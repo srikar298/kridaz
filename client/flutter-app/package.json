@@ -1,1 +1,0 @@
-{"name":"flutter-app","version":"1.0.0","private":true,"scripts":{"build":"flutter build apk","test":"flutter test","dev:flutter":"flutter run"}}
