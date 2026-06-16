@@ -1,6 +1,5 @@
 import { prisma } from '../config/prisma.js';
 import logger from '../utils/logger.js';
-import { awardAchievement } from './achievement.service.js';
 
 class CareerStatsService {
   /**
@@ -181,29 +180,99 @@ class CareerStatsService {
    */
   async checkAndAwardBadges(userId, matchStat, totalMatches, totalWins) {
     try {
+      const existingBadges = await prisma.userBadge.findMany({
+        where: { userId, sportType: 'CRICKET' },
+        select: { name: true }
+      });
+      const badgeNames = new Set(existingBadges.map(b => b.name));
+      const newBadgesToInsert = [];
+
       const runs = matchStat.battingRuns || 0;
       const wickets = matchStat.bowlingWickets || 0;
       const sixes = matchStat.battingSixes || 0;
       const balls = matchStat.battingBalls || 0;
-      const strikeRate = balls > 0 ? (runs / balls) * 100 : 0;
 
-      const candidates = [];
-      if (runs    >= 100) candidates.push('centurion');
-      if (wickets >= 5)   candidates.push('fifer_master');
-      if (sixes   >= 5)   candidates.push('sixer_king');
-      if (runs    >= 50 && strikeRate < 100) candidates.push('anchor');
-      if (totalMatches >= 100) candidates.push('veteran');
-      if (totalWins    >= 10)  candidates.push('invincible');
-
-      const awarded = [];
-      for (const code of candidates) {
-        const before = Date.now();
-        const row = await awardAchievement({ userId, code, context: { matchId: matchStat.matchId, runs, wickets, sixes } });
-        if (row && Date.now() - new Date(row.awardedAt).getTime() < 60_000) {
-          awarded.push(code);
-        }
+      // 1. Centurion Badge
+      if (runs >= 100 && !badgeNames.has('Centurion')) {
+        newBadgesToInsert.push({
+          userId,
+          name: 'Centurion',
+          description: 'Scored a magnificent century (100+ runs) in a single match.',
+          sportType: 'CRICKET',
+          category: 'BATTING',
+          badgeIcon: 'GoldShield'
+        });
       }
-      return awarded;
+
+      // 2. Fifer Master Badge
+      if (wickets >= 5 && !badgeNames.has('Fifer Master')) {
+        newBadgesToInsert.push({
+          userId,
+          name: 'Fifer Master',
+          description: 'Claimed a stellar five-wicket haul (5+ wickets) in an innings.',
+          sportType: 'CRICKET',
+          category: 'BOWLING',
+          badgeIcon: 'RedFire'
+        });
+      }
+
+      // 3. Sixer King Badge
+      if (sixes >= 5 && !badgeNames.has('Sixer King')) {
+        newBadgesToInsert.push({
+          userId,
+          name: 'Sixer King',
+          description: 'Launched 5 or more massive sixes in a single innings.',
+          sportType: 'CRICKET',
+          category: 'BATTING',
+          badgeIcon: 'PurpleCrown'
+        });
+      }
+
+      // 4. Anchor Badge
+      const strikeRate = balls > 0 ? (runs / balls) * 100 : 0;
+      if (runs >= 50 && strikeRate < 100 && !badgeNames.has('Anchor')) {
+        newBadgesToInsert.push({
+          userId,
+          name: 'Anchor',
+          description: 'Showed immense patience, anchoring the innings with a solid 50+ runs at a steady pace.',
+          sportType: 'CRICKET',
+          category: 'BATTING',
+          badgeIcon: 'SilverAnchor'
+        });
+      }
+
+      // 5. Veteran Badge
+      if (totalMatches >= 100 && !badgeNames.has('Veteran')) {
+        newBadgesToInsert.push({
+          userId,
+          name: 'Veteran',
+          description: 'Achieved a remarkable milestone of 100 career matches played.',
+          sportType: 'CRICKET',
+          category: 'MILESTONE',
+          badgeIcon: 'PlatinumBadge'
+        });
+      }
+
+      // 6. Invincible Badge
+      if (totalWins >= 10 && !badgeNames.has('Invincible')) {
+        newBadgesToInsert.push({
+          userId,
+          name: 'Invincible',
+          description: 'Proved to be unbeatable by claiming 10 dynamic victories.',
+          sportType: 'CRICKET',
+          category: 'MILESTONE',
+          badgeIcon: 'NeonLightning'
+        });
+      }
+
+      if (newBadgesToInsert.length > 0) {
+        await prisma.userBadge.createMany({
+          data: newBadgesToInsert
+        });
+        return newBadgesToInsert.map(b => b.name);
+      }
+
+      return [];
     } catch (error) {
       logger.error(`[CareerStats] Error checking/awarding badges for user ${userId}:`, error);
       return [];

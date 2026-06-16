@@ -1,6 +1,5 @@
 import { prisma } from "../../config/prisma.js";
 import { getIO } from "../../config/socket.js";
-import { canDirectMessage } from "../../utils/dmGate.js";
 import logger from "../../utils/logger.js";
 import { SOCKET } from "@kridaz/shared-constants/socketEvents";
 
@@ -125,25 +124,6 @@ export const sendMessage = async (req, res) => {
       return res.status(404).json({ message: "Chat not found" });
     }
     console.log("SEND_MESSAGE: Chat found successfully");
-
-    // Bidirectional DM gate for 1-on-1 User↔User chats. Group consent is
-    // implicit (member of the group), so groups are skipped. Owner senders
-    // are also skipped (handled at chat creation).
-    if (!chat.isGroupChat && participantData.userId) {
-      const otherUserParticipant = chat.participants.find(
-        (p) => p.userId && p.userId !== participantData.userId && p.onModel === "User"
-      );
-      if (otherUserParticipant?.userId) {
-        const gate = await canDirectMessage({
-          senderUserId: participantData.userId,
-          targetUserId: otherUserParticipant.userId,
-          senderIsOwner: participantData.onModel === "Owner",
-        });
-        if (!gate.ok) {
-          return res.status(gate.status).json({ success: false, code: gate.code, message: gate.message });
-        }
-      }
-    }
 
     // Check admin-only restriction
     if (chat.adminOnlyMessages) {

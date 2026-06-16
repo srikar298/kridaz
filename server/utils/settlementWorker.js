@@ -226,20 +226,6 @@ export const runAutoSettle = async () => {
       });
     });
 
-    // Award booking-completion XP to each booker. Outside the transaction so a
-    // grantXp failure can't roll back settlement. Spec section 6 hook.
-    try {
-      const { grantXp } = await import('../services/xp.service.js');
-      const seen = new Set();
-      for (const booking of eligibleBookings) {
-        if (!booking.userId || seen.has(booking.userId + booking.id)) continue;
-        seen.add(booking.userId + booking.id);
-        await grantXp({ userId: booking.userId, source: 'booking', amount: 10, referenceId: booking.id });
-      }
-    } catch (xpErr) {
-      logger.error('[SETTLEMENT] Failed to grant booking XP:', xpErr);
-    }
-
     logger.info(`[SETTLEMENT] Phase B: Auto-settled ${eligibleBookings.length} booking(s) ✓`);
   } catch (err) {
     logger.error("[SETTLEMENT] Phase B error:", err);

@@ -194,6 +194,12 @@ const socketConfig = (server) => {
                   longitude = ${lng}
               WHERE id = ${socket.userId}
             `;
+          await prisma.$executeRaw`
+              UPDATE "UserProfile"
+              SET latitude = ${lat},
+                  longitude = ${lng}
+              WHERE "userId" = ${socket.userId}
+            `;
           socket.lastDbLocationWrite = now;
         }
 

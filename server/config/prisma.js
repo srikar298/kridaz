@@ -4,10 +4,15 @@ import pkg_pg from 'pg';
 const { Pool } = pkg_pg;
 import { PrismaPg } from '@prisma/adapter-pg';
 import dotenv from 'dotenv';
-import { encrypt, decrypt } from '../utils/encryption.js';
+import { encrypt, decrypt, isEncrypted } from '../utils/encryption.js';
 import { queryContext } from '../middleware/queryCounter.middleware.js';
 
 dotenv.config();
+
+/**
+ * Sensitive fields that should be encrypted/decrypted
+ */
+const SENSITIVE_FIELDS = ['youtubeAccessToken', 'youtubeRefreshToken', 'facebookAccessToken'];
 
 /**
  * Helper to process socialAccounts JSON array
@@ -52,13 +57,16 @@ const prisma = basePrisma.$extends({
     },
     user: {
       async $allOperations({ model, operation, args, query }) {
-        // Encrypt sensitive fields inside the socialAccounts JSON array on
-        // write. Per-provider columns (youtubeAccessToken, etc.) were
-        // dropped — everything now lives inside socialAccounts.
+        // Encrypt sensitive fields on write operations
         const isWrite = ['create', 'update', 'upsert', 'updateMany'].includes(operation);
         if (isWrite) {
           const processData = (data) => {
             if (!data) return;
+            SENSITIVE_FIELDS.forEach(field => {
+              if (data[field] && typeof data[field] === 'string' && !isEncrypted(data[field])) {
+                data[field] = encrypt(data[field]);
+              }
+            });
             if (data.socialAccounts) {
               data.socialAccounts = processSocialAccounts(data.socialAccounts, 'encrypt');
             }
@@ -77,6 +85,18 @@ const prisma = basePrisma.$extends({
   },
   result: {
     user: {
+      youtubeAccessToken: {
+        needs: { youtubeAccessToken: true },
+        compute(user) { return decrypt(user.youtubeAccessToken); },
+      },
+      youtubeRefreshToken: {
+        needs: { youtubeRefreshToken: true },
+        compute(user) { return decrypt(user.youtubeRefreshToken); },
+      },
+      facebookAccessToken: {
+        needs: { facebookAccessToken: true },
+        compute(user) { return decrypt(user.facebookAccessToken); },
+      },
       socialAccounts: {
         needs: { socialAccounts: true },
         compute(user) { return processSocialAccounts(user.socialAccounts, 'decrypt'); },

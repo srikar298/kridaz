@@ -43,6 +43,7 @@ describe("Player Module API", () => {
           where: { OR: [{ userId: user.id }, { targetId: user.id }] }
         }).catch(() => {});
         await prisma.refreshToken.deleteMany({ where: { userId: user.id } }).catch(() => {});
+        await prisma.userProfile.deleteMany({ where: { userId: user.id } }).catch(() => {});
         await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
       }
       await prisma.oTP.deleteMany({ where: { email } }).catch(() => {});
@@ -116,6 +117,7 @@ describe("Player Module API", () => {
           where: { OR: [{ userId }, { targetId: userId }] }
         }).catch(() => {});
         await prisma.refreshToken.deleteMany({ where: { userId } }).catch(() => {});
+        await prisma.userProfile.deleteMany({ where: { userId } }).catch(() => {});
         await prisma.user.delete({ where: { id: userId } }).catch(() => {});
       }
     }

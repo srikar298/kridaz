@@ -117,21 +117,20 @@ export const computeScoreSnapshot = (scoring, match) => {
     const suffix = EXTRA_SUFFIX[ball.extraType] || '';
     const extraRuns = ball.extraRuns || 0;
     const offBat = ball.runs || 0;
-    const freeHit = !!ball.freeHit;
     // Wicket overrides — keep "W" prominent but annotate if it was off an extra.
     if (ball.isWicket) {
-      return { type: 'wicket', label: suffix ? `W${suffix}` : 'W', isExtra: ball.isExtra, freeHit };
+      return { type: 'wicket', label: suffix ? `W${suffix}` : 'W', isExtra: ball.isExtra };
     }
     // Boundary off the bat.
     if (ball.isFour) {
-      return { type: 'boundary', label: suffix ? `4${suffix}` : '4', isExtra: ball.isExtra, freeHit };
+      return { type: 'boundary', label: suffix ? `4${suffix}` : '4', isExtra: ball.isExtra };
     }
     if (ball.isSix) {
-      return { type: 'boundary', label: suffix ? `6${suffix}` : '6', isExtra: ball.isExtra, freeHit };
+      return { type: 'boundary', label: suffix ? `6${suffix}` : '6', isExtra: ball.isExtra };
     }
     // Pure penalty (no batting involvement): "5p".
     if (ball.extraType === 'PENALTY') {
-      return { type: 'run', label: `${extraRuns || offBat}p`, isExtra: true, freeHit };
+      return { type: 'run', label: `${extraRuns || offBat}p`, isExtra: true };
     }
     // For byes/leg-byes the runs live on extraRuns; for wides/no-balls the
     // total is offBat + extraRuns (e.g. no-ball + 2 ran off bat = "3nb").
@@ -139,7 +138,7 @@ export const computeScoreSnapshot = (scoring, match) => {
       (ball.extraType === 'BYE' || ball.extraType === 'LEG_BYE')
         ? extraRuns
         : offBat + extraRuns;
-    return { type: 'run', label: suffix ? `${total}${suffix}` : `${total}`, isExtra: ball.isExtra, freeHit };
+    return { type: 'run', label: suffix ? `${total}${suffix}` : `${total}`, isExtra: ball.isExtra };
   });
 
   // Target & Chase Info.
@@ -218,7 +217,6 @@ export const computeScoreSnapshot = (scoring, match) => {
       profilePicture: getPlayerImage(scoring.bowlerId),
       overs: bStat ? Math.floor(bStat.bowlingBalls / ballsPerOver) : 0,
       balls: bStat ? (bStat.bowlingBalls % ballsPerOver) : 0,
-      maidens: bStat?.bowlingMaidens || 0,
       runs: bStat?.bowlingRuns || 0,
       wickets: bStat?.bowlingWickets || 0,
       economy: bStat?.bowlingBalls > 0 ? Number(((bStat.bowlingRuns / bStat.bowlingBalls) * ballsPerOver).toFixed(2)) : 0

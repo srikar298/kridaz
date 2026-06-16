@@ -59,12 +59,6 @@ const startServer = () => {
       initSettlementWorker();           // startup runs + backfill (immediate)
       const { settlementQueue } = await initSettlementJobs();       // recurring jobs via BullMQ (singleton)
       trackQueue("settlement", settlementQueue);
-
-      // Player stats aggregator — consumes match-completed events + runs the
-      // nightly milestone sweep.
-      const { playerStatsQueue, initPlayerStatsJobs } = await import("./queues/playerStats.queue.js");
-      await initPlayerStatsJobs();
-      trackQueue("playerStats", playerStatsQueue);
       
       // Initialize Notification Worker
       import("./queues/notification.worker.js").then(() => {
@@ -161,10 +155,6 @@ const shutdown = async (signal) => {
           import('./queues/media.queue.js').then(({ mediaQueue }) => mediaQueue.close()),
           import('./queues/notification.queue.js').then(({ notificationQueue }) => notificationQueue.close()).catch(() => {}),
           import('./queues/settlement.queue.js').then(({ settlementQueue }) => settlementQueue?.close?.()).catch(() => {}),
-          import('./queues/playerStats.queue.js').then(({ playerStatsQueue, playerStatsWorker }) => {
-            playerStatsWorker?.close?.();
-            return playerStatsQueue?.close?.();
-          }).catch(() => {}),
         ]),
       ]);
 

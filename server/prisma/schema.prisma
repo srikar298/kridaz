@@ -16,7 +16,6 @@ model User {
   name                    String
   phone                   String?
   profilePicture          String?
-  coverImage              String?
   city                    String?
   state                   String?
   latitude                Decimal?                      @db.Decimal(10, 8)
@@ -29,21 +28,6 @@ model User {
   bio                     String?
   interests               String[]
   sportTypes              String[]
-  preferredFoot           String?
-  preferredHand           String?
-  languages               String[]                      @default([])
-  travelRadiusKm          Int                           @default(10)
-  lookingFor              String[]                      @default([])
-  skillLevels             Json                          @default("{}")
-  preferredPositions      Json                          @default("{}")
-  availability            Json                          @default("{}")
-  privacyFlags            Json                          @default("{\"showOnMap\":true,\"allowDM\":true,\"statsPublic\":true}")
-  xp                      Int                           @default(0)
-  level                   Int                           @default(1)
-  verifiedPhone           Boolean                       @default(false)
-  verifiedEmail           Boolean                       @default(false)
-  verifiedId              Boolean                       @default(false)
-  profileViewsCount       Int                           @default(0)
   googleId                String?
   lastSeen                DateTime                      @default(now())
   status                  String                        @default("active")
@@ -109,11 +93,9 @@ model User {
   ownedTeams              Team[]                        @relation("TeamOwner")
   teamMemberships         TeamMember[]
   oauth                   UserOAuth?
+  profile                 UserProfile?
   followers               UserRelationship[]            @relation("Following")
   following               UserRelationship[]            @relation("Follower")
-  blocksMade              BlockedUser[]                 @relation("Blocker")
-  blocksReceived          BlockedUser[]                 @relation("Blocked")
-  xpEvents                XpEvent[]
   stats                   UserStats?
   wallet                  Wallet?
   walletTransactions      WalletTransaction[]
@@ -124,213 +106,31 @@ model User {
   turfInteractions        TurfInteraction[]
   professionalCustomers   ProfessionalCustomer[]
   careerStats             PlayerCareerStats[]
+  earnedBadges            UserBadge[]
   postReports             PostReport[]
   devices                 UserDevice[]
-  matchParticipations     MatchParticipant[]
-  reviewsGiven            PlayerReview[]                @relation("PlayerReviewReviewer")
-  reviewsReceived         PlayerReview[]                @relation("PlayerReviewReviewee")
-  reviewAggregate         PlayerReviewAggregate?
-  achievements            UserAchievement[]
-  playerMedia             PlayerMedia[]
-  reportsMade             UserReport[]                  @relation("UserReportReporter")
-  reportsReceived         UserReport[]                  @relation("UserReportReported")
-  profileViewsMade        ProfileView[]                 @relation("ProfileViewViewer")
-  profileViewsReceived    ProfileView[]                 @relation("ProfileViewViewed")
 
   @@index([role])
   @@index([latitude, longitude])
-  @@index([lastSeen(sort: Desc)])
-  @@index([city])
-  @@index([state])
 }
 
-model BlockedUser {
-  blockerId String
-  blockedId String
-  reason    String?
-  createdAt DateTime @default(now())
-  blocker   User     @relation("Blocker", fields: [blockerId], references: [id], onDelete: Cascade)
-  blocked   User     @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
-
-  @@id([blockerId, blockedId])
-  @@index([blockedId])
-}
-
-model XpEvent {
-  id          String   @id @default(uuid())
-  userId      String
-  source      String
-  amount      Int
-  referenceId String?
-  createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, createdAt(sort: Desc)])
-}
-
-/// Achievement catalog. Add new achievements by inserting rows here, not by
-/// editing code constants. `criteria` is a free-form JSONB blob that the
-/// nightly milestone job reads to decide who qualifies (e.g.
-/// `{ "type": "career_matches", "min": 100 }`).
-model Achievement {
-  id          String            @id @default(uuid())
-  code        String            @unique
-  name        String
-  description String?
-  iconUrl     String?
-  tier        String            @default("bronze")
-  sport       String?
-  criteria    Json              @default("{}")
-  createdAt   DateTime          @default(now())
-  awards      UserAchievement[]
-}
-
-/// Earned achievements per user. Idempotent — `awardAchievement()` is a
-/// no-op on duplicates thanks to the compound primary key.
-model UserAchievement {
-  userId        String
-  achievementId String
-  awardedAt     DateTime @default(now())
-  context       Json     @default("{}")
-
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
-
-  @@id([userId, achievementId])
-  @@index([achievementId])
-}
-
-/// Peer-to-peer review submitted after a match. Distinct from `Review`
-/// (turf/professional reviews). One row per (match, reviewer, reviewee).
-/// Aggregates roll up into `PlayerReviewAggregate` for the profile card.
-model PlayerReview {
-  id            String   @id @default(uuid())
-  matchId       String
-  hostedGameId  String?
-  reviewerId    String
-  revieweeId    String
-  sportsmanship Int
-  punctuality   Int
-  skill         Int
-  tags          String[] @default([])
-  note          String?
-  createdAt     DateTime @default(now())
-
-  reviewer User @relation("PlayerReviewReviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
-  reviewee User @relation("PlayerReviewReviewee", fields: [revieweeId], references: [id], onDelete: Cascade)
-
-  @@unique([matchId, reviewerId, revieweeId])
-  @@index([revieweeId, createdAt(sort: Desc)])
-  @@index([reviewerId])
-}
-
-/// Denormalized roll-up of all reviews a user has received. Rebuilt
-/// incrementally on each PlayerReview insert (one-user scope, cheap) and
-/// safe to refresh from a periodic job for drift recovery.
-model PlayerReviewAggregate {
-  userId           String   @id
-  avgSportsmanship Float?
-  avgPunctuality   Float?
-  avgSkill         Float?
-  reviewCount      Int      @default(0)
-  topTags          Json     @default("[]")
-  updatedAt        DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-/// Profile gallery media — currently photos only. The global Reel feed lives
-/// in `Reel` (separate model) and is surfaced on the gallery endpoint by
-/// querying `Reel.creatorId = :userId`. Per the current product decision
-/// reels-creator gating is NOT enforced at the API layer.
-model PlayerMedia {
-  id           String   @id @default(uuid())
-  userId       String
-  type         String // 'photo' (reels currently live in `Reel` table)
-  url          String
-  thumbnailUrl String?
-  matchId      String?
-  caption      String?
-  tags         String[] @default([])
-  isPinned     Boolean  @default(false)
-  viewCount    Int      @default(0)
-  likeCount    Int      @default(0)
-  createdAt    DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, type, createdAt(sort: Desc)])
-  @@index([userId, isPinned])
-}
-
-/// Moderation: someone reported a user's profile. Mirrors PostReport.
-/// Reviewed off-platform by ops; status is updated via admin tooling.
-model UserReport {
-  id         String   @id @default(uuid())
-  reporterId String
-  reportedId String
-  reason     String
-  details    String?
-  status     String   @default("PENDING") // PENDING | RESOLVED | DISMISSED
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  reporter User @relation("UserReportReporter", fields: [reporterId], references: [id], onDelete: Cascade)
-  reported User @relation("UserReportReported", fields: [reportedId], references: [id], onDelete: Cascade)
-
-  @@index([reportedId, status])
-  @@index([reporterId])
-}
-
-/// "Who viewed me" — one row per viewer per day (UTC). Older rows are
-/// pruned by a sweep job; the at-most-one-per-day shape keeps row count
-/// bounded for popular players. Unauth views aren't recorded.
-model ProfileView {
-  id        String   @id @default(uuid())
-  viewerId  String
-  viewedId  String
-  viewedAt  DateTime @default(now())
-  // YYYY-MM-DD in UTC. Compound unique with viewerId + viewedId for dedupe.
-  dayBucket String
-
-  viewer User @relation("ProfileViewViewer", fields: [viewerId], references: [id], onDelete: Cascade)
-  viewed User @relation("ProfileViewViewed", fields: [viewedId], references: [id], onDelete: Cascade)
-
-  @@unique([viewerId, viewedId, dayBucket])
-  @@index([viewedId, viewedAt(sort: Desc)])
-}
-
-/// Sport-agnostic per-match player row. Written by the aggregateStats queue
-/// when a match completes. Powers recent-matches list, activity heatmap, and
-/// `PlayerCareerStats` rebuilds. Cricket per-ball detail still lives on
-/// MatchPlayerStat / MatchBall; this row is the cross-sport summary.
-model MatchParticipant {
-  id            String   @id @default(uuid())
-  matchId       String
-  hostedGameId  String?
-  userId        String
-  teamId        String?
-  sport         String
-  role          String?
-  runs          Int?
-  wickets       Int?
-  goals         Int?
-  assists       Int?
-  minutesPlayed Int?
-  isMotm        Boolean  @default(false)
-  result        String?
-  xpAwarded     Int      @default(0)
-  playedAt      DateTime
-  createdAt     DateTime @default(now())
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, playedAt(sort: Desc)])
-  @@index([matchId])
-  @@index([hostedGameId])
+model UserProfile {
+  id         String    @id @default(uuid())
+  userId     String    @unique
+  bio        String?
+  gender     String?
+  dob        DateTime?
+  interests  String[]  @default([])
+  sportTypes String[]  @default([])
+  city       String?
+  state      String?
+  latitude   Decimal?  @db.Decimal(10, 8)
+  longitude  Decimal?  @db.Decimal(11, 8)
+  updatedAt  DateTime  @updatedAt
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserOAuth {
-<<<<<<< Updated upstream
   id                  String    @id @default(uuid())
   userId              String    @unique
   youtubeAccessToken  String?
@@ -346,13 +146,6 @@ model UserOAuth {
   socialAccounts      Json?     @default("{}")
   updatedAt           DateTime  @updatedAt
   user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-=======
-  id             String   @id @default(uuid())
-  userId         String   @unique
-  socialAccounts Json?    @default("{}")
-  updatedAt      DateTime @updatedAt
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
->>>>>>> Stashed changes
 }
 
 model OTP {
@@ -881,11 +674,6 @@ model MatchBall {
   fieldingPosition String?
   distance         String?
   commentary       String?
-  // True when this delivery was bowled on a free hit (the preceding no-ball
-  // armed the free-hit window and it hadn't been cleared by a fair delivery
-  // yet). Captured at write time from scoring.freeHitActive so the timeline
-  // can render an FH ring on the ball without recomputing the chain.
-  freeHit          Boolean      @default(false)
   timestamp        DateTime     @default(now())
   match            CricketMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
 }
@@ -1688,6 +1476,20 @@ model ProfessionalTask {
   customer     ProfessionalCustomer? @relation(fields: [customerId], references: [id])
 }
 
+model UserBadge {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  description String
+  sportType   String
+  category    String
+  badgeIcon   String
+  earnedAt    DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, sportType])
+}
+
 model PlayerCareerStats {
   id        String @id @default(uuid())
   userId    String
@@ -1696,7 +1498,6 @@ model PlayerCareerStats {
   matchesPlayed Int   @default(0)
   matchesWon    Int   @default(0)
   matchesLost   Int   @default(0)
-  matchesDrawn  Int   @default(0)
   winPercentage Float @default(0.0)
 
   totalRuns         Int   @default(0)
@@ -1717,19 +1518,6 @@ model PlayerCareerStats {
   bestBowlingWickets Int   @default(0)
   bowlingAverage     Float @default(0.0)
   bowlingEconomy     Float @default(0.0)
-
-  // Football
-  goalsScored  Int @default(0)
-  assistsCount Int @default(0)
-  cleanSheets  Int @default(0)
-
-  // Cross-sport — driven by aggregateStats job, not direct writes
-  currentStreak Int   @default(0)
-  longestStreak Int   @default(0)
-  mvpCount      Int   @default(0)
-  motmCount     Int   @default(0)
-  playerRating  Int   @default(1200)
-  hoursPlayed   Float @default(0.0)
 
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

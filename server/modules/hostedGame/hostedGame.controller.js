@@ -652,14 +652,6 @@ export const createHostedGame = async (req, res) => {
       NotificationService.sendCustomUmpireInvite({ customUmpire: result.customUmpire, game: result, host });
     }
 
-    // Phase 4: reward the host for organizing. Best-effort; never block 201.
-    try {
-      const { grantXp } = await import('../../services/xp.service.js');
-      await grantXp({ userId: hostId, source: 'host_game', amount: 25, referenceId: result.id });
-    } catch (xpErr) {
-      logger.warn('[HOSTED_GAME] Failed to grant host XP:', xpErr?.message);
-    }
-
     return res.status(201).json({
       success: true,
       message: "Game hosted successfully!",

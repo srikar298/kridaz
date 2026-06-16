@@ -557,29 +557,6 @@ export const finalizeMatch = async (scoringId) => {
   const match = await prisma.hostedGame.findUnique({ where: { id: scoring.gameId } });
   const earnedBadges = await aggregatePlayerStats(scoring, match);
 
-  // Phase 2: emit the multi-sport match-completed event. Lives alongside
-  // aggregatePlayerStats (which only handles cricket badges/normalized
-  // UserStats) — this one writes MatchParticipant + multi-sport
-  // PlayerCareerStats + XpEvent rows via the playerStats queue.
-  try {
-    const { emitMatchCompleted, buildCricketParticipants } = await import(
-      '../../services/matchCompletedEmitter.service.js'
-    );
-    const hostedGameWithTeams = await prisma.hostedGame.findUnique({
-      where: { id: scoring.gameId },
-      include: { teams: { include: { slots: true } } },
-    });
-    await emitMatchCompleted({
-      matchId: scoring.id,
-      hostedGameId: scoring.gameId,
-      sport: 'CRICKET',
-      completedAt: new Date().toISOString(),
-      participants: buildCricketParticipants(scoring, hostedGameWithTeams),
-    });
-  } catch (emitErr) {
-    logger.error('Error emitting match-completed event:', emitErr);
-  }
-
   return { earnedBadges };
 };
 
@@ -1391,15 +1368,7 @@ export const processScoreUpdate = async (scoringId, ballData) => {
         wicketTakerId: ballData.wicketTakerId,
         fielderId: ballData.fielderId,
         fieldingPosition: ballData.fieldingPosition,
-<<<<<<< Updated upstream
         distance: ballData.distance
-=======
-        // Snapshot the free-hit state BEFORE the rotation logic below flips
-        // it. If the previous no-ball armed the free-hit window and we're
-        // still inside it (the cricketMatch row hasn't been updated yet),
-        // this delivery counts as a free hit.
-        freeHit: !!(houseRules.enforceFreeHit && scoring.freeHitActive)
->>>>>>> Stashed changes
       }
     }),
     prisma.innings.update({
@@ -1544,96 +1513,56 @@ export const processScoreUpdate = async (scoringId, ballData) => {
     }
   }
 
-  // ---------------------------------------------------------------------
-  // Fast HTTP return path (latency fix #2).
-  //
-  // The ball is durably committed by the transaction above. Everything
-  // below — re-fetching the full match, computing the snapshot, caching it
-  // in Redis, broadcasting over Socket.IO, queueing commentary — is "after
-  // the write" work that the HTTP caller does not need to block on.
-  //
-  // Before: PUT /scoring/update took 6–7 s under load because the response
-  // body included the full liveData snapshot, and the snapshot recompute
-  // touched many rows. With many viewers connected, the synchronous emit
-  // also blocked the response while Socket.IO fanned out.
-  //
-  // Now: respond immediately with a lite ack. The scorer's UI either
-  // applies a local optimistic update or waits for the socket push. Every
-  // listener (the scorer included) receives the new snapshot via
-  // SOCKET.SCORE_UPDATED as soon as the background task finishes.
-  // ---------------------------------------------------------------------
-  const ack = {
-    ack: true,
-    scoringId: scoring.id,
-    gameId: scoring.gameId,
-    inningsIndex: scoring.currentInningsIndex,
-    overNumber,
-    ballInOver,
-    isOverComplete,
-    isLegalBall,
-    // Optimistic deltas — clients with local snapshot models can apply
-    // these immediately while the authoritative snapshot is on its way.
-    runsAdded: runs + extraRuns,
-    wicketAdded: !!(ballData.isWicket && ballData.wicketType !== 'RETIRED_HURT'),
-  };
+  const [updatedScoring, hostedGame] = await Promise.all([
+    prisma.cricketMatch.findUnique({
+      where: { id: scoring.id },
+      include: { innings: true, playerStats: true, timeline: { orderBy: { timestamp: 'desc' } } }
+    }),
+    prisma.hostedGame.findUnique({
+      where: { id: scoring.gameId },
+      include: HOSTED_GAME_SCORING_INCLUDE
+    })
+  ]);
 
-  setImmediate(async () => {
-    try {
-      const [updatedScoring, hostedGame] = await Promise.all([
-        prisma.cricketMatch.findUnique({
-          where: { id: scoring.id },
-          include: { innings: true, playerStats: true, timeline: { orderBy: { timestamp: 'desc' } } }
-        }),
-        prisma.hostedGame.findUnique({
-          where: { id: scoring.gameId },
-          include: HOSTED_GAME_SCORING_INCLUDE
-        })
-      ]);
+  const mappedHostedGame = mapHostedGame(hostedGame);
+  const liveData = computeScoreSnapshot(updatedScoring, mappedHostedGame);
 
-      const mappedHostedGame = mapHostedGame(hostedGame);
-      const liveData = computeScoreSnapshot(updatedScoring, mappedHostedGame);
+  let finalScoring = updatedScoring;
+  if (liveData.isInningsComplete && updatedScoring.timerState === "RUNNING") {
+    const now = new Date();
+    const elapsedSinceLastStart = updatedScoring.timerLastStartedAt ? Math.floor((now - new Date(updatedScoring.timerLastStartedAt)) / 1000) : 0;
+    const newElapsedTime = (updatedScoring.totalDurationSeconds || 0) + elapsedSinceLastStart;
 
-      if (liveData.isInningsComplete && updatedScoring.timerState === "RUNNING") {
-        const now = new Date();
-        const elapsedSinceLastStart = updatedScoring.timerLastStartedAt
-          ? Math.floor((now - new Date(updatedScoring.timerLastStartedAt)) / 1000)
-          : 0;
-        const newElapsedTime = (updatedScoring.totalDurationSeconds || 0) + elapsedSinceLastStart;
-        await prisma.cricketMatch.update({
-          where: { id: scoring.id },
-          data: {
-            timerState: "PAUSED",
-            totalDurationSeconds: newElapsedTime,
-            timerLastStartedAt: null
-          }
-        });
-      }
+    finalScoring = await prisma.cricketMatch.update({
+      where: { id: scoring.id },
+      data: {
+        timerState: "PAUSED",
+        totalDurationSeconds: newElapsedTime,
+        timerLastStartedAt: null
+      },
+      include: { innings: true, playerStats: true, timeline: { orderBy: { timestamp: 'desc' } } }
+    });
+  }
 
-      // Redis sticky-note (latency fix #3). Always refresh the cached
-      // snapshot so the next /scoring/live-score read hits cache instead of
-      // doing a full re-aggregate from Prisma.
-      await liveStateService.setLiveScore(scoring.gameId, liveData);
+  await liveStateService.setLiveScore(scoring.gameId, liveData);
 
-      const io = getIO();
-      if (io) {
-        io.to(scoring.gameId).emit(SOCKET.SCORE_UPDATED, liveData);
-      }
+  const io = getIO();
+  if (io) {
+    io.to(scoring.gameId).emit(SOCKET.SCORE_UPDATED, liveData);
+  }
 
-      import('../commentary/commentary.service.js')
-        .then(({ commentaryQueue }) => {
-          commentaryQueue.add('generate', {
-            matchId: scoring.gameId,
-            liveData,
-            ballEvent: ballData
-          });
-        })
-        .catch(err => logger.error("[Scoring] Failed to load commentary queue:", err));
-    } catch (err) {
-      logger.error("[Scoring] Background snapshot refresh failed:", err);
-    }
-  });
+  // AI Commentary (Async Background Job)
+  import('../commentary/commentary.service.js')
+    .then(({ commentaryQueue }) => {
+      commentaryQueue.add('generate', {
+        matchId: scoring.gameId,
+        liveData,
+        ballEvent: ballData
+      });
+    })
+    .catch(err => logger.error("[Scoring] Failed to load commentary queue:", err));
 
-  return { scoring: { id: scoring.id, gameId: scoring.gameId }, liveData: ack };
+  return { scoring: finalScoring, liveData };
 };
 
 /**
