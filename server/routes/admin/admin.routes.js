@@ -42,8 +42,10 @@ adminRouter.use("/notifications", verifyAdminToken, adminNotificationRouter);
 adminRouter.use("/games", verifyAdminToken, gameRouter);
 import adminCouponRouter from "../../modules/admin/routes/coupon.routes.js";
 import errorLogsRouter from "../../modules/admin/routes/errorLogs.routes.js";
+import venueInvitesRouter from "../../modules/admin/routes/venueInvites.routes.js";
 adminRouter.use("/coupons", verifyAdminToken, adminCouponRouter);
 adminRouter.use("/error-logs", verifyAdminToken, errorLogsRouter);
+adminRouter.use("/venue-invites", verifyAdminToken, venueInvitesRouter);
 
 export default adminRouter;
 

@@ -9,7 +9,7 @@ import useBookingHistory from "../hooks/useBookingHistory";
 import useWriteReview from "@hooks/useWriteReview";
 import TurfBookingHistorySkeleton from "@components/ui/TurfBookingHistorySkeleton";
 import WriteReview from "@components/reviews/WriteReview";
-import RaiseDisputeModal from "@components/dispute/RaiseDisputeModal";
+import ReportIssueFlowModal from "@components/dispute/ReportIssueFlowModal";
 import useSimilarRecommendations from "@hooks/useSimilarRecommendations";
 import useRecommendations from "@hooks/useRecommendations";
 import { TurfCard } from "@features/turf";
@@ -287,7 +287,15 @@ const TurfBookingHistory = () => {
                         </div>
 
                         {/* 3. Action */}
-                        <div className="mt-1 pt-3 border-t border-white/5 md:border-t-0 md:pt-0 md:mt-0 shrink-0">
+                        <div className="mt-1 pt-3 border-t border-white/5 md:border-t-0 md:pt-0 md:mt-0 shrink-0 flex flex-col md:flex-row gap-2">
+                           {(booking.status === 'confirmed' || booking.status === 'completed') && (
+                             <button 
+                               onClick={() => setSelectedDisputeBooking(booking)}
+                               className="w-full md:w-auto h-[36px] px-4 rounded-[8px] border border-red-500/50 text-red-500 hover:bg-red-500/10 text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-1.5"
+                             >
+                               <AlertOctagon size={14} /> Report Issue
+                             </button>
+                           )}
                            <Link to={`/booking-pass/${booking.id || booking._id}`} className="w-full md:w-auto h-[36px] px-6 rounded-[8px] bg-[#B3DC26] text-[#000000] text-[11px] font-black uppercase tracking-widest hover:bg-[#a2c921] transition-all flex items-center justify-center gap-2">
                              <Ticket size={14} /> View Pass
                            </Link>
@@ -845,7 +853,7 @@ const TurfBookingHistory = () => {
         )}
 
         {selectedDisputeBooking && (
-          <RaiseDisputeModal
+          <ReportIssueFlowModal
             booking={selectedDisputeBooking}
             onClose={() => setSelectedDisputeBooking(null)}
             onSuccess={fetchBookingsRefresh}
@@ -854,7 +862,7 @@ const TurfBookingHistory = () => {
 
         {/* Professional-specific Dispute Modal */}
         {proDisputeBooking && (
-          <RaiseDisputeModal
+          <ReportIssueFlowModal
             booking={proDisputeBooking}
             onClose={() => setProDisputeBooking(null)}
             onSuccess={fetchBookingsRefresh}

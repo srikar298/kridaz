@@ -6,13 +6,15 @@ import {
 import useDisputes from "@hooks/admin/useDisputes";
 
 const DisputeManager = () => {
-  const { disputes, loading, processingId, handleResolve, handleReply } = useDisputes("turf");
+  const { disputes, loading, processingId, handleResolve, handleReply, handleOwnerAction, handleEscalate } = useDisputes("turf");
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("ALL");
   const [selectedDispute, setSelectedDispute] = useState(null);
   const [replyText, setReplyText] = useState("");
   const [isResolveModalOpen, setIsResolveModalOpen] = useState(false);
+  const [isOwnerActionModalOpen, setIsOwnerActionModalOpen] = useState(false);
   const [decision, setDecision] = useState("RELEASE_TO_OWNER");
+  const [ownerDecision, setOwnerDecision] = useState("approve");
   const [partialAmount, setPartialAmount] = useState("");
   const [notes, setNotes] = useState("");
 
@@ -50,6 +52,13 @@ const DisputeManager = () => {
     setIsResolveModalOpen(false);
     setNotes("");
     setPartialAmount("");
+  };
+
+  const handleConfirmOwnerAction = async () => {
+    if (ownerDecision === 'reject' && !notes) return;
+    await handleOwnerAction(selectedDispute._id, ownerDecision, notes || 'Approved request');
+    setIsOwnerActionModalOpen(false);
+    setNotes("");
   };
 
   return (
@@ -156,14 +165,33 @@ const DisputeManager = () => {
                         </div>
 
                         <div className="flex flex-wrap gap-2">
-                           {selectedDispute.status !== 'RESOLVED' && (
+                           {selectedDispute.status !== 'RESOLVED' && !selectedDispute.isEscalated && (
                              <button 
-                               onClick={() => setIsResolveModalOpen(true)}
-                               className="bg-orange-500 text-black px-6 py-3 rounded-[8px] text-xs font-black uppercase tracking-widest hover:bg-orange-400 transition-all shadow-[0_5px_15px_rgba(249,115,22,0.3)]"
+                               onClick={() => setIsOwnerActionModalOpen(true)}
+                               className="bg-[#CCFF00] text-black px-6 py-3 rounded-[8px] text-xs font-black uppercase tracking-widest hover:bg-[#b3e600] transition-all shadow-[0_5px_15px_rgba(204,255,0,0.3)]"
                              >
-                                Resolve Case
+                                Owner Action
                              </button>
                            )}
+                           
+                           {selectedDispute.status !== 'RESOLVED' && selectedDispute.isEscalated && (
+                             <button 
+                               onClick={() => setIsResolveModalOpen(true)}
+                               className="bg-red-500 text-white px-6 py-3 rounded-[8px] text-xs font-black uppercase tracking-widest hover:bg-red-600 transition-all shadow-[0_5px_15px_rgba(239,68,68,0.3)]"
+                             >
+                                Admin Override
+                             </button>
+                           )}
+
+                           {selectedDispute.status !== 'RESOLVED' && !selectedDispute.isEscalated && (
+                             <button 
+                               onClick={() => handleEscalate(selectedDispute._id)}
+                               className="bg-white/5 border border-white/10 text-white px-5 py-3 rounded-[8px] text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2"
+                             >
+                                Force Escalate <AlertCircle size={14}/>
+                             </button>
+                           )}
+                           
                            <button className="bg-white/5 border border-white/10 text-white px-5 py-3 rounded-[8px] text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2">
                               Log <AlertCircle size={14}/>
                            </button>
@@ -242,6 +270,20 @@ const DisputeManager = () => {
                                  <span className="text-gray-400 font-bold uppercase text-[10px]">Slot Time</span>
                                  <span className="font-bold text-[11px]">{selectedDispute.bookingDetails?.slotLabel}</span>
                               </div>
+                              
+                              <div className="h-px bg-white/5 my-2" />
+                              <div className="flex justify-between items-center text-sm">
+                                 <span className="text-gray-400 font-bold uppercase text-[10px]">Request Type</span>
+                                 <span className="font-bold text-[11px] text-[#CCFF00]">{selectedDispute.requestType?.replace(/_/g, ' ') || "N/A"}</span>
+                              </div>
+                              {selectedDispute.slaDeadline && !selectedDispute.isEscalated && selectedDispute.status !== 'RESOLVED' && (
+                                <div className="flex justify-between items-center text-sm">
+                                   <span className="text-gray-400 font-bold uppercase text-[10px]">SLA Deadline</span>
+                                   <span className={`font-bold text-[11px] ${new Date(selectedDispute.slaDeadline) < new Date() ? 'text-red-500' : 'text-orange-400'}`}>
+                                     {new Date(selectedDispute.slaDeadline).toLocaleString()}
+                                   </span>
+                                </div>
+                              )}
                            </div>
                         </div>
                      </div>
@@ -348,12 +390,12 @@ const DisputeManager = () => {
       {/* Resolution Modal */}
       {isResolveModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
-          <div className="bg-[#111] border border-orange-500/30 rounded-[8px] w-full max-w-xl p-10 relative shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+          <div className="bg-[#111] border border-red-500/30 rounded-[8px] w-full max-w-xl p-10 relative shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
             <div className="flex items-center gap-3 mb-8">
-               <div className="w-10 h-10 rounded-[8px] bg-orange-500/20 flex items-center justify-center text-orange-500">
+               <div className="w-10 h-10 rounded-[8px] bg-red-500/20 flex items-center justify-center text-red-500">
                   <CheckCircle size={20} />
                </div>
-               <h2 className="text-2xl font-bold text-white uppercase tracking-tight">Issue Final Resolution</h2>
+               <h2 className="text-2xl font-bold text-white uppercase tracking-tight">Issue Admin Override</h2>
             </div>
             
             <div className="space-y-6">
@@ -369,7 +411,7 @@ const DisputeManager = () => {
                       <button
                         key={action.id}
                         onClick={() => setDecision(action.id)}
-                        className={`flex items-center gap-3 p-4 rounded-[8px] border text-xs font-bold transition-all ${decision === action.id ? 'bg-orange-500 border-orange-500 text-black shadow-[0_5px_15px_rgba(249,115,22,0.3)]' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'}`}
+                        className={`flex items-center gap-3 p-4 rounded-[8px] border text-xs font-bold transition-all ${decision === action.id ? 'bg-red-500 border-red-500 text-white shadow-[0_5px_15px_rgba(239,68,68,0.3)]' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'}`}
                       >
                          <action.icon size={16} />
                          {action.label}
@@ -388,7 +430,7 @@ const DisputeManager = () => {
                        value={partialAmount}
                        onChange={(e) => setPartialAmount(e.target.value)}
                        placeholder="Enter amount to refund..."
-                       className="w-full bg-[#0a0a0a] border border-white/10 rounded-[8px] pl-8 pr-4 py-4 text-white focus:outline-none focus:border-orange-500 transition-all font-bold"
+                       className="w-full bg-[#0a0a0a] border border-white/10 rounded-[8px] pl-8 pr-4 py-4 text-white focus:outline-none focus:border-red-500 transition-all font-bold"
                      />
                   </div>
                   <p className="text-[9px] text-gray-600 mt-2 font-bold uppercase italic">* Remaining ₹{selectedDispute.bookingDetails?.ownerRevenue - (parseFloat(partialAmount) || 0)} will be released to owner.</p>
@@ -401,7 +443,7 @@ const DisputeManager = () => {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Summarize the investigation and reason for this outcome..."
-                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-[8px] px-6 py-4 text-white min-h-[120px] resize-none focus:outline-none focus:border-orange-500 transition-all text-sm leading-relaxed"
+                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-[8px] px-6 py-4 text-white min-h-[120px] resize-none focus:outline-none focus:border-red-500 transition-all text-sm leading-relaxed"
                 />
               </div>
 
@@ -415,9 +457,70 @@ const DisputeManager = () => {
                 <button
                   onClick={handleConfirmResolve}
                   disabled={!notes || (decision === "PARTIAL_REFUND" && !partialAmount) || processingId === selectedDispute._id}
-                  className="flex-1 py-4 bg-orange-500 hover:bg-orange-600 text-black rounded-[8px] font-black uppercase tracking-widest transition-all disabled:opacity-30 shadow-[0_10px_20px_rgba(249,115,22,0.2)]"
+                  className="flex-1 py-4 bg-red-500 hover:bg-red-600 text-white rounded-[8px] font-black uppercase tracking-widest transition-all disabled:opacity-30 shadow-[0_10px_20px_rgba(239,68,68,0.2)]"
                 >
                   {processingId === selectedDispute._id ? "Processing..." : "Confirm Final Decision"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Owner Action Modal */}
+      {isOwnerActionModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
+          <div className="bg-[#111] border border-[#CCFF00]/30 rounded-[8px] w-full max-w-xl p-10 relative shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+            <div className="flex items-center gap-3 mb-8">
+               <div className="w-10 h-10 rounded-[8px] bg-[#CCFF00]/20 flex items-center justify-center text-[#CCFF00]">
+                  <CheckCircle size={20} />
+               </div>
+               <h2 className="text-2xl font-bold text-white uppercase tracking-tight">Review User Request</h2>
+            </div>
+            
+            <div className="space-y-6">
+              <div>
+                <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2 block">Your Action</label>
+                <div className="grid grid-cols-2 gap-3">
+                   {[
+                      { id: "approve", label: "Approve Request", icon: CheckCircle },
+                      { id: "reject", label: "Reject Request", icon: XCircle }
+                   ].map(action => (
+                      <button
+                        key={action.id}
+                        onClick={() => setOwnerDecision(action.id)}
+                        className={`flex items-center gap-3 p-4 rounded-[8px] border text-xs font-bold transition-all ${ownerDecision === action.id ? 'bg-[#CCFF00] border-[#CCFF00] text-black shadow-[0_5px_15px_rgba(204,255,0,0.3)]' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'}`}
+                      >
+                         <action.icon size={16} />
+                         {action.label}
+                      </button>
+                   ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2 block">Explanation (Required if Rejecting)</label>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Explain why you are approving/rejecting this request..."
+                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-[8px] px-6 py-4 text-white min-h-[120px] resize-none focus:outline-none focus:border-[#CCFF00] transition-all text-sm leading-relaxed"
+                />
+              </div>
+
+              <div className="flex gap-4 pt-6">
+                <button
+                  onClick={() => setIsOwnerActionModalOpen(false)}
+                  className="flex-1 py-4 bg-white/5 hover:bg-white/10 text-white rounded-[8px] font-black uppercase tracking-widest transition-all border border-white/10"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmOwnerAction}
+                  disabled={(ownerDecision === "reject" && !notes) || processingId === selectedDispute._id}
+                  className="flex-1 py-4 bg-[#CCFF00] hover:bg-[#b3e600] text-black rounded-[8px] font-black uppercase tracking-widest transition-all disabled:opacity-30 shadow-[0_10px_20px_rgba(204,255,0,0.2)]"
+                >
+                  {processingId === selectedDispute._id ? "Processing..." : "Submit Decision"}
                 </button>
               </div>
             </div>

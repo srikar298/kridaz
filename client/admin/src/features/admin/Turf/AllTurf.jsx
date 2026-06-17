@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { PackageOpen, Activity } from "lucide-react";
 import toast from "react-hot-toast";
 import useTurfData from "@hooks/admin/useTurf";
@@ -9,6 +10,7 @@ import ConfirmationPopup from "./ConfirmationPopup";
 
 export const AllTurf = () => {
   const { turfData, loading, approveTurf, rejectTurf, decommissionTurf, softDeleteTurf, hardDeleteTurf } = useTurfData();
+  const navigate = useNavigate();
   const [selectedTurf, setSelectedTurf] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState("all");
@@ -99,11 +101,19 @@ export const AllTurf = () => {
                <Activity size={14} className="animate-pulse" />
                <span>Venue Management</span>
             </div>
-            <div className="relative">
-              <h1 className="text-4xl md:text-5xl font-black tracking-tight uppercase text-white leading-none">
-                Platform <span className="text-[#CCFF00]">Venues</span>
-              </h1>
-              <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-3">Manage and monitor all platform venues</p>
+            <div className="relative flex justify-between items-start w-full">
+              <div>
+                <h1 className="text-4xl md:text-5xl font-black tracking-tight uppercase text-white leading-none">
+                  Platform <span className="text-[#CCFF00]">Venues</span>
+                </h1>
+                <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-3">Manage and monitor all platform venues</p>
+              </div>
+              <button 
+                onClick={() => navigate("/admin/turfs/invites")}
+                className="px-6 py-2 rounded-[8px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-black text-xs font-bold uppercase tracking-widest shadow-[0_4px_12px_rgba(179,220,38,0.2)] ml-4"
+              >
+                Invite Venues
+              </button>
             </div>
           </div>
 

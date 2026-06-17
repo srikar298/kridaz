@@ -354,23 +354,22 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
         
         {/* Title and Rating Row */}
         <div className="flex justify-between items-start gap-3">
-          <div>
-            <h2 className="text-[18px] font-[700] font-inter tracking-normal text-[#FFFFFF] leading-[28px] mb-1">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-[18px] font-[700] font-inter tracking-normal text-[#FFFFFF] leading-[28px] mb-1 truncate">
               {turf.name}
             </h2>
             <div className="flex items-center gap-1.5 text-[rgba(255,255,255,0.70)] mt-0.5">
-              <MapPin size={12} className="text-[#BFF367]" />
-              <p className="text-[12px] font-[400] leading-[16px]">
+              <MapPin size={12} className="text-[#BFF367] shrink-0" />
+              <p className="text-[12px] font-[400] leading-[16px] truncate">
                 {turf.location || turf.city || 'Location unavailable'}
               </p>
             </div>
           </div>
-          <div className="flex flex-col items-end">
+          <div className="flex flex-col items-end shrink-0">
             <div className="flex items-center gap-1 text-[#BFF367]">
               <Star size={14} className="fill-[#BFF367]" />
               <span className="text-[18px] font-[700] leading-none">{rating.toFixed(1)}</span>
             </div>
-            <span className="text-[12px] text-[rgba(255,255,255,0.70)] mt-0.5">{reviewsCount} Reviews</span>
           </div>
         </div>
 

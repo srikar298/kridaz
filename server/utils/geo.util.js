@@ -19,9 +19,14 @@ export const updateGeoPoint = async (table, id, lat, lng) => {
  * Find entities within a certain radius using the Haversine formula in SQL.
  * Optimized with a bounding box to utilize standard B-Tree indexes on lat/lng.
  */
+const ALLOWED_TABLES = new Set(['Turf', 'User', 'Team']);
+
 export const findNearby = async (table, lat, lng, radiusInMeters = 5000, options = {}) => {
   try {
     const tableName = table.charAt(0).toUpperCase() + table.slice(1);
+    if (!ALLOWED_TABLES.has(tableName)) {
+      throw new Error(`Invalid table name for geo query: ${tableName}`);
+    }
     const { where = {}, take = 50, include = {}, select } = options;
 
     // 1. Calculate bounding box (rough square) to use indexes

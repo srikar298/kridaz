@@ -5,7 +5,7 @@ import { z } from "zod";
 import { format, isValid } from "date-fns";
 import toast from "react-hot-toast";
 import axiosInstance from "@hooks/useAxiosInstance";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const addTurfSchema = z.object({
   name: z.string()
@@ -70,6 +70,8 @@ export default function useAddTurf() {
   const [loading, setLoading] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const inviteToken = searchParams.get("inviteToken");
   const {
     register,
     handleSubmit,
@@ -117,29 +119,60 @@ export default function useAddTurf() {
   const [newFacility, setNewFacility] = useState("");
   const [generatedSlots, setGeneratedSlots] = useState([]);
   
-  // Load draft from local storage on mount
+  // Load draft from local storage on mount, or fetch invite data
   useEffect(() => {
-    const savedDraft = localStorage.getItem("addVenueDraft");
-    if (savedDraft) {
+    const fetchInviteData = async () => {
       try {
-        const parsed = JSON.parse(savedDraft);
-        Object.keys(parsed).forEach((key) => {
-          if (key === "openTime" || key === "closeTime") {
-            if (parsed[key]) setValue(key, parsed[key]);
-          } else {
-            setValue(key, parsed[key]);
-          }
-        });
-        if (parsed.managerContacts) setManagerContacts(parsed.managerContacts);
-        if (parsed.sportTypes) setSportTypes(parsed.sportTypes);
-        if (parsed.groundTypes) setGroundTypes(parsed.groundTypes);
-        if (parsed.facilities) setFacilities(parsed.facilities);
-        toast.success("Draft loaded successfully!");
+        const response = await axiosInstance.get(`/api/public/venue-invites/verify/${inviteToken}`);
+        const { turf } = response.data.data.invite;
+        if (turf) {
+          setValue("name", turf.name || "");
+          setValue("description", turf.description || "");
+          setValue("location", turf.location || "");
+          setValue("city", turf.city || "");
+          setValue("state", turf.state || "");
+          setValue("openTime", turf.openTime || "");
+          setValue("closeTime", turf.closeTime || "");
+          setValue("pricePerHour", turf.pricePerHour || 0);
+          setValue("slotDuration", turf.slotDuration || 60);
+          
+          if (turf.sportTypes) setSportTypes(turf.sportTypes);
+          if (turf.groundTypes) setGroundTypes(turf.groundTypes);
+          if (turf.facilities) setFacilities(turf.facilities);
+          
+          toast.success("Loaded invited venue details.");
+        }
       } catch (e) {
-        console.error("Failed to load draft");
+        console.error("Failed to fetch invite data", e);
+        toast.error("Invalid or expired invite link");
+      }
+    };
+
+    if (inviteToken) {
+      fetchInviteData();
+    } else {
+      const savedDraft = localStorage.getItem("addVenueDraft");
+      if (savedDraft) {
+        try {
+          const parsed = JSON.parse(savedDraft);
+          Object.keys(parsed).forEach((key) => {
+            if (key === "openTime" || key === "closeTime") {
+              if (parsed[key]) setValue(key, parsed[key]);
+            } else {
+              setValue(key, parsed[key]);
+            }
+          });
+          if (parsed.managerContacts) setManagerContacts(parsed.managerContacts);
+          if (parsed.sportTypes) setSportTypes(parsed.sportTypes);
+          if (parsed.groundTypes) setGroundTypes(parsed.groundTypes);
+          if (parsed.facilities) setFacilities(parsed.facilities);
+          toast.success("Draft loaded successfully!");
+        } catch (e) {
+          console.error("Failed to load draft");
+        }
       }
     }
-  }, [setValue]);
+  }, [setValue, inviteToken]);
 
   const saveDraft = () => {
     const data = getValues();
@@ -329,6 +362,9 @@ export default function useAddTurf() {
 
     // Append generated slots
     formData.append("generatedSlots", JSON.stringify(generatedSlots));
+    if (inviteToken) {
+      formData.append("inviteToken", inviteToken);
+    }
 
     try {
       const response = await axiosInstance.post(

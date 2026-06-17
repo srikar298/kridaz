@@ -10,7 +10,7 @@ import { uploadToCloudinary } from "../../utils/cloudinary.js";
 export const raiseDispute = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { bookingId, reason, customReason, description } = req.body;
+    const { bookingId, reason, customReason, description, requestType, preferredSlots } = req.body;
 
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
@@ -68,6 +68,19 @@ export const raiseDispute = async (req, res) => {
         throw new ConflictError("A dispute is already active for this booking.", { code: "CONFLICT" });
       }
 
+      // Calculate SLA
+      let slaDeadline = new Date(Date.now() + 12 * 60 * 60 * 1000); // default 12 hours
+      const now = new Date();
+      if (booking && booking.playStartTime) {
+         if (new Date(booking.playStartTime).toDateString() === now.toDateString()) {
+             slaDeadline = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+         }
+      } else if (professionalBooking && professionalBooking.matchEndParsed) {
+         if (new Date(professionalBooking.matchEndParsed).toDateString() === now.toDateString()) {
+             slaDeadline = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+         }
+      }
+
       // 1. Create the dispute
       const disputeReason = reason === "Other" ? customReason : reason;
       const newDispute = await tx.dispute.create({
@@ -79,6 +92,9 @@ export const raiseDispute = async (req, res) => {
           reason: disputeReason,
           description,
           images: imageUrls,
+          requestType: requestType || "WALLET_REFUND",
+          preferredSlots: preferredSlots || null,
+          slaDeadline,
           status: "OPEN",
           bookingDetails: booking ? {
             turfName: booking.turf.name,
@@ -300,6 +316,9 @@ export const getAllDisputes = async (req, res) => {
       where.onDemandBookingId = { not: null };
     } else if (type === 'turf') {
       where.bookingId = { not: null };
+    }
+    if (req.query.all !== 'true') {
+      where.isEscalated = true;
     }
 
     const [disputes, total] = await Promise.all([
@@ -635,3 +654,132 @@ export const resolveDispute = async (req, res) => {
   }
 };
 
+/**
+ * OWNER: Take action on a dispute (APPROVE_REFUND, APPROVE_RESCHEDULE, REJECT)
+ */
+export const ownerActionDispute = async (req, res) => {
+  try {
+    const { disputeId } = req.params;
+    const { action, reason } = req.body;
+    const ownerUserId = req.user.id;
+
+    const result = await prisma.$transaction(async (tx) => {
+      const dispute = await tx.dispute.findUnique({
+        where: { id: disputeId },
+        include: { booking: true, onDemandBooking: true }
+      });
+
+      if (!dispute) throw new NotFoundError("Dispute not found.", { code: "NOT_FOUND" });
+      if (dispute.isEscalated || dispute.status === "RESOLVED") {
+        throw new BadRequestError("Dispute is already escalated or resolved.", { code: "BAD_REQUEST" });
+      }
+
+      // Verify the caller is the owner
+      const ownerProfile = await tx.ownerProfile.findUnique({ where: { userId: ownerUserId } });
+      if (!ownerProfile || ownerProfile.id !== dispute.ownerId) {
+        throw new ForbiddenError("You are not the owner of this dispute.", { code: "FORBIDDEN" });
+      }
+
+      const isProfessional = !!dispute.onDemandBooking;
+      const activeBooking = isProfessional ? dispute.onDemandBooking : dispute.booking;
+      const ownerRevenue = isProfessional ? Number(activeBooking.blockedAmount) : Number(activeBooking.ownerRevenue);
+
+      let newStatus = "RESOLVED";
+
+      if (action === "APPROVE_REFUND") {
+        await tx.ownerProfile.update({
+          where: { id: ownerProfile.id },
+          data: { disputeBalance: { decrement: ownerRevenue } }
+        });
+
+        if (activeBooking.userId) {
+          await tx.user.update({
+            where: { id: activeBooking.userId },
+            data: { walletBalance: { increment: ownerRevenue } }
+          });
+
+          await tx.walletTransaction.create({
+            data: {
+              userId: activeBooking.userId,
+              type: "DISPUTE_REFUND",
+              amount: ownerRevenue,
+              bookingId: !isProfessional ? activeBooking.id : undefined,
+              onDemandBookingId: isProfessional ? activeBooking.id : undefined,
+              disputeId: dispute.id,
+              status: "SUCCESS",
+              description: `Owner approved full refund for booking ${activeBooking.id}`
+            }
+          });
+        }
+
+        if (!isProfessional) {
+          await tx.booking.update({
+            where: { id: activeBooking.id },
+            data: { status: "CANCELLED", revenueStatus: "REFUNDED" }
+          });
+        } else {
+          await tx.onDemandProfessionalBooking.update({
+            where: { id: activeBooking.id },
+            data: { status: "CANCELLED" }
+          });
+        }
+      } else if (action === "APPROVE_RESCHEDULE") {
+        // Let's just mark as RESOLVED for now. Follow-up new booking logic will consume wallet.
+      } else if (action === "REJECT") {
+        newStatus = "OPEN";
+      } else {
+        throw new BadRequestError("Invalid action", { code: "BAD_REQUEST" });
+      }
+
+      const updatedDispute = await tx.dispute.update({
+        where: { id: disputeId },
+        data: {
+          ownerAction: action,
+          ownerActionReason: reason,
+          status: newStatus,
+          ...(newStatus === "RESOLVED" && {
+            resolvedAt: new Date(),
+            outcome: "OWNER_RESOLVED"
+          })
+        }
+      });
+
+      return { updatedDispute, activeBooking };
+    });
+
+    return res.status(200).json({ success: true, message: `Dispute action ${action} recorded`, data: result.updatedDispute });
+  } catch (error) {
+    logger.error("[DISPUTE] Error processing owner action:", error);
+    return res.status(400).json({ success: false, message: error.message || "Failed to process owner action." });
+  }
+};
+
+/**
+ * USER: Escalate dispute to admin
+ */
+export const escalateDispute = async (req, res) => {
+  try {
+    const { disputeId } = req.params;
+    const userId = req.user.id;
+
+    const dispute = await prisma.dispute.findUnique({ where: { id: disputeId } });
+    if (!dispute) return res.status(404).json({ success: false, message: "Dispute not found" });
+
+    if (dispute.raisedById !== userId) {
+      return res.status(403).json({ success: false, message: "Not authorized" });
+    }
+    if (dispute.status === "RESOLVED") {
+      return res.status(400).json({ success: false, message: "Already resolved" });
+    }
+
+    const updatedDispute = await prisma.dispute.update({
+      where: { id: disputeId },
+      data: { isEscalated: true }
+    });
+
+    return res.status(200).json({ success: true, message: "Dispute escalated to KRIDAZ Admin", data: updatedDispute });
+  } catch (error) {
+    logger.error("[DISPUTE] Error escalating:", error);
+    return res.status(400).json({ success: false, message: error.message || "Failed to escalate." });
+  }
+};

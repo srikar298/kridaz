@@ -49,6 +49,35 @@ const useDisputes = (type = "all") => {
   };
 
 
+  const handleOwnerAction = async (id, action, message) => {
+    setProcessingId(id);
+    try {
+      await axiosInstance.post(`/api/admin/dispute/${id}/owner-action`, { 
+        action, 
+        reason: message
+      });
+      toast.success(`Request ${action}d successfully`);
+      fetchDisputes();
+    } catch (err) {
+      toast.error(err.response?.data?.message || `Failed to ${action} request`);
+    } finally {
+      setProcessingId("");
+    }
+  };
+
+  const handleEscalate = async (id) => {
+    setProcessingId(id);
+    try {
+      await axiosInstance.post(`/api/admin/dispute/${id}/escalate`);
+      toast.success("Dispute escalated to KRIDAZ Support");
+      fetchDisputes();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to escalate dispute");
+    } finally {
+      setProcessingId("");
+    }
+  };
+
   useEffect(() => {
     fetchDisputes();
   }, []);
@@ -59,6 +88,8 @@ const useDisputes = (type = "all") => {
     processingId,
     handleResolve,
     handleReply,
+    handleOwnerAction,
+    handleEscalate,
 
     refresh: fetchDisputes
   };

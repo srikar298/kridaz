@@ -8,7 +8,7 @@ import axiosInstance from '@hooks/useAxiosInstance';
 import { toast } from 'react-hot-toast';
 import { 
   Users, MapPin, Search, Filter, Coins, ChevronDown,
-  Trophy, Info, Zap, X
+  Trophy, Info, Zap, X, MessageCircle
 } from 'lucide-react';
 import { fetchStates, fetchCities } from '@utils/locationService';
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
@@ -167,9 +167,27 @@ const JoinGames = () => {
     } else if (matchTypeFilter === 'Live') {
       if (!isLiveGame) return false;
     } else if (matchTypeFilter === 'Quick') {
-      if (game.gameMode?.toUpperCase() !== 'QUICK') return false;
+      if (game.gameMode?.toUpperCase() !== 'QUICK' || (game.requestType && game.requestType !== 'MATCH')) return false;
     } else if (matchTypeFilter === 'Professional') {
-      if (game.gameMode?.toUpperCase() !== 'PROFESSIONAL') return false;
+      if (game.gameMode?.toUpperCase() !== 'PROFESSIONAL' || (game.requestType && game.requestType !== 'MATCH')) return false;
+    } else if (matchTypeFilter === 'Looking for Team') {
+      if (game.requestType !== 'LOOKING_FOR_TEAM') return false;
+    } else if (matchTypeFilter === 'Need Opponent (GBNO)') {
+      if (game.requestType !== 'GBNO') return false;
+    } else if (matchTypeFilter === 'Practice') {
+      if (game.requestType !== 'PRACTICE') return false;
+    } else if (matchTypeFilter === 'Net Bowlers') {
+      if (game.requestType !== 'NET_BOWLERS') return false;
+    } else if (matchTypeFilter === 'Professionals Wanted') {
+      if (game.gameMode?.toUpperCase() !== 'HIRING') return false;
+    } else if (matchTypeFilter === 'Need Umpire') {
+      if (game.requestType !== 'NEED_UMPIRE') return false;
+    } else if (matchTypeFilter === 'Need Scorer') {
+      if (game.requestType !== 'NEED_SCORER') return false;
+    } else if (matchTypeFilter === 'Need Streamer') {
+      if (game.requestType !== 'NEED_STREAMER') return false;
+    } else if (matchTypeFilter === 'Need Coach') {
+      if (game.requestType !== 'NEED_COACH') return false;
     } else {
       // By default ('All Matches'), hide live matches unless there's an active search
       if (!search && isLiveGame) return false;
@@ -315,11 +333,21 @@ const JoinGames = () => {
                             value={matchTypeFilter}
                             onChange={(e) => setMatchTypeFilter(e.target.value)}
                           >
-                            <option value="All Matches">All Matches</option>
-                            <option value="My Hosted Games">My Hosted Games</option>
+                            <option value="All Matches">All Posts</option>
+                            <option value="My Hosted Games">My Posts</option>
                             <option value="Live">Live Matches</option>
                             <option value="Quick">Quick Matches</option>
-                            <option value="Professional">Professional</option>
+                            <option value="Professional">Professional Matches</option>
+                            <option value="Looking for Team">Looking for Team</option>
+                            <option value="Need Opponent (GBNO)">Need Opponent (GBNO)</option>
+                            <option value="Practice">Practice Matches</option>
+                            <option value="Net Bowlers">Net Bowlers Needed</option>
+                            <option disabled>── Professionals ──</option>
+                            <option value="Professionals Wanted">All Pro Wanted</option>
+                            <option value="Need Umpire">Need Umpire</option>
+                            <option value="Need Scorer">Need Scorer</option>
+                            <option value="Need Streamer">Need Streamer</option>
+                            <option value="Need Coach">Need Coach</option>
                           </select>
                           <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
                         </div>
@@ -427,13 +455,33 @@ const JoinGames = () => {
               </div>
             </div>
           ) : (
-            filteredGames.map(game => (
-              <GameCard 
-                key={game.id || game._id} 
-                game={game} 
-                onSelect={(selectedGame) => navigate(`/join-games/${selectedGame.id || selectedGame._id}`)} 
-              />
-            ))
+            filteredGames.map(game => {
+              const currentUserId = user?.id || user?._id;
+              const hostId = game.hostId || game.host?._id || game.host?.id;
+              const isHost = currentUserId === hostId;
+
+              return (
+                <GameCard 
+                  key={game.id || game._id} 
+                  game={game} 
+                  onSelect={(selectedGame) => navigate(`/join-games/${selectedGame.id || selectedGame._id}`)} 
+                  actionButton={
+                    !isHost && currentUserId ? (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/messages?userId=${hostId}`);
+                        }}
+                        className="w-full flex items-center justify-center gap-2 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-[12px] text-xs font-bold text-white transition-all"
+                      >
+                        <MessageCircle size={14} />
+                        Chat with {game.requestType === 'LOOKING_FOR_TEAM' ? 'Player' : 'Host'}
+                      </button>
+                    ) : null
+                  }
+                />
+              );
+            })
           )}
         </div>
       </div>

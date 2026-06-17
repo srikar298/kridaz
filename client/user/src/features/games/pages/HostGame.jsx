@@ -15,6 +15,7 @@ import { useGetMyTeamsQuery } from '@redux/api/teamApi';
 import CoinAnimation from '@components/CoinAnimation';
 import { fetchStates, fetchCities } from '@utils/locationService';
 
+const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
 const SUBHEADING_STYLE = { fontFamily: "'Inter 28pt Light', sans-serif", fontWeight: 300 };
 
 const MOCK_TEAM_IMAGES = [
@@ -181,8 +182,9 @@ const HostGame = () => {
     ...storedData,
     quickPlayerCount: storedData.quickPlayerCount || 2
   } : {
+    requestType: '',
     gameType: '',
-    gameMode: '', // QUICK or FULL
+    gameMode: '', // QUICK, PROFESSIONAL, or HIRING
     date: '',
     time: '',
     quickPlayerCount: 2,
@@ -190,7 +192,16 @@ const HostGame = () => {
     city: user?.city || '',
     state: user?.state || '',
     teamA: { name: '', slots: [], image: MOCK_TEAM_IMAGES[0].url },
-    teamB: { name: '', slots: [], image: MOCK_TEAM_IMAGES[1].url }
+    teamB: { name: '', slots: [], image: MOCK_TEAM_IMAGES[1].url },
+    bookingId: '',
+    matchPreferences: {
+      budget: '',
+      budgetType: 'Per Match',
+      requirements: '',
+      isDateFlexible: false,
+      isLocationFlexible: false,
+      customLocation: ''
+    }
   };
   const [gameData, setGameData] = useState(initialGameData);
 
@@ -203,6 +214,18 @@ const HostGame = () => {
     const urlStep = searchParams.get('step');
     if (urlStep) {
       setStep(parseInt(urlStep));
+    }
+    const urlReqType = searchParams.get('requestType');
+    const urlBookingId = searchParams.get('bookingId');
+    const urlTurfId = searchParams.get('turfId');
+    if (urlReqType) {
+      setGameData(prev => ({
+        ...prev,
+        requestType: urlReqType,
+        bookingId: urlBookingId || prev.bookingId,
+        groundId: urlTurfId || prev.groundId,
+        gameMode: urlReqType === 'MATCH' ? prev.gameMode : 'QUICK'
+      }));
     }
   }, [searchParams]);
 
@@ -650,95 +673,152 @@ const HostGame = () => {
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4 max-w-3xl mx-auto py-2">
 
 
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => setGameData({ ...gameData, gameMode: 'QUICK' })}
-                className={`px-2 py-2.5 sm:px-4 sm:py-3 rounded-[16px] border-[1.5px] transition-all text-center flex flex-col items-center justify-center relative overflow-hidden ${ gameData.gameMode === 'QUICK' ? 'border-transparent shadow-[0_0_30px_rgba(85,222,232,0.1)]' : 'border-white/10 bg-[#121212] hover:border-white/10' }`}
-                style={
-                  gameData.gameMode === 'QUICK'
-                  ? {
-                      border: '1.5px solid transparent',
-                      backgroundImage: 'linear-gradient(#0c0d0f, #0c0d0f), linear-gradient(90deg, #BFF367, #BFF367)',
-                      backgroundClip: 'padding-box, border-box',
-                      backgroundOrigin: 'border-box',
-                    }
-                  : {}
-                }
-              >
-                <div className="flex flex-col items-center justify-center w-full">
-                  <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mb-2 sm:mb-2.5 border transition-all duration-500 relative ${ gameData.gameMode === 'QUICK' ? 'border-transparent bg-[#121212] text-white' : 'border-white/10 bg-[#121212] text-white/70' }`}
-                  style={
-                    gameData.gameMode === 'QUICK'
-                    ? {
-                        border: '2px solid transparent',
-                        backgroundImage: 'linear-gradient(#0c0d0f, #0c0d0f), linear-gradient(135deg, #BFF367, #BFF367, transparent, transparent)',
-                        backgroundClip: 'padding-box, border-box',
-                        backgroundOrigin: 'border-box',
-                      }
-                    : {}
-                  }
-                  >
-                    <Zap className={`w-4 h-4 sm:w-5 sm:h-5 ${gameData.gameMode === 'QUICK' ? 'text-white animate-pulse' : 'text-white/70'}`} />
-                  </div>
-                  <h3 className={`text-[9px] sm:text-sm font-black mb-0 font-open-sans tracking-wide uppercase ${gameData.gameMode === 'QUICK' ? 'text-white' : 'text-white/70'}`}>QUICK GAME</h3>
-                  <div className="hidden sm:block w-8 h-[2px] bg-[#1B1B1B] my-2 rounded-full mx-auto" />
-                  <p className="hidden sm:block text-[14px] text-white/70 leading-relaxed font-medium font-inter text-center">
-                    One simple pool of players. No team split required. Best for casual matches or single-team practice.
-                  </p>
-                </div>
-                {gameData.gameMode === 'QUICK' && (
-                  <div className="absolute top-2 right-2 sm:top-4 sm:right-4">
-                    <CheckCircle2 className="text-[#BFF367] w-4 h-4 sm:w-5 sm:h-5" />
-                  </div>
-                )}
-              </button>
+            {!gameData.requestType ? (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-sm font-bold text-white/70 mb-3 uppercase tracking-widest flex items-center gap-2">
+                    <div className="w-[3px] h-[14px] bg-gradient-to-b from-[#55DEE8] to-[#BFF367] rounded-full" />
+                    Matches & Players
+                  </h2>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {[
+                        { id: 'TOURNAMENT', label: 'Host Tournament', icon: <Trophy size={20} className="text-[#FFD700]" />, desc: 'League, Knockout, IPL Style' },
+                        { id: 'MATCH', label: 'Host a Match', icon: <Trophy size={20} />, desc: 'Quick or Pro Matches' },
+                        { id: 'LOOKING_FOR_TEAM', label: 'Looking for Team', icon: <UserCheck size={20} />, desc: 'Find a team to join' },
+                        { id: 'GBNO', label: 'Ground Booked', icon: <MapPin size={20} />, desc: 'Need Opponent' },
+                        { id: 'PRACTICE', label: 'Practice Match', icon: <ShieldCheck size={20} />, desc: 'Friendly Practice' },
+                        { id: 'NET_BOWLERS', label: 'Net Bowlers', icon: <Zap size={20} />, desc: 'Need bowlers for nets' },
+                      ].map(req => (
+                        <button
+                          key={req.id}
+                          onClick={() => {
+                            if (req.id === 'TOURNAMENT') {
+                              navigate('/tournament/create');
+                              return;
+                            }
+                            setGameData({ 
+                              ...gameData, 
+                              requestType: req.id, 
+                              gameMode: req.id === 'MATCH' ? '' : 'QUICK' 
+                            });
+                          }}
+                        className="group relative rounded-[16px] p-[1.5px] transition-all duration-300 cursor-pointer overflow-hidden text-center flex flex-col"
+                      >
+                        {/* Gradient Border Overlay - Only visible on hover */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#BFF367] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
+                        
+                        {/* Normal Border Overlay - Fades out on hover */}
+                        <div className="absolute inset-0 border-[1.5px] border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[16px]" />
 
-              <button
-                onClick={() => setGameData({ ...gameData, gameMode: 'PROFESSIONAL' })}
-                className={`px-2 py-2.5 sm:px-4 sm:py-3 rounded-[16px] border-[1.5px] transition-all text-center flex flex-col items-center justify-center relative overflow-hidden ${ gameData.gameMode === 'PROFESSIONAL' ? 'border-transparent shadow-[0_0_30px_rgba(85,222,232,0.15)]' : 'border-white/10 bg-[#121212] hover:border-white/10' }`}
-                style={
-                  gameData.gameMode === 'PROFESSIONAL'
-                  ? {
-                      border: '1.5px solid transparent',
-                      backgroundImage: 'linear-gradient(#0c0d0f, #0c0d0f), linear-gradient(90deg, #BFF367, #BFF367)',
-                      backgroundClip: 'padding-box, border-box',
-                      backgroundOrigin: 'border-box',
-                    }
-                  : {}
-                }
-              >
-                <div className="flex flex-col items-center justify-center w-full">
-                  <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mb-2 sm:mb-2.5 border transition-all duration-500 relative ${ gameData.gameMode === 'PROFESSIONAL' ? 'border-transparent bg-[#121212] text-white' : 'border-white/10 bg-[#121212] text-white/70' }`}
-                  style={
-                    gameData.gameMode === 'PROFESSIONAL'
-                    ? {
-                        border: '2px solid transparent',
-                        backgroundImage: 'linear-gradient(#0c0d0f, #0c0d0f), linear-gradient(135deg, #BFF367, #BFF367, transparent, transparent)',
-                        backgroundClip: 'padding-box, border-box',
-                        backgroundOrigin: 'border-box',
-                      }
-                    : {}
-                  }
-                  >
-                    <ShieldCheck className={`w-4 h-4 sm:w-5 sm:h-5 ${gameData.gameMode === 'PROFESSIONAL' ? 'text-white animate-pulse' : 'text-white/70'}`} />
+                        <div className="relative bg-[#0d0d0d] rounded-[15px] p-3 sm:p-4 h-full w-full flex flex-col items-center justify-center">
+                          <div className="w-10 h-10 rounded-full bg-[#1B1B1B] text-white/70 flex items-center justify-center mb-2 group-hover:text-[#BFF367] transition-colors">
+                            {req.icon}
+                          </div>
+                          <h3 className="text-[10px] sm:text-xs font-black mb-1 uppercase text-white tracking-widest" style={HEADING_STYLE}>{req.label}</h3>
+                          <p className="text-[9px] text-white/50 tracking-wider" style={SUBHEADING_STYLE}>{req.desc}</p>
+                        </div>
+                      </button>
+                    ))}
                   </div>
-                  <h3 className={`text-[9px] sm:text-sm font-black mb-0 font-open-sans tracking-wide uppercase ${gameData.gameMode === 'PROFESSIONAL' ? 'text-white' : 'text-white/70'}`}>PROFESSIONAL</h3>
-                  <div className="hidden sm:block w-8 h-[2px] bg-[#1B1B1B] my-2 rounded-full mx-auto" />
-                  <p className="hidden sm:block text-[14px] text-white/70 leading-relaxed font-medium font-inter text-center">
-                    Two balanced teams (A vs B). Assign specific roles and define unique team identities.
-                  </p>
                 </div>
-                {gameData.gameMode === 'PROFESSIONAL' && (
-                  <div className="absolute top-2 right-2 sm:top-4 sm:right-4">
-                    <CheckCircle2 className="text-[#BFF367] w-4 h-4 sm:w-5 sm:h-5" />
+
+                <div>
+                  <h2 className="text-sm font-bold text-white/70 mb-3 uppercase tracking-widest flex items-center gap-2">
+                    <div className="w-[3px] h-[14px] bg-gradient-to-b from-[#55DEE8] to-[#BFF367] rounded-full" />
+                    Hire Professionals
+                  </h2>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {[
+                      { id: 'NEED_UMPIRE', label: 'Need Umpire', icon: <ShieldCheck size={20} />, desc: 'Hire an official' },
+                      { id: 'NEED_SCORER', label: 'Need Scorer', icon: <CheckCircle2 size={20} />, desc: 'Hire a scorer' },
+                      { id: 'NEED_STREAMER', label: 'Need Streamer', icon: <Zap size={20} />, desc: 'Live broadcast' },
+                      { id: 'NEED_COACH', label: 'Need Coach', icon: <UserCheck size={20} />, desc: 'Hire a trainer' },
+                    ].map(req => (
+                      <button
+                        key={req.id}
+                        onClick={() => {
+                          setGameData({ 
+                            ...gameData, 
+                            requestType: req.id, 
+                            gameMode: 'HIRING' 
+                          });
+                        }}
+                        className="group relative rounded-[16px] p-[1.5px] transition-all duration-300 cursor-pointer overflow-hidden text-center flex flex-col"
+                      >
+                        {/* Gradient Border Overlay - Only visible on hover */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#BFF367] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
+                        
+                        {/* Normal Border Overlay - Fades out on hover */}
+                        <div className="absolute inset-0 border-[1.5px] border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[16px]" />
+
+                        <div className="relative bg-[#0d0d0d] rounded-[15px] p-3 sm:p-4 h-full w-full flex flex-col items-center justify-center">
+                          <div className="w-10 h-10 rounded-full bg-[#1B1B1B] text-white/70 flex items-center justify-center mb-2 group-hover:text-[#BFF367] transition-colors">
+                            {req.icon}
+                          </div>
+                          <h3 className="text-[10px] sm:text-xs font-black mb-1 uppercase text-white tracking-widest" style={HEADING_STYLE}>{req.label}</h3>
+                          <p className="text-[9px] text-white/50 tracking-wider" style={SUBHEADING_STYLE}>{req.desc}</p>
+                        </div>
+                      </button>
+                    ))}
                   </div>
-                )}
-              </button>
-            </div>
+                </div>
+              </div>
+            ) : gameData.requestType === 'MATCH' && !gameData.gameMode ? (
+              <div className="space-y-3">
+                <button onClick={() => setGameData({...gameData, requestType: ''})} className="text-xs text-cyan-400 mb-2">&larr; Back to Options</button>
+                <div className="grid grid-cols-2 gap-3">
+                  {/* QUICK GAME BUTTON */}
+                  <button
+                    onClick={() => setGameData({ ...gameData, gameMode: 'QUICK' })}
+                    className="group relative rounded-[16px] p-[1.5px] transition-all duration-300 cursor-pointer overflow-hidden text-center flex flex-col h-full"
+                  >
+                    {/* Gradient Border Overlay - Only visible on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#BFF367] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
+                    
+                    {/* Normal Border Overlay - Fades out on hover */}
+                    <div className="absolute inset-0 border-[1.5px] border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[16px]" />
+
+                    <div className="relative bg-[#0d0d0d] rounded-[15px] p-3 sm:p-4 h-full w-full flex flex-col items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-[#1B1B1B] text-white/70 flex items-center justify-center mb-2 group-hover:text-[#BFF367] transition-colors">
+                        <Zap size={20} />
+                      </div>
+                      <h3 className="text-[10px] sm:text-xs font-black mb-1 uppercase text-white tracking-widest" style={HEADING_STYLE}>QUICK GAME</h3>
+                      <p className="hidden sm:block text-[9px] text-white/50 tracking-wider" style={SUBHEADING_STYLE}>One pool of players.</p>
+                    </div>
+                  </button>
+
+                  {/* PROFESSIONAL GAME BUTTON */}
+                  <button
+                    onClick={() => setGameData({ ...gameData, gameMode: 'PROFESSIONAL' })}
+                    className="group relative rounded-[16px] p-[1.5px] transition-all duration-300 cursor-pointer overflow-hidden text-center flex flex-col h-full"
+                  >
+                    {/* Gradient Border Overlay - Only visible on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#BFF367] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
+                    
+                    {/* Normal Border Overlay - Fades out on hover */}
+                    <div className="absolute inset-0 border-[1.5px] border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[16px]" />
+
+                    <div className="relative bg-[#0d0d0d] rounded-[15px] p-3 sm:p-4 h-full w-full flex flex-col items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-[#1B1B1B] text-white/70 flex items-center justify-center mb-2 group-hover:text-[#BFF367] transition-colors">
+                        <ShieldCheck size={20} />
+                      </div>
+                      <h3 className="text-[10px] sm:text-xs font-black mb-1 uppercase text-white tracking-widest" style={HEADING_STYLE}>PROFESSIONAL</h3>
+                      <p className="hidden sm:block text-[9px] text-white/50 tracking-wider" style={SUBHEADING_STYLE}>Two balanced teams.</p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            ) : null}
+            
+            {(gameData.requestType !== 'MATCH' || gameData.gameMode) && gameData.requestType && (
+              <div className="flex justify-end mt-2">
+                 <button onClick={() => setGameData({...gameData, requestType: '', gameMode: ''})} className="text-xs text-white/50 hover:text-white">&larr; Change Type</button>
+              </div>
+            )}
 
 
             {/* Step 2 integrated here */}
-            {gameData.gameMode && (
+            {(gameData.gameMode || (gameData.requestType && gameData.requestType !== 'MATCH')) && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-5 pt-5 border-t border-white/10 mt-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <section>
@@ -989,7 +1069,76 @@ const HostGame = () => {
                   </div>
                 </div>
               </section>
-            
+              
+              {gameData.requestType === 'LOOKING_FOR_TEAM' && (
+                <section className="space-y-4 mt-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-[#55DEE8] to-[#BFF367] rounded-full" />
+                    <label className="text-[10px] font-bold text-white uppercase tracking-widest block">Your Role / Preference</label>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="e.g. Opening Batsman, Pace Bowler..."
+                    value={gameData.matchPreferences?.role || ''}
+                    onChange={(e) => setGameData({ ...gameData, matchPreferences: { ...gameData.matchPreferences, role: e.target.value } })}
+                    className="w-full bg-[#000] border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-4 px-4 text-sm text-white outline-none transition-all font-bold"
+                  />
+                </section>
+              )}
+
+              {gameData.gameMode === 'HIRING' && (
+                <section className="space-y-4 mt-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-[#55DEE8] to-[#BFF367] rounded-full" />
+                    <label className="text-[10px] font-bold text-white uppercase tracking-widest block">Hiring Details</label>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] text-white/50 uppercase">Budget (₹)</label>
+                      <input 
+                        type="number" 
+                        placeholder="e.g. 1500" 
+                        value={gameData.matchPreferences?.budget || ''}
+                        onChange={(e) => setGameData({ ...gameData, matchPreferences: { ...gameData.matchPreferences, budget: e.target.value } })}
+                        className="w-full bg-[#121212] border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-[#55DEE8] outline-none transition-all"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] text-white/50 uppercase">Pay Rate</label>
+                      <select 
+                        value={gameData.matchPreferences?.budgetType || 'Per Match'}
+                        onChange={(e) => setGameData({ ...gameData, matchPreferences: { ...gameData.matchPreferences, budgetType: e.target.value } })}
+                        className="w-full bg-[#121212] border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-[#55DEE8] outline-none transition-all"
+                      >
+                        <option value="Per Match">Per Match</option>
+                        <option value="Per Day">Per Day</option>
+                        <option value="Per Hour">Per Hour</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] text-white/50 uppercase">Requirements / Notes</label>
+                    <textarea 
+                      placeholder="e.g. Need experienced umpire for T20 final..." 
+                      rows={3}
+                      value={gameData.matchPreferences?.requirements || ''}
+                      onChange={(e) => setGameData({ ...gameData, matchPreferences: { ...gameData.matchPreferences, requirements: e.target.value } })}
+                      className="w-full bg-[#121212] border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-[#55DEE8] outline-none transition-all resize-none"
+                    />
+                  </div>
+                  <div className="flex items-center gap-3 bg-[#121212] border border-white/10 rounded-[16px] p-3">
+                    <input 
+                      type="checkbox" 
+                      id="flex-date"
+                      checked={gameData.matchPreferences?.isDateFlexible || false}
+                      onChange={(e) => setGameData({ ...gameData, matchPreferences: { ...gameData.matchPreferences, isDateFlexible: e.target.checked } })}
+                      className="w-4 h-4 rounded border-white/20 text-cyan-400 focus:ring-0 focus:ring-offset-0 bg-[#000]"
+                    />
+                    <label htmlFor="flex-date" className="text-xs text-white font-bold cursor-pointer">Date and Time are flexible / TBD</label>
+                  </div>
+                </section>
+              )}
+
             <div className="flex gap-3 pt-4 mt-4">
               <button 
                 onClick={() => navigate(-1)} 
@@ -998,11 +1147,17 @@ const HostGame = () => {
                 Cancel
               </button>
               <button
-                onClick={() => setStep(3)}
-                disabled={!gameData.gameMode || !gameData.gameType || !gameData.date || !gameData.time || !gameData.city || !gameData.state}
+                onClick={() => {
+                  if (gameData.requestType === 'LOOKING_FOR_TEAM' || gameData.gameMode === 'HIRING') {
+                    handleCreateGame();
+                  } else {
+                    setStep(3);
+                  }
+                }}
+                disabled={(!gameData.gameMode && gameData.requestType === 'MATCH') || !gameData.gameType || (!gameData.matchPreferences?.isDateFlexible && (!gameData.date || !gameData.time)) || !gameData.city || !gameData.state || loading || (gameData.gameMode === 'HIRING' && (!gameData.matchPreferences?.budget || !gameData.matchPreferences?.requirements))}
                 className="flex-[2] h-[40px] sm:h-[40px] bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] font-bold rounded-[16px] sm:rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 text-xs sm:text-xs font-open-sans shadow-[0_8px_24px_rgba(191,243,103,0.15)] uppercase tracking-wider disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
               >
-                CONTINUE
+                {loading ? 'WAIT...' : (gameData.requestType === 'LOOKING_FOR_TEAM' || gameData.gameMode === 'HIRING') ? 'PUBLISH' : 'CONTINUE'}
               </button>
             </div>
 
@@ -1016,6 +1171,29 @@ const HostGame = () => {
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
               {/* Grounds */}
+              {gameData.requestType === 'GBNO' ? (
+                <section className="space-y-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <label className="text-xs font-black text-white/70 uppercase tracking-widest whitespace-nowrap">Opponent Preference</label>
+                  </div>
+                  <div className="bg-[#121212] border border-white/10 rounded-[16px] overflow-hidden">
+                    <button
+                      onClick={() => setGameData({ ...gameData, matchPreferences: { ...gameData.matchPreferences, gbnoPreference: 'SPECIFIC_PLAYERS' } })}
+                      className={`w-full flex items-center justify-between p-4 transition-all ${gameData.matchPreferences?.gbnoPreference === 'SPECIFIC_PLAYERS' ? 'bg-[#BFF367]/10 border-b border-[#BFF367]/20' : 'hover:bg-white/5 border-b border-white/5'}`}
+                    >
+                      <span className="text-sm font-bold text-white">Specific number of players</span>
+                      {gameData.matchPreferences?.gbnoPreference === 'SPECIFIC_PLAYERS' && <Trophy size={16} className="text-[#BFF367]" />}
+                    </button>
+                    <button
+                      onClick={() => setGameData({ ...gameData, matchPreferences: { ...gameData.matchPreferences, gbnoPreference: 'FULL_TEAM' } })}
+                      className={`w-full flex items-center justify-between p-4 transition-all ${gameData.matchPreferences?.gbnoPreference === 'FULL_TEAM' ? 'bg-[#BFF367]/10' : 'hover:bg-white/5'}`}
+                    >
+                      <span className="text-sm font-bold text-white">Full opponent team</span>
+                      {gameData.matchPreferences?.gbnoPreference === 'FULL_TEAM' && <Trophy size={16} className="text-[#BFF367]" />}
+                    </button>
+                  </div>
+                </section>
+              ) : (
               <section className="space-y-4">
                 <div className="flex items-center justify-between gap-2">
                   <label className="text-xs font-black text-white/70 uppercase tracking-widest whitespace-nowrap">Select Ground</label>
@@ -1073,8 +1251,7 @@ const HostGame = () => {
                   </button>
                 )}
               </section>
-
-
+              )}
             </div>
 
             {/* Pricing / Quick Settings Section */}

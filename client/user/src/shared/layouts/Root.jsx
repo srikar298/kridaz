@@ -110,12 +110,13 @@ const Root = () => {
   const searchParams = new URLSearchParams(location.search);
   const isReelsPage = location.pathname.startsWith('/reels') || location.pathname.startsWith('/shorts') || searchParams.get('tab') === 'shots';
   const isNewPostPage = location.pathname.startsWith('/new-post') || location.pathname.startsWith('/create-post') || location.pathname.startsWith('/create-story');
+  const isTournamentWizard = location.pathname.startsWith('/tournament/create');
   const isTeamsPage = location.pathname.startsWith('/my-teams');
   const isMessagesPage = location.pathname.startsWith('/messages');
   const isChatOpen = isMessagesPage && searchParams.get('chatId') !== null;
   const isProfile = location.pathname.startsWith('/profile');
   const isBookingHistory = location.pathname.startsWith('/booking-history');
-  const hideNav = isReelsPage || isNewPostPage || isChatOpen;
+  const hideNav = isReelsPage || isNewPostPage || isTournamentWizard || isChatOpen;
   const isHome = location.pathname === "/" || location.pathname === "/community";
   const isSingleVenue = location.pathname.startsWith("/venue/");
   const isVenue = (location.pathname.startsWith("/venue") || location.pathname === "/venues") && !isSingleVenue;
@@ -125,11 +126,7 @@ const Root = () => {
   const isUploadReel = location.pathname.startsWith("/reels/upload") || location.pathname.startsWith("/shorts/upload");
   const useRestrictedWidth = isHome || isVenue || isUploadReel || isTeamsPage || isPlayer || isProfessional || isJoinGames;
 
-  const isLandingPage = location.pathname === "/landing" || 
-                        location.pathname.startsWith("/business/venue") || 
-                        location.pathname.startsWith("/business/professional") ||
-                        location.pathname.startsWith("/business/registration") ||
-                        location.pathname.startsWith("/business/register");
+  const isLandingPage = location.pathname === "/landing";
   const isInsideIframe = window.self !== window.top;
   const showSplitView = isDesktop && !isLandingPage && !isInsideIframe;
 
@@ -285,14 +282,14 @@ const Root = () => {
         <div className={`flex w-full ${useRestrictedWidth ? 'max-w-[700px]' : 'max-w-none'} justify-between relative`}>
           {/* Main Content Area - Centered alongside the right sidebar on desktop */}
           <main className={`flex-grow ${
-            isReelsPage || isNewPostPage
+            isReelsPage || isNewPostPage || isTournamentWizard
               ? 'pb-0' 
               : isTeamsPage || isMessagesPage
                 ? 'pb-0' 
                 : 'pb-20 lg:pb-28'
-          } transition-all duration-300 min-w-0 flex justify-center ${isNewPostPage || isTeamsPage || isMessagesPage || isProfile || isBookingHistory ? 'py-0' : 'py-6'}`}>
+          } transition-all duration-300 min-w-0 flex justify-center ${isNewPostPage || isTeamsPage || isMessagesPage || isProfile || isBookingHistory || isTournamentWizard ? 'py-0' : 'py-6'}`}>
             
-            <div className={`w-full ${isNewPostPage || isTeamsPage || isMessagesPage || isProfile || isBookingHistory ? 'max-w-none px-0' : 'px-0 max-w-none'} flex flex-col justify-between`}>
+            <div className={`w-full ${isNewPostPage || isTeamsPage || isMessagesPage || isProfile || isBookingHistory || isTournamentWizard ? 'max-w-none px-0' : 'px-0 max-w-none'} flex flex-col justify-between`}>
               <div className="min-h-full">
                 <Outlet />
               </div>

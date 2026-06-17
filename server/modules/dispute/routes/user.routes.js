@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { raiseDispute, replyToDispute, getUserDisputes, getDisputeById } from "../dispute.controller.js";
+import { raiseDispute, replyToDispute, getUserDisputes, getDisputeById, escalateDispute } from "../dispute.controller.js";
 import verifyToken from "../../../middleware/jwt/user.middleware.js";
 import { validate } from "../../../middleware/validate.middleware.js";
 import { raiseDisputeSchema, replyToDisputeSchema } from "../dispute.validator.js";
@@ -51,5 +51,14 @@ router.get("/:disputeId", getDisputeById);
  *     tags: [Dispute]
  */
 router.post("/:disputeId/reply", validate(replyToDisputeSchema), replyToDispute);
+
+/**
+ * @swagger
+ * /dispute/{disputeId}/escalate:
+ *   post:
+ *     summary: Escalate a dispute to admin
+ *     tags: [Dispute]
+ */
+router.post("/:disputeId/escalate", escalateDispute);
 
 export default router;

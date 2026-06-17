@@ -184,15 +184,15 @@ const AddTurf = () => {
 
         {/* Step Indicators */}
         <div className="flex items-center justify-between relative z-10 mb-8">
-          {[1, 2, 3].map((step) => (
+          {[1, 2, 3, 4].map((step) => (
             <div key={step} className={`flex-1 flex flex-col items-center gap-2 relative ${currentStep === step ? 'opacity-100' : 'opacity-50'}`}>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm z-10 ${currentStep === step ? 'bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black shadow-[0_0_15px_rgba(204,255,0,0.5)]' : 'bg-[#121212]  -white/10 text-white'}`}>
                 {step}
               </div>
               <span className="text-[10px] font-bold uppercase tracking-widest text-center">
-                {step === 1 ? 'General Info' : step === 2 ? 'Legalities' : 'Slot Mgmt'}
+                {step === 1 ? 'General Info' : step === 2 ? 'Facilities & Contact' : step === 3 ? 'Slot Mgmt' : 'Documents'}
               </span>
-              {step < 3 && (
+              {step < 4 && (
                 <div className={`absolute top-5 left-[50%] w-full h-[2px] ${currentStep > step ? 'bg-[#B3DC26]' : 'bg-[#1B1B1B]'}`} />
               )}
             </div>
@@ -206,10 +206,12 @@ const AddTurf = () => {
               const errorMessage = errors[firstErrorKey]?.message || `Please check the ${firstErrorKey} field`;
               // Try to find which step the error is in to help the user navigate
               let stepError = 1;
-              const step2Fields = ['saleDeed', 'electricityBill', 'gstRegistration', 'rentalAgreement', 'ownershipAgreement', 'policies'];
-              const step3Fields = ['pricePerHour', 'openTime', 'closeTime', 'slotDuration'];
+              const step2Fields = ['facilities', 'location', 'city', 'state', 'mapUrl', 'managerContacts'];
+              const step3Fields = ['pricePerHour', 'openTime', 'closeTime', 'slotDuration', 'breakTime', 'availableDays', 'offDays', 'slotsConfigDuration', 'slotsConfigWeeks'];
+              const step4Fields = ['saleDeed', 'electricityBill', 'gstRegistration', 'rentalAgreement', 'ownershipAgreement', 'policies'];
               if (step2Fields.includes(firstErrorKey)) stepError = 2;
               if (step3Fields.includes(firstErrorKey)) stepError = 3;
+              if (step4Fields.includes(firstErrorKey)) stepError = 4;
               
               setCurrentStep(stepError);
               toast.error(`Step ${stepError}: ${errorMessage}`);
@@ -547,7 +549,50 @@ const AddTurf = () => {
                       <div className="text-center py-12 border border-dashed border-white/10 rounded-[16px] bg-[#121212]">
                         <span className="text-[#444] text-[11px] font-bold uppercase tracking-[4px]">Set times to generate slots</span>
                       </div>
-                    )}
+                  )}
+              </div>
+            </div>
+          )}
+
+          {/* STEP 4: Legal & Documents */}
+          {currentStep === 4 && (
+            <div className="col-span-1 grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-4 md:gap-x-12 md:gap-y-8 relative z-10 animate-fade-in">
+              <div className="form-control col-span-1 md:col-span-2">
+                <label className="label mb-2"><span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">Policies & Rules</span></label>
+                <textarea placeholder="e.g. No smoking, proper gear required..." {...register("policies")} className={`w-full bg-[#121212] border ${errors.policies ? 'border-red-500' : 'border-white/10'} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-24 md:h-32 rounded-[16px] md:rounded-[16px] p-3 md:p-4 transition-all`}></textarea>
+                {errors.policies && <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">{errors.policies.message}</span>}
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2"><span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">Sale Deed / Title Deed (Mandatory)</span></label>
+                <input type="file" onChange={(e) => setValue("saleDeed", e.target.files[0] || null)} className="w-full bg-[#121212] border border-white/10 text-white/70 text-[6px] md:text-sm file:bg-[#1B1B1B] file:text-white file:border-none file:px-2 md:file:px-6 file:h-7 md:file:h-12 file:mr-1 md:file:mr-4 file:font-bold file:uppercase file:text-[6px] md:file:text-[10px] file:tracking-widest rounded-[16px] md:rounded-[16px] h-7 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer" />
+                {errors.saleDeed && <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">{errors.saleDeed.message}</span>}
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2"><span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">Electricity Bill (Mandatory)</span></label>
+                <input type="file" onChange={(e) => setValue("electricityBill", e.target.files[0] || null)} className="w-full bg-[#121212] border border-white/10 text-white/70 text-[6px] md:text-sm file:bg-[#1B1B1B] file:text-white file:border-none file:px-2 md:file:px-6 file:h-7 md:file:h-12 file:mr-1 md:file:mr-4 file:font-bold file:uppercase file:text-[6px] md:file:text-[10px] file:tracking-widest rounded-[16px] md:rounded-[16px] h-7 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer" />
+                {errors.electricityBill && <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">{errors.electricityBill.message}</span>}
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2"><span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">Rental Agreement (Optional)</span></label>
+                <input type="file" onChange={(e) => setValue("rentalAgreement", e.target.files[0] || null)} className="w-full bg-[#121212] border border-white/10 text-white/70 text-[6px] md:text-sm file:bg-[#1B1B1B] file:text-white file:border-none file:px-2 md:file:px-6 file:h-7 md:file:h-12 file:mr-1 md:file:mr-4 file:font-bold file:uppercase file:text-[6px] md:file:text-[10px] file:tracking-widest rounded-[16px] md:rounded-[16px] h-7 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer" />
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2"><span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">Ownership Agreement (Optional)</span></label>
+                <input type="file" onChange={(e) => setValue("ownershipAgreement", e.target.files[0] || null)} className="w-full bg-[#121212] border border-white/10 text-white/70 text-[6px] md:text-sm file:bg-[#1B1B1B] file:text-white file:border-none file:px-2 md:file:px-6 file:h-7 md:file:h-12 file:mr-1 md:file:mr-4 file:font-bold file:uppercase file:text-[6px] md:file:text-[10px] file:tracking-widest rounded-[16px] md:rounded-[16px] h-7 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer" />
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2"><span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">Google Profile Screenshot (Optional)</span></label>
+                <input type="file" onChange={(e) => setValue("googleProfileScreenshot", e.target.files[0] || null)} className="w-full bg-[#121212] border border-white/10 text-white/70 text-[6px] md:text-sm file:bg-[#1B1B1B] file:text-white file:border-none file:px-2 md:file:px-6 file:h-7 md:file:h-12 file:mr-1 md:file:mr-4 file:font-bold file:uppercase file:text-[6px] md:file:text-[10px] file:tracking-widest rounded-[16px] md:rounded-[16px] h-7 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer" />
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2"><span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">GST Registration (Optional)</span></label>
+                <input type="file" onChange={(e) => setValue("gstRegistration", e.target.files[0] || null)} className="w-full bg-[#121212] border border-white/10 text-white/70 text-[6px] md:text-sm file:bg-[#1B1B1B] file:text-white file:border-none file:px-2 md:file:px-6 file:h-7 md:file:h-12 file:mr-1 md:file:mr-4 file:font-bold file:uppercase file:text-[6px] md:file:text-[10px] file:tracking-widest rounded-[16px] md:rounded-[16px] h-7 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer" />
               </div>
             </div>
           )}
@@ -573,10 +618,10 @@ const AddTurf = () => {
                 Back
               </button>
               
-              {currentStep < 3 ? (
+              {currentStep < 4 ? (
                 <button
                   type="button"
-                  onClick={(e) => { e.preventDefault(); setCurrentStep(prev => Math.min(3, prev + 1)); }}
+                  onClick={(e) => { e.preventDefault(); setCurrentStep(prev => Math.min(4, prev + 1)); }}
                   className="px-8 md:px-10 py-2 md:py-3 rounded-[16px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-black font-bold text-xs md:text-sm uppercase tracking-wider hover:opacity-90 transition-all duration-300 shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none"
                 >
                   Next Step

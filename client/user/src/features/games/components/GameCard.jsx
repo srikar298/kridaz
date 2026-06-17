@@ -8,6 +8,9 @@ import {
   ShieldCheck
 } from 'lucide-react';
 
+const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
+const SUBHEADING_STYLE = { fontFamily: "'Inter 28pt Light', sans-serif", fontWeight: 300 };
+
 const GameCard = ({ game, onSelect, actionButton }) => {
   // Calculate slots progress
   let totalSlots = 0;
@@ -36,15 +39,22 @@ const GameCard = ({ game, onSelect, actionButton }) => {
   const fillPercentage = totalSlots > 0 ? (filledSlots / totalSlots) * 100 : 0;
 
   return (
-    <div className="flex flex-col bg-[#121212] border border-white/[0.08] hover:border-[#55DEE8]/50 p-4 rounded-[16px] transition-all duration-300 group cursor-pointer hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)]" onClick={() => onSelect && onSelect(game)}>
-      {/* Top bar with tags */}
+    <div className="group relative rounded-[16px] p-[1.5px] transition-all duration-300 cursor-pointer overflow-hidden flex flex-col h-full" onClick={() => onSelect && onSelect(game)}>
+      {/* Gradient Border Overlay - Only visible on hover */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#BFF367] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
+      
+      {/* Normal Border Overlay - Fades out on hover */}
+      <div className="absolute inset-0 border border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[16px]" />
+
+      <div className="relative bg-[#121212] rounded-[15px] p-4 h-full flex flex-col">
+        {/* Top bar with tags */}
       <div className="flex items-center justify-between gap-3 mb-3">
         <div className="flex items-center gap-2">
           <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-[#BFF367]/10 text-[#BFF367] border border-[#BFF367]/20">
             {game.sport || (game.gameType === 'SCORING_MATCH' ? 'LIVE MATCH' : game.gameType?.replace('_', ' '))}
           </span>
           <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-white/5 text-white/70 border border-white/10">
-            {game.gameMode}
+            {game.requestType === 'LOOKING_FOR_TEAM' ? 'LOOKING FOR TEAM' : game.requestType === 'GBNO' ? 'NEED OPPONENT' : game.requestType === 'PRACTICE' ? 'PRACTICE' : game.requestType === 'NET_BOWLERS' ? 'NET BOWLERS' : game.gameMode === 'HIRING' ? 'PRO WANTED' : game.gameMode}
           </span>
         </div>
 
@@ -58,10 +68,10 @@ const GameCard = ({ game, onSelect, actionButton }) => {
 
       {/* Venue & Host */}
       <div className="mb-4">
-        <h3 className="text-[14px] font-bold text-white group-hover:text-[#BFF367] transition-colors line-clamp-1">
-          {game.name || game.customVenue || game.turf?.name || `${game.sport || 'Match'} Event`}
+        <h3 className="text-[14px] font-bold text-white group-hover:text-[#BFF367] transition-colors line-clamp-1 uppercase tracking-tight" style={HEADING_STYLE}>
+          {game.requestType === 'LOOKING_FOR_TEAM' ? `Player Available: ${game.host?.name || 'Unknown'}` : game.gameMode === 'HIRING' ? `Looking for ${game.requestType?.replace('NEED_', '').replace('_', ' ')}` : (game.name || game.customVenue || game.turf?.name || `${game.sport || 'Match'} Event`)}
         </h3>
-        <p className="text-[11px] font-medium text-white/40 mt-0.5">
+        <p className="text-[11px] font-medium text-white/40 mt-0.5" style={SUBHEADING_STYLE}>
           Hosted by <span className="text-white/70">{game.host?.name || game.creator?.name || 'Player'}</span>
         </p>
       </div>
@@ -71,12 +81,12 @@ const GameCard = ({ game, onSelect, actionButton }) => {
         <div className="flex items-center gap-1.5">
           <Calendar className="h-3.5 w-3.5 text-white/40" />
           <span className="truncate">
-            {game.date ? new Date(game.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Flexible'}
+            {game.matchPreferences?.isDateFlexible ? 'Flexible Date' : (game.date ? new Date(game.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'TBD')}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
           <Clock className="h-3.5 w-3.5 text-white/40" />
-          <span>{game.time || 'TBD'}</span>
+          <span>{game.matchPreferences?.isDateFlexible ? 'Flexible Time' : (game.time || 'TBD')}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <MapPin className="h-3.5 w-3.5 text-white/40" />
@@ -89,7 +99,47 @@ const GameCard = ({ game, onSelect, actionButton }) => {
       </div>
 
       {/* Roster & Slot Progress or Teams */}
-      {game.gameMode === 'PROFESSIONAL' ? (
+      {game.requestType === 'LOOKING_FOR_TEAM' ? (
+        <div className="mt-3 text-[11px] text-white/70 flex items-center gap-2">
+          <Users className="w-3.5 h-3.5" />
+          <span>Available to join a team as {game.matchPreferences?.role || 'Player'}</span>
+        </div>
+      ) : game.gameMode === 'HIRING' ? (
+        <div className="mt-3 bg-[#55DEE8]/10 border border-[#55DEE8]/20 p-3 rounded-[8px] flex flex-col gap-2">
+           <div className="flex justify-between items-center">
+             <span className="text-[10px] font-bold text-[#55DEE8] uppercase tracking-widest block">Budget</span>
+             <span className="font-bold text-white text-xs">₹{game.matchPreferences?.budget || 'Negotiable'} {game.matchPreferences?.budgetType ? `(${game.matchPreferences.budgetType})` : ''}</span>
+           </div>
+           {game.matchPreferences?.requirements && (
+             <p className="text-[10px] text-white/70 line-clamp-2 mt-1 italic border-t border-white/5 pt-2">"{game.matchPreferences.requirements}"</p>
+           )}
+        </div>
+      ) : game.requestType === 'GBNO' ? (
+        <div className="mt-3 bg-[#BFF367]/10 border border-[#BFF367]/20 p-2 rounded-[8px] text-center">
+            <span className="text-[10px] font-bold text-[#BFF367] uppercase tracking-widest block mb-1">
+                {game.matchPreferences?.gbnoPreference === 'FULL_TEAM' ? 'Seeking Full Team' : 'Seeking Individual Players'}
+            </span>
+            {game.matchPreferences?.gbnoPreference !== 'FULL_TEAM' && (
+                <div className="space-y-1.5 text-left mt-2">
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-white/50 flex items-center gap-1">
+                      <Users className="h-3 w-3" />
+                      Roster Spots
+                    </span>
+                    <span className="font-bold text-[#BFF367]">
+                      {filledSlots} / {totalSlots} Filled
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full bg-[#111] rounded-full overflow-hidden border border-white/5">
+                    <div 
+                      className="h-full bg-[#BFF367] transition-all duration-500"
+                      style={{ width: `${fillPercentage}%` }}
+                    />
+                  </div>
+                </div>
+            )}
+        </div>
+      ) : game.gameMode === 'PROFESSIONAL' ? (
         <div className="flex items-center justify-between mt-3">
           <div className="flex flex-col items-start gap-1 max-w-[40%]">
             <div className="flex items-center gap-2">
@@ -165,6 +215,7 @@ const GameCard = ({ game, onSelect, actionButton }) => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

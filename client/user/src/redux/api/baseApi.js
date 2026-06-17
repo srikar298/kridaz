@@ -90,6 +90,6 @@ export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
   endpoints: () => ({}),
-  tagTypes: ["Chat", "Message", "User", "Team", "Games", "Reel", "Community", "Booking", "Turf", "Stories", "Scoring"],
+  tagTypes: ["Chat", "Message", "User", "Team", "Games", "Reel", "Community", "Booking", "Turf", "Stories", "Scoring", "Tournament"],
 });
 

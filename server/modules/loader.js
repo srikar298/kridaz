@@ -101,6 +101,11 @@ const MODULE_MANIFEST = [
     mountPath: "/webhooks",
     description: "Incoming external webhooks (Sentry, etc.)",
   },
+  {
+    module: "tournament",
+    mountPath: "/tournament",
+    description: "Tournament creation and management",
+  },
 ];
 
 /**

@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CheckCircle, BarChart3, CalendarDays, Zap, Play, X, FileCheck, Landmark, User, QrCode, Loader2, ArrowRight, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { updateUser } from "../../../redux/slices/authSlice";
 import axiosInstance from "@hooks/useAxiosInstance.js";
 import toast from "react-hot-toast";
 import ScrollToTop from "@components/common/ScrollToTop";
@@ -24,14 +25,23 @@ const benefits = [
 
 export default function VenueOwnerLanding() {
   const [showDocumentModal, setShowDocumentModal] = useState(false);
+  const [activeTab, setActiveTab] = useState("aadhaar"); // aadhaar | pan
   const [aadharFront, setAadharFront] = useState(null);
   const [aadharBack, setAadharBack] = useState(null);
   const [panFront, setPanFront] = useState(null);
-  const [panBack, setPanBack] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isOptimisticallyPending, setIsOptimisticallyPending] = useState(false);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user, isLoggedIn } = useSelector((state) => state.auth);
+
+  // Auto switch tab to PAN once both Aadhaar parts are uploaded
+  useEffect(() => {
+    if (aadharFront && aadharBack) {
+      setActiveTab("pan");
+    }
+  }, [aadharFront, aadharBack]);
 
   const handleRegisterClick = (e) => {
     e.preventDefault();
@@ -40,13 +50,14 @@ export default function VenueOwnerLanding() {
       navigate("/login?redirect=/business/venue");
       return;
     }
+    setActiveTab("aadhaar");
     setShowDocumentModal(true);
   };
 
   // Compute user registration status
   const professionalRoles = ["coach", "umpire", "streamer", "commentator", "venue_owner", "venu_owners"];
   const hasExistingRole = isLoggedIn && (user?.ownerProfile || professionalRoles.includes(user?.role?.toLowerCase()));
-  const hasPendingApplication = isLoggedIn && user?.applicationStatus === "pending";
+  const hasPendingApplication = isLoggedIn && (user?.applicationStatus === "pending" || isOptimisticallyPending);
 
   const getDashboardPath = () => {
     const role = user?.role?.toLowerCase();
@@ -102,13 +113,18 @@ export default function VenueOwnerLanding() {
 
   const handleDocumentSubmit = async (e) => {
     e.preventDefault();
-    if (!aadharFront || !aadharBack || !panFront || !panBack) {
-      toast.error("Please upload front and back of both Aadhaar and PAN cards.");
+    if (!aadharFront || !aadharBack || !panFront) {
+      toast.error("Please upload front and back of Aadhaar and front of PAN card.");
       return;
     }
 
     try {
       setIsSubmitting(true);
+      
+      // Optimistically show pending message instantly
+      setIsOptimisticallyPending(true);
+      setShowDocumentModal(false);
+
       const data = new FormData();
       data.append("name", user?.name || "");
       data.append("email", user?.email || "");
@@ -118,7 +134,6 @@ export default function VenueOwnerLanding() {
       data.append("documents", aadharFront);
       data.append("documents", aadharBack);
       data.append("documents", panFront);
-      data.append("documents", panBack);
 
       const response = await axiosInstance.post("/api/user/auth/upgrade-request", data, {
         headers: { "Content-Type": "multipart/form-data" }
@@ -126,44 +141,43 @@ export default function VenueOwnerLanding() {
 
       if (response.data.success) {
         toast.success("Application submitted successfully!");
-        setShowDocumentModal(false);
+        dispatch(updateUser({ applicationStatus: "pending", applicationRole: "venu_owners" }));
+        
         setAadharFront(null);
         setAadharBack(null);
         setPanFront(null);
-        setPanBack(null);
       }
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.message || "Failed to submit application");
+      
+      // Revert optimistic update on failure
+      setIsOptimisticallyPending(false);
+      setShowDocumentModal(true);
+
       if (err.response?.data?.message?.includes("already have a pending application") || err.response?.data?.message?.includes("already has a professional role")) {
-         setShowDocumentModal(false);
+        setShowDocumentModal(false);
       }
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleAadharUpload = (e) => {
+  const handleAadharFrontUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      if (!aadharFront) {
-        setAadharFront(file);
-      } else if (!aadharBack) {
-        setAadharBack(file);
-      }
-    }
+    if (file) setAadharFront(file);
     e.target.value = null;
   };
 
-  const handlePanUpload = (e) => {
+  const handleAadharBackUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      if (!panFront) {
-        setPanFront(file);
-      } else if (!panBack) {
-        setPanBack(file);
-      }
-    }
+    if (file) setAadharBack(file);
+    e.target.value = null;
+  };
+
+  const handlePanFrontUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) setPanFront(file);
     e.target.value = null;
   };
 
@@ -172,23 +186,23 @@ export default function VenueOwnerLanding() {
       <ScrollToTop />
       
       {/* ── Hero Section ── */}
-      <section className="relative w-full min-h-[100vh] flex flex-col justify-start md:justify-center pt-28 md:pt-32 pb-16 md:pb-24 overflow-hidden bg-[#0A0A0A]">
+      <section className="relative w-full min-h-[100vh] flex flex-col justify-start md:justify-center pt-0 md:pt-8 pb-16 md:pb-24 overflow-hidden bg-[#0A0A0A]">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img src="/venue-hero-desktop.png" alt="Hero Background Desktop" className="hidden md:block w-full h-full object-cover object-center opacity-100" />
           <img src="/venue-hero-mobile.png" alt="Hero Background Mobile" className="block md:hidden w-full h-full object-cover object-top opacity-100" />
         </div>
              
-        <div className="w-full px-4 md:px-8 lg:px-12 relative z-10 mt-10 md:mt-0">
+        <div className="w-full px-4 md:px-8 lg:px-12 relative z-10 mt-0">
           <div className="flex flex-col md:flex-row items-center w-full">
-            <div className="w-full md:w-[55%] lg:w-[50%] xl:w-[45%] text-center md:text-left">
+            <div className="w-full md:w-[55%] lg:w-[50%] xl:w-[45%] text-center md:text-left flex flex-col justify-center items-center md:items-start">
+              <div className="flex justify-center md:justify-start w-full mb-2 md:mb-4">
+                {renderActionButton("hero")}
+              </div>
               <h1 className="text-[32px] md:text-[60px] lg:text-[80px] font-black tracking-tight leading-[1.05] font-poppins font-medium normal-case text-white mb-6 drop-shadow-2xl">
                 Digitize Your Sports Club <br className="hidden lg:block"/>
                 at <span className="text-[#BFF367]">0% Commission</span>
               </h1>
-              <div className="flex justify-center md:justify-start w-full mt-8 md:mt-12">
-                {renderActionButton("hero")}
-              </div>
             </div>
             {/* Empty space for the background mockup to show through on the right */}
             <div className="w-full md:w-[45%] lg:w-[50%] xl:w-[55%] hidden md:block"></div>
@@ -517,91 +531,151 @@ export default function VenueOwnerLanding() {
             
             <form className="space-y-6 mt-4" onSubmit={handleDocumentSubmit}>
               
-              <div className="grid grid-cols-2 gap-4 md:gap-6">
-                {/* Aadhaar Upload Box */}
-                <label className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${aadharFront && aadharBack ? 'opacity-80' : ''}`}>
-                  <span className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base" style={{ fontFamily: "'Inter'" }}>AADHAAR CARD</span>
-                  <div className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] p-2 md:p-3 overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharFront && aadharBack ? 'ring-2 ring-[#BFF367]' : 'group-hover:ring-2 group-hover:ring-[#BFF367]'}`}>
-                    {aadharFront && aadharBack ? (
-                      <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
-                        <FileCheck className="text-[#BFF367] mb-2" size={32} />
-                        <span className="text-white font-bold tracking-wider uppercase text-center text-xs" style={{ fontFamily: "'Inter'" }}>Aadhaar Uploaded</span>
-                      </div>
-                    ) : (
-                      <div className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm transition-opacity ${aadharFront && !aadharBack ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                         <span className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs" style={{ fontFamily: "'Inter'" }}>
-                           {aadharFront ? "Upload Aadhaar Back" : "Upload Aadhaar Front"}
-                         </span>
-                      </div>
-                    )}
-                    <div className="flex justify-between items-start opacity-60">
-                      <Landmark className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
-                      <div className="space-y-1 md:space-y-1.5 flex flex-col items-end mt-0.5">
-                        <div className="w-12 md:w-20 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
-                        <div className="w-8 md:w-14 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2 md:gap-3 mt-1 opacity-60">
-                      <div className="w-10 h-12 md:w-12 md:h-14 bg-gray-400/30 rounded-[8px] overflow-hidden flex items-end justify-center border border-gray-400/20">
-                        <User className="w-8 h-8 md:w-10 md:h-10 text-gray-600 -mb-1.5" fill="currentColor" />
-                      </div>
-                      <div className="flex-1 space-y-2 md:space-y-2.5 mt-0.5 md:mt-1">
-                        <div className="w-full h-2 md:h-2.5 bg-gray-500 rounded-full"></div>
-                        <div className="w-5/6 h-2 md:h-2.5 bg-gray-500 rounded-full"></div>
-                        <div className="w-4/6 h-2 md:h-2.5 bg-gray-500 rounded-full"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <input type="file" accept="image/*" className="hidden" onChange={handleAadharUpload} disabled={aadharFront && aadharBack} />
-                </label>
+              {/* Custom Tabs */}
+              <div className="flex bg-[#1A1D1D] rounded-lg p-1 w-full max-w-[300px] mx-auto mb-6">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("aadhaar")}
+                  className={`flex-1 py-2 px-4 rounded-md text-xs md:text-sm font-bold tracking-widest uppercase transition-all ${
+                    activeTab === "aadhaar" ? "bg-[#BFF367] text-black shadow-sm" : "text-white/60 hover:text-white"
+                  }`}
+                >
+                  Aadhaar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("pan")}
+                  className={`flex-1 py-2 px-4 rounded-md text-xs md:text-sm font-bold tracking-widest uppercase transition-all ${
+                    activeTab === "pan" ? "bg-[#BFF367] text-black shadow-sm" : "text-white/60 hover:text-white"
+                  }`}
+                >
+                  PAN
+                </button>
+              </div>
 
-                {/* PAN Upload Box */}
-                <label className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${panFront && panBack ? 'opacity-80' : ''}`}>
-                  <span className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base" style={{ fontFamily: "'Inter'" }}>PAN CARD</span>
-                  <div className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${panFront && panBack ? 'ring-2 ring-[#BFF367]' : 'group-hover:ring-2 group-hover:ring-[#BFF367]'}`}>
-                    {panFront && panBack ? (
-                      <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
-                        <FileCheck className="text-[#BFF367] mb-2" size={32} />
-                        <span className="text-white font-bold tracking-wider uppercase text-center text-xs" style={{ fontFamily: "'Inter'" }}>PAN Uploaded</span>
-                      </div>
-                    ) : (
-                      <div className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm transition-opacity ${panFront && !panBack ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                         <span className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs" style={{ fontFamily: "'Inter'" }}>
-                           {panFront ? "Upload PAN Back" : "Upload PAN Front"}
-                         </span>
-                      </div>
-                    )}
-                    <div className="w-full h-5 md:h-6 bg-gray-400/60 flex justify-between items-center px-2 md:px-3 opacity-60 shrink-0">
-                      <div className="w-4 h-4 md:w-5 md:h-5 bg-gray-600 rounded-sm"></div>
-                      <div className="w-12 md:w-20 h-1.5 md:h-2 bg-gray-600 rounded-full"></div>
-                    </div>
-                    <div className="p-2 md:p-3 flex-1 flex flex-col justify-between opacity-60">
-                      <div className="flex gap-1.5 md:gap-2">
-                        <div className="flex-1 space-y-1.5 md:space-y-2 mt-0.5">
-                          <div className="flex gap-1">
-                            <div className="w-6 md:w-10 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
-                            <div className="w-8 md:w-14 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
-                          </div>
-                          <div className="flex gap-1">
-                            <div className="w-10 md:w-16 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
-                            <div className="w-4 md:w-8 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
-                          </div>
+              {activeTab === "aadhaar" && (
+                <div className="grid grid-cols-2 gap-4 md:gap-6 animate-fadeIn">
+                  {/* Aadhaar FRONT Upload Box */}
+                  <label className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${aadharFront ? 'opacity-80' : ''}`}>
+                    <span className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base" style={{ fontFamily: "'Inter'" }}>FRONT</span>
+                    <div className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] p-2 md:p-3 overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharFront ? 'ring-2 ring-[#BFF367]' : 'group-hover:ring-2 group-hover:ring-[#BFF367]'}`}>
+                      {aadharFront ? (
+                        <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
+                          <FileCheck className="text-[#BFF367] mb-2" size={32} />
+                          <span className="text-white font-bold tracking-wider uppercase text-center text-xs" style={{ fontFamily: "'Inter'" }}>Uploaded</span>
+                        </div>
+                      ) : (
+                        <div className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm transition-opacity opacity-0 group-hover:opacity-100`}>
+                           <span className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs" style={{ fontFamily: "'Inter'" }}>
+                             Upload Front
+                           </span>
+                        </div>
+                      )}
+                      <div className="flex justify-between items-start opacity-60">
+                        <Landmark className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
+                        <div className="space-y-1 md:space-y-1.5 flex flex-col items-end mt-0.5">
+                          <div className="w-12 md:w-20 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
                           <div className="w-8 md:w-14 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
                         </div>
-                        <div className="w-10 md:w-14 space-y-1 md:space-y-1.5 mt-0.5">
-                           <div className="w-full h-1 md:h-1.5 bg-gray-500 rounded-full"></div>
-                           <div className="w-3/4 h-1 md:h-1.5 bg-gray-500 rounded-full"></div>
+                      </div>
+                      <div className="flex gap-2 md:gap-3 mt-1 opacity-60">
+                        <div className="w-10 h-12 md:w-12 md:h-14 bg-gray-400/30 rounded-[8px] overflow-hidden flex items-end justify-center border border-gray-400/20">
+                          <User className="w-8 h-8 md:w-10 md:h-10 text-gray-600 -mb-1.5" fill="currentColor" />
+                        </div>
+                        <div className="flex-1 space-y-2 md:space-y-2.5 mt-0.5 md:mt-1">
+                          <div className="w-full h-2 md:h-2.5 bg-gray-500 rounded-full"></div>
+                          <div className="w-5/6 h-2 md:h-2.5 bg-gray-500 rounded-full"></div>
+                          <div className="w-4/6 h-2 md:h-2.5 bg-gray-500 rounded-full"></div>
                         </div>
                       </div>
-                      <div className="flex justify-between items-end mt-1">
-                        <span className="text-gray-600 font-bold tracking-widest font-mono text-[8px] md:text-[10px]">ABCDE1234F</span>
-                        <QrCode className="w-6 h-6 md:w-8 md:h-8 text-gray-600" />
+                    </div>
+                    <input type="file" accept="image/*" className="hidden" onChange={handleAadharFrontUpload} />
+                  </label>
+
+                  {/* Aadhaar BACK Upload Box */}
+                  <label className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${aadharBack ? 'opacity-80' : ''}`}>
+                    <span className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base" style={{ fontFamily: "'Inter'" }}>BACK</span>
+                    <div className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] p-2 md:p-3 overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharBack ? 'ring-2 ring-[#BFF367]' : 'group-hover:ring-2 group-hover:ring-[#BFF367]'}`}>
+                      {aadharBack ? (
+                        <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
+                          <FileCheck className="text-[#BFF367] mb-2" size={32} />
+                          <span className="text-white font-bold tracking-wider uppercase text-center text-xs" style={{ fontFamily: "'Inter'" }}>Uploaded</span>
+                        </div>
+                      ) : (
+                        <div className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm transition-opacity opacity-0 group-hover:opacity-100`}>
+                           <span className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs" style={{ fontFamily: "'Inter'" }}>
+                             Upload Back
+                           </span>
+                        </div>
+                      )}
+                      <div className="flex flex-col opacity-60">
+                         <div className="w-16 md:w-24 h-2 md:h-2.5 bg-gray-600 mb-2 rounded-full"></div>
+                         <div className="space-y-1.5 md:space-y-2 mt-2">
+                           <div className="w-full h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
+                           <div className="w-11/12 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
+                           <div className="w-5/6 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
+                         </div>
+                         <div className="mt-auto flex justify-between items-end pb-1 pt-4">
+                           <div className="w-12 h-4 md:w-16 md:h-6 bg-gray-400 rounded-sm"></div>
+                           <QrCode className="w-6 h-6 md:w-8 md:h-8 text-gray-600" />
+                         </div>
                       </div>
                     </div>
-                  </div>
-                  <input type="file" accept="image/*" className="hidden" onChange={handlePanUpload} disabled={panFront && panBack} />
-                </label>
-              </div>
+                    <input type="file" accept="image/*" className="hidden" onChange={handleAadharBackUpload} />
+                  </label>
+                </div>
+              )}
+
+              {activeTab === "pan" && (
+                <div className="flex justify-center animate-fadeIn">
+                  {/* PAN Upload Box */}
+                  <label className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group w-[220px] md:w-[260px] ${panFront ? 'opacity-80' : ''}`}>
+                    <span className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base" style={{ fontFamily: "'Inter'" }}>FRONT</span>
+                    <div className={`relative w-full h-[130px] md:h-[150px] bg-[#D9D9D9] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${panFront ? 'ring-2 ring-[#BFF367]' : 'group-hover:ring-2 group-hover:ring-[#BFF367]'}`}>
+                      {panFront ? (
+                        <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
+                          <FileCheck className="text-[#BFF367] mb-2" size={32} />
+                          <span className="text-white font-bold tracking-wider uppercase text-center text-xs" style={{ fontFamily: "'Inter'" }}>Uploaded</span>
+                        </div>
+                      ) : (
+                        <div className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm transition-opacity opacity-0 group-hover:opacity-100`}>
+                           <span className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs" style={{ fontFamily: "'Inter'" }}>
+                             Upload Front
+                           </span>
+                        </div>
+                      )}
+                      <div className="w-full h-5 md:h-6 bg-gray-400/60 flex justify-between items-center px-2 md:px-3 opacity-60 shrink-0">
+                        <div className="w-4 h-4 md:w-5 md:h-5 bg-gray-600 rounded-sm"></div>
+                        <div className="w-12 md:w-20 h-1.5 md:h-2 bg-gray-600 rounded-full"></div>
+                      </div>
+                      <div className="p-2 md:p-3 flex-1 flex flex-col justify-between opacity-60">
+                        <div className="flex gap-1.5 md:gap-2">
+                          <div className="flex-1 space-y-1.5 md:space-y-2 mt-0.5">
+                            <div className="flex gap-1">
+                              <div className="w-6 md:w-10 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
+                              <div className="w-8 md:w-14 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
+                            </div>
+                            <div className="flex gap-1">
+                              <div className="w-10 md:w-16 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
+                              <div className="w-4 md:w-8 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
+                            </div>
+                            <div className="w-8 md:w-14 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
+                          </div>
+                          <div className="w-10 md:w-14 space-y-1 md:space-y-1.5 mt-0.5">
+                             <div className="w-full h-1 md:h-1.5 bg-gray-500 rounded-full"></div>
+                             <div className="w-3/4 h-1 md:h-1.5 bg-gray-500 rounded-full"></div>
+                          </div>
+                        </div>
+                        <div className="flex justify-between items-end mt-1">
+                          <span className="text-gray-600 font-bold tracking-widest font-mono text-[8px] md:text-[10px]">ABCDE1234F</span>
+                          <QrCode className="w-6 h-6 md:w-8 md:h-8 text-gray-600" />
+                        </div>
+                      </div>
+                    </div>
+                    <input type="file" accept="image/*" className="hidden" onChange={handlePanFrontUpload} />
+                  </label>
+                </div>
+              )}
 
               <div className="flex justify-center mt-6">
                 <button 

@@ -123,6 +123,8 @@ const Turf = () => {
             <input 
               type="text" 
               placeholder="Search arenas..." 
+              value={searchFilters.searchTerm || ""}
+              onChange={(e) => dispatch(setFilters({ searchTerm: e.target.value }))}
               className="w-full bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[16px] py-3.5 pl-11 pr-4 text-[14px] font-[400] text-[#FFFFFF] placeholder:text-[rgba(255,255,255,0.70)] focus:outline-none focus:border-[#55DEE8] transition-all shadow-md"
             />
           </div>
@@ -349,11 +351,21 @@ const Turf = () => {
             <h5 className="text-[13px] font-black uppercase text-white tracking-wider">Price</h5>
             <div className="space-y-3">
               <label className="flex items-center gap-3 cursor-pointer group">
-                <input type="checkbox" className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer" />
+                <input 
+                  type="checkbox" 
+                  checked={searchFilters.priceLessThan5000 || false}
+                  onChange={(e) => dispatch(setFilters({ priceLessThan5000: e.target.checked }))}
+                  className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer" 
+                />
                 <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">Less than ₹5000</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer group">
-                <input type="checkbox" defaultChecked className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer" />
+                <input 
+                  type="checkbox" 
+                  checked={searchFilters.price5000AndAbove || false}
+                  onChange={(e) => dispatch(setFilters({ price5000AndAbove: e.target.checked }))}
+                  className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer" 
+                />
                 <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">₹5000 and above</span>
               </label>
             </div>
@@ -427,6 +439,12 @@ const Turf = () => {
               placeholder="Search city or area..." 
               value={locationSearchInput}
               onChange={(e) => setLocationSearchInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  dispatch(setFilters({ city: locationSearchInput }));
+                  setIsMobileLocationOpen(false);
+                }
+              }}
               className="w-full bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[16px] py-3.5 pl-11 pr-4 text-[14px] text-[#FFFFFF] placeholder:text-[rgba(255,255,255,0.70)] focus:outline-none focus:border-[#55DEE8] transition-all shadow-md"
             />
           </div>

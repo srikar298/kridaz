@@ -205,7 +205,12 @@ export const initCronJobs = () => {
     await cleanUpSkippedCards();
   });
 
-  logger.info("[CRON] All cron jobs initialized (token cleanup, story expiry, media cleanup, match auto-end, game auto-settle, matchmaking sweeps, on-demand matching sweeps).");
+  // ── Every 15 Minutes: Check for SLA breached disputes ──
+  nodeCron.schedule("*/15 * * * *", async () => {
+    await runSlaEscalation();
+  });
+
+  logger.info("[CRON] All cron jobs initialized (token cleanup, story expiry, media cleanup, match auto-end, game auto-settle, matchmaking sweeps, on-demand matching sweeps, dispute escalations).");
 };
 
 /**
@@ -728,5 +733,43 @@ export const cleanUpSkippedCards = async () => {
     }
   } catch (error) {
     logger.error("[CRON] Error during skipped card cleanup:", error);
+  }
+};
+
+/**
+ * Auto-escalates open disputes where the SLA deadline has breached
+ */
+export const runSlaEscalation = async () => {
+  logger.info("[CRON] Checking for SLA breached disputes to escalate...");
+  try {
+    const now = new Date();
+    
+    const breachedDisputes = await prisma.dispute.findMany({
+      where: {
+        status: "OPEN",
+        isEscalated: false,
+        slaDeadline: { lt: now }
+      }
+    });
+
+    for (const dispute of breachedDisputes) {
+      logger.info(`[CRON] Escalating dispute ${dispute.id} due to SLA breach...`);
+      await prisma.dispute.update({
+        where: { id: dispute.id },
+        data: { isEscalated: true }
+      });
+      
+      const { createNotification } = await import("./notificationHelper.js");
+      await createNotification({
+        recipientId: dispute.raisedById,
+        recipientModel: "User",
+        title: "Dispute Escalated",
+        message: "Your dispute has been escalated to KRIDAZ Admin as the venue owner did not respond in time.",
+        type: "SUPPORT",
+        link: "/profile/bookings"
+      }).catch(() => {});
+    }
+  } catch (error) {
+    logger.error("[CRON] Error escalating SLA breached disputes:", error);
   }
 };

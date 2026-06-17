@@ -320,7 +320,8 @@ export const getWalletData = async (req, res) => {
       transactions: transactions,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: "Could not retrieve wallet data." });
+    logger.error("Error in getWalletData:", error);
+    return res.status(500).json({ success: false, message: "Could not retrieve wallet data.", error: error.message });
   }
 };
 

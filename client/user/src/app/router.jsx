@@ -77,12 +77,15 @@ const NewPostLanding         = lazy(() => import("@user/pages/NewPost/NewPostLan
 const CreatePostPage         = lazy(() => import("@features/networking/pages/CreatePostPage"));
 const CreateStoryPage        = lazy(() => import("@features/networking/pages/CreateStoryPage"));
 const LandingPage            = lazy(() => import("@user/pages/LandingPage"));
-
+const TournamentWizard       = lazy(() => import("@features/tournament/pages/TournamentWizard"));
+const TournamentDashboard    = lazy(() => import("@features/tournament/pages/TournamentDashboard"));
+const TournamentPublicPage   = lazy(() => import("@features/tournament/pages/TournamentPublicPage"));
 
 // â”€â”€ Lazy: Business Landing Pages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const UserVenueOwnerLanding  = lazy(() => import("@features/business").then(m => ({ default: m.VenueOwnerLanding })));
 const ProfessionalLanding    = lazy(() => import("@features/business").then(m => ({ default: m.ProfessionalLanding })));
 const BusinessRegistration   = lazy(() => import("@features/business").then(m => ({ default: m.BusinessRegistration })));
+const ClaimVenueInvite       = lazy(() => import("@features/business").then(m => ({ default: m.ClaimVenueInvite })));
 
 
 // â”€â”€ Lazy: Legal Pages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -254,15 +257,18 @@ const router = createBrowserRouter([
       { path: "new-post",           element: <ProtectedRoute><S><NewPostLanding /></S></ProtectedRoute> },
       { path: "create-post",        element: <ProtectedRoute><S><CreatePostPage /></S></ProtectedRoute> },
       { path: "create-story",       element: <ProtectedRoute><S><CreateStoryPage /></S></ProtectedRoute> },
+      { path: "tournament/create",  element: <ProtectedRoute><S><TournamentWizard /></S></ProtectedRoute> },
+      { path: "tournament/:id",     element: <ProtectedRoute><S><TournamentDashboard /></S></ProtectedRoute> },
+      { path: "t/:id",              element: <S><TournamentPublicPage /></S> },
 
       // Landing Page (PR #68)
       { path: "landing",            element: <S><LandingPage /></S> },
 
       // Business Landings
-      { path: "business/venue",     element: <S><UserVenueOwnerLanding /></S> },
+      { path: "business/venue", element: <S><UserVenueOwnerLanding /></S> },
       { path: "business/professional", element: <S><ProfessionalLanding /></S> },
-      { path: "business/registration", element: <S><BusinessRegistration /></S> },
       { path: "business/register", element: <S><BusinessRegistration /></S> },
+      { path: "claim-venue", element: <PublicRoute><S><ClaimVenueInvite /></S></PublicRoute> },
 
       // Business Auth
       { path: "signup/venue",    element: <S><BusinessRegistration defaultRole="venu_owners" /></S> },

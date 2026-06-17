@@ -2,7 +2,25 @@ import { useSelector } from "react-redux";
 import { useGetTurfsQuery, useGetSavedTurfsQuery } from "@redux/api/turfApi";
 
 const useTurfData = (filters = {}) => {
-  const { data, isLoading, error, refetch } = useGetTurfsQuery(filters, {
+  const apiParams = {
+    searchTerm: filters.searchTerm,
+    city: filters.city,
+    state: filters.state,
+    lat: filters.lat,
+    lng: filters.lng,
+    radius: filters.radius,
+    limit: filters.limit,
+    page: filters.page,
+  };
+
+  // Remove empty/undefined values so cache key remains stable
+  Object.keys(apiParams).forEach(key => {
+    if (apiParams[key] === undefined || apiParams[key] === "") {
+      delete apiParams[key];
+    }
+  });
+
+  const { data, isLoading, isFetching, error, refetch } = useGetTurfsQuery(apiParams, {
     skip: !!filters._skip,
   });
 
@@ -17,6 +35,10 @@ const useTurfData = (filters = {}) => {
   let turfs = data?.turfs || [];
 
   // Local Filtering logic
+  if (filters.city) {
+    turfs = turfs.filter(t => t.city?.toLowerCase() === filters.city.toLowerCase());
+  }
+
   if (filters.onlyAvailable) {
     turfs = turfs.filter(t => t.slotsLeft > 0);
   }
@@ -26,12 +48,29 @@ const useTurfData = (filters = {}) => {
     turfs = turfs.filter(t => savedIds.includes(t.id || t._id));
   }
 
+  if (filters.sport) {
+    turfs = turfs.filter(t => {
+      const sports = t.sportTypes || t.sports || [];
+      return sports.some(s => (s.name || s).toLowerCase() === filters.sport.toLowerCase());
+    });
+  }
+
   const minR = filters.minRating || 0;
   const maxR = filters.maxRating || 5;
   if (minR > 0 || maxR < 5) {
     turfs = turfs.filter(t => {
       const r = t.avgRating || 0;
       return r >= minR && r <= maxR;
+    });
+  }
+
+  if (filters.priceLessThan5000 || filters.price5000AndAbove) {
+    turfs = turfs.filter(t => {
+      const price = t.pricePerHour ?? t.price ?? 0;
+      if (filters.priceLessThan5000 && filters.price5000AndAbove) return true;
+      if (filters.priceLessThan5000 && price < 5000) return true;
+      if (filters.price5000AndAbove && price >= 5000) return true;
+      return false;
     });
   }
 
@@ -70,7 +109,7 @@ const useTurfData = (filters = {}) => {
 
   return {
     turfs,
-    loading: isLoading,
+    loading: isLoading || isFetching,
     error: errorMessage,
     refetch,
   };

@@ -81,6 +81,16 @@ const userOrIpKey = (req, res) => {
 };
 
 /**
+ * OTP key generator.
+ * Prevents attackers from using rotating proxies to spam a single phone number.
+ */
+const otpKeyGenerator = (req, res) => {
+  const target = req.body?.phone || req.body?.email;
+  if (target) return `target:${target}`;
+  return `ip:${ipKeyGenerator(req, res)}`;
+};
+
+/**
  * Auth limiter — login, register, Google auth, password reset.
  * 10 attempts per 15 minutes per IP (auth endpoints have no req.user yet).
  */
@@ -97,7 +107,7 @@ export const authLimiter = rateLimit({
 
 /**
  * OTP limiter — send-otp and login-step1.
- * 5 requests per 15 minutes per IP.
+ * 5 requests per 15 minutes per target (phone/email) or IP.
  */
 export const otpLimiter = rateLimit({
   windowMs: defaultWindow,
@@ -105,6 +115,7 @@ export const otpLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   store: createRedisStoreWithBreaker('rl:otp'),
+  keyGenerator: otpKeyGenerator,
   message: { success: false, code: 'RATE_LIMITED', message: 'Too many OTP requests. Please wait a while.' },
   skip: (req) => process.env.NODE_ENV === 'test',
 });

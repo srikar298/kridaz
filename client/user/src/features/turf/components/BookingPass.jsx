@@ -16,7 +16,8 @@ import {
   User as UserIcon,
   ExternalLink,
   AlertOctagon,
-  FileText
+  FileText,
+  Trophy
 } from "lucide-react";
 import useBookingPass from "../hooks/useBookingPass";
 import { motion } from "framer-motion";
@@ -25,7 +26,7 @@ import useSimilarRecommendations from "@hooks/useSimilarRecommendations";
 import { TurfCard } from "@features/turf";
 import { toPng } from "html-to-image";
 import toast from "react-hot-toast";
-import RaiseDisputeModal from "@components/dispute/RaiseDisputeModal";
+import ReportIssueFlowModal from "@components/dispute/ReportIssueFlowModal";
 import axiosInstance from "@hooks/useAxiosInstance";
 
 const BookingPass = () => {
@@ -371,8 +372,19 @@ const BookingPass = () => {
                 className="w-full flex items-center justify-center gap-2 h-[42px] rounded-[12px] text-[10px] font-[700] uppercase tracking-widest transition-all text-zinc-400 bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] hover:text-white"
               >
                 <AlertOctagon size={14} />
-                Raise a Dispute
+                Report Issue / Request Help
               </button>
+            )}
+
+            {/* Find Opponent (GBNO) */}
+            {status === "CONFIRMED" && !isSlotOver && (
+              <Link
+                to={`/host-game?requestType=GBNO&bookingId=${booking.id || booking._id}&turfId=${turfId}`}
+                className="w-full flex items-center justify-center gap-2 h-[42px] rounded-[12px] text-[10px] font-[700] uppercase tracking-widest transition-all text-[#000000] bg-gradient-to-r from-[#55DEE8] to-[#BFF367] hover:scale-[1.02]"
+              >
+                <Trophy size={14} />
+                Find Opponent / Players
+              </Link>
             )}
 
             {/* Dispute review state */}
@@ -430,7 +442,7 @@ const BookingPass = () => {
 
       {/* Dispute Modal */}
       {showDisputeModal && (
-        <RaiseDisputeModal
+        <ReportIssueFlowModal
           booking={booking}
           onClose={() => setShowDisputeModal(false)}
           onSuccess={() => window.location.reload()}

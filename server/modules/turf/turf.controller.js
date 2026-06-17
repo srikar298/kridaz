@@ -363,14 +363,16 @@ export const turfRegister = async (req, res) => {
       return res.status(404).json({ success: false, message: "Owner profile not found" });
     }
 
-    if (!req.files || req.files.length === 0) {
+    const imageFiles = req.files?.images || (Array.isArray(req.files) ? req.files : []);
+    
+    if (!imageFiles || imageFiles.length === 0) {
       return res.status(400).json({ success: false, message: "At least one turf image is required" });
     }
 
-    const uploadPromises = req.files.map((file) => {
+    const uploadFile = (file, folder) => {
       return new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
-          { folder: "kridaz/turfs" },
+          { folder },
           (error, result) => {
             if (error) reject(error);
             else resolve(result.secure_url);
@@ -378,9 +380,19 @@ export const turfRegister = async (req, res) => {
         );
         uploadStream.end(file.buffer);
       });
-    });
+    };
 
+    const uploadPromises = imageFiles.map((file) => uploadFile(file, "kridaz/turfs"));
     const imageUrls = await Promise.all(uploadPromises);
+
+    // Upload verification documents if present
+    const verificationDocs = ['saleDeed', 'electricityBill', 'gstRegistration', 'rentalAgreement', 'ownershipAgreement', 'googleProfileScreenshot'];
+    const verificationData = {};
+    for (const doc of verificationDocs) {
+      if (req.files?.[doc]?.[0]) {
+        verificationData[doc] = await uploadFile(req.files[doc][0], "kridaz/turf_documents");
+      }
+    }
 
     const { 
       name,
@@ -405,6 +417,7 @@ export const turfRegister = async (req, res) => {
       sportTypes,
       groundTypes,
       facilities,
+      inviteToken,
     } = req.body;
 
     let configExpiry = null;
@@ -416,39 +429,61 @@ export const turfRegister = async (req, res) => {
     const parsedSlots = generatedSlots ? JSON.parse(generatedSlots) : [];
     const slotLowestHourly = computeLowestHourlyRate(parsedSlots);
 
-    const newTurf = await prisma.turf.create({
-      data: {
-        name,
-        description,
-        location,
-        youtubeUrl,
-        openTime,
-        closeTime,
-        image: imageUrls[0],
-        images: imageUrls,
-        ownerId: ownerProfile.id,
-        status: "pending",
-        city,
-        state,
-        latitude: latitude ? parseFloat(latitude) : null,
-        longitude: longitude ? parseFloat(longitude) : null,
-        slotDuration: Number(slotDuration) || 60,
-        breakTime: Number(breakTime) || 0,
-        pricePerHour: slotLowestHourly ?? (parseFloat(price) || 0),
-        availableDays: Array.isArray(availableDays) ? availableDays : (availableDays ? [availableDays] : []),
-        offDays: Array.isArray(offDays) ? offDays : (offDays ? [offDays] : []),
-        sportTypes: Array.isArray(sportTypes) ? sportTypes : (sportTypes ? [sportTypes] : []),
-        groundTypes: Array.isArray(groundTypes) ? groundTypes : (groundTypes ? [groundTypes] : []),
-        facilities: Array.isArray(facilities) ? facilities : (facilities ? [facilities] : []),
-        generatedSlots: parsedSlots,
-        managerContacts: managerContacts ? JSON.parse(managerContacts) : [],
-        slotsConfigDuration: slotsConfigDuration || "Until Changed",
-        slotsConfigWeeks: Number(slotsConfigWeeks) || 1,
-        slotsConfigExpiry: configExpiry,
-        slotsNeedsUpdate: false,
-        isActive: true
+    const turfData = {
+      name,
+      description,
+      location,
+      youtubeUrl,
+      openTime,
+      closeTime,
+      image: imageUrls[0],
+      images: imageUrls,
+      ownerId: ownerProfile.id,
+      status: "pending",
+      city,
+      state,
+      latitude: latitude ? parseFloat(latitude) : null,
+      longitude: longitude ? parseFloat(longitude) : null,
+      slotDuration: Number(slotDuration) || 60,
+      breakTime: Number(breakTime) || 0,
+      pricePerHour: slotLowestHourly ?? (parseFloat(price) || 0),
+      availableDays: Array.isArray(availableDays) ? availableDays : (availableDays ? [availableDays] : []),
+      offDays: Array.isArray(offDays) ? offDays : (offDays ? [offDays] : []),
+      sportTypes: Array.isArray(sportTypes) ? sportTypes : (sportTypes ? [sportTypes] : []),
+      groundTypes: Array.isArray(groundTypes) ? groundTypes : (groundTypes ? [groundTypes] : []),
+      facilities: Array.isArray(facilities) ? facilities : (facilities ? [facilities] : []),
+      generatedSlots: parsedSlots,
+      managerContacts: managerContacts ? JSON.parse(managerContacts) : [],
+      slotsConfigDuration: slotsConfigDuration || "Until Changed",
+      slotsConfigWeeks: Number(slotsConfigWeeks) || 1,
+      slotsConfigExpiry: configExpiry,
+      slotsNeedsUpdate: false,
+      policies: req.body.policies || "",
+      verificationData,
+      isActive: true
+    };
+
+    let newTurf;
+    if (inviteToken) {
+      const invite = await prisma.venueInvite.findUnique({ where: { token: inviteToken } });
+      if (!invite || invite.status !== "PENDING" || new Date() > invite.expiresAt) {
+        return res.status(400).json({ success: false, message: "Invalid or expired invite token" });
       }
-    });
+      // Update the existing turf
+      newTurf = await prisma.turf.update({
+        where: { id: invite.turfId },
+        data: turfData
+      });
+      // Mark invite as ACCEPTED
+      await prisma.venueInvite.update({
+        where: { id: invite.id },
+        data: { status: "ACCEPTED" }
+      });
+    } else {
+      newTurf = await prisma.turf.create({
+        data: turfData
+      });
+    }
 
     if (latitude && longitude) {
       await updateGeoPoint('Turf', newTurf.id, parseFloat(latitude), parseFloat(longitude));

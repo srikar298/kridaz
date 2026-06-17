@@ -244,9 +244,14 @@ export const sendOtp = asyncHandler(async (req, res) => {
       }
     });
     if (existingUser) {
+      let msg = "Email or Phone already registered";
+      if (email && phone) msg = "This email and phone number are already registered on our platform.";
+      else if (email) msg = "This email is already registered on our platform.";
+      else if (phone) msg = "This phone number is already registered on our platform. Please log in.";
+      
       return res.status(400).json({
         success: false,
-        message: "Email or Phone already registered"
+        message: msg
       });
     }
   }
@@ -721,22 +726,57 @@ export const registerOwner = asyncHandler(async (req, res) => {
     location,
     registrationToken,
     phoneRegistrationToken,
-    businessName
+    businessName,
+    inviteToken
   } = req.body;
+  let stubUser = null;
+  let stubOwner = null;
+
+  if (inviteToken) {
+    const invite = await prisma.venueInvite.findUnique({
+      where: { token: inviteToken },
+      include: { turf: { include: { owner: { include: { user: true } } } } }
+    });
+
+    if (invite && invite.status === "PENDING" && new Date() <= invite.expiresAt) {
+      stubUser = invite.turf.owner.user;
+      stubOwner = invite.turf.owner;
+    }
+  }
+
   const existingUser = await prisma.user.findFirst({
     where: {
-      OR: [{
-        email
-      }, {
-        phone
-      }]
+      OR: [{ email }, { phone }]
     }
   });
+  
   if (existingUser) {
-    return res.status(400).json({
-      success: false,
-      message: "Email or Phone already registered"
-    });
+    if (stubUser && existingUser.id === stubUser.id) {
+      // It's the stub user, we can claim it
+    } else {
+      if (inviteToken) {
+        const professionalRolesSet = new Set(["COACH", "UMPIRE", "STREAMER", "SCORER", "VENUE_OWNER", "OWNER", "VENU_OWNERS"]);
+        if (existingUser.role && existingUser.role.toUpperCase() !== "USER" && professionalRolesSet.has(existingUser.role.toUpperCase())) {
+          return res.status(400).json({
+            success: false,
+            message: `You already have a professional role (${existingUser.role}) and cannot accept this venue invite. Kridaz supports only one professional role per account.`
+          });
+        }
+        
+        const isMatch = await argon2.verify(existingUser.password, password);
+        if (!isMatch) {
+          return res.status(401).json({
+            success: false,
+            message: "This email/phone is already registered. To claim the invite, please enter your existing account password."
+          });
+        }
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Email or Phone already registered"
+        });
+      }
+    }
   }
 
   try {
@@ -776,44 +816,99 @@ export const registerOwner = asyncHandler(async (req, res) => {
     waitlistPosition = count + 1;
   }
   const result = await prisma.$transaction(async tx => {
-    // 1. Create User
-    const user = await tx.user.create({
-      data: {
-        name,
-        username: await generateUniqueUsername(name),
-        email,
-        phone,
-        password: hashedPassword,
-        role: role?.toUpperCase() || "OWNER",
-        gender,
-        city: location || "",
-        isVerified: true
-      }
-    });
+    let user;
+    let owner;
 
-    // 2. Create OwnerProfile
-    const owner = await tx.ownerProfile.create({
-      data: {
-        userId: user.id,
-        gender,
-        businessName: businessName || name || "Independent Partner"
-      }
-    });
+    if (stubUser) {
+      if (existingUser && existingUser.id !== stubUser.id) {
+        // 1. Existing real user is claiming the invite
+        // Update the existing User
+        user = await tx.user.update({
+          where: { id: existingUser.id },
+          data: {
+            role: "VENUE_OWNER",
+            // Keep their existing name, email, phone, password, username, gender
+            // We just upgrade their role.
+          }
+        });
 
-    // 3. Migrate Custom Player Data — see migrateCustomInvitesForUser.
+        // 2. Re-link the stub OwnerProfile to existingUser
+        owner = await tx.ownerProfile.update({
+          where: { id: stubOwner.id },
+          data: {
+            userId: existingUser.id,
+            businessName: businessName || name || stubOwner.businessName || "Independent Partner"
+          }
+        });
+
+        // 3. Delete the stubUser
+        await tx.user.delete({ where: { id: stubUser.id } });
+      } else {
+        // 1. Update the existing stub User (they are claiming their own stub)
+        user = await tx.user.update({
+          where: { id: stubUser.id },
+          data: {
+            name,
+            username: await generateUniqueUsername(name),
+            email,
+            phone,
+            password: hashedPassword,
+            role: "VENUE_OWNER",
+            gender,
+            city: location || "",
+            isVerified: true
+          }
+        });
+
+        // 2. Update existing OwnerProfile
+        owner = await tx.ownerProfile.update({
+          where: { id: stubOwner.id },
+          data: {
+            gender,
+            businessName: businessName || name || stubOwner.businessName || "Independent Partner"
+          }
+        });
+      }
+    } else {
+      // 1. Create User
+      user = await tx.user.create({
+        data: {
+          name,
+          username: await generateUniqueUsername(name),
+          email,
+          phone,
+          password: hashedPassword,
+          role: role?.toUpperCase() || "OWNER",
+          gender,
+          city: location || "",
+          isVerified: true
+        }
+      });
+
+      // 2. Create OwnerProfile
+      owner = await tx.ownerProfile.create({
+        data: {
+          userId: user.id,
+          gender,
+          businessName: businessName || name || "Independent Partner"
+        }
+      });
+    }
+
+    // 3. Migrate Custom Player Data
     if (phone) {
       await migrateCustomInvitesForUser(tx, user.id, phone);
     }
 
     // 4. Create OwnerRequest for verification center
-    if (professionalRoles.includes(role) || ["OWNER", "VENU_OWNERS", "VENUE_OWNERS", "VENUE_OWNER"].includes(role?.toUpperCase())) {
+    if (professionalRoles.includes(role) || ["OWNER", "VENU_OWNERS", "VENUE_OWNERS", "VENUE_OWNER"].includes(role?.toUpperCase()) || stubUser) {
       await tx.ownerRequest.create({
         data: {
           userId: user.id,
           name: user.name,
           email: user.email || `${user.id}@noemail.com`,
           phone: user.phone || "",
-          role: role === "venu_owners" ? "venue_owner" : (role || "venue_owner"),
+          role: stubUser ? "venue_owner" : (role === "venu_owners" ? "venue_owner" : (role || "venue_owner")),
           businessDetails: { businessName: businessName || name || "Independent Partner" },
           documents: [],
           status: "pending"
@@ -1804,19 +1899,23 @@ export const upgradeRequest = asyncHandler(async (req, res) => {
   }
 
   // 4. Handle File Uploads
-  const documents = [];
+  let documents = [];
   if (req.files && req.files.length > 0) {
-    for (const file of req.files) {
+    const uploadPromises = req.files.map(async (file) => {
       try {
         const url = await uploadToCloudinary(file.buffer, "kridaz/verification");
-        documents.push({
+        return {
           name: file.originalname,
           url: url
-        });
+        };
       } catch (uploadErr) {
         logger.error(`[UPGRADE] Error uploading ${file.originalname}:`, uploadErr);
+        return null;
       }
-    }
+    });
+    
+    const results = await Promise.all(uploadPromises);
+    documents = results.filter((doc) => doc !== null);
   }
 
   // 5. Create new request
@@ -2360,15 +2459,11 @@ export const sendPhoneVerificationOtp = asyncHandler(async (req, res) => {
     logger.error("NotificationService.sendOTP error:", notifErr);
   }
 
-  // Return success
+  // Return success — never expose the OTP in the response body, even in dev.
+  // Developers can read it from server logs or directly from the DB.
   return res.status(200).json({
     success: true,
-    message: "Verification OTP sent to your phone/WhatsApp successfully",
-    ...(process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? {
-      testOtp: {
-        phone: phoneOtp
-      }
-    } : {})
+    message: "Verification OTP sent to your phone/WhatsApp successfully"
   });
 });
 export const verifyPhoneOtp = asyncHandler(async (req, res) => {
@@ -2479,9 +2574,9 @@ export const forgotPasswordOtp = asyncHandler(async (req, res) => {
   });
   await prisma.oTP.create({
     data: {
-      email: user.email || 'no-email@test.com',
+      email: user.email || null,
       emailOtp,
-      phone: user.phone || '0000000000',
+      phone: user.phone || null,
       phoneOtp: emailOtp,
       expiresAt: new Date(Date.now() + 10 * 60 * 1000)
     }
@@ -2499,14 +2594,10 @@ export const forgotPasswordOtp = asyncHandler(async (req, res) => {
       subject: 'Your Password Reset Code',
       html: `<p>Your password reset code is <strong>${emailOtp}</strong>. It will expire in 10 minutes.</p>`
     });
+    // Never expose the OTP in the response body, even in dev.
     return res.status(200).json({
       success: true,
-      message: 'OTP sent to your email',
-      ...(process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? {
-        testOtp: {
-          email: emailOtp
-        }
-      } : {})
+      message: 'OTP sent to your email'
     });
   }
 });

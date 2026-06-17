@@ -22,6 +22,8 @@ const SupportCenter = lazy(() => import("../features/admin").then(m => ({ defaul
 const DisputeManager = lazy(() => import("../features/admin").then(m => ({ default: m.DisputeManager })));
 const ProfessionalDisputeManager = lazy(() => import("../features/admin").then(m => ({ default: m.ProfessionalDisputeManager })));
 const GameDisputeManager = lazy(() => import("../features/admin").then(m => ({ default: m.GameDisputeManager })));
+const AddVenueInvite = lazy(() => import("../features/admin").then(m => ({ default: m.AddVenueInvite })));
+const InviteDashboard = lazy(() => import("../features/admin").then(m => ({ default: m.InviteDashboard })));
 const AuditLogs = lazy(() => import("../features/admin").then(m => ({ default: m.AuditLogs })));
 const FinancialMissionControl = lazy(() => import("../features/admin").then(m => ({ default: m.FinancialMissionControl })));
 const FeatureFlags = lazy(() => import("../features/admin").then(m => ({ default: m.FeatureFlags })));
@@ -72,6 +74,8 @@ const router = createBrowserRouter([
         ],
       },
       { path: "turfs",        element: <S><AllTurf /></S> },
+      { path: "turfs/invites", element: <S><InviteDashboard /></S> },
+      { path: "turfs/invite/new", element: <S><AddVenueInvite /></S> },
       { path: "turfs/:id",    element: <S><VenueApprovalDetail /></S> },
       { path: "transactions", element: <S><TransactionSection /></S> },
       { path: "support",      element: <S><SupportCenter /></S> },

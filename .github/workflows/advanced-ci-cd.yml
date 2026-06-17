@@ -2,7 +2,7 @@ name: Kridaz Monorepo CI/CD
 
 on:
   push:
-    branches: [ main, version1, version2, version3, dev_test_production ]
+    branches: [ Production ]
   workflow_dispatch:
 
 concurrency:
@@ -86,7 +86,7 @@ jobs:
     name: Deploy Containers to Azure
     needs: build-and-push-images
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/version1' || github.ref == 'refs/heads/version2' || github.ref == 'refs/heads/version3' || github.ref == 'refs/heads/Production' || github.ref == 'refs/heads/dev_test_production'
+    if: github.ref == 'refs/heads/Production'
     steps:
       - name: Login to Azure
         uses: azure/login@v2
