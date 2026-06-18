@@ -960,8 +960,8 @@ const FindPlayers = () => {
       )}
 
       {/* BOTTOM PANEL: Feed */}
-      <div className={`flex-1 ${activeTab === "players" ? "overflow-y-auto no-scrollbar pb-24 pt-6 px-4 md:px-8" : "pb-12 pt-2 px-1 md:px-2"} bg-black`}>
-        <div className={`max-w-6xl mx-auto space-y-6 ${activeTab === "players" ? "mt-6" : "mt-2"}`}>
+      <div className={`flex-1 ${activeTab === "players" ? "overflow-y-auto no-scrollbar pb-24 pt-2 px-4 md:px-8" : "pb-12 pt-2 px-1 md:px-2"} bg-black`}>
+        <div className={`max-w-6xl mx-auto space-y-6 ${activeTab === "players" ? "mt-2" : "mt-2"}`}>
           
           {/* Tab Switcher */}
           <div className="flex items-center gap-4 border-b border-[rgba(255,255,255,0.08)] pb-1">

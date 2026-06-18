@@ -146,7 +146,8 @@ const useLoginForm = (countryCode = '+91') => {
       
       if (errorMessage.toLowerCase().includes("account not found")) {
         setAccountNotFound(true);
-        toast.error("Account not found. Please sign up!");
+        toast.error("Account not found. Redirecting to sign up...");
+        navigate("/signup");
       } else {
         toast.error(errorMessage);
       }
@@ -198,6 +199,7 @@ const useLoginForm = (countryCode = '+91') => {
     try {
       const payload = {
         role: "user",
+        mode: "signin"
       };
 
       if (googleResponse.credential) {
@@ -215,7 +217,13 @@ const useLoginForm = (countryCode = '+91') => {
       
       handleRoleRedirect(result.role);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Google login failed");
+      const errorMessage = error.response?.data?.message || "Google login failed";
+      if (errorMessage.toLowerCase().includes("account not found") || errorMessage.toLowerCase().includes("sign up first")) {
+        toast.error("Account not found. Redirecting to sign up...");
+        navigate("/signup");
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setGoogleLoading(false);
     }

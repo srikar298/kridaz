@@ -272,10 +272,11 @@ const router = createBrowserRouter([
 
       // Business Auth
       { path: "signup/venue",    element: <S><BusinessRegistration defaultRole="venu_owners" /></S> },
-      { path: "signup/coach",    element: <S><BusinessRegistration defaultRole="coach" /></S> },
-      { path: "signup/official", element: <S><BusinessRegistration defaultRole="umpire" /></S> },
-      { path: "signup/streamer", element: <S><BusinessRegistration defaultRole="streamer" /></S> },
-      { path: "signup/scorer",   element: <S><BusinessRegistration defaultRole="scorer" /></S> },
+      { path: "signup/professional", element: <S><BusinessRegistration defaultRole="professional" /></S> },
+      { path: "signup/coach",    element: <Navigate to="/signup/professional" replace /> },
+      { path: "signup/official", element: <Navigate to="/signup/professional" replace /> },
+      { path: "signup/streamer", element: <Navigate to="/signup/professional" replace /> },
+      { path: "signup/scorer",   element: <Navigate to="/signup/professional" replace /> },
 
       { path: "wallet",           element: <ProtectedRoute><S><UserWallet /></S></ProtectedRoute> },
       { path: "booking-history",  element: <ProtectedRoute><S><UserTurfBookingHistory /></S></ProtectedRoute> },

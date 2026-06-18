@@ -6,18 +6,6 @@ import { searchLocations } from "@utils/locationService";
 import { closeLocationSidebar, setUserLocation, setLocationStatus } from "@redux/slices/uiSlice";
 import { motion, AnimatePresence } from "framer-motion";
 
-const POPULAR_AREAS_BY_CITY = {
-  "Chennai": ["Mylapore", "Velachery", "Thoraipakkam", "Sholinganallur", "Ramapuram", "Porur", "Nungambakkam", "Nolambur"],
-  "Hyderabad": ["Banjara Hills", "Jubilee Hills", "HITEC City", "Gachibowli", "Madhapur", "Kondapur", "Kukatpally", "Begumpet"],
-  "Bengaluru": ["Koramangala", "Indiranagar", "Whitefield", "Jayanagar", "HSR Layout", "Malleswaram", "Marathahalli", "BTM Layout"],
-  "Bangalore": ["Koramangala", "Indiranagar", "Whitefield", "Jayanagar", "HSR Layout", "Malleswaram", "Marathahalli", "BTM Layout"],
-  "Mumbai": ["Andheri", "Bandra", "Juhu", "Colaba", "Worli", "Powai", "Borivali", "Goregaon"],
-  "New Delhi": ["Connaught Place", "Hauz Khas", "Saket", "Vasant Kunj", "Dwarka", "Rohini", "Karol Bagh", "Lajpat Nagar"],
-  "Delhi": ["Connaught Place", "Hauz Khas", "Saket", "Vasant Kunj", "Dwarka", "Rohini", "Karol Bagh", "Lajpat Nagar"],
-  "Pune": ["Koregaon Park", "Kalyani Nagar", "Viman Nagar", "Hinjewadi", "Baner", "Wakad", "Kothrud", "Magarpatta"],
-  "Kolkata": ["Salt Lake", "New Town", "Ballygunge", "Park Street", "Alipore", "Dum Dum", "Jadavpur", "Gariahat"],
-};
-
 const LocationSidebar = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector((state) => state.ui.locationSidebar?.isOpen);
@@ -28,35 +16,29 @@ const LocationSidebar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  
+  const [nearbySuggestions, setNearbySuggestions] = useState([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
   const currentCity = userLocation?.city || "Chennai";
-  
-  const getPopularAreas = (city) => {
-    if (!city) return { name: "Chennai", areas: POPULAR_AREAS_BY_CITY["Chennai"] };
-    
-    const match = Object.keys(POPULAR_AREAS_BY_CITY).find(key => 
-      city.toLowerCase().includes(key.toLowerCase()) || 
-      key.toLowerCase().includes(city.toLowerCase())
-    );
-    
-    if (match) return { name: match, areas: POPULAR_AREAS_BY_CITY[match] };
-    
-    return {
-      name: city,
-      areas: [
-        `${city} Central`,
-        `North ${city}`,
-        `South ${city}`,
-        `${city} East`,
-        `${city} West`,
-        `Downtown ${city}`,
-        `Old ${city}`,
-        `New ${city}`
-      ]
-    };
-  };
 
-  const { name: displayCityName, areas: currentPopularAreas } = getPopularAreas(currentCity);
+  useEffect(() => {
+    if (isOpen && searchQuery.length < 3) {
+      const fetchSuggestions = async () => {
+        setLoadingSuggestions(true);
+        try {
+          // Fetch locations related to the current city to show as nearby suggestions
+          const results = await searchLocations(currentCity);
+          setNearbySuggestions(results);
+        } catch (err) {
+          console.error("Error fetching nearby suggestions", err);
+        } finally {
+          setLoadingSuggestions(false);
+        }
+      };
+      fetchSuggestions();
+    }
+  }, [isOpen, currentCity, searchQuery.length]);
 
   useEffect(() => {
     if (searchQuery.length < 3) {
@@ -176,7 +158,7 @@ const LocationSidebar = () => {
         animate={{ x: 0, y: 0 }}
         exit={isMobile ? { y: "100%", x: 0 } : { x: "100%", y: 0 }}
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        className="fixed bottom-0 left-0 right-0 sm:top-0 sm:bottom-0 sm:left-auto sm:right-0 w-full sm:w-[400px] max-h-[90dvh] sm:max-h-[100dvh] bg-[#161616] flex flex-col shadow-2xl sm:border-l border-white/5 rounded-t-[24px] sm:rounded-none z-[10000]"
+        className="fixed inset-0 sm:left-auto sm:right-0 w-full sm:w-[400px] h-[100dvh] bg-[#161616] flex flex-col shadow-2xl sm:border-l border-white/5 z-[10000]"
       >
         {/* Header */}
         <div className="flex items-center gap-4 p-5 pb-4">
@@ -251,29 +233,40 @@ const LocationSidebar = () => {
             <ArrowRight size={20} className="text-white/40 group-hover:text-white transition-colors group-hover:translate-x-1" />
           </button>
 
-          {/* Popular Areas Section */}
+          {/* Nearby Suggestions Section */}
           {searchQuery.length < 3 && (
             <div className="flex flex-col">
-            <h3 className="text-[12px] font-bold text-white/50 uppercase tracking-[0.1em] mb-4">
-              Popular Areas in {displayCityName}
-            </h3>
-            <div className="flex flex-col gap-2">
-              {currentPopularAreas.map((area) => (
-                <button
-                  key={area}
-                  onClick={() => handleSelectArea(area)}
-                  className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-white/5 transition-colors text-left"
-                >
-                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0">
-                    <MapPin size={18} className="text-white/60" />
-                  </div>
-                  <span className="text-[15px] font-bold text-white/90">
-                    {area}
-                  </span>
-                </button>
-              ))}
+              <h3 className="text-[12px] font-bold text-white/50 uppercase tracking-[0.1em] mb-4">
+                Nearby {currentCity} Areas
+              </h3>
+              <div className="flex flex-col gap-2">
+                {loadingSuggestions ? (
+                  <div className="text-white/40 text-sm text-center py-4">Loading suggestions...</div>
+                ) : nearbySuggestions.length > 0 ? (
+                  nearbySuggestions.map((result, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleSelectResult(result)}
+                      className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-white/5 transition-colors text-left border border-white/5"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0">
+                        <MapPin size={18} className="text-white/60" />
+                      </div>
+                      <div className="flex flex-col overflow-hidden">
+                        <span className="text-[14px] font-bold text-white/90 truncate">
+                          {result.city || result.suburb || result.display_name.split(",")[0]}
+                        </span>
+                        <span className="text-[11px] text-white/40 truncate">
+                          {result.display_name}
+                        </span>
+                      </div>
+                    </button>
+                  ))
+                ) : (
+                  <div className="text-white/40 text-sm text-center py-4">No suggestions found</div>
+                )}
+              </div>
             </div>
-          </div>
           )}
         </div>
       </motion.div>

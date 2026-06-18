@@ -12,7 +12,8 @@ import {
   ShieldAlert,
   ExternalLink,
   ArrowLeft,
-  HelpCircle
+  HelpCircle,
+  Info
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, updateUser } from "@redux/slices/authSlice.js";
@@ -174,22 +175,24 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex flex-col font-inter">
-      <nav className="navbar bg-[#000000] border-b border-[#2D2D2D] px-4 md:px-8 h-16 lg:h-20 shadow-2xl flex items-center justify-between">
+      <nav className={`bg-[#000000] border-b border-[#2D2D2D] px-6 md:px-8 pt-10 pb-2 lg:pt-0 h-[88px] lg:h-20 shadow-2xl flex items-center justify-between w-full box-border`}>
         
 
         
         <div className="flex items-center gap-4 lg:min-w-[200px]">
+          <button 
+            onClick={() => navigate(-1)} 
+            className="p-2 transition-all duration-300 relative text-[#999999] hover:text-white bg-[#0d0d0d] border border-white/5 hover:border-[#BFF367]/30 rounded-full hover:bg-[#BFF367]/10 hover:text-[#BFF367] flex items-center justify-center outline-none"
+            title="Go Back"
+          >
+            <ArrowLeft size={20} strokeWidth={2.5} />
+          </button>
+
           {!isProfessionalDashboard && !isVenueOwner && (
             <button className="p-2 text-white hover:opacity-80 transition-opacity lg:hidden" style={{ color: themeColor }} onClick={toggleSidebar}>
               <Menu size={24} />
             </button>
           )}
-
-          <Link to="/" className="flex items-center gap-4 group">
-            <div className="w-20 h-10 sm:w-32 sm:h-12 bg-transparent flex items-center justify-center overflow-hidden">
-               <img src="/logo.png" alt="Kridaz Logo" className="w-full h-full object-contain" />
-            </div>
-          </Link>
         </div>
 
 
@@ -234,190 +237,35 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
                  navigate(`${getBasePath()}/notifications`);
                  setShowMobileMenu(false);
               }}
-              className="p-2.5 rounded-[8px] transition-all duration-300 relative border bg-[#0d0d0d] text-[#999999] border-white/5 hover:border-white/10 hover:text-white"
+              className="p-2 transition-all duration-300 relative text-[#999999] hover:text-white bg-transparent outline-none"
             >
-              <Bell size={20} />
-              {unreadCount > 0 && <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#B3DC26] rounded-full border-2 border-black" />}
+              <Bell size={24} />
+              {unreadCount > 0 && <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-[#B3DC26] rounded-full border-2 border-black" />}
             </button>
           </div>
 
           <div className="h-8 w-[1px] bg-white/5 mx-1 hidden sm:block" />
 
           {isProfessionalDashboard && (
-            <div className="hidden md:flex relative">
+            <div className="flex relative">
               <Link 
                 to={`/professional/${role}/support`}
-                className="flex items-center justify-center p-2.5 bg-[#0d0d0d] border border-white/5 hover:border-[#BFF367]/30 rounded-[8px] hover:bg-[#BFF367]/10 hover:text-[#BFF367] text-[#999999] transition-all duration-300"
-                title="Support"
+                className="flex items-center justify-center p-2.5 bg-transparent md:bg-[#0d0d0d] md:border border-white/5 hover:border-[#BFF367]/30 rounded-[8px] hover:bg-[#BFF367]/10 hover:text-[#BFF367] text-[#999999] hover:text-white transition-all duration-300"
+                title="Docs & Support"
               >
-                <HelpCircle size={20} strokeWidth={2.5} />
+                <Info size={24} strokeWidth={2.5} className="md:w-5 md:h-5" />
               </Link>
             </div>
           )}
-
-          {!isProfessionalDashboard && (
-            <div className="hidden md:block relative">
-              <button 
-                onClick={handleLogout}
-                className="flex items-center justify-center p-2.5 bg-[#0d0d0d] border border-white/5 hover:border-red-500/30 rounded-[8px] hover:bg-red-500/10 hover:text-red-500 text-[#999999] transition-all duration-300"
-                title="Logout"
-              >
-                <LogOut size={20} strokeWidth={2.5} />
-              </button>
-            </div>
-          )}
-
-          {/* Mobile Menu Toggle */}
-          <div className="md:hidden relative" ref={mobileMenuRef}>
-            <button 
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className={`p-2.5 rounded-[8px] transition-all duration-300 border ${ showMobileMenu ? "" : "bg-[#0d0d0d] text-[#999999] border-white/5 hover:border-white/10" }`}
-              style={{ 
-                backgroundColor: showMobileMenu ? themeColor : undefined, 
-                color: showMobileMenu ? '#000' : undefined,
-                borderColor: showMobileMenu ? themeColor : undefined 
-              }}
-            >
-              <Menu size={20} />
-            </button>
-
-            {showMobileMenu && (
-              <div className="absolute right-0 mt-4 w-56 bg-[#111111] border border-[#2D2D2D] rounded-xl shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
-                <div className="flex flex-col p-2 gap-1">
-                  {isVenueOwner && (
-                    <>
-                      <button 
-                        onClick={() => { setShowMobileMenu(false); setIsManualBookingOpen(true); }}
-                        className="flex items-center gap-3 px-3 py-3 rounded-lg text-xs font-bold text-black transition-colors"
-                        style={{ backgroundColor: themeColor }}
-                      >
-                        <Plus size={16} />
-                        Manual Booking
-                      </button>
-                      <Link 
-                        to="/venue-owner/support"
-                        onClick={() => setShowMobileMenu(false)}
-                        className="flex items-center gap-3 px-3 py-3 rounded-lg text-xs font-bold text-white hover:bg-white/5 transition-colors"
-                      >
-                        <HelpCircle size={16} />
-                        Docs & Support
-                      </Link>
-                    </>
-                  )}
-
-                  {isProfessionalDashboard && (
-                    <Link 
-                      to={`/professional/${role}/support`}
-                      onClick={() => setShowMobileMenu(false)}
-                      className="flex items-center gap-3 px-3 py-3 rounded-lg text-xs font-bold text-white hover:bg-white/5 transition-colors"
-                    >
-                      <HelpCircle size={16} />
-                      Docs & Support
-                    </Link>
-                  )}
-                  
-                  <div className="h-[1px] bg-white/10 my-1"></div>
-
-                  <button 
-                    onClick={() => { setShowMobileMenu(false); handleLogout(); }}
-                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-xs font-bold text-red-500 hover:bg-red-500/10 transition-colors"
-                  >
-                    <LogOut size={16} />
-                    Logout
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       </nav>
 
       {/* Professional Sub-Bar — visible on ALL screen sizes */}
       {isProfessionalDashboard && user && (
-        <div className="bg-[#0A0A0A] border-b border-[#1a1a1a] px-3 sm:px-6 py-2.5">
+        <div className="bg-[#0A0A0A] border-b border-[#1a1a1a] px-6 md:px-8 py-3 w-full box-border">
           <div className="flex items-center justify-between gap-3">
-            {/* Left: Avatar + Greeting */}
-            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-              {/* Avatar with online indicator ring and dropdown */}
-              <div className="relative shrink-0" ref={profileRef}>
-                <button
-                  onClick={() => setShowProfileMenu(prev => !prev)}
-                  className="relative block focus:outline-none transition-transform active:scale-95"
-                >
-                  <img 
-                    src={user.profilePicture || user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'U')}&background=111111&color=BFF367&bold=true&size=80`} 
-                    alt={user.name} 
-                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-offset-1 ring-offset-[#0A0A0A]" 
-                    style={{ ringColor: isOnline ? '#BFF367' : '#555' }}
-                  />
-                  <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-[#0A0A0A] ${isOnline ? 'bg-[#BFF367]' : 'bg-gray-500'}`} />
-                </button>
-
-                {/* Dropdown containing Logout button */}
-                {showProfileMenu && (
-                  <div className="absolute left-0 mt-2 w-48 bg-[#141414] border border-[#2D2D2D] rounded-xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="p-3 border-b border-[#2D2D2D] bg-[#0d0d0d]">
-                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Signed in as</p>
-                      <p className="text-xs font-bold text-white truncate mt-0.5">{user.name}</p>
-                    </div>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center gap-2.5 px-4 py-3 text-left text-xs font-semibold text-red-500 hover:bg-red-500/10 transition-colors duration-200"
-                    >
-                      <LogOut size={14} strokeWidth={2.5} />
-                      <span>Log Out</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-              {/* Greeting */}
-              <div className="flex flex-col min-w-0">
-                <span className="text-[9px] sm:text-[10px] font-semibold text-gray-500 uppercase tracking-wider truncate">{getTimeGreeting()}</span>
-                <span className="text-xs sm:text-sm font-bold text-white truncate">{user.name}</span>
-              </div>
-            </div>
-
-            {/* Center: Trust Score Ring (clickable to go to Trust Score ledger) */}
-            <div 
-              onClick={() => navigate(`/professional/${role?.toLowerCase()}/trust-score`)}
-              className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:opacity-80 transition-opacity active:scale-95 duration-200"
-            >
-              <div className="relative flex items-center justify-center" style={{ width: 44, height: 44 }}>
-                {/* SVG Ring */}
-                <svg width="44" height="44" viewBox="0 0 44 44" className="-rotate-90">
-                  {/* Background track */}
-                  <circle cx="22" cy="22" r={ringRadius} fill="transparent" stroke="#1a1a1a" strokeWidth="3" />
-                  {/* Progress arc */}
-                  <circle 
-                    cx="22" cy="22" r={ringRadius} fill="transparent" 
-                    stroke="#BFF367" strokeWidth="3" strokeLinecap="round"
-                    strokeDasharray={ringCircumference} 
-                    strokeDashoffset={ringOffset}
-                    style={{ transition: 'stroke-dashoffset 0.8s ease', filter: 'drop-shadow(0 0 4px rgba(191,243,103,0.4))' }}
-                  />
-                </svg>
-                {/* Center score */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-[11px] font-black text-[#BFF367] leading-none">{trustScore}</span>
-                </div>
-              </div>
-              {/* Label */}
-              <div className="flex flex-col">
-                <span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">Trust</span>
-                <span className="text-[10px] sm:text-xs font-black text-[#BFF367] uppercase">{trustScore} XP</span>
-              </div>
-            </div>
-
-            {/* Right: Online / Offline Toggle */}
-            <div className="flex items-center gap-2 shrink-0">
-              <div className="flex flex-col items-end gap-0.5">
-                <span className="text-[8px] sm:text-[9px] font-bold uppercase tracking-widest" style={{ color: isOnline ? '#BFF367' : '#555' }}>
-                  {isOnline ? 'Online' : 'Offline'}
-                </span>
-                <span className="text-[9px] font-semibold text-gray-600 uppercase tracking-wider">
-                  {isOnline ? 'Visible' : 'Hidden'}
-                </span>
-              </div>
+            {/* Left: Online / Offline Toggle */}
+            <div className="flex items-center gap-3 flex-1 min-w-0 pr-4">
               <button
                 onClick={handleToggleOnline}
                 disabled={isToggling}
@@ -444,8 +292,45 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
                   <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-black' : 'bg-gray-600'}`} />
                 </span>
               </button>
+              <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest truncate" style={{ color: isOnline ? '#BFF367' : '#555' }}>
+                  {isOnline ? 'Online' : 'Offline'} Mode
+                </span>
+                <span className="text-[9px] font-semibold text-gray-500 tracking-wider truncate">
+                  {isOnline ? 'You are visible to players' : 'Your profile is hidden'}
+                </span>
+              </div>
             </div>
 
+            {/* Right: Trust Score Ring (clickable to go to Trust Score ledger) */}
+            <div 
+              onClick={() => navigate(`/professional/${role?.toLowerCase()}/trust-score`)}
+              className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:opacity-80 transition-opacity active:scale-95 duration-200 justify-end shrink-0"
+            >
+              <div className="flex flex-col text-right hidden sm:flex">
+                <span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">Trust</span>
+                <span className="text-[10px] sm:text-xs font-black text-[#BFF367] uppercase">{trustScore} XP</span>
+              </div>
+              <div className="relative flex items-center justify-center" style={{ width: 40, height: 40 }}>
+                {/* SVG Ring */}
+                <svg width="40" height="40" viewBox="0 0 44 44" className="-rotate-90">
+                  {/* Background track */}
+                  <circle cx="22" cy="22" r={ringRadius} fill="transparent" stroke="#1a1a1a" strokeWidth="3" />
+                  {/* Progress arc */}
+                  <circle 
+                    cx="22" cy="22" r={ringRadius} fill="transparent" 
+                    stroke="#BFF367" strokeWidth="3" strokeLinecap="round"
+                    strokeDasharray={ringCircumference} 
+                    strokeDashoffset={ringOffset}
+                    style={{ transition: 'stroke-dashoffset 0.8s ease', filter: 'drop-shadow(0 0 4px rgba(191,243,103,0.4))' }}
+                  />
+                </svg>
+                {/* Center score */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-[10px] font-black text-[#BFF367] leading-none">{trustScore}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

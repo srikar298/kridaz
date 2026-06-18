@@ -85,7 +85,7 @@ const TournamentDashboard = () => {
         <div className="absolute inset-0 z-0 overflow-hidden">
           <div 
             className="absolute inset-0 bg-cover bg-center opacity-30 blur-2xl scale-110"
-            style={{ backgroundImage: \`url(\${tournament.posterUrl || 'https://images.unsplash.com/photo-1522778119026-d647f0596c20'}) saturate(200%)\` }}
+            style={{ backgroundImage: `url(${tournament.posterUrl || 'https://images.unsplash.com/photo-1522778119026-d647f0596c20'})` }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/40 via-[#050505]/80 to-[#050505]" />
         </div>
@@ -144,9 +144,9 @@ const TournamentDashboard = () => {
               <button
                 key={tab.id}
                 onClick={() => setTab(tab.id)}
-                className={\`flex items-center gap-2 py-4 px-4 whitespace-nowrap transition-colors relative \${
+                className={`flex items-center gap-2 py-4 px-4 whitespace-nowrap transition-colors relative ${
                   currentTab === tab.id ? 'text-[#BFF367]' : 'text-white/50 hover:text-white'
-                }\`}
+                }`}
               >
                 {tab.icon}
                 <span className="text-xs font-bold uppercase tracking-wider">{tab.label}</span>
@@ -203,7 +203,7 @@ const TournamentDashboard = () => {
             </button>
             <button 
               onClick={() => {
-                navigator.clipboard.writeText(\`https://kridaz.com/t/\${tournament.id}\`);
+                navigator.clipboard.writeText(`https://kridaz.com/t/${tournament.id}`);
                 setShowShareModal(false);
               }}
               className="w-full bg-[#1a1a1a] text-white font-bold py-3 rounded-full flex items-center justify-center gap-2 hover:bg-white/10"
@@ -215,7 +215,7 @@ const TournamentDashboard = () => {
       )}
 
       {/* Global CSS for hiding scrollbar in tabs */}
-      <style dangerouslySetInnerHTML={{__html: \`
+      <style dangerouslySetInnerHTML={{__html: `
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
         }
@@ -223,7 +223,7 @@ const TournamentDashboard = () => {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
-      \`}} />
+      `}} />
     </div>
   );
 };

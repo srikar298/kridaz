@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { AppError } from "../../middleware/errorHandler.middleware.js";
+import { NotFoundError, ForbiddenError, BadRequestError } from "@kridaz/common";
 import { autoGenerateGroupStage, getTournamentStandings, createManualScheduledGame } from "./scheduler.service.js";
 
 const prisma = new PrismaClient();
@@ -92,12 +92,12 @@ export const getTournamentById = async (req, res, next) => {
     });
 
     if (!tournament) {
-      throw new AppError("Tournament not found", 404);
+      throw new NotFoundError("Tournament not found");
     }
 
     // Optional: Add authorization check if needed (e.g. only owner can see draft)
     if (tournament.status === "DRAFT" && tournament.ownerId !== userId) {
-      throw new AppError("Not authorized to view this draft tournament", 403);
+      throw new ForbiddenError("Not authorized to view this draft tournament");
     }
 
     res.status(200).json({
@@ -125,11 +125,11 @@ export const updateTournament = async (req, res, next) => {
     });
 
     if (!tournament) {
-      throw new AppError("Tournament not found", 404);
+      throw new NotFoundError("Tournament not found");
     }
 
     if (tournament.ownerId !== userId) {
-      throw new AppError("Not authorized to update this tournament", 403);
+      throw new ForbiddenError("Not authorized to update this tournament");
     }
 
     const updatedTournament = await prisma.tournament.update({
@@ -158,7 +158,7 @@ export const uploadPoster = async (req, res, next) => {
     const userId = req.user.id;
 
     if (!req.file) {
-      throw new AppError("No file uploaded", 400);
+      throw new BadRequestError("No file uploaded");
     }
 
     const tournament = await prisma.tournament.findUnique({
@@ -166,11 +166,11 @@ export const uploadPoster = async (req, res, next) => {
     });
 
     if (!tournament) {
-      throw new AppError("Tournament not found", 404);
+      throw new NotFoundError("Tournament not found");
     }
 
     if (tournament.ownerId !== userId) {
-      throw new AppError("Not authorized", 403);
+      throw new ForbiddenError("Not authorized");
     }
 
     // req.file.path comes from the multer upload middleware (cloudinary/s3)
@@ -219,11 +219,11 @@ export const getPublicTournament = async (req, res, next) => {
     });
 
     if (!tournament) {
-      throw new AppError("Tournament not found", 404);
+      throw new NotFoundError("Tournament not found");
     }
 
     if (tournament.status === 'DRAFT') {
-      throw new AppError("Tournament is not published yet", 400);
+      throw new BadRequestError("Tournament is not published yet");
     }
 
     res.status(200).json({
@@ -254,8 +254,8 @@ export const registerForTournament = async (req, res, next) => {
       }
     });
 
-    if (!tournament) throw new AppError("Tournament not found", 404);
-    if (tournament.status !== 'PUBLISHED') throw new AppError("Registration is not open", 400);
+    if (!tournament) throw new NotFoundError("Tournament not found");
+    if (tournament.status !== 'PUBLISHED') throw new BadRequestError("Registration is not open");
 
     // 2. Fetch Team and verify ownership
     const team = await prisma.team.findUnique({
@@ -265,21 +265,21 @@ export const registerForTournament = async (req, res, next) => {
       }
     });
 
-    if (!team) throw new AppError("Team not found", 404);
-    if (team.adminId !== userId) throw new AppError("You must be the team admin to register", 403);
+    if (!team) throw new NotFoundError("Team not found");
+    if (team.adminId !== userId) throw new ForbiddenError("You must be the team admin to register");
     if (team.sportType && tournament.sport && team.sportType !== tournament.sport) {
-      throw new AppError(`This is a ${tournament.sport} tournament, but your team plays ${team.sportType}`, 400);
+      throw new BadRequestError(`This is a ${tournament.sport} tournament, but your team plays ${team.sportType}`);
     }
 
     // 3. Verify Team is not already registered
     const alreadyRegistered = tournament.teams.find(t => t.teamId === teamId);
     if (alreadyRegistered) {
-      throw new AppError("Your team is already registered for this tournament", 400);
+      throw new BadRequestError("Your team is already registered for this tournament");
     }
 
     // 4. Verify spots available
     if (tournament.maxTeams && tournament.teams.length >= tournament.maxTeams) {
-      throw new AppError("Tournament is already full", 400);
+      throw new BadRequestError("Tournament is already full");
     }
 
     // 5. Calculate Fee
@@ -292,7 +292,7 @@ export const registerForTournament = async (req, res, next) => {
       // Fetch user wallet
       const wallet = await prisma.wallet.findUnique({ where: { userId } });
       if (!wallet || wallet.balance < amountToDeduct) {
-        throw new AppError("Insufficient wallet balance. Please recharge.", 400);
+        throw new BadRequestError("Insufficient wallet balance. Please recharge.");
       }
 
       await prisma.$transaction([
@@ -358,8 +358,8 @@ export const autoScheduleGroupStage = async (req, res, next) => {
     const userId = req.user.id;
 
     const tournament = await prisma.tournament.findUnique({ where: { id } });
-    if (!tournament) throw new AppError("Tournament not found", 404);
-    if (tournament.ownerId !== userId) throw new AppError("Not authorized", 403);
+    if (!tournament) throw new NotFoundError("Tournament not found");
+    if (tournament.ownerId !== userId) throw new ForbiddenError("Not authorized");
 
     const matches = await autoGenerateGroupStage(id, startDate, slotTimes);
 
@@ -404,8 +404,8 @@ export const manualSchedule = async (req, res, next) => {
     const userId = req.user.id;
 
     const tournament = await prisma.tournament.findUnique({ where: { id } });
-    if (!tournament) throw new AppError("Tournament not found", 404);
-    if (tournament.ownerId !== userId) throw new AppError("Not authorized", 403);
+    if (!tournament) throw new NotFoundError("Tournament not found");
+    if (tournament.ownerId !== userId) throw new ForbiddenError("Not authorized");
 
     const match = await createManualScheduledGame(id, stage, poolId, scheduledAt, team1Id, team2Id);
 

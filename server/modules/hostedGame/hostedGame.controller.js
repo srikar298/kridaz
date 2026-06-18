@@ -852,6 +852,34 @@ export const joinHostedGame = async (req, res) => {
             }
       );
 
+      const playerUser = await prisma.user.findUnique({ where: { id: userId } });
+      const hostUser = await prisma.user.findUnique({ where: { id: game.hostId } });
+      if (isPublic) {
+        NotificationService.publishEvent("GAME_JOIN_APPROVED", {
+          recipientId: userId,
+          recipientModel: "User",
+          email: playerUser?.email,
+          phone: playerUser?.phone,
+          gameType: game.gameType,
+          date: game.date,
+          time: game.time,
+          hostName: hostUser?.name || "The host",
+          amount: perPlayerCharge
+        });
+      } else {
+        NotificationService.publishEvent("GAME_JOIN_REQUESTED", {
+          recipientId: game.hostId,
+          recipientModel: "User",
+          email: hostUser?.email,
+          phone: hostUser?.phone,
+          playerName: playerUser?.name || "A player",
+          hostName: hostUser?.name || "Host",
+          gameType: game.gameType,
+          date: game.date,
+          time: game.time
+        });
+      }
+
       return { autoJoined: isPublic };
     });
 
@@ -1001,6 +1029,22 @@ export const approveJoinRequest = async (req, res) => {
           }
         }
       }
+
+      const playerUser = await tx.user.findUnique({ where: { id: playerUserId } });
+      const hostUser = await tx.user.findUnique({ where: { id: hostId } });
+
+      NotificationService.publishEvent("GAME_JOIN_APPROVED", {
+        recipientId: playerUserId,
+        recipientModel: "User",
+        email: playerUser?.email,
+        phone: playerUser?.phone,
+        gameType: game.gameType,
+        date: game.date,
+        time: game.time,
+        hostName: hostUser?.name || "The host",
+        city: game.city || "your city",
+        amount: perPlayerCharge
+      });
     });
 
     return res.status(200).json({ success: true, message: "Player approved and coins deducted." });
@@ -1101,6 +1145,20 @@ export const rejectJoinRequest = async (req, res) => {
           status: "OPEN",
           paymentStatus: "NONE"
         }
+      });
+
+      const playerUser = await tx.user.findUnique({ where: { id: playerUserId } });
+      const hostUser = await tx.user.findUnique({ where: { id: hostId } });
+
+      NotificationService.publishEvent("GAME_JOIN_REJECTED", {
+        recipientId: playerUserId,
+        recipientModel: "User",
+        email: playerUser?.email,
+        phone: playerUser?.phone,
+        gameType: game.gameType,
+        date: game.date,
+        hostName: hostUser?.name || "The host",
+        amount: perPlayerCharge
       });
     });
 
@@ -1223,6 +1281,22 @@ export const cancelHostedGame = async (req, res) => {
           payoutStatus: "REFUNDED"
         }
       });
+
+      const hostUser = await tx.user.findUnique({ where: { id: hostId } });
+      for (const slot of [...pendingSlots, ...joinedSlots]) {
+        const playerUser = await tx.user.findUnique({ where: { id: slot.userId } });
+        NotificationService.publishEvent("GAME_CANCELLED_BY_HOST", {
+          recipientId: slot.userId,
+          recipientModel: "User",
+          email: playerUser?.email,
+          phone: playerUser?.phone,
+          gameType: game.gameType,
+          date: game.date,
+          time: game.time,
+          hostName: hostUser?.name || "The host",
+          refundAmount: perPlayerCharge
+        });
+      }
     });
 
     return res.status(200).json({ success: true, message: "Game cancelled and all reserved coins released." });
@@ -1335,6 +1409,20 @@ export const leaveHostedGame = async (req, res) => {
           status: "OPEN",
           paymentStatus: "NONE"
         }
+      });
+      
+      const hostUser = await tx.user.findUnique({ where: { id: game.hostId } });
+      const playerUser = await tx.user.findUnique({ where: { id: userId } });
+      NotificationService.publishEvent("GAME_PLAYER_LEFT", {
+        recipientId: game.hostId,
+        recipientModel: "User",
+        email: hostUser?.email,
+        phone: hostUser?.phone,
+        gameType: game.gameType,
+        date: game.date,
+        time: game.time,
+        playerName: playerUser?.name || "A player",
+        refundAmount: perPlayerCharge
       });
     });
 
@@ -1624,14 +1712,13 @@ export const inviteOfficial = async (req, res) => {
       }
     });
 
-    NotificationService.sendInApp({
+    await NotificationService.publishEvent("PRO_INVITE_RECEIVED", {
+      email: official.email,
+      phone: official.phone,
       recipientId: officialId,
-      title: "Match Official Invitation",
-      message: `You have been invited to be a ${type} for a match.`,
-      type: "SYSTEM",
-      link: `/my-hosted-games`,
-      relatedId: gameId,
-      onModel: "HostedGame"
+      recipientModel: "User",
+      type,
+      matchName: game.name || game.title || ""
     });
 
     return res.status(200).json({ success: true, message: `${type} invitation sent!` });
@@ -1703,20 +1790,25 @@ export const respondToOfficialInvitation = async (req, res) => {
       });
     }
 
-    // â”€â”€ Notify Host â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ──────────────────────────────────────────────────────────────────────────────────────────────────
     try {
       const responder = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
       const statusMsg = action === "APPROVE" ? "accepted" : "rejected";
+      const host = await prisma.user.findUnique({ where: { id: game.hostId }, select: { email: true, phone: true } });
 
-      NotificationService.sendInApp({
-        recipientId: game.hostId,
-        title: `Official Invitation ${action === "APPROVE" ? "Accepted" : "Rejected"}`,
-        message: `${responder?.name || "Someone"} has ${statusMsg} your invitation to be the ${type.toLowerCase()} for the match.`,
-        type: "SYSTEM",
-        link: `/hosted-game/${game.id}`,
-        relatedId: game.id,
-        onModel: "HostedGame"
-      });
+      if (host) {
+        await NotificationService.publishEvent("OFFICIAL_INVITE_UPDATED", {
+          email: host.email,
+          phone: host.phone,
+          recipientId: game.hostId,
+          recipientModel: "User",
+          gameId: game.id,
+          matchName: game.name || game.title || "",
+          responderName: responder?.name || "Someone",
+          status: statusMsg,
+          type
+        });
+      }
     } catch (notifErr) {
       logger.error("[Notification] Error notifying host:", notifErr);
     }

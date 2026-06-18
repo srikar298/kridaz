@@ -87,8 +87,20 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
   };
   const calendarDays = getDaysInMonth(currentMonthDate);
 
-  const activeSlots = Array.isArray(turf.generatedSlots) 
-    ? turf.generatedSlots.filter(s => s.isActive !== false) 
+  let parsedSlots = [];
+  if (Array.isArray(turf.generatedSlots)) {
+    parsedSlots = turf.generatedSlots;
+  } else if (typeof turf.generatedSlots === 'string') {
+    try {
+      parsedSlots = JSON.parse(turf.generatedSlots);
+      if (typeof parsedSlots === 'string') parsedSlots = JSON.parse(parsedSlots);
+    } catch (e) {
+      console.error("Failed to parse generatedSlots", e);
+    }
+  }
+
+  const activeSlots = Array.isArray(parsedSlots) 
+    ? parsedSlots.filter(s => s.isActive !== false) 
     : [];
 
   const displaySlots = activeSlots.length > 0

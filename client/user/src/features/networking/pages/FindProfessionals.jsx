@@ -347,7 +347,7 @@ export default function FindProfessionals() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-1 md:px-2 pt-2 pb-20 font-sans">
+    <div className="min-h-screen bg-black text-white px-0 md:px-2 pt-2 pb-20 font-sans">
 
       {/* Search & Filters */}
       <div className="max-w-7xl mx-auto mb-6">
@@ -431,7 +431,7 @@ export default function FindProfessionals() {
           </form>
 
           {/* Ads Space */}
-          <div className="px-2 md:px-0">
+          <div className="px-1 md:px-0">
             <div className="w-full h-[180px] sm:h-[240px] rounded-[16px] overflow-hidden mb-6 relative cursor-pointer group bg-[#111] shadow-[0px_8px_24px_rgba(179,220,38,0.15)] border border-[rgba(255,255,255,0.08)]">
               <img src="/pro-banner.png" alt="Pro Training" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#000000]/90 via-[#000000]/40 to-transparent flex flex-col justify-end p-6">
@@ -443,13 +443,13 @@ export default function FindProfessionals() {
 
         {/* Grid Content */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 px-2">
             {[...Array(12)].map((_, i) => (
               <div key={i} className="aspect-[1/1.3] rounded-[8px] bg-white/5 border border-white/5 animate-pulse" />
             ))}
           </div>
         ) : professionals.length === 0 ? (
-          <div className="mx-2 md:mx-0 text-center py-12 px-4 border border-[rgba(255,255,255,0.08)] rounded-[16px] bg-[#111] relative overflow-hidden shadow-2xl">
+          <div className="mx-1 md:mx-0 text-center py-12 px-2 border border-[rgba(255,255,255,0.08)] rounded-[16px] bg-[#111] relative overflow-hidden shadow-2xl">
             <div className="relative z-10 flex flex-col items-center">
               <img src="/empty-pros.png" alt="No Professionals Found" className="w-full max-w-[200px] h-[140px] object-cover mb-6 border border-white/5 rounded-2xl" />
               <h3 className="text-lg font-black uppercase tracking-[0.1em] text-[#BFF367] mb-2">Your Next Coach is Waiting</h3>
@@ -459,7 +459,7 @@ export default function FindProfessionals() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 px-2">
             {professionals.map((pro) => (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}

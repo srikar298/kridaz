@@ -287,7 +287,7 @@ const Root = () => {
               : isTeamsPage || isMessagesPage
                 ? 'pb-0' 
                 : 'pb-20 lg:pb-28'
-          } transition-all duration-300 min-w-0 flex justify-center ${isNewPostPage || isTeamsPage || isMessagesPage || isProfile || isBookingHistory || isTournamentWizard ? 'py-0' : 'py-6'}`}>
+          } transition-all duration-300 min-w-0 flex justify-center ${isNewPostPage || isTeamsPage || isMessagesPage || isProfile || isBookingHistory || isTournamentWizard || location.pathname.startsWith('/search') ? 'py-0' : 'py-6'}`}>
             
             <div className={`w-full ${isNewPostPage || isTeamsPage || isMessagesPage || isProfile || isBookingHistory || isTournamentWizard ? 'max-w-none px-0' : 'px-0 max-w-none'} flex flex-col justify-between`}>
               <div className="min-h-full">

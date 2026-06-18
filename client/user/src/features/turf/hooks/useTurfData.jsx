@@ -76,8 +76,18 @@ const useTurfData = (filters = {}) => {
 
   if (filters.timingMorning || filters.timingAfternoon || filters.timingEvening || filters.timingLateNight) {
     turfs = turfs.filter(t => {
-      if (!t.generatedSlots || t.generatedSlots.length === 0) return false;
-      return t.generatedSlots.some(slot => {
+      let parsedSlots = [];
+      if (Array.isArray(t.generatedSlots)) {
+        parsedSlots = t.generatedSlots;
+      } else if (typeof t.generatedSlots === 'string') {
+        try {
+          parsedSlots = JSON.parse(t.generatedSlots);
+          if (typeof parsedSlots === 'string') parsedSlots = JSON.parse(parsedSlots);
+        } catch (e) {}
+      }
+
+      if (!Array.isArray(parsedSlots) || parsedSlots.length === 0) return false;
+      return parsedSlots.some(slot => {
         if (slot.isActive === false) return false;
         let hr = 0;
         if (typeof slot.startTime === 'string') {

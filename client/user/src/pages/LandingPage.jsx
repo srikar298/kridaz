@@ -237,7 +237,7 @@ export default function LandingPage() {
             { label: "Venues", icon: <MapPin size={18} />, onClick: () => navigate("/venues") },
             { label: "Scoring", icon: <Gamepad2 size={18} />, onClick: () => navigate("/leaderboard") },
             { label: "Players", icon: <Users size={18} />, onClick: () => navigate("/players") },
-            { label: "Register", icon: <UserPlus size={18} />, onClick: () => navigate("/signup") }
+            { label: "Register", icon: <UserPlus size={18} />, onClick: () => navigate("/login") }
           ]}
           panelHeight={64}
           baseItemSize={44}

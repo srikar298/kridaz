@@ -2,6 +2,7 @@ import { prisma } from "../../config/prisma.js";
 import WalletService from "../../services/wallet.service.js";
 import WalletBlockingService from "../../services/walletBlocking.service.js";
 import logger from "../../utils/logger.js";
+import NotificationService from "../../services/notification.service.js";
 
 // --- USER OPERATIONS ---
 
@@ -261,6 +262,24 @@ export const bookProfessional = async (req, res) => {
           data: { slots: updatedSlots }
         });
       }
+
+      // Fetch user and professional details for notification
+      const user = await tx.user.findUnique({ where: { id: userId } });
+      const professional = await tx.ownerProfile.findUnique({
+        where: { id: professionalId },
+        include: { user: true }
+      });
+
+      NotificationService.publishEvent("PRO_BOOKING_CREATED", {
+        recipientId: professional.userId,
+        recipientModel: "OwnerProfile",
+        email: professional.user?.email,
+        phone: professional.user?.phone,
+        customerName: user?.name,
+        date: date,
+        bookingType: bookingType,
+        totalAmount: totalAmount
+      });
     });
 
     return res.status(201).json({ message: "Booking request sent successfully. Coins reserved." });
@@ -432,8 +451,45 @@ export const handleBookingRequest = async (req, res) => {
           where: { id: bookingId },
           data: { status: "REJECTED", rejectionReason }
         });
+
+        const user = await tx.user.findUnique({ where: { id: booking.userId } });
+        const professional = await tx.ownerProfile.findUnique({
+          where: { id: professionalId },
+          include: { user: true }
+        });
+
+        NotificationService.publishEvent("PRO_BOOKING_REJECTED", {
+          recipientId: booking.userId,
+          recipientModel: "User",
+          email: user?.email,
+          phone: user?.phone,
+          professionalName: professional.user?.name,
+          date: booking.date,
+          bookingType: booking.bookingType,
+          totalAmount: booking.totalAmount
+        });
       }
     });
+
+    // We can also publish ACCEPTED event after transaction
+    if (status === "ACCEPTED") {
+      const user = await prisma.user.findUnique({ where: { id: booking.userId } });
+      const professional = await prisma.ownerProfile.findUnique({
+        where: { id: professionalId },
+        include: { user: true }
+      });
+
+      NotificationService.publishEvent("PRO_BOOKING_ACCEPTED", {
+        recipientId: booking.userId,
+        recipientModel: "User",
+        email: user?.email,
+        phone: user?.phone,
+        professionalName: professional.user?.name,
+        date: booking.date,
+        bookingType: booking.bookingType,
+        totalAmount: booking.totalAmount
+      });
+    }
 
     return res.status(200).json({ message: `Booking ${status.toLowerCase()} successfully` });
   } catch (error) {
@@ -1111,6 +1167,19 @@ export const acceptMatchOffer = async (req, res) => {
       });
     }
 
+    const customerUser = await prisma.user.findUnique({ where: { id: offer.request.userId } });
+    NotificationService.publishEvent("PRO_ONDEMAND_MATCHED", {
+      recipientId: offer.request.userId,
+      recipientModel: "User",
+      email: customerUser?.email,
+      phone: customerUser?.phone,
+      professionalName: req.user.name || "A professional",
+      date: offer.request.matchDate,
+      time: offer.request.matchStartTime,
+      amount: limitMaxBudget,
+      otp: plainOtp
+    });
+
     return res.status(200).json({ success: true, booking, otp: plainOtp });
   } catch (error) {
     logger.error("Error in acceptMatchOffer:", error);
@@ -1262,14 +1331,24 @@ export const verifyOTPCheckIn = async (req, res) => {
 
       await tx.onDemandProfessionalBooking.update({
         where: { id: bookingId },
-        data: {
-          status: "IN_PROGRESS",
-          verifiedAt: new Date()
+        data: { 
+          status: "COMPLETED",
+          completedAt: new Date()
         }
       });
     });
 
-    return res.status(200).json({ success: true, message: "Check-in successful. Booking status active." });
+    NotificationService.publishEvent("PRO_BOOKING_COMPLETED", {
+      recipientId: booking.userId,
+      recipientModel: "User",
+      email: booking.user?.email,
+      phone: booking.user?.phone,
+      professionalName: req.user.name || "The professional",
+      amount: booking.hourlyRate,
+      date: booking.matchDate
+    });
+
+    return res.status(200).json({ success: true, message: "Check-in successful. Funds transferred." });
   } catch (error) {
     logger.error("Error in verifyOTPCheckIn:", error);
     return res.status(500).json({ message: error.message });
@@ -1753,8 +1832,24 @@ export const completeProfessionalBooking = async (req, res) => {
     await WalletBlockingService.releaseFundsToProfessional(bookingId);
 
     const updatedBooking = await prisma.onDemandProfessionalBooking.findUnique({
-      where: { id: bookingId }
+      where: { id: bookingId },
+      include: {
+        professional: { include: { user: true } },
+        user: true
+      }
     });
+
+    if (updatedBooking) {
+      NotificationService.publishEvent("PRO_BOOKING_COMPLETED", {
+        recipientId: updatedBooking.userId,
+        recipientModel: "User",
+        email: updatedBooking.user?.email,
+        phone: updatedBooking.user?.phone,
+        professionalName: updatedBooking.professional?.user?.name || "The professional",
+        amount: updatedBooking.hourlyRate,
+        date: updatedBooking.matchDate
+      });
+    }
 
     return res.status(200).json({ success: true, booking: updatedBooking });
   } catch (error) {

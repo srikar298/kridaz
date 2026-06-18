@@ -305,17 +305,7 @@ export const verifyBookingPayment = async (userId, paymentData) => {
     data: { qrCode: QRcode }
   });
 
-  // Notify Owner
-  NotificationService.sendInApp({
-    recipientId: turf.owner.userId,
-    recipientModel: 'User',
-    title: "New Booking Received",
-    message: `A new booking has been confirmed for ${turf.name} on ${formattedDate}.`,
-    type: "BOOKING",
-    link: "/venue-owner/bookings"
-  });
-
-  // Generate & send invoice
+  // Generate & send invoice and dispatch notifications
   const duration = Math.ceil((new Date(adjustedEndTime) - new Date(adjustedStartTime)) / (1000 * 60 * 60));
   const invoiceBooking = {
     ...updatedBooking,
@@ -326,20 +316,18 @@ export const verifyBookingPayment = async (userId, paymentData) => {
   };
 
   generateInvoice(invoiceBooking, turf, user).then(pdfBuffer => {
-    const htmlContent = generateHTMLContent(
-      turf.name,
-      turf.city + ", " + turf.state,
-      formattedDate,
-      formattedStartTime,
-      formattedEndTime,
-      totalPrice,
-      QRcode
-    );
-
-    NotificationService.sendEmail({
-      to: user.email,
-      subject: "Booking Confirmation & Invoice - Kridaz",
-      html: htmlContent,
+    NotificationService.publishEvent("BOOKING_COMPLETED", {
+      recipientId: turf.owner.userId,
+      recipientModel: "User",
+      ownerId: turf.owner.userId,
+      email: user.email,
+      phone: user.phone,
+      playerName: user.name || "Player",
+      turfName: turf.name,
+      date: formattedDate,
+      time: formattedStartTime,
+      amount: totalPrice,
+      currency: "₹",
       attachments: [
         {
           filename: `Invoice-KRZ-${booking.id.slice(-6).toUpperCase()}.pdf`,
@@ -351,25 +339,6 @@ export const verifyBookingPayment = async (userId, paymentData) => {
   }).catch(err => {
     logger.error("[INVOICE] Failed to generate/queue invoice:", err.message);
   });
-
-  if (user.phone) {
-    const ticketUrl = `${process.env.USER_URL || 'https://kridaz.com'}/booking-pass/${booking.id}`;
-    const invoiceUrl = `${process.env.APP_BASE_URL || 'https://api.kridaz.com'}/api/booking/user/invoice/${booking.id}`;
-    
-    NotificationService.sendWhatsApp({
-      phone: user.phone,
-      message: `Your booking at ${turf.name} on ${formattedDate} is confirmed.`,
-      templateName: process.env.MSG91_WHATSAPP_BOOKING_TEMPLATE,
-      params: [
-        user.name || "Player",
-        turf.name,
-        formattedDate,
-        formattedStartTime,
-        ticketUrl,
-        invoiceUrl
-      ]
-    });
-  }
 
   return updatedBooking;
 };
@@ -579,34 +548,18 @@ export const processWalletBooking = async (userId, bookingData) => {
     data: { qrCode: QRcode }
   });
 
-  // Notify Owner
-  NotificationService.sendInApp({
-    recipientId: turf.owner.userId,
-    recipientModel: 'User',
-    title: "New Wallet Booking",
-    message: `A new booking has been confirmed for ${turf.name} via Wallet on ${formattedDate}.`,
-    type: "BOOKING",
-    link: "/venue-owner/bookings"
+  // Notify Owner & User
+  NotificationService.publishEvent("WALLET_BOOKING_CONFIRMED", {
+    booking: updatedBooking,
+    turf,
+    user,
+    ownerId: turf.owner.userId,
+    formattedDate,
+    formattedStartTime,
+    formattedEndTime: format(adjustedEndTime, "hh:mm a"),
+    ticketUrl: `${process.env.USER_URL || 'https://kridaz.com'}/booking-pass/${booking.id}`,
+    invoiceUrl: `${process.env.APP_BASE_URL || 'https://api.kridaz.com'}/api/booking/user/invoice/${booking.id}`
   });
-
-  if (user.phone) {
-    const ticketUrl = `${process.env.USER_URL || 'https://kridaz.com'}/booking-pass/${booking.id}`;
-    const invoiceUrl = `${process.env.APP_BASE_URL || 'https://api.kridaz.com'}/api/booking/user/invoice/${booking.id}`;
-    
-    NotificationService.sendWhatsApp({
-      phone: user.phone,
-      message: `Your booking at ${turf.name} on ${formattedDate} is confirmed.`,
-      templateName: process.env.MSG91_WHATSAPP_BOOKING_TEMPLATE,
-      params: [
-        user.name || "Player",
-        turf.name,
-        formattedDate,
-        formattedStartTime,
-        ticketUrl,
-        invoiceUrl
-      ]
-    });
-  }
 
   return updatedBooking;
 };
@@ -963,10 +916,26 @@ export const processManualBooking = async (ownerId, manualData) => {
   const qrUrl = `${process.env.USER_URL || "https://kridaz.com"}/booking-pass/${booking.id}`;
   const QRcode = await generateQRCode(qrUrl);
   
-  return await prisma.booking.update({
+  const updatedBooking = await prisma.booking.update({
     where: { id: booking.id },
     data: { qrCode: QRcode }
   });
+
+  if (customerEmail || customerPhone) {
+    NotificationService.publishEvent("MANUAL_BOOKING_CREATED", {
+      booking: updatedBooking,
+      turf,
+      guestName: customerName || "Guest",
+      guestEmail: customerEmail,
+      phone: customerPhone,
+      email: customerEmail,
+      formattedDate: format(turfDate, "d MMM yyyy"),
+      formattedStartTime: format(adjustedStartTime, "hh:mm a"),
+      formattedEndTime: format(adjustedEndTime, "hh:mm a")
+    });
+  }
+
+  return updatedBooking;
 };
 
 /**
@@ -1044,36 +1013,19 @@ export const processBookingCancellation = async (userId, bookingId) => {
     }
 
     // Trigger Notification
-    NotificationService.sendInApp({
+    // Trigger Notification
+    NotificationService.publishEvent("BOOKING_CANCELLED", {
       recipientId: userId,
-      recipientModel: 'User',
-      title: "Booking Cancelled",
-      message: refundAmount > 0 
-        ? `Your booking has been cancelled. 30% refund (₹${refundAmount}) credited to wallet.` 
-        : `Your booking has been cancelled. No refund issued as per policy.`,
-      type: "BOOKING",
-      link: "/profile/bookings"
-    });
-
-    if (booking.user && booking.user.phone) {
-      const dateStr = booking.timeSlot 
+      recipientModel: "User",
+      email: booking.user?.email,
+      phone: booking.user?.phone,
+      userName: booking.user?.name || "Player",
+      turfName: booking.turf?.name,
+      date: booking.timeSlot 
         ? format(new Date(booking.timeSlot.startTime), "d MMM yyyy") 
-        : "the scheduled date";
-      
-      NotificationService.sendWhatsApp({
-        phone: booking.user.phone,
-        message: `Cancellation for ${booking.turf.name}`,
-        templateName: process.env.MSG91_WHATSAPP_CANCEL_TEMPLATE || "general_messages",
-        params: {
-          customer_name: booking.user.name || "Player",
-          update_line_1: `Your booking at ${booking.turf.name} on ${dateStr} has been cancelled.`,
-          update_line_2: refundAmount > 0 ? `A refund of ₹${refundAmount} has been processed to your wallet.` : "No refund was eligible for this cancellation.",
-          update_line_3: "",
-          status_text: "Cancelled",
-          footer_note: "Thank you for using Kridaz!"
-        }
-      });
-    }
+        : "the scheduled date",
+      refundAmount: refundAmount
+    });
 
     return { booking: updatedBooking, refundAmount };
   });

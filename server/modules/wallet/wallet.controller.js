@@ -264,19 +264,17 @@ export const verifyTopup = async (req, res) => {
     }
 
     const user = await prisma.user.findUnique({ where: { id: req.user.id } });
-    if (user && user.phone) {
-      NotificationService.sendWhatsApp({
+    if (user) {
+      NotificationService.publishEvent("WALLET_TOPUP_SUCCESS", {
+        recipientId: user.id,
+        recipientModel: "User",
+        email: user.email,
         phone: user.phone,
-        message: `Wallet topped up with ₹${transaction.amount}`,
-        templateName: process.env.MSG91_WHATSAPP_WALLET_TEMPLATE || "general_messages",
-        params: {
-          customer_name: user.name || "Player",
-          update_line_1: `Your wallet has been successfully recharged.`,
-          update_line_2: `Amount Added: ₹${transaction.amount}`,
-          update_line_3: `Current Balance: ₹${newBalance}`,
-          status_text: "Success",
-          footer_note: "Thank you for using Kridaz!"
-        }
+        userName: user.name || "Player",
+        amount: transaction.amount,
+        newBalance: newBalance,
+        currency: "₹",
+        date: new Date()
       });
     }
 
@@ -374,6 +372,20 @@ export const checkPaymentStatus = async (req, res) => {
         });
 
         if (newBalance !== undefined) {
+          if (user) {
+            NotificationService.publishEvent("WALLET_TOPUP_SUCCESS", {
+              recipientId: transaction.userId,
+              recipientModel: "User",
+              email: user.email,
+              phone: user.phone,
+              userName: user.name || "Player",
+              amount: transaction.amount,
+              newBalance: newBalance,
+              currency: "₹",
+              date: new Date()
+            });
+          }
+
           return res.status(200).json({ success: true, message: "Payment was successful. Wallet updated." });
         }
       }
@@ -431,6 +443,17 @@ export const requestWithdrawal = async (req, res) => {
       message: `Partner ${owner.name} requested a withdrawal of Rs ${amount}.`,
       type: "WITHDRAWAL",
       link: "/admin/withdrawals"
+    });
+
+    const ownerUser = await prisma.user.findUnique({ where: { id: owner.userId } });
+    NotificationService.publishEvent("WITHDRAWAL_REQUESTED", {
+      recipientId: owner.userId,
+      recipientModel: "User",
+      email: ownerUser?.email,
+      phone: ownerUser?.phone,
+      amount: amount,
+      currency: "₹",
+      ownerName: owner.name
     });
 
     return res.status(201).json({

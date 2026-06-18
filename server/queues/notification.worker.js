@@ -110,6 +110,41 @@ const worker = new Worker(
           break;
         }
 
+        case "APP_EVENT": {
+          const { eventName, payload } = data;
+          const { getTemplatesForEvent } = await import("../utils/notification.templates.js");
+          
+          const templates = getTemplatesForEvent(eventName, payload);
+          if (!templates) break;
+
+          const promises = [];
+          
+          // 1. Email
+          if (templates.email && payload.email) {
+            promises.push(generateEmail(payload.email, templates.email.subject || "Kridaz Notification", templates.email.html, payload.attachments));
+          }
+
+          // 2. WhatsApp
+          if (templates.wa && payload.phone) {
+            promises.push(sendWhatsAppMessage(payload.phone, templates.wa.message, templates.wa.template, templates.wa.params));
+          }
+
+          // 3. In-App Notification
+          if (templates.inApp && payload.recipientId && payload.recipientModel) {
+            promises.push(processInAppNotification({
+              recipientId: payload.recipientId,
+              recipientModel: payload.recipientModel,
+              title: templates.inApp.title,
+              message: templates.inApp.message,
+              type: templates.inApp.type || "SYSTEM",
+              link: templates.inApp.link || ""
+            }));
+          }
+
+          await Promise.allSettled(promises);
+          break;
+        }
+
         default:
           logger.warn(`[Notification Worker] Unknown job type: ${name}`);
       }

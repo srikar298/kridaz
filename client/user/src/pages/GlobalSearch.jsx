@@ -169,7 +169,7 @@ const GlobalSearch = () => {
   const VENUE_TYPES = ["TURF", "GROUND", "INDOOR"];
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white pt-4 px-4 md:px-6 font-inter relative overflow-hidden">
+    <div className="min-h-screen bg-[#050505] text-white pt-0 px-4 md:px-6 font-inter relative overflow-hidden">
       <div className="max-w-3xl mx-auto space-y-6 pb-20">
         
         {/* Search Bar */}

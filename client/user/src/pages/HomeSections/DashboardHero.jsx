@@ -25,7 +25,7 @@ export default function DashboardHero() {
           />
         </div>
         <div className="h-[28px] flex items-start justify-center">
-          <span className="text-[9px] md:text-[11px] font-black text-white/70 uppercase tracking-wider text-center leading-tight group-hover:text-white transition-colors">
+          <span className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors" style={{ fontFamily: "'Open Sans', sans-serif" }}>
             Players Nearby
           </span>
         </div>
@@ -52,7 +52,7 @@ export default function DashboardHero() {
           />
         </div>
         <div className="h-[28px] flex items-start justify-center">
-          <span className="text-[9px] md:text-[11px] font-black text-white/70 uppercase tracking-wider text-center leading-tight group-hover:text-white transition-colors">
+          <span className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors" style={{ fontFamily: "'Open Sans', sans-serif" }}>
             Score Match
           </span>
         </div>
@@ -78,7 +78,7 @@ export default function DashboardHero() {
           />
         </div>
         <div className="h-[28px] flex items-start justify-center">
-          <span className="text-[9px] md:text-[11px] font-black text-white/70 uppercase tracking-wider text-center leading-tight group-hover:text-white transition-colors">
+          <span className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors" style={{ fontFamily: "'Open Sans', sans-serif" }}>
             Join Game
           </span>
         </div>
@@ -98,13 +98,13 @@ export default function DashboardHero() {
         >
           <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />
           <img
-            src="/3d_professional_v2.png"
+            src="/sports/3d_professional_v2.png"
             alt="Pros Icon"
             className="absolute inset-0 w-full h-full object-contain p-[10%] pointer-events-none transform group-hover:scale-110 transition-all duration-300 z-10"
           />
         </div>
         <div className="h-[28px] flex items-start justify-center">
-          <span className="text-[9px] md:text-[11px] font-black text-white/70 uppercase tracking-wider text-center leading-tight group-hover:text-white transition-colors">
+          <span className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors" style={{ fontFamily: "'Open Sans', sans-serif" }}>
             Pro's
           </span>
         </div>

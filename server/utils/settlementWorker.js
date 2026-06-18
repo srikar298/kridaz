@@ -1,6 +1,7 @@
 import { prisma } from "../config/prisma.js";
 import logger from "./logger.js";
 import * as Sentry from "@sentry/node";
+import NotificationService from "../../services/notification.service.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -69,6 +70,25 @@ export const runPlayingTransition = async () => {
 
     if (result.count > 0) {
       logger.info(`[SETTLEMENT] Phase A-1: ${result.count} booking(s) → PLAYING`);
+      
+      const updatedBookings = await prisma.booking.findMany({
+        where: {
+          status: "PLAYING",
+          playStartTime: { lte: now }
+        },
+        include: { turf: true, user: true }
+      });
+
+      for (const b of updatedBookings) {
+        NotificationService.publishEvent("BOOKING_STARTED", {
+          recipientId: b.userId,
+          recipientModel: "User",
+          email: b.user?.email,
+          phone: b.user?.phone,
+          turfName: b.turf?.name,
+          bookingId: b.id
+        });
+      }
     }
   } catch (err) {
     logger.error("[SETTLEMENT] Phase A-1 error:", err);
@@ -225,6 +245,21 @@ export const runAutoSettle = async () => {
         },
       });
     });
+
+    for (const booking of eligibleBookings) {
+      if (!booking.turf?.owner) continue;
+      const ownerRevenue = booking.ownerRevenue || booking.totalPrice;
+      NotificationService.publishEvent("AUTO_SETTLEMENT_PROCESSED", {
+        recipientId: booking.turf.owner.userId,
+        recipientModel: "OwnerProfile",
+        email: booking.turf.owner.user?.email,
+        phone: booking.turf.owner.user?.phone,
+        ownerName: booking.turf.owner.user?.name || "Partner",
+        amount: ownerRevenue,
+        turfName: booking.turf.name,
+        bookingId: booking.id
+      });
+    }
 
     logger.info(`[SETTLEMENT] Phase B: Auto-settled ${eligibleBookings.length} booking(s) ✓`);
   } catch (err) {

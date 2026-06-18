@@ -204,13 +204,13 @@ const Turf = () => {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-[#84CC16]">
                     <Sparkles size={18} className="fill-current animate-pulse" />
-                    <span className="text-sm font-black uppercase tracking-[0.2em] font-sans">Handpicked Alternates</span>
+                    <span className="text-sm font-black uppercase tracking-[0.2em] font-sans">Recommended</span>
                   </div>
                   <h4 className="text-3xl font-black uppercase tracking-tight text-white font-open-sans">
-                    Trending Spots Active In Your City
+                    Popular spots near you
                   </h4>
                   <p className="text-xs font-semibold text-zinc-500 font-inter">
-                    ML-ranked suggestions based on real-time location metrics & teammate sport affinities.
+                    Discover highly-rated venues matching your interests.
                   </p>
                 </div>
 
@@ -432,26 +432,39 @@ const Turf = () => {
         </div>
 
         <div className="p-5 space-y-6">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.70)]" size={16} />
-            <input 
-              type="text" 
-              placeholder="Search city or area..." 
-              value={locationSearchInput}
-              onChange={(e) => setLocationSearchInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  dispatch(setFilters({ city: locationSearchInput }));
-                  setIsMobileLocationOpen(false);
-                }
-              }}
-              className="w-full bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[16px] py-3.5 pl-11 pr-4 text-[14px] text-[#FFFFFF] placeholder:text-[rgba(255,255,255,0.70)] focus:outline-none focus:border-[#55DEE8] transition-all shadow-md"
-            />
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.70)]" size={16} />
+              <input 
+                type="text" 
+                placeholder="Search city or area..." 
+                value={locationSearchInput}
+                onChange={(e) => setLocationSearchInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    dispatch(setFilters({ city: locationSearchInput }));
+                    setIsMobileLocationOpen(false);
+                  }
+                }}
+                className="w-full bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[16px] py-3.5 pl-11 pr-4 text-[14px] text-[#FFFFFF] placeholder:text-[rgba(255,255,255,0.70)] focus:outline-none focus:border-[#55DEE8] transition-all shadow-md"
+              />
+            </div>
+            {searchFilters.city && (
+              <button 
+                onClick={() => {
+                  dispatch(setFilters({ city: '' }));
+                  setLocationSearchInput('');
+                }}
+                className="px-3 py-3.5 bg-red-500/10 text-red-500 rounded-[16px] border border-red-500/20 text-xs font-black uppercase tracking-wider hover:bg-red-500/20 transition-colors shrink-0"
+              >
+                Clear
+              </button>
+            )}
           </div>
 
           <div className="space-y-4">
             <h5 className="text-[11px] font-black uppercase text-white/50 tracking-wider">Popular Cities</h5>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-wrap gap-2">
               {["Delhi", "Mumbai", "Bangalore", "Hyderabad", "Pune", "Chennai"].map((city) => (
                 <button 
                   key={city}
@@ -459,7 +472,7 @@ const Turf = () => {
                     dispatch(setFilters({ city }));
                     setIsMobileLocationOpen(false);
                   }}
-                  className={`py-3 px-4 rounded-[12px] border flex items-center justify-center text-xs font-bold transition-all ${searchFilters.city === city ? "bg-[#BFF367]/10 border-[#BFF367] text-[#BFF367]" : "bg-[#1B1B1B] border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)] hover:border-[rgba(255,255,255,0.20)]"}`}
+                  className={`py-2 px-4 rounded-full border flex items-center justify-center text-xs font-bold transition-all ${searchFilters.city === city ? "bg-[#BFF367]/10 border-[#BFF367] text-[#BFF367]" : "bg-[#1B1B1B] border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)] hover:border-[rgba(255,255,255,0.20)]"}`}
                 >
                   {city}
                 </button>

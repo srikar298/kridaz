@@ -53,13 +53,25 @@ export const getGroundRecommendations = async (userId, lat, lng, limit = 15) => 
 
       return fallbackGrounds.map(g => ({
         id: g.id,
+        _id: g.id,
         name: g.name,
         image: g.image,
+        images: g.images || [],
+        description: g.description,
+        location: g.location,
+        city: g.city,
+        state: g.state,
         sportTypes: g.sportTypes,
+        groundTypes: g.groundTypes,
+        facilities: g.facilities,
         pricePerHour: parseFloat(g.pricePerHour),
         rating: g.rating ? parseFloat(g.rating) : 3.5,
         latitude: g.latitude ? parseFloat(g.latitude) : null,
         longitude: g.longitude ? parseFloat(g.longitude) : null,
+        generatedSlots: g.generatedSlots || [],
+        openTime: g.openTime,
+        closeTime: g.closeTime,
+        youtubeUrl: g.youtubeUrl,
         totalScore: 0.5 // Neutral baseline score for fallback items
       }));
     } catch (fallbackErr) {

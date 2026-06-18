@@ -173,6 +173,11 @@ export const raiseDispute = async (req, res) => {
     const { newDispute, activeBooking, owner, disputeReason, isProfessional } = result;
 
     // ── Notifications (Queued) ──────────────────────────────────────────────────────────
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true, phone: true }
+    });
+
     NotificationService.notifyAdmins({
       title: "New Dispute Raised",
       message: `A dispute has been raised for booking ${activeBooking.id} (${disputeReason}).`,
@@ -188,6 +193,16 @@ export const raiseDispute = async (req, res) => {
         message: `A user has raised a dispute for your turf booking. Funds have been frozen until resolution.`,
         type: "SUPPORT",
         link: "/venue-owner/dashboard"
+      });
+    }
+
+    if (user) {
+      await NotificationService.publishEvent("DISPUTE_RAISED", {
+        email: user.email,
+        phone: user.phone,
+        recipientId: userId,
+        recipientModel: "User",
+        bookingId: activeBooking.id
       });
     }
 
@@ -619,24 +634,37 @@ export const resolveDispute = async (req, res) => {
     const { dispute, activeBooking, ownerId, isProfessional } = result;
 
     // ── Notifications (Queued) ──────────────────────────────────────────────────────────
-    NotificationService.sendInApp({
-      recipientId: dispute.raisedById,
-      recipientModel: 'User',
-      title: "Dispute Resolved",
-      message: `The dispute for your booking has been resolved: ${resolutionAction}.`,
-      type: "SUPPORT",
-      link: "/profile/bookings"
+    const raisingUser = await prisma.user.findUnique({
+      where: { id: dispute.raisedById },
+      select: { email: true, phone: true }
     });
 
-    if (ownerId) {
-      NotificationService.sendInApp({
-        recipientId: ownerId,
-        recipientModel: 'Owner',
-        title: "Dispute Resolved",
-        message: `The dispute on booking ${activeBooking.id} has been resolved: ${resolutionAction}.`,
-        type: "SUPPORT",
-        link: "/venue-owner/dashboard"
+    if (raisingUser) {
+      await NotificationService.publishEvent("DISPUTE_RESOLVED", {
+        email: raisingUser.email,
+        phone: raisingUser.phone,
+        recipientId: dispute.raisedById,
+        recipientModel: "User",
+        bookingId: activeBooking.id,
+        resolutionAction
       });
+    }
+
+    if (ownerId) {
+      const owner = await prisma.ownerProfile.findUnique({
+        where: { id: ownerId },
+        include: { user: true }
+      });
+      if (owner) {
+        await NotificationService.publishEvent("DISPUTE_RESOLVED", {
+          email: owner.email,
+          phone: owner.user?.phone,
+          recipientId: owner.userId,
+          recipientModel: "User",
+          bookingId: activeBooking.id,
+          resolutionAction
+        });
+      }
     }
 
     return res.status(200).json({

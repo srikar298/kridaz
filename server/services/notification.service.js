@@ -126,6 +126,23 @@ const NotificationService = {
       await saveToDeadLetter("notifications", "CUSTOM_UMPIRE_INVITE", payload);
       return false;
     }
+  },
+
+  /**
+   * Universal Event Publisher
+   * Dispatches an application event to the notification worker.
+   * The worker will map the event to the appropriate email/wa/in-app templates.
+   */
+  async publishEvent(eventName, payload) {
+    try {
+      await notificationQueue.add("APP_EVENT", { eventName, payload });
+      return true;
+    } catch (error) {
+      logger.error(`[Notification Service] Error queuing APP_EVENT (${eventName}) — saving to dead-letter:`, error);
+      Sentry.captureException(error, { extra: { jobName: "APP_EVENT", eventName, payload } });
+      await saveToDeadLetter("notifications", "APP_EVENT", { eventName, payload });
+      return false;
+    }
   }
 };
 

@@ -202,7 +202,7 @@ export default function SocialArenaSection({ reelsFeed }) {
         <div className="relative flex flex-row items-center justify-between gap-4 mb-6 lg:mb-8">
           <div className="relative flex items-center gap-2">
             <h2
-              className="text-[18px] md:text-[25px] font-black text-white tracking-tighter leading-none flex items-center gap-2 md:gap-3"
+              className="text-[14px] font-black text-white tracking-tighter leading-none flex items-center gap-2 md:gap-3"
               style={{ fontFamily: "'Open Sans', sans-serif" }}
             >
               Your{" "}

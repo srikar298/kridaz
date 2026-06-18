@@ -421,16 +421,12 @@ export default function DesktopRightSidebar({ isRightDrawerOpen, setIsRightDrawe
                     <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[40%] w-[70.8%] h-[42.85%] rounded-xl filter blur-[15px] bg-[#006]"></span>
                   </div>
                   
-                  {/* Button Content */}
                   <div
-                    className="absolute inset-0 rounded-xl bg-transparent cursor-pointer flex items-center justify-between px-5"
+                    className="absolute inset-0 rounded-xl bg-transparent cursor-pointer flex items-center justify-center gap-3 px-5"
                     onMouseEnter={() => setIsInviteHovered(true)}
                     onMouseLeave={() => setIsInviteHovered(false)}>
-                    <span className="flex items-center gap-3">
-                      <Share2 size={18} className="group-hover:text-yellow-400 text-white flex-shrink-0 transition-colors" />
-                      <span className="group-hover:text-yellow-400 text-white text-[14px] font-black tracking-wide whitespace-nowrap transition-colors uppercase">Invite & Earn</span>
-                    </span>
-                    <span className="group-hover:text-yellow-400 text-white/80 font-bold text-[10px] uppercase tracking-widest transition-colors">Get ₹100 / Friend</span>
+                    <Share2 size={18} className="group-hover:text-yellow-400 text-white flex-shrink-0 transition-colors" />
+                    <span className="group-hover:text-yellow-400 text-white text-[14px] font-black tracking-wide whitespace-nowrap transition-colors uppercase">Invite & Earn</span>
                   </div>
                 </Link>
               </div>

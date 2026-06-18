@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, Search, Users, UserSearch, Trophy, Plus, PenSquare, MessageCircle, History, Gamepad2, Award, Wallet, Bookmark, Bell, Swords, Settings, Map, HelpCircle, Activity, Calendar, Store } from "lucide-react";
+import { Home, Search, Users, UserSearch, Trophy, Plus, PenSquare, MessageCircle, History, Gamepad2, Award, Wallet, Bookmark, Bell, Swords, Settings, Map, HelpCircle, Activity, Calendar, Store, MapPin } from "lucide-react";
 import { useSelector } from "react-redux";
 
 const MobileBottomNav = () => {
@@ -66,7 +66,7 @@ const MobileBottomNav = () => {
 
   const navItems = [
     { name: "Home", path: "/", icon: Home },
-    { name: "Venues", path: "/venues", icon: Map },
+    { name: "Venues", path: "/venues", icon: MapPin },
     { name: "Players", path: "/players", icon: UserSearch },
     { name: "My Teams", path: "/my-teams", icon: Users },
   ];
@@ -91,29 +91,40 @@ const MobileBottomNav = () => {
 
   return (
     <>
-      {/* Transparent Click-away Overlay (No Masking) */}
+      {/* Blurred Click-away Overlay (Only covers bottom area) */}
       {isMenuOpen && (
         <div 
           className="lg:hidden fixed inset-0 z-[90] pointer-events-auto"
           onClick={handleClose}
-        />
+        >
+          <div 
+            className="absolute bottom-0 left-0 w-full h-[280px] backdrop-blur-xl bg-black/40 transition-all duration-300" 
+            style={{ 
+              maskImage: 'linear-gradient(to top, black 60%, transparent 100%)', 
+              WebkitMaskImage: 'linear-gradient(to top, black 60%, transparent 100%)' 
+            }} 
+          />
+        </div>
       )}
 
       {/* Floating Bottom Nav Container */}
       <div 
-        className="lg:hidden fixed left-4 right-4 z-[100] h-[60px] flex flex-col justify-end pointer-events-none mb-4"
+        className="lg:hidden fixed left-4 right-4 z-[100] flex flex-col justify-end pointer-events-none mb-4"
         style={{ bottom: 'env(safe-area-inset-bottom)' }}
       >
-        
-        {/* Second Navbar (Custom Icons) */}
         <div 
-          className={`absolute left-0 right-0 flex justify-center z-30 transition-all duration-300 ease-in-out ${
+          className={`relative w-full pointer-events-auto overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] ${
             isMenuOpen 
-              ? "bottom-[125px] opacity-100 pointer-events-auto translate-y-0" 
-              : "bottom-[30px] opacity-0 pointer-events-none translate-y-4"
+              ? "h-[190px] rounded-[32px] bg-[#050505]/90 backdrop-blur-3xl" 
+              : "h-[60px] rounded-full bg-[#050505]/70 backdrop-blur-2xl"
           }`}
         >
-          <div className="bg-[#1A1A1A]/80 backdrop-blur-2xl border border-white/10 rounded-full px-4 py-1.5 flex items-center gap-1.5 md:gap-2 shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+          {/* Top Row (Custom Icons) */}
+          <div 
+            className={`absolute top-2 left-0 w-full h-[60px] flex items-center justify-around px-2 transition-all duration-300 ease-in-out ${
+              isMenuOpen ? "opacity-100 translate-y-0 delay-150 pointer-events-auto" : "opacity-0 translate-y-4 pointer-events-none"
+            }`}
+          >
             {customIcons.map((item, i) => (
               <div key={`custom-${i}`} className="relative">
                 {item ? (
@@ -125,8 +136,8 @@ const MobileBottomNav = () => {
                       className="flex items-center justify-center"
                       title={item.title}
                     >
-                      <div className="w-8 h-8 md:w-9 md:h-9 rounded-[12px] flex items-center justify-center transition-all duration-300 transform group-hover:scale-110 bg-[#BFF367] text-black shadow-[0_0_15px_rgba(191,243,103,0.3)]">
-                        <item.icon size={16} strokeWidth={2.5} />
+                      <div className="w-11 h-11 flex items-center justify-center transition-all duration-300 transform group-hover:scale-110 text-white/50 hover:text-white">
+                        <item.icon size={22} strokeWidth={2} />
                       </div>
                     </Link>
                     {/* Tiny edit button to remove/change */}
@@ -140,27 +151,22 @@ const MobileBottomNav = () => {
                 ) : (
                   <button 
                     onClick={(e) => handleEmptyIconClick(e, i)}
-                    className="w-8 h-8 md:w-9 md:h-9 rounded-[12px] flex items-center justify-center transition-all duration-300 border border-dashed border-white/20 text-white/30 hover:border-white/50 hover:text-white/70 hover:bg-white/5"
+                    className="w-11 h-11 flex items-center justify-center transition-all duration-300 text-white/20 hover:text-white/50 transform hover:scale-110"
                     title="Add Custom Shortcut"
                   >
-                    <Plus size={14} strokeWidth={2.5} />
+                    <Plus size={22} strokeWidth={2} />
                   </button>
                 )}
               </div>
             ))}
           </div>
-        </div>
 
-        {/* Primary Popup Navbar (5 Pre-defined Icons) */}
-        <div 
-          className={`absolute left-0 right-0 flex justify-center z-40 transition-all duration-300 ease-in-out ${
-            isMenuOpen 
-              ? "bottom-[70px] opacity-100 pointer-events-auto translate-y-0" 
-              : "bottom-[30px] opacity-0 pointer-events-none translate-y-4"
-          }`}
-        >
-          {/* Adjusted padding/width for middle navbar */}
-          <div className="bg-[#1A1A1A]/80 backdrop-blur-2xl border border-white/10 rounded-full px-5 py-1.5 flex items-center gap-2 md:gap-2.5 shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+          {/* Middle Row (Popup Items) */}
+          <div 
+            className={`absolute top-[62px] left-0 w-full h-[60px] flex items-center justify-around px-2 transition-all duration-300 ease-in-out ${
+              isMenuOpen ? "opacity-100 translate-y-0 delay-75 pointer-events-auto" : "opacity-0 translate-y-4 pointer-events-none"
+            }`}
+          >
             {popupItems.map((item, i) => (
               <Link 
                 key={`primary-${i}`}
@@ -170,90 +176,83 @@ const MobileBottomNav = () => {
                 className="flex items-center justify-center group"
                 title={item.title}
               >
-                <div className={`w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 transform group-hover:scale-125 ${
+                <div className={`w-11 h-11 flex items-center justify-center transition-all duration-300 transform group-hover:scale-110 ${
                   item.isSpecial 
-                    ? "bg-[#BFF367]/20 text-[#BFF367] border border-[#BFF367]/40 group-hover:bg-[#BFF367] group-hover:text-black shadow-[0_0_15px_rgba(191,243,103,0.2)]" 
-                    : "bg-white/5 text-white/70 border border-white/5 group-hover:bg-white/20 group-hover:text-white group-hover:border-white/20"
+                    ? "text-[#BFF367] drop-shadow-[0_0_10px_rgba(191,243,103,0.3)]" 
+                    : "text-white/40 group-hover:text-white/80"
                 }`}>
-                  <item.icon size={18} strokeWidth={2.5} />
+                  <item.icon size={22} strokeWidth={item.isSpecial ? 2.5 : 2} />
                 </div>
               </Link>
             ))}
           </div>
-        </div>
 
-        {/* Main Floating Bar */}
-        <div className="relative w-full h-[60px] flex items-center justify-between px-2 pb-0 pointer-events-auto rounded-full z-50 transition-all duration-300">
-          {/* Glass Background */}
-          <div className="absolute inset-0 bg-[#050505]/70 backdrop-blur-2xl rounded-full border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] z-0" />
-
-          {/* Left Nav Items */}
-          <div className="relative z-10 flex-1 flex justify-around items-center h-full">
+          {/* Bottom Row (Main Floating Bar) */}
+          <div className="absolute bottom-0 left-0 w-full h-[60px] grid grid-cols-5 items-center px-1 pb-0 z-50">
+            {/* Left Nav Items */}
             {leftItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  onClick={handleClose}
-                  className="flex flex-col items-center justify-center p-2 transition-colors group"
-                >
-                  <div className={`relative flex items-center justify-center transition-all duration-300 ${
-                    isActive 
-                      ? "w-11 h-11 bg-[#BFF367]/20 text-[#BFF367] rounded-full shadow-[0_0_15px_rgba(191,243,103,0.2)]" 
-                      : "w-11 h-11 text-white/40 group-hover:text-white/80 group-hover:bg-white/10 group-hover:scale-110 rounded-full"
-                  }`}>
-                    <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
-                  </div>
-                </Link>
+                <div key={item.name} className="flex justify-center items-center h-full relative z-10">
+                  <Link
+                    to={item.path}
+                    onClick={handleClose}
+                    className="flex flex-col items-center justify-center p-2 transition-colors group"
+                  >
+                    <div className={`relative flex items-center justify-center transition-all duration-300 ${
+                      isActive 
+                        ? "w-11 h-11 text-[#BFF367]" 
+                        : "w-11 h-11 text-white/40 group-hover:text-white/80 group-hover:scale-110"
+                    }`}>
+                      <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                    </div>
+                  </Link>
+                </div>
               );
             })}
-          </div>
 
-          {/* Center Floating Actions Container */}
-          <div className="relative z-50 flex justify-center items-center w-[60px] h-full">
-            <div className="absolute bottom-[14px] flex justify-center items-center">
-              
-              {/* Floating + Button */}
-              <button
-                onClick={handleToggle}
-                className={`relative flex items-center justify-center w-[44px] h-[44px] rounded-full text-black transition-all duration-500 shadow-[0_0_20px_rgba(191,243,103,0.3)] border-[3px] border-[#050505] ${
-                  isMenuOpen ? "bg-[#aade55]" : "bg-[#BFF367] hover:scale-105"
-                }`}
-              >
-                <Plus 
-                  size={22} 
-                  strokeWidth={3.5} 
-                  className={`absolute transition-all duration-300 ease-in-out ${isMenuOpen ? "opacity-0 scale-50 rotate-90" : "opacity-100 scale-100 rotate-0"}`} 
-                />
-                <Search 
-                  size={20} 
-                  strokeWidth={3} 
-                  className={`absolute transition-all duration-300 ease-in-out ${isMenuOpen ? "opacity-100 scale-100 rotate-0" : "opacity-0 scale-50 -rotate-90"}`} 
-                />
-              </button>
+            {/* Center Floating Actions Container */}
+            <div className="flex justify-center items-center h-full relative z-50">
+              <div className="absolute bottom-[8px] flex justify-center items-center">
+                <button
+                  onClick={handleToggle}
+                  className={`relative flex items-center justify-center w-[44px] h-[44px] rounded-full text-black transition-all duration-500 border-[3px] border-[#050505] ${
+                    isMenuOpen ? "bg-[#aade55]" : "bg-[#BFF367]"
+                  }`}
+                >
+                  <Plus 
+                    size={22} 
+                    strokeWidth={3.5} 
+                    className={`absolute transition-all duration-300 ease-in-out ${isMenuOpen ? "opacity-0 scale-50 rotate-90" : "opacity-100 scale-100 rotate-0"}`} 
+                  />
+                  <Search 
+                    size={20} 
+                    strokeWidth={3} 
+                    className={`absolute transition-all duration-300 ease-in-out ${isMenuOpen ? "opacity-100 scale-100 rotate-0" : "opacity-0 scale-50 -rotate-90"}`} 
+                  />
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* Right Nav Items */}
-          <div className="relative z-10 flex-1 flex justify-around items-center h-full">
+            {/* Right Nav Items */}
             {rightItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  onClick={handleClose}
-                  className="flex flex-col items-center justify-center p-2 transition-colors group"
-                >
-                  <div className={`relative flex items-center justify-center transition-all duration-300 ${
-                    isActive 
-                      ? "w-11 h-11 bg-[#BFF367]/20 text-[#BFF367] rounded-full shadow-[0_0_15px_rgba(191,243,103,0.2)]" 
-                      : "w-11 h-11 text-white/40 group-hover:text-white/80 group-hover:bg-white/10 group-hover:scale-110 rounded-full"
-                  }`}>
-                    <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
-                  </div>
-                </Link>
+                <div key={item.name} className="flex justify-center items-center h-full relative z-10">
+                  <Link
+                    to={item.path}
+                    onClick={handleClose}
+                    className="flex flex-col items-center justify-center p-2 transition-colors group"
+                  >
+                    <div className={`relative flex items-center justify-center transition-all duration-300 ${
+                      isActive 
+                        ? "w-11 h-11 text-[#BFF367]" 
+                        : "w-11 h-11 text-white/40 group-hover:text-white/80 group-hover:scale-110"
+                    }`}>
+                      <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                    </div>
+                  </Link>
+                </div>
               );
             })}
           </div>

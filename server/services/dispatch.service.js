@@ -5,6 +5,7 @@ import { notificationQueue } from "../queues/notification.queue.js";
 import { MatchingService } from "./matching.service.js";
 import { WalletBlockingService } from "./walletBlocking.service.js";
 import { TrustScoreLedgerService } from "./trustScore.service.js";
+import { NotificationService } from "./notification.service.js";
 import logger from "../utils/logger.js";
 
 /**
@@ -294,6 +295,15 @@ export class DispatchService {
             // Broadcast skipped card removed to all pros
             io.emit("professional:skipped_card_removed", { bookingId });
           }
+
+          const customerUser = await prisma.user.findUnique({ where: { id: booking.userId } });
+          NotificationService.publishEvent("PRO_ONDEMAND_EXPIRED", {
+            recipientId: booking.userId,
+            recipientModel: "User",
+            email: customerUser?.email,
+            phone: customerUser?.phone,
+            customerName: customerUser?.name || "Player"
+          });
 
           // 5. Clean up expired skipped card lists 10 minutes later (via background cron or BullMQ delay)
         }

@@ -1270,7 +1270,8 @@ export const googleAuth = asyncHandler(async (req, res) => {
     accessToken,
     role: requestedRole,
     umpireInvite,
-    inviteToken
+    inviteToken,
+    mode
   } = req.body;
   let payload;
   if (credential) {
@@ -1309,7 +1310,7 @@ export const googleAuth = asyncHandler(async (req, res) => {
       message: "No Google credentials provided"
     });
   }
-  const {
+  let {
     name,
     email,
     sub: googleId
@@ -1321,6 +1322,9 @@ export const googleAuth = asyncHandler(async (req, res) => {
       message: "Could not retrieve email from Google. Please ensure your Google account has a verified email."
     });
   }
+  
+  email = email.toLowerCase();
+  
   let user = await prisma.user.findUnique({
     where: {
       email
@@ -1332,6 +1336,14 @@ export const googleAuth = asyncHandler(async (req, res) => {
   let token;
   let roleToReturn;
   let isNewAccountCreated = false;
+
+  if (!user && (mode === "signin" || mode === "login")) {
+    return res.status(400).json({
+      success: false,
+      message: "Account not found. Please sign up first."
+    });
+  }
+
   if (user) {
     roleToReturn = user.role;
     const ownerProfileId = user.ownerProfile ? user.ownerProfile.id : null;
@@ -1493,7 +1505,7 @@ export const googleAuth = asyncHandler(async (req, res) => {
     });
   }
   const tokens = await issueTokens(res, user.id, token);
-  const isNewUser = isNewAccountCreated || !user.phone || !user.gender || !user.location;
+  const isNewUser = isNewAccountCreated;
   return res.status(200).json({
     success: true,
     message: "Google authentication successful",

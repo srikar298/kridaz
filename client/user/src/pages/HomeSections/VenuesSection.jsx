@@ -54,7 +54,7 @@ export default function VenuesSection({
     <section className="pt-[15px] mb-8 w-full">
       <div className="mb-6">
         <h2
-          className="text-[18px] md:text-[25px] font-black text-white tracking-tighter leading-none text-left"
+          className="text-[14px] font-black text-white tracking-tighter leading-none text-left"
           style={{ fontFamily: "'Open Sans', sans-serif" }}
         >
           Featured <span className="text-[#BFF367]">Venues</span>
@@ -75,17 +75,17 @@ export default function VenuesSection({
           ))}
         </div>
       ) : error || displayTurfs.length === 0 ? (
-        <div className="text-center py-24 animate-fadeIn">
-          <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Search size={32} className="text-gray-600" />
+        <div className="text-center py-12 animate-fadeIn">
+          <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Search size={20} className="text-gray-600" />
           </div>
           <p
-            className="text-3xl mb-3 uppercase tracking-tighter font-black"
+            className="text-lg mb-1 uppercase tracking-tighter font-black"
             style={{ fontFamily: "'Open Sans', sans-serif" }}
           >
             Venues Not Found
           </p>
-          <p className="text-gray-500 text-sm uppercase tracking-wider mb-8">
+          <p className="text-gray-500 text-xs uppercase tracking-wider mb-4">
             Try adjusting your search or filters
           </p>
         </div>

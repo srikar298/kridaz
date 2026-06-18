@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Check, Users, IndianRupee, AlertCircle } from 'lucide-react';
 import { useGetMyTeamsQuery } from '../../../redux/api/teamApi';
 import { useRegisterForTournamentMutation } from '../../../redux/api/tournamentApi';
-import { toast } from 'sonner';
+import { toast } from 'react-hot-toast';
 
 const RegistrationModal = ({ tournament, onClose }) => {
   const { data: teamsRes, isLoading: isLoadingTeams } = useGetMyTeamsQuery();
@@ -94,7 +94,7 @@ const RegistrationModal = ({ tournament, onClose }) => {
                           : isDisabled
                             ? 'border-white/5 bg-white/5 opacity-50 cursor-not-allowed'
                             : 'border-white/10 bg-[#1a1a1a] hover:bg-white/5'
-                      }\`}
+                      }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center overflow-hidden">
@@ -141,7 +141,7 @@ const RegistrationModal = ({ tournament, onClose }) => {
                     paymentType === 'FULL' 
                       ? 'border-[#BFF367] bg-[#BFF367]/10' 
                       : 'border-white/10 bg-[#1a1a1a] hover:bg-white/5'
-                  }\`}
+                  }`}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <span className="text-xs font-bold text-white uppercase tracking-wider">Pay Full</span>
@@ -160,7 +160,7 @@ const RegistrationModal = ({ tournament, onClose }) => {
                       paymentType === 'ADVANCE' 
                         ? 'border-[#BFF367] bg-[#BFF367]/10' 
                         : 'border-white/10 bg-[#1a1a1a] hover:bg-white/5'
-                    }\`}
+                    }`}
                   >
                     <div className="flex justify-between items-start mb-2">
                       <span className="text-xs font-bold text-white uppercase tracking-wider">Pay Advance</span>

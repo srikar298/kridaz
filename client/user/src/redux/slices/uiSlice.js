@@ -11,6 +11,9 @@ const initialState = {
   locationSidebar: {
     isOpen: false,
   },
+  mainSidebar: {
+    isOpen: false,
+  },
 };
 
 const uiSlice = createSlice({
@@ -36,9 +39,15 @@ const uiSlice = createSlice({
     },
     closeLocationSidebar: (state) => {
       state.locationSidebar.isOpen = false;
+    },
+    openMainSidebar: (state) => {
+      state.mainSidebar.isOpen = true;
+    },
+    closeMainSidebar: (state) => {
+      state.mainSidebar.isOpen = false;
     }
   }
 });
 
-export const { openLoginModal, closeLoginModal, setUserLocation, setLocationStatus, openLocationSidebar, closeLocationSidebar } = uiSlice.actions;
+export const { openLoginModal, closeLoginModal, setUserLocation, setLocationStatus, openLocationSidebar, closeLocationSidebar, openMainSidebar, closeMainSidebar } = uiSlice.actions;
 export default uiSlice.reducer;

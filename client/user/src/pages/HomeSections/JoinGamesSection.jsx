@@ -36,7 +36,7 @@ export default function JoinGamesSection({
               style={{ background: GRAD }}
             ></div>
             <h2
-              className="text-[18px] md:text-[25px] font-black text-white tracking-tighter leading-none"
+              className="text-[14px] font-black text-white tracking-tighter leading-none"
               style={{ fontFamily: "'Open Sans', sans-serif" }}
             >
               Join{" "}

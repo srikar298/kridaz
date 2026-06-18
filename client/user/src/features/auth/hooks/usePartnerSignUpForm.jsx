@@ -37,12 +37,9 @@ const usePartnerSignUpForm = (predefinedRole = "venu_owners") => {
     },
   });
 
-  const onSubmit = async (data, inviteToken = null) => {
+  const onSubmit = async (data) => {
     setLoading(true);
     const payload = { ...data, role: predefinedRole };
-    if (inviteToken) {
-      payload.inviteToken = inviteToken;
-    }
     try {
       const response = await axiosInstance.post("/api/owner/auth/register", payload);
       const result = response.data;
@@ -50,11 +47,7 @@ const usePartnerSignUpForm = (predefinedRole = "venu_owners") => {
       if (predefinedRole === "venu_owners" || predefinedRole === "owner") {
         dispatch(login({ token: result.token, role: result.role }));
         toast.success("Welcome to Kridaz!");
-        if (inviteToken) {
-          window.location.href = `/venue-owner/add-turf?inviteToken=${inviteToken}`;
-        } else {
-          window.location.href = "/venue-owner";
-        }
+        window.location.href = "/venue-owner";
       } else {
         const waitlistNumber = result.waitlistNumber || Math.floor(Math.random() * 50) + 1;
         toast.success("You're on the waitlist!");

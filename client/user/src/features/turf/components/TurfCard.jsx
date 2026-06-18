@@ -42,7 +42,18 @@ const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
     return () => clearInterval(interval);
   }, [carouselItems.length]);
 
-  const activeSlots = (turf.generatedSlots || []).filter(s => s.isActive !== false);
+  let parsedSlots = [];
+  if (Array.isArray(turf.generatedSlots)) {
+    parsedSlots = turf.generatedSlots;
+  } else if (typeof turf.generatedSlots === 'string') {
+    try {
+      parsedSlots = JSON.parse(turf.generatedSlots);
+      if (typeof parsedSlots === 'string') parsedSlots = JSON.parse(parsedSlots);
+    } catch (e) {
+      console.error("Failed to parse generatedSlots", e);
+    }
+  }
+  const activeSlots = Array.isArray(parsedSlots) ? parsedSlots.filter(s => s.isActive !== false) : [];
   const slotsLeft = turf.slotsLeft !== undefined ? turf.slotsLeft : activeSlots.length;
   
   const nextImage = (e) => { 

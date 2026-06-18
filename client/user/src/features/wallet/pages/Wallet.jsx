@@ -168,7 +168,7 @@ const WalletPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white pt-2 md:pt-24 pb-20 px-0 sm:px-4 font-inter">
+    <div className="min-h-screen bg-black text-white pt-2 md:pt-24 pb-20 px-4 font-inter">
       <div className="max-w-4xl mx-auto space-y-4">
         {/* Header */}
         <div className="space-y-2">
@@ -179,7 +179,7 @@ const WalletPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
           {/* Balance Card */}
           <div className="md:col-span-5 space-y-4">
-            <div className="relative group overflow-hidden bg-[#121212] border-2 border-white/10 p-4 rounded-[16px] shadow-xl animate-slide-in-left text-white">
+            <div className="relative group overflow-hidden bg-black p-4 rounded-[16px] animate-slide-in-left text-white">
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
                 <Wallet className="w-32 h-32 text-white/5" />
               </div>
@@ -215,7 +215,7 @@ const WalletPage = () => {
             </div>
 
             {/* Top-up Form */}
-            <div className="bg-[#121212] border border-white/10 p-4 rounded-[16px] space-y-4">
+            <div className="bg-black p-4 rounded-[16px] space-y-4">
               <h2 className="text-lg font-bold uppercase tracking-tight flex items-center gap-3 font-open-sans">
                 <Plus className="w-5 h-5 text-[#BFF367]" />
                 Top-up Wallet
@@ -295,7 +295,7 @@ const WalletPage = () => {
           </div>
 
           {/* Transaction History */}
-          <div className="md:col-span-7 bg-[#121212] border border-white/10 rounded-[16px] overflow-hidden flex flex-col font-inter">
+          <div className="md:col-span-7 bg-black rounded-[16px] overflow-hidden flex flex-col font-inter">
             <div className="p-4 border-b border-white/10 flex items-center justify-between">
               <h2 className="text-lg font-bold uppercase tracking-tight flex items-center gap-3 font-open-sans">
                 <History className="w-5 h-5 text-[#BFF367]" />

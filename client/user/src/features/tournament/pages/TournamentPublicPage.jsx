@@ -42,7 +42,7 @@ const TournamentPublicPage = () => {
         <div className="absolute inset-0 z-0 h-[60vh] overflow-hidden">
           <div 
             className="absolute inset-0 bg-cover bg-center opacity-40 blur-lg scale-110"
-            style={{ backgroundImage: \`url(\${tournament.posterUrl || 'https://images.unsplash.com/photo-1522778119026-d647f0596c20'}) saturate(150%)\` }}
+            style={{ backgroundImage: `url(${tournament.posterUrl || 'https://images.unsplash.com/photo-1522778119026-d647f0596c20'}) saturate(150%)` }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#050505]/80 to-[#050505]" />
         </div>
@@ -140,9 +140,9 @@ const TournamentPublicPage = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={\`flex items-center gap-2 py-3 px-6 whitespace-nowrap transition-colors relative \${
+              className={`flex items-center gap-2 py-3 px-6 whitespace-nowrap transition-colors relative ${
                 activeTab === tab.id ? 'text-[#BFF367]' : 'text-white/50 hover:text-white'
-              }\`}
+              }`}
             >
               {tab.icon}
               <span className="text-xs font-bold uppercase tracking-wider">{tab.label}</span>
@@ -219,7 +219,7 @@ const TournamentPublicPage = () => {
             onClick={() => setShowRegistrationModal(true)}
             className="flex-1 bg-[#BFF367] text-black font-black px-6 py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-xs sm:text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(191,243,103,0.2)]"
           >
-            {isFull ? 'Tournament Full' : \`Register Team • â‚¹\${tournament.entryFee}\`}
+            {isFull ? 'Tournament Full' : `Register Team • â‚¹${tournament.entryFee}`}
           </button>
         </div>
       </div>

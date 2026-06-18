@@ -633,22 +633,14 @@ export const approveOwnerRequest = async (req, res) => {
       });
     });
 
-    // Email notification
-    const to = ownerRequest.email;
-    const subject = "Your Professional Account has been Approved!";
-    const html = ` 
-    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; padding: 20px; border-radius: 10px;">
-        <h1 style="color: #4CAF50;">Congratulations!</h1>
-        <p>Your request to become a <strong>${ownerRequest.role}</strong> on Kridaz has been approved.</p>
-        <p>You can now access your dashboard using your existing login credentials:</p>
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="${process.env.OWNER_URL || 'https://owner.kridaz.com'}" style="background-color: #4CAF50; color: white; padding: 12px 25px; text-decoration: none; font-size: 16px; border-radius: 5px; font-weight: bold;">Go to Dashboard</a>
-        </div>
-        <p>If you have any questions, feel free to contact our support team.</p>
-        <p>Best regards,<br/>The Kridaz Team</p>
-    </div>`;
-    
-    NotificationService.sendEmail({ to, subject, html });
+    // Event-driven notification
+    await NotificationService.publishEvent("PARTNER_REQUEST_APPROVED", {
+      email: ownerRequest.email,
+      phone: ownerRequest.phone,
+      recipientId: targetUserId,
+      recipientModel: "User",
+      role: ownerRequest.role
+    });
     await logAdminAction(req, "APPROVE_PARTNER", "USER_MANAGEMENT", ownerRequest.id, {
       role: ownerRequest.role,
       email: ownerRequest.email
@@ -680,16 +672,14 @@ export const deleteOwnerRequest = async (req, res) => {
       data: { status: "rejected" }
     });
     
-    const to = ownerRequest.email;
-    const subject = "Your request has been rejected";
-    const html = ` 
-    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-        <h1 style="color: #4CAF50;">Your request to become an owner has been rejected</h1>
-        <p>We apologize for the inconvenience. Please contact us if you have any further questions.</p>
-        <p>Thank you for your understanding.</p>
-    </div>`;
-    
-    NotificationService.sendEmail({ to, subject, html });
+    // Event-driven notification
+    await NotificationService.publishEvent("PARTNER_REQUEST_REJECTED", {
+      email: ownerRequest.email,
+      phone: ownerRequest.phone,
+      recipientId: ownerRequest.userId,
+      recipientModel: "User",
+      role: ownerRequest.role
+    });
     await logAdminAction(req, "REJECT_PARTNER", "USER_MANAGEMENT", ownerRequest.id, {
       role: ownerRequest.role,
       email: ownerRequest.email
@@ -835,39 +825,15 @@ export const approveWithdrawalRequest = async (req, res) => {
       })
     ]);
 
-    // Notify owner
-    const to = owner.email;
-    const subject = "Withdrawal Request Approved";
-    const html = `
-      <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-        <h2 style="color: #4CAF50;">Withdrawal Successful!</h2>
-        <p>Hello ${owner.name},</p>
-        <p>Your withdrawal request for <strong>Ã¢â€šÂ¹${request.amount}</strong> has been approved and processed.</p>
-        <p><strong>Transaction ID:</strong> ${transactionId || "N/A"}</p>
-        <p>The funds should reflect in your bank account shortly.</p>
-        <p>Best regards,<br/>The Kridaz Team</p>
-      </div>
-    `;
-    NotificationService.sendEmail({ to, subject, html });
-    
-    // WhatsApp Notification
-    const phone = owner.user?.phone;
-    const name = owner.user?.name || owner.businessName || "Partner";
-    if (phone) {
-      NotificationService.sendWhatsApp({
-        phone: phone,
-        message: `Withdrawal Approved`,
-        templateName: process.env.MSG91_WHATSAPP_PAYOUT_TEMPLATE || "general_messages",
-        params: {
-          customer_name: name,
-          update_line_1: `Your withdrawal request of ₹${request.amount} has been approved.`,
-          update_line_2: `Transaction ID: ${transactionId || "N/A"}`,
-          update_line_3: `The funds will reflect in your account shortly.`,
-          status_text: "Approved",
-          footer_note: "Thank you for partnering with Kridaz!"
-        }
-      });
-    }
+    // Event-driven notification
+    await NotificationService.publishEvent("WITHDRAWAL_APPROVED", {
+      email: owner.email,
+      phone: owner.user?.phone,
+      recipientId: owner.userId,
+      recipientModel: "User",
+      amount: request.amount,
+      transactionId: transactionId || "N/A"
+    });
     await logAdminAction(req, "APPROVE_WITHDRAWAL", "FINANCE", request.id, {
       amount: request.amount,
       transactionId
@@ -925,38 +891,15 @@ export const rejectWithdrawalRequest = async (req, res) => {
     });
 
     if (owner) {
-      const to = owner.email;
-      const subject = "Withdrawal Request Rejected";
-      const html = `
-        <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-          <h2 style="color: #f44336;">Withdrawal Request Update</h2>
-          <p>Hello ${owner.name},</p>
-          <p>Your withdrawal request for <strong>Ã¢â€šÂ¹${request.amount}</strong> has been rejected.</p>
-          <p><strong>Reason:</strong> ${reason || "No specific reason provided."}</p>
-          <p>The amount has been credited back to your usable wallet balance.</p>
-          <p>Best regards,<br/>The Kridaz Team</p>
-        </div>
-      `;
-      NotificationService.sendEmail({ to, subject, html });
-
-      // WhatsApp Notification
-      const phone = owner.user?.phone;
-      const name = owner.user?.name || owner.businessName || "Partner";
-      if (phone) {
-        NotificationService.sendWhatsApp({
-          phone: phone,
-          message: `Withdrawal Rejected`,
-          templateName: process.env.MSG91_WHATSAPP_PAYOUT_TEMPLATE || "general_messages",
-          params: {
-            customer_name: name,
-            update_line_1: `Your withdrawal request of ₹${request.amount} has been rejected.`,
-            update_line_2: `Reason: ${reason || "No specific reason provided."}`,
-            update_line_3: `The amount has been credited back to your usable balance.`,
-            status_text: "Rejected",
-            footer_note: "Contact support for more details."
-          }
-        });
-      }
+      // Event-driven notification
+      await NotificationService.publishEvent("WITHDRAWAL_REJECTED", {
+        email: owner.email,
+        phone: owner.user?.phone,
+        recipientId: owner.userId,
+        recipientModel: "User",
+        amount: request.amount,
+        reason: reason || "No specific reason provided."
+      });
     }
 
     await logAdminAction(req, "REJECT_WITHDRAWAL", "FINANCE", request.id, {

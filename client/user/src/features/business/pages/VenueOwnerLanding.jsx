@@ -196,13 +196,13 @@ export default function VenueOwnerLanding() {
         <div className="w-full px-4 md:px-8 lg:px-12 relative z-10 mt-0">
           <div className="flex flex-col md:flex-row items-center w-full">
             <div className="w-full md:w-[55%] lg:w-[50%] xl:w-[45%] text-center md:text-left flex flex-col justify-center items-center md:items-start">
-              <div className="flex justify-center md:justify-start w-full mb-2 md:mb-4">
-                {renderActionButton("hero")}
-              </div>
-              <h1 className="text-[32px] md:text-[60px] lg:text-[80px] font-black tracking-tight leading-[1.05] font-poppins font-medium normal-case text-white mb-6 drop-shadow-2xl">
+              <h1 className="text-[32px] md:text-[60px] lg:text-[80px] font-black tracking-tight leading-[1.05] font-poppins font-medium normal-case text-white mb-6 md:mb-8 drop-shadow-2xl">
                 Digitize Your Sports Club <br className="hidden lg:block"/>
                 at <span className="text-[#BFF367]">0% Commission</span>
               </h1>
+              <div className="flex justify-center md:justify-start w-full mt-2">
+                {renderActionButton("hero")}
+              </div>
             </div>
             {/* Empty space for the background mockup to show through on the right */}
             <div className="w-full md:w-[45%] lg:w-[50%] xl:w-[55%] hidden md:block"></div>

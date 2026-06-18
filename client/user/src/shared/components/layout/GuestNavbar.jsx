@@ -32,12 +32,7 @@ const GuestNavbar = () => {
     <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${ scrolled ? "bg-black/80 backdrop-blur-xl border-b border-white/5 py-2" : "bg-transparent py-4" }`}>
       <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
         
-        {/* Brand Logo Unit */}
-        <Link to="/" className="group flex items-center gap-4">
-          <div className="flex items-center justify-center">
-            <img src="/logo.png" alt="Kridaz" className="h-8 lg:h-10 w-auto transition-transform duration-500 group-hover:scale-105" />
-          </div>
-        </Link>
+        {/* Brand Logo Unit - Removed from Navbar as requested */}
 
         {/* Navigation (Desktop) */}
         <div className="hidden lg:flex items-center gap-8">
@@ -89,10 +84,6 @@ const GuestNavbar = () => {
               >
                 <ShieldCheck size={16} className="opacity-50" />
                 Login
-              </Link>
-              
-              <Link to="/venue-owners" className="text-black h-10 px-6 rounded-md text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-[#BFF367]/30 hover:scale-105" style={{ background: "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)" }}>
-                Join Now <ArrowRight size={16} />
               </Link>
             </>
           ) : (

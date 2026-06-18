@@ -282,35 +282,35 @@ const CheckoutPage = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
           {/* Left Column: Summary */}
-          <div className="lg:col-span-7 bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[16px] overflow-hidden">
-            {/* Hero Image */}
-            <div className="h-[120px] md:h-[160px] w-full bg-[#1B1B1B]">
-              <img src={turf?.images?.[0] || "/banner-1.png"} className="w-full h-full object-cover" alt="Venue" />
-            </div>
-
-            {/* Turf Title & Time */}
-            <div className="px-5 py-4 border-b border-[rgba(255,255,255,0.08)]">
-              <div>
-                <h2 className="text-[18px] font-[700] text-[#FFFFFF] uppercase tracking-tight font-inter">{turfName || turf?.name || "Kridaz Venue"}</h2>
-                <div className="flex items-center gap-3 text-[rgba(255,255,255,0.70)] text-[12px] mt-2 font-[600] uppercase tracking-wide">
-                  <Clock className="w-3.5 h-3.5" /> 
-                  <span>{startTime} ({duration || 1} hr)</span> 
-                  <span className="text-[rgba(255,255,255,0.08)]">|</span> 
-                  <Calendar className="w-3.5 h-3.5" /> 
-                  <span>{selectedDate ? format(new Date(selectedDate), "MM/dd/yyyy") : "Select Date"}</span>
+          <div className="lg:col-span-7 flex flex-col gap-3">
+            {/* Hero Image & Turf Title */}
+            <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[16px] overflow-hidden">
+              <div className="h-[120px] md:h-[160px] w-full bg-[#1B1B1B]">
+                <img src={turf?.images?.[0] || "/banner-1.png"} className="w-full h-full object-cover" alt="Venue" />
+              </div>
+              <div className="px-4 py-3">
+                <div>
+                  <h2 className="text-[18px] font-[700] text-[#FFFFFF] uppercase tracking-tight font-inter">{turfName || turf?.name || "Kridaz Venue"}</h2>
+                  <div className="flex items-center gap-3 text-[rgba(255,255,255,0.70)] text-[12px] mt-1.5 font-[600] uppercase tracking-wide">
+                    <Clock className="w-3.5 h-3.5" /> 
+                    <span>{startTime} ({duration || 1} hr)</span> 
+                    <span className="text-[rgba(255,255,255,0.08)]">|</span> 
+                    <Calendar className="w-3.5 h-3.5" /> 
+                    <span>{selectedDate ? format(new Date(selectedDate), "MM/dd/yyyy") : "Select Date"}</span>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Payment Plan Section */}
-            <div className="px-5 py-4 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between">
+            <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[12px] px-4 py-3 flex items-center justify-between">
               <span className="text-[14px] font-[700] text-[#FFFFFF] uppercase tracking-widest font-inter">Payment Plan</span>
               <div className="flex bg-[#1B1B1B] rounded-[8px] p-1 border border-[rgba(255,255,255,0.08)]">
                 {[30, 50, 100].map((pct) => (
                   <button
                     key={pct}
                     onClick={() => setPaymentPercentage(pct)}
-                    className={`px-4 py-2 rounded-[6px] text-[12px] font-[700] uppercase tracking-wider transition-all ${
+                    className={`px-3 py-1.5 rounded-[6px] text-[12px] font-[700] uppercase tracking-wider transition-all ${
                       paymentPercentage === pct 
                         ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] shadow-[0px_2px_8px_rgba(191,243,103,0.15)]" 
                         : "text-[rgba(255,255,255,0.70)] hover:text-[#FFFFFF]"
@@ -323,7 +323,7 @@ const CheckoutPage = () => {
             </div>
 
             {/* Price Details */}
-            <div className="px-5 py-4 space-y-3 border-b border-[rgba(255,255,255,0.08)]">
+            <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[12px] px-4 py-3 space-y-2.5">
               <h3 className="text-[12px] font-[700] text-[#FFFFFF] uppercase tracking-widest font-inter mb-1">Price Details</h3>
               <div className="flex justify-between text-[14px] text-[rgba(255,255,255,0.70)] font-[400]">
                 <span>Slot Price</span>
@@ -339,23 +339,21 @@ const CheckoutPage = () => {
                   <span>-₹ {discount}</span>
                 </div>
               )}
-            </div>
-
-            {/* Total Amount */}
-            <div className="px-5 py-4 border-b border-[rgba(255,255,255,0.08)] flex justify-between items-center">
-              <span className="text-[#FFFFFF] font-[700] uppercase text-[14px] tracking-wide font-inter">Total Amount</span>
-              <span className="font-[700] text-[24px] tracking-tight text-[#B3DC26]">₹ {amountToPay}</span>
-            </div>
-            {paymentPercentage !== 100 && (
-              <div className="px-5 py-4 border-b border-[rgba(255,255,255,0.08)] flex justify-between items-center bg-[#1B1B1B]">
-                <span className="text-[#FFFFFF] font-[600] uppercase text-[12px] tracking-wide font-inter">Pay at Venue</span>
-                <span className="font-[700] text-[18px] tracking-tight text-[#FFFFFF]">₹ {balanceAtVenue}</span>
+              
+              <div className="pt-2 border-t border-[rgba(255,255,255,0.08)] flex justify-between items-center">
+                <span className="text-[#FFFFFF] font-[700] uppercase text-[14px] tracking-wide font-inter">Total Amount</span>
+                <span className="font-[700] text-[20px] tracking-tight text-[#B3DC26]">₹ {amountToPay}</span>
               </div>
-            )}
+              {paymentPercentage !== 100 && (
+                <div className="pt-2 flex justify-between items-center">
+                  <span className="text-[rgba(255,255,255,0.70)] font-[600] uppercase text-[12px] tracking-wide font-inter">Pay at Venue</span>
+                  <span className="font-[700] text-[16px] tracking-tight text-[#FFFFFF]">₹ {balanceAtVenue}</span>
+                </div>
+              )}
+            </div>
 
-            {/* Coupon Box & Secure Label */}
-            <div className="px-5 py-4">
-              {/* Coupon Code */}
+            {/* Coupon Box */}
+            <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[12px] p-3">
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Tag size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.70)]" />
@@ -364,13 +362,13 @@ const CheckoutPage = () => {
                     placeholder="ENTER COUPON CODE"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                    className="w-full bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[12px] py-[12px] pl-[40px] pr-[16px] text-[14px] font-[400] text-[#FFFFFF] outline-none focus:border-[#55DEE8] transition-all placeholder:text-[rgba(255,255,255,0.70)]"
+                    className="w-full bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[8px] py-[10px] pl-[36px] pr-[16px] text-[13px] font-[400] text-[#FFFFFF] outline-none focus:border-[#55DEE8] transition-all placeholder:text-[rgba(255,255,255,0.70)]"
                   />
                 </div>
                 <button 
                   onClick={handleApplyCoupon}
                   disabled={isValidating || !couponCode}
-                  className="bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] text-[#FFFFFF] px-6 rounded-[12px] text-[12px] font-[700] uppercase tracking-widest disabled:opacity-40"
+                  className="bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] text-[#FFFFFF] px-5 rounded-[8px] text-[12px] font-[700] uppercase tracking-widest disabled:opacity-40"
                 >
                   {isValidating ? <Loader2 size={16} className="animate-spin" /> : "APPLY"}
                 </button>

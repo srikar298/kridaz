@@ -289,7 +289,7 @@ export default function DesktopTopNavbar({ isRightDrawerOpen, setIsRightDrawerOp
             </Link>
 
             <Link
-              to="/signup"
+              to="/login"
               className="bg-[#84CC16] hover:bg-[#a3e635] text-black h-9 px-5 text-xs font-bold flex items-center gap-2 rounded-[8px] transition-all shadow-[0_0_15px_rgba(132,204,22,0.15)]"
             >
               Join Now <ArrowRight size={14} />
