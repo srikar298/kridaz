@@ -4,7 +4,9 @@ import logger from "./logger.js";
 export default async function generateEmail(to, subject, html, attachments = []) {
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: process.env.SMTP_HOST || "smtp.hostinger.com",
+      port: parseInt(process.env.SMTP_PORT || "465", 10),
+      secure: true,
       auth: {
         user: process.env.EMAIL,
         pass: process.env.PASSWORD,
