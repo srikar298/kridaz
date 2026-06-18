@@ -17,7 +17,7 @@ import {
   createTournamentSchema,
   updateTournamentSchema,
 } from "./tournament.validator.js";
-import { requireAuth } from "../../middleware/auth.middleware.js";
+import { authenticate } from "../../middleware/auth.middleware.js";
 import upload from "../../middleware/uploads/upload.middleware.js";
 
 const router = Router();
@@ -28,7 +28,7 @@ router.get("/:id/standings", getStandings);
 router.get("/:id/matches", getTournamentMatches);
 
 // All tournament routes below require authentication
-router.use(requireAuth);
+router.use(authenticate);
 
 router.post(
   "/:id/register",
