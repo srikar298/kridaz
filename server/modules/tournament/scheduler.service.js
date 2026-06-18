@@ -85,7 +85,7 @@ export const autoGenerateGroupStage = async (tournamentId, startDate, slotTimes)
     }
     
     const timeString = slotTimes[slotIndex];
-    const scheduledAt = new Date(\`\${format(currentDate, 'yyyy-MM-dd')}T\${timeString}:00\`);
+    const scheduledAt = new Date(`${format(currentDate, 'yyyy-MM-dd')}T${timeString}:00`);
 
     slotIndex++;
 
