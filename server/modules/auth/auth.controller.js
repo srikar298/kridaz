@@ -1438,18 +1438,26 @@ export const googleAuth = asyncHandler(async (req, res) => {
     payload = ticket.getPayload();
   } else if (accessToken) {
     try {
-      const tokenInfo = await client.getTokenInfo(accessToken);
+      const tokenInfoResponse = await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`);
+      if (!tokenInfoResponse.ok) {
+        const errText = await tokenInfoResponse.text();
+        logger.error(`Google tokeninfo fetch failed: ${tokenInfoResponse.status}`, errText);
+        return res.status(401).json({ success: false, message: "Invalid Google access token" });
+      }
+      const tokenInfo = await tokenInfoResponse.json();
+
       if (
         tokenInfo.aud !== process.env.GOOGLE_CLIENT_ID &&
         tokenInfo.azp !== process.env.GOOGLE_CLIENT_ID
       ) {
+        logger.warn(`Google Auth: Invalid token audience. Expected ${process.env.GOOGLE_CLIENT_ID}, got aud=${tokenInfo.aud}, azp=${tokenInfo.azp}`);
         return res.status(401).json({
           success: false,
           message: "Invalid token audience (Confused Deputy Prevention)",
         });
       }
     } catch (err) {
-      logger.error("Google token info verification failed:", err);
+      logger.error("Google token info verification threw an exception:", err);
       return res
         .status(401)
         .json({ success: false, message: "Invalid Google access token" });
@@ -3055,6 +3063,25 @@ export const verifyEmailGoogle = asyncHandler(async (req, res) => {
     });
     payload = ticket.getPayload();
   } else if (accessToken) {
+    try {
+      const tokenInfoResponse = await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`);
+      if (!tokenInfoResponse.ok) {
+        const errText = await tokenInfoResponse.text();
+        logger.error(`Google tokeninfo fetch failed: ${tokenInfoResponse.status}`, errText);
+        return res.status(401).json({ success: false, message: "Invalid Google access token" });
+      }
+      const tokenInfo = await tokenInfoResponse.json();
+      if (
+        tokenInfo.aud !== process.env.GOOGLE_CLIENT_ID &&
+        tokenInfo.azp !== process.env.GOOGLE_CLIENT_ID
+      ) {
+        return res.status(401).json({ success: false, message: "Invalid token audience" });
+      }
+    } catch (err) {
+      logger.error("Google token info verification threw an exception:", err);
+      return res.status(401).json({ success: false, message: "Invalid Google access token" });
+    }
+
     const response = await fetch(
       `https://www.googleapis.com/oauth2/v3/userinfo`,
       {
@@ -3127,6 +3154,25 @@ export const updateProfileEmailWithGoogle = asyncHandler(async (req, res) => {
     });
     payload = ticket.getPayload();
   } else if (accessToken) {
+    try {
+      const tokenInfoResponse = await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`);
+      if (!tokenInfoResponse.ok) {
+        const errText = await tokenInfoResponse.text();
+        logger.error(`Google tokeninfo fetch failed: ${tokenInfoResponse.status}`, errText);
+        return res.status(401).json({ success: false, message: "Invalid Google access token" });
+      }
+      const tokenInfo = await tokenInfoResponse.json();
+      if (
+        tokenInfo.aud !== process.env.GOOGLE_CLIENT_ID &&
+        tokenInfo.azp !== process.env.GOOGLE_CLIENT_ID
+      ) {
+        return res.status(401).json({ success: false, message: "Invalid token audience" });
+      }
+    } catch (err) {
+      logger.error("Google token info verification threw an exception:", err);
+      return res.status(401).json({ success: false, message: "Invalid Google access token" });
+    }
+
     const response = await fetch(
       `https://www.googleapis.com/oauth2/v3/userinfo`,
       {
