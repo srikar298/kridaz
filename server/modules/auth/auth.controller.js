@@ -2641,9 +2641,18 @@ export const sendPhoneVerificationOtp = asyncHandler(async (req, res) => {
   }
 
   // Check if phone is already in use by another user
+  const phoneConditions = [{ phone }];
+  const withoutCountry = phone.replace(/^\+\d{1,3}/, "");
+  if (withoutCountry && withoutCountry !== phone) {
+    phoneConditions.push({ phone: withoutCountry });
+  }
+  if (!phone.startsWith("+")) {
+    phoneConditions.push({ phone: `+91${phone}` });
+  }
+
   const conflict = await prisma.user.findFirst({
     where: {
-      phone,
+      OR: phoneConditions,
       NOT: {
         id: userId,
       },
