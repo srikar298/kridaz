@@ -1155,7 +1155,8 @@ export default function Profile() {
         <div className="w-full aspect-[16/9] md:aspect-[24/7] max-h-[320px] md:max-h-[360px] relative overflow-hidden rounded-b-[32px] group/banner">
           <img
             src={
-              profileUser?.bannerImage ||
+              profileUser?.bannerPicture ||
+              profileUser?.ownerProfile?.bannerUrl ||
               "https://images.unsplash.com/photo-1742610569389-687ba54287f3?q=80&w=2070&auto=format&fit=crop"
             }
             alt="Stadium Background"

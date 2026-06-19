@@ -934,28 +934,20 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "signup/professional",
-        element: (
-          <S>
-            <BusinessRegistration defaultRole="professional" />
-          </S>
-        ),
-      },
-      {
         path: "signup/coach",
-        element: <Navigate to="/signup/professional" replace />,
+        element: <Navigate to="/business/professional" replace />,
       },
       {
         path: "signup/official",
-        element: <Navigate to="/signup/professional" replace />,
+        element: <Navigate to="/business/professional" replace />,
       },
       {
         path: "signup/streamer",
-        element: <Navigate to="/signup/professional" replace />,
+        element: <Navigate to="/business/professional" replace />,
       },
       {
         path: "signup/scorer",
-        element: <Navigate to="/signup/professional" replace />,
+        element: <Navigate to="/business/professional" replace />,
       },
 
       {

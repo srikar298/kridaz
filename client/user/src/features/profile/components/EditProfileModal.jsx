@@ -32,6 +32,12 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const locationRef = useRef(null);
 
+  // OTP states for phone change
+  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+
   // Username check states
   const [usernameStatus, setUsernameStatus] = useState(null); // 'available', 'taken', 'checking'
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
@@ -47,13 +53,17 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
         bio: user.bio || "",
         gender: user.gender || "",
         location: user.location || user.city || "",
-        interests: user.interests || user.sportTypes || [],
+        interests: user.interests?.length ? user.interests : (user.sportTypes || []),
       });
     }
   }, [user, isOpen]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (e.target.name === "phone") {
+      setShowOtpInput(false);
+      setOtp("");
+    }
   };
 
   // Location Autocomplete Effect
@@ -162,6 +172,44 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const phoneChanged = formData.phone && formData.phone !== (user?.phone || "");
+
+    if (phoneChanged && !showOtpInput) {
+      setSendingOtp(true);
+      try {
+        await axiosInstance.post("/api/user/auth/send-phone-otp", {
+          phone: formData.phone,
+        });
+        setShowOtpInput(true);
+        toast.success("OTP sent to your new phone number");
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Failed to send OTP");
+      } finally {
+        setSendingOtp(false);
+      }
+      return;
+    }
+
+    if (showOtpInput) {
+      if (!otp) {
+        toast.error("Please enter the OTP");
+        return;
+      }
+      setVerifyingOtp(true);
+      try {
+        await axiosInstance.post("/api/user/auth/verify-phone-otp", {
+          phone: formData.phone,
+          otp,
+        });
+      } catch (error) {
+        setVerifyingOtp(false);
+        toast.error(error.response?.data?.message || "Invalid OTP");
+        return; // Stop here if verification fails
+      }
+      setVerifyingOtp(false);
+    }
+
     setLoading(true);
     try {
       const response = await axiosInstance.put(
@@ -171,6 +219,8 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
       if (response.data.success) {
         dispatch(updateUser(response.data.user));
         toast.success("Profile updated successfully");
+        setShowOtpInput(false);
+        setOtp("");
         onClose();
       }
     } catch (error) {
@@ -369,6 +419,37 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                   placeholder="Phone number"
                 />
               </div>
+              {showOtpInput && (
+                <div className="mt-2 relative group animate-in fade-in slide-in-from-top-2 duration-300">
+                  <input
+                    type="text"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    className="w-full bg-[#000000] border border-[#2D2D2D] rounded-[8px] py-4 px-4 text-sm text-white focus:outline-none focus:border-[#CCFF00] focus:ring-4 focus:ring-[#CCFF00]/10 transition-all text-center tracking-[0.5em] font-bold"
+                    placeholder="ENTER OTP"
+                  />
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setSendingOtp(true);
+                      try {
+                        await axiosInstance.post("/api/user/auth/send-phone-otp", {
+                          phone: formData.phone,
+                        });
+                        toast.success("OTP resent");
+                      } catch (error) {
+                        toast.error("Failed to resend OTP");
+                      } finally {
+                        setSendingOtp(false);
+                      }
+                    }}
+                    disabled={sendingOtp}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black uppercase text-[#CCFF00] hover:text-white transition-colors disabled:opacity-50"
+                  >
+                    {sendingOtp ? "Sending..." : "Resend"}
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Gender */}
@@ -558,21 +639,23 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
               type="submit"
               disabled={
                 loading ||
+                sendingOtp ||
+                verifyingOtp ||
                 isCheckingUsername ||
                 usernameStatus === "taken" ||
                 usernameStatus === "short"
               }
               className="flex-[2] px-8 py-4 rounded-[8px] bg-[#CCFF00] text-black text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-lg shadow-[#CCFF00]/20 disabled:opacity-50 disabled:grayscale disabled:hover:scale-100"
             >
-              {loading ? (
+              {loading || sendingOtp || verifyingOtp ? (
                 <>
                   <Loader2 size={16} className="animate-spin" />
-                  Updating...
+                  {sendingOtp ? "Sending OTP..." : verifyingOtp ? "Verifying..." : "Updating..."}
                 </>
               ) : (
                 <>
                   <Check size={16} />
-                  Save Changes
+                  {showOtpInput ? "Verify & Save" : "Save Changes"}
                 </>
               )}
             </button>

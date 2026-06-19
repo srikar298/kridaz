@@ -2583,6 +2583,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
     city: city || location,
     state,
     sportTypes: finalInterests,
+    interests: finalInterests,
     isOnboarded:
       req.body.isOnboarded === true || req.body.isOnboarded === "true"
         ? true
