@@ -225,15 +225,15 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex flex-col font-inter">
       <nav
-        className={`bg-[#000000] border-b border-[#2D2D2D] px-6 md:px-8 pt-10 pb-2 lg:pt-0 h-[88px] lg:h-20 shadow-2xl flex items-center justify-between w-full box-border`}
+        className={`bg-[#000000] border-b border-[#2D2D2D] px-4 md:px-8 pt-2 pb-2 lg:pt-0 h-[56px] lg:h-20 shadow-2xl flex items-center justify-between w-full box-border`}
       >
         <div className="flex items-center gap-4 lg:min-w-[200px]">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 transition-all duration-300 relative text-[#999999] hover:text-white bg-[#0d0d0d] border border-white/5 hover:border-[#BFF367]/30 rounded-full hover:bg-[#BFF367]/10 hover:text-[#BFF367] flex items-center justify-center outline-none"
+            className="p-1.5 transition-all duration-300 relative text-[#999999] hover:text-white bg-[#0d0d0d] border border-white/5 hover:border-[#BFF367]/30 rounded-full hover:bg-[#BFF367]/10 hover:text-[#BFF367] flex items-center justify-center outline-none"
             title="Go Back"
           >
-            <ArrowLeft size={20} strokeWidth={2.5} />
+            <ArrowLeft size={16} strokeWidth={2.5} />
           </button>
 
           {!isProfessionalDashboard && !isVenueOwner && (
@@ -301,9 +301,9 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
               }}
               className="p-2 transition-all duration-300 relative text-[#999999] hover:text-white bg-transparent outline-none"
             >
-              <Bell size={24} />
+              <Bell size={20} />
               {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-[#B3DC26] rounded-full border-2 border-black" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-[#B3DC26] rounded-full border-2 border-black" />
               )}
             </button>
           </div>

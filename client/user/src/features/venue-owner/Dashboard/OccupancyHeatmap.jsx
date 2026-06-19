@@ -58,20 +58,20 @@ const OccupancyHeatmap = () => {
 
   return (
     <div className="bg-[#121212] p-6 rounded-[16px] border border-white/10 hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)] transition-shadow">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-[16px] font-bold text-white tracking-tighter whitespace-nowrap font-inter">
+          <h2 className="text-[14px] lg:text-[16px] font-bold text-white tracking-tighter font-inter">
             Weekly Occupancy Calendar
           </h2>
-          <p className="text-[12px] font-normal text-white/70 tracking-widest mt-1 font-inter">
+          <p className="text-[11px] font-normal text-white/70 tracking-wide mt-1 font-inter">
             Real-time weekly booking density
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <select
             value={selectedTurf}
             onChange={(e) => setSelectedTurf(e.target.value)}
-            className="bg-[#121212] border border-white/10 text-white text-[12px] font-bold tracking-widest rounded-[16px] px-2 py-1 focus:outline-none focus:border-[#55DEE8] transition-all cursor-pointer hover:border-[#55DEE8]/50"
+            className="bg-[#121212] border border-white/10 text-white text-[11px] font-bold tracking-widest rounded-[12px] px-3 py-1.5 focus:outline-none focus:border-[#55DEE8] transition-all cursor-pointer max-w-full"
           >
             <option value="" disabled>
               Select Facility
@@ -83,15 +83,15 @@ const OccupancyHeatmap = () => {
             ))}
           </select>
 
-          <div className="flex flex-wrap items-center gap-4 lg:ml-2 mt-2 lg:mt-0">
+          <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-[16px] bg-[#1B1B1B]" />
+              <div className="w-3 h-3 rounded-[4px] bg-[#1B1B1B]" />
               <span className="text-[10px] text-[#999999] font-medium uppercase tracking-wider">
                 Empty
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-[16px] bg-[#B3DC26]" />
+              <div className="w-3 h-3 rounded-[4px] bg-[#B3DC26]" />
               <span className="text-[10px] text-[#999999] font-medium uppercase tracking-wider">
                 Booked
               </span>

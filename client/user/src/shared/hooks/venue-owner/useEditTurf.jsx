@@ -25,10 +25,10 @@ const editTurfSchema = z
     state: z.string().min(1, "State is required"),
     latitude: z.string().optional(),
     longitude: z.string().optional(),
-    pricePerHour: z
+    pricePerHour: z.coerce
       .number({ invalid_type_error: "Enter the price per hour of the turf" })
       .min(500, "Price per hour must be at least 500 rupees")
-      .max(3000, "Price per hour must be at most 3000 rupees"),
+      .max(10000, "Price per hour must be at most 10000 rupees"),
     images: z
       .any()
       .nullable()
@@ -65,13 +65,13 @@ const editTurfSchema = z
       .array(z.string())
       .min(1, "At least one ground type is required"),
     facilities: z.array(z.string()).min(1, "At least one facility is required"),
-    slotDuration: z
+    slotDuration: z.coerce
       .number({ required_error: "Slot duration is required" })
       .min(30)
       .max(240),
-    breakTime: z.number().min(0).max(60).optional(),
+    breakTime: z.coerce.number().min(0).max(60).optional(),
     slotsConfigDuration: z.enum(["Until Changed", "Fixed Weeks"]),
-    slotsConfigWeeks: z.number().optional(),
+    slotsConfigWeeks: z.coerce.number().optional(),
     mapUrl: z
       .string()
       .url("Invalid Google Maps URL")

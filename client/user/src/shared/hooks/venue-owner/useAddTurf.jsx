@@ -30,13 +30,10 @@ const addTurfSchema = z
     state: z.string().min(1, "State is required"),
     latitude: z.string().optional(),
     longitude: z.string().optional(),
-    pricePerHour: z.preprocess(
-      (val) => Number(val),
-      z
-        .number()
-        .min(500, "Price per hour must be at least 500 rupees")
-        .max(3000, "Price per hour must be at most 3000 rupees")
-    ),
+    pricePerHour: z.coerce
+      .number()
+      .min(500, "Price per hour must be at least 500 rupees")
+      .max(10000, "Price per hour must be at most 10000 rupees"),
     images: z.any().refine((value) => {
       if (!value || value.length === 0) return false;
       if (value.length > 10) return false;
@@ -90,13 +87,11 @@ const addTurfSchema = z
       )
       .optional(),
     gstRegistration: z.any().optional(),
-    saleDeed: z.any().refine((val) => val != null, "Sale Deed is mandatory"),
+    saleDeed: z.any().optional(),
     rentalAgreement: z.any().optional(),
     ownershipAgreement: z.any().optional(),
     googleProfileScreenshot: z.any().optional(),
-    electricityBill: z
-      .any()
-      .refine((val) => val != null, "Electricity Bill is mandatory"),
+    electricityBill: z.any().optional(),
   })
   .refine(
     (data) => {

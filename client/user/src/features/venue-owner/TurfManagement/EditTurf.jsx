@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Controller } from "react-hook-form";
 import { FormField } from "@components/common";
+import { useParams } from "react-router-dom";
 import useEditTurf from "@hooks/venue-owner/useEditTurf";
 import {
   fetchStates,
@@ -11,6 +12,7 @@ import { Search, Plus } from "lucide-react";
 import toast from "react-hot-toast";
 
 const EditTurf = () => {
+  const { id } = useParams();
   const {
     register,
     handleSubmit,
@@ -52,7 +54,8 @@ const EditTurf = () => {
     setNewManagerPhone,
     addManagerContact,
     removeManagerContact,
-  } = useEditTurf();
+    turf,
+  } = useEditTurf(id);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [statesList, setStatesList] = useState([]);
@@ -62,6 +65,13 @@ const EditTurf = () => {
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [isSearchingLocation, setIsSearchingLocation] = useState(false);
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+
+  // Pre-fill location search box once turf data loads
+  useEffect(() => {
+    if (turf?.location && !locationSearchQuery) {
+      setLocationSearchQuery(turf.location);
+    }
+  }, [turf]);
 
   const selectedState = watch("state");
   const watchedLat = watch("latitude");
@@ -156,6 +166,9 @@ const EditTurf = () => {
 
   // Calculate projected earnings
   const activeSlotsCount = generatedSlots.filter((s) => s.isActive).length;
+  const hasSlotPrices = generatedSlots.some(
+    (s) => s.isActive && Number(s.price) > 0
+  );
   const perSlotPrice =
     (Number(watchedPricePerHour) || 0) * (Number(watchedSlotDuration) / 60);
   const totalDailyEarnings = activeSlotsCount * perSlotPrice;
@@ -222,6 +235,11 @@ const EditTurf = () => {
     "WiFi",
     "Lighting",
     "Sitting Area",
+    "Pavilion",
+    "Sight Screen",
+    "Flood Lights",
+    "Boundary Netting",
+    "Shower",
   ];
 
   return (
@@ -289,12 +307,18 @@ const EditTurf = () => {
                 "rentalAgreement",
                 "ownershipAgreement",
                 "policies",
+                "managerContacts",
               ];
               const step3Fields = [
                 "pricePerHour",
                 "openTime",
                 "closeTime",
                 "slotDuration",
+                "breakTime",
+                "availableDays",
+                "offDays",
+                "slotsConfigDuration",
+                "slotsConfigWeeks",
               ];
               if (step2Fields.includes(firstErrorKey)) stepError = 2;
               if (step3Fields.includes(firstErrorKey)) stepError = 3;
@@ -304,7 +328,7 @@ const EditTurf = () => {
               toast.error("Please fill all required fields correctly.");
             }
           })}
-          className="grid grid-cols-1 gap-6 md:gap-12 bg-[#000000] px-2 py-4 md:p-12 rounded-[16px] border-none md:border md:border-white/10 md:shadow-[var(--shadow-2)] relative overflow-hidden"
+          className="grid grid-cols-1 gap-6 md:gap-12 bg-[#000000] px-2 py-4 md:p-8 rounded-[16px] border-none md:border md:border-white/10 md:shadow-[var(--shadow-2)] relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#B3DC26]/5 blur-[100px] pointer-events-none" />
 
@@ -316,339 +340,371 @@ const EditTurf = () => {
 
           {/* STEP 1: General Information */}
           {currentStep === 1 && (
-            <div className="col-span-1 grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10 animate-fade-in">
-              <div className="space-y-8">
-                <FormField
-                  label={`${watchedFacilityCategory} Name`}
-                  name="name"
+            <div className="col-span-1 grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 animate-fade-in">
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    {watchedFacilityCategory} Name
+                  </span>
+                </label>
+                <input
                   type="text"
-                  register={register}
-                  error={errors.name}
-                  className="bg-[#121212] border-white/10 text-white focus:border-[#B3DC26]/60"
+                  placeholder={`${watchedFacilityCategory} Name`}
+                  {...register("name")}
+                  className={`w-full bg-[#121212] border ${errors.name ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
                 />
+                {errors.name && (
+                  <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
+                    {errors.name.message}
+                  </span>
+                )}
+              </div>
 
-                <div className="form-control">
-                  <label className="label mb-2">
-                    <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
-                      Facility Images (Up to 10)
-                    </span>
-                  </label>
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    className="w-full bg-[#121212] border border-white/10 text-white/70 file:bg-[#1B1B1B] file:text-white file:border-none file:px-6 file:h-12 file:mr-4 file:font-bold file:uppercase file:text-[10px] file:tracking-widest rounded-[16px] h-12 flex items-center focus:outline-none transition-all cursor-pointer"
-                    onChange={(e) => setValue("images", e.target.files)}
-                  />
-                  {errors.images && (
-                    <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
-                      {errors.images.message}
-                    </span>
-                  )}
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Facility Images (Up to 10)
+                  </span>
+                </label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="w-full bg-[#121212] border border-white/10 text-white/70 file:bg-[#1B1B1B] file:text-white file:border-none file:px-6 file:h-12 file:mr-4 file:font-bold file:uppercase file:text-[10px] file:tracking-widest rounded-[16px] h-12 flex items-center focus:outline-none transition-all cursor-pointer"
+                  onChange={(e) => setValue("images", e.target.files)}
+                />
+                {errors.images && (
+                  <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
+                    {errors.images.message}
+                  </span>
+                )}
 
-                  {/* Image Previews */}
-                  {imagePreviews.length > 0 && (
-                    <div className="flex gap-4 mt-4 overflow-x-auto pb-2 custom-scrollbar">
-                      {imagePreviews.map((src, i) => (
+                {/* New file previews */}
+                {imagePreviews.length > 0 && (
+                  <div className="flex gap-4 mt-4 overflow-x-auto pb-2 custom-scrollbar">
+                    {imagePreviews.map((src, i) => (
+                      <img
+                        key={i}
+                        src={src}
+                        alt={`preview ${i}`}
+                        className="w-20 h-20 object-cover rounded-[16px] border border-white/10"
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Existing images from server (shown when no new file chosen) */}
+                {imagePreviews.length === 0 && turf?.images?.length > 0 && (
+                  <div>
+                    <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-3 mb-2 ml-1">
+                      Current Images
+                    </p>
+                    <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                      {turf.images.map((src, i) => (
                         <img
                           key={i}
                           src={src}
-                          alt={`preview ${i}`}
-                          className="w-20 h-20 object-cover rounded-[16px] border border-white/10"
+                          alt={`existing ${i}`}
+                          className="w-20 h-20 object-cover rounded-[16px] border border-[#B3DC26]/20 shrink-0"
                         />
                       ))}
-                    </div>
-                  )}
-                </div>
-
-                <FormField
-                  label="YouTube Video URL"
-                  name="youtubeUrl"
-                  type="text"
-                  placeholder="https://www.youtube.com/watch?v=..."
-                  register={register}
-                  error={errors.youtubeUrl}
-                  className="bg-[#121212] border-white/10 text-white focus:border-[#B3DC26]/60"
-                />
-
-                <div className="form-control">
-                  <label className="label mb-2">
-                    <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
-                      Facility Category
-                    </span>
-                  </label>
-                  <select
-                    {...register("facilityCategory", {
-                      required: "Please select a category",
-                    })}
-                    className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
-                  >
-                    <option value="">Select Category</option>
-                    <option value="Turf">Venue</option>
-                    <option value="Ground">Ground</option>
-                    <option value="Court">Court</option>
-                    <option value="Stadium">Stadium</option>
-                  </select>
-                </div>
-
-                <div className="form-control">
-                  <label className="label mb-2">
-                    <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
-                      Sport Arsenal
-                    </span>
-                  </label>
-                  <select
-                    className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
-                    onChange={(e) => addSportType(e.target.value)}
-                    value=""
-                  >
-                    <option value="" disabled>
-                      Select Sports
-                    </option>
-                    {sportsOptions.map((o) => (
-                      <option
-                        key={o}
-                        value={o}
-                        disabled={sportTypes.includes(o)}
-                      >
-                        {o}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {sportTypes.map((type, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1.5 bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold rounded-[16px] text-[10px] flex items-center gap-2 uppercase tracking-widest"
-                      >
-                        {type}{" "}
-                        <button
-                          type="button"
-                          onClick={() => removeSportType(type)}
-                          className="hover:text-white transition-colors"
-                        >
-                          <Plus size={12} className="rotate-45" />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="form-control">
-                  <label className="label mb-2">
-                    <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
-                      Ground Composition
-                    </span>
-                  </label>
-                  <select
-                    className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
-                    onChange={(e) => addGroundType(e.target.value)}
-                    value=""
-                  >
-                    <option value="" disabled>
-                      Select Ground Types
-                    </option>
-                    {groundTypeOptions.map((o) => (
-                      <option
-                        key={o}
-                        value={o}
-                        disabled={groundTypes.includes(o)}
-                      >
-                        {o}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {groundTypes.map((type, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1.5 bg-[#1B1B1B] border border-white/10 text-white font-bold rounded-[16px] text-[10px] flex items-center gap-2 uppercase tracking-widest"
-                      >
-                        {type}{" "}
-                        <button
-                          type="button"
-                          onClick={() => removeGroundType(type)}
-                          className="hover:text-[#B3DC26] transition-colors"
-                        >
-                          <Plus size={12} className="rotate-45" />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="form-control">
-                  <label className="label mb-2">
-                    <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
-                      Facilities
-                    </span>
-                  </label>
-                  <select
-                    className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
-                    onChange={(e) => addFacility(e.target.value)}
-                    value=""
-                  >
-                    <option value="" disabled>
-                      Select Facilities
-                    </option>
-                    {facilitiesOptions.map((o) => (
-                      <option
-                        key={o}
-                        value={o}
-                        disabled={facilities.includes(o)}
-                      >
-                        {o}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {facilities.map((type, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1.5 bg-[#1B1B1B] border border-white/10 text-[#B3DC26] font-bold rounded-[16px] text-[10px] flex items-center gap-2 uppercase tracking-widest"
-                      >
-                        {type}{" "}
-                        <button
-                          type="button"
-                          onClick={() => removeFacility(type)}
-                          className="hover:text-white transition-colors"
-                        >
-                          <Plus size={12} className="rotate-45" />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="form-control">
-                  <label className="label mb-2">
-                    <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
-                      Facility Description
-                    </span>
-                  </label>
-                  <textarea
-                    {...register("description")}
-                    className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-32 rounded-[16px] p-4 transition-all"
-                  ></textarea>
-                </div>
-              </div>
-
-              <div className="space-y-8">
-                {/* Searchable Location Input */}
-                <div className="form-control relative">
-                  <label className="label mb-2">
-                    <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
-                      Search Location
-                    </span>
-                  </label>
-                  <div
-                    className="relative"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Search
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70"
-                      size={16}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Type to search location..."
-                      className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] pl-12 pr-4 transition-all"
-                      value={locationSearchQuery}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setLocationSearchQuery(val);
-                        setShowLocationSuggestions(true);
-                        setValue("location", val, {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        });
-                        setValue("city", val, {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        });
-                        setValue("state", val, {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        });
-                      }}
-                      onFocus={() => setShowLocationSuggestions(true)}
-                    />
-
-                    {/* Autocomplete dropdown */}
-                    {showLocationSuggestions &&
-                      locationSuggestions.length > 0 && (
-                        <div className="absolute z-50 top-[52px] left-0 right-0 bg-[#121212] border border-white/10 rounded-[16px] shadow-2xl overflow-hidden max-h-[300px] overflow-y-auto custom-scrollbar">
-                          {locationSuggestions.map((loc, i) => (
-                            <div
-                              key={i}
-                              className="p-4 border-b border-white/10 last:border-b-0 hover:bg-[#1B1B1B] cursor-pointer transition-colors"
-                              onClick={() => handleLocationSelect(loc)}
-                            >
-                              <p className="text-sm text-white font-medium truncate">
-                                {loc.display_name}
-                              </p>
-                              {(loc.city || loc.state) && (
-                                <p className="text-[10px] text-white/70 mt-1 uppercase tracking-wider">
-                                  {[loc.city, loc.state]
-                                    .filter(Boolean)
-                                    .join(", ")}
-                                </p>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                  </div>
-                  {errors.location && (
-                    <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
-                      {errors.location.message}
-                    </span>
-                  )}
-                </div>
-
-                <FormField
-                  label="Direct Google Maps URL"
-                  name="mapUrl"
-                  type="text"
-                  placeholder="https://maps.app.goo.gl/..."
-                  register={register}
-                  error={errors.mapUrl}
-                  className="bg-[#121212] border-white/10 text-white focus:border-[#B3DC26]/60"
-                />
-
-                {mapPreviewUrl && (
-                  <div className="form-control">
-                    <label className="label mb-4">
-                      <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1 flex items-center gap-2">
-                        📍 Map Preview
-                      </span>
-                    </label>
-                    <div
-                      className="relative w-full rounded-[16px] overflow-hidden border border-white/10 shadow-[var(--shadow-1)]"
-                      style={{ height: 220 }}
-                    >
-                      <iframe
-                        title="Location Preview"
-                        src={mapPreviewUrl}
-                        width="100%"
-                        height="100%"
-                        style={{
-                          border: 0,
-                          filter:
-                            "invert(90%) hue-rotate(180deg) saturate(0.7) brightness(0.9)",
-                        }}
-                        loading="lazy"
-                      />
                     </div>
                   </div>
                 )}
               </div>
+
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    YouTube Video URL
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="https://www.youtube.com/watch?v=..."
+                  {...register("youtubeUrl")}
+                  className={`w-full bg-[#121212] border ${errors.youtubeUrl ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
+                />
+                {errors.youtubeUrl && (
+                  <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
+                    {errors.youtubeUrl.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Facility Category
+                  </span>
+                </label>
+                <select
+                  {...register("facilityCategory", {
+                    required: "Please select a category",
+                  })}
+                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
+                >
+                  <option value="">Select Category</option>
+                  <option value="Turf">Venue</option>
+                  <option value="Ground">Ground</option>
+                  <option value="Court">Court</option>
+                  <option value="Stadium">Stadium</option>
+                </select>
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Sport Arsenal
+                  </span>
+                </label>
+                <select
+                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
+                  onChange={(e) => addSportType(e.target.value)}
+                  value=""
+                >
+                  <option value="" disabled>
+                    Select Sports
+                  </option>
+                  {sportsOptions.map((o) => (
+                    <option key={o} value={o} disabled={sportTypes.includes(o)}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {sportTypes.map((type, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1.5 bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold rounded-[16px] text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                    >
+                      {type}{" "}
+                      <button
+                        type="button"
+                        onClick={() => removeSportType(type)}
+                        className="hover:text-white transition-colors"
+                      >
+                        <Plus size={12} className="rotate-45" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Ground Composition
+                  </span>
+                </label>
+                <select
+                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
+                  onChange={(e) => addGroundType(e.target.value)}
+                  value=""
+                >
+                  <option value="" disabled>
+                    Select Ground Types
+                  </option>
+                  {groundTypeOptions.map((o) => (
+                    <option
+                      key={o}
+                      value={o}
+                      disabled={groundTypes.includes(o)}
+                    >
+                      {o}
+                    </option>
+                  ))}
+                </select>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {groundTypes.map((type, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1.5 bg-[#1B1B1B] border border-white/10 text-white font-bold rounded-[16px] text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                    >
+                      {type}{" "}
+                      <button
+                        type="button"
+                        onClick={() => removeGroundType(type)}
+                        className="hover:text-[#B3DC26] transition-colors"
+                      >
+                        <Plus size={12} className="rotate-45" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Facilities
+                  </span>
+                </label>
+                <select
+                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
+                  onChange={(e) => addFacility(e.target.value)}
+                  value=""
+                >
+                  <option value="" disabled>
+                    Select Facilities
+                  </option>
+                  {facilitiesOptions.map((o) => (
+                    <option key={o} value={o} disabled={facilities.includes(o)}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {facilities.map((type, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1.5 bg-[#1B1B1B] border border-white/10 text-[#B3DC26] font-bold rounded-[16px] text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                    >
+                      {type}{" "}
+                      <button
+                        type="button"
+                        onClick={() => removeFacility(type)}
+                        className="hover:text-white transition-colors"
+                      >
+                        <Plus size={12} className="rotate-45" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-control md:col-span-3">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Facility Description
+                  </span>
+                </label>
+                <textarea
+                  {...register("description")}
+                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-32 rounded-[16px] p-4 transition-all"
+                ></textarea>
+              </div>
+
+              {/* Searchable Location Input */}
+              <div className="form-control relative">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Search Location
+                  </span>
+                </label>
+                <div className="relative" onClick={(e) => e.stopPropagation()}>
+                  <Search
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70"
+                    size={16}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Type to search location..."
+                    className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] pl-12 pr-4 transition-all"
+                    value={locationSearchQuery}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setLocationSearchQuery(val);
+                      setShowLocationSuggestions(true);
+                      setValue("location", val, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                      setValue("city", val, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                      setValue("state", val, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                    }}
+                    onFocus={() => setShowLocationSuggestions(true)}
+                  />
+
+                  {/* Autocomplete dropdown */}
+                  {showLocationSuggestions &&
+                    locationSuggestions.length > 0 && (
+                      <div className="absolute z-50 top-[52px] left-0 right-0 bg-[#121212] border border-white/10 rounded-[16px] shadow-2xl overflow-hidden max-h-[300px] overflow-y-auto custom-scrollbar">
+                        {locationSuggestions.map((loc, i) => (
+                          <div
+                            key={i}
+                            className="p-4 border-b border-white/10 last:border-b-0 hover:bg-[#1B1B1B] cursor-pointer transition-colors"
+                            onClick={() => handleLocationSelect(loc)}
+                          >
+                            <p className="text-sm text-white font-medium truncate">
+                              {loc.display_name}
+                            </p>
+                            {(loc.city || loc.state) && (
+                              <p className="text-[10px] text-white/70 mt-1 uppercase tracking-wider">
+                                {[loc.city, loc.state]
+                                  .filter(Boolean)
+                                  .join(", ")}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                </div>
+                {errors.location && (
+                  <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
+                    {errors.location.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Direct Google Maps URL
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="https://maps.app.goo.gl/..."
+                  {...register("mapUrl")}
+                  className={`w-full bg-[#121212] border ${errors.mapUrl ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
+                />
+                {errors.mapUrl && (
+                  <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
+                    {errors.mapUrl.message}
+                  </span>
+                )}
+              </div>
+
+              {mapPreviewUrl && (
+                <div className="form-control">
+                  <label className="label mb-4">
+                    <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1 flex items-center gap-2">
+                      📍 Map Preview
+                    </span>
+                  </label>
+                  <div
+                    className="relative w-full rounded-[16px] overflow-hidden border border-white/10 shadow-[var(--shadow-1)]"
+                    style={{ height: 220 }}
+                  >
+                    <iframe
+                      title="Location Preview"
+                      src={mapPreviewUrl}
+                      width="100%"
+                      height="100%"
+                      style={{
+                        border: 0,
+                        filter:
+                          "invert(90%) hue-rotate(180deg) saturate(0.7) brightness(0.9)",
+                      }}
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
           {/* STEP 2: Legalities & Management */}
           {currentStep === 2 && (
-            <div className="col-span-1 grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10 animate-fade-in">
+            <div className="col-span-1 grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10 animate-fade-in">
               <div className="space-y-8">
                 <h3 className="text-[14px] font-bold text-[#B3DC26] border-b border-white/10 pb-3 mb-8 uppercase tracking-[3px]">
                   Legal Documents
@@ -656,11 +712,8 @@ const EditTurf = () => {
 
                 {[
                   { name: "gstRegistration", label: "GST Registration" },
-                  { name: "saleDeed", label: "Sale Deed (Mandatory)*" },
-                  {
-                    name: "electricityBill",
-                    label: "Electricity Bill (Mandatory)*",
-                  },
+                  { name: "saleDeed", label: "Sale Deed" },
+                  { name: "electricityBill", label: "Electricity Bill" },
                   { name: "rentalAgreement", label: "Rental Agreement" },
                   { name: "ownershipAgreement", label: "Ownership Agreement" },
                   {
@@ -779,7 +832,7 @@ const EditTurf = () => {
 
           {/* STEP 3: Slot Management */}
           {currentStep === 3 && (
-            <div className="col-span-1 grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10 animate-fade-in">
+            <div className="col-span-1 grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10 animate-fade-in">
               <div className="space-y-8">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="form-control">
@@ -796,6 +849,7 @@ const EditTurf = () => {
                       <option value={60}>60 Minutes</option>
                       <option value={90}>90 Minutes</option>
                       <option value={120}>120 Minutes</option>
+                      <option value={210}>210 Minutes</option>
                     </select>
                   </div>
                   <div className="form-control">
@@ -841,14 +895,33 @@ const EditTurf = () => {
                   </div>
                 </div>
 
-                <FormField
-                  label="Hourly Rate (INR)"
-                  name="pricePerHour"
-                  type="number"
-                  register={register}
-                  error={errors.pricePerHour}
-                  className="bg-[#121212] border-white/10 text-white focus:border-[#B3DC26]/60"
-                />
+                {!hasSlotPrices ? (
+                  <div className="form-control">
+                    <label className="label mb-2">
+                      <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                        Hourly Rate (INR)
+                      </span>
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Hourly Rate (INR)"
+                      {...register("pricePerHour", { valueAsNumber: true })}
+                      className={`w-full bg-[#121212] border ${errors.pricePerHour ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
+                    />
+                    {errors.pricePerHour && (
+                      <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
+                        {errors.pricePerHour.message}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 p-3 rounded-[12px] bg-[#B3DC26]/5 border border-[#B3DC26]/20">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#B3DC26] animate-pulse shrink-0" />
+                    <p className="text-[11px] text-[#B3DC26] font-medium">
+                      Slot prices set individually — hourly rate is overridden.
+                    </p>
+                  </div>
+                )}
 
                 <div className="space-y-6">
                   <label className="label">

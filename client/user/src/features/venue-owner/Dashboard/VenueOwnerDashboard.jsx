@@ -144,15 +144,15 @@ const VenueOwnerDashboard = () => {
       <div className="px-1 lg:px-3 lg:pt-2 lg:pb-3 space-y-8 lg:space-y-10 animate-fade-in pt-0 pb-4 h-full relative">
         <div className="space-y-8 lg:space-y-10 relative z-10">
           {/* Facility Selector */}
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl lg:text-2xl font-black text-white uppercase tracking-widest">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <h1 className="text-sm sm:text-base lg:text-2xl font-black text-white uppercase tracking-wide leading-tight">
               {dashboardTitle}
             </h1>
             {finalData.turfsList && finalData.turfsList.length > 0 && (
               <select
                 value={selectedVenue}
                 onChange={(e) => setSelectedVenue(e.target.value)}
-                className="bg-[#121212] border border-white/10 text-white text-xs md:text-sm font-bold uppercase tracking-wider rounded-[16px] px-4 py-2 outline-none focus:border-[#B3DC26]/50 transition-colors"
+                className="bg-[#121212] border border-white/10 text-white text-xs font-bold uppercase tracking-wider rounded-[12px] px-3 py-2 outline-none focus:border-[#B3DC26]/50 transition-colors max-w-full"
               >
                 <option value="">All Facilities</option>
                 {finalData.turfsList.map((turf) => (
