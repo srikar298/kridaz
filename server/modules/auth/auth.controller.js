@@ -1438,18 +1438,26 @@ export const googleAuth = asyncHandler(async (req, res) => {
     payload = ticket.getPayload();
   } else if (accessToken) {
     try {
-      const tokenInfo = await client.getTokenInfo(accessToken);
+      const tokenInfoResponse = await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`);
+      if (!tokenInfoResponse.ok) {
+        const errText = await tokenInfoResponse.text();
+        logger.error(`Google tokeninfo fetch failed: ${tokenInfoResponse.status}`, errText);
+        return res.status(401).json({ success: false, message: "Invalid Google access token" });
+      }
+      const tokenInfo = await tokenInfoResponse.json();
+
       if (
         tokenInfo.aud !== process.env.GOOGLE_CLIENT_ID &&
         tokenInfo.azp !== process.env.GOOGLE_CLIENT_ID
       ) {
+        logger.warn(`Google Auth: Invalid token audience. Expected ${process.env.GOOGLE_CLIENT_ID}, got aud=${tokenInfo.aud}, azp=${tokenInfo.azp}`);
         return res.status(401).json({
           success: false,
           message: "Invalid token audience (Confused Deputy Prevention)",
         });
       }
     } catch (err) {
-      logger.error("Google token info verification failed:", err);
+      logger.error("Google token info verification threw an exception:", err);
       return res
         .status(401)
         .json({ success: false, message: "Invalid Google access token" });
@@ -2534,32 +2542,6 @@ export const updateProfile = asyncHandler(async (req, res) => {
     }
   }
 
-  // Check if phone is taken
-  if (phone) {
-    const phoneConditions = [{ phone }];
-    const withoutCountry = phone.replace(/^\+\d{1,3}/, "");
-    if (withoutCountry && withoutCountry !== phone) {
-      phoneConditions.push({ phone: withoutCountry });
-    }
-    if (!phone.startsWith("+")) {
-      phoneConditions.push({ phone: `+91${phone}` });
-    }
-
-    const conflictPhone = await prisma.user.findFirst({
-      where: {
-        OR: phoneConditions,
-        NOT: {
-          id: user.id,
-        },
-      },
-    });
-    if (conflictPhone) {
-      return res.status(400).json({
-        success: false,
-        message: "Phone number already registered to another account",
-      });
-    }
-  }
   const finalInterests = interests || sportTypes || [];
   let hashedPassword;
   if (password) {
@@ -2577,7 +2559,6 @@ export const updateProfile = asyncHandler(async (req, res) => {
   const updateData = cleanObject({
     name,
     username: username?.toLowerCase(),
-    phone,
     bio,
     gender,
     dob: dob ? new Date(dob) : undefined,
@@ -2657,9 +2638,18 @@ export const sendPhoneVerificationOtp = asyncHandler(async (req, res) => {
   }
 
   // Check if phone is already in use by another user
+  const phoneConditions = [{ phone }];
+  const withoutCountry = phone.replace(/^\+\d{1,3}/, "");
+  if (withoutCountry && withoutCountry !== phone) {
+    phoneConditions.push({ phone: withoutCountry });
+  }
+  if (!phone.startsWith("+")) {
+    phoneConditions.push({ phone: `+91${phone}` });
+  }
+
   const conflict = await prisma.user.findFirst({
     where: {
-      phone,
+      OR: phoneConditions,
       NOT: {
         id: userId,
       },
@@ -2794,6 +2784,17 @@ export const verifyPhoneOtp = asyncHandler(async (req, res) => {
       },
     });
   }
+
+  // Update the user's phone number
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      phone: phone,
+    },
+  });
+
   return res.status(200).json({
     success: true,
     message: "Phone number verified successfully",
@@ -3062,6 +3063,25 @@ export const verifyEmailGoogle = asyncHandler(async (req, res) => {
     });
     payload = ticket.getPayload();
   } else if (accessToken) {
+    try {
+      const tokenInfoResponse = await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`);
+      if (!tokenInfoResponse.ok) {
+        const errText = await tokenInfoResponse.text();
+        logger.error(`Google tokeninfo fetch failed: ${tokenInfoResponse.status}`, errText);
+        return res.status(401).json({ success: false, message: "Invalid Google access token" });
+      }
+      const tokenInfo = await tokenInfoResponse.json();
+      if (
+        tokenInfo.aud !== process.env.GOOGLE_CLIENT_ID &&
+        tokenInfo.azp !== process.env.GOOGLE_CLIENT_ID
+      ) {
+        return res.status(401).json({ success: false, message: "Invalid token audience" });
+      }
+    } catch (err) {
+      logger.error("Google token info verification threw an exception:", err);
+      return res.status(401).json({ success: false, message: "Invalid Google access token" });
+    }
+
     const response = await fetch(
       `https://www.googleapis.com/oauth2/v3/userinfo`,
       {
@@ -3134,6 +3154,25 @@ export const updateProfileEmailWithGoogle = asyncHandler(async (req, res) => {
     });
     payload = ticket.getPayload();
   } else if (accessToken) {
+    try {
+      const tokenInfoResponse = await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`);
+      if (!tokenInfoResponse.ok) {
+        const errText = await tokenInfoResponse.text();
+        logger.error(`Google tokeninfo fetch failed: ${tokenInfoResponse.status}`, errText);
+        return res.status(401).json({ success: false, message: "Invalid Google access token" });
+      }
+      const tokenInfo = await tokenInfoResponse.json();
+      if (
+        tokenInfo.aud !== process.env.GOOGLE_CLIENT_ID &&
+        tokenInfo.azp !== process.env.GOOGLE_CLIENT_ID
+      ) {
+        return res.status(401).json({ success: false, message: "Invalid token audience" });
+      }
+    } catch (err) {
+      logger.error("Google token info verification threw an exception:", err);
+      return res.status(401).json({ success: false, message: "Invalid Google access token" });
+    }
+
     const response = await fetch(
       `https://www.googleapis.com/oauth2/v3/userinfo`,
       {

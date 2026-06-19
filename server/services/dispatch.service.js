@@ -5,7 +5,7 @@ import { notificationQueue } from "../queues/notification.queue.js";
 import { MatchingService } from "./matching.service.js";
 import { WalletBlockingService } from "./walletBlocking.service.js";
 import { TrustScoreLedgerService } from "./trustScore.service.js";
-import { NotificationService } from "./notification.service.js";
+import NotificationService from "./notification.service.js";
 import logger from "../utils/logger.js";
 
 /**
