@@ -2474,6 +2474,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
     sportTypes,
     interests,
     password,
+    email,
   } = req.body;
   const decoded = req.user || req.owner;
   if (!decoded) {
@@ -2592,6 +2593,23 @@ export const updateProfile = asyncHandler(async (req, res) => {
       password: hashedPassword,
     }),
   });
+
+  if (email && email.toLowerCase() !== user.email?.toLowerCase()) {
+    const conflictEmail = await prisma.user.findFirst({
+      where: {
+        email: email.toLowerCase(),
+        NOT: { id: user.id }
+      }
+    });
+    if (conflictEmail) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already registered to another account",
+      });
+    }
+    updateData.email = email.toLowerCase();
+    updateData.isEmailVerified = false;
+  }
   const profileData = cleanObject({
     bio: updateData.bio,
     gender: updateData.gender,

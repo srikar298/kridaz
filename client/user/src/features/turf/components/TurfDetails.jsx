@@ -16,6 +16,7 @@ import useLoginOnDemand from "@hooks/useLoginOnDemand";
 import axiosInstance from "@hooks/useAxiosInstance";
 import useSimilarRecommendations from "@hooks/useSimilarRecommendations";
 import TurfCard from "./TurfCard.jsx";
+import { useGetSavedTurfsQuery, useToggleTurfLikeMutation } from "@redux/api/turfApi";
 import toast from "react-hot-toast";
 import GlobalBackButton from "@/shared/components/GlobalBackButton";
 import {
@@ -89,7 +90,33 @@ const TurfDetails = () => {
   const { averageRating, reviews } = useReviews(id);
   const { gateInteraction } = useLoginOnDemand();
   const turf = turfs.find((t) => t._id === id);
-  const [isFavorite, setIsFavorite] = useState(false);
+
+  const { data: savedData } = useGetSavedTurfsQuery(undefined, {
+    skip: !isLoggedIn,
+  });
+  const [toggleTurfLike] = useToggleTurfLikeMutation();
+
+  const isFavorite =
+    isLoggedIn && savedData?.turfs?.some((t) => (t.id || t._id) === id);
+
+  const toggleFavorite = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isLoggedIn) {
+      toast.error("Please login to save venues");
+      return;
+    }
+
+    try {
+      await toggleTurfLike(id).unwrap();
+      toast.success(isFavorite ? "Removed from saved" : "Saved successfully");
+    } catch (err) {
+      console.error("Failed to toggle wishlist like:", err);
+      toast.error("Failed to update saved status");
+    }
+  };
+
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isPoliciesModalOpen, setIsPoliciesModalOpen] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
@@ -537,7 +564,7 @@ const TurfDetails = () => {
                   {/* Like and Share Actions */}
                   <div className="absolute top-4 right-4 z-40 flex items-center gap-3">
                     <button
-                      onClick={() => setIsFavorite(!isFavorite)}
+                      onClick={toggleFavorite}
                       className={`p-3 rounded-[8px] bg-black/40 backdrop-blur-md border ${isFavorite ? "border-[#B3DC26] text-[#B3DC26]" : "border-white/10 text-white"} hover:bg-[#B3DC26] hover:text-black hover:border-transparent transition-all shadow-lg`}
                     >
                       <Heart

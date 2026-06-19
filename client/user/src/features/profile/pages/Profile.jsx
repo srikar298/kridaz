@@ -644,6 +644,24 @@ export default function Profile() {
     }
     try {
       setSendingVerification(true);
+      if (editingEmail && tempEmail) {
+        try {
+          await axiosInstance.put("/api/user/auth/updateProfile", {
+            email: emailToVerify,
+          });
+          dispatch(updateUser({ email: emailToVerify, isEmailVerified: false }));
+          setProfileUser((prev) => ({
+            ...prev,
+            email: emailToVerify,
+            isEmailVerified: false,
+          }));
+        } catch (error) {
+          toast.error(error.response?.data?.message || "Failed to save email");
+          setSendingVerification(false);
+          return;
+        }
+      }
+      
       const res = await axiosInstance.post("/api/user/auth/send-otp", {
         email: emailToVerify,
       });
@@ -1322,7 +1340,8 @@ export default function Profile() {
                         {profileUser.sportTypes[0]}
                       </span>
                     )}
-                  {profileUser?.interests?.[0] && (
+                  {profileUser?.interests?.[0] &&
+                    profileUser.interests[0] !== profileUser.sportTypes?.[0] && (
                     <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-white/10 bg-white/[0.05] text-white/90 text-[9px] font-black tracking-widest uppercase backdrop-blur-md shrink-0">
                       <span className="w-1.5 h-1.5 rounded-full bg-red-600 shadow-[0_0_4px_rgba(220,38,38,0.8)]" />
                       {profileUser.interests[0]}

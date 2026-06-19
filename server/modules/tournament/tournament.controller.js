@@ -1,12 +1,10 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../config/prisma.js";
 import { NotFoundError, ForbiddenError, BadRequestError } from "@kridaz/common";
 import {
   autoGenerateGroupStage,
   getTournamentStandings,
   createManualScheduledGame,
 } from "./scheduler.service.js";
-
-const prisma = new PrismaClient();
 
 /**
  * @desc    Create a draft tournament (Step 1)
