@@ -6,14 +6,12 @@ import MobileBottomNav from "@components/layout/MobileBottomNav";
 import UserFooter from "@components/layout/UserFooter";
 import ScrollToTop from "@components/common/ScrollToTop";
 import BackgroundUploadManager from "@components/BackgroundUploadManager";
-import { closeLoginModal } from "@redux/slices/uiSlice";
 // Desktop Right Sidebar removed — content moved to Home feed
 import { useAuthModal } from "../../context/AuthModalContext";
 
 const OnboardingModal = lazy(
   () => import("@components/modals/OnboardingModal")
 );
-const LoginModal = lazy(() => import("@components/modals/LoginModal"));
 const AuthModal = lazy(
   () => import("../../features/auth/components/AuthModal")
 );
@@ -26,7 +24,6 @@ const Root = () => {
   const { user, isAuthenticated } = useSelector(
     (/** @type {any} */ state) => state.auth
   );
-  const { loginModal } = useSelector((/** @type {any} */ state) => state.ui);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
   const iframeRef = useRef(null);
@@ -171,16 +168,6 @@ const Root = () => {
   if (showSplitView) {
     return (
       <div className="flex h-screen w-screen overflow-hidden bg-[#050505] text-white">
-        {loginModal.isOpen && (
-          <Suspense fallback={null}>
-            <LoginModal
-              isOpen={loginModal.isOpen}
-              onClose={() => dispatch(closeLoginModal())}
-              title={loginModal.title}
-              message={loginModal.message}
-            />
-          </Suspense>
-        )}
         {isAuthModalOpen && (
           <Suspense fallback={null}>
             <AuthModal />
@@ -298,17 +285,6 @@ const Root = () => {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white overflow-x-clip font-sans">
-      {/* Global Login-on-Demand Modal — rendered here so useNavigate() works inside router context */}
-      {loginModal.isOpen && (
-        <Suspense fallback={null}>
-          <LoginModal
-            isOpen={loginModal.isOpen}
-            onClose={() => dispatch(closeLoginModal())}
-            title={loginModal.title}
-            message={loginModal.message}
-          />
-        </Suspense>
-      )}
       {isAuthModalOpen && (
         <Suspense fallback={null}>
           <AuthModal />

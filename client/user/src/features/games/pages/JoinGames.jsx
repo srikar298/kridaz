@@ -46,12 +46,12 @@ const JoinGames = () => {
   const fetchGames = async (city = "", state = "", sport = "All Sports") => {
     try {
       setLoading(true);
-      let url = `${import.meta.env.VITE_API_URL}/api/hosted-game/list?`;
-      if (city) url += `city=${city}&`;
-      if (state) url += `state=${state}&`;
-      if (sport !== "All Sports") url += `gameType=${sport}&`;
+      const params = new URLSearchParams();
+      if (city) params.append("city", city);
+      if (state) params.append("state", state);
+      if (sport !== "All Sports") params.append("gameType", sport);
 
-      const res = await axiosInstance.get(url);
+      const res = await axiosInstance.get(`/api/hosted-game/list?${params.toString()}`);
       setGames(res.data.games || []);
     } catch (err) {
       toast.error("Failed to fetch games");

@@ -67,7 +67,7 @@ const CheckoutPage = () => {
     location: turfLocation,
   } = bookingData;
 
-  const [paymentPercentage, setPaymentPercentage] = useState(30);
+  const [paymentPercentage, setPaymentPercentage] = useState(100);
   const [paymentMode, setPaymentMode] = useState("WALLET");
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentBalance, setCurrentBalance] = useState(

@@ -1915,6 +1915,8 @@ export const getDashboardStats = async (req, res) => {
         avgDailyActivePct: true,
         acceptanceRate30d: true,
         trustScore: true,
+        cityRank: true,
+        stateRank: true,
       },
     });
 
@@ -1999,6 +2001,8 @@ export const getDashboardStats = async (req, res) => {
     const trustScore = owner.trustScore || 100;
     const acceptanceRate = owner.acceptanceRate30d || 100;
     const daat = owner.avgDailyActivePct || 0;
+    const cityRank = owner.cityRank || null;
+    const stateRank = owner.stateRank || null;
 
     // Format graph data based on completed bookings
     const graphData = {
@@ -2064,6 +2068,8 @@ export const getDashboardStats = async (req, res) => {
       avgTime: "0h 0m",
       rating: professional?.rating || 0,
       trustScore,
+      cityRank,
+      stateRank,
       acceptanceRate,
       daat,
       acceptedRequests: acceptedCount,

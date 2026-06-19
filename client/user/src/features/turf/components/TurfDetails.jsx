@@ -96,6 +96,16 @@ const TurfDetails = () => {
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
+  // Hide bottom nav when booking modal is open
+  useEffect(() => {
+    if (isBookingModalOpen) {
+      document.body.setAttribute("data-hide-bottom-nav", "true");
+    } else {
+      document.body.removeAttribute("data-hide-bottom-nav");
+    }
+    return () => document.body.removeAttribute("data-hide-bottom-nav");
+  }, [isBookingModalOpen]);
+
   // Similar Recommendations
   const { similarTurfs, loading: similarLoading } = useSimilarRecommendations(
     id,
@@ -816,7 +826,7 @@ const TurfDetails = () => {
       </div>
 
       {/* Sticky Book Button for Mobile & Desktop */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent z-50 pointer-events-none flex justify-center pb-6">
+      <div className="fixed bottom-20 lg:bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent z-50 pointer-events-none flex justify-center pb-6">
         <button
           onClick={() => setIsBookingModalOpen(true)}
           className="pointer-events-auto bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] w-full max-w-md h-[56px] rounded-[16px] font-inter text-[18px] font-[700] leading-[28px] shadow-[0px_8px_24px_rgba(179,220,38,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"

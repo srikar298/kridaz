@@ -143,6 +143,16 @@ export default function FindProfessionals() {
     }
   }, []);
 
+  // Hide bottom nav when modal is open
+  useEffect(() => {
+    if (showMatchModal) {
+      document.body.setAttribute("data-hide-bottom-nav", "true");
+    } else {
+      document.body.removeAttribute("data-hide-bottom-nav");
+    }
+    return () => document.body.removeAttribute("data-hide-bottom-nav");
+  }, [showMatchModal]);
+
   // Load States & Grounds
   useEffect(() => {
     loadStates();

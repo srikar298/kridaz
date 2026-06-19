@@ -180,6 +180,9 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
   };
 
   const trustScore = statsData?.stats?.trustScore || 100;
+  const cityRank = statsData?.stats?.cityRank;
+  const stateRank = statsData?.stats?.stateRank;
+
   const trustMax = 100;
   const trustPercent = Math.min(
     100,
@@ -227,7 +230,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
       <nav
         className={`bg-[#000000] border-b border-[#2D2D2D] px-4 md:px-8 pt-2 pb-2 lg:pt-0 h-[56px] lg:h-20 shadow-2xl flex items-center justify-between w-full box-border`}
       >
-        <div className="flex items-center gap-4 lg:min-w-[200px]">
+        <div className="flex items-center gap-4 lg:minw-[200px]">
           <button
             onClick={() => navigate(-1)}
             className="p-1.5 transition-all duration-300 relative text-[#999999] hover:text-white bg-[#0d0d0d] border border-white/5 hover:border-[#BFF367]/30 rounded-full hover:bg-[#BFF367]/10 hover:text-[#BFF367] flex items-center justify-center outline-none"
@@ -247,7 +250,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
           )}
         </div>
 
-        <div className="flex items-center gap-3 sm:gap-5 lg:min-w-[200px] justify-end">
+        <div className="flex items-center gap-3 sm:gap-5 lg:minw-[200px] justify-end">
           {[
             "venu_owners",
             "owner",
@@ -376,63 +379,84 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
               </div>
             </div>
 
-            {/* Right: Trust Score Ring (clickable to go to Trust Score ledger) */}
-            <div
-              onClick={() =>
-                navigate(`/professional/${role?.toLowerCase()}/trust-score`)
-              }
-              className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:opacity-80 transition-opacity active:scale-95 duration-200 justify-end shrink-0"
-            >
-              <div className="flex flex-col text-right hidden sm:flex">
-                <span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">
-                  Trust
-                </span>
-                <span className="text-[10px] sm:text-xs font-black text-[#BFF367] uppercase">
-                  {trustScore} XP
-                </span>
-              </div>
+            {/* Right: Rankings & Trust Score */}
+            <div className="flex items-center gap-3 sm:gap-4 shrink-0 justify-end">
+              {/* Rankings */}
+              {(cityRank || stateRank) && (
+                <div className="flex flex-col text-right pr-3 border-r border-white/10">
+                  {cityRank && (
+                    <div className="flex items-center justify-end gap-1.5">
+                      <span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">City Rank</span>
+                      <span className="text-[10px] sm:text-xs font-black text-white">#{cityRank}</span>
+                    </div>
+                  )}
+                  {stateRank && (
+                    <div className="flex items-center justify-end gap-1.5 mt-0.5">
+                      <span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">State Rank</span>
+                      <span className="text-[10px] sm:text-xs font-black text-white">#{stateRank}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Trust Score Ring */}
               <div
-                className="relative flex items-center justify-center"
-                style={{ width: 40, height: 40 }}
+                onClick={() =>
+                  navigate(`/professional/${role?.toLowerCase()}/trust-score`)
+                }
+                className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:opacity-80 transition-opacity active:scale-95 duration-200"
               >
-                {/* SVG Ring */}
-                <svg
-                  width="40"
-                  height="40"
-                  viewBox="0 0 44 44"
-                  className="-rotate-90"
-                >
-                  {/* Background track */}
-                  <circle
-                    cx="22"
-                    cy="22"
-                    r={ringRadius}
-                    fill="transparent"
-                    stroke="#1a1a1a"
-                    strokeWidth="3"
-                  />
-                  {/* Progress arc */}
-                  <circle
-                    cx="22"
-                    cy="22"
-                    r={ringRadius}
-                    fill="transparent"
-                    stroke="#BFF367"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeDasharray={ringCircumference}
-                    strokeDashoffset={ringOffset}
-                    style={{
-                      transition: "stroke-dashoffset 0.8s ease",
-                      filter: "drop-shadow(0 0 4px rgba(191,243,103,0.4))",
-                    }}
-                  />
-                </svg>
-                {/* Center score */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-[10px] font-black text-[#BFF367] leading-none">
-                    {trustScore}
+                <div className="flex flex-col text-right hidden sm:flex">
+                  <span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">
+                    Trust
                   </span>
+                  <span className="text-[10px] sm:text-xs font-black text-[#BFF367] uppercase">
+                    {trustScore} XP
+                  </span>
+                </div>
+                <div
+                  className="relative flex items-center justify-center"
+                  style={{ width: 40, height: 40 }}
+                >
+                  {/* SVG Ring */}
+                  <svg
+                    width="40"
+                    height="40"
+                    viewBox="0 0 44 44"
+                    className="-rotate-90"
+                  >
+                    {/* Background track */}
+                    <circle
+                      cx="22"
+                      cy="22"
+                      r={ringRadius}
+                      fill="transparent"
+                      stroke="#1a1a1a"
+                      strokeWidth="3"
+                    />
+                    {/* Progress arc */}
+                    <circle
+                      cx="22"
+                      cy="22"
+                      r={ringRadius}
+                      fill="transparent"
+                      stroke="#BFF367"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeDasharray={ringCircumference}
+                      strokeDashoffset={ringOffset}
+                      style={{
+                        transition: "stroke-dashoffset 0.8s ease",
+                        filter: "drop-shadow(0 0 4px rgba(191,243,103,0.4))",
+                      }}
+                    />
+                  </svg>
+                  {/* Center score */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-[10px] font-black text-[#BFF367] leading-none">
+                      {trustScore}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

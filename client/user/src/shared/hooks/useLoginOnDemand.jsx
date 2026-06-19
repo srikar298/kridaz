@@ -1,19 +1,19 @@
-import { useSelector, useDispatch } from "react-redux";
-import { openLoginModal } from "@redux/slices/uiSlice";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 /**
  * useLoginOnDemand - Hook to gate interactions for unauthenticated users.
  * Returns a function that checks for login status before executing a callback.
  */
 const useLoginOnDemand = () => {
-  const dispatch = useDispatch();
   const { isLoggedIn } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
-  const gateInteraction = (callback, modalOptions = {}) => {
+  const gateInteraction = (callback) => {
     if (isLoggedIn) {
       if (typeof callback === "function") callback();
     } else {
-      dispatch(openLoginModal(modalOptions));
+      navigate("/login");
     }
   };
 

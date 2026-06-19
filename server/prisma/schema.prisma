@@ -222,6 +222,8 @@ model OwnerProfile {
   avgDailyActivePct       Float                         @default(0.0)
   acceptanceRate30d       Float                         @default(100.0)
   trustScore              Float                         @default(100.0)
+  cityRank                Int?
+  stateRank               Int?
   createdAt               DateTime                      @default(now())
   updatedAt               DateTime                      @updatedAt
   bookingNotifications    BookingNotification[]

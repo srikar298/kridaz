@@ -630,6 +630,7 @@ export default function Profile() {
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const handleEditEmailClick = () => {
     setEditingEmail(true);
+    setOtpState("idle");
     setTempEmail(profileUser?.email || currentUser?.email || "");
   };
 
@@ -1519,7 +1520,8 @@ export default function Profile() {
           {isOwnProfile &&
             profileUser?.email &&
             !profileUser?.isEmailVerified && (
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-4 p-3 bg-[#121212] border border-white/[0.08] rounded-[16px]">
+              <div className="flex flex-col gap-3 mt-4 p-3 bg-[#121212] border border-white/[0.08] rounded-[16px]">
+                {/* Email display / edit row */}
                 <div className="flex items-center gap-2.5">
                   <div className="px-2 py-0.5 bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-wider rounded-[6px]">
                     Pending
@@ -1528,8 +1530,11 @@ export default function Profile() {
                     <input
                       type="email"
                       value={tempEmail}
-                      onChange={(e) => setTempEmail(e.target.value)}
-                      className="bg-[#000000] border border-white/[0.08] rounded-[8px] px-3 py-1.5 text-xs text-white w-full sm:w-[160px] outline-none focus:border-[#BFF367] transition-all placeholder:text-white/30"
+                      onChange={(e) => {
+                        setTempEmail(e.target.value);
+                        if (otpState !== "idle") setOtpState("idle");
+                      }}
+                      className="bg-[#000000] border border-white/[0.08] rounded-[8px] px-3 py-1.5 text-xs text-white w-full sm:w-[200px] outline-none focus:border-[#BFF367] transition-all placeholder:text-white/30"
                       placeholder="Enter new email"
                       autoFocus
                     />
@@ -1547,22 +1552,36 @@ export default function Profile() {
                       <Edit2 size={12} />
                     </button>
                   )}
-                  {editingEmail && (
-                    <button
-                      onClick={() => {
-                        setEditingEmail(false);
-                        setOtpState("idle");
-                      }}
-                      className="text-white/40 hover:text-white transition-colors text-[9px] uppercase font-bold"
-                      title="Cancel"
-                    >
-                      Cancel
-                    </button>
-                  )}
                 </div>
 
+                {/* Action buttons row */}
                 <div className="flex items-center gap-2 shrink-0">
-                  {otpState === "sent" ? (
+                  {editingEmail && otpState === "idle" ? (
+                    /* Save / Cancel buttons when editing email */
+                    <>
+                      <button
+                        onClick={handleSendOTP}
+                        disabled={
+                          sendingVerification || !tempEmail ||
+                          tempEmail === (profileUser?.email || currentUser?.email || "")
+                        }
+                        className="px-4 py-1.5 bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:opacity-90 transition-all disabled:opacity-50 shadow-[0_4px_12px_rgba(191,243,103,0.15)]"
+                      >
+                        {sendingVerification ? "Sending..." : "Save"}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingEmail(false);
+                          setOtpState("idle");
+                          setTempEmail("");
+                        }}
+                        className="px-4 py-1.5 bg-white/[0.05] border border-white/[0.08] text-white/60 text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:bg-white/[0.1] hover:text-white transition-all"
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : otpState === "sent" ? (
+                    /* OTP input + Verify after Save triggers OTP */
                     <>
                       <input
                         type="text"
@@ -1581,16 +1600,24 @@ export default function Profile() {
                       >
                         {verifyingEmail ? "..." : "Verify"}
                       </button>
+                      <button
+                        onClick={() => {
+                          setEditingEmail(false);
+                          setOtpState("idle");
+                          setOtpCode("");
+                          setTempEmail("");
+                        }}
+                        className="px-3 py-1.5 bg-white/[0.05] border border-white/[0.08] text-white/60 text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:bg-white/[0.1] hover:text-white transition-all"
+                      >
+                        Cancel
+                      </button>
                     </>
                   ) : (
+                    /* Default: Google verify + Get OTP buttons */
                     <>
                       <button
                         onClick={() => verifyWithGoogle()}
-                        disabled={
-                          sendingVerification ||
-                          verifyingEmail ||
-                          (editingEmail && !tempEmail)
-                        }
+                        disabled={sendingVerification || verifyingEmail}
                         className="px-3 py-1.5 bg-white/[0.03] border border-white/[0.08] text-white text-[10px] font-black uppercase tracking-wider rounded-[8px] hover:bg-white/[0.08] transition-all disabled:opacity-50 flex items-center gap-1.5"
                         title="Verify with Google"
                       >
@@ -1617,11 +1644,7 @@ export default function Profile() {
                       </button>
                       <button
                         onClick={handleSendOTP}
-                        disabled={
-                          sendingVerification ||
-                          verifyingEmail ||
-                          (editingEmail && !tempEmail)
-                        }
+                        disabled={sendingVerification || verifyingEmail}
                         className="px-4 py-1.5 bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:opacity-90 transition-all disabled:opacity-50 shadow-[0_4px_12px_rgba(191,243,103,0.15)]"
                       >
                         {sendingVerification ? "..." : "Get OTP"}
