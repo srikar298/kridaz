@@ -12,16 +12,14 @@ import { NotFoundError } from "@kridaz/common";
  */
 export const createOrder = asyncHandler(async (req, res) => {
   const userId = req.user.id || req.user.user;
-  const {
+  const { totalPrice } = req.body;
+  const { order, user } = await bookingService.createRazorpayOrder(
+    userId,
     totalPrice
-  } = req.body;
-  const {
-    order,
-    user
-  } = await bookingService.createRazorpayOrder(userId, totalPrice);
+  );
   return res.status(200).json({
     order,
-    user
+    user,
   });
 });
 
@@ -34,7 +32,7 @@ export const verifyPayment = asyncHandler(async (req, res) => {
   return res.status(200).json({
     success: true,
     message: "Booking successful, Check your email for the receipt",
-    bookingId: booking.id
+    bookingId: booking.id,
   });
 });
 
@@ -47,7 +45,7 @@ export const bookWithWallet = asyncHandler(async (req, res) => {
   return res.status(200).json({
     success: true,
     message: "Booking successful with Wallet",
-    bookingId: booking.id
+    bookingId: booking.id,
   });
 });
 
@@ -55,11 +53,10 @@ export const bookWithWallet = asyncHandler(async (req, res) => {
  * Retrieves a detailed booking by ID.
  */
 export const getBookingById = asyncHandler(async (req, res) => {
-  const {
-    id
-  } = req.params;
+  const { id } = req.params;
   const booking = await bookingService.findBookingDetailsById(id);
-  if (!booking) throw new NotFoundError("Booking not found", { code: "BOOKING_NOT_FOUND" });
+  if (!booking)
+    throw new NotFoundError("Booking not found", { code: "BOOKING_NOT_FOUND" });
   return res.status(200).json(booking);
 });
 
@@ -79,7 +76,8 @@ export const getUserBookings = asyncHandler(async (req, res) => {
  */
 export const getOwnerBookings = asyncHandler(async (req, res) => {
   const ownerUserId = req.owner.id;
-  const formattedBookings = await bookingService.findBookingsByOwnerDetailed(ownerUserId);
+  const formattedBookings =
+    await bookingService.findBookingsByOwnerDetailed(ownerUserId);
   return res.status(200).json(formattedBookings);
 });
 
@@ -87,25 +85,22 @@ export const getOwnerBookings = asyncHandler(async (req, res) => {
  * Validates a coupon's active, expiration, and turf limits.
  */
 export const validateCoupon = asyncHandler(async (req, res) => {
-  const {
+  const { code, turfId, amount } = req.body;
+  if (!code || !turfId || !amount) {
+    return res.status(400).json({
+      message: "Missing required fields",
+    });
+  }
+  const { discount, finalAmount } = await bookingService.verifyCoupon(
     code,
     turfId,
     amount
-  } = req.body;
-  if (!code || !turfId || !amount) {
-    return res.status(400).json({
-      message: "Missing required fields"
-    });
-  }
-  const {
-    discount,
-    finalAmount
-  } = await bookingService.verifyCoupon(code, turfId, amount);
+  );
   return res.status(200).json({
     success: true,
     discount,
     finalAmount,
-    message: "Coupon applied successfully"
+    message: "Coupon applied successfully",
   });
 });
 
@@ -118,7 +113,7 @@ export const createManualBooking = asyncHandler(async (req, res) => {
   return res.status(200).json({
     success: true,
     message: "Manual booking created successfully",
-    bookingId: booking.id
+    bookingId: booking.id,
   });
 });
 
@@ -126,26 +121,47 @@ export const createManualBooking = asyncHandler(async (req, res) => {
  * Generates and streams PDF invoice for checking booking check-ins.
  */
 export const downloadInvoice = asyncHandler(async (req, res) => {
-  const {
-    id
-  } = req.params;
+  const { id } = req.params;
   const booking = await bookingService.findBookingDetailsById(id);
-  if (!booking) throw new NotFoundError("Booking not found", { code: "BOOKING_NOT_FOUND" });
+  if (!booking)
+    throw new NotFoundError("Booking not found", { code: "BOOKING_NOT_FOUND" });
   const customerInfo = booking.user || {
     name: booking.guestName || "Guest Customer",
     email: booking.guestEmail || "N/A",
-    phone: booking.guestPhone || "N/A"
+    phone: booking.guestPhone || "N/A",
   };
   const invoiceBooking = {
     ...booking,
-    selectedTurfDate: format(new Date(booking.timeSlot?.startTime || booking.createdAt), "d MMM yyyy"),
-    startTime: format(new Date(booking.timeSlot?.startTime || booking.createdAt), "hh:mm a"),
-    endTime: format(new Date(booking.timeSlot?.endTime || booking.createdAt), "hh:mm a"),
-    duration: booking.timeSlot ? Math.ceil((new Date(booking.timeSlot.endTime) - new Date(booking.timeSlot.startTime)) / (1000 * 60 * 60)) : 1
+    selectedTurfDate: format(
+      new Date(booking.timeSlot?.startTime || booking.createdAt),
+      "d MMM yyyy"
+    ),
+    startTime: format(
+      new Date(booking.timeSlot?.startTime || booking.createdAt),
+      "hh:mm a"
+    ),
+    endTime: format(
+      new Date(booking.timeSlot?.endTime || booking.createdAt),
+      "hh:mm a"
+    ),
+    duration: booking.timeSlot
+      ? Math.ceil(
+          (new Date(booking.timeSlot.endTime) -
+            new Date(booking.timeSlot.startTime)) /
+            (1000 * 60 * 60)
+        )
+      : 1,
   };
-  const pdfBuffer = await generateInvoice(invoiceBooking, booking.turf, customerInfo);
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', `inline; filename=Invoice-${id.slice(-6).toUpperCase()}.pdf`);
+  const pdfBuffer = await generateInvoice(
+    invoiceBooking,
+    booking.turf,
+    customerInfo
+  );
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    `inline; filename=Invoice-${id.slice(-6).toUpperCase()}.pdf`
+  );
   return res.send(pdfBuffer);
 });
 
@@ -154,16 +170,15 @@ export const downloadInvoice = asyncHandler(async (req, res) => {
  */
 export const cancelBooking = asyncHandler(async (req, res) => {
   const userId = req.user.id || req.user.user;
-  const {
+  const { id } = req.params;
+  const { refundAmount } = await bookingService.processBookingCancellation(
+    userId,
     id
-  } = req.params;
-  const {
-    refundAmount
-  } = await bookingService.processBookingCancellation(userId, id);
+  );
   return res.status(200).json({
     success: true,
     message: `Booking cancelled. Refund of ₹${refundAmount} issued.`,
-    refundAmount
+    refundAmount,
   });
 });
 
@@ -173,14 +188,8 @@ export const cancelBooking = asyncHandler(async (req, res) => {
  * Fetches platform-wide paginated list of bookings.
  */
 export const getAdminAllBookings = asyncHandler(async (req, res) => {
-  const {
-    bookings,
-    total
-  } = await bookingService.findAdminBookings(req.query);
-  const {
-    page = 1,
-    limit = 20
-  } = req.query;
+  const { bookings, total } = await bookingService.findAdminBookings(req.query);
+  const { page = 1, limit = 20 } = req.query;
   return res.status(200).json({
     success: true,
     data: bookings,
@@ -188,7 +197,7 @@ export const getAdminAllBookings = asyncHandler(async (req, res) => {
       total,
       page: parseInt(page),
       limit: parseInt(limit),
-      totalPages: Math.ceil(total / parseInt(limit))
-    }
+      totalPages: Math.ceil(total / parseInt(limit)),
+    },
   });
 });

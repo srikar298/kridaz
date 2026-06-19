@@ -1,13 +1,13 @@
 import express from "express";
-import { 
-  getAllProfessionals, 
+import {
+  getAllProfessionals,
   getProfessionalFilters,
-  getProfessionalById, 
-  bookProfessional, 
-  updateAvailability, 
-  getMyBookings, 
-  handleBookingRequest, 
-  addProfessionalReview, 
+  getProfessionalById,
+  bookProfessional,
+  updateAvailability,
+  getMyBookings,
+  handleBookingRequest,
+  addProfessionalReview,
   replyToReview,
   updateProfessionalProfile,
   getMyProfessionalProfile,
@@ -26,9 +26,11 @@ import {
   getMyOnDemandBookings,
   getUserOnDemandBookings,
   getDashboardStats,
-  getTrustScoreHistory
+  getTrustScoreHistory,
 } from "../professional.controller.js";
-import protect, { optionalAuth } from "../../../middleware/jwt/auth.middleware.js";
+import protect, {
+  optionalAuth,
+} from "../../../middleware/jwt/auth.middleware.js";
 
 const router = express.Router();
 
@@ -293,7 +295,11 @@ router.post("/match-request", protect, createMatchRequest);
 router.post("/offers/:offerId/accept", protect, acceptMatchOffer);
 router.post("/offers/:offerId/reject", protect, rejectMatchOffer);
 router.post("/bookings/:bookingId/verify-otp", protect, verifyOTPCheckIn);
-router.post("/bookings/:bookingId/complete", protect, completeProfessionalBooking);
+router.post(
+  "/bookings/:bookingId/complete",
+  protect,
+  completeProfessionalBooking
+);
 router.get("/on-demand-bookings", protect, getMyOnDemandBookings);
 router.get("/user-on-demand-bookings", protect, getUserOnDemandBookings);
 router.get("/dashboard-stats", protect, getDashboardStats);

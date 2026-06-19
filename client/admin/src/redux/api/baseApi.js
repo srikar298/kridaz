@@ -43,7 +43,10 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
-    const isRefreshRequest = typeof args === "object" && args !== null && args.url?.includes("/api/user/auth/refresh");
+    const isRefreshRequest =
+      typeof args === "object" &&
+      args !== null &&
+      args.url?.includes("/api/user/auth/refresh");
 
     if (isRefreshRequest) {
       return result;

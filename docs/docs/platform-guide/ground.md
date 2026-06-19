@@ -12,10 +12,8 @@ The details page (`client/user/src/features/turf/components/TurfDetails.jsx`) is
 
 1. **High-Fidelity Image Gallery:**
    A large hero image with a scrollable thumbnail carousel beneath it. This allows users to inspect the turf quality, lighting, and general environment.
-   
 2. **Venue Metadata:**
    Displays the turf name, physical address, average star rating, total review count, and the base price per hour.
-   
 3. **Amenities List:**
    A clean grid showcasing available facilities using checkmarks (e.g., Free Parking, Floodlights, Change Room, Drinking Water).
 
@@ -46,7 +44,7 @@ useEffect(() => {
       setLoading(false);
     }
   };
-  
+
   if (id) fetchTurfDetails();
 }, [id]);
 ```
@@ -57,16 +55,25 @@ The application does not hardcode time slots. Instead, it generates them dynamic
 
 ```javascript
 // Conceptual representation of slot logic
-const generateSlots = (openTime, closeTime, durationMinutes, existingBookings) => {
+const generateSlots = (
+  openTime,
+  closeTime,
+  durationMinutes,
+  existingBookings
+) => {
   const slots = [];
   let currentTime = parseTime(openTime);
   const endLimit = parseTime(closeTime);
 
   while (currentTime + durationMinutes <= endLimit) {
-    const isBooked = checkOverlap(currentTime, durationMinutes, existingBookings);
+    const isBooked = checkOverlap(
+      currentTime,
+      durationMinutes,
+      existingBookings
+    );
     slots.push({
       time: formatTime(currentTime),
-      status: isBooked ? 'BOOKED' : 'AVAILABLE'
+      status: isBooked ? "BOOKED" : "AVAILABLE",
     });
     currentTime += 30; // 30-minute stepping
   }
@@ -75,5 +82,6 @@ const generateSlots = (openTime, closeTime, durationMinutes, existingBookings) =
 ```
 
 ### UX Considerations
+
 - **Instant Price Calculation:** As the user changes the duration or selects premium time slots, the "Total Price" updates instantaneously.
 - **Sticky Booking Bar:** On mobile devices, the "Book Now" button remains fixed at the bottom of the screen, ensuring the primary call-to-action is always accessible.

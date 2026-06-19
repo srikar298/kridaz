@@ -5,7 +5,7 @@ export const matchStatusSchema = z.enum([
   "LIVE",
   "COMPLETED",
   "ABANDONED",
-  "DELAYED"
+  "DELAYED",
 ]);
 
 export const matchScoreSchema = z.object({
@@ -21,7 +21,7 @@ export const matchScoreSchema = z.object({
   wicketsB: z.number().nonnegative().default(0),
   status: matchStatusSchema,
   sportType: z.string().min(1),
-  currentInnings: z.number().min(1).max(2).default(1)
+  currentInnings: z.number().min(1).max(2).default(1),
 });
 
 export const ballEventSchema = z.object({
@@ -30,9 +30,13 @@ export const ballEventSchema = z.object({
   bowlerId: z.string().uuid(),
   runs: z.number().min(0).max(6),
   extraRuns: z.number().min(0).default(0),
-  extraType: z.enum(["NONE", "WIDE", "NO_BALL", "BYE", "LEG_BYE"]).default("NONE"),
+  extraType: z
+    .enum(["NONE", "WIDE", "NO_BALL", "BYE", "LEG_BYE"])
+    .default("NONE"),
   isWicket: z.boolean().default(false),
-  wicketType: z.enum(["BOWLED", "CAUGHT", "RUN_OUT", "LBW", "STUMPED", "NONE"]).optional()
+  wicketType: z
+    .enum(["BOWLED", "CAUGHT", "RUN_OUT", "LBW", "STUMPED", "NONE"])
+    .optional(),
 });
 
 export type MatchStatus = z.infer<typeof matchStatusSchema>;

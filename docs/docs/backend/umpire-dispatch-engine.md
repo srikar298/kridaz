@@ -37,30 +37,35 @@ flowchart TD
 Before prioritizing match officials, the engine filters the global pool of umpires using three sequential rules:
 
 ### Step 1 — Online Status Check
-* **Rule**: The system queries active umpire sessions. Offline umpires are excluded.
-* **Implementation**: Relies on a Redis online presence store (`kridaz:online:users`) with heartbeat TTL checks.
+
+- **Rule**: The system queries active umpire sessions. Offline umpires are excluded.
+- **Implementation**: Relies on a Redis online presence store (`kridaz:online:users`) with heartbeat TTL checks.
 
 ### Step 2 — Budget Match
-* **Rule**: Evaluates whether the user's budget accommodates the umpire's rates.
-* **Calculation**: 
+
+- **Rule**: Evaluates whether the user's budget accommodates the umpire's rates.
+- **Calculation**:
   `Total Fee = Umpire Hourly Rate * Booking Hours`
-  
+
   Exclude the official if `Total Fee > User Match Budget`.
 
 ### Step 3 — Conflict & Travel Buffer Checks
-* **Rule**: Checks if the umpire has overlapping bookings.
-* **Buffer Calculation**: If there is a time gap between the candidate's existing booking and the requested booking, the travel time must be calculated.
-  * **Geofenced Travel Time**: `Travel Time = Haversine Distance / Average Speed (Platform Default: 40 km/h)`
-  * **Validation Rule**: The gap must be greater than or equal to `Travel Time + Buffer Space` (default: 1 hour). If the gap is insufficient, the accept action is blocked.
+
+- **Rule**: Checks if the umpire has overlapping bookings.
+- **Buffer Calculation**: If there is a time gap between the candidate's existing booking and the requested booking, the travel time must be calculated.
+  - **Geofenced Travel Time**: `Travel Time = Haversine Distance / Average Speed (Platform Default: 40 km/h)`
+  - **Validation Rule**: The gap must be greater than or equal to `Travel Time + Buffer Space` (default: 1 hour). If the gap is insufficient, the accept action is blocked.
 
 ---
 
 ## 3. Phase 2 — Prioritization Engine
 
-Eligible officials are ranked dynamically. New umpires start with a base trust balance of **100 points**. 
+Eligible officials are ranked dynamically. New umpires start with a base trust balance of **100 points**.
 
 ### 3.1 Scoring Parameters
+
 The overall priority score is calculated using these parameters:
+
 1. **Distance to Match Venue**: Closer proximity boosts ranking.
 2. **Historical Acceptance Rate**: Ratio of accepted notifications to total dispatched notifications.
 3. **Cancellation History**: Track record of late cancellations.
@@ -68,9 +73,10 @@ The overall priority score is calculated using these parameters:
 5. **Experience Level**: Credentials and total matches officiated.
 6. **Urgency**: Shorter time windows to match kick-off apply dynamic multipliers to the scoring query.
 7. **New Onboarding Boost**: A temporary priority boost given to newly registered umpires.
-   * *Boost Expiry Rule*: The boost expires automatically after the umpire's first **10 bookings** or **30 days** on the platform, whichever comes first.
+   - _Boost Expiry Rule_: The boost expires automatically after the umpire's first **10 bookings** or **30 days** on the platform, whichever comes first.
 
 ### 3.2 Tiebreaker
+
 If two umpires share the same priority score, the system prefers the candidate with the higher **Average Daily Active Time** on the platform over the past 30 days.
 
 ---
@@ -94,18 +100,18 @@ The notification cascade handles the sequential offering of bookings to candidat
 
 Umpire reliability is tracked via a points system. High points translate to higher dispatch priority:
 
-| Event / Action | Trust Points Impact | Business Rules & Triggers |
-| :--- | :---: | :--- |
-| **Profile Creation** | `+100` | Initial base balance on onboarding. |
-| **Booking Accepted** | `+1` | Applied upon successful session checkout. |
-| **Review Received** | `+1` | Applied when customer rating is $\ge 4.0$ stars. |
-| **Skip Booking** | `-0.5` | Applied on 30-second notification timeout. |
-| **Cancellation (More than 72 Hrs)**| `-0.5` | Allowed only outside the 72-hour match window. |
-| **Cancellation (Less than 72 Hrs)**| *Blocked* | Umpires cannot cancel matches within 72 hours of kick-off. |
-| **Rescheduling Exemption**| `0` | If the match host reschedules, the 72-hour window resets. Umpires are not penalized for schedule changes they did not cause. |
-| **No-Show** | `-5` | Flagged if the host reports a referee no-show. |
-| **Double Skip (Forced Offline)**| *Auto-Offline*| Skipping 2 bookings in a row sets status to `offline`. |
-| **Forced Offline Cooldown** | *Toggle Blocked*| Once set offline due to double-skipping, the umpire cannot switch back to `online` for **30 minutes**. |
+| Event / Action                      | Trust Points Impact | Business Rules & Triggers                                                                                                    |
+| :---------------------------------- | :-----------------: | :--------------------------------------------------------------------------------------------------------------------------- |
+| **Profile Creation**                |       `+100`        | Initial base balance on onboarding.                                                                                          |
+| **Booking Accepted**                |        `+1`         | Applied upon successful session checkout.                                                                                    |
+| **Review Received**                 |        `+1`         | Applied when customer rating is $\ge 4.0$ stars.                                                                             |
+| **Skip Booking**                    |       `-0.5`        | Applied on 30-second notification timeout.                                                                                   |
+| **Cancellation (More than 72 Hrs)** |       `-0.5`        | Allowed only outside the 72-hour match window.                                                                               |
+| **Cancellation (Less than 72 Hrs)** |      _Blocked_      | Umpires cannot cancel matches within 72 hours of kick-off.                                                                   |
+| **Rescheduling Exemption**          |         `0`         | If the match host reschedules, the 72-hour window resets. Umpires are not penalized for schedule changes they did not cause. |
+| **No-Show**                         |        `-5`         | Flagged if the host reports a referee no-show.                                                                               |
+| **Double Skip (Forced Offline)**    |   _Auto-Offline_    | Skipping 2 bookings in a row sets status to `offline`.                                                                       |
+| **Forced Offline Cooldown**         |  _Toggle Blocked_   | Once set offline due to double-skipping, the umpire cannot switch back to `online` for **30 minutes**.                       |
 
 ---
 
@@ -114,43 +120,53 @@ Umpire reliability is tracked via a points system. High points translate to high
 To build a reliable platform, developers must implement the following safeguards:
 
 ### 6.1 Concurrency Lock (Compare-and-Swap / SELECT FOR UPDATE)
+
 To prevent race conditions during simultaneous accepts (e.g. from the active notification vs a skipped list re-claim), use a database transaction with a write lock:
-* **Database Field**: Add `lockedByUmpireId` and `notifiedUmpireId` to the `Booking` schema.
-* **SQL Lock Pattern**:
+
+- **Database Field**: Add `lockedByUmpireId` and `notifiedUmpireId` to the `Booking` schema.
+- **SQL Lock Pattern**:
+
   ```sql
   -- Atomic state verification block
   BEGIN;
-  SELECT id, status, "lockedByUmpireId", "notifiedUmpireId" 
-  FROM "Booking" 
+  SELECT id, status, "lockedByUmpireId", "notifiedUmpireId"
+  FROM "Booking"
   WHERE id = :bookingId FOR UPDATE;
-  
+
   -- If lockedByUmpireId is already populated, fail immediately.
   -- If the accepting umpire is NOT the notifiedUmpireId, check if another active notification exists.
   COMMIT;
   ```
 
 ### 6.2 Server-Side Expiry Timers
+
 Do not rely on the client browser or mobile app to manage the 30-second timeout.
-* **Scheduler**: Implement a queue scheduler (e.g. **BullMQ** or **Agenda** in Node.js) to schedule a job when a notification is sent.
-* **Job Execution**: The job runs after 30 seconds, verifies if the booking is still pending, marks it as `SKIPPED` for the current candidate, and dispatches to the next candidate.
+
+- **Scheduler**: Implement a queue scheduler (e.g. **BullMQ** or **Agenda** in Node.js) to schedule a job when a notification is sent.
+- **Job Execution**: The job runs after 30 seconds, verifies if the booking is still pending, marks it as `SKIPPED` for the current candidate, and dispatches to the next candidate.
 
 ### 6.3 Real-Time WebSocket Push (Preventing Stale UI)
+
 To prevent umpires from seeing and trying to accept already-booked matches on their "Skipped Requests" screen:
-* **WebSockets**: Integrate Socket.io. When a booking moves from `PENDING` to `ACCEPTED`, emit a broadcast:
+
+- **WebSockets**: Integrate Socket.io. When a booking moves from `PENDING` to `ACCEPTED`, emit a broadcast:
   ```javascript
-  io.emit('booking_claimed', { bookingId: booking.id });
+  io.emit("booking_claimed", { bookingId: booking.id });
   ```
-* **Client Handler**: The app intercepts this event and removes the card from the UI.
+- **Client Handler**: The app intercepts this event and removes the card from the UI.
 
 ### 6.4 Estimated vs Maps API Travel Fallbacks
-* **Fallback Config**: Implement a feature flag to toggle travel time calculations.
-  * `travel_time_source: estimated`: Uses the Haversine distance formula with a 40 km/h speed estimate.
-  * `travel_time_source: maps_api`: Queries the Google Distance Matrix API for real-time traffic routing.
-* **Platform Variables**: Store the travel buffer time (default: 1 hour) as a global setting key (`officiating_travel_buffer_mins`) rather than hardcoding it in the codebase.
+
+- **Fallback Config**: Implement a feature flag to toggle travel time calculations.
+  - `travel_time_source: estimated`: Uses the Haversine distance formula with a 40 km/h speed estimate.
+  - `travel_time_source: maps_api`: Queries the Google Distance Matrix API for real-time traffic routing.
+- **Platform Variables**: Store the travel buffer time (default: 1 hour) as a global setting key (`officiating_travel_buffer_mins`) rather than hardcoding it in the codebase.
 
 ### 6.5 Append-Only Trust Ledger (`TrustEvent`)
+
 Never update the umpire's trust score directly in a single database column without an audit trail.
-* **Schema**: Log every point change in a ledger table:
+
+- **Schema**: Log every point change in a ledger table:
   ```prisma
   model TrustEvent {
     id         String   @id @default(uuid())
@@ -162,9 +178,10 @@ Never update the umpire's trust score directly in a single database column witho
     umpire     User     @relation(fields: [umpireId], references: [id])
   }
   ```
-* **Score Computation**: The active rating score is computed dynamically via `SUM(delta)` or synced periodically to a cached field on the profile.
+- **Score Computation**: The active rating score is computed dynamically via `SUM(delta)` or synced periodically to a cached field on the profile.
 
 ### 6.6 Booking State Machine
+
 Explicitly restrict status transitions in the database using this state model:
 
 ```
@@ -193,5 +210,6 @@ Explicitly restrict status transitions in the database using this state model:
 ```
 
 ### 6.7 Idempotency Validation (Notification Token)
-* **Idempotency Token**: Each notification dispatch generates a unique `notification_token` saved in cache (Redis) with a 35-second TTL.
-* **Verification**: The `/api/bookings/accept` endpoint requires this token. If a duplicate call with the same token is received, the server returns the first success response without running the database transaction twice.
+
+- **Idempotency Token**: Each notification dispatch generates a unique `notification_token` saved in cache (Redis) with a 35-second TTL.
+- **Verification**: The `/api/bookings/accept` endpoint requires this token. If a duplicate call with the same token is received, the server returns the first success response without running the database transaction twice.

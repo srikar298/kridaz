@@ -32,7 +32,9 @@ export const getCurrentTokenVersion = async (userId) => {
       if (Number.isFinite(n)) return n;
     }
   } catch (err) {
-    logger.warn("[tokenVersion] Redis GET failed, falling through to DB", { error: err.message });
+    logger.warn("[tokenVersion] Redis GET failed, falling through to DB", {
+      error: err.message,
+    });
   }
 
   const row = await prisma.user.findUnique({
@@ -62,8 +64,12 @@ export const bumpTokenVersion = async (userId) => {
     select: { tokenVersion: true },
   });
   // Invalidate cache so the next verify sees the new value immediately.
-  try { await redisClient.del(cacheKey(userId)); } catch (err) {
-    logger.warn("[tokenVersion] Redis DEL failed after bump", { error: err.message });
+  try {
+    await redisClient.del(cacheKey(userId));
+  } catch (err) {
+    logger.warn("[tokenVersion] Redis DEL failed after bump", {
+      error: err.message,
+    });
   }
   return updated.tokenVersion;
 };
@@ -88,7 +94,9 @@ export const isTokenVersionStale = async (decoded) => {
     if (current === null) return false; // user gone — let other middleware decide
     return decoded.tv < current;
   } catch (err) {
-    logger.warn("[tokenVersion] verify failed, failing open", { error: err.message });
+    logger.warn("[tokenVersion] verify failed, failing open", {
+      error: err.message,
+    });
     return false;
   }
 };

@@ -16,8 +16,8 @@ const ProfessionalLayout = () => {
       <AuthenticatedNavbar toggleSidebar={toggleSidebar} />
 
       <div className="flex flex-1 pt-32 lg:pt-40">
-        <div 
-          onMouseEnter={() => window.innerWidth >= 1024 && setIsHovered(true)} 
+        <div
+          onMouseEnter={() => window.innerWidth >= 1024 && setIsHovered(true)}
           onMouseLeave={() => window.innerWidth >= 1024 && setIsHovered(false)}
           className="z-50"
         >
@@ -25,7 +25,7 @@ const ProfessionalLayout = () => {
             isOpen={isOpen}
             toggleSidebar={toggleSidebar}
             isMinimized={isMinimized}
-            className={`${ isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0" }`}
+            className={`${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
           />
         </div>
         <main

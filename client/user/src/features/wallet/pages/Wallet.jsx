@@ -1,12 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axiosInstance from "@hooks/useAxiosInstance";
-import { Wallet, Plus, ArrowUpRight, ArrowDownLeft, History, IndianRupee, Loader2, Zap } from "lucide-react";
+import {
+  Wallet,
+  Plus,
+  ArrowUpRight,
+  ArrowDownLeft,
+  History,
+  IndianRupee,
+  Loader2,
+  Zap,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import { updateUser } from "@redux/slices/authSlice";
 import { loadRazorpay } from "@infrastructure/razorpay";
 
-const SUBHEADING_STYLE = { fontFamily: "'Inter 28pt Light', sans-serif", fontWeight: 300 };
+const SUBHEADING_STYLE = {
+  fontFamily: "'Inter 28pt Light', sans-serif",
+  fontWeight: 300,
+};
 
 const WalletPage = () => {
   const { user } = useSelector((state) => state.auth);
@@ -44,10 +56,13 @@ const WalletPage = () => {
     }
     try {
       setIsValidatingCoupon(true);
-      const { data } = await axiosInstance.post("/api/user/wallet/topup/validate-coupon", {
-        code: couponCode,
-        amount: Number(topupAmount)
-      });
+      const { data } = await axiosInstance.post(
+        "/api/user/wallet/topup/validate-coupon",
+        {
+          code: couponCode,
+          amount: Number(topupAmount),
+        }
+      );
       if (data.success) {
         setIsCouponValid(true);
         setDiscountAmount(data.discount);
@@ -75,10 +90,12 @@ const WalletPage = () => {
       setReservedBalance(response.data.reservedBalance);
       setUsableBalance(response.data.usableBalance);
       setTransactions(response.data.transactions);
-      dispatch(updateUser({ 
-        walletBalance: response.data.balance,
-        reservedBalance: response.data.reservedBalance 
-      }));
+      dispatch(
+        updateUser({
+          walletBalance: response.data.balance,
+          reservedBalance: response.data.reservedBalance,
+        })
+      );
     } catch (error) {
       console.error("Error fetching wallet data:", error);
       toast.error("Failed to load wallet data");
@@ -95,10 +112,13 @@ const WalletPage = () => {
 
     try {
       setIsProcessing(true);
-      const { data } = await axiosInstance.post("/api/user/wallet/topup/create-order", {
-        amount: Number(topupAmount),
-        couponCode: isCouponValid ? couponCode : undefined,
-      });
+      const { data } = await axiosInstance.post(
+        "/api/user/wallet/topup/create-order",
+        {
+          amount: Number(topupAmount),
+          couponCode: isCouponValid ? couponCode : undefined,
+        }
+      );
 
       if (data.payableAmount === 0) {
         toast.success("Wallet topped up successfully!");
@@ -119,7 +139,10 @@ const WalletPage = () => {
         order_id: data.order.id,
         handler: async (response) => {
           try {
-            const verifyRes = await axiosInstance.post("/api/user/wallet/topup/verify", response);
+            const verifyRes = await axiosInstance.post(
+              "/api/user/wallet/topup/verify",
+              response
+            );
             if (verifyRes.data.success) {
               toast.success("Wallet topped up successfully!");
               setTopupAmount("");
@@ -134,7 +157,7 @@ const WalletPage = () => {
         modal: {
           ondismiss: () => {
             setIsProcessing(false);
-          }
+          },
         },
         prefill: {
           name: user?.name || "",
@@ -172,8 +195,15 @@ const WalletPage = () => {
       <div className="max-w-4xl mx-auto space-y-4">
         {/* Header */}
         <div className="space-y-2">
-          <h1 className="text-[20px] font-black uppercase tracking-tight font-open-sans">My Wallet</h1>
-          <p className="text-white/70 uppercase tracking-widest text-[11px]" style={SUBHEADING_STYLE}>Manage your coins & transactions</p>
+          <h1 className="text-[20px] font-black uppercase tracking-tight font-open-sans">
+            My Wallet
+          </h1>
+          <p
+            className="text-white/70 uppercase tracking-widest text-[11px]"
+            style={SUBHEADING_STYLE}
+          >
+            Manage your coins & transactions
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
@@ -188,28 +218,44 @@ const WalletPage = () => {
                   <div className="p-2 bg-[#1B1B1B] rounded-[12px] backdrop-blur-sm">
                     <Zap className="w-5 h-5 text-[#BFF367]" />
                   </div>
-                  <span className="font-inter text-[20px] font-black uppercase text-white/70 tracking-wider text-[11px]">Available Coins</span>
+                  <span className="font-inter text-[20px] font-black uppercase text-white/70 tracking-wider text-[11px]">
+                    Available Coins
+                  </span>
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-4xl font-black text-white tracking-tighter font-open-sans">{usableBalance}</span>
+                    <span className="text-4xl font-black text-white tracking-tighter font-open-sans">
+                      {usableBalance}
+                    </span>
                     <IndianRupee className="w-8 h-8 text-white/50 mt-4" />
                   </div>
-                  <p className="font-inter text-[12px] font-bold text-[#BFF367] uppercase">Spendable Coins Right Now</p>
+                  <p className="font-inter text-[12px] font-bold text-[#BFF367] uppercase">
+                    Spendable Coins Right Now
+                  </p>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-2 bg-[#1B1B1B] rounded-[16px] backdrop-blur-sm">
-                    <p className="font-inter text-xs font-black uppercase text-white/70 mb-1 tracking-widest">Total</p>
-                    <p className="text-lg font-black text-white tracking-tighter font-open-sans">{balance}</p>
+                    <p className="font-inter text-xs font-black uppercase text-white/70 mb-1 tracking-widest">
+                      Total
+                    </p>
+                    <p className="text-lg font-black text-white tracking-tighter font-open-sans">
+                      {balance}
+                    </p>
                   </div>
                   <div className="p-2 bg-[#1B1B1B] rounded-[16px] backdrop-blur-sm">
-                    <p className="font-inter text-xs font-black uppercase text-white/70 mb-1 tracking-widest">Reserved</p>
-                    <p className="text-lg font-black text-white tracking-tighter font-open-sans">{reservedBalance}</p>
+                    <p className="font-inter text-xs font-black uppercase text-white/70 mb-1 tracking-widest">
+                      Reserved
+                    </p>
+                    <p className="text-lg font-black text-white tracking-tighter font-open-sans">
+                      {reservedBalance}
+                    </p>
                   </div>
                 </div>
                 <div className="pt-4 border-t border-white/10">
-                  <p className="font-inter text-xs font-bold text-white/50 uppercase tracking-widest text-[9px]">Last updated: {new Date().toLocaleTimeString()}</p>
+                  <p className="font-inter text-xs font-bold text-white/50 uppercase tracking-widest text-[9px]">
+                    Last updated: {new Date().toLocaleTimeString()}
+                  </p>
                 </div>
               </div>
             </div>
@@ -255,10 +301,14 @@ const WalletPage = () => {
                     disabled={isValidatingCoupon || !couponCode}
                     className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#1B1B1B] text-[#BFF367] px-3 py-1 rounded-[12px] text-xs font-bold uppercase disabled:opacity-50"
                   >
-                    {isValidatingCoupon ? <Loader2 className="w-4 h-4 animate-spin" /> : "Apply"}
+                    {isValidatingCoupon ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      "Apply"
+                    )}
                   </button>
                 </div>
-                
+
                 {isCouponValid && (
                   <div className="bg-[#1B1B1B] p-3 rounded-[12px] text-xs font-inter space-y-1">
                     <div className="flex justify-between text-white/70">
@@ -301,7 +351,9 @@ const WalletPage = () => {
                 <History className="w-5 h-5 text-[#BFF367]" />
                 Coin Activity
               </h2>
-              <span className="font-inter text-xs font-bold text-white/50 uppercase tracking-widest">Recent 20 entries</span>
+              <span className="font-inter text-xs font-bold text-white/50 uppercase tracking-widest">
+                Recent 20 entries
+              </span>
             </div>
             <div className="flex-1 overflow-y-auto max-h-[600px] scrollbar-hide">
               {transactions.length === 0 ? (
@@ -309,77 +361,109 @@ const WalletPage = () => {
                   <div className="p-6 bg-zinc-800/50 rounded-full">
                     <History className="w-12 h-12 text-zinc-600" />
                   </div>
-                  <p className="text-zinc-500 font-bold uppercase text-xs font-inter">No transactions yet</p>
+                  <p className="text-zinc-500 font-bold uppercase text-xs font-inter">
+                    No transactions yet
+                  </p>
                 </div>
               ) : (
                 <div className="divide-y divide-white/10 font-inter">
                   {transactions.map((tx) => {
-                    const isPositive = ['TOPUP', 'OFFER', 'REFUND', 'SLOT_INCOME', 'CREDIT'].includes(tx.type);
+                    const isPositive = [
+                      "TOPUP",
+                      "OFFER",
+                      "REFUND",
+                      "SLOT_INCOME",
+                      "CREDIT",
+                    ].includes(tx.type);
                     return (
-                    <div key={tx._id || tx.id} className="p-4 flex items-center justify-between hover:bg-[#1B1B1B]/50 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2.5 rounded-[12px] ${ isPositive ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500" }`}>
-                          {isPositive ? <ArrowDownLeft className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
-                        </div>
-                        <div>
-                          <p className="font-bold text-sm text-zinc-200 font-inter">
-                            {tx.description || tx.type}
-                            {tx.description?.toLowerCase().includes("bonus") && (
-                              <span className="ml-2 px-2 py-0.5 bg-gradient-to-r from-[#BFF367]/10 to-[#BFF367]/10 text-transparent bg-clip-text bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-[8px] font-black uppercase rounded-md border border-[#BFF367]/20 font-inter">
-                                Platform Offer
-                              </span>
+                      <div
+                        key={tx._id || tx.id}
+                        className="p-4 flex items-center justify-between hover:bg-[#1B1B1B]/50 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`p-2.5 rounded-[12px] ${isPositive ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"}`}
+                          >
+                            {isPositive ? (
+                              <ArrowDownLeft className="w-5 h-5" />
+                            ) : (
+                              <ArrowUpRight className="w-5 h-5" />
                             )}
-                          </p>
-                          <p className="text-[10px] text-zinc-500 font-bold uppercase font-inter">
-                            {new Date(tx.createdAt).toLocaleDateString()} • {new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </p>
+                          </div>
+                          <div>
+                            <p className="font-bold text-sm text-zinc-200 font-inter">
+                              {tx.description || tx.type}
+                              {tx.description
+                                ?.toLowerCase()
+                                .includes("bonus") && (
+                                <span className="ml-2 px-2 py-0.5 bg-gradient-to-r from-[#BFF367]/10 to-[#BFF367]/10 text-transparent bg-clip-text bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-[8px] font-black uppercase rounded-md border border-[#BFF367]/20 font-inter">
+                                  Platform Offer
+                                </span>
+                              )}
+                            </p>
+                            <p className="text-[10px] text-zinc-500 font-bold uppercase font-inter">
+                              {new Date(tx.createdAt).toLocaleDateString()} •{" "}
+                              {new Date(tx.createdAt).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="text-right font-inter">
-                        <p className={`font-black text-lg font-open-sans ${ isPositive ? "text-emerald-500" : "text-zinc-200" }`}>
-                          {isPositive ? "+" : "-"}{tx.amount}
-                        </p>
-                        <div className="flex flex-col items-end gap-1 font-inter">
-                          <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full font-inter ${ tx.status === "SUCCESS" ? "bg-[#BFF367]/10 text-[#BFF367]" : tx.status === "PENDING" ? "bg-amber-500/10 text-amber-500" : "bg-rose-500/10 text-rose-500" }`}>
-                            {tx.status}
-                          </span>
-                          {tx.status === "PENDING" && tx.type === "TOPUP" && (
-                            <div className="flex gap-2 font-inter">
-                              <button 
-                                onClick={async () => {
-                                  try {
-                                    const { data } = await axiosInstance.get(`/api/user/wallet/topup/check-status/${tx.razorpayOrderId}`);
-                                    if (data.success) {
-                                      toast.success(data.message);
-                                      fetchWalletData();
-                                    } else {
-                                      toast.error(data.message);
+                        <div className="text-right font-inter">
+                          <p
+                            className={`font-black text-lg font-open-sans ${isPositive ? "text-emerald-500" : "text-zinc-200"}`}
+                          >
+                            {isPositive ? "+" : "-"}
+                            {tx.amount}
+                          </p>
+                          <div className="flex flex-col items-end gap-1 font-inter">
+                            <span
+                              className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full font-inter ${tx.status === "SUCCESS" ? "bg-[#BFF367]/10 text-[#BFF367]" : tx.status === "PENDING" ? "bg-amber-500/10 text-amber-500" : "bg-rose-500/10 text-rose-500"}`}
+                            >
+                              {tx.status}
+                            </span>
+                            {tx.status === "PENDING" && tx.type === "TOPUP" && (
+                              <div className="flex gap-2 font-inter">
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      const { data } = await axiosInstance.get(
+                                        `/api/user/wallet/topup/check-status/${tx.razorpayOrderId}`
+                                      );
+                                      if (data.success) {
+                                        toast.success(data.message);
+                                        fetchWalletData();
+                                      } else {
+                                        toast.error(data.message);
+                                      }
+                                    } catch (error) {
+                                      toast.error("Failed to check status");
                                     }
-                                  } catch (error) {
-                                    toast.error("Failed to check status");
-                                  }
-                                }}
-                                className="text-[8px] font-bold text-[#BFF367] hover:underline uppercase"
-                              >
-                                Check Status
-                              </button>
-                              <span className="text-[8px] text-zinc-600">|</span>
-                              <button 
-                                onClick={() => {
-                                  setTopupAmount(tx.amount.toString());
-                                  handleTopup();
-                                }}
-                                className="text-[8px] font-bold text-zinc-400 hover:underline uppercase"
-                              >
-                                Retry
-                              </button>
-                            </div>
-                          )}
+                                  }}
+                                  className="text-[8px] font-bold text-[#BFF367] hover:underline uppercase"
+                                >
+                                  Check Status
+                                </button>
+                                <span className="text-[8px] text-zinc-600">
+                                  |
+                                </span>
+                                <button
+                                  onClick={() => {
+                                    setTopupAmount(tx.amount.toString());
+                                    handleTopup();
+                                  }}
+                                  className="text-[8px] font-bold text-zinc-400 hover:underline uppercase"
+                                >
+                                  Retry
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
                 </div>
               )}
             </div>

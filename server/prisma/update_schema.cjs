@@ -1,5 +1,5 @@
-const fs = require('fs');
-const lines = fs.readFileSync('schema.prisma', 'utf8').split(/\r?\n/);
+const fs = require("fs");
+const lines = fs.readFileSync("schema.prisma", "utf8").split(/\r?\n/);
 
 let inUser = false;
 let inTurf = false;
@@ -9,38 +9,53 @@ let inTeam = false;
 
 for (let i = 0; i < lines.length; i++) {
   const line = lines[i];
-  
-  if (line.startsWith('model User {')) inUser = true;
-  if (inUser && line.includes('@@index([role])')) {
-    lines.splice(i, 0, '  ownedTournaments    Tournament[]         @relation("TournamentOwner")', '  tournamentOfficials TournamentOfficial[]');
+
+  if (line.startsWith("model User {")) inUser = true;
+  if (inUser && line.includes("@@index([role])")) {
+    lines.splice(
+      i,
+      0,
+      '  ownedTournaments    Tournament[]         @relation("TournamentOwner")',
+      "  tournamentOfficials TournamentOfficial[]"
+    );
     inUser = false;
     i += 2;
   }
 
-  if (line.startsWith('model Turf {')) inTurf = true;
-  if (inTurf && line.includes('@@index([ownerId])')) {
-    lines.splice(i, 0, '  tournamentVenues TournamentVenue[]');
+  if (line.startsWith("model Turf {")) inTurf = true;
+  if (inTurf && line.includes("@@index([ownerId])")) {
+    lines.splice(i, 0, "  tournamentVenues TournamentVenue[]");
     inTurf = false;
     i += 1;
   }
 
-  if (line.startsWith('model WalletTransaction {')) inWalletTx = true;
-  if (inWalletTx && line.includes('@@index([userId, createdAt])')) {
-    lines.splice(i, 0, '  tournamentId String?', '  tournament   Tournament? @relation(fields: [tournamentId], references: [id])');
+  if (line.startsWith("model WalletTransaction {")) inWalletTx = true;
+  if (inWalletTx && line.includes("@@index([userId, createdAt])")) {
+    lines.splice(
+      i,
+      0,
+      "  tournamentId String?",
+      "  tournament   Tournament? @relation(fields: [tournamentId], references: [id])"
+    );
     inWalletTx = false;
     i += 2;
   }
 
-  if (line.startsWith('model HostedGame {')) inHostedGame = true;
-  if (inHostedGame && line === '}') {
-    lines.splice(i, 0, '  tournamentId       String?', '  tournament         Tournament?          @relation(fields: [tournamentId], references: [id])');
+  if (line.startsWith("model HostedGame {")) inHostedGame = true;
+  if (inHostedGame && line === "}") {
+    lines.splice(
+      i,
+      0,
+      "  tournamentId       String?",
+      "  tournament         Tournament?          @relation(fields: [tournamentId], references: [id])"
+    );
     inHostedGame = false;
     i += 2;
   }
 
-  if (line.startsWith('model Team {')) inTeam = true;
-  if (inTeam && line === '}') {
-    lines.splice(i, 0, '  tournamentTeams          TournamentTeam[]');
+  if (line.startsWith("model Team {")) inTeam = true;
+  if (inTeam && line === "}") {
+    lines.splice(i, 0, "  tournamentTeams          TournamentTeam[]");
     inTeam = false;
     i += 1;
   }
@@ -133,5 +148,5 @@ model TournamentVenue {
 }
 `;
 
-fs.writeFileSync('schema.prisma', lines.join('\n') + '\n' + newModels);
-console.log('Schema updated successfully');
+fs.writeFileSync("schema.prisma", lines.join("\n") + "\n" + newModels);
+console.log("Schema updated successfully");

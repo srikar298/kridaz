@@ -3,10 +3,13 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "@redux/slices/authSlice";
 import axiosInstance from "@hooks/useAxiosInstance";
-import { fetchStates, fetchCities } from "../../../shared/utils/locationService";
-import { 
-  Search, 
-  MapPin, 
+import {
+  fetchStates,
+  fetchCities,
+} from "../../../shared/utils/locationService";
+import {
+  Search,
+  MapPin,
   Users,
   ShieldCheck,
   Swords,
@@ -18,7 +21,7 @@ import {
   UserPlus,
   Eye,
   EyeOff,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -34,9 +37,14 @@ const HEADING_STYLE = { fontFamily: "'Inter', sans-serif" };
 const SUBHEADING_STYLE = { fontFamily: "'Inter', sans-serif", fontWeight: 400 };
 const SNAP_STATES = { COLLAPSED: 0, HALF: 33, EXPANDED: 85 };
 
-
-
-const PlayerCard = ({ player, followingIds = [], handleFollowToggle, handleAvatarClick, navigate, gateInteraction }) => {
+const PlayerCard = ({
+  player,
+  followingIds = [],
+  handleFollowToggle,
+  handleAvatarClick,
+  navigate,
+  gateInteraction,
+}) => {
   const playerId = player.id || player._id;
   const isFollowing = followingIds.includes(playerId);
   const initials =
@@ -49,7 +57,11 @@ const PlayerCard = ({ player, followingIds = [], handleFollowToggle, handleAvata
 
   const city = player.city ? player.city.split(",")[0].trim() : "Nearby";
   const locationText = city;
-  const primarySport = player.preferredSport || (player.sportTypes && player.sportTypes[0]) || (player.interests && player.interests[0]) || "Athlete";
+  const primarySport =
+    player.preferredSport ||
+    (player.sportTypes && player.sportTypes[0]) ||
+    (player.interests && player.interests[0]) ||
+    "Athlete";
 
   return (
     <motion.div
@@ -75,7 +87,8 @@ const PlayerCard = ({ player, followingIds = [], handleFollowToggle, handleAvata
       <div
         className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-[#000000]"
         style={{
-          display: player.profilePicture || player.profileImage ? "none" : "flex",
+          display:
+            player.profilePicture || player.profileImage ? "none" : "flex",
         }}
       >
         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] font-inter font-[700] text-4xl opacity-50">
@@ -87,19 +100,17 @@ const PlayerCard = ({ player, followingIds = [], handleFollowToggle, handleAvata
       <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-[#000000]/60 to-transparent" />
 
       {/* Primary Sport badge - Top Right */}
-      <div
-        className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full text-[9px] font-[700] font-inter text-[#000000] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] z-10"
-      >
+      <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full text-[9px] font-[700] font-inter text-[#000000] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] z-10">
         {primarySport}
       </div>
-      
+
       {/* Bottom Content */}
       <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col z-10">
         {/* Player Name */}
         <h3 className="text-[#FFFFFF] text-[14px] font-[600] leading-[20px] line-clamp-1 mb-0.5 font-inter">
           {player.name || "Anonymous"}
         </h3>
-        
+
         {/* Location: City */}
         <p className="text-[rgba(255,255,255,0.70)] text-[11px] font-[400] leading-[14px] line-clamp-1 mb-3 font-inter">
           {locationText}
@@ -120,7 +131,7 @@ const PlayerCard = ({ player, followingIds = [], handleFollowToggle, handleAvata
           >
             {isFollowing ? "Following" : "Follow"}
           </button>
-          
+
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -139,10 +150,14 @@ const PlayerCard = ({ player, followingIds = [], handleFollowToggle, handleAvata
 
 const TeamCard = ({ team, navigate }) => {
   const sportBanners = {
-    Cricket: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067&auto=format&fit=crop',
-    Football: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2076&auto=format&fit=crop',
-    Basketball: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=2090&auto=format&fit=crop',
-    default: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2070&auto=format&fit=crop',
+    Cricket:
+      "https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067&auto=format&fit=crop",
+    Football:
+      "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2076&auto=format&fit=crop",
+    Basketball:
+      "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=2090&auto=format&fit=crop",
+    default:
+      "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2070&auto=format&fit=crop",
   };
   const banner = sportBanners[team.sportType] || sportBanners.default;
 
@@ -152,7 +167,7 @@ const TeamCard = ({ team, navigate }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       whileHover={{ y: -4 }}
-      transition={{ duration: 0.35, ease: 'easeOut' }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
       onClick={() => navigate(`/team/${team._id}`)}
       className="relative bg-[#121212] rounded-[16px] border border-[rgba(255,255,255,0.08)] overflow-hidden flex flex-col cursor-pointer group hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)] transition-shadow duration-500"
     >
@@ -169,7 +184,7 @@ const TeamCard = ({ team, navigate }) => {
           className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[9px] font-[700] font-inter text-[#000000]"
           style={{ background: GRAD }}
         >
-          {team.sportType || 'Sport'}
+          {team.sportType || "Sport"}
         </div>
       </div>
 
@@ -179,10 +194,16 @@ const TeamCard = ({ team, navigate }) => {
         <div className="relative">
           <div
             className="w-10 h-10 rounded-full border border-[#121212] overflow-hidden bg-[#1B1B1B] flex items-center justify-center"
-            style={{ boxShadow: '0 0 0 2px #B3DC26, 0 0 16px rgba(179,220,38,0.35)' }}
+            style={{
+              boxShadow: "0 0 0 2px #B3DC26, 0 0 16px rgba(179,220,38,0.35)",
+            }}
           >
             {team.logo ? (
-              <img src={team.logo} alt="" className="w-full h-full object-cover" />
+              <img
+                src={team.logo}
+                alt=""
+                className="w-full h-full object-cover"
+              />
             ) : (
               <span className="text-[#B3DC26] font-inter font-[700] text-sm leading-none">
                 {team.name?.charAt(0).toUpperCase()}
@@ -194,32 +215,39 @@ const TeamCard = ({ team, navigate }) => {
 
       {/* ── Body ── */}
       <div className="flex-1 px-3 pb-3 flex flex-col gap-2.5">
-
         {/* Name + Location */}
         <div>
-          <h3
-            className="text-[#FFFFFF] text-[13px] font-[600] leading-[18px] font-inter line-clamp-1"
-          >
+          <h3 className="text-[#FFFFFF] text-[13px] font-[600] leading-[18px] font-inter line-clamp-1">
             {team.name}
           </h3>
           <p className="text-[rgba(255,255,255,0.70)] text-[11px] font-[400] leading-[14px] font-inter mt-0.5 flex items-center gap-1">
             <MapPin size={10} className="text-[#B3DC26]" />
-            {team.city || 'N/A'}
+            {team.city || "N/A"}
           </p>
         </div>
 
         {/* Stats inline row */}
         <div className="flex items-center gap-1.5 text-[10px] font-[500] text-[rgba(255,255,255,0.60)] font-inter">
-          <span><span className="text-[#FFFFFF] font-[600]">{team.memberCount || 1}</span> Members</span>
+          <span>
+            <span className="text-[#FFFFFF] font-[600]">
+              {team.memberCount || 1}
+            </span>{" "}
+            Members
+          </span>
           <span className="text-white/15">·</span>
-          <span><span className="text-[#FFFFFF] font-[600]">{team.matchesPlayed || 0}</span> Matches</span>
+          <span>
+            <span className="text-[#FFFFFF] font-[600]">
+              {team.matchesPlayed || 0}
+            </span>{" "}
+            Matches
+          </span>
         </div>
 
         {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-1.5 mt-auto">
           <Link
             to={`/team/${team._id}`}
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
             className="h-6 rounded-[6px] font-inter text-[9px] font-[600] leading-[12px] text-[#000000] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0px_8px_24px_rgba(179,220,38,0.15)] flex items-center justify-center gap-1 active:scale-[0.98] hover:scale-[1.02] transition-all"
           >
             <UserPlus size={10} strokeWidth={2} />
@@ -227,7 +255,7 @@ const TeamCard = ({ team, navigate }) => {
           </Link>
           <Link
             to={`/team/${team._id}`}
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
             className="h-6 rounded-[6px] font-inter text-[9px] font-[600] leading-[12px] bg-[#1B1B1B] text-[#FFFFFF] border border-[rgba(255,255,255,0.08)] flex items-center justify-center gap-1 hover:brightness-110 active:scale-[0.98] transition-all"
           >
             <Swords size={10} />
@@ -237,13 +265,13 @@ const TeamCard = ({ team, navigate }) => {
       </div>
 
       {/* Subtle glow border on hover */}
-      <div className="absolute inset-0 rounded-[16px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-        style={{ boxShadow: 'inset 0 0 0 1px rgba(179,220,38,0.2)' }}
+      <div
+        className="absolute inset-0 rounded-[16px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{ boxShadow: "inset 0 0 0 1px rgba(179,220,38,0.2)" }}
       />
     </motion.div>
   );
 };
-
 
 const FindPlayers = () => {
   const { user: currentUser } = useSelector((state) => state.auth);
@@ -260,17 +288,17 @@ const FindPlayers = () => {
   const [filters, setFilters] = useState({ state: "", city: "", sport: "" });
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get("tab") || "players";
-  
+
   const setActiveTab = (tab) => {
     setSearchParams({ tab });
   };
   const [teams, setTeams] = useState([]);
   const [viewingStoryGroup, setViewingStoryGroup] = useState(null);
-  
+
   const [snapState, setSnapState] = useState("HALF");
   const [selectedRadius, setSelectedRadius] = useState(5);
   const [isRadiusChanging, setIsRadiusChanging] = useState(false);
-  
+
   const [statesList, setStatesList] = useState([]);
   const [citiesList, setCitiesList] = useState([]);
 
@@ -298,7 +326,11 @@ const FindPlayers = () => {
   const [userLocation, setUserLocation] = useState(() => {
     const cached = localStorage.getItem("kridaz_guest_location");
     if (cached) {
-      try { return JSON.parse(cached); } catch(e) { /* ignore */ }
+      try {
+        return JSON.parse(cached);
+      } catch (e) {
+        /* ignore */
+      }
     }
     return null;
   });
@@ -306,7 +338,7 @@ const FindPlayers = () => {
   const lastBoundsRef = useRef(null);
   const [currentZoom, setCurrentZoom] = useState(14);
   const [hasShownLimitToast, setHasShownLimitToast] = useState(false);
-  
+
   // Adaptive tracking & Privacy states
   const [isTrackingActive, setIsTrackingActive] = useState(true);
   const [isLocationSharing, setIsLocationSharing] = useState(() => {
@@ -325,7 +357,7 @@ const FindPlayers = () => {
   }, [currentUser?.locationSharingEnabled]);
   const [isMapTilesLoaded, setIsMapTilesLoaded] = useState(false);
   const [locationError, setLocationError] = useState(null);
-  
+
   const lastEmittedLocation = useRef(null);
   const lastEmitTime = useRef(0);
   const watchId = useRef(null);
@@ -334,61 +366,78 @@ const FindPlayers = () => {
 
   const clusterPlayers = (players, zoom, radiusPx) => {
     if (!players.length) return [];
-    
+
     const clusters = [];
     const assigned = new Set();
-    
+
     players.forEach((player, i) => {
       if (assigned.has(i)) return;
-      
+
       const nearby = players.filter((other, j) => {
         if (j === i || assigned.has(j)) return false;
         const latDiff = Math.abs(player.lat - other.lat);
         const lngDiff = Math.abs(player.lng - other.lng);
-        const pxPerDegree = 256 * Math.pow(2, zoom) / 360;
-        const distPx = Math.sqrt((latDiff * pxPerDegree)**2 + (lngDiff * pxPerDegree)**2);
+        const pxPerDegree = (256 * Math.pow(2, zoom)) / 360;
+        const distPx = Math.sqrt(
+          (latDiff * pxPerDegree) ** 2 + (lngDiff * pxPerDegree) ** 2
+        );
         return distPx < radiusPx;
       });
-      
+
       // If there is at least 1 other nearby player, form a cluster (total >= 2)
       if (nearby.length >= 1) {
         const clusterMembers = [player, ...nearby];
-        clusterMembers.forEach(member => {
-          const idx = players.findIndex(p => (p.id || p._id) === (member.id || member._id));
+        clusterMembers.forEach((member) => {
+          const idx = players.findIndex(
+            (p) => (p.id || p._id) === (member.id || member._id)
+          );
           if (idx !== -1) assigned.add(idx);
         });
-        
-        const centerLat = clusterMembers.reduce((s, p) => s + p.lat, 0) / clusterMembers.length;
-        const centerLng = clusterMembers.reduce((s, p) => s + p.lng, 0) / clusterMembers.length;
-        const previews = [...clusterMembers].sort(() => Math.random() - 0.5).slice(0, 3);
-        
-        clusters.push({ 
-          type: "cluster", 
-          lat: centerLat, 
-          lng: centerLng, 
-          count: clusterMembers.length, 
-          previews, 
+
+        const centerLat =
+          clusterMembers.reduce((s, p) => s + p.lat, 0) / clusterMembers.length;
+        const centerLng =
+          clusterMembers.reduce((s, p) => s + p.lng, 0) / clusterMembers.length;
+        const previews = [...clusterMembers]
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 3);
+
+        clusters.push({
+          type: "cluster",
+          lat: centerLat,
+          lng: centerLng,
+          count: clusterMembers.length,
+          previews,
           members: clusterMembers,
-          _id: `cluster-${centerLat}-${centerLng}-${clusterMembers.length}`
+          _id: `cluster-${centerLat}-${centerLng}-${clusterMembers.length}`,
         });
       } else {
         assigned.add(i);
         clusters.push({ type: "single", ...player });
       }
     });
-    
+
     return clusters;
   };
 
-  const sports = ["Cricket", "Football", "Badminton", "Tennis", "Basketball", "Volleyball", "Table Tennis"];
+  const sports = [
+    "Cricket",
+    "Football",
+    "Badminton",
+    "Tennis",
+    "Basketball",
+    "Volleyball",
+    "Table Tennis",
+  ];
 
   useEffect(() => {
     const handleVisibilityChange = () => {
       setIsTrackingActive(document.visibilityState === "visible");
     };
-    
+
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, []);
 
   useEffect(() => {
@@ -399,7 +448,7 @@ const FindPlayers = () => {
       }
       return;
     }
-    
+
     if (!("geolocation" in navigator)) {
       toast.error("Geolocation is not supported by your browser");
       return;
@@ -412,17 +461,24 @@ const FindPlayers = () => {
         const newLocation = {
           lat: newLat,
           lng: newLng,
-          profilePicture: currentUser?.profilePicture || currentUser?.profileImage
+          profilePicture:
+            currentUser?.profilePicture || currentUser?.profileImage,
         };
 
-        setUserLocation(prev => {
+        setUserLocation((prev) => {
           if (!prev) {
-            localStorage.setItem("kridaz_guest_location", JSON.stringify({ lat: newLat, lng: newLng }));
+            localStorage.setItem(
+              "kridaz_guest_location",
+              JSON.stringify({ lat: newLat, lng: newLng })
+            );
             return newLocation;
           }
           const dist = haversineMeters(prev.lat, prev.lng, newLat, newLng);
           if (dist > MOVEMENT_THRESHOLD_METERS) {
-            localStorage.setItem("kridaz_guest_location", JSON.stringify({ lat: newLat, lng: newLng }));
+            localStorage.setItem(
+              "kridaz_guest_location",
+              JSON.stringify({ lat: newLat, lng: newLng })
+            );
             return newLocation;
           }
           return prev;
@@ -432,14 +488,15 @@ const FindPlayers = () => {
         // Adaptive emitting logic
         if (socket && isLocationSharing) {
           const now = Date.now();
-          const shouldEmit = !lastEmittedLocation.current || 
+          const shouldEmit =
+            !lastEmittedLocation.current ||
             haversineMeters(
-              lastEmittedLocation.current.lat, 
+              lastEmittedLocation.current.lat,
               lastEmittedLocation.current.lng,
               newLocation.lat,
               newLocation.lng
             ) > MOVEMENT_THRESHOLD_METERS ||
-            (now - lastEmitTime.current) > HEARTBEAT_INTERVAL_MS;
+            now - lastEmitTime.current > HEARTBEAT_INTERVAL_MS;
 
           if (shouldEmit) {
             socket.emit("location:update", newLocation);
@@ -451,7 +508,8 @@ const FindPlayers = () => {
       (error) => {
         console.error("WatchPosition error:", error);
         setLocationError(error.message);
-        if (error.code === 1) { // PERMISSION_DENIED
+        if (error.code === 1) {
+          // PERMISSION_DENIED
           // Silently handle, UI will show map placeholder or error state
         }
       },
@@ -467,19 +525,19 @@ const FindPlayers = () => {
   }, [isTrackingActive, isLocationSharing, socket, activeTab]);
 
   useEffect(() => {
-    if (activeTab === 'players' && snapState !== 'COLLAPSED') {
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
+    if (activeTab === "players" && snapState !== "COLLAPSED") {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
-      if (activeTab === 'players' && snapState === 'COLLAPSED') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+      if (activeTab === "players" && snapState === "COLLAPSED") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     }
     return () => {
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     };
   }, [snapState, activeTab]);
 
@@ -493,7 +551,7 @@ const FindPlayers = () => {
       await axiosInstance.post("/api/user/players/location", {
         sharing: newState,
         lat: userLocation?.lat || 0,
-        lng: userLocation?.lng || 0
+        lng: userLocation?.lng || 0,
       });
 
       if (!newState) {
@@ -518,25 +576,28 @@ const FindPlayers = () => {
         city: filters.city,
         sportType: filters.sport,
         search: searchQuery,
-        radius: selectedRadius
+        radius: selectedRadius,
       };
-      
+
       const response = await axiosInstance.get("/api/user/players", {
         params: {
           state: filters.state,
           city: filters.city,
           sport: filters.sport,
           search: searchQuery,
-          ...(showNearbyOnly && userLocation ? {
-            lat: userLocation.lat,
-            lng: userLocation.lng,
-            radius: selectedRadius * 1000
-          } : {})
-        }
+          ...(showNearbyOnly && userLocation
+            ? {
+                lat: userLocation.lat,
+                lng: userLocation.lng,
+                radius: selectedRadius * 1000,
+              }
+            : {}),
+        },
       });
       if (response.data.success) {
         setPlayers(response.data.players || []);
-        if (response.data.followingIds) setFollowingIds(response.data.followingIds);
+        if (response.data.followingIds)
+          setFollowingIds(response.data.followingIds);
       }
     } catch (error) {
       console.error("Error fetching players:", error);
@@ -553,16 +614,18 @@ const FindPlayers = () => {
           lat: userLocation.lat,
           lng: userLocation.lng,
           radius: selectedRadius * 1000,
-          limit: 50
-        }
+          limit: 50,
+        },
       });
       if (res.data.success) {
         if (res.data.players.length > 100 && !hasShownLimitToast) {
-          toast("Showing top nearby players. Zoom in to see more.", { icon: "=ƒôì" });
+          toast("Showing top nearby players. Zoom in to see more.", {
+            icon: "=ƒôì",
+          });
           setHasShownLimitToast(true);
         }
         const mapPlayers = res.data.players
-          .map(p => ({
+          .map((p) => ({
             _id: p.id || p._id,
             name: p.name,
             username: p.username,
@@ -572,9 +635,9 @@ const FindPlayers = () => {
             distanceKm: p.distanceKm,
             city: p.city,
             sportTypes: p.sportTypes,
-            lastSeen: p.lastSeen
+            lastSeen: p.lastSeen,
           }))
-          .filter(p => p.lat != null && p.lng != null);
+          .filter((p) => p.lat != null && p.lng != null);
 
         setAllNearbyPlayers(mapPlayers);
       }
@@ -583,38 +646,45 @@ const FindPlayers = () => {
     }
   }, [userLocation, selectedRadius]);
 
-  const handleMapMove = useCallback((bounds, zoom) => {
-    lastBoundsRef.current = bounds;
-    if (zoom) setCurrentZoom(zoom);
-    if (!bounds || !allNearbyPlayers.length) {
-      if (allNearbyPlayers.length) {
-        setDisplayedPlayers(allNearbyPlayers.map(p => ({ type: "single", ...p })));
+  const handleMapMove = useCallback(
+    (bounds, zoom) => {
+      lastBoundsRef.current = bounds;
+      if (zoom) setCurrentZoom(zoom);
+      if (!bounds || !allNearbyPlayers.length) {
+        if (allNearbyPlayers.length) {
+          setDisplayedPlayers(
+            allNearbyPlayers.map((p) => ({ type: "single", ...p }))
+          );
+        }
+        return;
       }
-      return;
-    }
 
-    const visiblePlayers = allNearbyPlayers.filter(p => {
-      try {
-        return bounds.contains([p.lat, p.lng]);
-      } catch (e) {
-        return true; // Fallback to showing if bounds check fails
+      const visiblePlayers = allNearbyPlayers.filter((p) => {
+        try {
+          return bounds.contains([p.lat, p.lng]);
+        } catch (e) {
+          return true; // Fallback to showing if bounds check fails
+        }
+      });
+
+      let radiusPx = 60;
+      const z = zoom || currentZoom;
+      if (z < 13) radiusPx = 80;
+      else if (z >= 13 && z <= 15) radiusPx = 60;
+      else if (z > 15 && z <= 17) radiusPx = 30;
+      else radiusPx = 0;
+
+      if (radiusPx > 0 && visiblePlayers.length > 0) {
+        const clustered = clusterPlayers(visiblePlayers, z, radiusPx);
+        setDisplayedPlayers(clustered);
+      } else {
+        setDisplayedPlayers(
+          visiblePlayers.map((p) => ({ type: "single", ...p }))
+        );
       }
-    });
-    
-    let radiusPx = 60;
-    const z = zoom || currentZoom;
-    if (z < 13) radiusPx = 80;
-    else if (z >= 13 && z <= 15) radiusPx = 60;
-    else if (z > 15 && z <= 17) radiusPx = 30;
-    else radiusPx = 0;
-
-    if (radiusPx > 0 && visiblePlayers.length > 0) {
-      const clustered = clusterPlayers(visiblePlayers, z, radiusPx);
-      setDisplayedPlayers(clustered);
-    } else {
-      setDisplayedPlayers(visiblePlayers.map(p => ({ type: "single", ...p })));
-    }
-  }, [allNearbyPlayers, currentZoom]);
+    },
+    [allNearbyPlayers, currentZoom]
+  );
 
   useEffect(() => {
     if (lastBoundsRef.current) {
@@ -638,23 +708,31 @@ const FindPlayers = () => {
   }, [selectedRadius]);
 
   useEffect(() => {
-    if (!socket || !userLocation || snapState === 'COLLAPSED' || !isLocationSharing) return;
-    
+    if (
+      !socket ||
+      !userLocation ||
+      snapState === "COLLAPSED" ||
+      !isLocationSharing
+    )
+      return;
+
     socket.emit("location:update", {
       lat: userLocation.lat,
       lng: userLocation.lng,
-      radiusKm: selectedRadius
+      radiusKm: selectedRadius,
     });
   }, [socket, userLocation, selectedRadius, snapState, isLocationSharing]);
 
   useEffect(() => {
     if (!socket) return;
-    
+
     const handleLocationUpdate = ({ userId, lat, lng }) => {
-      setAllNearbyPlayers(prev => {
-        const existing = prev.find(p => (p.id || p._id) === userId);
+      setAllNearbyPlayers((prev) => {
+        const existing = prev.find((p) => (p.id || p._id) === userId);
         if (existing) {
-          return prev.map(p => (p.id || p._id) === userId ? { ...p, lat, lng } : p);
+          return prev.map((p) =>
+            (p.id || p._id) === userId ? { ...p, lat, lng } : p
+          );
         } else {
           // New user moved into radius, trigger fetch to get their profile data
           fetchNearbyPlayers();
@@ -664,7 +742,7 @@ const FindPlayers = () => {
     };
 
     socket.on("nearby:location:update", handleLocationUpdate);
-    
+
     return () => {
       socket.off("nearby:location:update", handleLocationUpdate);
     };
@@ -716,7 +794,7 @@ const FindPlayers = () => {
   };
 
   const handleFilterChange = (name, value) => {
-    setFilters(prev => ({ ...prev, [name]: value }));
+    setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFollowToggle = (targetUserId) => {
@@ -724,44 +802,50 @@ const FindPlayers = () => {
       const wasFollowing = followingIds.includes(targetUserId);
 
       // ── Optimistic update: flip state instantly ──────────────────────
-      setFollowingIds(prev =>
+      setFollowingIds((prev) =>
         wasFollowing
-          ? prev.filter(id => id !== targetUserId)
+          ? prev.filter((id) => id !== targetUserId)
           : [...prev, targetUserId]
       );
 
       // ── Also update follower count in the players list optimistically ─
-      setPlayers(prev =>
-        prev.map(p => {
+      setPlayers((prev) =>
+        prev.map((p) => {
           const id = p.id || p._id;
           if (id !== targetUserId) return p;
           const delta = wasFollowing ? -1 : 1;
           return {
             ...p,
-            followersCount: Math.max(0, (p.followersCount ?? p.followers?.length ?? 0) + delta),
+            followersCount: Math.max(
+              0,
+              (p.followersCount ?? p.followers?.length ?? 0) + delta
+            ),
           };
         })
       );
 
       try {
-        const endpoint = `/api/user/players/${targetUserId}/${wasFollowing ? 'unfollow' : 'follow'}`;
+        const endpoint = `/api/user/players/${targetUserId}/${wasFollowing ? "unfollow" : "follow"}`;
         await axiosInstance.post(endpoint);
         // Success – no toast needed, the UI already reflected the change
       } catch (error) {
         // ── Rollback on failure ──────────────────────────────────────────
-        setFollowingIds(prev =>
+        setFollowingIds((prev) =>
           wasFollowing
             ? [...prev, targetUserId]
-            : prev.filter(id => id !== targetUserId)
+            : prev.filter((id) => id !== targetUserId)
         );
-        setPlayers(prev =>
-          prev.map(p => {
+        setPlayers((prev) =>
+          prev.map((p) => {
             const id = p.id || p._id;
             if (id !== targetUserId) return p;
             const delta = wasFollowing ? 1 : -1;
             return {
               ...p,
-              followersCount: Math.max(0, (p.followersCount ?? p.followers?.length ?? 0) + delta),
+              followersCount: Math.max(
+                0,
+                (p.followersCount ?? p.followers?.length ?? 0) + delta
+              ),
             };
           })
         );
@@ -769,7 +853,6 @@ const FindPlayers = () => {
       }
     });
   };
-
 
   const handleAvatarClick = (player) => {
     gateInteraction(() => {
@@ -780,7 +863,9 @@ const FindPlayers = () => {
       }
       const fetchStories = async () => {
         try {
-          const res = await axiosInstance.get(`/api/user/community/user-stories/${playerId}`);
+          const res = await axiosInstance.get(
+            `/api/user/community/user-stories/${playerId}`
+          );
           if (res.data.success && res.data.stories?.length > 0) {
             setViewingStoryGroup({ user: player, stories: res.data.stories });
           } else {
@@ -799,9 +884,19 @@ const FindPlayers = () => {
     const element = document.getElementById(`player-card-${id}`);
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "center" });
-      element.classList.add("ring-2", "ring-[#B3DC26]", "ring-offset-4", "ring-offset-black");
+      element.classList.add(
+        "ring-2",
+        "ring-[#B3DC26]",
+        "ring-offset-4",
+        "ring-offset-black"
+      );
       setTimeout(() => {
-        element.classList.remove("ring-2", "ring-[#B3DC26]", "ring-offset-4", "ring-offset-black");
+        element.classList.remove(
+          "ring-2",
+          "ring-[#B3DC26]",
+          "ring-offset-4",
+          "ring-offset-black"
+        );
       }, 3000);
     }
   };
@@ -825,26 +920,27 @@ const FindPlayers = () => {
   };
 
   return (
-    <div className={`bg-black text-white flex flex-col ${activeTab === "players" ? "fixed inset-0 lg:relative lg:inset-auto lg:left-0 lg:overflow-visible overflow-hidden pt-16 lg:pt-0" : "min-h-screen"}`}>
-      
+    <div
+      className={`bg-black text-white flex flex-col ${activeTab === "players" ? "fixed inset-0 lg:relative lg:inset-auto lg:left-0 lg:overflow-visible overflow-hidden pt-16 lg:pt-0" : "min-h-screen"}`}
+    >
       {activeTab === "players" && (
         <>
-          <motion.div 
+          <motion.div
             animate={{ height: `${SNAP_STATES[snapState]}vh` }}
             transition={{ type: "spring", damping: 25, stiffness: 150 }}
             className="relative w-full bg-[#000000] border-b border-[#B3DC26]/30 overflow-hidden lg:hidden"
           >
             <AnimatePresence>
               {snapState !== "COLLAPSED" && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   className="w-full h-full relative"
                 >
-                  <NearbyPlayersMap 
+                  <NearbyPlayersMap
                     userLocation={userLocation}
-                    nearbyPlayers={displayedPlayers} 
+                    nearbyPlayers={displayedPlayers}
                     radiusKm={selectedRadius}
                     onMapMove={handleMapMove}
                     onPlayerClick={(id) => navigate(`/profile/${id}`)}
@@ -854,14 +950,20 @@ const FindPlayers = () => {
                   <div className="absolute top-4 left-4 z-[1000] flex items-center gap-2 pointer-events-auto">
                     <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-xl border border-white/10 p-1.5 px-2.5 rounded-[8px] shadow-2xl">
                       <Users size={14} className="text-[#B3DC26]" />
-                      <span className="text-[#B3DC26] text-[12px] font-black">{allNearbyPlayers.length}</span>
+                      <span className="text-[#B3DC26] text-[12px] font-black">
+                        {allNearbyPlayers.length}
+                      </span>
                     </div>
 
-                    <button 
+                    <button
                       onClick={toggleLocationSharing}
-                      className={`flex items-center justify-center p-1.5 w-8 h-8 rounded-[8px] border transition-all duration-300 backdrop-blur-xl shadow-2xl ${ isLocationSharing ? "bg-[#B3DC26]/20 border-[#B3DC26]/30 text-[#B3DC26]" : "bg-red-500/10 border-red-500/20 text-red-500" }`}
+                      className={`flex items-center justify-center p-1.5 w-8 h-8 rounded-[8px] border transition-all duration-300 backdrop-blur-xl shadow-2xl ${isLocationSharing ? "bg-[#B3DC26]/20 border-[#B3DC26]/30 text-[#B3DC26]" : "bg-red-500/10 border-red-500/20 text-red-500"}`}
                     >
-                      {isLocationSharing ? <Eye size={16} /> : <EyeOff size={16} />}
+                      {isLocationSharing ? (
+                        <Eye size={16} />
+                      ) : (
+                        <EyeOff size={16} />
+                      )}
                     </button>
                   </div>
 
@@ -869,21 +971,32 @@ const FindPlayers = () => {
                   {!userLocation && !locationError && (
                     <div className="absolute inset-0 z-[2000] bg-[#000000] flex flex-col items-center justify-center">
                       <div className="w-full h-full relative opacity-20">
-                        <div className="absolute inset-0" style={{ 
-                            backgroundImage: 'radial-gradient(#B3DC26 1px, transparent 1px)', 
-                            backgroundSize: '40px 40px' 
-                        }} />
+                        <div
+                          className="absolute inset-0"
+                          style={{
+                            backgroundImage:
+                              "radial-gradient(#B3DC26 1px, transparent 1px)",
+                            backgroundSize: "40px 40px",
+                          }}
+                        />
                       </div>
                       <div className="absolute flex flex-col items-center gap-4">
                         <div className="relative">
                           <div className="w-16 h-16 border-2 border-[#B3DC26]/20 rounded-full animate-ping absolute inset-0" />
                           <div className="w-16 h-16 border-2 border-[#B3DC26] rounded-full flex items-center justify-center bg-black">
-                            <MapPin className="text-[#B3DC26] animate-bounce" size={24} />
+                            <MapPin
+                              className="text-[#B3DC26] animate-bounce"
+                              size={24}
+                            />
                           </div>
                         </div>
                         <div className="text-center">
-                          <p className="text-white font-black text-sm uppercase tracking-widest mb-1">Finding your location...</p>
-                          <p className="text-white/40 text-[10px] font-bold uppercase tracking-tighter">Connecting to Kridaz Satellites</p>
+                          <p className="text-white font-black text-sm uppercase tracking-widest mb-1">
+                            Finding your location...
+                          </p>
+                          <p className="text-white/40 text-[10px] font-bold uppercase tracking-tighter">
+                            Connecting to Kridaz Satellites
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -895,11 +1008,14 @@ const FindPlayers = () => {
                       <div className="w-16 h-16 bg-red-500/20 border border-red-500/30 rounded-[8px] flex items-center justify-center mb-4">
                         <AlertCircle className="text-red-500" size={32} />
                       </div>
-                      <h3 className="text-white font-black uppercase tracking-widest mb-2">Location Required</h3>
+                      <h3 className="text-white font-black uppercase tracking-widest mb-2">
+                        Location Required
+                      </h3>
                       <p className="text-white/40 text-xs font-medium leading-relaxed max-w-xs mb-6">
-                        We need your location to show nearby players. Please check your browser permissions.
+                        We need your location to show nearby players. Please
+                        check your browser permissions.
                       </p>
-                      <button 
+                      <button
                         onClick={() => window.location.reload()}
                         className="px-8 py-3 bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.08)] rounded-[16px] text-[12px] font-[600] font-inter uppercase text-[#FFFFFF] hover:brightness-110 transition-all"
                       >
@@ -910,32 +1026,41 @@ const FindPlayers = () => {
 
                   <AnimatePresence>
                     {isRadiusChanging && (
-                      <motion.div 
+                      <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className="absolute inset-0 z-[1500] bg-black/40 backdrop-blur-sm flex items-center justify-center"
                       >
-                        <Loader2 className="text-[#B3DC26] animate-spin" size={32} />
+                        <Loader2
+                          className="text-[#B3DC26] animate-spin"
+                          size={32}
+                        />
                       </motion.div>
                     )}
                   </AnimatePresence>
 
                   <div className="absolute bottom-0 left-0 w-full z-[1000]">
                     <div className="bg-black/80 backdrop-blur-xl border-t border-white/10 p-2.5 px-6 flex items-center gap-4 pointer-events-auto w-full">
-                        <span className="text-white/40 text-[9px] font-black uppercase tracking-widest">Radius</span>
-                        <input 
-                          type="range"
-                          min="5" max="100" step="5"
-                          value={selectedRadius}
-                          onPointerDown={(e) => e.stopPropagation()}
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            setSelectedRadius(Number(e.target.value));
-                          }}
-                          className="flex-1 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-[#B3DC26]"
-                        />
-                        <span className="text-[#B3DC26] text-[10px] font-black min-w-[40px] text-right">{selectedRadius} KM</span>
+                      <span className="text-white/40 text-[9px] font-black uppercase tracking-widest">
+                        Radius
+                      </span>
+                      <input
+                        type="range"
+                        min="5"
+                        max="100"
+                        step="5"
+                        value={selectedRadius}
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          setSelectedRadius(Number(e.target.value));
+                        }}
+                        className="flex-1 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-[#B3DC26]"
+                      />
+                      <span className="text-[#B3DC26] text-[10px] font-black min-w-[40px] text-right">
+                        {selectedRadius} KM
+                      </span>
                     </div>
                   </div>
                 </motion.div>
@@ -944,7 +1069,7 @@ const FindPlayers = () => {
           </motion.div>
 
           {/* DRAG HANDLE */}
-          <motion.div 
+          <motion.div
             drag="y"
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={0.1}
@@ -953,31 +1078,38 @@ const FindPlayers = () => {
           >
             <div className="w-12 h-1.5 bg-white/10 rounded-full group-hover:bg-[#B3DC26]/40 transition-colors" />
             <div className="text-[8px] font-bold text-white/10 uppercase tracking-[0.3em] mt-1 group-hover:text-[#B3DC26]/40 transition-colors">
-                Slide to Discover
+              Slide to Discover
             </div>
           </motion.div>
         </>
       )}
 
       {/* BOTTOM PANEL: Feed */}
-      <div className={`flex-1 ${activeTab === "players" ? "overflow-y-auto no-scrollbar pb-24 pt-2 px-4 md:px-8" : "pb-12 pt-2 px-1 md:px-2"} bg-black`}>
-        <div className={`max-w-6xl mx-auto space-y-6 ${activeTab === "players" ? "mt-2" : "mt-2"}`}>
-          
+      <div
+        className={`flex-1 ${activeTab === "players" ? "overflow-y-auto no-scrollbar pb-24 pt-2 px-4 md:px-8" : "pb-12 pt-2 px-1 md:px-2"} bg-black`}
+      >
+        <div
+          className={`max-w-6xl mx-auto space-y-6 ${activeTab === "players" ? "mt-2" : "mt-2"}`}
+        >
           {/* Tab Switcher */}
           <div className="flex items-center gap-4 border-b border-[rgba(255,255,255,0.08)] pb-1">
-            <button 
+            <button
               onClick={() => setActiveTab("players")}
               className={`pb-4 px-2 text-[12px] font-[600] font-inter uppercase transition-all relative ${activeTab === "players" ? "text-[#B3DC26]" : "text-[rgba(255,255,255,0.70)] hover:text-[#FFFFFF]"}`}
             >
               Players
-              {activeTab === "players" && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#B3DC26]" />}
+              {activeTab === "players" && (
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#B3DC26]" />
+              )}
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab("teams")}
               className={`pb-4 px-2 text-[12px] font-[600] font-inter uppercase transition-all relative ${activeTab === "teams" ? "text-[#B3DC26]" : "text-[rgba(255,255,255,0.70)] hover:text-[#FFFFFF]"}`}
             >
               Teams
-              {activeTab === "teams" && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#B3DC26]" />}
+              {activeTab === "teams" && (
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#B3DC26]" />
+              )}
             </button>
           </div>
 
@@ -985,9 +1117,12 @@ const FindPlayers = () => {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-3 md:p-4">
             <div className="flex items-center gap-4 flex-1">
               <div className="relative flex-1 max-w-md group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.40)] group-focus-within:text-[#B3DC26] transition-colors" size={16} />
-                <input 
-                  type="text" 
+                <Search
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.40)] group-focus-within:text-[#B3DC26] transition-colors"
+                  size={16}
+                />
+                <input
+                  type="text"
                   value={searchQuery}
                   onChange={handleSearch}
                   placeholder="SEARCH..."
@@ -997,20 +1132,33 @@ const FindPlayers = () => {
             </div>
 
             <div className="flex items-center gap-1 justify-between w-full mt-2 md:mt-0">
-              <select 
+              <select
                 value={filters.sport}
                 onChange={(e) => handleFilterChange("sport", e.target.value)}
                 className="bg-transparent px-1 py-1.5 text-[10px] md:text-[12px] font-[400] font-inter text-[rgba(255,255,255,0.70)] focus:text-[#B3DC26] outline-none cursor-pointer hover:text-[#FFFFFF] transition-all uppercase flex-1 min-w-[70px] text-ellipsis overflow-hidden appearance-none md:appearance-auto"
               >
-                <option value="" className="bg-[#121212] text-[#FFFFFF]">All Sports</option>
-                {sports.map(s => <option key={s} value={s} className="bg-[#121212] text-[#FFFFFF]">{s}</option>)}
+                <option value="" className="bg-[#121212] text-[#FFFFFF]">
+                  All Sports
+                </option>
+                {sports.map((s) => (
+                  <option
+                    key={s}
+                    value={s}
+                    className="bg-[#121212] text-[#FFFFFF]"
+                  >
+                    {s}
+                  </option>
+                ))}
               </select>
-              
+
               {/* PC View Filters (Hidden on Mobile/Tab) */}
               <div className="hidden lg:flex items-center gap-2">
                 <div className="relative group">
-                  <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#B3DC26]" size={10} />
-                  <select 
+                  <MapPin
+                    className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#B3DC26]"
+                    size={10}
+                  />
+                  <select
                     value={filters.state || ""}
                     onChange={(e) => {
                       handleFilterChange("state", e.target.value);
@@ -1018,41 +1166,80 @@ const FindPlayers = () => {
                     }}
                     className="bg-transparent pl-7 pr-3 py-1.5 text-[12px] font-[400] font-inter text-[rgba(255,255,255,0.70)] focus:text-[#B3DC26] outline-none w-24 md:w-28 cursor-pointer hover:text-[#FFFFFF] transition-all appearance-none uppercase"
                   >
-                    <option value="" className="bg-[#121212] text-[#FFFFFF]">STATE...</option>
-                    {statesList.map(s => <option key={s} value={s} className="bg-[#121212] text-[#FFFFFF]">{s}</option>)}
+                    <option value="" className="bg-[#121212] text-[#FFFFFF]">
+                      STATE...
+                    </option>
+                    {statesList.map((s) => (
+                      <option
+                        key={s}
+                        value={s}
+                        className="bg-[#121212] text-[#FFFFFF]"
+                      >
+                        {s}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className="relative group">
-                  <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#B3DC26]" size={10} />
-                  <select 
+                  <MapPin
+                    className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#B3DC26]"
+                    size={10}
+                  />
+                  <select
                     value={filters.city || ""}
                     onChange={(e) => handleFilterChange("city", e.target.value)}
                     className="bg-transparent pl-7 pr-3 py-1.5 text-[12px] font-[400] font-inter text-[rgba(255,255,255,0.70)] focus:text-[#B3DC26] outline-none w-24 md:w-28 cursor-pointer hover:text-[#FFFFFF] transition-all appearance-none uppercase"
                     disabled={!filters.state}
                   >
-                    <option value="" className="bg-[#121212] text-[#FFFFFF]">CITY...</option>
-                    {citiesList.map(c => <option key={c} value={c} className="bg-[#121212] text-[#FFFFFF]">{c}</option>)}
+                    <option value="" className="bg-[#121212] text-[#FFFFFF]">
+                      CITY...
+                    </option>
+                    {citiesList.map((c) => (
+                      <option
+                        key={c}
+                        value={c}
+                        className="bg-[#121212] text-[#FFFFFF]"
+                      >
+                        {c}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className="relative group">
-                  <Navigation className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#B3DC26]" size={10} />
-                  <select 
+                  <Navigation
+                    className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#B3DC26]"
+                    size={10}
+                  />
+                  <select
                     value={selectedRadius}
                     onChange={(e) => setSelectedRadius(Number(e.target.value))}
                     className="bg-transparent pl-7 pr-3 py-1.5 text-[12px] font-[400] font-inter text-[rgba(255,255,255,0.70)] focus:text-[#B3DC26] outline-none cursor-pointer hover:text-[#FFFFFF] transition-all appearance-none w-24 md:w-28 uppercase"
                   >
-                    <option value="5" className="bg-[#121212] text-[#FFFFFF]">5 KM</option>
-                    <option value="10" className="bg-[#121212] text-[#FFFFFF]">10 KM</option>
-                    <option value="20" className="bg-[#121212] text-[#FFFFFF]">20 KM</option>
-                    <option value="50" className="bg-[#121212] text-[#FFFFFF]">50 KM</option>
-                    <option value="100" className="bg-[#121212] text-[#FFFFFF]">100 KM</option>
+                    <option value="5" className="bg-[#121212] text-[#FFFFFF]">
+                      5 KM
+                    </option>
+                    <option value="10" className="bg-[#121212] text-[#FFFFFF]">
+                      10 KM
+                    </option>
+                    <option value="20" className="bg-[#121212] text-[#FFFFFF]">
+                      20 KM
+                    </option>
+                    <option value="50" className="bg-[#121212] text-[#FFFFFF]">
+                      50 KM
+                    </option>
+                    <option value="100" className="bg-[#121212] text-[#FFFFFF]">
+                      100 KM
+                    </option>
                   </select>
                 </div>
               </div>
 
               {/* Mobile/Tab Location Filters */}
               <div className="relative group lg:hidden flex-1 min-w-0">
-                <MapPin className="absolute left-1 md:left-2.5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#B3DC26]" size={10} />
+                <MapPin
+                  className="absolute left-1 md:left-2.5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#B3DC26]"
+                  size={10}
+                />
                 <select
                   value={filters.state || ""}
                   onChange={(e) => {
@@ -1061,29 +1248,55 @@ const FindPlayers = () => {
                   }}
                   className="bg-transparent pl-4 md:pl-7 pr-1 md:pr-3 py-1.5 text-[10px] md:text-[12px] font-[400] font-inter text-[rgba(255,255,255,0.70)] focus:text-[#B3DC26] outline-none w-full cursor-pointer hover:text-[#FFFFFF] transition-all appearance-none uppercase text-ellipsis overflow-hidden"
                 >
-                  <option value="" className="bg-[#121212] text-[#FFFFFF]">STATE...</option>
-                  {statesList.map(s => <option key={s} value={s} className="bg-[#121212] text-[#FFFFFF]">{s}</option>)}
+                  <option value="" className="bg-[#121212] text-[#FFFFFF]">
+                    STATE...
+                  </option>
+                  {statesList.map((s) => (
+                    <option
+                      key={s}
+                      value={s}
+                      className="bg-[#121212] text-[#FFFFFF]"
+                    >
+                      {s}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="relative group lg:hidden flex-1 min-w-0">
-                <MapPin className="absolute left-1 md:left-2.5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#B3DC26]" size={10} />
+                <MapPin
+                  className="absolute left-1 md:left-2.5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#B3DC26]"
+                  size={10}
+                />
                 <select
                   value={filters.city || ""}
                   onChange={(e) => handleFilterChange("city", e.target.value)}
                   disabled={!filters.state}
                   className="bg-transparent pl-4 md:pl-7 pr-1 md:pr-3 py-1.5 text-[10px] md:text-[12px] font-[400] font-inter text-[rgba(255,255,255,0.70)] focus:text-[#B3DC26] outline-none w-full cursor-pointer hover:text-[#FFFFFF] transition-all appearance-none disabled:opacity-40 uppercase text-ellipsis overflow-hidden"
                 >
-                  <option value="" className="bg-[#121212] text-[#FFFFFF]">CITY...</option>
-                  {citiesList.map(c => <option key={c} value={c} className="bg-[#121212] text-[#FFFFFF]">{c}</option>)}
+                  <option value="" className="bg-[#121212] text-[#FFFFFF]">
+                    CITY...
+                  </option>
+                  {citiesList.map((c) => (
+                    <option
+                      key={c}
+                      value={c}
+                      className="bg-[#121212] text-[#FFFFFF]"
+                    >
+                      {c}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               {activeTab === "players" && (
-                <button 
+                <button
                   onClick={() => setShowNearbyOnly(!showNearbyOnly)}
-                  className={`flex items-center justify-center gap-1 px-1 md:px-3 h-8 md:h-10 rounded-[12px] md:rounded-[16px] transition-all text-[9px] md:text-[12px] font-[600] font-inter uppercase flex-1 min-w-0 ${ showNearbyOnly ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] shadow-[0px_8px_24px_rgba(179,220,38,0.15)] border-none" : "bg-[#1B1B1B] text-[#FFFFFF] border border-[rgba(255,255,255,0.08)] hover:brightness-110" }`}
+                  className={`flex items-center justify-center gap-1 px-1 md:px-3 h-8 md:h-10 rounded-[12px] md:rounded-[16px] transition-all text-[9px] md:text-[12px] font-[600] font-inter uppercase flex-1 min-w-0 ${showNearbyOnly ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] shadow-[0px_8px_24px_rgba(179,220,38,0.15)] border-none" : "bg-[#1B1B1B] text-[#FFFFFF] border border-[rgba(255,255,255,0.08)] hover:brightness-110"}`}
                 >
-                  <Navigation size={12} className={`shrink-0 ${showNearbyOnly ? "animate-pulse" : ""}`} />
+                  <Navigation
+                    size={12}
+                    className={`shrink-0 ${showNearbyOnly ? "animate-pulse" : ""}`}
+                  />
                   <span className="truncate">Nearby</span>
                 </button>
               )}
@@ -1114,7 +1327,10 @@ const FindPlayers = () => {
           ) : activeTab === "players" ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {players.map((player) => (
-                <div key={player.id || player._id} id={`player-card-${player.id || player._id}`}>
+                <div
+                  key={player.id || player._id}
+                  id={`player-card-${player.id || player._id}`}
+                >
                   <PlayerCard
                     player={player}
                     followingIds={followingIds}
@@ -1137,7 +1353,9 @@ const FindPlayers = () => {
                   <div className="w-16 h-16 bg-[#121212] rounded-full flex items-center justify-center mx-auto mb-4 border border-[rgba(255,255,255,0.08)] text-gray-500">
                     <Users size={32} />
                   </div>
-                  <p className="text-[rgba(255,255,255,0.70)] font-[600] uppercase font-inter text-[12px]">No teams found</p>
+                  <p className="text-[rgba(255,255,255,0.70)] font-[600] uppercase font-inter text-[12px]">
+                    No teams found
+                  </p>
                 </div>
               )}
             </div>
@@ -1146,7 +1364,7 @@ const FindPlayers = () => {
       </div>
 
       {viewingStoryGroup && (
-        <StoryViewer 
+        <StoryViewer
           storyGroup={viewingStoryGroup}
           onClose={() => setViewingStoryGroup(null)}
           onDelete={null}

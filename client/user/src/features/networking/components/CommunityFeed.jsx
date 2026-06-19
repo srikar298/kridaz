@@ -2,7 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ChevronDown, Loader2 } from "lucide-react";
-import { useLazyGetCommunityFeedQuery, useDeletePostMutation } from "@redux/api/communityApi";
+import {
+  useLazyGetCommunityFeedQuery,
+  useDeletePostMutation,
+} from "@redux/api/communityApi";
 import { useLazySearchPlayersQuery } from "@redux/api/teamApi";
 import { useSocket } from "@context/SocketContext";
 import PostItem from "./PostItem";
@@ -15,7 +18,12 @@ import PostDetailModal from "./PostDetailModal";
 
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
 
-const CustomDropdown = ({ value, options, onChange, placeholder = "Select" }) => {
+const CustomDropdown = ({
+  value,
+  options,
+  onChange,
+  placeholder = "Select",
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -29,7 +37,10 @@ const CustomDropdown = ({ value, options, onChange, placeholder = "Select" }) =>
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selectedOption = options.find(opt => opt.value === value) || { label: placeholder, value: "" };
+  const selectedOption = options.find((opt) => opt.value === value) || {
+    label: placeholder,
+    value: "",
+  };
 
   return (
     <div className="relative flex-1 md:min-w-[120px]" ref={dropdownRef}>
@@ -38,12 +49,15 @@ const CustomDropdown = ({ value, options, onChange, placeholder = "Select" }) =>
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="truncate">{selectedOption.label}</span>
-        <ChevronDown size={14} className={`text-white/40 transition-transform duration-200 shrink-0 ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown
+          size={14}
+          className={`text-white/40 transition-transform duration-200 shrink-0 ${isOpen ? "rotate-180" : ""}`}
+        />
       </div>
-      
+
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
@@ -73,7 +87,18 @@ const CustomDropdown = ({ value, options, onChange, placeholder = "Select" }) =>
   );
 };
 
-const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilter, handleSetActiveFilter, activeSportFilter, setActiveSportFilter, debouncedSearchQuery, children }) => {
+const CommunityFeed = ({
+  user,
+  isLoggedIn,
+  isAdmin,
+  gateInteraction,
+  activeFilter,
+  handleSetActiveFilter,
+  activeSportFilter,
+  setActiveSportFilter,
+  debouncedSearchQuery,
+  children,
+}) => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const userLocation = useSelector((state) => state.ui.userLocation);
@@ -105,14 +130,14 @@ const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilte
   useEffect(() => {
     if (searchParams.get("createPost") === "true") {
       const text = searchParams.get("text");
-      
+
       // Clean up the URL
       const newParams = new URLSearchParams(searchParams);
       newParams.delete("createPost");
       newParams.delete("text");
       setSearchParams(newParams, { replace: true });
-      
-      navigate('/create-post', { state: { preSelectedText: text } });
+
+      navigate("/create-post", { state: { preSelectedText: text } });
     }
   }, [searchParams, setSearchParams, navigate]);
 
@@ -156,7 +181,9 @@ const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilte
 
       setLoadedPosts((prev) => {
         const existingIds = new Set(prev.map((p) => p._id || p.id));
-        const filtered = newPosts.filter((p) => !existingIds.has(p._id || p.id));
+        const filtered = newPosts.filter(
+          (p) => !existingIds.has(p._id || p.id)
+        );
         return pageNumber === 1 ? newPosts : [...prev, ...filtered];
       });
 
@@ -189,7 +216,9 @@ const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilte
 
       setLoadedPlayers((prev) => {
         const existingIds = new Set(prev.map((p) => p.id || p._id));
-        const filtered = newPlayers.filter((p) => !existingIds.has(p.id || p._id));
+        const filtered = newPlayers.filter(
+          (p) => !existingIds.has(p.id || p._id)
+        );
         return pageNumber === 1 ? newPlayers : [...prev, ...filtered];
       });
 
@@ -211,7 +240,15 @@ const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilte
     if (postsPage === 1) {
       fetchPosts(1, !!debouncedSearchQuery.trim());
     }
-  }, [postsPage, debouncedSearchQuery, activeFilter, activeSportFilter, sortOrder, userLocation, locationStatus]);
+  }, [
+    postsPage,
+    debouncedSearchQuery,
+    activeFilter,
+    activeSportFilter,
+    sortOrder,
+    userLocation,
+    locationStatus,
+  ]);
 
   useEffect(() => {
     if (postsPage > 1) {
@@ -235,7 +272,10 @@ const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilte
   useEffect(() => {
     const handleScroll = () => {
       if (postsLoading || !hasMorePosts) return;
-      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 200) {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 200
+      ) {
         setPostsPage((prev) => prev + 1);
       }
     };
@@ -275,7 +315,10 @@ const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilte
       };
 
       setLoadedPosts((prev) => {
-        if (prev.find((p) => (p._id || p.id) === (formatted._id || formatted.id))) return prev;
+        if (
+          prev.find((p) => (p._id || p.id) === (formatted._id || formatted.id))
+        )
+          return prev;
         return [formatted, ...prev];
       });
     };
@@ -311,7 +354,9 @@ const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilte
     };
 
     const handlePostDeleted = (postId) => {
-      setLoadedPosts((prev) => prev.filter((post) => post._id !== postId && post.id !== postId));
+      setLoadedPosts((prev) =>
+        prev.filter((post) => post._id !== postId && post.id !== postId)
+      );
     };
 
     const handleMediaProgress = ({ mediaId, progress }) => {
@@ -386,7 +431,9 @@ const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilte
     try {
       await deletePost(deletePostId).unwrap();
       toast.success("Post deleted");
-      setLoadedPosts((prev) => prev.filter((p) => (p._id || p.id) !== deletePostId));
+      setLoadedPosts((prev) =>
+        prev.filter((p) => (p._id || p.id) !== deletePostId)
+      );
     } catch (error) {
       toast.error(error?.data?.message || "Failed to delete post");
     } finally {
@@ -406,20 +453,33 @@ const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilte
           {/* Unified View Filters Dropdowns */}
           <div className="flex gap-2 items-center w-full pb-1">
             {/* Post Type Filter */}
-            <CustomDropdown 
+            <CustomDropdown
               value={activeFilter}
               onChange={handleSetActiveFilter}
-              options={["All", "Following", "Highlights", "Match Moments", "Announcements"].map(f => ({ label: f, value: f }))}
+              options={[
+                "All",
+                "Following",
+                "Highlights",
+                "Match Moments",
+                "Announcements",
+              ].map((f) => ({ label: f, value: f }))}
             />
 
             {/* Sport Category Filter */}
-            <CustomDropdown 
+            <CustomDropdown
               value={activeSportFilter}
               onChange={setActiveSportFilter}
               placeholder="All Categories"
               options={[
                 { label: "All Categories", value: "" },
-                ...["Cricket", "Football", "Rugby", "Baseball", "Hockey", "Athletics"].map(s => ({ label: s, value: s.toLowerCase() }))
+                ...[
+                  "Cricket",
+                  "Football",
+                  "Rugby",
+                  "Baseball",
+                  "Hockey",
+                  "Athletics",
+                ].map((s) => ({ label: s, value: s.toLowerCase() })),
               ]}
             />
           </div>
@@ -430,10 +490,15 @@ const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilte
       {debouncedSearchQuery.trim() !== "" && (
         <div className="flex flex-col gap-3 py-4">
           <div className="flex items-center justify-between mb-1 px-2 md:px-0">
-            <h3 className="text-xs font-black uppercase tracking-widest text-[#BFF367]" style={HEADING_STYLE}>
+            <h3
+              className="text-xs font-black uppercase tracking-widest text-[#BFF367]"
+              style={HEADING_STYLE}
+            >
               PLAYERS MATCHING "{debouncedSearchQuery}"
             </h3>
-            {playersLoading && <Loader2 size={16} className="text-[#BFF367] animate-spin" />}
+            {playersLoading && (
+              <Loader2 size={16} className="text-[#BFF367] animate-spin" />
+            )}
           </div>
 
           {loadedPlayers.length === 0 && !playersLoading ? (
@@ -443,18 +508,26 @@ const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilte
           ) : (
             <div
               className="grid grid-rows-2 grid-flow-col gap-4 overflow-x-auto pb-1 no-scrollbar scroll-smooth px-2 md:px-0"
-              style={{ maxHeight: "240px", minHeight: loadedPlayers.length > 1 ? "180px" : "90px" }}
+              style={{
+                maxHeight: "240px",
+                minHeight: loadedPlayers.length > 1 ? "180px" : "90px",
+              }}
               onScroll={handlePlayersHorizontalScroll}
             >
               {loadedPlayers.map((player) => (
                 <div
                   key={player.id || player._id}
-                  onClick={() => navigate(`/profile/${player.id || player._id}`)}
+                  onClick={() =>
+                    navigate(`/profile/${player.id || player._id}`)
+                  }
                   className="flex items-center gap-3 bg-neutral-900/50 hover:bg-neutral-900 border border-white/5 hover:border-[#BFF367]/30 p-3 rounded-[8px] cursor-pointer transition-all min-w-[220px] max-w-[280px] group shrink-0"
                 >
                   <div className="w-[42px] h-[42px] rounded-full bg-[#111] border border-white/10 overflow-hidden shrink-0">
                     <img
-                      src={player.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${player.name}`}
+                      src={
+                        player.profilePicture ||
+                        `https://api.dicebear.com/7.x/avataaars/svg?seed=${player.name}`
+                      }
                       className="w-full h-full object-cover"
                       alt=""
                     />
@@ -464,7 +537,9 @@ const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilte
                       {player.name}
                     </div>
                     <div className="text-[11px] font-medium text-white/40 truncate">
-                      @{player.username || player.name.toLowerCase().replace(/\s+/g, "")}
+                      @
+                      {player.username ||
+                        player.name.toLowerCase().replace(/\s+/g, "")}
                     </div>
                     {(player.city || player.state) && (
                       <div className="text-[9px] font-semibold text-[#BFF367] mt-0.5 uppercase tracking-wider truncate">
@@ -489,13 +564,14 @@ const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilte
       {/* Posts Heading if searching */}
       {debouncedSearchQuery.trim() !== "" && (
         <div className="pt-2">
-          <h3 className="text-xs font-black uppercase tracking-widest text-[#BFF367]" style={HEADING_STYLE}>
+          <h3
+            className="text-xs font-black uppercase tracking-widest text-[#BFF367]"
+            style={HEADING_STYLE}
+          >
             POSTS MATCHING "{debouncedSearchQuery}"
           </h3>
         </div>
       )}
-
-
 
       {/* Feed list */}
       {postsLoading && loadedPosts.length === 0 ? (
@@ -548,14 +624,20 @@ const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilte
           />
         )}
         {sharePostId && (
-          <ShareModal postId={sharePostId} onClose={() => setSharePostId(null)} />
+          <ShareModal
+            postId={sharePostId}
+            onClose={() => setSharePostId(null)}
+          />
         )}
         {reportPostId && (
-          <ReportModal postId={reportPostId} onClose={() => setReportPostId(null)} />
+          <ReportModal
+            postId={reportPostId}
+            onClose={() => setReportPostId(null)}
+          />
         )}
         {deletePostId && (
-          <DeleteConfirmModal 
-            onClose={() => setDeletePostId(null)} 
+          <DeleteConfirmModal
+            onClose={() => setDeletePostId(null)}
             onConfirm={confirmDeletePost}
             isDeleting={isDeleting}
           />
@@ -566,4 +648,3 @@ const CommunityFeed = ({ user, isLoggedIn, isAdmin, gateInteraction, activeFilte
 };
 
 export default CommunityFeed;
-

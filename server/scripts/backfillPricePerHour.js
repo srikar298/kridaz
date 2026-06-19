@@ -8,12 +8,12 @@
 // yield a computable lowest hourly rate. The column is non-nullable
 // (Decimal NOT NULL DEFAULT 0) so we don't filter on null.
 
-import { prisma } from '../config/prisma.js';
-import { invalidateCache } from '../utils/cache.js';
-import { computeLowestHourlyRate } from '../utils/turfPricing.js';
+import { prisma } from "../config/prisma.js";
+import { invalidateCache } from "../utils/cache.js";
+import { computeLowestHourlyRate } from "../utils/turfPricing.js";
 
 const BATCH = 50;
-const dryRun = process.argv.includes('--dry-run');
+const dryRun = process.argv.includes("--dry-run");
 
 async function run() {
   const turfs = await prisma.turf.findMany({
@@ -21,7 +21,9 @@ async function run() {
     select: { id: true, name: true, generatedSlots: true },
   });
 
-  console.log(`[backfill] candidates: ${turfs.length}${dryRun ? ' (dry-run)' : ''}`);
+  console.log(
+    `[backfill] candidates: ${turfs.length}${dryRun ? " (dry-run)" : ""}`
+  );
 
   let updated = 0;
   let skipped = 0;
@@ -39,7 +41,10 @@ async function run() {
       console.log(`[backfill] ${t.id} (${t.name}): -> ${lowest}/hr`);
       if (!dryRun) {
         writes.push(
-          prisma.turf.update({ where: { id: t.id }, data: { pricePerHour: lowest } })
+          prisma.turf.update({
+            where: { id: t.id },
+            data: { pricePerHour: lowest },
+          })
         );
       }
       updated++;
@@ -51,15 +56,17 @@ async function run() {
   }
 
   if (!dryRun && updated > 0) {
-    await invalidateCache('turfs:list:*');
+    await invalidateCache("turfs:list:*");
   }
 
-  console.log(`[backfill] done. updated=${updated} skipped=${skipped} dryRun=${dryRun}`);
+  console.log(
+    `[backfill] done. updated=${updated} skipped=${skipped} dryRun=${dryRun}`
+  );
 }
 
 run()
   .catch((err) => {
-    console.error('[backfill] error', err);
+    console.error("[backfill] error", err);
     process.exitCode = 1;
   })
   .finally(() => prisma.$disconnect());

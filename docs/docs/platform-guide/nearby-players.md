@@ -18,34 +18,43 @@ The **Nearby Players Discovery** module enables users to find, connect with, and
 The geographic player discovery features are built using the following core files:
 
 ### 1. `FindPlayers.jsx`
-* **Path:** [FindPlayers.jsx](file:///Users/prem/kridaz/client/user/src/pages/FindPlayers.jsx)
-* **Functionality:** The top-level page wrapper that coordinates local geolocation queries, filters, and manages sidebar player listing panels.
+
+- **Path:** [FindPlayers.jsx](file:///Users/prem/kridaz/client/user/src/pages/FindPlayers.jsx)
+- **Functionality:** The top-level page wrapper that coordinates local geolocation queries, filters, and manages sidebar player listing panels.
 
 ### 2. `NearbyPlayersMap.jsx` & `PlayerMap.jsx`
-* **Paths:** [NearbyPlayersMap.jsx](file:///Users/prem/kridaz/client/user/src/shared/components/map/NearbyPlayersMap.jsx) / [PlayerMap.jsx](file:///Users/prem/kridaz/client/user/src/shared/components/discovery/PlayerMap.jsx)
-* **Functionality:** Handles map rendering (via Leaflet or Mapbox API), custom marker placement, cluster overlays, and click bindings.
-* **Key Code Snippet:**
+
+- **Paths:** [NearbyPlayersMap.jsx](file:///Users/prem/kridaz/client/user/src/shared/components/map/NearbyPlayersMap.jsx) / [PlayerMap.jsx](file:///Users/prem/kridaz/client/user/src/shared/components/discovery/PlayerMap.jsx)
+- **Functionality:** Handles map rendering (via Leaflet or Mapbox API), custom marker placement, cluster overlays, and click bindings.
+- **Key Code Snippet:**
+
   ```javascript
   // Centering map and binding marker click handlers
-  import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-  
+  import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+
   const ActivePlayersMap = ({ players, userCoords }) => {
     return (
-      <MapContainer center={userCoords} zoom={13} className="h-full w-full rounded-2xl">
+      <MapContainer
+        center={userCoords}
+        zoom={13}
+        className="h-full w-full rounded-2xl"
+      >
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="https://carto.com/">CARTO</a>'
         />
-        {players.map(player => (
-          <Marker 
-            key={player.id} 
+        {players.map((player) => (
+          <Marker
+            key={player.id}
             position={[player.lat, player.lng]}
             icon={createCustomIcon(player.sport)}
           >
             <Popup className="custom-popup">
               <div className="text-white p-2">
                 <h4 className="font-bold">{player.name}</h4>
-                <p className="text-xs text-[#55DEE8]">{player.skillLevel} &bull; {player.distance}km away</p>
+                <p className="text-xs text-[#55DEE8]">
+                  {player.skillLevel} &bull; {player.distance}km away
+                </p>
               </div>
             </Popup>
           </Marker>
@@ -56,14 +65,16 @@ The geographic player discovery features are built using the following core file
   ```
 
 ### 3. `DiscoveryMapShell.jsx`
-* **Path:** [DiscoveryMapShell.jsx](file:///Users/prem/kridaz/client/user/src/shared/components/discovery/DiscoveryMapShell.jsx)
-* **Functionality:** A container shell that overlays filter panels, category pills, and quick-detail slides seamlessly over the map area.
+
+- **Path:** [DiscoveryMapShell.jsx](file:///Users/prem/kridaz/client/user/src/shared/components/discovery/DiscoveryMapShell.jsx)
+- **Functionality:** A container shell that overlays filter panels, category pills, and quick-detail slides seamlessly over the map area.
 
 ---
 
 ## Technical Logic & Data Flow
 
 Redis GEO commands power the fast geolocation lookup:
+
 1. **Coord Registration:** When users open the app or map, their current latitude/longitude are posted to `/api/users/location` and stored in Redis using `GEOADD active_users <lng> <lat> <userId>`.
 2. **Geofenced Querying:** Toggling filters triggers a search query using `GEORADIUSBYMEMBER` or `GEORADIUS` to retrieve players within the designated kilometer range.
 3. **Data Hydration:** Retrieved user IDs are hydrated via MongoDB to extract profile photos, sport levels, and badge details before returning to the frontend.
@@ -72,6 +83,6 @@ Redis GEO commands power the fast geolocation lookup:
 
 ## Styling & Design Integration
 
-* **Map Customization:** Embedded maps use a custom dark cartography style (CartoDB Dark Matter) to match the dark theme of the platform.
-* **Markers & Glows:** The user marker is highlighted with a pulse animation using neon cyan (`#55DEE8`), while other player pins glow green (`#BFF367`).
-* **Overlay Cards:** Navigation overlay filters and detail cards feature a transparent backdrop design (`rgba(18, 18, 18, 0.75)` with `backdrop-filter: blur(16px)` and a subtle light-gray border).
+- **Map Customization:** Embedded maps use a custom dark cartography style (CartoDB Dark Matter) to match the dark theme of the platform.
+- **Markers & Glows:** The user marker is highlighted with a pulse animation using neon cyan (`#55DEE8`), while other player pins glow green (`#BFF367`).
+- **Overlay Cards:** Navigation overlay filters and detail cards feature a transparent backdrop design (`rgba(18, 18, 18, 0.75)` with `backdrop-filter: blur(16px)` and a subtle light-gray border).

@@ -1,5 +1,12 @@
- import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 const Chart = ({ data = [] }) => (
   <ResponsiveContainer width="100%" height={300}>
@@ -12,6 +19,5 @@ const Chart = ({ data = [] }) => (
     </LineChart>
   </ResponsiveContainer>
 );
-
 
 export default Chart;

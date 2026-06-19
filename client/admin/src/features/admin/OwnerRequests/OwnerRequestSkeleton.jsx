@@ -10,7 +10,10 @@ const OwnerRequestsSkeleton = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, index) => (
-            <div key={index} className="bg-[#111] rounded-[8px] border border-white/5 p-6 space-y-6 animate-pulse">
+            <div
+              key={index}
+              className="bg-[#111] rounded-[8px] border border-white/5 p-6 space-y-6 animate-pulse"
+            >
               <div className="space-y-4">
                 <div className="h-4 w-24 bg-gray-800 rounded"></div>
                 <div className="h-8 w-48 bg-gray-800 rounded"></div>

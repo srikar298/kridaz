@@ -10,7 +10,7 @@ import {
   autoScheduleGroupStage,
   getStandings,
   manualSchedule,
-  getTournamentMatches
+  getTournamentMatches,
 } from "./tournament.controller.js";
 import { validate } from "../../middleware/validate.middleware.js";
 import {
@@ -30,30 +30,18 @@ router.get("/:id/matches", getTournamentMatches);
 // All tournament routes below require authentication
 router.use(authenticate);
 
-router.post(
-  "/:id/register",
-  registerForTournament
-);
+router.post("/:id/register", registerForTournament);
 
 router.post("/:id/schedule/auto", autoScheduleGroupStage);
 router.post("/:id/schedule/manual", manualSchedule);
 
-
-router.post(
-  "/",
-  validate(createTournamentSchema),
-  createTournament
-);
+router.post("/", validate(createTournamentSchema), createTournament);
 
 router.get("/my-tournaments", getMyTournaments);
 
 router.get("/:id", getTournamentById);
 
-router.patch(
-  "/:id",
-  validate(updateTournamentSchema),
-  updateTournament
-);
+router.patch("/:id", validate(updateTournamentSchema), updateTournament);
 
 router.post(
   "/:id/poster",

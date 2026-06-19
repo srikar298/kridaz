@@ -1,6 +1,6 @@
-import redis  from '../config/redis.js';
-import crypto from 'crypto';
-import logger from './logger.js';
+import redis from "../config/redis.js";
+import crypto from "crypto";
+import logger from "./logger.js";
 
 /**
  * L1 — in-process Map (zero network latency, per-instance)
@@ -19,9 +19,9 @@ const L1_TTL_MS = 30_000; // 30 seconds
 export const generateCacheKey = (prefix, params) => {
   const sortedParams = Object.keys(params)
     .sort()
-    .map(key => `${key}:${params[key]}`)
-    .join('|');
-  const hash = crypto.createHash('md5').update(sortedParams).digest('hex');
+    .map((key) => `${key}:${params[key]}`)
+    .join("|");
+  const hash = crypto.createHash("md5").update(sortedParams).digest("hex");
   return `${prefix}:${hash}`;
 };
 
@@ -65,7 +65,7 @@ export const getOrSetCache = async (key, fetchFn, ttl = 300) => {
     l1Cache.set(key, { value: freshData, expiresAt: Date.now() + L1_TTL_MS });
     // Write to L2
     try {
-      await redis.set(key, JSON.stringify(freshData), 'EX', ttl);
+      await redis.set(key, JSON.stringify(freshData), "EX", ttl);
     } catch (err) {
       logger.warn(`[CACHE] L2 write error for ${key}`, { error: err.message });
     }
@@ -80,7 +80,7 @@ export const getOrSetCache = async (key, fetchFn, ttl = 300) => {
  */
 export const invalidateCache = async (pattern) => {
   // Clear L1 — remove all keys matching the pattern prefix
-  const prefix = pattern.replace(/\*/g, '');
+  const prefix = pattern.replace(/\*/g, "");
   for (const key of l1Cache.keys()) {
     if (key.startsWith(prefix)) l1Cache.delete(key);
   }
@@ -90,9 +90,13 @@ export const invalidateCache = async (pattern) => {
     const keys = await redis.keys(pattern);
     if (keys.length > 0) {
       await redis.del(...keys);
-      logger.info(`[CACHE] Invalidated ${keys.length} key(s) matching "${pattern}"`);
+      logger.info(
+        `[CACHE] Invalidated ${keys.length} key(s) matching "${pattern}"`
+      );
     }
   } catch (err) {
-    logger.warn(`[CACHE] L2 invalidation error for ${pattern}`, { error: err.message });
+    logger.warn(`[CACHE] L2 invalidation error for ${pattern}`, {
+      error: err.message,
+    });
   }
 };

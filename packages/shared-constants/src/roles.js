@@ -10,8 +10,8 @@
  * @type {Readonly<Record<string, string>>}
  */
 export const USER_ROLE = Object.freeze({
-  USER: 'USER',
-  ADMIN: 'ADMIN',
+  USER: "USER",
+  ADMIN: "ADMIN",
 });
 
 /**
@@ -19,13 +19,13 @@ export const USER_ROLE = Object.freeze({
  * @type {Readonly<Record<string, string>>}
  */
 export const OWNER_ROLE = Object.freeze({
-  VENUE_OWNER: 'VENUE_OWNER',
-  OWNER: 'OWNER',
-  COACH: 'COACH',
-  UMPIRE: 'UMPIRE',
-  SCORER: 'SCORER',
-  STREAMER: 'STREAMER',
-  PROFESSIONAL: 'PROFESSIONAL',
+  VENUE_OWNER: "VENUE_OWNER",
+  OWNER: "OWNER",
+  COACH: "COACH",
+  UMPIRE: "UMPIRE",
+  SCORER: "SCORER",
+  STREAMER: "STREAMER",
+  PROFESSIONAL: "PROFESSIONAL",
 });
 
 /**

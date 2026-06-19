@@ -1,6 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { NotFoundError, ForbiddenError, BadRequestError } from "@kridaz/common";
-import { autoGenerateGroupStage, getTournamentStandings, createManualScheduledGame } from "./scheduler.service.js";
+import {
+  autoGenerateGroupStage,
+  getTournamentStandings,
+  createManualScheduledGame,
+} from "./scheduler.service.js";
 
 const prisma = new PrismaClient();
 
@@ -204,31 +208,31 @@ export const getPublicTournament = async (req, res, next) => {
       where: { id },
       include: {
         venues: {
-          include: { turf: true }
+          include: { turf: true },
         },
         teams: {
-          where: { status: { in: ['APPROVED', 'PENDING'] } },
+          where: { status: { in: ["APPROVED", "PENDING"] } },
           include: {
             team: {
-              select: { name: true, logo: true, city: true }
-            }
-          }
+              select: { name: true, logo: true, city: true },
+            },
+          },
         },
-        sponsors: true
-      }
+        sponsors: true,
+      },
     });
 
     if (!tournament) {
       throw new NotFoundError("Tournament not found");
     }
 
-    if (tournament.status === 'DRAFT') {
+    if (tournament.status === "DRAFT") {
       throw new BadRequestError("Tournament is not published yet");
     }
 
     res.status(200).json({
       success: true,
-      data: tournament
+      data: tournament,
     });
   } catch (error) {
     next(error);
@@ -250,31 +254,41 @@ export const registerForTournament = async (req, res, next) => {
     const tournament = await prisma.tournament.findUnique({
       where: { id: tournamentId },
       include: {
-        teams: true
-      }
+        teams: true,
+      },
     });
 
     if (!tournament) throw new NotFoundError("Tournament not found");
-    if (tournament.status !== 'PUBLISHED') throw new BadRequestError("Registration is not open");
+    if (tournament.status !== "PUBLISHED")
+      throw new BadRequestError("Registration is not open");
 
     // 2. Fetch Team and verify ownership
     const team = await prisma.team.findUnique({
       where: { id: teamId },
       include: {
-        members: true
-      }
+        members: true,
+      },
     });
 
     if (!team) throw new NotFoundError("Team not found");
-    if (team.adminId !== userId) throw new ForbiddenError("You must be the team admin to register");
-    if (team.sportType && tournament.sport && team.sportType !== tournament.sport) {
-      throw new BadRequestError(`This is a ${tournament.sport} tournament, but your team plays ${team.sportType}`);
+    if (team.adminId !== userId)
+      throw new ForbiddenError("You must be the team admin to register");
+    if (
+      team.sportType &&
+      tournament.sport &&
+      team.sportType !== tournament.sport
+    ) {
+      throw new BadRequestError(
+        `This is a ${tournament.sport} tournament, but your team plays ${team.sportType}`
+      );
     }
 
     // 3. Verify Team is not already registered
-    const alreadyRegistered = tournament.teams.find(t => t.teamId === teamId);
+    const alreadyRegistered = tournament.teams.find((t) => t.teamId === teamId);
     if (alreadyRegistered) {
-      throw new BadRequestError("Your team is already registered for this tournament");
+      throw new BadRequestError(
+        "Your team is already registered for this tournament"
+      );
     }
 
     // 4. Verify spots available
@@ -285,20 +299,23 @@ export const registerForTournament = async (req, res, next) => {
     // 5. Calculate Fee
     const entryFee = tournament.entryFee || 0;
     const advanceFee = tournament.advanceFee || 0;
-    const amountToDeduct = paymentType === 'ADVANCE' && advanceFee > 0 ? advanceFee : entryFee;
+    const amountToDeduct =
+      paymentType === "ADVANCE" && advanceFee > 0 ? advanceFee : entryFee;
 
     // 6. Wallet Deduction Logic (Transaction)
     if (amountToDeduct > 0) {
       // Fetch user wallet
       const wallet = await prisma.wallet.findUnique({ where: { userId } });
       if (!wallet || wallet.balance < amountToDeduct) {
-        throw new BadRequestError("Insufficient wallet balance. Please recharge.");
+        throw new BadRequestError(
+          "Insufficient wallet balance. Please recharge."
+        );
       }
 
       await prisma.$transaction([
         prisma.wallet.update({
           where: { userId },
-          data: { balance: { decrement: amountToDeduct } }
+          data: { balance: { decrement: amountToDeduct } },
         }),
         prisma.walletTransaction.create({
           data: {
@@ -308,20 +325,20 @@ export const registerForTournament = async (req, res, next) => {
             status: "SUCCESS",
             description: `Registration fee (${paymentType}) for ${tournament.name}`,
             referenceType: "TOURNAMENT",
-            referenceId: tournamentId
-          }
+            referenceId: tournamentId,
+          },
         }),
         // Register the team
         prisma.tournamentTeam.create({
           data: {
             tournamentId,
             teamId,
-            status: 'APPROVED', // or PENDING based on organizer preference
+            status: "APPROVED", // or PENDING based on organizer preference
             paidAmount: amountToDeduct,
-            isAdvancePaid: paymentType === 'ADVANCE',
-            isFullyPaid: paymentType === 'FULL' || amountToDeduct >= entryFee
-          }
-        })
+            isAdvancePaid: paymentType === "ADVANCE",
+            isFullyPaid: paymentType === "FULL" || amountToDeduct >= entryFee,
+          },
+        }),
       ]);
     } else {
       // Free tournament
@@ -329,17 +346,17 @@ export const registerForTournament = async (req, res, next) => {
         data: {
           tournamentId,
           teamId,
-          status: 'APPROVED',
+          status: "APPROVED",
           paidAmount: 0,
           isAdvancePaid: true,
-          isFullyPaid: true
-        }
+          isFullyPaid: true,
+        },
       });
     }
 
     res.status(200).json({
       success: true,
-      message: "Team successfully registered for the tournament!"
+      message: "Team successfully registered for the tournament!",
     });
   } catch (error) {
     next(error);
@@ -354,19 +371,20 @@ export const registerForTournament = async (req, res, next) => {
 export const autoScheduleGroupStage = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { startDate, slotTimes } = req.body; 
+    const { startDate, slotTimes } = req.body;
     const userId = req.user.id;
 
     const tournament = await prisma.tournament.findUnique({ where: { id } });
     if (!tournament) throw new NotFoundError("Tournament not found");
-    if (tournament.ownerId !== userId) throw new ForbiddenError("Not authorized");
+    if (tournament.ownerId !== userId)
+      throw new ForbiddenError("Not authorized");
 
     const matches = await autoGenerateGroupStage(id, startDate, slotTimes);
 
     res.status(200).json({
       success: true,
       message: `${matches.length} matches generated successfully`,
-      data: matches
+      data: matches,
     });
   } catch (error) {
     next(error);
@@ -385,7 +403,7 @@ export const getStandings = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: standings
+      data: standings,
     });
   } catch (error) {
     next(error);
@@ -405,14 +423,22 @@ export const manualSchedule = async (req, res, next) => {
 
     const tournament = await prisma.tournament.findUnique({ where: { id } });
     if (!tournament) throw new NotFoundError("Tournament not found");
-    if (tournament.ownerId !== userId) throw new ForbiddenError("Not authorized");
+    if (tournament.ownerId !== userId)
+      throw new ForbiddenError("Not authorized");
 
-    const match = await createManualScheduledGame(id, stage, poolId, scheduledAt, team1Id, team2Id);
+    const match = await createManualScheduledGame(
+      id,
+      stage,
+      poolId,
+      scheduledAt,
+      team1Id,
+      team2Id
+    );
 
     res.status(201).json({
       success: true,
       message: "Match scheduled successfully",
-      data: match
+      data: match,
     });
   } catch (error) {
     next(error);
@@ -429,23 +455,22 @@ export const getTournamentMatches = async (req, res, next) => {
     const { id } = req.params;
     const matches = await prisma.hostedGame.findMany({
       where: { tournamentId: id },
-      orderBy: { scheduledAt: 'asc' },
+      orderBy: { scheduledAt: "asc" },
       include: {
         teams: {
-          include: { team: true }
+          include: { team: true },
         },
         venue: {
-          include: { turf: true }
-        }
-      }
+          include: { turf: true },
+        },
+      },
     });
 
     res.status(200).json({
       success: true,
-      data: matches
+      data: matches,
     });
   } catch (error) {
     next(error);
   }
 };
-

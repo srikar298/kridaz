@@ -24,44 +24,26 @@ import Translate from "@docusaurus/Translate";
   as={"h1"}
   className={"openapi__heading"}
   children={"Verify booking payment"}
->
-</Heading>
+></Heading>
 
 <MethodEndpoint
   method={"post"}
   path={"/user/booking/verify-payment"}
   context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+></MethodEndpoint>
 
 Verifies the Razorpay payment signature and confirms the booking.
 
-<Heading
-  id={"request"}
-  as={"h2"}
-  className={"openapi-tabs__heading"}
->
+<Heading id={"request"} as={"h2"} className={"openapi-tabs__heading"}>
   <Translate id="theme.openapi.request.title">Request</Translate>
 </Heading>
 
-<ParamsDetails>
-  
-</ParamsDetails>
+<ParamsDetails></ParamsDetails>
 
 <RequestSchema
   {...require("./verify-booking-payment.RequestSchema.json")}
->
-  
-</RequestSchema>
+></RequestSchema>
 
 <StatusCodes
   {...require("./verify-booking-payment.StatusCodes.json")}
->
-  
-</StatusCodes>
-
-
-      
+></StatusCodes>

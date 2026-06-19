@@ -1,36 +1,44 @@
-import { 
-  X, 
-  UserPlus, 
-  Lock, 
-  CheckCircle2, 
-  HelpCircle, 
-  MapPin, 
-  Calendar, 
-  Clock, 
-  Users, 
-  DollarSign 
-} from 'lucide-react';
+import {
+  X,
+  UserPlus,
+  Lock,
+  CheckCircle2,
+  HelpCircle,
+  MapPin,
+  Calendar,
+  Clock,
+  Users,
+  DollarSign,
+} from "lucide-react";
 
 const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
   if (!game) return null;
 
-  const isQuick = game.gameMode === 'QUICK';
+  const isQuick = game.gameMode === "QUICK";
 
   const renderSlotStatus = (slot, teamKey, index) => {
     const isCurrentUser = slot.userId === currentUserId;
-    
-    if (slot.status === 'JOINED') {
+
+    if (slot.status === "JOINED") {
       return (
         <div className="flex items-center justify-between p-3 rounded-[8px] bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
           <div className="flex items-center gap-2">
             {slot.user?.profilePicture ? (
-              <img src={slot.user.profilePicture} alt={slot.user.name} className="h-6 w-6 rounded-full object-cover shrink-0" />
+              <img
+                src={slot.user.profilePicture}
+                alt={slot.user.name}
+                className="h-6 w-6 rounded-full object-cover shrink-0"
+              />
             ) : (
               <CheckCircle2 className="h-4.5 w-4.5 shrink-0" />
             )}
             <div>
-              <span className="font-semibold text-sm block">{slot.user?.name || slot.customPlayer?.name || 'Joined Player'}</span>
-              <span className="text-[10px] text-emerald-400/80 uppercase tracking-wider">{slot.role}</span>
+              <span className="font-semibold text-sm block">
+                {slot.user?.name || slot.customPlayer?.name || "Joined Player"}
+              </span>
+              <span className="text-[10px] text-emerald-400/80 uppercase tracking-wider">
+                {slot.role}
+              </span>
             </div>
           </div>
           {isCurrentUser && (
@@ -42,18 +50,26 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
       );
     }
 
-    if (slot.status === 'HELD' || slot.status === 'PENDING') {
+    if (slot.status === "HELD" || slot.status === "PENDING") {
       return (
         <div className="flex items-center justify-between p-3 rounded-[8px] bg-amber-500/10 border border-amber-500/20 text-amber-400">
           <div className="flex items-center gap-2">
             {slot.user?.profilePicture ? (
-              <img src={slot.user.profilePicture} alt={slot.user.name} className="h-6 w-6 rounded-full object-cover shrink-0 opacity-50" />
+              <img
+                src={slot.user.profilePicture}
+                alt={slot.user.name}
+                className="h-6 w-6 rounded-full object-cover shrink-0 opacity-50"
+              />
             ) : (
               <Lock className="h-4.5 w-4.5 shrink-0 animate-pulse" />
             )}
             <div>
-              <span className="font-semibold text-sm block">{slot.user?.name || slot.customPlayer?.name || 'Reserved Spot'}</span>
-              <span className="text-[10px] text-amber-400/80 uppercase tracking-wider">{slot.role}</span>
+              <span className="font-semibold text-sm block">
+                {slot.user?.name || slot.customPlayer?.name || "Reserved Spot"}
+              </span>
+              <span className="text-[10px] text-amber-400/80 uppercase tracking-wider">
+                {slot.role}
+              </span>
             </div>
           </div>
           <span className="text-[10px] font-bold uppercase bg-gradient-to-r from-[#BFF367]/20 to-[#BFF367]/20 text-transparent bg-clip-text bg-gradient-to-r from-[#BFF367] to-[#BFF367] border border-[#BFF367]/30 px-2 py-0.5 rounded">
@@ -65,15 +81,19 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
 
     // OPEN Spot
     return (
-      <button 
+      <button
         onClick={() => onJoinSlot({ team: teamKey, index, role: slot.role })}
         className="w-full flex items-center justify-between p-3 rounded-[8px] bg-slate-800/40 border border-white/5 text-slate-400 hover:text-violet-400 hover:border-violet-500/40 hover:bg-violet-500/5 transition-all text-left group/slot"
       >
         <div className="flex items-center gap-2">
           <HelpCircle className="h-4.5 w-4.5 shrink-0 group-hover/slot:text-violet-400" />
           <div>
-            <span className="font-medium text-sm block group-hover/slot:text-violet-200">Open Roster Spot</span>
-            <span className="text-[10px] text-slate-500 group-hover/slot:text-violet-400/80 uppercase tracking-wider">{slot.role}</span>
+            <span className="font-medium text-sm block group-hover/slot:text-violet-200">
+              Open Roster Spot
+            </span>
+            <span className="text-[10px] text-slate-500 group-hover/slot:text-violet-400/80 uppercase tracking-wider">
+              {slot.role}
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-1 opacity-0 group-hover/slot:opacity-100 transition-opacity">
@@ -89,7 +109,7 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
       <div className="relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-[8px] border border-white/10 bg-slate-900 shadow-2xl overflow-hidden">
         {/* Header decoration */}
         <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600" />
-        
+
         {/* Header */}
         <div className="flex justify-between items-center px-6 py-5 border-b border-white/5 mt-1.5">
           <div>
@@ -97,10 +117,10 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
               {game.gameMode} Matchup
             </span>
             <h3 className="text-xl md:text-2xl font-bold text-white mb-2 leading-tight">
-              {game.ground?.name || 'Venue TBD'}
+              {game.ground?.name || "Venue TBD"}
             </h3>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="p-2 rounded-[8px] bg-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-700 transition-all"
           >
@@ -117,9 +137,17 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
                 <Calendar className="h-4.5 w-4.5" />
               </div>
               <div>
-                <span className="text-xs text-slate-500 block uppercase font-bold tracking-wider">Date</span>
+                <span className="text-xs text-slate-500 block uppercase font-bold tracking-wider">
+                  Date
+                </span>
                 <span className="font-semibold text-slate-200">
-                  {game.date ? new Date(game.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Flexible'}
+                  {game.date
+                    ? new Date(game.date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })
+                    : "Flexible"}
                 </span>
               </div>
             </div>
@@ -128,8 +156,12 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
                 <Clock className="h-4.5 w-4.5" />
               </div>
               <div>
-                <span className="text-xs text-slate-500 block uppercase font-bold tracking-wider">Time</span>
-                <span className="font-semibold text-slate-200">{game.time || 'Flexible'}</span>
+                <span className="text-xs text-slate-500 block uppercase font-bold tracking-wider">
+                  Time
+                </span>
+                <span className="font-semibold text-slate-200">
+                  {game.time || "Flexible"}
+                </span>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -137,8 +169,12 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
                 <MapPin className="h-4.5 w-4.5" />
               </div>
               <div>
-                <span className="text-xs text-slate-500 block uppercase font-bold tracking-wider">Location</span>
-                <span className="font-semibold text-slate-200 truncate block max-w-[150px]">{game.city || 'Any City'}</span>
+                <span className="text-xs text-slate-500 block uppercase font-bold tracking-wider">
+                  Location
+                </span>
+                <span className="font-semibold text-slate-200 truncate block max-w-[150px]">
+                  {game.city || "Any City"}
+                </span>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -146,8 +182,12 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
                 <DollarSign className="h-4.5 w-4.5" />
               </div>
               <div>
-                <span className="text-xs text-slate-500 block uppercase font-bold tracking-wider">Coin Charge</span>
-                <span className="font-bold text-emerald-400">{game.perPlayerCharge || 'Free'}</span>
+                <span className="text-xs text-slate-500 block uppercase font-bold tracking-wider">
+                  Coin Charge
+                </span>
+                <span className="font-bold text-emerald-400">
+                  {game.perPlayerCharge || "Free"}
+                </span>
               </div>
             </div>
           </div>
@@ -161,9 +201,7 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {game.quickSlotsData?.map((slot, idx) => (
-                  <div key={idx}>
-                    {renderSlotStatus(slot, 'quick', idx)}
-                  </div>
+                  <div key={idx}>{renderSlotStatus(slot, "quick", idx)}</div>
                 ))}
               </div>
             </div>
@@ -172,21 +210,26 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
               {/* Team A */}
               <div className="space-y-4">
                 <div className="flex items-center gap-3 p-3 rounded-[8px] bg-slate-800/40 border border-white/5">
-                  <img 
-                    src={game.teamA?.image || 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800&q=80'} 
-                    alt="Team A Logo" 
+                  <img
+                    src={
+                      game.teamA?.image ||
+                      "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800&q=80"
+                    }
+                    alt="Team A Logo"
                     className="h-10 w-10 rounded-[8px] object-cover"
                   />
                   <div>
-                    <h4 className="font-bold text-slate-200">{game.teamA?.name || 'TBD'}</h4>
-                    <span className="text-[10px] uppercase font-bold text-violet-400 tracking-wider">Professional Squad</span>
+                    <h4 className="font-bold text-slate-200">
+                      {game.teamA?.name || "TBD"}
+                    </h4>
+                    <span className="text-[10px] uppercase font-bold text-violet-400 tracking-wider">
+                      Professional Squad
+                    </span>
                   </div>
                 </div>
                 <div className="space-y-2">
                   {game.teamA?.slots?.map((slot, idx) => (
-                    <div key={idx}>
-                      {renderSlotStatus(slot, 'teamA', idx)}
-                    </div>
+                    <div key={idx}>{renderSlotStatus(slot, "teamA", idx)}</div>
                   ))}
                 </div>
               </div>
@@ -194,21 +237,26 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
               {/* Team B */}
               <div className="space-y-4">
                 <div className="flex items-center gap-3 p-3 rounded-[8px] bg-slate-800/40 border border-white/5">
-                  <img 
-                    src={game.teamB?.image || 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&q=80'} 
-                    alt="Team B Logo" 
+                  <img
+                    src={
+                      game.teamB?.image ||
+                      "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&q=80"
+                    }
+                    alt="Team B Logo"
                     className="h-10 w-10 rounded-[8px] object-cover"
                   />
                   <div>
-                    <h4 className="font-bold text-slate-200">{game.teamB?.name || 'TBD'}</h4>
-                    <span className="text-[10px] uppercase font-bold text-pink-400 tracking-wider">Professional Squad</span>
+                    <h4 className="font-bold text-slate-200">
+                      {game.teamB?.name || "TBD"}
+                    </h4>
+                    <span className="text-[10px] uppercase font-bold text-pink-400 tracking-wider">
+                      Professional Squad
+                    </span>
                   </div>
                 </div>
                 <div className="space-y-2">
                   {game.teamB?.slots?.map((slot, idx) => (
-                    <div key={idx}>
-                      {renderSlotStatus(slot, 'teamB', idx)}
-                    </div>
+                    <div key={idx}>{renderSlotStatus(slot, "teamB", idx)}</div>
                   ))}
                 </div>
               </div>
@@ -224,19 +272,27 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
               <div className="p-3 rounded-[8px] bg-slate-800/40 border border-white/5 text-xs">
                 <span className="text-slate-500 block">Assigned Pitch</span>
                 <span className="font-semibold text-slate-200 block mt-0.5 truncate">
-                  {game.ground?.name || 'Venue TBD'}
+                  {game.ground?.name || "Venue TBD"}
                 </span>
               </div>
               <div className="p-3 rounded-[8px] bg-slate-800/40 border border-white/5 text-xs">
-                <span className="text-slate-500 block">Match Referee / Umpire</span>
+                <span className="text-slate-500 block">
+                  Match Referee / Umpire
+                </span>
                 <span className="font-semibold text-slate-200 block mt-0.5">
-                  {game.umpireId ? 'Official Certified Referee' : 'Community Volunteer'}
+                  {game.umpireId
+                    ? "Official Certified Referee"
+                    : "Community Volunteer"}
                 </span>
               </div>
               <div className="p-3 rounded-[8px] bg-slate-800/40 border border-white/5 text-xs">
-                <span className="text-slate-500 block">Broadcaster / Streamer</span>
+                <span className="text-slate-500 block">
+                  Broadcaster / Streamer
+                </span>
                 <span className="font-semibold text-slate-200 block mt-0.5">
-                  {game.streamerId ? 'Live Broadcast Scheduled' : 'No Stream Requested'}
+                  {game.streamerId
+                    ? "Live Broadcast Scheduled"
+                    : "No Stream Requested"}
                 </span>
               </div>
             </div>

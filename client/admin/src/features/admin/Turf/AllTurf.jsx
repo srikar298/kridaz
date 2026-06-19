@@ -9,12 +9,25 @@ import VenueDetailsModal from "./VenueDetailsModal";
 import ConfirmationPopup from "./ConfirmationPopup";
 
 export const AllTurf = () => {
-  const { turfData, loading, approveTurf, rejectTurf, decommissionTurf, softDeleteTurf, hardDeleteTurf } = useTurfData();
+  const {
+    turfData,
+    loading,
+    approveTurf,
+    rejectTurf,
+    decommissionTurf,
+    softDeleteTurf,
+    hardDeleteTurf,
+  } = useTurfData();
   const navigate = useNavigate();
   const [selectedTurf, setSelectedTurf] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState("all");
-  const [confirmModal, setConfirmModal] = useState({ isOpen: false, type: "", turfId: null, name: "" });
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    type: "",
+    turfId: null,
+    name: "",
+  });
 
   const filters = [
     { id: "all", label: "All Venues" },
@@ -25,7 +38,7 @@ export const AllTurf = () => {
     { id: "deleted", label: "Deleted" },
   ];
 
-  const filteredTurfs = turfData?.filter(turf => 
+  const filteredTurfs = turfData?.filter((turf) =>
     activeFilter === "all" ? true : turf.status === activeFilter
   );
 
@@ -47,7 +60,12 @@ export const AllTurf = () => {
   };
 
   const openDeleteConfirm = (id, name, isPermanent = false) => {
-    setConfirmModal({ isOpen: true, type: isPermanent ? "hard-delete" : "soft-delete", turfId: id, name });
+    setConfirmModal({
+      isOpen: true,
+      type: isPermanent ? "hard-delete" : "soft-delete",
+      turfId: id,
+      name,
+    });
   };
 
   const handleConfirm = async (adminData) => {
@@ -98,17 +116,19 @@ export const AllTurf = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-[#CCFF00] font-bold text-xs uppercase tracking-widest">
-               <Activity size={14} className="animate-pulse" />
-               <span>Venue Management</span>
+              <Activity size={14} className="animate-pulse" />
+              <span>Venue Management</span>
             </div>
             <div className="relative flex justify-between items-start w-full">
               <div>
                 <h1 className="text-4xl md:text-5xl font-black tracking-tight uppercase text-white leading-none">
                   Platform <span className="text-[#CCFF00]">Venues</span>
                 </h1>
-                <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-3">Manage and monitor all platform venues</p>
+                <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-3">
+                  Manage and monitor all platform venues
+                </p>
               </div>
-              <button 
+              <button
                 onClick={() => navigate("/admin/turfs/invites")}
                 className="px-6 py-2 rounded-[8px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-black text-xs font-bold uppercase tracking-widest shadow-[0_4px_12px_rgba(179,220,38,0.2)] ml-4"
               >
@@ -123,7 +143,7 @@ export const AllTurf = () => {
               <button
                 key={filter.id}
                 onClick={() => setActiveFilter(filter.id)}
-                className={`px-4 py-2 rounded-[8px] text-[10px] font-black uppercase tracking-widest transition-all ${ activeFilter === filter.id ? "bg-[#CCFF00] text-black shadow-lg shadow-[#CCFF00]/20" : "text-gray-500 hover:text-white hover:bg-white/5" }`}
+                className={`px-4 py-2 rounded-[8px] text-[10px] font-black uppercase tracking-widest transition-all ${activeFilter === filter.id ? "bg-[#CCFF00] text-black shadow-lg shadow-[#CCFF00]/20" : "text-gray-500 hover:text-white hover:bg-white/5"}`}
               >
                 {filter.label}
               </button>
@@ -135,23 +155,32 @@ export const AllTurf = () => {
           <div className="relative p-20 rounded-[8px] border border-white/5 bg-white/[0.02] text-center overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full bg-[#CCFF00]/5 blur-[100px]"></div>
             <div className="relative space-y-6">
-               <PackageOpen size={80} className="mx-auto text-gray-800" />
-               <div className="space-y-2">
-                 <p className="font-black text-3xl text-white uppercase tracking-tighter">No Venues Found</p>
-                 <p className="text-sm text-gray-500 max-w-md mx-auto">Try adjusting your filters or check back later for new applications.</p>
-               </div>
+              <PackageOpen size={80} className="mx-auto text-gray-800" />
+              <div className="space-y-2">
+                <p className="font-black text-3xl text-white uppercase tracking-tighter">
+                  No Venues Found
+                </p>
+                <p className="text-sm text-gray-500 max-w-md mx-auto">
+                  Try adjusting your filters or check back later for new
+                  applications.
+                </p>
+              </div>
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
             {filteredTurfs.map((turf) => (
-              <Turf 
-                key={turf._id} 
-                turf={turf} 
+              <Turf
+                key={turf._id}
+                turf={turf}
                 onApprove={() => openApproveConfirm(turf._id, turf.name)}
                 onReject={() => openRejectConfirm(turf._id, turf.name)}
-                onDecommission={() => openDecommissionConfirm(turf._id, turf.name)}
-                onDelete={(id, permanent) => openDeleteConfirm(id, turf.name, permanent)}
+                onDecommission={() =>
+                  openDecommissionConfirm(turf._id, turf.name)
+                }
+                onDelete={(id, permanent) =>
+                  openDeleteConfirm(id, turf.name, permanent)
+                }
                 onViewDetails={handleViewDetails}
               />
             ))}
@@ -160,39 +189,57 @@ export const AllTurf = () => {
       </div>
 
       {/* Modals */}
-      <VenueDetailsModal 
+      <VenueDetailsModal
         isOpen={isDetailsOpen}
         onClose={() => setIsDetailsOpen(false)}
         turf={selectedTurf}
-        onApprove={() => openApproveConfirm(selectedTurf?._id, selectedTurf?.name)}
-        onReject={() => openRejectConfirm(selectedTurf?._id, selectedTurf?.name)}
+        onApprove={() =>
+          openApproveConfirm(selectedTurf?._id, selectedTurf?.name)
+        }
+        onReject={() =>
+          openRejectConfirm(selectedTurf?._id, selectedTurf?.name)
+        }
       />
 
-      <ConfirmationPopup 
+      <ConfirmationPopup
         isOpen={confirmModal.isOpen}
         onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })}
         onConfirm={handleConfirm}
         title={
-          confirmModal.type === 'approve' ? 'Verify Venue' : 
-          confirmModal.type === 'reject' ? 'Decline Venue' :
-          confirmModal.type === 'decommission' ? 'Decommission Venue' :
-          confirmModal.type === 'soft-delete' ? 'Delete Venue' : 'Permanent Delete'
+          confirmModal.type === "approve"
+            ? "Verify Venue"
+            : confirmModal.type === "reject"
+              ? "Decline Venue"
+              : confirmModal.type === "decommission"
+                ? "Decommission Venue"
+                : confirmModal.type === "soft-delete"
+                  ? "Delete Venue"
+                  : "Permanent Delete"
         }
         message={
-          confirmModal.type === 'approve' ? `Are you sure you want to approve "${confirmModal.name}"?` :
-          confirmModal.type === 'reject' ? `Are you sure you want to decline "${confirmModal.name}"?` :
-          confirmModal.type === 'decommission' ? `Are you sure you want to decommission "${confirmModal.name}"? The owner will need to re-apply for verification.` :
-          confirmModal.type === 'soft-delete' ? `Are you sure you want to move "${confirmModal.name}" to the deleted list?` :
-          `WARNING: This will permanently delete "${confirmModal.name}" and all associated booking/slot data. This action CANNOT be undone.`
+          confirmModal.type === "approve"
+            ? `Are you sure you want to approve "${confirmModal.name}"?`
+            : confirmModal.type === "reject"
+              ? `Are you sure you want to decline "${confirmModal.name}"?`
+              : confirmModal.type === "decommission"
+                ? `Are you sure you want to decommission "${confirmModal.name}"? The owner will need to re-apply for verification.`
+                : confirmModal.type === "soft-delete"
+                  ? `Are you sure you want to move "${confirmModal.name}" to the deleted list?`
+                  : `WARNING: This will permanently delete "${confirmModal.name}" and all associated booking/slot data. This action CANNOT be undone.`
         }
-        type={confirmModal.type === 'approve' ? 'success' : 'danger'}
+        type={confirmModal.type === "approve" ? "success" : "danger"}
         confirmText={
-          confirmModal.type === 'approve' ? 'Verify & Approve' : 
-          confirmModal.type === 'reject' ? 'Decline Venue' :
-          confirmModal.type === 'decommission' ? 'Decommission Now' :
-          confirmModal.type === 'soft-delete' ? 'Move to Deleted' : 'Delete Permanently'
+          confirmModal.type === "approve"
+            ? "Verify & Approve"
+            : confirmModal.type === "reject"
+              ? "Decline Venue"
+              : confirmModal.type === "decommission"
+                ? "Decommission Now"
+                : confirmModal.type === "soft-delete"
+                  ? "Move to Deleted"
+                  : "Delete Permanently"
         }
-        showGovernanceForm={confirmModal.type !== 'hard-delete'}
+        showGovernanceForm={confirmModal.type !== "hard-delete"}
       />
     </div>
   );

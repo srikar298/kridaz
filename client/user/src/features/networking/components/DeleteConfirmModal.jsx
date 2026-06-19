@@ -25,12 +25,16 @@ const DeleteConfirmModal = ({ onClose, onConfirm, isDeleting }) => {
           <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
             <Trash2 size={24} className="text-red-500" />
           </div>
-          
-          <h3 className="text-xl font-bold text-white mb-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+
+          <h3
+            className="text-xl font-bold text-white mb-2"
+            style={{ fontFamily: "'Open Sans', sans-serif" }}
+          >
             Delete Post
           </h3>
           <p className="text-white/60 text-sm mb-6 leading-relaxed">
-            Are you sure you want to delete this post? This action cannot be undone.
+            Are you sure you want to delete this post? This action cannot be
+            undone.
           </p>
 
           <div className="flex gap-3">

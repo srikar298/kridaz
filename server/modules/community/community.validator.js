@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const getUploadUrlSchema = z.object({
   query: z.object({
@@ -14,11 +14,15 @@ export const confirmPostSchema = z.object({
     mediaType: z.enum(["image", "video"]).optional(),
     title: z.string().optional(),
     content: z.string().optional(),
-    mediaItems: z.array(z.object({
-      key: z.string(),
-      mediaType: z.string()
-    })).optional(),
-    sport: z.string().optional()
+    mediaItems: z
+      .array(
+        z.object({
+          key: z.string(),
+          mediaType: z.string(),
+        })
+      )
+      .optional(),
+    sport: z.string().optional(),
   }),
 });
 

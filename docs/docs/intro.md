@@ -43,14 +43,14 @@ kridaz/
 
 ## Quick Navigation
 
-| I want to… | Go to |
-| :--- | :--- |
-| Understand the backend architecture | [Backend Architecture](/docs/backend/architecture) |
-| Onboard as a new backend developer | [Backend Onboarding](/docs/backend/onboarding) |
-| Create or work on a module | [Module Guide](/docs/backend/module-guide) |
-| Understand auth and rate limiting | [Security Model](/docs/backend/security) |
-| Browse the full API reference | [API Reference](/docs/api/kridaz-api) |
-| Understand the frontend codebase | [Frontend Architecture](/docs/frontend/architecture) |
+| I want to…                          | Go to                                                |
+| :---------------------------------- | :--------------------------------------------------- |
+| Understand the backend architecture | [Backend Architecture](/docs/backend/architecture)   |
+| Onboard as a new backend developer  | [Backend Onboarding](/docs/backend/onboarding)       |
+| Create or work on a module          | [Module Guide](/docs/backend/module-guide)           |
+| Understand auth and rate limiting   | [Security Model](/docs/backend/security)             |
+| Browse the full API reference       | [API Reference](/docs/api/kridaz-api)                |
+| Understand the frontend codebase    | [Frontend Architecture](/docs/frontend/architecture) |
 
 ---
 
@@ -62,27 +62,27 @@ pnpm install
 pnpm dev
 ```
 
-| Service | URL |
-| :--- | :--- |
-| API Server | http://localhost:6001 |
-| Swagger UI | http://localhost:6001/api/docs |
-| Health Check | http://localhost:6001/api/health |
-| This Docs Site | http://localhost:3000 |
+| Service        | URL                              |
+| :------------- | :------------------------------- |
+| API Server     | http://localhost:6001            |
+| Swagger UI     | http://localhost:6001/api/docs   |
+| Health Check   | http://localhost:6001/api/health |
+| This Docs Site | http://localhost:3000            |
 
 ---
 
 ## Technology Stack
 
-| Layer | Technology |
-| :--- | :--- |
-| API Server | Node.js 20 + Express.js |
-| Database | PostgreSQL via Prisma ORM |
-| Cache / Rate Limiting | Redis (ioredis) |
-| Payments | Razorpay |
-| Real-time | Socket.io |
-| Auth | JWT (access + refresh tokens) + Google OAuth |
-| Media | AWS S3 + CloudFront + ffmpeg (HLS) |
-| Monitoring | Prometheus + Winston |
-| Error Tracking | Sentry |
-| API Docs | Swagger UI (OpenAPI 3.0) |
-| Developer Docs | Docusaurus (this site) |
+| Layer                 | Technology                                   |
+| :-------------------- | :------------------------------------------- |
+| API Server            | Node.js 20 + Express.js                      |
+| Database              | PostgreSQL via Prisma ORM                    |
+| Cache / Rate Limiting | Redis (ioredis)                              |
+| Payments              | Razorpay                                     |
+| Real-time             | Socket.io                                    |
+| Auth                  | JWT (access + refresh tokens) + Google OAuth |
+| Media                 | AWS S3 + CloudFront + ffmpeg (HLS)           |
+| Monitoring            | Prometheus + Winston                         |
+| Error Tracking        | Sentry                                       |
+| API Docs              | Swagger UI (OpenAPI 3.0)                     |
+| Developer Docs        | Docusaurus (this site)                       |

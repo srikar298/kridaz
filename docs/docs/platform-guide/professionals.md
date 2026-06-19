@@ -18,9 +18,10 @@ To elevate match quality and competitive integrity, Kridaz provides a marketplac
 The marketplace and scheduling tools are built with the following files:
 
 ### 1. `HireOfficialModal.jsx`
-* **Path:** [HireOfficialModal.jsx](file:///Users/prem/kridaz/client/user/src/shared/components/official/HireOfficialModal.jsx)
-* **Functionality:** Handles the hiring configuration wizard. Lets the user input dates, time windows, choose matching bookings, and see final service cost calculations.
-* **Key Code Snippet:**
+
+- **Path:** [HireOfficialModal.jsx](file:///Users/prem/kridaz/client/user/src/shared/components/official/HireOfficialModal.jsx)
+- **Functionality:** Handles the hiring configuration wizard. Lets the user input dates, time windows, choose matching bookings, and see final service cost calculations.
+- **Key Code Snippet:**
   ```javascript
   // Processing official booking request submission
   const handleHireSubmit = async () => {
@@ -35,9 +36,12 @@ The marketplace and scheduling tools are built with the following files:
         bookingId: selectedBooking?.id,
         durationHours,
         dateTime: matchTime,
-        totalFees: official.ratePerHour * durationHours
+        totalFees: official.ratePerHour * durationHours,
       };
-      const res = await axiosInstance.post('/api/professionals/hire', requestPayload);
+      const res = await axiosInstance.post(
+        "/api/professionals/hire",
+        requestPayload
+      );
       toast.success("Hiring request sent to official!");
       onClose();
     } catch (err) {
@@ -49,12 +53,14 @@ The marketplace and scheduling tools are built with the following files:
   ```
 
 ### 2. `SelectVenueModal.jsx`
-* **Path:** [SelectVenueModal.jsx](file:///Users/prem/kridaz/client/user/src/shared/components/official/SelectVenueModal.jsx)
-* **Functionality:** Allows the match host to link the official's booking directly to one of their pre-reserved ground slots or choose a public/external venue location.
+
+- **Path:** [SelectVenueModal.jsx](file:///Users/prem/kridaz/client/user/src/shared/components/official/SelectVenueModal.jsx)
+- **Functionality:** Allows the match host to link the official's booking directly to one of their pre-reserved ground slots or choose a public/external venue location.
 
 ### 3. `ProfessionalLayout.jsx` & `ProfessionalSidebar.jsx`
-* **Paths:** [ProfessionalLayout.jsx](file:///Users/prem/kridaz/client/user/src/shared/layouts/ProfessionalLayout.jsx) / [ProfessionalSidebar.jsx](file:///Users/prem/kridaz/client/user/src/shared/components/layout/ProfessionalSidebar.jsx)
-* **Functionality:** The dashboard layout and navigation sidebar used by professionals to view incoming requests, log match reports, configure banking payouts, and set their shift availability calendars.
+
+- **Paths:** [ProfessionalLayout.jsx](file:///Users/prem/kridaz/client/user/src/shared/layouts/ProfessionalLayout.jsx) / [ProfessionalSidebar.jsx](file:///Users/prem/kridaz/client/user/src/shared/components/layout/ProfessionalSidebar.jsx)
+- **Functionality:** The dashboard layout and navigation sidebar used by professionals to view incoming requests, log match reports, configure banking payouts, and set their shift availability calendars.
 
 ---
 
@@ -80,6 +86,6 @@ graph TD
 
 ## Styling & Design Integration
 
-* **Card Grids:** Structured in css grid layouts (`grid grid-cols-1 md:grid-cols-3 gap-6`) using rich `#121212` backgrounds.
-* **Rating Stars:** Colored in vibrant yellow/gold (`#FBBF24`), with a soft glowing back shadow to indicate exceptional ratings.
-* **Interactive Pills:** Action buttons utilize the brand gradient (transitioning from `#55DEE8` to `#BFF367`) with strong hover offsets (`hover:-translate-y-0.5 transition-transform`).
+- **Card Grids:** Structured in css grid layouts (`grid grid-cols-1 md:grid-cols-3 gap-6`) using rich `#121212` backgrounds.
+- **Rating Stars:** Colored in vibrant yellow/gold (`#FBBF24`), with a soft glowing back shadow to indicate exceptional ratings.
+- **Interactive Pills:** Action buttons utilize the brand gradient (transitioning from `#55DEE8` to `#BFF367`) with strong hover offsets (`hover:-translate-y-0.5 transition-transform`).

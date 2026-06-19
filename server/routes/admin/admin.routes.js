@@ -1,26 +1,26 @@
-import { Router } from "express"
+import { Router } from "express";
 
-import turfRouter from "../../modules/turf/turf.routes.js"
+import turfRouter from "../../modules/turf/turf.routes.js";
 import dashboardRouter from "../../modules/admin/routes/dashboard.routes.js";
-import communityRouter from "../../modules/community/community.routes.js"
-import transactionRouter from "../../modules/wallet/routes/transaction.routes.js"
-import userManagementRouter from "../../modules/player/routes/admin.routes.js"
-import ownerRequestRouter from "../../modules/owner/routes/partnerRequest.routes.js"
-import ownerManagementRouter from "../../modules/owner/routes/admin.routes.js"
-import featureFlagRouter from "../../modules/feature/feature.routes.js"
-import adminMarketingRouter from "../../modules/marketing/routes/admin.routes.js"
-import blogRouter from "../../modules/blog/blog.routes.js"
-import professionalRouter from "../../modules/professional/professional.routes.js"
-import withdrawalRouter from "../../modules/wallet/routes/admin.routes.js"
-import supportRouter from "../../modules/support/routes/admin.routes.js"
-import auditRouter from "../../modules/audit/routes/admin.routes.js"
-import settingsRouter from "../../modules/settings/routes/admin.routes.js"
-import adminNotificationRouter from "../../modules/notification/routes/admin.routes.js"
-import adminDisputeRouter from "../../modules/dispute/routes/admin.routes.js"
-import gameRouter from "../../modules/hostedGame/hostedGame.routes.js"
-import verifyAdminToken from "../../middleware/jwt/admin.middleware.js"
+import communityRouter from "../../modules/community/community.routes.js";
+import transactionRouter from "../../modules/wallet/routes/transaction.routes.js";
+import userManagementRouter from "../../modules/player/routes/admin.routes.js";
+import ownerRequestRouter from "../../modules/owner/routes/partnerRequest.routes.js";
+import ownerManagementRouter from "../../modules/owner/routes/admin.routes.js";
+import featureFlagRouter from "../../modules/feature/feature.routes.js";
+import adminMarketingRouter from "../../modules/marketing/routes/admin.routes.js";
+import blogRouter from "../../modules/blog/blog.routes.js";
+import professionalRouter from "../../modules/professional/professional.routes.js";
+import withdrawalRouter from "../../modules/wallet/routes/admin.routes.js";
+import supportRouter from "../../modules/support/routes/admin.routes.js";
+import auditRouter from "../../modules/audit/routes/admin.routes.js";
+import settingsRouter from "../../modules/settings/routes/admin.routes.js";
+import adminNotificationRouter from "../../modules/notification/routes/admin.routes.js";
+import adminDisputeRouter from "../../modules/dispute/routes/admin.routes.js";
+import gameRouter from "../../modules/hostedGame/hostedGame.routes.js";
+import verifyAdminToken from "../../middleware/jwt/admin.middleware.js";
 
-const adminRouter = Router()
+const adminRouter = Router();
 
 adminRouter.use("/blogs", verifyAdminToken, blogRouter);
 adminRouter.use("/marketing", verifyAdminToken, adminMarketingRouter);
@@ -48,5 +48,3 @@ adminRouter.use("/error-logs", verifyAdminToken, errorLogsRouter);
 adminRouter.use("/venue-invites", verifyAdminToken, venueInvitesRouter);
 
 export default adminRouter;
-
-

@@ -15,7 +15,13 @@ export class DisputeService {
    * @param {string} description - Detailed explanation
    * @param {string[]} [images] - Optional media attachments
    */
-  static async raiseDispute(bookingId, raisedById, reason, description, images = []) {
+  static async raiseDispute(
+    bookingId,
+    raisedById,
+    reason,
+    description,
+    images = []
+  ) {
     try {
       const booking = await prisma.onDemandProfessionalBooking.findUnique({
         where: { id: bookingId },
@@ -26,11 +32,15 @@ export class DisputeService {
       }
 
       // Check if dispute is raised within 12 hours of match end parsed
-      const matchEnd = booking.matchEndParsed ? new Date(booking.matchEndParsed) : null;
+      const matchEnd = booking.matchEndParsed
+        ? new Date(booking.matchEndParsed)
+        : null;
       if (matchEnd) {
         const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
         if (matchEnd < twelveHoursAgo) {
-          throw new Error("Dispute window has closed. Disputes must be raised within 12 hours of match completion.");
+          throw new Error(
+            "Dispute window has closed. Disputes must be raised within 12 hours of match completion."
+          );
         }
       }
 
@@ -61,7 +71,7 @@ export class DisputeService {
         // and use that for the bookingId field.
         // Let's write a helper to ensure a dummy Booking exists for the dispute.
         let bookingIdToUse = null;
-        
+
         // Find if a Booking already exists, else create a stub
         const firstBooking = await tx.booking.findFirst({
           where: { userId: booking.userId },
@@ -79,9 +89,9 @@ export class DisputeService {
             data: {
               userId: booking.userId,
               turfId,
-              totalPrice: 0.00,
-              paidAmount: 0.00,
-              balanceAmount: 0.00,
+              totalPrice: 0.0,
+              paidAmount: 0.0,
+              balanceAmount: 0.0,
               status: "PENDING",
             },
           });
@@ -102,7 +112,9 @@ export class DisputeService {
         });
       });
 
-      logger.info(`[DisputeService] Raised dispute ${dispute.id} on booking ${bookingId}`);
+      logger.info(
+        `[DisputeService] Raised dispute ${dispute.id} on booking ${bookingId}`
+      );
       return dispute;
     } catch (error) {
       logger.error(`[DisputeService] Failed to raise dispute:`, error);
@@ -117,7 +129,12 @@ export class DisputeService {
    * @param {string} adminId - ID of the Admin resolving the dispute
    * @param {number} [refundPercentage] - Percentage to refund to user (only for PARTIAL_REFUND)
    */
-  static async resolveDispute(disputeId, outcome, adminId, refundPercentage = 0) {
+  static async resolveDispute(
+    disputeId,
+    outcome,
+    adminId,
+    refundPercentage = 0
+  ) {
     try {
       const dispute = await prisma.dispute.findUnique({
         where: { id: disputeId },
@@ -147,19 +164,32 @@ export class DisputeService {
 
         if (outcome === "FULL_REFUND") {
           // Refund full amount to user
-          await WalletBlockingService.releaseBlockedFunds(booking.userId, booking.id, blockedAmt, false, tx);
-          
+          await WalletBlockingService.releaseBlockedFunds(
+            booking.userId,
+            booking.id,
+            blockedAmt,
+            false,
+            tx
+          );
+
           await tx.onDemandProfessionalBooking.update({
             where: { id: booking.id },
             data: { status: "REFUNDED" },
           });
 
-          logger.info(`[DisputeService] Resolved dispute ${disputeId} with FULL_REFUND to user ${booking.userId}`);
+          logger.info(
+            `[DisputeService] Resolved dispute ${disputeId} with FULL_REFUND to user ${booking.userId}`
+          );
         } else if (outcome === "RELEASE_TO_UMPIRE") {
           // Release full payout to professional
-          await WalletBlockingService.releaseFundsToProfessional(booking.id, tx);
+          await WalletBlockingService.releaseFundsToProfessional(
+            booking.id,
+            tx
+          );
 
-          logger.info(`[DisputeService] Resolved dispute ${disputeId} with RELEASE_TO_UMPIRE to professional ${booking.professionalId}`);
+          logger.info(
+            `[DisputeService] Resolved dispute ${disputeId} with RELEASE_TO_UMPIRE to professional ${booking.professionalId}`
+          );
         } else if (outcome === "PARTIAL_REFUND") {
           // Partial refund: user receives refundPercentage % and professional receives the rest
           const refundPctVal = parseFloat(refundPercentage);
@@ -174,7 +204,9 @@ export class DisputeService {
           const commissionConfig = await tx.platformConfig.findUnique({
             where: { key: "COMMISSION_PERCENTAGE" },
           });
-          const commissionPct = commissionConfig ? parseFloat(commissionConfig.value) : 10;
+          const commissionPct = commissionConfig
+            ? parseFloat(commissionConfig.value)
+            : 10;
           const commissionAmount = proPayoutAmountRaw * (commissionPct / 100);
           const payoutAmount = proPayoutAmountRaw - commissionAmount;
 
@@ -239,12 +271,17 @@ export class DisputeService {
             },
           });
 
-          logger.info(`[DisputeService] Resolved dispute ${disputeId} with PARTIAL_REFUND: ${refundPctVal}% to user, ${100 - refundPctVal}% to professional`);
+          logger.info(
+            `[DisputeService] Resolved dispute ${disputeId} with PARTIAL_REFUND: ${refundPctVal}% to user, ${100 - refundPctVal}% to professional`
+          );
         }
       });
       return true;
     } catch (error) {
-      logger.error(`[DisputeService] Failed to resolve dispute ${disputeId}:`, error);
+      logger.error(
+        `[DisputeService] Failed to resolve dispute ${disputeId}:`,
+        error
+      );
       throw error;
     }
   }

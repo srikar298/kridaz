@@ -1,14 +1,14 @@
 import express from "express";
-import { 
+import {
   getAllProfessionals,
   getAllRequestedProfessionals,
   getProfessionalDetails,
-  approveOwnerRequest, 
-  deleteOwnerRequest, 
+  approveOwnerRequest,
+  deleteOwnerRequest,
   reconsiderOwnerRequest,
   deleteOwner,
   batchDeleteOwners,
-  batchUpdateOwnerStatus
+  batchUpdateOwnerStatus,
 } from "../../admin/admin.controller.js";
 
 const router = express.Router();

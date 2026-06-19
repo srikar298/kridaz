@@ -1,1 +1,20 @@
-{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["turfId","timeSlotId","amount"],"properties":{"turfId":{"type":"string","format":"uuid"},"timeSlotId":{"type":"string","format":"uuid"},"amount":{"type":"number","example":500},"couponCode":{"type":"string","nullable":true}}}}}}}
+{
+  "title": "Body",
+  "body": {
+    "required": true,
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "required": ["turfId", "timeSlotId", "amount"],
+          "properties": {
+            "turfId": { "type": "string", "format": "uuid" },
+            "timeSlotId": { "type": "string", "format": "uuid" },
+            "amount": { "type": "number", "example": 500 },
+            "couponCode": { "type": "string", "nullable": true }
+          }
+        }
+      }
+    }
+  }
+}

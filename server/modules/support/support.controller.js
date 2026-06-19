@@ -9,14 +9,14 @@ export const getAllTickets = async (req, res) => {
   try {
     const tickets = await prisma.supportTicket.findMany({
       include: {
-        user: { select: { id: true, name: true, email: true } }
+        user: { select: { id: true, name: true, email: true } },
       },
-      orderBy: { updatedAt: 'desc' }
+      orderBy: { updatedAt: "desc" },
     });
 
-    res.status(200).json({ 
-      success: true, 
-      tickets
+    res.status(200).json({
+      success: true,
+      tickets,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -29,17 +29,17 @@ export const updateTicketStatus = async (req, res) => {
   try {
     const ticket = await prisma.supportTicket.findUnique({
       where: { id: ticketId },
-      include: { 
-        user: true
-      }
+      include: {
+        user: true,
+      },
     });
     if (!ticket) return res.status(404).json({ message: "Ticket not found" });
-    
+
     ticket.user = sanitizeUser(ticket.user);
 
     const updatedTicket = await prisma.supportTicket.update({
       where: { id: ticketId },
-      data: { status }
+      data: { status },
     });
 
     // ── Notifications (Queued) ──────────────────────────────────────────────────────────
@@ -48,27 +48,27 @@ export const updateTicketStatus = async (req, res) => {
       NotificationService.sendEmail({
         to: recipient.email,
         subject: `Support Ticket Status Updated: ${ticket.subject}`,
-        html: `<p>Hello ${recipient.name},</p><p>Your support ticket status has been updated to: <strong>${status}</strong>.</p><p>View details in your dashboard.</p>`
+        html: `<p>Hello ${recipient.name},</p><p>Your support ticket status has been updated to: <strong>${status}</strong>.</p><p>View details in your dashboard.</p>`,
       });
 
       NotificationService.sendInApp({
         userId: recipient.id,
-        recipientModel: 'User',
+        recipientModel: "User",
         title: "Ticket Status Updated",
         message: `Your ticket "${ticket.subject}" is now ${status}.`,
         type: "SUPPORT",
-        link: "/venue-owner/docs-support"
+        link: "/venue-owner/docs-support",
       });
     }
 
-    res.status(200).json({ 
-      success: true, 
-      message: "Status updated", 
-      ticket: updatedTicket
+    res.status(200).json({
+      success: true,
+      message: "Status updated",
+      ticket: updatedTicket,
     });
 
     await logAdminAction(req, "UPDATE_TICKET_STATUS", "RESOLUTION", ticket.id, {
-      status
+      status,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -81,10 +81,10 @@ export const replyToTicket = async (req, res) => {
   try {
     const ticket = await prisma.supportTicket.findUnique({
       where: { id: ticketId },
-      include: { user: true }
+      include: { user: true },
     });
     if (!ticket) return res.status(404).json({ message: "Ticket not found" });
-    
+
     ticket.user = sanitizeUser(ticket.user);
 
     const [reply] = await prisma.$transaction([
@@ -93,16 +93,16 @@ export const replyToTicket = async (req, res) => {
           ticketId,
           senderType: "ADMIN",
           senderId: req.user.id,
-          message
-        }
+          message,
+        },
       }),
       prisma.supportTicket.update({
         where: { id: ticketId },
         data: {
           status: ticket.status === "OPEN" ? "IN_PROGRESS" : ticket.status,
-          updatedAt: new Date()
-        }
-      })
+          updatedAt: new Date(),
+        },
+      }),
     ]);
 
     // ── Notifications (Queued) ──────────────────────────────────────────────────────────
@@ -112,23 +112,23 @@ export const replyToTicket = async (req, res) => {
       NotificationService.sendEmail({
         to: recipient.email,
         subject: `New Reply on Support Ticket: ${ticket.subject}`,
-        html: `<p>Hello ${recipient.name},</p><p>An administrator has replied to your support ticket.</p><p><strong>Message:</strong> ${message}</p><p>Please check your dashboard to reply.</p>`
+        html: `<p>Hello ${recipient.name},</p><p>An administrator has replied to your support ticket.</p><p><strong>Message:</strong> ${message}</p><p>Please check your dashboard to reply.</p>`,
       });
 
       NotificationService.sendInApp({
         userId: recipient.id,
-        recipientModel: 'User',
+        recipientModel: "User",
         title: "New Support Reply",
         message: `Admin replied to your ticket: "${message.substring(0, 50)}..."`,
         type: "SUPPORT",
-        link: "/venue-owner/docs-support"
+        link: "/venue-owner/docs-support",
       });
     }
 
-    res.status(200).json({ 
-      success: true, 
-      message: "Reply sent", 
-      ticket
+    res.status(200).json({
+      success: true,
+      message: "Reply sent",
+      ticket,
     });
 
     await logAdminAction(req, "REPLY_TO_TICKET", "RESOLUTION", ticket.id);
@@ -143,15 +143,21 @@ export const toggleAgentStatus = async (req, res) => {
   try {
     // Support agent online status is currently handled via transient state or metadata.
     // If persistent agent status is required, it should be added to the schema.
-    res.status(200).json({ 
-      success: true, 
-      message: `Agent is now ${isOnline ? 'online' : 'offline'}`, 
-      isAgentOnline: isOnline 
+    res.status(200).json({
+      success: true,
+      message: `Agent is now ${isOnline ? "online" : "offline"}`,
+      isAgentOnline: isOnline,
     });
 
-    await logAdminAction(req, "TOGGLE_SUPPORT_AGENT_STATUS", "RESOLUTION", ticketId, {
-      isOnline
-    });
+    await logAdminAction(
+      req,
+      "TOGGLE_SUPPORT_AGENT_STATUS",
+      "RESOLUTION",
+      ticketId,
+      {
+        isOnline,
+      }
+    );
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -166,17 +172,17 @@ export const getAllDisputes = async (req, res) => {
         booking: {
           include: {
             user: { select: { id: true, name: true, email: true } },
-            turf: { select: { id: true, name: true } }
-          }
+            turf: { select: { id: true, name: true } },
+          },
         },
-        raisedBy: { select: { id: true, name: true, email: true } }
+        raisedBy: { select: { id: true, name: true, email: true } },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: "desc" },
     });
 
-    res.status(200).json({ 
-      success: true, 
-      disputes
+    res.status(200).json({
+      success: true,
+      disputes,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -188,7 +194,7 @@ export const resolveDispute = async (req, res) => {
   const { action, message } = req.body;
   try {
     const dispute = await prisma.dispute.findUnique({
-      where: { id: disputeId }
+      where: { id: disputeId },
     });
     if (!dispute) return res.status(404).json({ message: "Dispute not found" });
 
@@ -200,23 +206,22 @@ export const resolveDispute = async (req, res) => {
           action,
           message,
           resolvedAt: new Date(),
-          resolvedBy: req.user.id
-        }
-      }
+          resolvedBy: req.user.id,
+        },
+      },
     });
 
-    res.status(200).json({ 
-      success: true, 
+    res.status(200).json({
+      success: true,
       message: `Dispute resolved with action: ${action}`,
-      dispute: updatedDispute
+      dispute: updatedDispute,
     });
 
     await logAdminAction(req, "RESOLVE_DISPUTE", "RESOLUTION", dispute.id, {
       action,
-      message
+      message,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-

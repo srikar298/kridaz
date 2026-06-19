@@ -4,9 +4,10 @@ title: Refactoring Report (Gold Standard)
 ---
 
 # Enterprise Architecture Refactoring Report
+
 ## Booking & Scoring Modules (Gold Standard Complete)
 
-We have successfully completed the refactoring of both high-frequency, complex backend domains—the **Booking Module** and the **Scoring Module**—to adhere to high-grade **Low-Level Design (LLD)** separation-of-concerns principles. 
+We have successfully completed the refactoring of both high-frequency, complex backend domains—the **Booking Module** and the **Scoring Module**—to adhere to high-grade **Low-Level Design (LLD)** separation-of-concerns principles.
 
 All database operations, Prisma transactions, calculations, caching layers, and external notifier integrations have been extracted from the Express controllers and relocated into modular, highly testable **Service Layers**.
 
@@ -32,21 +33,21 @@ graph TD
 graph TD
     Client[Client / Mobile App] -->|HTTP Requests| Route[Routes Layer]
     Route -->|Thin Wrappers| Controller[Controller Layer]
-    
+
     BackgroundJob[Background Workers / Cron Jobs] -->|Direct Call| Service[Service Layer]
     SocketHandler[Socket.io Game Lobby Handler] -->|Direct Call| Service
-    
+
     subgraph Controller Layer
         HTTP[Parse Request Params / User Roles / HTTP Status Code Mapping]
     end
-    
+
     subgraph Service Layer (Pure Business Logic)
         Tx[Database Transactions / Prisma Client]
         Cache[Redis State Invalidation & Reads]
         SocketsEmit[Event Dispatches & global getIO emits]
         Rules[Granular Game States / Financial Overlap Rules / Expiry Guards]
     end
-    
+
     Controller -->|Plain DTOs| Service
     Service --> DB[(PostgreSQL Database)]
     Service --> Redis[(Redis Live Cache)]
@@ -58,12 +59,14 @@ graph TD
 ## 2. Refactored Files & Locations
 
 ### Booking Module
+
 1. **Service Layer**: [booking.service.js](file:///c:/Users/saavi/OneDrive/Desktop/kridaz/kridaz/server/modules/booking/booking.service.js)
    - Handles all booking slot creations, overlap audits, pricing logic (GST, platform fees, cashback calculations), Razorpay order creation & payment signatures, and notification dispatches.
 2. **Controller Layer**: [booking.controller.js](file:///c:/Users/saavi/OneDrive/Desktop/kridaz/kridaz/server/modules/booking/booking.controller.js)
    - Acts strictly as a thin router and HTTP error handler.
 
 ### Scoring Module
+
 1. **Service Layer**: [scoring.service.js](file:///c:/Users/saavi/OneDrive/Desktop/kridaz/kridaz/server/modules/scoring/scoring.service.js)
    - Houses the complete cricket match progression state machine, including ball-by-ball score mutations, extras tracking, innings transitions, toss results, striker/non-striker/bowler adjustments, undos, and MVP stats aggregations.
    - Manages active scoreboard state sync on Redis (`liveStateService.setLiveScore`) and real-time WebSockets notifications (`getIO().to(gameId).emit(...)`).
@@ -77,6 +80,7 @@ graph TD
 We ran full-scope backend integration tests for both modules after extraction to confirm that all public APIs, exception mappings, and state changes remain 100% compliant.
 
 ### Booking Integration Suite
+
 Command: `pnpm test tests/booking.test.js`
 
 ```bash
@@ -107,6 +111,7 @@ Time:        26.458 s
 ```
 
 ### Scoring Integration Suite
+
 Command: `pnpm test tests/scoring.test.js`
 
 ```bash

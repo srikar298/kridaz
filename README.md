@@ -9,6 +9,7 @@ The codebase is organized as a unified monorepo managed by **pnpm** and **Turbor
 ## 🚀 Key Features
 
 ### 👤 Player Portal
+
 - **Unified Discovery**: Advanced search and geographical filtering of turfs by location, sport, rating, and real-time slot pricing.
 - **Turf Bookings**: Real-time interactive slot selection with instant payment processing via Razorpay.
 - **Community Games**: Host, discover, and join local pickup games with auto-calculating slots.
@@ -16,15 +17,18 @@ The codebase is organized as a unified monorepo managed by **pnpm** and **Turbor
 - **Instant Messaging**: Real-time peer-to-peer and group chat for team coordination.
 
 ### 👔 Sports Professionals Hub (Coaches, Umpires, Scorers)
+
 - **On-Demand Matchmaking**: Users can place real-time match requests to automatically recruit coaches, umpires, scorers, commentators, or streamers.
 - **Professional Profiles**: High-fidelity portfolios showing ratings, certifications, pricing structures, and past match histories.
 - **Scoring Engine**: Ball-by-ball interactive scoring application (specifically optimized for Cricket matches) with real-time public analytical scoreboards.
 
 ### 🏢 Venue Management Portal
+
 - **Owner Dashboard**: Advanced analytics, revenue bookkeeping, dynamic slot pricing, and booking calendar views.
 - **Slot Management**: Automated daily slot generation engine with dynamic unbooked slot counters.
 
 ### 🛡️ Platform Administration
+
 - **Approval Queue**: Complete onboarding oversight for venue owners and registered coaches/umpires.
 - **Marketing Systems**: Control active promotional landing page banners, advertisements, and video placements.
 
@@ -32,15 +36,15 @@ The codebase is organized as a unified monorepo managed by **pnpm** and **Turbor
 
 ## 🛠 Modern Architecture & Stack
 
-| Layer | Technologies |
-| :--- | :--- |
-| **Monorepo Manager** | `pnpm` + `Turborepo` (Turbo) |
-| **Frontend Client** | React 18 (Vite) + Redux Toolkit + RTK Query + Tailwind CSS |
-| **HTTP API Server** | Node.js (Express.js) + Stateless JWT Auth (Access/Refresh Tokens) |
-| **Database** | PostgreSQL via **Prisma ORM** |
-| **Cache & Limiters** | Redis (ioredis) |
-| **Mobile Target** | Capacitor 8 (Android) + Capgo OTA (On-Air Update Pipeline) |
-| **Real-time Engine** | Socket.io |
+| Layer                    | Technologies                                                                   |
+| :----------------------- | :----------------------------------------------------------------------------- |
+| **Monorepo Manager**     | `pnpm` + `Turborepo` (Turbo)                                                   |
+| **Frontend Client**      | React 18 (Vite) + Redux Toolkit + RTK Query + Tailwind CSS                     |
+| **HTTP API Server**      | Node.js (Express.js) + Stateless JWT Auth (Access/Refresh Tokens)              |
+| **Database**             | PostgreSQL via **Prisma ORM**                                                  |
+| **Cache & Limiters**     | Redis (ioredis)                                                                |
+| **Mobile Target**        | Capacitor 8 (Android) + Capgo OTA (On-Air Update Pipeline)                     |
+| **Real-time Engine**     | Socket.io                                                                      |
 | **Third-Party Services** | Razorpay (Escrow & Payments), Cloudflare R2 (Media Storage), Winston (Logging) |
 
 ---
@@ -50,7 +54,9 @@ The codebase is organized as a unified monorepo managed by **pnpm** and **Turbor
 Follow these step-by-step instructions to get your local development environment running.
 
 ### 1. Prerequisites
+
 Ensure you have the following installed on your system:
+
 - **Node.js**: v20 or later
 - **pnpm**: v10.28.0 (Package Manager)
 - **PostgreSQL**: Local instance or remote database URL
@@ -59,6 +65,7 @@ Ensure you have the following installed on your system:
 ### 2. Installation & Workspace Setup
 
 1. **Clone the Repository**
+
    ```bash
    git clone https://github.com/Prince364133/kridaz.git
    cd kridaz
@@ -86,6 +93,7 @@ JWT_REFRESH_SECRET="your-jwt-refresh-secret-key"
 ### 4. Database Setup & Seeding
 
 1. **Push Prisma Schema to PostgreSQL**
+
    ```bash
    cd server
    npx prisma db push
@@ -100,15 +108,16 @@ JWT_REFRESH_SECRET="your-jwt-refresh-secret-key"
 ### 5. Running the Application
 
 To boot up all client and server workspaces concurrently in development mode, run the following command from the **root directory**:
+
 ```bash
 pnpm dev
 ```
 
-| Service | Access Link |
-| :--- | :--- |
-| **Frontend Web Client** | [http://localhost:5174](http://localhost:5174) |
-| **API Server** | [http://localhost:6001](http://localhost:6001) |
-| **Swagger API Docs** | [http://localhost:6001/api/docs](http://localhost:6001/api/docs) |
+| Service                                 | Access Link                                                                |
+| :-------------------------------------- | :------------------------------------------------------------------------- |
+| **Frontend Web Client**                 | [http://localhost:5174](http://localhost:5174)                             |
+| **API Server**                          | [http://localhost:6001](http://localhost:6001)                             |
+| **Swagger API Docs**                    | [http://localhost:6001/api/docs](http://localhost:6001/api/docs)           |
 | **Local Developer Portal (Docusaurus)** | [http://localhost:3000](http://localhost:3000) (via `cd docs && pnpm dev`) |
 
 ---
@@ -117,16 +126,16 @@ pnpm dev
 
 For local testing, standard accounts are pre-seeded with the universal password `36413333`.
 
-| Persona / Role | Common Username / Legacy ID | Password |
-| :--- | :--- | :--- |
-| **Player (User)** | `user` | `36413333` |
-| **Venue Owner** | `saavik` / `venue owner` | `36413333` |
-| **Platform Admin** | `admin` | `36413333` |
-| **Coach** | `coach` | `36413333` |
-| **Umpire** | `umpire` | `36413333` |
-| **Scorer** | `scorer` | `36413333` |
-| **Commentator** | `commentator` | `36413333` |
-| **Streamer** | `streamer` | `36413333` |
+| Persona / Role     | Common Username / Legacy ID | Password   |
+| :----------------- | :-------------------------- | :--------- |
+| **Player (User)**  | `user`                      | `36413333` |
+| **Venue Owner**    | `saavik` / `venue owner`    | `36413333` |
+| **Platform Admin** | `admin`                     | `36413333` |
+| **Coach**          | `coach`                     | `36413333` |
+| **Umpire**         | `umpire`                    | `36413333` |
+| **Scorer**         | `scorer`                    | `36413333` |
+| **Commentator**    | `commentator`               | `36413333` |
+| **Streamer**       | `streamer`                  | `36413333` |
 
 ---
 

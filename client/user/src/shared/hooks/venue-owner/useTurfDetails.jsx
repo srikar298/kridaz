@@ -10,12 +10,18 @@ const useTurfDetails = (turfId) => {
     if (!turfId) return;
     setIsLoading(true);
     try {
-      const response = await axiosInstance.get(`/api/owner/turf/owner/${turfId}/details`);
+      const response = await axiosInstance.get(
+        `/api/owner/turf/owner/${turfId}/details`
+      );
       setTurfData(response.data);
       setError(null);
     } catch (err) {
       console.error("Error fetching turf details:", err);
-      const msg = err.response?.data ? JSON.stringify(err.response.data) : (err.response?.data?.message || err.message || "Failed to fetch turf details");
+      const msg = err.response?.data
+        ? JSON.stringify(err.response.data)
+        : err.response?.data?.message ||
+          err.message ||
+          "Failed to fetch turf details";
       setError(msg);
     } finally {
       setIsLoading(false);
@@ -47,7 +53,14 @@ const useTurfDetails = (turfId) => {
     }
   };
 
-  return { turfData, isLoading, error, refetch: fetchTurfDetails, toggleVisibility, deleteArena };
+  return {
+    turfData,
+    isLoading,
+    error,
+    refetch: fetchTurfDetails,
+    toggleVisibility,
+    deleteArena,
+  };
 };
 
 export default useTurfDetails;

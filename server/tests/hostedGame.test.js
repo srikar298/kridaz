@@ -22,7 +22,7 @@ const seedOtp = async (email, phone) => {
       phone,
       emailOtp: "123456",
       phoneOtp: "123456",
-      expiresAt: new Date(Date.now() + 600000)
+      expiresAt: new Date(Date.now() + 600000),
     },
   });
 };
@@ -30,31 +30,47 @@ const seedOtp = async (email, phone) => {
 describe("Hosted Game Module API", () => {
   beforeAll(async () => {
     // Clean up
-    await prisma.gameSlot.deleteMany({ where: { game: { host: { email: userEmail } } } }).catch(() => {});
-    await prisma.gameTeam.deleteMany({ where: { game: { host: { email: userEmail } } } }).catch(() => {});
-    await prisma.customPlayerInvite.deleteMany({ where: { game: { host: { email: userEmail } } } }).catch(() => {});
-    await prisma.hostedGame.deleteMany({ where: { host: { email: userEmail } } }).catch(() => {});
-    await prisma.refreshToken.deleteMany({ where: { user: { email: userEmail } } }).catch(() => {});
-    await prisma.user.deleteMany({ where: { email: userEmail } }).catch(() => {});
-    await prisma.oTP.deleteMany({ where: { email: userEmail } }).catch(() => {});
+    await prisma.gameSlot
+      .deleteMany({ where: { game: { host: { email: userEmail } } } })
+      .catch(() => {});
+    await prisma.gameTeam
+      .deleteMany({ where: { game: { host: { email: userEmail } } } })
+      .catch(() => {});
+    await prisma.customPlayerInvite
+      .deleteMany({ where: { game: { host: { email: userEmail } } } })
+      .catch(() => {});
+    await prisma.hostedGame
+      .deleteMany({ where: { host: { email: userEmail } } })
+      .catch(() => {});
+    await prisma.refreshToken
+      .deleteMany({ where: { user: { email: userEmail } } })
+      .catch(() => {});
+    await prisma.user
+      .deleteMany({ where: { email: userEmail } })
+      .catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: userEmail } })
+      .catch(() => {});
 
     await seedOtp(userEmail, userPhone);
 
     // Register user
-    const otpRes_regRes = await request(app).post('/api/user/auth/verify-otp').send({ email: userEmail, phone: userPhone, otp: "123456" });
-    const regRes = await request(app)
-      .post("/api/user/auth/register")
-      .send({
-        name: "Game Host Tester",
-        email: userEmail,
-        username: userName,
-        phone: userPhone,
-        gender: "Male",
-        location: "Test City",
-        password: "Host@Pass123",
-        confirmPassword: "Host@Pass123",
-        otp: "123456",
-        phoneOtp: "123456", registrationToken: otpRes_regRes.body.registrationToken});
+    const otpRes_regRes = await request(app)
+      .post("/api/user/auth/verify-otp")
+      .send({ email: userEmail, phone: userPhone, otp: "123456" });
+    const regRes = await request(app).post("/api/user/auth/register").send({
+      name: "Game Host Tester",
+      email: userEmail,
+      username: userName,
+      phone: userPhone,
+      gender: "Male",
+      location: "Test City",
+      password: "Host@Pass123",
+      confirmPassword: "Host@Pass123",
+      otp: "123456",
+      phoneOtp: "123456",
+      registrationToken: otpRes_regRes.body.registrationToken,
+    });
 
     if (regRes.statusCode === 201) {
       userToken = regRes.body.token;
@@ -66,14 +82,26 @@ describe("Hosted Game Module API", () => {
   afterAll(async () => {
     const user = await prisma.user.findFirst({ where: { email: userEmail } });
     if (user) {
-      await prisma.gameSlot.deleteMany({ where: { game: { hostId: user.id } } }).catch(() => {});
-      await prisma.gameTeam.deleteMany({ where: { game: { hostId: user.id } } }).catch(() => {});
-      await prisma.customPlayerInvite.deleteMany({ where: { game: { hostId: user.id } } }).catch(() => {});
-      await prisma.hostedGame.deleteMany({ where: { hostId: user.id } }).catch(() => {});
-      await prisma.refreshToken.deleteMany({ where: { userId: user.id } }).catch(() => {});
+      await prisma.gameSlot
+        .deleteMany({ where: { game: { hostId: user.id } } })
+        .catch(() => {});
+      await prisma.gameTeam
+        .deleteMany({ where: { game: { hostId: user.id } } })
+        .catch(() => {});
+      await prisma.customPlayerInvite
+        .deleteMany({ where: { game: { hostId: user.id } } })
+        .catch(() => {});
+      await prisma.hostedGame
+        .deleteMany({ where: { hostId: user.id } })
+        .catch(() => {});
+      await prisma.refreshToken
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
       await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
     }
-    await prisma.oTP.deleteMany({ where: { email: userEmail } }).catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: userEmail } })
+      .catch(() => {});
     await prisma.$disconnect();
   });
 
@@ -105,7 +133,14 @@ describe("Hosted Game Module API", () => {
     it("should reject game creation without auth token", async () => {
       const res = await request(app)
         .post("/api/hosted-game/create")
-        .send({ gameType: "Cricket", date: "2026-06-01", time: "18:00", city: "Test City", state: "Test State", perPlayerCharge: 0 });
+        .send({
+          gameType: "Cricket",
+          date: "2026-06-01",
+          time: "18:00",
+          city: "Test City",
+          state: "Test State",
+          perPlayerCharge: 0,
+        });
 
       expect(res.statusCode).toBe(401);
     });
@@ -137,7 +172,8 @@ describe("Hosted Game Module API", () => {
           gameMode: "FRIENDLY",
         });
 
-      if (res.statusCode !== 201) logger.info("[create game failure]", res.body);
+      if (res.statusCode !== 201)
+        logger.info("[create game failure]", res.body);
       expect(res.statusCode).toBe(201);
       expect(res.body).toHaveProperty("game");
       expect(res.body.game).toHaveProperty("id");
@@ -156,7 +192,9 @@ describe("Hosted Game Module API", () => {
     });
 
     it("should return 404 for non-existent game ID", async () => {
-      const res = await request(app).get("/api/hosted-game/00000000-0000-0000-0000-000000000000");
+      const res = await request(app).get(
+        "/api/hosted-game/00000000-0000-0000-0000-000000000000"
+      );
       expect(res.statusCode).toBe(404);
     });
   });

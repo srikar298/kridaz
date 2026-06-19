@@ -1,18 +1,17 @@
-import express from 'express';
-import { 
-  searchPlayers, 
-  followPlayer, 
-  unfollowPlayer, 
+import express from "express";
+import {
+  searchPlayers,
+  followPlayer,
+  unfollowPlayer,
   getNetwork,
   getPlayerProfile,
   getNetworkById,
   getNearbyPlayers,
   updateUserLocation,
   updateNotificationPreferences,
-  getPlayerRecommendations
-} from '../player.controller.js';
+  getPlayerRecommendations,
+} from "../player.controller.js";
 import userAuth from "../../../middleware/jwt/user.middleware.js";
-
 
 const router = express.Router();
 
@@ -32,7 +31,7 @@ const router = express.Router();
  *     summary: Search for players
  *     tags: [Player]
  */
-router.get('/search', searchPlayers);
+router.get("/search", searchPlayers);
 
 // ── Authenticated Routes (Static) ───────────────────────────────────────────
 
@@ -47,7 +46,7 @@ import { optionalUserAuth } from "../../../middleware/jwt/user.middleware.js";
  *     security:
  *       - BearerAuth: []
  */
-router.get('/nearby', optionalUserAuth, getNearbyPlayers);
+router.get("/nearby", optionalUserAuth, getNearbyPlayers);
 
 /**
  * @swagger
@@ -58,7 +57,7 @@ router.get('/nearby', optionalUserAuth, getNearbyPlayers);
  *     security:
  *       - BearerAuth: []
  */
-router.get('/recommendations', userAuth, getPlayerRecommendations);
+router.get("/recommendations", userAuth, getPlayerRecommendations);
 
 /**
  * @swagger
@@ -69,7 +68,7 @@ router.get('/recommendations', userAuth, getPlayerRecommendations);
  *     security:
  *       - BearerAuth: []
  */
-router.post('/location', userAuth, updateUserLocation);
+router.post("/location", userAuth, updateUserLocation);
 
 /**
  * @swagger
@@ -80,7 +79,11 @@ router.post('/location', userAuth, updateUserLocation);
  *     security:
  *       - BearerAuth: []
  */
-router.patch('/notification-preferences', userAuth, updateNotificationPreferences);
+router.patch(
+  "/notification-preferences",
+  userAuth,
+  updateNotificationPreferences
+);
 
 /**
  * @swagger
@@ -91,7 +94,7 @@ router.patch('/notification-preferences', userAuth, updateNotificationPreference
  *     security:
  *       - BearerAuth: []
  */
-router.get('/network', userAuth, getNetwork);
+router.get("/network", userAuth, getNetwork);
 
 // ── Public Parameterized / Wildcard Routes ──────────────────────────────────
 
@@ -102,7 +105,7 @@ router.get('/network', userAuth, getNetwork);
  *     summary: Get player profile
  *     tags: [Player]
  */
-router.get('/:id', getPlayerProfile);
+router.get("/:id", getPlayerProfile);
 
 // ── Authenticated Parameterized / Wildcard Routes ───────────────────────────
 
@@ -115,7 +118,7 @@ router.get('/:id', getPlayerProfile);
  *     security:
  *       - BearerAuth: []
  */
-router.post('/:id/follow', userAuth, followPlayer);
+router.post("/:id/follow", userAuth, followPlayer);
 
 /**
  * @swagger
@@ -126,7 +129,7 @@ router.post('/:id/follow', userAuth, followPlayer);
  *     security:
  *       - BearerAuth: []
  */
-router.post('/:id/unfollow', userAuth, unfollowPlayer);
+router.post("/:id/unfollow", userAuth, unfollowPlayer);
 
 /**
  * @swagger
@@ -137,6 +140,6 @@ router.post('/:id/unfollow', userAuth, unfollowPlayer);
  *     security:
  *       - BearerAuth: []
  */
-router.get('/:id/network', userAuth, getNetworkById);
+router.get("/:id/network", userAuth, getNetworkById);
 
 export default router;

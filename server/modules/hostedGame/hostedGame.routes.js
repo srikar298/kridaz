@@ -5,7 +5,7 @@ import adminHostedGameRouter from "./routes/admin.routes.js";
 /**
  * Hosted Game Domain Router
  * Mounts actor-specific sub-routers for the HostedGame module.
- * 
+ *
  * Routes:
  * /api/hosted-game/...
  */

@@ -7,7 +7,8 @@ const useProfessionals = (roleFilter) => {
   const [allProfessionals, setAllProfessionals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [detailsLoading, setDetailsLoading] = useState(false);
-  const [selectedProfessionalDetails, setSelectedProfessionalDetails] = useState(null);
+  const [selectedProfessionalDetails, setSelectedProfessionalDetails] =
+    useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = useCallback(
@@ -40,7 +41,9 @@ const useProfessionals = (roleFilter) => {
       setAllProfessionals(filteredProfessionals);
     } catch (err) {
       console.log(err, "err");
-      toast.error(err.response?.data?.message || "Failed to fetch professionals");
+      toast.error(
+        err.response?.data?.message || "Failed to fetch professionals"
+      );
     } finally {
       setLoading(false);
     }
@@ -50,12 +53,16 @@ const useProfessionals = (roleFilter) => {
     setDetailsLoading(true);
     setSelectedProfessionalDetails(null);
     try {
-      const response = await axiosInstance.get(`/api/admin/professionals/${id}`);
+      const response = await axiosInstance.get(
+        `/api/admin/professionals/${id}`
+      );
       setSelectedProfessionalDetails(response.data);
       return response.data;
     } catch (err) {
       console.error("Failed to fetch professional details:", err);
-      toast.error(err.response?.data?.message || "Failed to fetch professional details");
+      toast.error(
+        err.response?.data?.message || "Failed to fetch professional details"
+      );
       return null;
     } finally {
       setDetailsLoading(false);
@@ -65,8 +72,8 @@ const useProfessionals = (roleFilter) => {
   const deleteProfessional = async (id) => {
     try {
       await axiosInstance.delete(`/api/admin/professionals/${id}`);
-      setProfessionals(prev => prev.filter(p => p._id !== id));
-      setAllProfessionals(prev => prev.filter(p => p._id !== id));
+      setProfessionals((prev) => prev.filter((p) => p._id !== id));
+      setAllProfessionals((prev) => prev.filter((p) => p._id !== id));
       toast.success("Professional record deleted");
       return true;
     } catch (err) {
@@ -77,9 +84,11 @@ const useProfessionals = (roleFilter) => {
 
   const batchDeleteProfessionals = async (ids) => {
     try {
-      await axiosInstance.post("/api/admin/professionals/batch-delete", { ownerIds: ids });
-      setProfessionals(prev => prev.filter(p => !ids.includes(p._id)));
-      setAllProfessionals(prev => prev.filter(p => !ids.includes(p._id)));
+      await axiosInstance.post("/api/admin/professionals/batch-delete", {
+        ownerIds: ids,
+      });
+      setProfessionals((prev) => prev.filter((p) => !ids.includes(p._id)));
+      setAllProfessionals((prev) => prev.filter((p) => !ids.includes(p._id)));
       toast.success(`${ids.length} records deleted`);
       return true;
     } catch (err) {
@@ -90,9 +99,16 @@ const useProfessionals = (roleFilter) => {
 
   const batchUpdateProfessionalStatus = async (ids, status) => {
     try {
-      await axiosInstance.put("/api/admin/professionals/batch-status", { ownerIds: ids, status });
-      setProfessionals(prev => prev.map(p => ids.includes(p._id) ? { ...p, status } : p));
-      setAllProfessionals(prev => prev.map(p => ids.includes(p._id) ? { ...p, status } : p));
+      await axiosInstance.put("/api/admin/professionals/batch-status", {
+        ownerIds: ids,
+        status,
+      });
+      setProfessionals((prev) =>
+        prev.map((p) => (ids.includes(p._id) ? { ...p, status } : p))
+      );
+      setAllProfessionals((prev) =>
+        prev.map((p) => (ids.includes(p._id) ? { ...p, status } : p))
+      );
       toast.success(`Status updated for ${ids.length} records`);
       return true;
     } catch (err) {
@@ -100,7 +116,6 @@ const useProfessionals = (roleFilter) => {
       return false;
     }
   };
-
 
   useEffect(() => {
     fetchProfessionals();
@@ -117,7 +132,7 @@ const useProfessionals = (roleFilter) => {
     deleteProfessional,
     batchDeleteProfessionals,
     batchUpdateProfessionalStatus,
-    refresh: fetchProfessionals
+    refresh: fetchProfessionals,
   };
 };
 

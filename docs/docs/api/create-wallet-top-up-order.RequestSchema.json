@@ -1,1 +1,15 @@
-{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["amount"],"properties":{"amount":{"type":"number","example":1000}}}}}}}
+{
+  "title": "Body",
+  "body": {
+    "required": true,
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "required": ["amount"],
+          "properties": { "amount": { "type": "number", "example": 1000 } }
+        }
+      }
+    }
+  }
+}

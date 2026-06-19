@@ -10,7 +10,10 @@ const useDisputes = (type = "all") => {
   const fetchDisputes = async () => {
     setLoading(true);
     try {
-      const url = type === "all" ? "/api/admin/dispute" : `/api/admin/dispute?type=${type}`;
+      const url =
+        type === "all"
+          ? "/api/admin/dispute"
+          : `/api/admin/dispute?type=${type}`;
       const response = await axiosInstance.get(url);
       setDisputes(response.data.data || []);
     } catch (err) {
@@ -24,10 +27,10 @@ const useDisputes = (type = "all") => {
   const handleResolve = async (id, action, message, partialAmount = 0) => {
     setProcessingId(id);
     try {
-      await axiosInstance.post(`/api/admin/dispute/${id}/resolve`, { 
-        resolutionAction: action, 
+      await axiosInstance.post(`/api/admin/dispute/${id}/resolve`, {
+        resolutionAction: action,
         resolutionNotes: message,
-        partialAmount 
+        partialAmount,
       });
       toast.success("Dispute resolved");
       fetchDisputes();
@@ -48,13 +51,12 @@ const useDisputes = (type = "all") => {
     }
   };
 
-
   const handleOwnerAction = async (id, action, message) => {
     setProcessingId(id);
     try {
-      await axiosInstance.post(`/api/admin/dispute/${id}/owner-action`, { 
-        action, 
-        reason: message
+      await axiosInstance.post(`/api/admin/dispute/${id}/owner-action`, {
+        action,
+        reason: message,
       });
       toast.success(`Request ${action}d successfully`);
       fetchDisputes();
@@ -91,7 +93,7 @@ const useDisputes = (type = "all") => {
     handleOwnerAction,
     handleEscalate,
 
-    refresh: fetchDisputes
+    refresh: fetchDisputes,
   };
 };
 

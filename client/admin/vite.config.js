@@ -13,10 +13,19 @@ export default defineConfig({
     alias: {
       "@app": path.resolve(__dirname, "./src/app"),
       "@": path.resolve(__dirname, "./src"),
-      "@components/layout": path.resolve(__dirname, "./src/shared/components/layout"),
+      "@components/layout": path.resolve(
+        __dirname,
+        "./src/shared/components/layout"
+      ),
       "@components": path.resolve(__dirname, "../user/src/shared/components"),
-      "@hooks/useAxiosInstance": path.resolve(__dirname, "../user/src/infrastructure/axios.js"),
-      "@user/hooks/useAxiosInstance": path.resolve(__dirname, "../user/src/infrastructure/axios.js"),
+      "@hooks/useAxiosInstance": path.resolve(
+        __dirname,
+        "../user/src/infrastructure/axios.js"
+      ),
+      "@user/hooks/useAxiosInstance": path.resolve(
+        __dirname,
+        "../user/src/infrastructure/axios.js"
+      ),
       "@hooks": path.resolve(__dirname, "../user/src/shared/hooks"),
       "@utils": path.resolve(__dirname, "../user/src/shared/utils"),
       "@layouts": path.resolve(__dirname, "./src/shared/layouts"),

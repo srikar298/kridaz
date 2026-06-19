@@ -1,1 +1,23 @@
-{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"string","format":"uuid"},"userId":{"type":"string","format":"uuid"},"businessName":{"type":"string"},"verified":{"type":"boolean"},"walletBalance":{"type":"number"},"rating":{"type":"number"},"numReviews":{"type":"integer"}},"title":"Owner"}}}}}
+{
+  "title": "Body",
+  "body": {
+    "required": true,
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "format": "uuid" },
+            "userId": { "type": "string", "format": "uuid" },
+            "businessName": { "type": "string" },
+            "verified": { "type": "boolean" },
+            "walletBalance": { "type": "number" },
+            "rating": { "type": "number" },
+            "numReviews": { "type": "integer" }
+          },
+          "title": "Owner"
+        }
+      }
+    }
+  }
+}

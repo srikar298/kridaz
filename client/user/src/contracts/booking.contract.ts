@@ -5,7 +5,7 @@ export const bookingStatusSchema = z.enum([
   "CONFIRMED",
   "CANCELLED",
   "COMPLETED",
-  "FAILED"
+  "FAILED",
 ]);
 
 export const bookingSchema = z.object({
@@ -17,7 +17,7 @@ export const bookingSchema = z.object({
   date: z.string(), // ISO Date String
   timeSlot: z.string().min(1, "Time slot is required"),
   createdAt: z.string().datetime().optional(),
-  updatedAt: z.string().datetime().optional()
+  updatedAt: z.string().datetime().optional(),
 });
 
 export const createBookingSchema = z.object({
@@ -25,7 +25,7 @@ export const createBookingSchema = z.object({
   date: z.string().min(1, "Date is required"),
   timeSlot: z.string().min(1, "Time slot is required"),
   amount: z.number().positive(),
-  paymentMethod: z.enum(["RAZORPAY", "WALLET", "FREE"]).default("RAZORPAY")
+  paymentMethod: z.enum(["RAZORPAY", "WALLET", "FREE"]).default("RAZORPAY"),
 });
 
 export type BookingStatus = z.infer<typeof bookingStatusSchema>;

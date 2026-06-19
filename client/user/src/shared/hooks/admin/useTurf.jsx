@@ -1,20 +1,16 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "@hooks/useAxiosInstance";
- 
+
 const useTurfData = () => {
   const [turfData, setTurfData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-
- 
   const fetchTurfData = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get(
-        `/api/admin/turfs/admin/all`
-      );
+      const response = await axiosInstance.get(`/api/admin/turfs/admin/all`);
       const result = await response.data;
-       setTurfData(result.turfs);
+      setTurfData(result.turfs);
     } catch (err) {
       console.log(err);
     } finally {
@@ -28,7 +24,10 @@ const useTurfData = () => {
 
   const approveTurf = async (id, adminData) => {
     try {
-      await axiosInstance.put(`/api/admin/turfs/admin/${id}/approve`, adminData);
+      await axiosInstance.put(
+        `/api/admin/turfs/admin/${id}/approve`,
+        adminData
+      );
       await fetchTurfData();
       return true;
     } catch (err) {
@@ -50,7 +49,10 @@ const useTurfData = () => {
 
   const decommissionTurf = async (id, adminData) => {
     try {
-      await axiosInstance.put(`/api/admin/turfs/admin/${id}/decommission`, adminData);
+      await axiosInstance.put(
+        `/api/admin/turfs/admin/${id}/decommission`,
+        adminData
+      );
       await fetchTurfData();
       return true;
     } catch (err) {
@@ -61,7 +63,10 @@ const useTurfData = () => {
 
   const softDeleteTurf = async (id, adminData) => {
     try {
-      await axiosInstance.put(`/api/admin/turfs/admin/${id}/soft-delete`, adminData);
+      await axiosInstance.put(
+        `/api/admin/turfs/admin/${id}/soft-delete`,
+        adminData
+      );
       await fetchTurfData();
       return true;
     } catch (err) {
@@ -81,15 +86,15 @@ const useTurfData = () => {
     }
   };
 
-  return { 
-    turfData, 
-    loading, 
-    approveTurf, 
-    rejectTurf, 
-    decommissionTurf, 
-    softDeleteTurf, 
-    hardDeleteTurf, 
-    refetch: fetchTurfData 
+  return {
+    turfData,
+    loading,
+    approveTurf,
+    rejectTurf,
+    decommissionTurf,
+    softDeleteTurf,
+    hardDeleteTurf,
+    refetch: fetchTurfData,
   };
 };
 

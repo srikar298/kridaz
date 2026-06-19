@@ -23,7 +23,9 @@ const useSupport = () => {
   const handleUpdateStatus = async (id, status) => {
     setProcessingId(id);
     try {
-      await axiosInstance.put(`/api/admin/support/tickets/${id}/status`, { status });
+      await axiosInstance.put(`/api/admin/support/tickets/${id}/status`, {
+        status,
+      });
       toast.success("Status updated");
       fetchTickets();
     } catch (err) {
@@ -37,7 +39,9 @@ const useSupport = () => {
     if (!message.trim()) return;
     setProcessingId(id);
     try {
-      await axiosInstance.post(`/api/admin/support/tickets/${id}/reply`, { message });
+      await axiosInstance.post(`/api/admin/support/tickets/${id}/reply`, {
+        message,
+      });
       toast.success("Reply sent");
       fetchTickets();
     } catch (err) {
@@ -50,7 +54,9 @@ const useSupport = () => {
   const handleToggleAgentStatus = async (id, isOnline) => {
     setProcessingId(id);
     try {
-      await axiosInstance.put(`/api/admin/support/tickets/${id}/agent-status`, { isOnline });
+      await axiosInstance.put(`/api/admin/support/tickets/${id}/agent-status`, {
+        isOnline,
+      });
       toast.success(isOnline ? "You are now ONLINE" : "You are now OFFLINE");
       fetchTickets();
     } catch (err) {
@@ -71,7 +77,7 @@ const useSupport = () => {
     handleUpdateStatus,
     handleReply,
     handleToggleAgentStatus,
-    refresh: fetchTickets
+    refresh: fetchTickets,
   };
 };
 

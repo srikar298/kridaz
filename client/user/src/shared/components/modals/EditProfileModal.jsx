@@ -1,5 +1,15 @@
 import { useState, useEffect, useRef } from "react";
-import { X, User, Phone, MapPin, AlignLeft, Loader2, Check, Camera, Star } from "lucide-react";
+import {
+  X,
+  User,
+  Phone,
+  MapPin,
+  AlignLeft,
+  Loader2,
+  Check,
+  Camera,
+  Star,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useDispatch } from "react-redux";
@@ -23,7 +33,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
   const [isSearchingLocation, setIsSearchingLocation] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const locationRef = useRef(null);
-  
+
   // Username check states
   const [usernameStatus, setUsernameStatus] = useState(null); // 'available', 'taken', 'checking'
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
@@ -97,16 +107,18 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
       }
 
       if (formData.username.length < 3) {
-        setUsernameStatus('short');
+        setUsernameStatus("short");
         return;
       }
 
       setIsCheckingUsername(true);
-      setUsernameStatus('checking');
-      
+      setUsernameStatus("checking");
+
       try {
-        const response = await axiosInstance.get(`/api/user/auth/check-username?username=${formData.username}`);
-        setUsernameStatus(response.data.available ? 'available' : 'taken');
+        const response = await axiosInstance.get(
+          `/api/user/auth/check-username?username=${formData.username}`
+        );
+        setUsernameStatus(response.data.available ? "available" : "taken");
       } catch (error) {
         console.error("Username check error:", error);
         setUsernameStatus(null);
@@ -123,7 +135,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith("image/")) {
       toast.error("Please upload an image file");
       return;
     }
@@ -133,8 +145,11 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
 
     setUploading(true);
     try {
-      const response = await axiosInstance.post("/api/user/auth/profile-picture", formData);
-      
+      const response = await axiosInstance.post(
+        "/api/user/auth/profile-picture",
+        formData
+      );
+
       dispatch(updateUser({ profilePicture: response.data.profilePicture }));
       toast.success("Profile picture updated!");
     } catch (error) {
@@ -148,7 +163,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith("image/")) {
       toast.error("Please upload an image file");
       return;
     }
@@ -158,8 +173,11 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
 
     setBannerUploading(true);
     try {
-      const response = await axiosInstance.post("/api/user/auth/banner-picture", formData);
-      
+      const response = await axiosInstance.post(
+        "/api/user/auth/banner-picture",
+        formData
+      );
+
       dispatch(updateUser({ bannerPicture: response.data.bannerPicture }));
       toast.success("Banner picture updated!");
     } catch (error) {
@@ -173,7 +191,10 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axiosInstance.put("/api/user/auth/updateProfile", formData);
+      const response = await axiosInstance.put(
+        "/api/user/auth/updateProfile",
+        formData
+      );
       if (response.data.success) {
         dispatch(updateUser(response.data.user));
         toast.success("Profile updated successfully");
@@ -190,9 +211,12 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 font-sans" style={{ fontFamily: 'Inter, -apple-system, sans-serif' }}>
+    <div
+      className="fixed inset-0 z-[1000] flex items-center justify-center p-4 font-sans"
+      style={{ fontFamily: "Inter, -apple-system, sans-serif" }}
+    >
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/90 backdrop-blur-md animate-in fade-in duration-300"
         onClick={onClose}
       />
@@ -206,11 +230,15 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
               <User size={24} className="text-[#B3DC26]" />
             </div>
             <div>
-              <h2 className="text-[18px] font-bold text-white leading-[28px]">Edit Profile</h2>
-              <p className="text-[14px] font-normal text-white/70 leading-[20px]">Customize your identity</p>
+              <h2 className="text-[18px] font-bold text-white leading-[28px]">
+                Edit Profile
+              </h2>
+              <p className="text-[14px] font-normal text-white/70 leading-[20px]">
+                Customize your identity
+              </p>
             </div>
           </div>
-          <button 
+          <button
             type="button"
             onClick={onClose}
             className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-[#121212] border border-white/[0.08] text-white/70 hover:text-white transition-colors"
@@ -220,35 +248,47 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
         </div>
 
         {/* Content Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1">
-          
+        <form
+          onSubmit={handleSubmit}
+          className="p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1"
+        >
           {/* Banner Upload */}
           <div className="flex flex-col">
-            <label className="text-[14px] font-semibold text-white mb-2">Banner Image</label>
+            <label className="text-[14px] font-semibold text-white mb-2">
+              Banner Image
+            </label>
             <div className="relative group w-full h-32 md:h-40 rounded-[16px] bg-[#121212] border border-white/[0.08] overflow-hidden flex items-center justify-center hover:border-[#B3DC26] transition-all">
               {user?.bannerPicture || user?.ownerProfile?.bannerUrl ? (
-                <img src={user.bannerPicture || user.ownerProfile.bannerUrl} alt="Banner" className="w-full h-full object-cover" />
+                <img
+                  src={user.bannerPicture || user.ownerProfile.bannerUrl}
+                  alt="Banner"
+                  className="w-full h-full object-cover"
+                />
               ) : (
-                <span className="text-[14px] font-normal text-white/70">No Banner Image</span>
+                <span className="text-[14px] font-normal text-white/70">
+                  No Banner Image
+                </span>
               )}
               {bannerUploading && (
                 <div className="absolute inset-0 bg-[#000000]/60 backdrop-blur-sm flex items-center justify-center z-10">
                   <Loader2 size={24} className="animate-spin text-[#B3DC26]" />
                 </div>
               )}
-              <label 
-                htmlFor="modal-banner-upload" 
+              <label
+                htmlFor="modal-banner-upload"
                 className="absolute inset-0 flex flex-col items-center justify-center bg-[#000000]/60 opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity z-20"
               >
                 <Camera size={24} className="text-[#B3DC26] mb-2" />
-                <span className="text-[14px] font-semibold text-white">Change Banner</span>
-                <input 
-                  type="file" 
-                  id="modal-banner-upload" 
-                  className="hidden" 
-                  accept="image/*" 
-                  onChange={handleBannerUpload} 
-                  disabled={bannerUploading} 
+                <span className="text-[14px] font-semibold text-white">
+                  Change Banner
+                </span>
+                <input
+                  type="file"
+                  id="modal-banner-upload"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleBannerUpload}
+                  disabled={bannerUploading}
                 />
               </label>
             </div>
@@ -258,40 +298,50 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
           <div className="flex flex-col md:flex-row gap-6">
             {/* Left Box: Profile Picture */}
             <div className="flex flex-col shrink-0">
-              <label className="text-[14px] font-semibold text-white mb-2">Profile Picture</label>
+              <label className="text-[14px] font-semibold text-white mb-2">
+                Profile Picture
+              </label>
               <div className="relative group w-[100px] h-[100px]">
                 <div className="w-full h-full rounded-[16px] bg-[#121212] border border-white/[0.08] overflow-hidden flex items-center justify-center group-hover:border-[#B3DC26] transition-all">
                   {user?.profilePicture ? (
-                    <img 
-                      src={user.profilePicture} 
-                      alt="" 
+                    <img
+                      src={user.profilePicture}
+                      alt=""
                       className="w-full h-full object-cover"
                     />
                   ) : (
                     <span className="text-[#B3DC26] font-bold text-[32px]">
-                      {user?.name?.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "U"}
+                      {user?.name
+                        ?.split(" ")
+                        .map((w) => w[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2) || "U"}
                     </span>
                   )}
 
                   {uploading && (
                     <div className="absolute inset-0 bg-[#000000]/60 backdrop-blur-sm flex items-center justify-center z-10">
-                      <Loader2 size={24} className="animate-spin text-[#B3DC26]" />
+                      <Loader2
+                        size={24}
+                        className="animate-spin text-[#B3DC26]"
+                      />
                     </div>
                   )}
                 </div>
-                
-                <label 
-                  htmlFor="modal-profile-upload" 
+
+                <label
+                  htmlFor="modal-profile-upload"
                   className="absolute -bottom-2 -right-2 w-10 h-10 bg-[#1B1B1B] rounded-[12px] border border-white/[0.08] flex items-center justify-center cursor-pointer hover:border-[#B3DC26] transition-all z-20 shadow-[0px_4px_16px_rgba(0,0,0,0.4)]"
                 >
                   <Camera size={18} className="text-[#B3DC26]" />
-                  <input 
-                    type="file" 
-                    id="modal-profile-upload" 
-                    className="hidden" 
-                    accept="image/*" 
-                    onChange={handleImageUpload} 
-                    disabled={uploading} 
+                  <input
+                    type="file"
+                    id="modal-profile-upload"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={uploading}
                   />
                 </label>
               </div>
@@ -301,9 +351,14 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
             <div className="flex-1 grid grid-cols-1 gap-6">
               {/* Full Name */}
               <div className="flex flex-col">
-                <label className="text-[14px] font-semibold text-white mb-2">Full Name</label>
+                <label className="text-[14px] font-semibold text-white mb-2">
+                  Full Name
+                </label>
                 <div className="relative group">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-[#55DEE8] transition-colors" size={18} />
+                  <User
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-[#55DEE8] transition-colors"
+                    size={18}
+                  />
                   <input
                     type="text"
                     name="name"
@@ -319,33 +374,49 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
               {/* Username */}
               <div className="flex flex-col">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-[14px] font-semibold text-white">Username</label>
+                  <label className="text-[14px] font-semibold text-white">
+                    Username
+                  </label>
                   {usernameStatus && (
-                    <span className={`text-[12px] font-semibold ${ usernameStatus === 'available' ? 'text-[#B3DC26]' : usernameStatus === 'taken' ? 'text-red-500' : usernameStatus === 'short' ? 'text-orange-500' : 'text-white/70' }`}>
-                      {usernameStatus === 'checking' ? 'Checking...' :
-                      usernameStatus === 'available' ? 'Available' :
-                      usernameStatus === 'taken' ? 'Username Taken' :
-                      usernameStatus === 'short' ? 'Too short' : ''}
+                    <span
+                      className={`text-[12px] font-semibold ${usernameStatus === "available" ? "text-[#B3DC26]" : usernameStatus === "taken" ? "text-red-500" : usernameStatus === "short" ? "text-orange-500" : "text-white/70"}`}
+                    >
+                      {usernameStatus === "checking"
+                        ? "Checking..."
+                        : usernameStatus === "available"
+                          ? "Available"
+                          : usernameStatus === "taken"
+                            ? "Username Taken"
+                            : usernameStatus === "short"
+                              ? "Too short"
+                              : ""}
                     </span>
                   )}
                 </div>
                 <div className="relative group">
-                  <span className={`absolute left-4 top-1/2 -translate-y-1/2 font-bold text-[14px] transition-colors ${ usernameStatus === 'available' ? 'text-[#B3DC26]' : usernameStatus === 'taken' ? 'text-red-500' : 'text-white/70' }`}>@</span>
+                  <span
+                    className={`absolute left-4 top-1/2 -translate-y-1/2 font-bold text-[14px] transition-colors ${usernameStatus === "available" ? "text-[#B3DC26]" : usernameStatus === "taken" ? "text-red-500" : "text-white/70"}`}
+                  >
+                    @
+                  </span>
                   <input
                     type="text"
                     name="username"
                     value={formData.username}
                     onChange={handleChange}
-                    className={`w-full h-[58px] bg-[#121212] border rounded-[16px] py-4 pl-10 pr-12 text-[14px] text-white focus:outline-none transition-all placeholder-white/70 ${ usernameStatus === 'available' ? 'border-[#B3DC26]/50 focus:border-[#B3DC26]' : usernameStatus === 'taken' ? 'border-red-500/50 focus:border-red-500' : 'border-white/[0.08] focus:border-[#55DEE8]' }`}
+                    className={`w-full h-[58px] bg-[#121212] border rounded-[16px] py-4 pl-10 pr-12 text-[14px] text-white focus:outline-none transition-all placeholder-white/70 ${usernameStatus === "available" ? "border-[#B3DC26]/50 focus:border-[#B3DC26]" : usernameStatus === "taken" ? "border-red-500/50 focus:border-red-500" : "border-white/[0.08] focus:border-[#55DEE8]"}`}
                     placeholder="username"
                     required
                   />
                   {isCheckingUsername && (
                     <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                      <Loader2 size={16} className="animate-spin text-[#55DEE8]" />
+                      <Loader2
+                        size={16}
+                        className="animate-spin text-[#55DEE8]"
+                      />
                     </div>
                   )}
-                  {!isCheckingUsername && usernameStatus === 'available' && (
+                  {!isCheckingUsername && usernameStatus === "available" && (
                     <div className="absolute right-4 top-1/2 -translate-y-1/2">
                       <Check size={16} className="text-[#B3DC26]" />
                     </div>
@@ -359,9 +430,14 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Phone */}
             <div className="flex flex-col">
-              <label className="text-[14px] font-semibold text-white mb-2">Contact Number</label>
+              <label className="text-[14px] font-semibold text-white mb-2">
+                Contact Number
+              </label>
               <div className="relative group">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-[#55DEE8] transition-colors" size={18} />
+                <Phone
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-[#55DEE8] transition-colors"
+                  size={18}
+                />
                 <input
                   type="text"
                   name="phone"
@@ -375,23 +451,50 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
 
             {/* Gender Dropdown */}
             <div className="flex flex-col">
-              <label className="text-[14px] font-semibold text-white mb-2">Gender</label>
+              <label className="text-[14px] font-semibold text-white mb-2">
+                Gender
+              </label>
               <div className="relative group">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-[#55DEE8] transition-colors pointer-events-none" size={18} />
+                <User
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-[#55DEE8] transition-colors pointer-events-none"
+                  size={18}
+                />
                 <select
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
                   className="w-full h-[58px] bg-[#121212] border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-10 text-[14px] text-white focus:outline-none focus:border-[#55DEE8] transition-all appearance-none cursor-pointer"
                 >
-                  <option value="" className="bg-[#121212]">Select Gender</option>
-                  <option value="Male" className="bg-[#121212]">Male</option>
-                  <option value="Female" className="bg-[#121212]">Female</option>
-                  <option value="Other" className="bg-[#121212]">Other</option>
-                  <option value="Prefer not to say" className="bg-[#121212]">Prefer not to say</option>
+                  <option value="" className="bg-[#121212]">
+                    Select Gender
+                  </option>
+                  <option value="Male" className="bg-[#121212]">
+                    Male
+                  </option>
+                  <option value="Female" className="bg-[#121212]">
+                    Female
+                  </option>
+                  <option value="Other" className="bg-[#121212]">
+                    Other
+                  </option>
+                  <option value="Prefer not to say" className="bg-[#121212]">
+                    Prefer not to say
+                  </option>
                 </select>
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/70">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
                 </div>
               </div>
             </div>
@@ -400,13 +503,18 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
           {/* Row 3: Short Bio */}
           <div className="flex flex-col">
             <div className="flex items-center justify-between mb-2">
-              <label className="text-[14px] font-semibold text-white">Short Bio</label>
+              <label className="text-[14px] font-semibold text-white">
+                Short Bio
+              </label>
               <span className="text-[12px] font-normal text-white/70">
                 {formData.bio?.length || 0}/150
               </span>
             </div>
             <div className="relative group">
-              <AlignLeft className="absolute left-4 top-4 text-white/70 group-focus-within:text-[#55DEE8] transition-colors" size={18} />
+              <AlignLeft
+                className="absolute left-4 top-4 text-white/70 group-focus-within:text-[#55DEE8] transition-colors"
+                size={18}
+              />
               <textarea
                 name="bio"
                 maxLength={150}
@@ -420,17 +528,24 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
 
           {/* Row 4: Location */}
           <div className="flex flex-col" ref={locationRef}>
-            <label className="text-[14px] font-semibold text-white mb-2">Location</label>
+            <label className="text-[14px] font-semibold text-white mb-2">
+              Location
+            </label>
             <div className="relative group">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-[#55DEE8] transition-colors" size={18} />
+              <MapPin
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-[#55DEE8] transition-colors"
+                size={18}
+              />
               <input
                 type="text"
                 value={formData.location}
                 onChange={(e) => {
-                  setFormData({...formData, location: e.target.value});
+                  setFormData({ ...formData, location: e.target.value });
                   setShowSuggestions(true);
                 }}
-                onFocus={() => setShowSuggestions(locationSuggestions.length > 0)}
+                onFocus={() =>
+                  setShowSuggestions(locationSuggestions.length > 0)
+                }
                 placeholder="e.g. Mumbai, Maharashtra"
                 className="w-full h-[58px] bg-[#121212] border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-12 text-[14px] text-white focus:outline-none focus:border-[#55DEE8] transition-all placeholder-white/70"
               />
@@ -450,29 +565,41 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                       onClick={() => handleSelectLocation(suggestion)}
                       className="w-full px-4 py-3 text-left hover:bg-[#121212] border-b border-white/[0.08] last:border-0 transition-colors flex flex-col gap-1"
                     >
-                      <span className="text-[14px] font-semibold text-white">{suggestion.city || suggestion.display_name.split(',')[0]}</span>
-                      <span className="text-[12px] font-normal text-white/70 truncate">{suggestion.display_name}</span>
+                      <span className="text-[14px] font-semibold text-white">
+                        {suggestion.city ||
+                          suggestion.display_name.split(",")[0]}
+                      </span>
+                      <span className="text-[12px] font-normal text-white/70 truncate">
+                        {suggestion.display_name}
+                      </span>
                     </button>
                   ))}
                 </div>
               )}
             </div>
           </div>
-          
+
           {/* Row 5: Sports & Interests */}
           <div className="flex flex-col">
-            <label className="text-[14px] font-semibold text-white mb-2">Sports & Interests</label>
+            <label className="text-[14px] font-semibold text-white mb-2">
+              Sports & Interests
+            </label>
             {formData.interests?.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-3">
                 {formData.interests.map((interest, idx) => (
-                  <span key={idx} className="px-3 py-1.5 bg-[#B3DC26] rounded-[8px] text-[12px] font-bold text-[#000000] flex items-center gap-1.5">
+                  <span
+                    key={idx}
+                    className="px-3 py-1.5 bg-[#B3DC26] rounded-[8px] text-[12px] font-bold text-[#000000] flex items-center gap-1.5"
+                  >
                     {interest}
-                    <button 
+                    <button
                       type="button"
                       onClick={() => {
-                        setFormData(prev => ({
+                        setFormData((prev) => ({
                           ...prev,
-                          interests: prev.interests.filter(i => i !== interest)
+                          interests: prev.interests.filter(
+                            (i) => i !== interest
+                          ),
                         }));
                       }}
                       className="hover:bg-black/10 rounded-full p-0.5"
@@ -484,26 +611,61 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
               </div>
             )}
             <div className="relative group">
-              <Star className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-[#55DEE8] transition-colors pointer-events-none" size={18} />
+              <Star
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-[#55DEE8] transition-colors pointer-events-none"
+                size={18}
+              />
               <select
                 onChange={(e) => {
-                  if (e.target.value && !formData.interests.includes(e.target.value)) {
-                    setFormData(prev => ({
+                  if (
+                    e.target.value &&
+                    !formData.interests.includes(e.target.value)
+                  ) {
+                    setFormData((prev) => ({
                       ...prev,
-                      interests: [...prev.interests, e.target.value]
+                      interests: [...prev.interests, e.target.value],
                     }));
                   }
                   e.target.value = "";
                 }}
                 className="w-full h-[58px] bg-[#121212] border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-12 text-[14px] text-white focus:outline-none focus:border-[#55DEE8] transition-all appearance-none cursor-pointer"
               >
-                <option value="" className="bg-[#121212]">Add your sports or interests</option>
-                {["Cricket", "Football", "Badminton", "Tennis", "Basketball", "Volleyball", "Table Tennis", "Swimming", "Gym", "Yoga"].filter(s => !formData.interests.includes(s)).map((sport, idx) => (
-                  <option key={idx} value={sport} className="bg-[#121212]">{sport}</option>
-                ))}
+                <option value="" className="bg-[#121212]">
+                  Add your sports or interests
+                </option>
+                {[
+                  "Cricket",
+                  "Football",
+                  "Badminton",
+                  "Tennis",
+                  "Basketball",
+                  "Volleyball",
+                  "Table Tennis",
+                  "Swimming",
+                  "Gym",
+                  "Yoga",
+                ]
+                  .filter((s) => !formData.interests.includes(s))
+                  .map((sport, idx) => (
+                    <option key={idx} value={sport} className="bg-[#121212]">
+                      {sport}
+                    </option>
+                  ))}
               </select>
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/70">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
               </div>
             </div>
           </div>
@@ -519,7 +681,12 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
             </button>
             <button
               type="submit"
-              disabled={loading || isCheckingUsername || usernameStatus === 'taken' || usernameStatus === 'short'}
+              disabled={
+                loading ||
+                isCheckingUsername ||
+                usernameStatus === "taken" ||
+                usernameStatus === "short"
+              }
               className="w-full md:flex-[2] h-[58px] bg-[linear-gradient(90deg,#55DEE8_0%,#B3DC26_100%)] rounded-[16px] text-[#000000] text-[18px] font-bold shadow-[0px_8px_24px_rgba(179,220,38,0.15)] hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:scale-100 disabled:shadow-none"
             >
               {loading ? (

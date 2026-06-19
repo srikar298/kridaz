@@ -39,9 +39,19 @@ const useUsers = () => {
   const toggleUserStatus = async (userId, currentStatus) => {
     try {
       const newStatus = currentStatus === "active" ? "blocked" : "active";
-      await axiosInstance.put(`/api/admin/users/${userId}/status`, { status: newStatus });
-      setUsers(prev => prev.map(u => (u.id || u._id) === userId ? { ...u, status: newStatus } : u));
-      setFilteredUsers(prev => prev.map(u => (u.id || u._id) === userId ? { ...u, status: newStatus } : u));
+      await axiosInstance.put(`/api/admin/users/${userId}/status`, {
+        status: newStatus,
+      });
+      setUsers((prev) =>
+        prev.map((u) =>
+          (u.id || u._id) === userId ? { ...u, status: newStatus } : u
+        )
+      );
+      setFilteredUsers((prev) =>
+        prev.map((u) =>
+          (u.id || u._id) === userId ? { ...u, status: newStatus } : u
+        )
+      );
       return { success: true };
     } catch (error) {
       console.error("Error toggling user status:", error);
@@ -52,8 +62,10 @@ const useUsers = () => {
   const deleteUser = async (userId) => {
     try {
       await axiosInstance.delete(`/api/admin/users/${userId}`);
-      setUsers(prev => prev.filter(u => (u.id || u._id) !== userId));
-      setFilteredUsers(prev => prev.filter(u => (u.id || u._id) !== userId));
+      setUsers((prev) => prev.filter((u) => (u.id || u._id) !== userId));
+      setFilteredUsers((prev) =>
+        prev.filter((u) => (u.id || u._id) !== userId)
+      );
       return { success: true };
     } catch (error) {
       console.error("Error deleting user:", error);
@@ -64,8 +76,10 @@ const useUsers = () => {
   const batchDeleteUsers = async (userIds) => {
     try {
       await axiosInstance.post("/api/admin/users/batch-delete", { userIds });
-      setUsers(prev => prev.filter(u => !userIds.includes(u.id || u._id)));
-      setFilteredUsers(prev => prev.filter(u => !userIds.includes(u.id || u._id)));
+      setUsers((prev) => prev.filter((u) => !userIds.includes(u.id || u._id)));
+      setFilteredUsers((prev) =>
+        prev.filter((u) => !userIds.includes(u.id || u._id))
+      );
       return { success: true };
     } catch (error) {
       console.error("Error batch deleting users:", error);
@@ -75,9 +89,20 @@ const useUsers = () => {
 
   const batchToggleStatus = async (userIds, status) => {
     try {
-      await axiosInstance.put("/api/admin/users/batch-status", { userIds, status });
-      setUsers(prev => prev.map(u => userIds.includes(u.id || u._id) ? { ...u, status } : u));
-      setFilteredUsers(prev => prev.map(u => userIds.includes(u.id || u._id) ? { ...u, status } : u));
+      await axiosInstance.put("/api/admin/users/batch-status", {
+        userIds,
+        status,
+      });
+      setUsers((prev) =>
+        prev.map((u) =>
+          userIds.includes(u.id || u._id) ? { ...u, status } : u
+        )
+      );
+      setFilteredUsers((prev) =>
+        prev.map((u) =>
+          userIds.includes(u.id || u._id) ? { ...u, status } : u
+        )
+      );
       return { success: true };
     } catch (error) {
       console.error("Error batch updating status:", error);
@@ -85,9 +110,17 @@ const useUsers = () => {
     }
   };
 
-
-  return { users: filteredUsers, loading, searchTerm, handleSearch, toggleUserStatus, deleteUser, batchDeleteUsers, batchToggleStatus, refreshUsers: fetchUsers };
-
+  return {
+    users: filteredUsers,
+    loading,
+    searchTerm,
+    handleSearch,
+    toggleUserStatus,
+    deleteUser,
+    batchDeleteUsers,
+    batchToggleStatus,
+    refreshUsers: fetchUsers,
+  };
 };
 
 export default useUsers;

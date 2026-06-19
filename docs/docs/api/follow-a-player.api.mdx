@@ -24,46 +24,26 @@ import Translate from "@docusaurus/Translate";
   as={"h1"}
   className={"openapi__heading"}
   children={"Follow a player"}
->
-</Heading>
+></Heading>
 
 <MethodEndpoint
   method={"post"}
   path={"/user/players/{id}/follow"}
   context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+></MethodEndpoint>
 
 Adds the specified player to the current user's following list.
 
-<Heading
-  id={"request"}
-  as={"h2"}
-  className={"openapi-tabs__heading"}
->
+<Heading id={"request"} as={"h2"} className={"openapi-tabs__heading"}>
   <Translate id="theme.openapi.request.title">Request</Translate>
 </Heading>
 
 <ParamsDetails
   {...require("./follow-a-player.ParamsDetails.json")}
->
-  
-</ParamsDetails>
+></ParamsDetails>
 
 <RequestSchema
   {...require("./follow-a-player.RequestSchema.json")}
->
-  
-</RequestSchema>
+></RequestSchema>
 
-<StatusCodes
-  {...require("./follow-a-player.StatusCodes.json")}
->
-  
-</StatusCodes>
-
-
-      
+<StatusCodes {...require("./follow-a-player.StatusCodes.json")}></StatusCodes>

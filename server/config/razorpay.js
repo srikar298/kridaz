@@ -1,4 +1,4 @@
-import Razorpay from "razorpay"
+import Razorpay from "razorpay";
 import dotenv from "dotenv";
 import { createCircuitBreaker } from "../utils/circuitBreaker.js";
 dotenv.config();

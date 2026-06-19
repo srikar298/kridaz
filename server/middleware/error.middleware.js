@@ -1,9 +1,15 @@
-import logger from '../utils/logger.js';
-import { HttpError, NotFoundError, BadRequestError, ConflictError, InternalError } from '@kridaz/common';
-import pkg from '@prisma/client';
+import logger from "../utils/logger.js";
+import {
+  HttpError,
+  NotFoundError,
+  BadRequestError,
+  ConflictError,
+  InternalError,
+} from "@kridaz/common";
+import pkg from "@prisma/client";
 const { Prisma } = pkg;
 const { PrismaClientKnownRequestError, PrismaClientValidationError } = Prisma;
-import * as Sentry from '@sentry/node';
+import * as Sentry from "@sentry/node";
 
 /**
  * Legacy codes whose `message` field used to BE the code string itself —
@@ -14,9 +20,7 @@ import * as Sentry from '@sentry/node';
  * value. Once the web client cuts over to reading `data.code`, this list
  * shrinks to empty and the override can be removed.
  */
-const LEGACY_MESSAGE_AS_CODE = new Set([
-  "TOKEN_EXPIRED",
-]);
+const LEGACY_MESSAGE_AS_CODE = new Set(["TOKEN_EXPIRED"]);
 
 /**
  * Maps Prisma errors to typed HttpErrors before they reach the 500 catch-all.
@@ -30,31 +34,46 @@ const normalizePrismaError = (err) => {
       clientVersion: err.clientVersion,
     });
     switch (err.code) {
-      case 'P2002': {
-        const field = Array.isArray(err.meta?.target) ? err.meta.target.join(', ') : 'field';
-        return new ConflictError(`A record with this ${field} already exists.`, {
-          code: 'DUPLICATE_ENTRY',
-          field: err.meta?.target,
-        });
+      case "P2002": {
+        const field = Array.isArray(err.meta?.target)
+          ? err.meta.target.join(", ")
+          : "field";
+        return new ConflictError(
+          `A record with this ${field} already exists.`,
+          {
+            code: "DUPLICATE_ENTRY",
+            field: err.meta?.target,
+          }
+        );
       }
-      case 'P2025':
-        return new NotFoundError('Record not found.', { code: 'RECORD_NOT_FOUND' });
-      case 'P2003':
-        return new ConflictError('Related record not found or constraint violated.', {
-          code: 'FOREIGN_KEY_VIOLATION',
+      case "P2025":
+        return new NotFoundError("Record not found.", {
+          code: "RECORD_NOT_FOUND",
         });
-      case 'P2014':
-        return new BadRequestError('Required relation is missing.', {
-          code: 'RELATION_VIOLATION',
+      case "P2003":
+        return new ConflictError(
+          "Related record not found or constraint violated.",
+          {
+            code: "FOREIGN_KEY_VIOLATION",
+          }
+        );
+      case "P2014":
+        return new BadRequestError("Required relation is missing.", {
+          code: "RELATION_VIOLATION",
         });
       default:
-        return new InternalError('Database operation failed.', { code: 'DB_ERROR', prismaCode: err.code });
+        return new InternalError("Database operation failed.", {
+          code: "DB_ERROR",
+          prismaCode: err.code,
+        });
     }
   }
 
   if (err instanceof PrismaClientValidationError) {
     logger.error(`[PRISMA_VALIDATION_ERROR] ${err.message}`);
-    return new BadRequestError('Invalid data provided.', { code: 'VALIDATION_ERROR' });
+    return new BadRequestError("Invalid data provided.", {
+      code: "VALIDATION_ERROR",
+    });
   }
 
   return null; // not a Prisma error — let caller handle
@@ -101,13 +120,14 @@ export const errorHandler = (err, req, res, next) => {
     const hasDetails = Object.keys(detailsRest).length > 0;
 
     // Legacy message-as-code shim — see LEGACY_MESSAGE_AS_CODE.
-    const message = code && LEGACY_MESSAGE_AS_CODE.has(code) ? code : err.message;
+    const message =
+      code && LEGACY_MESSAGE_AS_CODE.has(code) ? code : err.message;
 
     // Sanitize Prisma internals out of the wire body regardless of env —
     // server-side method signatures should never reach the client even in
     // dev, since they leak schema details.
     const sanitizedMessage = looksLikePrismaInternal(message)
-      ? 'Internal server error.'
+      ? "Internal server error."
       : message;
 
     return res.status(err.statusCode).json({
@@ -120,17 +140,22 @@ export const errorHandler = (err, req, res, next) => {
   }
 
   // Unexpected / untyped errors — always a 500
-  logger.error('[UNHANDLED_ERROR]', err);
+  logger.error("[UNHANDLED_ERROR]", err);
   Sentry.captureException(err, {
     extra: { path: req.originalUrl, method: req.method, requestId },
   });
 
-  const rawMessage = process.env.NODE_ENV === 'production' ? 'Something went wrong.' : err.message;
-  const safeMessage = looksLikePrismaInternal(rawMessage) ? 'Internal server error.' : rawMessage;
+  const rawMessage =
+    process.env.NODE_ENV === "production"
+      ? "Something went wrong."
+      : err.message;
+  const safeMessage = looksLikePrismaInternal(rawMessage)
+    ? "Internal server error."
+    : rawMessage;
 
   return res.status(500).json({
     success: false,
-    code:    'INTERNAL_ERROR',
+    code: "INTERNAL_ERROR",
     message: safeMessage,
     ...(requestId && { requestId }),
   });
@@ -138,7 +163,10 @@ export const errorHandler = (err, req, res, next) => {
 
 /** Strip Prisma method signatures / Where-input shapes from response bodies. */
 const looksLikePrismaInternal = (msg) =>
-  typeof msg === 'string' && /prisma\.|WhereInput|StringNullableFilter|NullableJsonNullValueInput/i.test(msg);
+  typeof msg === "string" &&
+  /prisma\.|WhereInput|StringNullableFilter|NullableJsonNullValueInput/i.test(
+    msg
+  );
 
 /**
  * 404 handler — must be registered BEFORE errorHandler in app.js.

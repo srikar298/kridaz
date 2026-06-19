@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomUUID } from "crypto";
 
 /**
  * Per-request correlation ID.
@@ -13,11 +13,14 @@ import { randomUUID } from 'crypto';
  * (logger, error handler, Sentry scope).
  */
 export const requestId = (req, res, next) => {
-  const incoming = req.headers['x-request-id'];
-  const id = (typeof incoming === 'string' && incoming.length > 0 && incoming.length <= 200)
-    ? incoming
-    : randomUUID();
+  const incoming = req.headers["x-request-id"];
+  const id =
+    typeof incoming === "string" &&
+    incoming.length > 0 &&
+    incoming.length <= 200
+      ? incoming
+      : randomUUID();
   res.locals.requestId = id;
-  res.setHeader('X-Request-Id', id);
+  res.setHeader("X-Request-Id", id);
   next();
 };

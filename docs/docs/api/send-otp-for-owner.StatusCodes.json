@@ -1,1 +1,1 @@
-{"responses":{"200":{"description":"OTP sent"}}}
+{ "responses": { "200": { "description": "OTP sent" } } }

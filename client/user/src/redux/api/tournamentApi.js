@@ -35,9 +35,7 @@ export const tournamentApi = baseApi.injectEndpoints({
         method: "POST",
         body: formData,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Tournament", id },
-      ],
+      invalidatesTags: (result, error, { id }) => [{ type: "Tournament", id }],
     }),
     getPublicTournament: builder.query({
       query: (id) => `/tournament/public/${id}`,
@@ -60,9 +58,7 @@ export const tournamentApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Tournament", id },
-      ],
+      invalidatesTags: (result, error, { id }) => [{ type: "Tournament", id }],
     }),
     manualSchedule: builder.mutation({
       query: ({ id, data }) => ({
@@ -70,9 +66,7 @@ export const tournamentApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Tournament", id },
-      ],
+      invalidatesTags: (result, error, { id }) => [{ type: "Tournament", id }],
     }),
     getStandings: builder.query({
       query: (id) => `/tournament/${id}/standings`,

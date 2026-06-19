@@ -1,9 +1,9 @@
-import express from 'express';
-import { 
-  createPost, 
+import express from "express";
+import {
+  createPost,
   getPosts,
   getPostById,
-  updatePost, 
+  updatePost,
   deletePost,
   likePost,
   addComment,
@@ -15,13 +15,18 @@ import {
   getCommunityStats,
   getUploadUrl,
   confirmPost,
-  reportPost
-} from '../community.controller.js';
-import userAuth from '../../../middleware/jwt/user.middleware.js';
-import { optionalAuth } from '../../../middleware/jwt/auth.middleware.js';
-import upload from '../../../middleware/uploads/upload.middleware.js';
-import { validate } from '../../../middleware/validate.middleware.js';
-import { getUploadUrlSchema, confirmPostSchema, commentSchema, reportPostSchema } from '../community.validator.js';
+  reportPost,
+} from "../community.controller.js";
+import userAuth from "../../../middleware/jwt/user.middleware.js";
+import { optionalAuth } from "../../../middleware/jwt/auth.middleware.js";
+import upload from "../../../middleware/uploads/upload.middleware.js";
+import { validate } from "../../../middleware/validate.middleware.js";
+import {
+  getUploadUrlSchema,
+  confirmPostSchema,
+  commentSchema,
+  reportPostSchema,
+} from "../community.validator.js";
 
 const router = express.Router();
 
@@ -41,7 +46,7 @@ const router = express.Router();
  *     summary: Get all community posts
  *     tags: [Community]
  */
-router.get('/', optionalAuth, getPosts);
+router.get("/", optionalAuth, getPosts);
 
 // ── Authenticated Routes ────────────────────────────────────────────────────
 
@@ -52,7 +57,7 @@ router.get('/', optionalAuth, getPosts);
  *     summary: Get community statistics
  *     tags: [Community]
  */
-router.get('/stats', getCommunityStats);
+router.get("/stats", getCommunityStats);
 
 /**
  * @swagger
@@ -61,7 +66,7 @@ router.get('/stats', getCommunityStats);
  *     summary: Get posts by specific user
  *     tags: [Community]
  */
-router.get('/user-posts/:targetUserId?', getUserPosts);
+router.get("/user-posts/:targetUserId?", getUserPosts);
 
 /**
  * @swagger
@@ -70,8 +75,7 @@ router.get('/user-posts/:targetUserId?', getUserPosts);
  *     summary: Get stories by specific user
  *     tags: [Community]
  */
-router.get('/user-stories/:targetUserId?', getUserStories);
-
+router.get("/user-stories/:targetUserId?", getUserStories);
 
 /**
  * @swagger
@@ -82,7 +86,7 @@ router.get('/user-stories/:targetUserId?', getUserStories);
  *     security:
  *       - BearerAuth: []
  */
-router.get('/my-activity', userAuth, getMyActivity);
+router.get("/my-activity", userAuth, getMyActivity);
 
 /**
  * @swagger
@@ -93,7 +97,7 @@ router.get('/my-activity', userAuth, getMyActivity);
  *     security:
  *       - BearerAuth: []
  */
-router.post('/:id/like', userAuth, likePost);
+router.post("/:id/like", userAuth, likePost);
 
 /**
  * @swagger
@@ -104,7 +108,7 @@ router.post('/:id/like', userAuth, likePost);
  *     security:
  *       - BearerAuth: []
  */
-router.post('/:id/comment', userAuth, validate(commentSchema), addComment);
+router.post("/:id/comment", userAuth, validate(commentSchema), addComment);
 
 /**
  * @swagger
@@ -120,8 +124,13 @@ router.post('/:id/comment', userAuth, validate(commentSchema), addComment);
  *     security:
  *       - BearerAuth: []
  */
-router.put('/:id/comment/:commentId', userAuth, validate(commentSchema), updateComment);
-router.delete('/:id/comment/:commentId', userAuth, deleteComment);
+router.put(
+  "/:id/comment/:commentId",
+  userAuth,
+  validate(commentSchema),
+  updateComment
+);
+router.delete("/:id/comment/:commentId", userAuth, deleteComment);
 
 /**
  * @swagger
@@ -132,7 +141,7 @@ router.delete('/:id/comment/:commentId', userAuth, deleteComment);
  *     security:
  *       - BearerAuth: []
  */
-router.get('/upload-url', userAuth, validate(getUploadUrlSchema), getUploadUrl);
+router.get("/upload-url", userAuth, validate(getUploadUrlSchema), getUploadUrl);
 
 /**
  * @swagger
@@ -143,7 +152,12 @@ router.get('/upload-url', userAuth, validate(getUploadUrlSchema), getUploadUrl);
  *     security:
  *       - BearerAuth: []
  */
-router.post('/confirm-post', userAuth, validate(confirmPostSchema), confirmPost);
+router.post(
+  "/confirm-post",
+  userAuth,
+  validate(confirmPostSchema),
+  confirmPost
+);
 
 /**
  * @swagger
@@ -154,7 +168,7 @@ router.post('/confirm-post', userAuth, validate(confirmPostSchema), confirmPost)
  *     security:
  *       - BearerAuth: []
  */
-router.post('/', userAuth, upload.single('image'), createPost);
+router.post("/", userAuth, upload.single("image"), createPost);
 
 /**
  * @swagger
@@ -170,8 +184,8 @@ router.post('/', userAuth, upload.single('image'), createPost);
  *     security:
  *       - BearerAuth: []
  */
-router.put('/:id', userAuth, upload.single('image'), updatePost);
-router.delete('/:id', userAuth, deletePost);
+router.put("/:id", userAuth, upload.single("image"), updatePost);
+router.delete("/:id", userAuth, deletePost);
 
 /**
  * @swagger
@@ -182,7 +196,7 @@ router.delete('/:id', userAuth, deletePost);
  *     security:
  *       - BearerAuth: []
  */
-router.post('/:id/report', userAuth, validate(reportPostSchema), reportPost);
+router.post("/:id/report", userAuth, validate(reportPostSchema), reportPost);
 
 /**
  * @swagger
@@ -191,6 +205,6 @@ router.post('/:id/report', userAuth, validate(reportPostSchema), reportPost);
  *     summary: Get a specific community post
  *     tags: [Community]
  */
-router.get('/:id', getPostById);
+router.get("/:id", getPostById);
 
 export default router;

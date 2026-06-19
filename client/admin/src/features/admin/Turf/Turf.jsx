@@ -3,23 +3,60 @@ import { MapPin, Clock, Star, Calendar, Check, X } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 
-const Turf = ({ turf, onApprove, onReject, onDecommission, onDelete, onViewDetails }) => {
+const Turf = ({
+  turf,
+  onApprove,
+  onReject,
+  onDecommission,
+  onDelete,
+  onViewDetails,
+}) => {
   const navigate = useNavigate();
 
   const getStatusConfig = (status) => {
     switch (status) {
-      case 'approved': return { color: 'green', icon: 'bg-green-500', border: 'border-green-500/20', bg: 'bg-green-500/10' };
-      case 'rejected': return { color: 'red', icon: 'bg-red-500', border: 'border-red-500/20', bg: 'bg-red-500/10' };
-      case 'decommissioned': return { color: 'orange', icon: 'bg-orange-500', border: 'border-orange-500/20', bg: 'bg-orange-500/10' };
-      case 'deleted': return { color: 'gray', icon: 'bg-gray-500', border: 'border-gray-500/20', bg: 'bg-gray-500/10' };
-      default: return { color: 'yellow', icon: 'bg-yellow-500', border: 'border-yellow-500/20', bg: 'bg-yellow-500/10' };
+      case "approved":
+        return {
+          color: "green",
+          icon: "bg-green-500",
+          border: "border-green-500/20",
+          bg: "bg-green-500/10",
+        };
+      case "rejected":
+        return {
+          color: "red",
+          icon: "bg-red-500",
+          border: "border-red-500/20",
+          bg: "bg-red-500/10",
+        };
+      case "decommissioned":
+        return {
+          color: "orange",
+          icon: "bg-orange-500",
+          border: "border-orange-500/20",
+          bg: "bg-orange-500/10",
+        };
+      case "deleted":
+        return {
+          color: "gray",
+          icon: "bg-gray-500",
+          border: "border-gray-500/20",
+          bg: "bg-gray-500/10",
+        };
+      default:
+        return {
+          color: "yellow",
+          icon: "bg-yellow-500",
+          border: "border-yellow-500/20",
+          bg: "bg-yellow-500/10",
+        };
     }
   };
 
   const config = getStatusConfig(turf.status);
 
   return (
-    <div 
+    <div
       onClick={() => navigate(`/admin/turfs/${turf._id}`)}
       className="bms-card group flex flex-col relative cursor-pointer hover:border-[#CCFF00]/40 transition-all duration-500 overflow-hidden"
     >
@@ -36,16 +73,18 @@ const Turf = ({ turf, onApprove, onReject, onDecommission, onDelete, onViewDetai
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-        
+
         {/* Price badge */}
         <div className="absolute top-4 left-4">
           <span className="bg-[#CCFF00] text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
             Rs {turf.pricePerHour}/hr
           </span>
         </div>
-        
+
         {/* Status badge */}
-        <div className={`absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1 rounded-[6px] text-[9px] font-black uppercase tracking-widest border ${config.bg} text-${config.color}-500 ${config.border}`}>
+        <div
+          className={`absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1 rounded-[6px] text-[9px] font-black uppercase tracking-widest border ${config.bg} text-${config.color}-500 ${config.border}`}
+        >
           <div className={`w-1.5 h-1.5 rounded-full ${config.icon}`} />
           <span>{turf.status}</span>
         </div>
@@ -54,10 +93,14 @@ const Turf = ({ turf, onApprove, onReject, onDecommission, onDelete, onViewDetai
       {/* ── Body ──────────────────────────────────────────────────── */}
       <div className="flex flex-col flex-1 p-6 gap-4">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-black text-[#CCFF00] uppercase tracking-[0.2em]">Arena</span>
+          <span className="text-[10px] font-black text-[#CCFF00] uppercase tracking-[0.2em]">
+            Arena
+          </span>
           <div className="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded-[6px] border border-white/5">
             <Star size={10} className="text-[#CCFF00] fill-[#CCFF00]" />
-            <span className="text-white text-[10px] font-bold tracking-tighter">{turf.avgRating || "NEW"}</span>
+            <span className="text-white text-[10px] font-bold tracking-tighter">
+              {turf.avgRating || "NEW"}
+            </span>
           </div>
         </div>
 
@@ -74,68 +117,71 @@ const Turf = ({ turf, onApprove, onReject, onDecommission, onDelete, onViewDetai
         {turf.createdAt && (
           <div className="flex items-center gap-2 text-gray-600 text-[9px] font-black uppercase tracking-widest">
             <Calendar size={10} />
-            <span>Operational since {format(new Date(turf.createdAt), "dd MMM yyyy")}</span>
+            <span>
+              Operational since{" "}
+              {format(new Date(turf.createdAt), "dd MMM yyyy")}
+            </span>
           </div>
         )}
 
         {/* Admin Actions */}
         <div className="grid grid-cols-2 gap-3 mt-2 pt-5 border-t border-white/5">
-          {turf.status === 'pending' ? (
+          {turf.status === "pending" ? (
             <>
-              <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onApprove(turf._id);
-                  }}
-                  className="flex items-center justify-center gap-2 py-3 bg-green-500/5 hover:bg-green-500/10 text-green-500 border border-green-500/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.1em] transition-all"
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onApprove(turf._id);
+                }}
+                className="flex items-center justify-center gap-2 py-3 bg-green-500/5 hover:bg-green-500/10 text-green-500 border border-green-500/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.1em] transition-all"
               >
-                  <Check size={12} />
-                  Approve
+                <Check size={12} />
+                Approve
               </button>
-              <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onReject(turf._id);
-                  }}
-                  className="flex items-center justify-center gap-2 py-3 bg-red-500/5 hover:bg-red-500/10 text-red-500 border border-red-500/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.1em] transition-all"
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onReject(turf._id);
+                }}
+                className="flex items-center justify-center gap-2 py-3 bg-red-500/5 hover:bg-red-500/10 text-red-500 border border-red-500/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.1em] transition-all"
               >
-                  <X size={12} />
-                  Reject
+                <X size={12} />
+                Reject
               </button>
             </>
-          ) : turf.status !== 'deleted' ? (
+          ) : turf.status !== "deleted" ? (
             <>
-              <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDecommission(turf._id);
-                  }}
-                  className="flex items-center justify-center gap-2 py-3 bg-orange-500/5 hover:bg-orange-500/10 text-orange-500 border border-orange-500/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.1em] transition-all"
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDecommission(turf._id);
+                }}
+                className="flex items-center justify-center gap-2 py-3 bg-orange-500/5 hover:bg-orange-500/10 text-orange-500 border border-orange-500/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.1em] transition-all"
               >
-                  <Clock size={12} />
-                  Decommission
+                <Clock size={12} />
+                Decommission
               </button>
-              <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(turf._id);
-                  }}
-                  className="flex items-center justify-center gap-2 py-3 bg-gray-500/5 hover:bg-gray-500/10 text-gray-400 border border-white/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.1em] transition-all"
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(turf._id);
+                }}
+                className="flex items-center justify-center gap-2 py-3 bg-gray-500/5 hover:bg-gray-500/10 text-gray-400 border border-white/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.1em] transition-all"
               >
-                  <X size={12} />
-                  Soft Delete
+                <X size={12} />
+                Soft Delete
               </button>
             </>
           ) : (
-            <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(turf._id, true); // True for hard delete
-                }}
-                className="col-span-2 flex items-center justify-center gap-2 py-3 bg-red-600/10 hover:bg-red-600/20 text-red-500 border border-red-500/20 rounded-[8px] text-[9px] font-black uppercase tracking-[0.1em] transition-all"
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(turf._id, true); // True for hard delete
+              }}
+              className="col-span-2 flex items-center justify-center gap-2 py-3 bg-red-600/10 hover:bg-red-600/20 text-red-500 border border-red-500/20 rounded-[8px] text-[9px] font-black uppercase tracking-[0.1em] transition-all"
             >
-                <X size={12} />
-                Permanently Delete
+              <X size={12} />
+              Permanently Delete
             </button>
           )}
         </div>
@@ -145,4 +191,3 @@ const Turf = ({ turf, onApprove, onReject, onDecommission, onDelete, onViewDetai
 };
 
 export default Turf;
-

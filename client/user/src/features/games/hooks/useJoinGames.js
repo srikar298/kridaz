@@ -1,16 +1,16 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'react-hot-toast';
-import { login } from '@redux/slices/authSlice';
-import { 
-  useListGamesQuery, 
-  useLazyVerifyInviteQuery, 
-  useClaimSlotMutation, 
-  useJoinGameMutation 
-} from '@redux/api/gamesApi';
-import { fetchStates, fetchCities } from '@utils/locationService';
-import useLoginOnDemand from '@hooks/useLoginOnDemand';
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { toast } from "react-hot-toast";
+import { login } from "@redux/slices/authSlice";
+import {
+  useListGamesQuery,
+  useLazyVerifyInviteQuery,
+  useClaimSlotMutation,
+  useJoinGameMutation,
+} from "@redux/api/gamesApi";
+import { fetchStates, fetchCities } from "@utils/locationService";
+import useLoginOnDemand from "@hooks/useLoginOnDemand";
 
 const useJoinGames = () => {
   const navigate = useNavigate();
@@ -22,13 +22,13 @@ const useJoinGames = () => {
   const [showCoinAnim, setShowCoinAnim] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [joiningSlot, setJoiningSlot] = useState(null);
-  
-  const [search, setSearch] = useState('');
-  const [sportFilter, setSportFilter] = useState('All Sports');
+
+  const [search, setSearch] = useState("");
+  const [sportFilter, setSportFilter] = useState("All Sports");
   const [liveFilter, setLiveFilter] = useState(false);
-  
-  const userLocation = { city: '', state: '' };
-  
+
+  const userLocation = { city: "", state: "" };
+
   // Deep-link / Invite state
   const [inviteData, setInviteData] = useState(null);
   const [showInvitePopup, setShowInvitePopup] = useState(false);
@@ -36,36 +36,44 @@ const useJoinGames = () => {
   // Location filter state
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
-  const [selectedState, setSelectedState] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   const [loadingStates, setLoadingStates] = useState(false);
   const [loadingCities, setLoadingCities] = useState(false);
 
   // RTK Query hooks
-  const { data: gamesData, isLoading: loading, refetch } = useListGamesQuery({
+  const {
+    data: gamesData,
+    isLoading: loading,
+    refetch,
+  } = useListGamesQuery({
     city: selectedCity,
     state: selectedState,
-    gameType: sportFilter
+    gameType: sportFilter,
   });
-  
-  const [triggerVerifyInvite, { isLoading: verifyingInvite }] = useLazyVerifyInviteQuery();
+
+  const [triggerVerifyInvite, { isLoading: verifyingInvite }] =
+    useLazyVerifyInviteQuery();
   const [claimSlot] = useClaimSlotMutation();
   const [joinGame] = useJoinGameMutation();
 
-  const handleVerifyInvite = useCallback(async (token) => {
-    try {
-      const res = await triggerVerifyInvite(token).unwrap();
-      if (res.success) {
-        setInviteData({
-          ...res,
-          token
-        });
-        setShowInvitePopup(true);
+  const handleVerifyInvite = useCallback(
+    async (token) => {
+      try {
+        const res = await triggerVerifyInvite(token).unwrap();
+        if (res.success) {
+          setInviteData({
+            ...res,
+            token,
+          });
+          setShowInvitePopup(true);
+        }
+      } catch (err) {
+        toast.error(err.data?.message || "Invalid or expired invite link");
       }
-    } catch (err) {
-      toast.error(err.data?.message || "Invalid or expired invite link");
-    }
-  }, [triggerVerifyInvite]);
+    },
+    [triggerVerifyInvite]
+  );
 
   useEffect(() => {
     const fetchUserAndGames = async () => {
@@ -84,7 +92,7 @@ const useJoinGames = () => {
 
     // Check for deep-link inviteToken
     const params = new URLSearchParams(window.location.search);
-    const token = params.get('inviteToken');
+    const token = params.get("inviteToken");
     if (token) {
       handleVerifyInvite(token);
     }
@@ -92,38 +100,48 @@ const useJoinGames = () => {
 
   const handleClaimSlot = async () => {
     if (!inviteData) return;
-    
-    gateInteraction(async () => {
-      try {
-        const res = await claimSlot({ token: inviteData.token }).unwrap();
-        if (res.success) {
-          setShowInvitePopup(false);
 
-          if (res.newToken && res.updatedRole) {
-            dispatch(login({
-              token: res.newToken,
-              role: res.updatedRole,
-            }));
-            localStorage.setItem("authToken", res.newToken);
-            toast.success("You've been assigned as Umpire! Redirecting to your dashboard...");
-            setTimeout(() => navigate("/umpire/dashboard"), 1200);
-          } else {
-            toast.success("Slot claimed successfully!");
-            refetch();
+    gateInteraction(
+      async () => {
+        try {
+          const res = await claimSlot({ token: inviteData.token }).unwrap();
+          if (res.success) {
+            setShowInvitePopup(false);
+
+            if (res.newToken && res.updatedRole) {
+              dispatch(
+                login({
+                  token: res.newToken,
+                  role: res.updatedRole,
+                })
+              );
+              localStorage.setItem("authToken", res.newToken);
+              toast.success(
+                "You've been assigned as Umpire! Redirecting to your dashboard..."
+              );
+              setTimeout(() => navigate("/umpire/dashboard"), 1200);
+            } else {
+              toast.success("Slot claimed successfully!");
+              refetch();
+            }
           }
+        } catch (err) {
+          toast.error(err.data?.message || "Failed to claim slot");
         }
-      } catch (err) {
-        toast.error(err.data?.message || "Failed to claim slot");
+      },
+      {
+        title: "Claim Your Invited Slot",
+        message: "Welcome to the game! Sign in to secure your reserved spot.",
       }
-    }, {
-      title: "Claim Your Invited Slot",
-      message: "Welcome to the game! Sign in to secure your reserved spot."
-    });
+    );
   };
 
   // When a state is selected, load its cities
   useEffect(() => {
-    if (!selectedState) { setCities([]); return; }
+    if (!selectedState) {
+      setCities([]);
+      return;
+    }
     const loadCities = async () => {
       setLoadingCities(true);
       const data = await fetchCities(selectedState);
@@ -135,7 +153,7 @@ const useJoinGames = () => {
 
   const handleStateChange = (state) => {
     setSelectedState(state);
-    setSelectedCity('');
+    setSelectedCity("");
   };
 
   const handleCityChange = (city) => {
@@ -143,47 +161,58 @@ const useJoinGames = () => {
   };
 
   const handleClearLocation = () => {
-    setSelectedState('');
-    setSelectedCity('');
+    setSelectedState("");
+    setSelectedCity("");
     setCities([]);
   };
 
   const handleSearch = (e) => setSearch(e.target.value);
 
   const games = gamesData?.games || [];
-  
-  const filteredGames = games.filter(game => {
+
+  const filteredGames = games.filter((game) => {
     if (liveFilter && !game.isLive) return false;
-    return game.gameType.toLowerCase().includes(search.toLowerCase()) ||
-      (game.ground?.name || '').toLowerCase().includes(search.toLowerCase()) ||
+    return (
+      game.gameType.toLowerCase().includes(search.toLowerCase()) ||
+      (game.ground?.name || "").toLowerCase().includes(search.toLowerCase()) ||
       game.city?.toLowerCase().includes(search.toLowerCase()) ||
-      (game.gameMode === 'QUICK' ? 'quick game' : 'professional game').includes(search.toLowerCase());
+      (game.gameMode === "QUICK" ? "quick game" : "professional game").includes(
+        search.toLowerCase()
+      )
+    );
   });
 
   const handleJoinGame = async () => {
     if (!joiningSlot) return;
-    gateInteraction(async () => {
-      try {
-        const res = await joinGame({
-          gameId: selectedGame.id,
-          team: joiningSlot.team,
-          slotIndex: joiningSlot.index,
-          role: joiningSlot.role
-        }).unwrap();
-        if (res.success) {
-          setShowCoinAnim(true);
+    gateInteraction(
+      async () => {
+        try {
+          const res = await joinGame({
+            gameId: selectedGame.id,
+            team: joiningSlot.team,
+            slotIndex: joiningSlot.index,
+            role: joiningSlot.role,
+          }).unwrap();
+          if (res.success) {
+            setShowCoinAnim(true);
+          }
+        } catch (err) {
+          const errorMsg = err.data?.message || "Failed to join game";
+          toast.error(errorMsg);
+          if (
+            errorMsg.toLowerCase().includes("insufficient coins") ||
+            errorMsg.toLowerCase().includes("insufficient wallet balance")
+          ) {
+            navigate("/wallet");
+          }
         }
-      } catch (err) {
-        const errorMsg = err.data?.message || "Failed to join game";
-        toast.error(errorMsg);
-        if (errorMsg.toLowerCase().includes("insufficient coins") || errorMsg.toLowerCase().includes("insufficient wallet balance")) {
-          navigate("/wallet");
-        }
+      },
+      {
+        title: "Join the Match",
+        message:
+          "Ready to hit the field? Sign in to secure your spot and start playing with the community.",
       }
-    }, { 
-      title: "Join the Match", 
-      message: "Ready to hit the field? Sign in to secure your spot and start playing with the community." 
-    });
+    );
   };
 
   return {
@@ -223,7 +252,7 @@ const useJoinGames = () => {
     refetch,
     isAuthenticated,
     verifyingInvite,
-    gateInteraction
+    gateInteraction,
   };
 };
 

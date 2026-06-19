@@ -15,7 +15,9 @@ import { setupProductionGuards } from "./utils/productionGuards";
 setupProductionGuards();
 
 Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN || "https://634126d8b3183e2da715d594593d1faa@o4511558335660032.ingest.de.sentry.io/4511558345752656",
+  dsn:
+    import.meta.env.VITE_SENTRY_DSN ||
+    "https://634126d8b3183e2da715d594593d1faa@o4511558335660032.ingest.de.sentry.io/4511558345752656",
   integrations: [
     Sentry.browserTracingIntegration(),
     Sentry.replayIntegration(),
@@ -36,13 +38,12 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 import { AuthModalProvider } from "./context/AuthModalContext";
 
-
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <Provider store={store}>
-        <PersistGate 
-          loading={null} 
+        <PersistGate
+          loading={null}
           persistor={persistor}
           onBeforeLift={() => store.dispatch(markRestored())}
         >

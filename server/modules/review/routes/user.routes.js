@@ -1,8 +1,5 @@
 import express from "express";
-import {
-  addReview,
-  viewReviewsByTurf,
-} from "../review.controller.js";
+import { addReview, viewReviewsByTurf } from "../review.controller.js";
 import verifyUserToken from "../../../middleware/jwt/user.middleware.js";
 
 const router = express.Router();

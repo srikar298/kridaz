@@ -1,22 +1,33 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { createPortal } from "react-dom";
-import { ArrowLeft, Crosshair, MapPin, ArrowRight, Search, Loader2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Crosshair,
+  MapPin,
+  ArrowRight,
+  Search,
+  Loader2,
+} from "lucide-react";
 import { searchLocations } from "@utils/locationService";
-import { closeLocationSidebar, setUserLocation, setLocationStatus } from "@redux/slices/uiSlice";
+import {
+  closeLocationSidebar,
+  setUserLocation,
+  setLocationStatus,
+} from "@redux/slices/uiSlice";
 import { motion, AnimatePresence } from "framer-motion";
 
 const LocationSidebar = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector((state) => state.ui.locationSidebar?.isOpen);
   const userLocation = useSelector((state) => state.ui.userLocation);
-  
+
   const [isDetecting, setIsDetecting] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  
+
   const [nearbySuggestions, setNearbySuggestions] = useState([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
@@ -46,7 +57,7 @@ const LocationSidebar = () => {
       setIsSearching(false);
       return;
     }
-    
+
     const debounceTimer = setTimeout(async () => {
       setIsSearching(true);
       try {
@@ -58,12 +69,19 @@ const LocationSidebar = () => {
         setIsSearching(false);
       }
     }, 500);
-    
+
     return () => clearTimeout(debounceTimer);
   }, [searchQuery]);
 
   const handleSelectResult = (result) => {
-    dispatch(setUserLocation({ lat: null, lng: null, city: result.city || result.suburb || result.display_name.split(",")[0], state: result.state }));
+    dispatch(
+      setUserLocation({
+        lat: null,
+        lng: null,
+        city: result.city || result.suburb || result.display_name.split(",")[0],
+        state: result.state,
+      })
+    );
     dispatch(setLocationStatus("granted"));
     setSearchQuery("");
     setSearchResults([]);
@@ -112,7 +130,9 @@ const LocationSidebar = () => {
         let city = "";
         let state = "";
         try {
-          const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`);
+          const res = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+          );
           const data = await res.json();
           city = data.city || data.locality || "";
           state = data.principalSubdivision || "";
@@ -133,7 +153,14 @@ const LocationSidebar = () => {
   };
 
   const handleSelectArea = (area) => {
-    dispatch(setUserLocation({ lat: null, lng: null, city: area, state: userLocation?.state || "" }));
+    dispatch(
+      setUserLocation({
+        lat: null,
+        lng: null,
+        city: area,
+        state: userLocation?.state || "",
+      })
+    );
     dispatch(setLocationStatus("granted"));
     handleClose();
   };
@@ -162,20 +189,24 @@ const LocationSidebar = () => {
       >
         {/* Header */}
         <div className="flex items-center gap-4 p-5 pb-4">
-          <button 
+          <button
             onClick={handleClose}
             className="text-white hover:text-white/70 transition-colors"
           >
             <ArrowLeft size={24} />
           </button>
-          <h2 className="text-xl font-bold text-white tracking-tight">Set Location</h2>
+          <h2 className="text-xl font-bold text-white tracking-tight">
+            Set Location
+          </h2>
         </div>
 
         <div className="flex-1 overflow-y-auto p-5 pt-2 flex flex-col gap-8 no-scrollbar">
-          
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={18} />
+            <Search
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40"
+              size={18}
+            />
             <input
               type="text"
               placeholder="Search for a city or area..."
@@ -184,7 +215,10 @@ const LocationSidebar = () => {
               className="w-full bg-[#242424] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-[#BFF367]/50 transition-colors"
             />
             {isSearching && (
-              <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 text-[#BFF367] animate-spin" size={18} />
+              <Loader2
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#BFF367] animate-spin"
+                size={18}
+              />
             )}
           </div>
 
@@ -192,7 +226,9 @@ const LocationSidebar = () => {
           {searchQuery.length >= 3 && (
             <div className="flex flex-col gap-2">
               {isSearching ? (
-                <div className="text-white/40 text-sm text-center py-4">Searching locations...</div>
+                <div className="text-white/40 text-sm text-center py-4">
+                  Searching locations...
+                </div>
               ) : searchResults.length > 0 ? (
                 searchResults.map((result, idx) => (
                   <button
@@ -205,7 +241,9 @@ const LocationSidebar = () => {
                     </div>
                     <div className="flex flex-col overflow-hidden">
                       <span className="text-[14px] font-bold text-white/90 truncate">
-                        {result.city || result.suburb || result.display_name.split(",")[0]}
+                        {result.city ||
+                          result.suburb ||
+                          result.display_name.split(",")[0]}
                       </span>
                       <span className="text-[11px] text-white/40 truncate">
                         {result.display_name}
@@ -214,7 +252,9 @@ const LocationSidebar = () => {
                   </button>
                 ))
               ) : (
-                <div className="text-white/40 text-sm text-center py-4">No locations found</div>
+                <div className="text-white/40 text-sm text-center py-4">
+                  No locations found
+                </div>
               )}
             </div>
           )}
@@ -230,7 +270,10 @@ const LocationSidebar = () => {
                 {isDetecting ? "Detecting..." : "Use Current Location"}
               </span>
             </div>
-            <ArrowRight size={20} className="text-white/40 group-hover:text-white transition-colors group-hover:translate-x-1" />
+            <ArrowRight
+              size={20}
+              className="text-white/40 group-hover:text-white transition-colors group-hover:translate-x-1"
+            />
           </button>
 
           {/* Nearby Suggestions Section */}
@@ -241,7 +284,9 @@ const LocationSidebar = () => {
               </h3>
               <div className="flex flex-col gap-2">
                 {loadingSuggestions ? (
-                  <div className="text-white/40 text-sm text-center py-4">Loading suggestions...</div>
+                  <div className="text-white/40 text-sm text-center py-4">
+                    Loading suggestions...
+                  </div>
                 ) : nearbySuggestions.length > 0 ? (
                   nearbySuggestions.map((result, idx) => (
                     <button
@@ -254,7 +299,9 @@ const LocationSidebar = () => {
                       </div>
                       <div className="flex flex-col overflow-hidden">
                         <span className="text-[14px] font-bold text-white/90 truncate">
-                          {result.city || result.suburb || result.display_name.split(",")[0]}
+                          {result.city ||
+                            result.suburb ||
+                            result.display_name.split(",")[0]}
                         </span>
                         <span className="text-[11px] text-white/40 truncate">
                           {result.display_name}
@@ -263,7 +310,9 @@ const LocationSidebar = () => {
                     </button>
                   ))
                 ) : (
-                  <div className="text-white/40 text-sm text-center py-4">No suggestions found</div>
+                  <div className="text-white/40 text-sm text-center py-4">
+                    No suggestions found
+                  </div>
                 )}
               </div>
             </div>
@@ -274,9 +323,7 @@ const LocationSidebar = () => {
   );
 
   return createPortal(
-    <AnimatePresence>
-      {isOpen && sidebarContent}
-    </AnimatePresence>,
+    <AnimatePresence>{isOpen && sidebarContent}</AnimatePresence>,
     document.body
   );
 };

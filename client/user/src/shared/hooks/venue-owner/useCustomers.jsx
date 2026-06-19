@@ -7,7 +7,7 @@ const useCustomers = () => {
     totalPlayers: 0,
     activeUsers: 0,
     avgLtv: 0,
-    retentionRate: 0
+    retentionRate: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,7 +15,9 @@ const useCustomers = () => {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get("/api/owner/dashboard/customers");
+      const response = await axiosInstance.get(
+        "/api/owner/dashboard/customers"
+      );
       setCustomers(response.data.customers);
       setStats(response.data.stats);
       setLoading(false);

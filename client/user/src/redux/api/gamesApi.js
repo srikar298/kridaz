@@ -1,31 +1,32 @@
-import { baseApi } from './baseApi';
+import { baseApi } from "./baseApi";
 
 export const gamesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getMyHostedGames: builder.query({
-      query: () => '/api/hosted-game/my-hosted',
-      providesTags: ['Games'],
+      query: () => "/api/hosted-game/my-hosted",
+      providesTags: ["Games"],
     }),
     getMyJoinedGames: builder.query({
-      query: () => '/api/hosted-game/my-joined',
-      providesTags: ['Games'],
+      query: () => "/api/hosted-game/my-joined",
+      providesTags: ["Games"],
     }),
     listGames: builder.query({
       query: ({ city, state, gameType } = {}) => {
-        let url = '/api/hosted-game/list?';
+        let url = "/api/hosted-game/list?";
         if (city) url += `city=${city}&`;
         if (state) url += `state=${state}&`;
-        if (gameType && gameType !== 'All Sports') url += `gameType=${gameType}&`;
+        if (gameType && gameType !== "All Sports")
+          url += `gameType=${gameType}&`;
         return url;
       },
-      providesTags: ['Games'],
+      providesTags: ["Games"],
     }),
     verifyInvite: builder.query({
       query: (token) => `/api/hosted-game/verify-invite?token=${token}`,
     }),
     getGrounds: builder.query({
       query: ({ city, state, sportType, query }) => {
-        let url = '/api/hosted-game/grounds?';
+        let url = "/api/hosted-game/grounds?";
         if (city) url += `city=${city}&`;
         if (state) url += `state=${state}&`;
         if (sportType) url += `sportType=${sportType}&`;
@@ -35,7 +36,7 @@ export const gamesApi = baseApi.injectEndpoints({
     }),
     getUmpires: builder.query({
       query: ({ city, state, gameType, query }) => {
-        let url = '/api/hosted-game/umpires?';
+        let url = "/api/hosted-game/umpires?";
         if (city) url += `city=${city}&`;
         if (state) url += `state=${state}&`;
         if (gameType) url += `gameType=${gameType}&`;
@@ -45,7 +46,7 @@ export const gamesApi = baseApi.injectEndpoints({
     }),
     getStreamers: builder.query({
       query: ({ city, state, gameType }) => {
-        let url = '/api/hosted-game/streamers?';
+        let url = "/api/hosted-game/streamers?";
         if (city) url += `city=${city}&`;
         if (state) url += `state=${state}&`;
         if (gameType) url += `gameType=${gameType}&`;
@@ -54,83 +55,83 @@ export const gamesApi = baseApi.injectEndpoints({
     }),
     createGame: builder.mutation({
       query: (payload) => ({
-        url: '/api/hosted-game/create',
-        method: 'POST',
+        url: "/api/hosted-game/create",
+        method: "POST",
         body: payload,
       }),
-      invalidatesTags: ['Games'],
+      invalidatesTags: ["Games"],
     }),
     joinGame: builder.mutation({
       query: (payload) => ({
-        url: '/api/hosted-game/join',
-        method: 'POST',
+        url: "/api/hosted-game/join",
+        method: "POST",
         body: payload,
       }),
-      invalidatesTags: ['Games'],
+      invalidatesTags: ["Games"],
     }),
     claimSlot: builder.mutation({
       query: (payload) => ({
-        url: '/api/hosted-game/claim-slot',
-        method: 'POST',
+        url: "/api/hosted-game/claim-slot",
+        method: "POST",
         body: payload,
       }),
-      invalidatesTags: ['Games'],
+      invalidatesTags: ["Games"],
     }),
     approvePlayer: builder.mutation({
       query: (payload) => ({
-        url: '/api/hosted-game/approve',
-        method: 'POST',
+        url: "/api/hosted-game/approve",
+        method: "POST",
         body: payload,
       }),
-      invalidatesTags: ['Games'],
+      invalidatesTags: ["Games"],
     }),
     rejectPlayer: builder.mutation({
       query: (payload) => ({
-        url: '/api/hosted-game/reject',
-        method: 'POST',
+        url: "/api/hosted-game/reject",
+        method: "POST",
         body: payload,
       }),
-      invalidatesTags: ['Games'],
+      invalidatesTags: ["Games"],
     }),
     cancelGame: builder.mutation({
       query: (payload) => ({
-        url: '/api/hosted-game/cancel',
-        method: 'POST',
+        url: "/api/hosted-game/cancel",
+        method: "POST",
         body: payload,
       }),
-      invalidatesTags: ['Games'],
+      invalidatesTags: ["Games"],
     }),
     leaveGame: builder.mutation({
       query: (payload) => ({
-        url: '/api/hosted-game/leave',
-        method: 'POST',
+        url: "/api/hosted-game/leave",
+        method: "POST",
         body: payload,
       }),
-      invalidatesTags: ['Games'],
+      invalidatesTags: ["Games"],
     }),
     handleStreamerRequest: builder.mutation({
       query: (payload) => ({
-        url: '/api/hosted-game/handle-streamer-request',
-        method: 'POST',
+        url: "/api/hosted-game/handle-streamer-request",
+        method: "POST",
         body: payload,
       }),
-      invalidatesTags: ['Games'],
+      invalidatesTags: ["Games"],
     }),
     handleUmpireRequest: builder.mutation({
       query: (payload) => ({
-        url: '/api/hosted-game/handle-umpire-request',
-        method: 'POST',
+        url: "/api/hosted-game/handle-umpire-request",
+        method: "POST",
         body: payload,
       }),
-      invalidatesTags: ['Games'],
+      invalidatesTags: ["Games"],
     }),
     handleScorerRequest: builder.mutation({
       query: (payload) => ({
-        url: '/api/hosted-game/handle-scorer-request',
-        method: 'POST',
+        url: "/api/hosted-game/handle-scorer-request",
+        method: "POST",
         body: payload,
       }),
-      invalidatesTags: ['Games'],
+      invalidatesTags: ["Games"],
     }),
   }),
 });

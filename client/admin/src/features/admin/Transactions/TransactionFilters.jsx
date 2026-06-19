@@ -11,7 +11,10 @@ const TransactionFilters = ({ filters, onFilterChange, onClear }) => {
     <div className="flex items-center gap-2 flex-wrap lg:flex-nowrap bg-[#0D0D0D] border border-white/8 rounded-[8px] px-3 py-2.5">
       {/* Search */}
       <div className="relative flex-1 min-w-[140px]">
-        <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+        <Search
+          size={13}
+          className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none"
+        />
         <input
           type="text"
           placeholder="Search..."
@@ -26,7 +29,10 @@ const TransactionFilters = ({ filters, onFilterChange, onClear }) => {
 
       {/* Min Amount */}
       <div className="relative flex-1 min-w-[110px]">
-        <IndianRupee size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+        <IndianRupee
+          size={12}
+          className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none"
+        />
         <input
           type="number"
           placeholder="Min Amount"
@@ -39,7 +45,10 @@ const TransactionFilters = ({ filters, onFilterChange, onClear }) => {
 
       {/* Max Amount */}
       <div className="relative flex-1 min-w-[110px]">
-        <IndianRupee size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+        <IndianRupee
+          size={12}
+          className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none"
+        />
         <input
           type="number"
           placeholder="Max Amount"
@@ -54,7 +63,10 @@ const TransactionFilters = ({ filters, onFilterChange, onClear }) => {
 
       {/* Start Date */}
       <div className="relative flex-1 min-w-[130px]">
-        <CalendarDays size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+        <CalendarDays
+          size={13}
+          className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none"
+        />
         <input
           type="date"
           name="startDate"
@@ -66,7 +78,10 @@ const TransactionFilters = ({ filters, onFilterChange, onClear }) => {
 
       {/* End Date */}
       <div className="relative flex-1 min-w-[130px]">
-        <CalendarDays size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+        <CalendarDays
+          size={13}
+          className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none"
+        />
         <input
           type="date"
           name="endDate"

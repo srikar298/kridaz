@@ -6,7 +6,7 @@ import adminWalletRouter from "./routes/admin.routes.js";
 /**
  * Wallet Domain Router
  * Mounts actor-specific sub-routers for the Wallet module.
- * 
+ *
  * Routes:
  * /api/wallet/...
  */

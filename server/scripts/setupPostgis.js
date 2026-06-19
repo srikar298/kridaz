@@ -1,23 +1,23 @@
-import pg from 'pg';
-import dotenv from 'dotenv';
-import logger from '../utils/logger.js';
+import pg from "pg";
+import dotenv from "dotenv";
+import logger from "../utils/logger.js";
 
 dotenv.config();
 
 const { Client } = pg;
 
 const setupPostgis = async () => {
-  logger.info('🚀 Connecting to database to setup PostGIS...');
+  logger.info("🚀 Connecting to database to setup PostGIS...");
   const client = new Client({ connectionString: process.env.DATABASE_URL });
 
   try {
     await client.connect();
-    logger.info('✅ Connected to database.');
+    logger.info("✅ Connected to database.");
 
     // 1. Enable PostGIS extension
-    logger.info('📦 Enabling PostGIS extension...');
-    await client.query('CREATE EXTENSION IF NOT EXISTS postgis;');
-    logger.info('✔️ PostGIS extension is enabled.');
+    logger.info("📦 Enabling PostGIS extension...");
+    await client.query("CREATE EXTENSION IF NOT EXISTS postgis;");
+    logger.info("✔️ PostGIS extension is enabled.");
 
     // 2. Check if geoPoint exists on Team table and add it
     logger.info('📐 Verifying "geoPoint" column on "Team" table...');
@@ -49,7 +49,9 @@ const setupPostgis = async () => {
     `);
     logger.info(`✔️ Backfilled ${userBackfill.rowCount} users.`);
 
-    logger.info('✨ PostGIS Setup and geoPoint backfilling completed successfully!');
+    logger.info(
+      "✨ PostGIS Setup and geoPoint backfilling completed successfully!"
+    );
   } catch (error) {
     logger.error(`❌ PostGIS Setup failed: ${error.message}`);
   } finally {

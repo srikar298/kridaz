@@ -13,7 +13,8 @@ export const locationApi = baseApi.injectEndpoints({
       providesTags: ["User"],
     }),
     reverseGeocode: builder.query({
-      query: ({ lat, lng }) => `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`,
+      query: ({ lat, lng }) =>
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`,
       providesTags: ["User"],
     }),
   }),

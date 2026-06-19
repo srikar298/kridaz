@@ -3,8 +3,23 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Bell, CheckCheck, Trash2, Users, MessageCircle, Calendar,
-  Heart, Trophy, Loader2, ShieldCheck, Zap, X, ChevronRight, CreditCard, AlertTriangle, Star, ArrowLeft
+  Bell,
+  CheckCheck,
+  Trash2,
+  Users,
+  MessageCircle,
+  Calendar,
+  Heart,
+  Trophy,
+  Loader2,
+  ShieldCheck,
+  Zap,
+  X,
+  ChevronRight,
+  CreditCard,
+  AlertTriangle,
+  Star,
+  ArrowLeft,
 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useSocket } from "@context/SocketContext";
@@ -12,7 +27,10 @@ import { formatDistanceToNow } from "date-fns";
 import useNotifications from "@hooks/shared/useNotifications";
 const PRI = "#B3DC26";
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
-const SUBHEADING_STYLE = { fontFamily: "'Inter 28pt Light', sans-serif", fontWeight: 300 };
+const SUBHEADING_STYLE = {
+  fontFamily: "'Inter 28pt Light', sans-serif",
+  fontWeight: 300,
+};
 
 /**
  * Notification type → visual configuration map.
@@ -35,7 +53,8 @@ const NOTIF_CONFIG = {
     icon: Calendar,
     color: "#B3DC26",
     bgColor: "rgba(85,222,232,0.08)",
-    getRoute: (notif) => notif.link || `/booking-pass/${notif.metadata?.bookingId || ""}`,
+    getRoute: (notif) =>
+      notif.link || `/booking-pass/${notif.metadata?.bookingId || ""}`,
   },
   LIKE: {
     icon: Heart,
@@ -176,7 +195,6 @@ const NotificationsPage = () => {
   return (
     <div className="min-h-screen bg-black pt-2 md:pt-24 pb-20 px-0 sm:px-4 font-inter">
       <div className="max-w-4xl mx-auto space-y-4">
-
         {/* ── Header ──────────────────────────────────────────────── */}
         <div className="flex items-center gap-4 mb-4">
           <div className="flex-1">
@@ -186,7 +204,10 @@ const NotificationsPage = () => {
             >
               Notifications
             </h1>
-            <p className="text-[11px] font-semibold text-white/30 mt-0.5 tracking-widest uppercase" style={SUBHEADING_STYLE}>
+            <p
+              className="text-[11px] font-semibold text-white/30 mt-0.5 tracking-widest uppercase"
+              style={SUBHEADING_STYLE}
+            >
               {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
             </p>
           </div>
@@ -220,7 +241,7 @@ const NotificationsPage = () => {
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`px-4 py-2 rounded-[16px] text-[10px] font-black uppercase tracking-widest transition-all border ${ activeFilter === filter ? "bg-[#B3DC26]/10 border-[#B3DC26]/30 text-[#B3DC26]" : "bg-white/[0.02] border-white/5 text-white/40 hover:text-white/60 hover:border-white/10" }`}
+              className={`px-4 py-2 rounded-[16px] text-[10px] font-black uppercase tracking-widest transition-all border ${activeFilter === filter ? "bg-[#B3DC26]/10 border-[#B3DC26]/30 text-[#B3DC26]" : "bg-white/[0.02] border-white/5 text-white/40 hover:text-white/60 hover:border-white/10"}`}
             >
               {filter === "all" ? "All" : `Unread (${unreadCount})`}
             </button>
@@ -242,9 +263,14 @@ const NotificationsPage = () => {
             </div>
             <div className="text-center">
               <p className="text-[13px] font-black text-white/30 uppercase tracking-widest">
-                {activeFilter === "unread" ? "No unread notifications" : "No notifications yet"}
+                {activeFilter === "unread"
+                  ? "No unread notifications"
+                  : "No notifications yet"}
               </p>
-              <p className="text-[11px] text-white/15 mt-1 font-medium" style={SUBHEADING_STYLE}>
+              <p
+                className="text-[11px] text-white/15 mt-1 font-medium"
+                style={SUBHEADING_STYLE}
+              >
                 {activeFilter === "unread"
                   ? "You're all caught up!"
                   : "When you get notifications, they'll show up here"}
@@ -268,7 +294,7 @@ const NotificationsPage = () => {
                     exit={{ opacity: 0, x: -40 }}
                     transition={{ duration: 0.2, delay: index * 0.03 }}
                     onClick={() => handleNotificationClick(notif)}
-                    className={`group relative flex items-start gap-4 p-3 sm:p-4 rounded-[16px] border cursor-pointer transition-all duration-300 ${ notif.isRead ? "bg-[#000000] border-white/5 hover:bg-[#1B1B1B]/50" : "bg-[#121212] border-white/10 hover:border-white/20" }`}
+                    className={`group relative flex items-start gap-4 p-3 sm:p-4 rounded-[16px] border cursor-pointer transition-all duration-300 ${notif.isRead ? "bg-[#000000] border-white/5 hover:bg-[#1B1B1B]/50" : "bg-[#121212] border-white/10 hover:border-white/20"}`}
                   >
                     {/* Unread indicator */}
                     {!notif.isRead && (
@@ -279,7 +305,9 @@ const NotificationsPage = () => {
                     <div
                       className="w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0 border border-white/5 transition-transform group-hover:scale-105"
                       style={{
-                        backgroundColor: notif.isRead ? "rgba(255,255,255,0.03)" : config.bgColor,
+                        backgroundColor: notif.isRead
+                          ? "rgba(255,255,255,0.03)"
+                          : config.bgColor,
                       }}
                     >
                       <IconComponent
@@ -292,14 +320,14 @@ const NotificationsPage = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-3">
                         <h4
-                          className={`text-[13px] font-bold leading-tight transition-colors ${ notif.isRead ? "text-white/40" : "text-white group-hover:text-[#B3DC26]" }`}
+                          className={`text-[13px] font-bold leading-tight transition-colors ${notif.isRead ? "text-white/40" : "text-white group-hover:text-[#B3DC26]"}`}
                           style={SUBHEADING_STYLE}
                         >
                           {notif.title}
                         </h4>
                       </div>
                       <p
-                        className={`text-[12px] mt-1 leading-relaxed ${ notif.isRead ? "text-white/25" : "text-white/50" }`}
+                        className={`text-[12px] mt-1 leading-relaxed ${notif.isRead ? "text-white/25" : "text-white/50"}`}
                         style={SUBHEADING_STYLE}
                       >
                         {notif.message}
@@ -307,7 +335,9 @@ const NotificationsPage = () => {
                       <div className="flex items-center gap-3 mt-2">
                         <span className="text-[10px] font-bold text-white/20 uppercase tracking-wider">
                           {notif.createdAt
-                            ? formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true }).replace("about ", "")
+                            ? formatDistanceToNow(new Date(notif.createdAt), {
+                                addSuffix: true,
+                              }).replace("about ", "")
                             : "Just now"}
                         </span>
                         {notif.type && (
@@ -315,8 +345,12 @@ const NotificationsPage = () => {
                             className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border"
                             style={{
                               color: notif.isRead ? "#444" : config.color,
-                              borderColor: notif.isRead ? "rgba(255,255,255,0.05)" : config.color + "30",
-                              backgroundColor: notif.isRead ? "transparent" : config.bgColor,
+                              borderColor: notif.isRead
+                                ? "rgba(255,255,255,0.05)"
+                                : config.color + "30",
+                              backgroundColor: notif.isRead
+                                ? "transparent"
+                                : config.bgColor,
                             }}
                           >
                             {notif.type}

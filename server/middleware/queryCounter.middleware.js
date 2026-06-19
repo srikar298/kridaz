@@ -22,17 +22,20 @@ const queryCounter = (req, res, next) => {
     res.on("finish", () => {
       const duration = Date.now() - startTime;
       const count = store.queryCount;
-      
+
       logger.info(`[PERFORMANCE] ${req.method} ${req.originalUrl}`, {
         queries: count,
-        duration: `${duration}ms`
+        duration: `${duration}ms`,
       });
 
       // Warning for N+1 detection
       if (count > 15) {
-        logger.warn(`[PERFORMANCE] Potential N+1 Query detected at ${req.originalUrl}`, {
-          queries: count
-        });
+        logger.warn(
+          `[PERFORMANCE] Potential N+1 Query detected at ${req.originalUrl}`,
+          {
+            queries: count,
+          }
+        );
       }
     });
 

@@ -7,15 +7,11 @@
   },
   {
     "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\games\\pages\\HostGame.jsx",
-    "msgs": [
-      "no-irregular-whitespace:68:Irregular whitespace not allowed."
-    ]
+    "msgs": ["no-irregular-whitespace:68:Irregular whitespace not allowed."]
   },
   {
     "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\networking\\pages\\FindPlayers.jsx",
-    "msgs": [
-      "no-empty:301:Empty block statement."
-    ]
+    "msgs": ["no-empty:301:Empty block statement."]
   },
   {
     "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\profile\\pages\\Profile.jsx",
@@ -25,33 +21,23 @@
   },
   {
     "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\components\\StartScoringModal.jsx",
-    "msgs": [
-      "no-empty:247:Empty block statement."
-    ]
+    "msgs": ["no-empty:247:Empty block statement."]
   },
   {
     "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\pages\\MatchAnalytics.jsx",
-    "msgs": [
-      "no-empty:448:Empty block statement."
-    ]
+    "msgs": ["no-empty:448:Empty block statement."]
   },
   {
     "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\venue-owner\\TurfManagement\\AddTurf.jsx",
-    "msgs": [
-      "no-empty:130:Empty block statement."
-    ]
+    "msgs": ["no-empty:130:Empty block statement."]
   },
   {
     "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\venue-owner\\TurfManagement\\EditTurf.jsx",
-    "msgs": [
-      "no-empty:128:Empty block statement."
-    ]
+    "msgs": ["no-empty:128:Empty block statement."]
   },
   {
     "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\venue-owner\\TurfManagement\\script.js",
-    "msgs": [
-      "null:51:Parsing error: Expecting Unicode escape sequence \\uXXXX"
-    ]
+    "msgs": ["null:51:Parsing error: Expecting Unicode escape sequence \\uXXXX"]
   },
   {
     "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\pages\\NewPost\\NewPostLanding.jsx",
@@ -62,9 +48,7 @@
   },
   {
     "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\redux\\api\\communityApi.js",
-    "msgs": [
-      "no-empty:167:Empty block statement."
-    ]
+    "msgs": ["no-empty:167:Empty block statement."]
   },
   {
     "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\shared\\components\\Marketing\\VideoSection.jsx",

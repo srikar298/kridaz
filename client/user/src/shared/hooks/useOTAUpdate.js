@@ -19,24 +19,33 @@ export const useOTAUpdate = () => {
 
       const latest = await otaService.getLatest();
       if (!latest || !latest.version || !latest.url) {
-        console.log("useOTAUpdate: App is fully up to date. Version:", currentVersion);
+        console.log(
+          "useOTAUpdate: App is fully up to date. Version:",
+          currentVersion
+        );
         isChecking.current = false;
         return;
       }
 
-      console.log(`useOTAUpdate: Current Version: ${currentVersion}, Latest Version: ${latest.version}`);
+      console.log(
+        `useOTAUpdate: Current Version: ${currentVersion}, Latest Version: ${latest.version}`
+      );
 
       // If the versions differ, perform the hot update
       if (latest.version !== currentVersion) {
         // Exclude local dev / web environment updates that might mismatch
         if (currentVersion === "web") {
-          console.log("useOTAUpdate: Running in web mode. Skipping hot update.");
+          console.log(
+            "useOTAUpdate: Running in web mode. Skipping hot update."
+          );
           isChecking.current = false;
           return;
         }
 
-        console.log("useOTAUpdate: Newer OTA bundle found! Starting download...");
-        
+        console.log(
+          "useOTAUpdate: Newer OTA bundle found! Starting download..."
+        );
+
         // Show elegant dark-themed loading toast
         toast.loading("Installing new app update...", {
           id: "ota-update",
@@ -50,7 +59,7 @@ export const useOTAUpdate = () => {
         // 1. Download the ZIP file
         const downloadResult = await otaService.download({
           url: latest.url,
-          version: latest.version
+          version: latest.version,
         });
 
         if (!downloadResult || !downloadResult.id) {
@@ -77,7 +86,10 @@ export const useOTAUpdate = () => {
         }, 1500);
       }
     } catch (error) {
-      console.error("useOTAUpdate: Failed to download or apply OTA update:", error);
+      console.error(
+        "useOTAUpdate: Failed to download or apply OTA update:",
+        error
+      );
       toast.error("Failed to load updates. Retrying in background.", {
         id: "ota-update-error",
         duration: 3000,
@@ -96,9 +108,12 @@ export const useOTAUpdate = () => {
     if (!otaService.isNative() || !isRestored) return;
 
     // 1. Notify that the current app starts correctly (prevents rollback)
-    otaService.notifyAppReady()
-      .then(() => console.log('[Capgo] App ready — update confirmed, no rollback'))
-      .catch(err => console.error('[Capgo] notifyAppReady failed:', err));
+    otaService
+      .notifyAppReady()
+      .then(() =>
+        console.log("[Capgo] App ready — update confirmed, no rollback")
+      )
+      .catch((err) => console.error("[Capgo] notifyAppReady failed:", err));
 
     // 2. Perform initial check on launch
     checkForUpdates();

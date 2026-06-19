@@ -7,7 +7,7 @@ const useOwnerWallet = () => {
     balance: 0,
     reservedBalance: 0,
     usableBalance: 0,
-    transactions: []
+    transactions: [],
   });
   const [withdrawals, setWithdrawals] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +17,7 @@ const useOwnerWallet = () => {
     try {
       const [walletRes, withdrawalsRes] = await Promise.all([
         axiosInstance.get("/api/owner/wallet/owner/data"),
-        axiosInstance.get("/api/owner/wallet/owner/withdrawals")
+        axiosInstance.get("/api/owner/wallet/owner/withdrawals"),
       ]);
       setWalletData(walletRes.data);
       setWithdrawals(withdrawalsRes.data.requests);
@@ -34,13 +34,15 @@ const useOwnerWallet = () => {
     try {
       const response = await axiosInstance.post("/api/owner/wallet/withdraw", {
         amount,
-        bankDetails
+        bankDetails,
       });
       toast.success(response.data.message);
       fetchWalletData(); // Refresh data
       return true;
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to submit withdrawal request");
+      toast.error(
+        err.response?.data?.message || "Failed to submit withdrawal request"
+      );
       return false;
     } finally {
       setSubmitting(false);
@@ -57,7 +59,7 @@ const useOwnerWallet = () => {
     loading,
     submitting,
     requestWithdrawal,
-    refresh: fetchWalletData
+    refresh: fetchWalletData,
   };
 };
 

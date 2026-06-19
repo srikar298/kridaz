@@ -9,13 +9,18 @@ const msg91WhatsAppBreaker = createCircuitBreaker(
   (url, payload, headers) => axios.post(url, payload, { headers }),
   { name: "MSG91_WhatsApp", timeout: 15_000 }
 );
-const msg91SmsBreaker = createCircuitBreaker(
-  (url) => axios.post(url),
-  { name: "MSG91_SMS", timeout: 15_000 }
-);
+const msg91SmsBreaker = createCircuitBreaker((url) => axios.post(url), {
+  name: "MSG91_SMS",
+  timeout: 15_000,
+});
 
 // MSG91 WhatsApp Service
-export const sendWhatsAppMessage = async (phone, message, templateName = null, params = []) => {
+export const sendWhatsAppMessage = async (
+  phone,
+  message,
+  templateName = null,
+  params = []
+) => {
   try {
     const authKey = process.env.MSG91_AUTH_KEY;
     const sender = process.env.MSG91_WHATSAPP_SENDER; // The integrated number in MSG91
@@ -38,22 +43,22 @@ export const sendWhatsAppMessage = async (phone, message, templateName = null, p
         params.forEach((param, index) => {
           componentsObj[`body_${index + 1}`] = {
             type: "text",
-            value: String(param)
+            value: String(param),
           };
           if (index === 0) {
             componentsObj[`button_1`] = {
               subtype: "url",
               type: "text",
-              value: String(param)
+              value: String(param),
             };
           }
         });
-      } else if (typeof params === 'object' && params !== null) {
+      } else if (typeof params === "object" && params !== null) {
         Object.entries(params).forEach(([key, value]) => {
           componentsObj[`body_${key}`] = {
             type: "text",
             value: String(value),
-            parameter_name: key
+            parameter_name: key,
           };
         });
       }
@@ -66,16 +71,21 @@ export const sendWhatsAppMessage = async (phone, message, templateName = null, p
           type: "template",
           template: {
             name: templateName,
-            language: { code: process.env.MSG91_WHATSAPP_LANG || "en", policy: "deterministic" },
-            namespace: process.env.MSG91_WHATSAPP_NAMESPACE || "24b8b902_4d4e_4da1_86f9_5160683abccb",
+            language: {
+              code: process.env.MSG91_WHATSAPP_LANG || "en",
+              policy: "deterministic",
+            },
+            namespace:
+              process.env.MSG91_WHATSAPP_NAMESPACE ||
+              "24b8b902_4d4e_4da1_86f9_5160683abccb",
             to_and_components: [
               {
                 to: [formattedPhone],
-                components: componentsObj
-              }
-            ]
-          }
-        }
+                components: componentsObj,
+              },
+            ],
+          },
+        },
       };
     } else {
       payload = {
@@ -84,26 +94,32 @@ export const sendWhatsAppMessage = async (phone, message, templateName = null, p
         payload: {
           to: formattedPhone,
           type: "text",
-          text: { body: message }
-        }
+          text: { body: message },
+        },
       };
     }
 
-    const apiUrl = templateName 
+    const apiUrl = templateName
       ? "https://api.msg91.com/api/v5/whatsapp/whatsapp-outbound-message/bulk/"
       : "https://api.msg91.com/api/v5/whatsapp/whatsapp-outbound-message/";
 
-    logger.info(`[WhatsApp Service] Sending request to MSG91 at ${new Date().toISOString()} for ${formattedPhone}`);
+    logger.info(
+      `[WhatsApp Service] Sending request to MSG91 at ${new Date().toISOString()} for ${formattedPhone}`
+    );
     const startTime = Date.now();
     const response = await msg91WhatsAppBreaker.fire(apiUrl, payload, {
-      "authkey": authKey,
-      "Content-Type": "application/json"
+      authkey: authKey,
+      "Content-Type": "application/json",
     });
 
-    logger.info(`[WhatsApp Service] Received response from MSG91 in ${Date.now() - startTime}ms. Status: ${response.data.status}`);
+    logger.info(
+      `[WhatsApp Service] Received response from MSG91 in ${Date.now() - startTime}ms. Status: ${response.data.status}`
+    );
     return response.data.status === "success";
   } catch (error) {
-    logger.error(`[WhatsApp Service] Error: ${error.response?.data?.message || error.message}`);
+    logger.error(
+      `[WhatsApp Service] Error: ${error.response?.data?.message || error.message}`
+    );
     return false;
   }
 };
@@ -120,15 +136,21 @@ export const sendSMSMessage = async (phone, otp) => {
     if (formattedPhone.length === 10) formattedPhone = "91" + formattedPhone;
 
     const url = `https://control.msg91.com/api/v5/otp?authkey=${authKey}&mobile=${formattedPhone}&otp=${otp}`;
-    
-    logger.info(`[SMS Service] Sending request to MSG91 at ${new Date().toISOString()} for ${formattedPhone}`);
+
+    logger.info(
+      `[SMS Service] Sending request to MSG91 at ${new Date().toISOString()} for ${formattedPhone}`
+    );
     const startTime = Date.now();
     const response = await msg91SmsBreaker.fire(url);
-    
-    logger.info(`[SMS Service] Received response from MSG91 in ${Date.now() - startTime}ms. Type: ${response.data.type}`);
+
+    logger.info(
+      `[SMS Service] Received response from MSG91 in ${Date.now() - startTime}ms. Type: ${response.data.type}`
+    );
     return response.data.type === "success";
   } catch (error) {
-    logger.error(`[SMS Service] Error: ${error.response?.data?.message || error.message}`);
+    logger.error(
+      `[SMS Service] Error: ${error.response?.data?.message || error.message}`
+    );
     return false;
   }
 };
@@ -136,15 +158,15 @@ export const sendSMSMessage = async (phone, otp) => {
 export const notifyNewGame = async (game, host) => {
   try {
     const { city, state, gameType, date, time } = game;
-    
+
     // Find users in the same city and state
-    const targetUsers = await prisma.user.findMany({ 
+    const targetUsers = await prisma.user.findMany({
       where: {
-        city: { contains: city, mode: 'insensitive' },
-        state: { contains: state, mode: 'insensitive' },
-        NOT: { id: host.id }
+        city: { contains: city, mode: "insensitive" },
+        state: { contains: state, mode: "insensitive" },
+        NOT: { id: host.id },
       },
-      select: { name: true, email: true, phone: true }
+      select: { name: true, email: true, phone: true },
     });
 
     if (targetUsers.length === 0) return;
@@ -178,29 +200,37 @@ Join the action now on Kridaz! 🏏⚽🏐
     const templateName = process.env.MSG91_WHATSAPP_NOTIF_TEMPLATE;
 
     // Send notifications in parallel
-    await Promise.all(targetUsers.map(async (user) => {
-      // Email
-      if (user.email) {
-        generateEmail(user.email, emailSubject, emailHtml).catch(e => logger.error("generateEmail error", e));
-      }
-      
-      // WhatsApp
-      if (user.phone) {
-        if (templateName) {
-          // Template params: Sport, City, Host, Link
-          sendWhatsAppMessage(user.phone, "", templateName, [
-            gameType, 
-            city, 
-            host.name, 
-            `${baseUrl}/join-games`
-          ]).catch(e => logger.error("sendWhatsAppMessage error", e));
-        } else {
-          sendWhatsAppMessage(user.phone, message).catch(e => logger.error("sendWhatsAppMessage error", e));
+    await Promise.all(
+      targetUsers.map(async (user) => {
+        // Email
+        if (user.email) {
+          generateEmail(user.email, emailSubject, emailHtml).catch((e) =>
+            logger.error("generateEmail error", e)
+          );
         }
-      }
-    }));
 
-    logger.info(`[Notifications] Sent to ${targetUsers.length} users in ${city}, ${state}`);
+        // WhatsApp
+        if (user.phone) {
+          if (templateName) {
+            // Template params: Sport, City, Host, Link
+            sendWhatsAppMessage(user.phone, "", templateName, [
+              gameType,
+              city,
+              host.name,
+              `${baseUrl}/join-games`,
+            ]).catch((e) => logger.error("sendWhatsAppMessage error", e));
+          } else {
+            sendWhatsAppMessage(user.phone, message).catch((e) =>
+              logger.error("sendWhatsAppMessage error", e)
+            );
+          }
+        }
+      })
+    );
+
+    logger.info(
+      `[Notifications] Sent to ${targetUsers.length} users in ${city}, ${state}`
+    );
   } catch (error) {
     logger.error(`[Notifications] Error: ${error.message}`);
   }
@@ -253,10 +283,16 @@ export const sendCustomPlayerInvite = async (customPlayer, game, host) => {
 </body>
 </html>`;
 
-    await generateEmail(email, `⚡ ${host?.name || "A friend"} invited you to play ${gameType} on Kridaz!`, html);
+    await generateEmail(
+      email,
+      `⚡ ${host?.name || "A friend"} invited you to play ${gameType} on Kridaz!`,
+      html
+    );
     logger.info(`[CustomInvite] Invite sent to ${email} for game ${game.id}`);
   } catch (error) {
-    logger.error(`[CustomInvite] Error sending to ${customPlayer?.email}: ${error.message}`);
+    logger.error(
+      `[CustomInvite] Error sending to ${customPlayer?.email}: ${error.message}`
+    );
     throw error;
   }
 };
@@ -302,7 +338,11 @@ export const sendCustomUmpireInvite = async (customUmpire, game, host) => {
 </body>
 </html>`;
 
-    await generateEmail(email, `⚖️ Invitation to officiate ${gameType} match on Kridaz`, html);
+    await generateEmail(
+      email,
+      `⚖️ Invitation to officiate ${gameType} match on Kridaz`,
+      html
+    );
     if (customUmpire.phone) {
       const waMessage = `⚖️ Hello ${name}! You've been invited by ${host?.name} to officiate a ${gameType} match on Kridaz.\n\n📅 Date: ${formattedDate}\n⏰ Time: ${time}\n\nAccept & Setup Scoring Portal: ${magicLink}`;
       await sendWhatsAppMessage(customUmpire.phone, waMessage);

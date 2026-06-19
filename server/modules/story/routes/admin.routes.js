@@ -1,9 +1,6 @@
-import express from 'express';
-import { 
-  deleteStory, 
-  getAllStoriesAdmin
-} from '../story.controller.js';
-import adminAuth from '../../../middleware/jwt/admin.middleware.js';
+import express from "express";
+import { deleteStory, getAllStoriesAdmin } from "../story.controller.js";
+import adminAuth from "../../../middleware/jwt/admin.middleware.js";
 
 const router = express.Router();
 
@@ -25,7 +22,7 @@ router.use(adminAuth);
  *     security:
  *       - BearerAuth: []
  */
-router.get('/all', getAllStoriesAdmin);
+router.get("/all", getAllStoriesAdmin);
 
 /**
  * @swagger
@@ -36,6 +33,6 @@ router.get('/all', getAllStoriesAdmin);
  *     security:
  *       - BearerAuth: []
  */
-router.delete('/:id', deleteStory);
+router.delete("/:id", deleteStory);
 
 export default router;

@@ -18,7 +18,7 @@ export const createNotification = async ({
   message,
   type,
   link,
-  metadata = {}
+  metadata = {},
 }) => {
   try {
     const data = {
@@ -27,10 +27,10 @@ export const createNotification = async ({
       type,
       link,
       metadata,
-      recipientModel
+      recipientModel,
     };
 
-    if (recipientModel === 'User') {
+    if (recipientModel === "User") {
       data.userId = recipientId;
     } else {
       data.ownerId = recipientId;
@@ -46,26 +46,32 @@ export const createNotification = async ({
 /**
  * Notify all administrators
  */
-export const notifyAdmins = async ({ title, message, type, link, metadata = {} }) => {
+export const notifyAdmins = async ({
+  title,
+  message,
+  type,
+  link,
+  metadata = {},
+}) => {
   try {
     const admins = await prisma.user.findMany({
       where: { role: { in: ["ADMIN"] } },
-      select: { id: true }
+      select: { id: true },
     });
-    
-    const notifications = admins.map(admin => ({
+
+    const notifications = admins.map((admin) => ({
       userId: admin.id,
-      recipientModel: 'User',
+      recipientModel: "User",
       title,
       message,
       type,
       link,
-      metadata: metadata || {}
+      metadata: metadata || {},
     }));
 
     if (notifications.length > 0) {
       await prisma.notification.createMany({
-        data: notifications
+        data: notifications,
       });
     }
   } catch (error) {

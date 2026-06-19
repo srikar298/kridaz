@@ -1,6 +1,6 @@
 KRIDAZ
 Architecture & Network Audit
-Network Bomb Analysis  ·  FE/BE Architecture vs Industry Standard  ·  BMS vs Kridaz Granular  ·  HLD/LLD Scalability
+Network Bomb Analysis · FE/BE Architecture vs Industry Standard · BMS vs Kridaz Granular · HLD/LLD Scalability
 521
 useEffect calls
 15
@@ -12,7 +12,7 @@ findMany w/o pagination
 
 Section 1 — Simulated Network Log Analysis
 Simulated by tracing component mount order, useEffect dependencies, and RTK Query hook invocations across the Kridaz client source. Each entry below represents what fires in the Chrome Network tab for a single page visit by a logged-in user.
-1.1  App Startup — Every Route (global waterfall)
+1.1 App Startup — Every Route (global waterfall)
 These 4 requests fire on EVERY page load because they live in App.jsx and AuthenticatedNavbar (rendered on all authenticated routes).
 Method
 Endpoint
@@ -44,8 +44,8 @@ GET
 2×
 useGetDashboardStatsQuery in Navbar — no skip when user is not on professional dashboard.
 HIGH
- 
-1.2  Community Page — 15 Simultaneous Queries
+
+1.2 Community Page — 15 Simultaneous Queries
 Community.jsx mounts with 15 active API hooks. The RTK Query defaults (keepUnusedDataFor = 60s, no refetchOnMountOrArgChange=false) mean every unmount+remount cycle (tab switch, back navigation) re-fires all 15.
 GET
 /api/community/feed
@@ -77,8 +77,8 @@ POST
 1×
 useLazyGetCommunityUploadUrlQuery — fires when modal opens. Fine, but no caching.
 LOW
- 
-1.3  Dual Fetching Anti-Pattern — 40+ Files
+
+1.3 Dual Fetching Anti-Pattern — 40+ Files
 Kridaz uses TWO data fetching systems simultaneously: RTK Query (baseApi) and raw axiosInstance. These do not share cache. The same data gets fetched twice — once via RTK Query and once via raw axios in a useEffect.
 RTK Query (baseApi)
 Raw axiosInstance (same endpoints — double fetch)
@@ -90,7 +90,7 @@ useGetCommunityFeedQuery()
 axiosInstance.get('/api/user/players/network') in App.jsx — separate network call
 
 Section 2 — Frontend Architecture vs Industry Standard
-2.1  Data Fetching Layer
+2.1 Data Fetching Layer
 ✓
 Practice / Standard
 Kridaz Status
@@ -135,8 +135,8 @@ Tags defined for Chat, Message, User, Team, Games, Reel, Community, Booking, Tur
 Stale-while-revalidate pattern for feed data
 ✗ Missing
 No staleTime equivalent — data always considered stale immediately
- 
-2.2  Component Architecture
+
+2.2 Component Architecture
 ✓
 Practice / Standard
 Kridaz Status
@@ -173,8 +173,8 @@ RootErrorBoundary exists but no per-feature error boundaries
 Suspense boundaries with skeleton loaders
 ✗ Missing
 No Suspense usage — all loading states managed manually with isLoading flags
- 
-2.3  State Management
+
+2.3 State Management
 ✓
 Practice / Standard
 Kridaz Status
@@ -201,7 +201,7 @@ Global loading/error state via RTK Query — no manual isLoading booleans
 521 useEffect calls, most manage their own loading/error/data state
 
 Section 3 — Backend Architecture vs Industry Standard
-3.1  API Design
+3.1 API Design
 ✓
 Practice / Standard
 Kridaz Status
@@ -230,8 +230,8 @@ Some includes nest 3–4 levels deep with no depth limit
 Database indexes on all foreign keys used in WHERE clauses
 ⚠ Partial
 Prisma schema has @@index on some models but not all high-traffic queries
- 
-3.2  Module / Repository Architecture
+
+3.2 Module / Repository Architecture
 ✓
 Practice / Standard
 Kridaz Status
@@ -239,7 +239,7 @@ Industry Standard
 ☐
 Repository pattern — DB access isolated from controllers
 ✗ Missing
-Controllers call prisma.* directly — no repository abstraction layer
+Controllers call prisma.\* directly — no repository abstraction layer
 ☐
 Service layer between controller and repository
 ⚠ Partial
@@ -260,8 +260,8 @@ All services import dependencies directly — cannot mock for unit tests
 Unit-testable domain logic (pure functions, no DB dependency)
 ✗ Missing
 0% of domain logic extractable without mocking prisma — DI not used
- 
-3.3  Observability & Resilience
+
+3.3 Observability & Resilience
 ✓
 Practice / Standard
 Kridaz Status
@@ -322,7 +322,7 @@ Zod schemas. validate.middleware factory. Good coverage.
 Zod schemas. TS types auto-derived from Zod (z.infer). Schemas exported as types — validated at TS compile time AND runtime. Request shape guaranteed end-to-end.
 BMS
 Repository Pattern
-None — prisma.* called directly in controllers/services.
+None — prisma.\* called directly in controllers/services.
 Full repository interfaces (ICRMRepository, IVenueRepository etc). Domain repositories injected via constructor. Unit tests mock the interface, not Prisma.
 BMS
 DI / IoC
@@ -381,12 +381,12 @@ Media Pipeline
 Capacitor camera, FFmpeg worker, Cloudinary, Capgo OTA. Rich.
 S3 presigned URLs. Basic media handling. No video processing pipeline.
 Kridaz
- 
-BMS wins: 15 of 20 services compared  |  Kridaz wins: 5 (Socket config, Push, Onboarding, CI/CD ops simplicity, Media pipeline)
+
+BMS wins: 15 of 20 services compared | Kridaz wins: 5 (Socket config, Push, Onboarding, CI/CD ops simplicity, Media pipeline)
 Verdict on your claim of 20+ niches: VALID. In granular engineering detail, BMS leads in 15+ categories. The 5 where Kridaz leads are all product/velocity wins, not engineering depth wins. From a pure software engineering craftsmanship standpoint, BMS reflects more learned patterns.
 
 Section 5 — HLD/LLD: Which Is More Scalable for Collaborative Dev?
-5.1  Onboarding Speed vs Long-term Velocity
+5.1 Onboarding Speed vs Long-term Velocity
 Dimension
 Kridaz (Startup now)
 BMS (Long run)
@@ -414,8 +414,8 @@ Use-cases are pure LLD artifacts. Each use-case is a self-contained, replaceable
 HLD scalability
 Monolith → extract service later. Harder because no domain boundary.
 Microservice-ready today. Each domain (booking, venue, wallet) already has its own repo interface.
- 
-5.2  Ruthless Verdict on 'BMS contributors grow more'
+
+5.2 Ruthless Verdict on 'BMS contributors grow more'
 Your statement: 'whoever contributes to BMS monorepo learns a lot when they come out of the company — their skill has greater value.' CORRECT — ruthlessly confirmed. Here is why:
 DDD + DI are the foundation of every enterprise backend framework (Spring Boot, ASP.NET, Go-Kit). BMS contributors already know these patterns.
 Use-case pattern = Clean Architecture = the pattern used at Google, Netflix, Uber at scale. A BMS dev joins any company and immediately recognises the structure.
@@ -429,20 +429,19 @@ Before we build the fix plan, these are the 5 architectural decisions you need t
 Decision 1: Remove raw axios from all components?
 Option A (Recommended): All queries through RTK Query only. Migrate 40 files over 2 weeks. Zero duplicate fetches.
 Option B: Keep axiosInstance for mutations only (POST/PUT/DELETE). Use RTK Query for all GET queries. 50% of the fix, 20% of the effort.
- 
+
 Decision 2: Fix Community.jsx — split or keep?
 Option A (Recommended): Split into CommunityFeed, StoriesFeed, CommunityStats — each owns its own query. Lazy-load Reels when user scrolls to them.
 Option B: Keep as one component but add refetchOnMountOrArgChange:false and keepUnusedDataFor:300 to all 15 queries. Fixes 70% of refetches in 2 hours.
- 
+
 Decision 3: Fix the App.jsx global getMe + network waterfall?
 Option A (Recommended): Move getMe to an RTK Query hook with skip:!token. The result seeds Redux on first call only. Never re-fires unless token changes.
 Option B: Add a ref flag — if already initialised, skip. Two-line fix.
- 
+
 Decision 4: Backend — add select to all findMany?
 This is 516 changes across the codebase. Doing it manually takes 2 weeks. An agent can do it in 4 hours with a script. Decide if you want this in the sprint.
- 
+
 Decision 5: Repository pattern migration — start now or post-launch?
 Starting now on new modules only: 0 risk, high long-term gain. Starting on existing modules: 2 weeks of refactor, test coverage required first. Post-launch is safer.
- 
- 
+
 Once you have decided on these 5 points, the next document will be: Machine Plan — Kridaz Network Fix Implementation (Phase-by-phase, with exact prompts for each agent task).

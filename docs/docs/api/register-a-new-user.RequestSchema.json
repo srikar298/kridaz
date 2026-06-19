@@ -1,1 +1,47 @@
-{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["name","email","phone","password","otp","phoneOtp","gender","location"],"properties":{"name":{"type":"string","example":"John Doe"},"email":{"type":"string","format":"email","example":"john@example.com"},"phone":{"type":"string","example":"9876543210"},"password":{"type":"string","minLength":6,"example":"password123"},"confirmPassword":{"type":"string","example":"password123"},"gender":{"type":"string","example":"Male"},"location":{"type":"string","example":"Bangalore"},"otp":{"type":"string","example":"123456"},"phoneOtp":{"type":"string","example":"654321"},"sportTypes":{"type":"array","items":{"type":"string"},"example":["Cricket","Football"]}}}}}}}
+{
+  "title": "Body",
+  "body": {
+    "required": true,
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "required": [
+            "name",
+            "email",
+            "phone",
+            "password",
+            "otp",
+            "phoneOtp",
+            "gender",
+            "location"
+          ],
+          "properties": {
+            "name": { "type": "string", "example": "John Doe" },
+            "email": {
+              "type": "string",
+              "format": "email",
+              "example": "john@example.com"
+            },
+            "phone": { "type": "string", "example": "9876543210" },
+            "password": {
+              "type": "string",
+              "minLength": 6,
+              "example": "password123"
+            },
+            "confirmPassword": { "type": "string", "example": "password123" },
+            "gender": { "type": "string", "example": "Male" },
+            "location": { "type": "string", "example": "Bangalore" },
+            "otp": { "type": "string", "example": "123456" },
+            "phoneOtp": { "type": "string", "example": "654321" },
+            "sportTypes": {
+              "type": "array",
+              "items": { "type": "string" },
+              "example": ["Cricket", "Football"]
+            }
+          }
+        }
+      }
+    }
+  }
+}

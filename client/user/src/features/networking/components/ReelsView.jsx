@@ -76,7 +76,12 @@ const ReelsView = ({ gateInteraction, onBack }) => {
           if (idx !== activeReelIndex) {
             setActiveReelIndex(idx);
           }
-          if (reels.length > 0 && idx >= reels.length - 2 && !reelsFetching && reelsData?.nextCursor) {
+          if (
+            reels.length > 0 &&
+            idx >= reels.length - 2 &&
+            !reelsFetching &&
+            reelsData?.nextCursor
+          ) {
             setReelCursor(reelsData.nextCursor);
           }
         }}
@@ -87,7 +92,10 @@ const ReelsView = ({ gateInteraction, onBack }) => {
           </div>
         ) : reels.length > 0 ? (
           reels.map((reel, index) => (
-            <div key={reel._id || reel.id} className="w-full h-full snap-start snap-always relative bg-black overflow-hidden flex-shrink-0">
+            <div
+              key={reel._id || reel.id}
+              className="w-full h-full snap-start snap-always relative bg-black overflow-hidden flex-shrink-0"
+            >
               {Math.abs(index - activeReelIndex) <= 2 ? (
                 <ReelItem reel={reel} isVisible={index === activeReelIndex} />
               ) : (
@@ -98,7 +106,9 @@ const ReelsView = ({ gateInteraction, onBack }) => {
         ) : (
           <div className="h-full flex flex-col items-center justify-center gap-3 text-white/40 bg-black">
             <PlaySquare size={48} className="opacity-50" />
-            <div className="font-bold uppercase tracking-widest text-[13px]">No reels yet</div>
+            <div className="font-bold uppercase tracking-widest text-[13px]">
+              No reels yet
+            </div>
           </div>
         )}
         {reelsFetching && (

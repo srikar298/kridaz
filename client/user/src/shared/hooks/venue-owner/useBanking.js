@@ -14,7 +14,7 @@ const useBanking = () => {
     try {
       const [bankingRes, settingsRes] = await Promise.all([
         axiosInstance.get("/api/owner/banking"),
-        axiosInstance.get("/api/owner/banking/config")
+        axiosInstance.get("/api/owner/banking/config"),
       ]);
 
       setBankingDetails(bankingRes.data.bankingDetails);
@@ -22,7 +22,7 @@ const useBanking = () => {
       setPayoutSettings(settingsRes.data.settings);
 
       // Payout button is now always active as per request
-      setIsPayoutDay(true); 
+      setIsPayoutDay(true);
     } catch (err) {
       console.error(err);
       toast.error("Failed to load banking info");
@@ -45,7 +45,10 @@ const useBanking = () => {
 
   const requestPayout = async (amount, password) => {
     try {
-      const res = await axiosInstance.post("/api/owner/banking/payout", { amount, password });
+      const res = await axiosInstance.post("/api/owner/banking/payout", {
+        amount,
+        password,
+      });
       toast.success(res.data.message);
       return true;
     } catch (err) {
@@ -56,7 +59,9 @@ const useBanking = () => {
 
   const verifyPassword = async (password) => {
     try {
-      await axiosInstance.post("/api/owner/banking/verify-password", { password });
+      await axiosInstance.post("/api/owner/banking/verify-password", {
+        password,
+      });
       toast.success("Identity Verified");
       return true;
     } catch (err) {
@@ -69,16 +74,16 @@ const useBanking = () => {
     fetchData();
   }, []);
 
-  return { 
-    bankingDetails, 
+  return {
+    bankingDetails,
     walletBalance,
-    payoutSettings, 
-    loading, 
-    isPayoutDay, 
-    updateBanking, 
-    requestPayout, 
+    payoutSettings,
+    loading,
+    isPayoutDay,
+    updateBanking,
+    requestPayout,
     verifyPassword,
-    refresh: fetchData 
+    refresh: fetchData,
   };
 };
 

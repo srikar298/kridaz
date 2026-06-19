@@ -1,5 +1,5 @@
-import { useCallback, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useCallback, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useSocket } from "@context/SocketContext";
 import { baseApi } from "@redux/api/baseApi";
 import {
@@ -17,32 +17,30 @@ const useNotifications = () => {
   const getBaseUrl = useCallback(() => {
     const normalizedRole = (role || user?.role || "").toString().toLowerCase();
 
-    if (normalizedRole === 'admin' || normalizedRole === 'bmsp_admin') {
-      return '/api/admin/notifications';
+    if (normalizedRole === "admin" || normalizedRole === "bmsp_admin") {
+      return "/api/admin/notifications";
     }
 
     if (
-      normalizedRole.includes('venu_owners') ||
-      normalizedRole === 'owner' ||
-      normalizedRole === 'venue_owner' ||
-      normalizedRole === 'verified_venue_owner' ||
-      normalizedRole === 'bmsp_owner' ||
-      ['coach', 'umpire', 'scorer', 'streamer'].some((r) => normalizedRole.includes(r))
+      normalizedRole.includes("venu_owners") ||
+      normalizedRole === "owner" ||
+      normalizedRole === "venue_owner" ||
+      normalizedRole === "verified_venue_owner" ||
+      normalizedRole === "bmsp_owner" ||
+      ["coach", "umpire", "scorer", "streamer"].some((r) =>
+        normalizedRole.includes(r)
+      )
     ) {
-      return '/api/owner/notifications';
+      return "/api/owner/notifications";
     }
 
-    return '/api/user/notifications';
+    return "/api/user/notifications";
   }, [role, user?.role]);
 
   const prefix = getBaseUrl();
   const hasUser = !!user?.id;
 
-  const {
-    data,
-    isLoading,
-    refetch,
-  } = useGetNotificationsQuery(prefix, {
+  const { data, isLoading, refetch } = useGetNotificationsQuery(prefix, {
     skip: !hasUser,
     pollingInterval: 60000,
   });
@@ -60,7 +58,9 @@ const useNotifications = () => {
             }
             // Add notification to top if not already exists
             const id = notification.id || notification._id;
-            const exists = draft.notifications.some(n => (n.id || n._id) === id);
+            const exists = draft.notifications.some(
+              (n) => (n.id || n._id) === id
+            );
             if (!exists) {
               draft.notifications.unshift(notification);
             }

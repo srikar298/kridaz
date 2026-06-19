@@ -17,11 +17,18 @@ export class WalletMapper {
     return {
       id: raw.id || raw._id || "",
       walletId: raw.walletId || "",
-      amount: typeof raw.amount === "number" ? raw.amount : parseFloat(raw.amount || 0),
-      type: ["DEPOSIT", "WITHDRAW", "PAYMENT", "REFUND"].includes(raw.type?.toUpperCase())
+      amount:
+        typeof raw.amount === "number"
+          ? raw.amount
+          : parseFloat(raw.amount || 0),
+      type: ["DEPOSIT", "WITHDRAW", "PAYMENT", "REFUND"].includes(
+        raw.type?.toUpperCase()
+      )
         ? (raw.type.toUpperCase() as any)
         : "DEPOSIT",
-      status: ["PENDING", "SUCCESS", "FAILED"].includes(raw.status?.toUpperCase())
+      status: ["PENDING", "SUCCESS", "FAILED"].includes(
+        raw.status?.toUpperCase()
+      )
         ? (raw.status.toUpperCase() as any)
         : "PENDING",
       description: raw.description || undefined,
@@ -42,7 +49,10 @@ export class WalletMapper {
     return {
       id: raw.id || raw._id || "",
       userId: raw.userId || "",
-      balance: typeof raw.balance === "number" ? raw.balance : parseFloat(raw.balance || raw.walletBalance || 0),
+      balance:
+        typeof raw.balance === "number"
+          ? raw.balance
+          : parseFloat(raw.balance || raw.walletBalance || 0),
       currency: raw.currency || "INR",
       transactions: rawTxns.map((t: any) => this.toTransaction(t)),
     };

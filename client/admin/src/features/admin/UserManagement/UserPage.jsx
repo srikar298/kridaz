@@ -7,17 +7,27 @@ import { Trash2, Ban, CheckCircle, X } from "lucide-react";
 import ConfirmationModal from "@components/shared/ConfirmationModal";
 
 const UserPage = () => {
-  const { 
-    users, loading, searchTerm, handleSearch, 
-    toggleUserStatus, deleteUser, batchDeleteUsers, batchToggleStatus 
+  const {
+    users,
+    loading,
+    searchTerm,
+    handleSearch,
+    toggleUserStatus,
+    deleteUser,
+    batchDeleteUsers,
+    batchToggleStatus,
   } = useUsers();
 
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [modalConfig, setModalConfig] = useState({ isOpen: false, type: "", target: null });
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    type: "",
+    target: null,
+  });
 
   const handleSelectUser = (id) => {
-    setSelectedUsers(prev => 
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    setSelectedUsers((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
@@ -25,7 +35,7 @@ const UserPage = () => {
     if (selectedUsers.length === users.length) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(users.map(u => u._id));
+      setSelectedUsers(users.map((u) => u._id));
     }
   };
 
@@ -36,7 +46,7 @@ const UserPage = () => {
       target: user,
       title: "Delete User",
       message: `Are you sure you want to PERMANENTLY delete user ${user.name}? This action cannot be undone and will remove all associated data.`,
-      confirmText: "Delete User"
+      confirmText: "Delete User",
     });
   };
 
@@ -47,20 +57,20 @@ const UserPage = () => {
       target: selectedUsers,
       title: "Batch Delete Users",
       message: `Are you sure you want to PERMANENTLY delete ${selectedUsers.length} selected users? This action is irreversible.`,
-      confirmText: `Delete ${selectedUsers.length} Users`
+      confirmText: `Delete ${selectedUsers.length} Users`,
     });
   };
 
   const handleConfirmAction = async () => {
     const { type, target } = modalConfig;
-    
+
     if (type === "DELETE_SINGLE") {
       await deleteUser(target._id);
     } else if (type === "DELETE_BATCH") {
       await batchDeleteUsers(target);
       setSelectedUsers([]);
     }
-    
+
     setModalConfig({ ...modalConfig, isOpen: false });
   };
 
@@ -93,7 +103,10 @@ const UserPage = () => {
 
             <div className="flex flex-col md:flex-row items-center gap-6">
               <div className="w-full md:w-80">
-                <SearchInput searchTerm={searchTerm} handleSearch={handleSearch} />
+                <SearchInput
+                  searchTerm={searchTerm}
+                  handleSearch={handleSearch}
+                />
               </div>
               <div className="px-5 py-2.5 bg-[#CCFF00]/10 border border-[#CCFF00]/20 rounded-full">
                 <span className="text-[10px] font-black text-[#CCFF00] uppercase tracking-widest">
@@ -111,9 +124,11 @@ const UserPage = () => {
                   <div className="w-6 h-6 rounded bg-[#CCFF00] flex items-center justify-center text-black font-black text-xs">
                     {selectedUsers.length}
                   </div>
-                  <span className="text-xs font-black uppercase tracking-widest text-[#CCFF00]">Users Selected</span>
+                  <span className="text-xs font-black uppercase tracking-widest text-[#CCFF00]">
+                    Users Selected
+                  </span>
                 </div>
-                <button 
+                <button
                   onClick={() => setSelectedUsers([])}
                   className="text-white/40 hover:text-white transition-colors"
                 >
@@ -122,20 +137,20 @@ const UserPage = () => {
               </div>
 
               <div className="flex items-center gap-3">
-                <button 
+                <button
                   onClick={() => handleBatchStatusUpdate("blocked")}
                   className="px-4 py-2 bg-orange-500/10 border border-orange-500/20 rounded-[8px] text-orange-400 font-black text-[10px] uppercase tracking-widest hover:bg-orange-500/20 transition-all flex items-center gap-2"
                 >
                   <Ban size={14} /> Block
                 </button>
-                <button 
+                <button
                   onClick={() => handleBatchStatusUpdate("active")}
                   className="px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-[8px] text-green-400 font-black text-[10px] uppercase tracking-widest hover:bg-green-500/20 transition-all flex items-center gap-2"
                 >
                   <CheckCircle size={14} /> Activate
                 </button>
                 <div className="w-px h-6 bg-white/10 mx-2" />
-                <button 
+                <button
                   onClick={openBatchDeleteModal}
                   className="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-[8px] text-red-400 font-black text-[10px] uppercase tracking-widest hover:bg-red-500/20 transition-all flex items-center gap-2"
                 >
@@ -150,9 +165,11 @@ const UserPage = () => {
             {/* Table Header */}
             <div className="hidden lg:grid grid-cols-12 gap-4 px-8 py-4 bg-[#0d0d0d] border border-[#2D2D2D] rounded-[12px] text-[10px] font-black text-[#878C9F] uppercase tracking-[0.2em] shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] items-center">
               <div className="col-span-1 flex justify-center">
-                <input 
-                  type="checkbox" 
-                  checked={users.length > 0 && selectedUsers.length === users.length}
+                <input
+                  type="checkbox"
+                  checked={
+                    users.length > 0 && selectedUsers.length === users.length
+                  }
                   onChange={handleSelectAll}
                   className="w-5 h-5 rounded border-[#2D2D2D] bg-[#0d0d0d] text-[#CCFF00] focus:ring-[#CCFF00]/50"
                 />
@@ -169,16 +186,20 @@ const UserPage = () => {
               <div className="relative p-20 rounded-[8px] border border-[#2D2D2D] bg-[#000000] text-center overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full bg-[#CCFF00]/5 blur-[100px]"></div>
                 <div className="relative space-y-4">
-                  <p className="text-2xl font-black text-white uppercase tracking-tighter">No Users Found</p>
-                  <p className="admin-subheading text-[#999999]">The identity database is currently empty.</p>
+                  <p className="text-2xl font-black text-white uppercase tracking-tighter">
+                    No Users Found
+                  </p>
+                  <p className="admin-subheading text-[#999999]">
+                    The identity database is currently empty.
+                  </p>
                 </div>
               </div>
             ) : (
               <div className="space-y-3">
                 {users.map((user) => (
-                  <UserCard 
-                    key={user._id} 
-                    user={user} 
+                  <UserCard
+                    key={user._id}
+                    user={user}
                     isSelected={selectedUsers.includes(user._id)}
                     onSelect={handleSelectUser}
                     onToggleStatus={toggleUserStatus}
@@ -192,7 +213,7 @@ const UserPage = () => {
       </div>
 
       {/* Confirmation Modal */}
-      <ConfirmationModal 
+      <ConfirmationModal
         isOpen={modalConfig.isOpen}
         onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
         onConfirm={handleConfirmAction}

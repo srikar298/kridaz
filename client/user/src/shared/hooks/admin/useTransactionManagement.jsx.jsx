@@ -13,7 +13,7 @@ const useTransactionManagement = (initialTransactions) => {
   });
 
   useEffect(() => {
-     setTransactions(initialTransactions || []);
+    setTransactions(initialTransactions || []);
   }, [initialTransactions]);
 
   const handleFilterChange = (e) => {
@@ -22,7 +22,13 @@ const useTransactionManagement = (initialTransactions) => {
   };
 
   const clearFilters = () => {
-    setFilters({ search: "", minAmount: "", maxAmount: "", startDate: "", endDate: "" });
+    setFilters({
+      search: "",
+      minAmount: "",
+      maxAmount: "",
+      startDate: "",
+      endDate: "",
+    });
   };
 
   const toggleSort = (field) => {
@@ -35,8 +41,6 @@ const useTransactionManagement = (initialTransactions) => {
   };
 
   const filteredAndSortedTransactions = useMemo(() => {
- 
-
     try {
       const filtered = transactions.filter((transaction) => {
         const searchLower = filters.search.toLowerCase();
@@ -74,7 +78,7 @@ const useTransactionManagement = (initialTransactions) => {
         return 0;
       });
 
-       return sorted;
+      return sorted;
     } catch (error) {
       console.error("Error in filtering and sorting:", error);
       return [];

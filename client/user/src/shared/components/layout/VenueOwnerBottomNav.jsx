@@ -1,14 +1,14 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { 
-  LayoutGrid, 
-  BookOpen, 
-  MapPin, 
-  Users, 
-  IndianRupee, 
-  BarChart3, 
-  Star, 
-  Landmark
+import {
+  LayoutGrid,
+  BookOpen,
+  MapPin,
+  Users,
+  IndianRupee,
+  BarChart3,
+  Star,
+  Landmark,
 } from "lucide-react";
 
 const VenueOwnerBottomNav = () => {
@@ -39,10 +39,14 @@ const VenueOwnerBottomNav = () => {
               className={`flex flex-col items-center justify-center min-w-[70px] w-auto h-12 rounded-lg transition-all duration-300 gap-1
                 ${isActive ? "text-[#BFF367]" : "text-[#878C9F] hover:text-white"}`}
             >
-              <div className={`relative flex items-center justify-center transition-all duration-300 ${isActive ? "scale-110" : ""}`}>
+              <div
+                className={`relative flex items-center justify-center transition-all duration-300 ${isActive ? "scale-110" : ""}`}
+              >
                 <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
               </div>
-              <span className={`text-[8px] font-black uppercase tracking-wider whitespace-nowrap px-1 transition-all duration-300 ${isActive ? "opacity-100" : "opacity-60"}`}>
+              <span
+                className={`text-[8px] font-black uppercase tracking-wider whitespace-nowrap px-1 transition-all duration-300 ${isActive ? "opacity-100" : "opacity-60"}`}
+              >
                 {item.label}
               </span>
             </Link>

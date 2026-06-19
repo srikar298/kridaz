@@ -4,7 +4,7 @@ import adminSettingsRouter from "./routes/admin.routes.js";
 /**
  * Settings Domain Router
  * Mounts sub-routers for the Settings module.
- * 
+ *
  * Routes:
  * /api/settings/...
  */

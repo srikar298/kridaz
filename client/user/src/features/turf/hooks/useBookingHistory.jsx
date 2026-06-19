@@ -5,7 +5,11 @@ import toast from "react-hot-toast";
 import { format, parseISO } from "date-fns";
 
 export default function useBookingHistory() {
-  const { data: bookingsRaw = [], isLoading: loading, refetch } = useGetUserBookingsQuery();
+  const {
+    data: bookingsRaw = [],
+    isLoading: loading,
+    refetch,
+  } = useGetUserBookingsQuery();
 
   const formatBookingsData = (bookings) => {
     return bookings.map((booking) => {
@@ -33,18 +37,24 @@ export default function useBookingHistory() {
     const playTime = new Date(booking.playStartTime);
     const now = new Date();
     const hoursRemaining = (playTime - now) / (1000 * 60 * 60);
-    
-    let confirmMsg = "Are you sure you want to cancel this booking? No refund will be issued as it's within 24 hours of the slot.";
+
+    let confirmMsg =
+      "Are you sure you want to cancel this booking? No refund will be issued as it's within 24 hours of the slot.";
     if (hoursRemaining >= 24) {
-      confirmMsg = "Are you sure you want to cancel? Since you are cancelling more than 24 hours before the slot, you will receive a 30% refund in your wallet. The remaining 70% is non-refundable.";
+      confirmMsg =
+        "Are you sure you want to cancel? Since you are cancelling more than 24 hours before the slot, you will receive a 30% refund in your wallet. The remaining 70% is non-refundable.";
     }
 
     if (!window.confirm(confirmMsg)) return false;
-    
+
     try {
-      const response = await axiosInstance.post(`/api/booking/user/cancel/${booking.id || booking._id}`);
+      const response = await axiosInstance.post(
+        `/api/booking/user/cancel/${booking.id || booking._id}`
+      );
       if (response.data.success) {
-        toast.success(response.data.message || "Booking cancelled successfully.");
+        toast.success(
+          response.data.message || "Booking cancelled successfully."
+        );
         refetch();
         return true;
       }

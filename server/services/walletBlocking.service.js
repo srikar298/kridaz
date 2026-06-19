@@ -28,7 +28,8 @@ export class WalletBlockingService {
           throw new Error("Wallet not found. Please recharge.");
         }
 
-        const usableBalance = Number(wallet.balance) - Number(wallet.reservedBalance);
+        const usableBalance =
+          Number(wallet.balance) - Number(wallet.reservedBalance);
         if (usableBalance < amountVal) {
           throw new Error("Insufficient wallet. Please recharge.");
         }
@@ -61,7 +62,9 @@ export class WalletBlockingService {
           },
         });
 
-        logger.info(`[WalletBlocking] Reserved Rs. ${amountVal} for user ${userId}, booking ${bookingId}`);
+        logger.info(
+          `[WalletBlocking] Reserved Rs. ${amountVal} for user ${userId}, booking ${bookingId}`
+        );
       };
 
       if (tx) {
@@ -70,7 +73,10 @@ export class WalletBlockingService {
         await prisma.$transaction(operation);
       }
     } catch (error) {
-      logger.error(`[WalletBlocking] Failed to reserve funds for booking ${bookingId}:`, error);
+      logger.error(
+        `[WalletBlocking] Failed to reserve funds for booking ${bookingId}:`,
+        error
+      );
       throw error;
     }
   }
@@ -83,7 +89,13 @@ export class WalletBlockingService {
    * @param {boolean} shouldDebit - If true, actually deducts from balance. If false, refunds (unreserves).
    * @param {object} [tx] - Optional Prisma transaction client
    */
-  static async releaseBlockedFunds(userId, bookingId, amount, shouldDebit = false, tx = null) {
+  static async releaseBlockedFunds(
+    userId,
+    bookingId,
+    amount,
+    shouldDebit = false,
+    tx = null
+  ) {
     const client = tx || prisma;
     const amountVal = parseFloat(amount);
 
@@ -126,7 +138,9 @@ export class WalletBlockingService {
           },
         });
 
-        logger.info(`[WalletBlocking] Released Rs. ${amountVal} (debit: ${shouldDebit}) for user ${userId}, booking ${bookingId}`);
+        logger.info(
+          `[WalletBlocking] Released Rs. ${amountVal} (debit: ${shouldDebit}) for user ${userId}, booking ${bookingId}`
+        );
       };
 
       if (tx) {
@@ -135,7 +149,10 @@ export class WalletBlockingService {
         await prisma.$transaction(operation);
       }
     } catch (error) {
-      logger.error(`[WalletBlocking] Failed to release blocked funds for booking ${bookingId}:`, error);
+      logger.error(
+        `[WalletBlocking] Failed to release blocked funds for booking ${bookingId}:`,
+        error
+      );
       throw error;
     }
   }
@@ -170,7 +187,9 @@ export class WalletBlockingService {
           booking.status === "FAILED" ||
           (booking.status === "COMPLETED" && booking.fundsReleasedAt !== null)
         ) {
-          logger.warn(`[WalletBlocking] Payout skipped: Booking ${bookingId} already in terminal state or funds released: ${booking.status}`);
+          logger.warn(
+            `[WalletBlocking] Payout skipped: Booking ${bookingId} already in terminal state or funds released: ${booking.status}`
+          );
           return;
         }
 
@@ -183,7 +202,9 @@ export class WalletBlockingService {
         const commissionConfig = await t.platformConfig.findUnique({
           where: { key: "COMMISSION_PERCENTAGE" },
         });
-        const commissionPct = commissionConfig ? parseFloat(commissionConfig.value) : 5;
+        const commissionPct = commissionConfig
+          ? parseFloat(commissionConfig.value)
+          : 5;
 
         // 3. Calculate commission and payout
         const commissionAmount = blockedAmt * (commissionPct / 100);
@@ -195,12 +216,18 @@ export class WalletBlockingService {
           where: {
             userId: booking.userId,
             type: "DEBIT",
-            description: { contains: bookingId }
-          }
+            description: { contains: bookingId },
+          },
         });
 
         if (!existingDebit) {
-          await this.releaseBlockedFunds(booking.userId, bookingId, blockedAmt, true, t);
+          await this.releaseBlockedFunds(
+            booking.userId,
+            bookingId,
+            blockedAmt,
+            true,
+            t
+          );
         }
 
         // 5. Credit professional's wallet and decrement inProgressBalance in OwnerProfile
@@ -208,7 +235,7 @@ export class WalletBlockingService {
           where: { id: booking.professionalId },
           data: {
             walletBalance: { increment: payoutAmount },
-            inProgressBalance: { decrement: blockedAmt }
+            inProgressBalance: { decrement: blockedAmt },
           },
         });
 
@@ -223,7 +250,9 @@ export class WalletBlockingService {
           },
         });
 
-        logger.info(`[WalletBlocking] Successfully released payout for booking ${bookingId}: Professional Payout: Rs. ${payoutAmount.toFixed(2)}, Platform Commission: Rs. ${commissionAmount.toFixed(2)}`);
+        logger.info(
+          `[WalletBlocking] Successfully released payout for booking ${bookingId}: Professional Payout: Rs. ${payoutAmount.toFixed(2)}, Platform Commission: Rs. ${commissionAmount.toFixed(2)}`
+        );
       };
 
       if (tx) {
@@ -232,7 +261,10 @@ export class WalletBlockingService {
         await prisma.$transaction(operation);
       }
     } catch (error) {
-      logger.error(`[WalletBlocking] Failed to release professional payout for booking ${bookingId}:`, error);
+      logger.error(
+        `[WalletBlocking] Failed to release professional payout for booking ${bookingId}:`,
+        error
+      );
       throw error;
     }
   }

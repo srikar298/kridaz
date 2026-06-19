@@ -1,6 +1,3 @@
 {
-  "ignore": [
-    "public/*",
-    "public/audio/*"
-  ]
+  "ignore": ["public/*", "public/audio/*"]
 }

@@ -9,10 +9,7 @@ import {
 } from "../wallet.controller.js";
 import verifyToken from "../../../middleware/jwt/user.middleware.js";
 import { validate } from "../../../middleware/validate.middleware.js";
-import {
-  createTopupSchema,
-  verifyTopupSchema,
-} from "../wallet.validator.js";
+import { createTopupSchema, verifyTopupSchema } from "../wallet.validator.js";
 import { paymentLimiter } from "../../../middleware/rateLimiter.middleware.js";
 import { idempotency } from "../../../middleware/idempotency.middleware.js";
 

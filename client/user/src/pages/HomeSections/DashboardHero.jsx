@@ -1,4 +1,3 @@
- 
 import React from "react";
 import { Link } from "react-router-dom";
 
@@ -25,7 +24,10 @@ export default function DashboardHero() {
           />
         </div>
         <div className="h-[28px] flex items-start justify-center">
-          <span className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+          <span
+            className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors"
+            style={{ fontFamily: "'Open Sans', sans-serif" }}
+          >
             Players Nearby
           </span>
         </div>
@@ -52,7 +54,10 @@ export default function DashboardHero() {
           />
         </div>
         <div className="h-[28px] flex items-start justify-center">
-          <span className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+          <span
+            className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors"
+            style={{ fontFamily: "'Open Sans', sans-serif" }}
+          >
             Score Match
           </span>
         </div>
@@ -78,7 +83,10 @@ export default function DashboardHero() {
           />
         </div>
         <div className="h-[28px] flex items-start justify-center">
-          <span className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+          <span
+            className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors"
+            style={{ fontFamily: "'Open Sans', sans-serif" }}
+          >
             Join Game
           </span>
         </div>
@@ -104,7 +112,10 @@ export default function DashboardHero() {
           />
         </div>
         <div className="h-[28px] flex items-start justify-center">
-          <span className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+          <span
+            className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors"
+            style={{ fontFamily: "'Open Sans', sans-serif" }}
+          >
             Pro's
           </span>
         </div>
@@ -112,4 +123,3 @@ export default function DashboardHero() {
     </div>
   );
 }
-

@@ -26,10 +26,13 @@ const fileFilter = (req, file, cb) => {
   }
   // multer wraps this in a MulterError-ish flow; throwing a typed BadRequest
   // makes the global error handler emit the standard envelope with code.
-  cb(new BadRequestError(
-    `Unsupported file type: ${file.mimetype}`,
-    { code: "INVALID_FILE_TYPE", allowed: [...ALLOWED_MIME_TYPES] }
-  ), false);
+  cb(
+    new BadRequestError(`Unsupported file type: ${file.mimetype}`, {
+      code: "INVALID_FILE_TYPE",
+      allowed: [...ALLOWED_MIME_TYPES],
+    }),
+    false
+  );
 };
 
 const upload = multer({

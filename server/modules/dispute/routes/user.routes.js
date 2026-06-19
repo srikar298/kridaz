@@ -1,8 +1,17 @@
 import { Router } from "express";
-import { raiseDispute, replyToDispute, getUserDisputes, getDisputeById, escalateDispute } from "../dispute.controller.js";
+import {
+  raiseDispute,
+  replyToDispute,
+  getUserDisputes,
+  getDisputeById,
+  escalateDispute,
+} from "../dispute.controller.js";
 import verifyToken from "../../../middleware/jwt/user.middleware.js";
 import { validate } from "../../../middleware/validate.middleware.js";
-import { raiseDisputeSchema, replyToDisputeSchema } from "../dispute.validator.js";
+import {
+  raiseDisputeSchema,
+  replyToDisputeSchema,
+} from "../dispute.validator.js";
 import upload from "../../../middleware/uploads/upload.middleware.js";
 
 const router = Router();
@@ -32,7 +41,12 @@ router.get("/", getUserDisputes);
  *     summary: Raise a new dispute
  *     tags: [Dispute]
  */
-router.post("/raise", upload.array('disputeImages', 5), validate(raiseDisputeSchema), raiseDispute);
+router.post(
+  "/raise",
+  upload.array("disputeImages", 5),
+  validate(raiseDisputeSchema),
+  raiseDispute
+);
 
 /**
  * @swagger
@@ -50,7 +64,11 @@ router.get("/:disputeId", getDisputeById);
  *     summary: Reply to a dispute thread
  *     tags: [Dispute]
  */
-router.post("/:disputeId/reply", validate(replyToDisputeSchema), replyToDispute);
+router.post(
+  "/:disputeId/reply",
+  validate(replyToDisputeSchema),
+  replyToDispute
+);
 
 /**
  * @swagger

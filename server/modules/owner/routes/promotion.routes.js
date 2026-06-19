@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { 
-  createPromotion, 
-  getPromotions, 
+import {
+  createPromotion,
+  getPromotions,
   deletePromotion,
-  togglePromotionStatus
+  togglePromotionStatus,
 } from "../promotion.controller.js";
 import verifyOwnerToken from "../../../middleware/jwt/owner.middleware.js";
 

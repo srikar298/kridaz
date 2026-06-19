@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { 
-  Star, 
-  MessageSquare, 
-  CornerDownRight, 
+import {
+  Star,
+  MessageSquare,
+  CornerDownRight,
   CheckCircle,
-  ArrowRight
+  ArrowRight,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import axios from "axios";
@@ -17,7 +17,7 @@ const ReviewsTab = ({ role }) => {
   const [rating, setRating] = useState(5.0);
   const [numReviews, setNumReviews] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Reply status state
   const [replyingTo, setReplyingTo] = useState(null); // reviewId
   const [replyText, setReplyText] = useState("");
@@ -33,7 +33,7 @@ const ReviewsTab = ({ role }) => {
     try {
       const token = localStorage.getItem("token") || "";
       const res = await axios.get(`/api/professional/details/${ownerId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (res.data && res.data.professional) {
         setReviews(res.data.reviews || []);
@@ -59,13 +59,17 @@ const ReviewsTab = ({ role }) => {
     setFeedback("");
     try {
       const token = localStorage.getItem("token") || "";
-      await axios.post("/api/professional/review/reply", { 
-        reviewId, 
-        reply: replyText 
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
+      await axios.post(
+        "/api/professional/review/reply",
+        {
+          reviewId,
+          reply: replyText,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
       setFeedback("Reply submitted successfully!");
       setReplyText("");
       setReplyingTo(null);
@@ -80,7 +84,7 @@ const ReviewsTab = ({ role }) => {
   // Star breakdown calculation
   const getStarBreakdown = () => {
     const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-    reviews.forEach(r => {
+    reviews.forEach((r) => {
       const star = Math.min(5, Math.max(1, r.rating));
       counts[star]++;
     });
@@ -94,17 +98,25 @@ const ReviewsTab = ({ role }) => {
       {/* Overall Score Card */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-2xl bg-[#141414] border border-[#2D2D2D] items-center">
         <div className="text-center space-y-2 md:border-r md:border-[#2D2D2D] py-4">
-          <h2 className="text-5xl font-black text-[#BFF367]">{rating.toFixed(1)}</h2>
+          <h2 className="text-5xl font-black text-[#BFF367]">
+            {rating.toFixed(1)}
+          </h2>
           <div className="flex justify-center gap-1">
             {[1, 2, 3, 4, 5].map((s) => (
-              <Star 
-                key={s} 
-                size={16} 
-                className={s <= Math.round(rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-600"} 
+              <Star
+                key={s}
+                size={16}
+                className={
+                  s <= Math.round(rating)
+                    ? "text-yellow-400 fill-yellow-400"
+                    : "text-gray-600"
+                }
               />
             ))}
           </div>
-          <p className="text-xs text-[#878C9F] font-semibold uppercase tracking-wider">{numReviews} Reviews total</p>
+          <p className="text-xs text-[#878C9F] font-semibold uppercase tracking-wider">
+            {numReviews} Reviews total
+          </p>
         </div>
 
         <div className="md:col-span-2 space-y-2 py-4 px-0 md:px-6">
@@ -113,15 +125,19 @@ const ReviewsTab = ({ role }) => {
             const percentage = numReviews > 0 ? (count / numReviews) * 100 : 0;
             return (
               <div key={stars} className="flex items-center gap-3 text-xs">
-                <span className="w-3 text-[#878C9F] text-right font-semibold">{stars}</span>
+                <span className="w-3 text-[#878C9F] text-right font-semibold">
+                  {stars}
+                </span>
                 <Star size={12} className="text-yellow-400 fill-yellow-400" />
                 <div className="flex-1 h-2 bg-black rounded-full overflow-hidden border border-[#2D2D2D]">
-                  <div 
-                    className="h-full bg-[#BFF367] rounded-full transition-all duration-500" 
+                  <div
+                    className="h-full bg-[#BFF367] rounded-full transition-all duration-500"
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
-                <span className="w-6 text-[#878C9F] text-left font-semibold">{count}</span>
+                <span className="w-6 text-[#878C9F] text-left font-semibold">
+                  {count}
+                </span>
               </div>
             );
           })}
@@ -142,7 +158,9 @@ const ReviewsTab = ({ role }) => {
         </h3>
 
         {isLoading ? (
-          <div className="py-12 text-center text-[#878C9F]">Loading reviews...</div>
+          <div className="py-12 text-center text-[#878C9F]">
+            Loading reviews...
+          </div>
         ) : reviews.length === 0 ? (
           <div className="p-12 text-center bg-[#141414] border border-[#2D2D2D] rounded-2xl space-y-4">
             <div className="mx-auto w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-gray-500">
@@ -158,8 +176,8 @@ const ReviewsTab = ({ role }) => {
         ) : (
           <div className="space-y-4">
             {reviews.map((review) => (
-              <div 
-                key={review.id} 
+              <div
+                key={review.id}
                 className="p-5 rounded-2xl bg-[#141414] border border-[#2D2D2D] space-y-4"
               >
                 <div className="flex justify-between items-start">
@@ -168,20 +186,28 @@ const ReviewsTab = ({ role }) => {
                       {review.user?.name?.charAt(0) || "U"}
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold">{review.user?.name || "Anonymous User"}</h4>
+                      <h4 className="text-sm font-bold">
+                        {review.user?.name || "Anonymous User"}
+                      </h4>
                       <div className="flex gap-0.5 mt-0.5">
                         {[1, 2, 3, 4, 5].map((s) => (
-                          <Star 
-                            key={s} 
-                            size={10} 
-                            className={s <= review.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-600"} 
+                          <Star
+                            key={s}
+                            size={10}
+                            className={
+                              s <= review.rating
+                                ? "text-yellow-400 fill-yellow-400"
+                                : "text-gray-600"
+                            }
                           />
                         ))}
                       </div>
                     </div>
                   </div>
                   <span className="text-[10px] text-[#878C9F] font-semibold">
-                    {new Date(review.createdAt).toLocaleDateString("en-IN", { dateStyle: "medium" })}
+                    {new Date(review.createdAt).toLocaleDateString("en-IN", {
+                      dateStyle: "medium",
+                    })}
                   </span>
                 </div>
 
@@ -197,7 +223,11 @@ const ReviewsTab = ({ role }) => {
                       <span>Your Response</span>
                       {review.replyDate && (
                         <span className="text-[10px] text-[#878C9F] font-normal">
-                          • {new Date(review.replyDate).toLocaleDateString("en-IN", { dateStyle: "medium" })}
+                          •{" "}
+                          {new Date(review.replyDate).toLocaleDateString(
+                            "en-IN",
+                            { dateStyle: "medium" }
+                          )}
                         </span>
                       )}
                     </div>
@@ -206,11 +236,11 @@ const ReviewsTab = ({ role }) => {
                     </p>
                   </div>
                 ) : replyingTo === review.id ? (
-                  <form 
+                  <form
                     onSubmit={(e) => handleReplySubmit(e, review.id)}
                     className="ml-8 space-y-2 border-l border-[#2D2D2D] pl-4"
                   >
-                    <textarea 
+                    <textarea
                       required
                       placeholder="Write your response to the user..."
                       value={replyText}
@@ -218,14 +248,14 @@ const ReviewsTab = ({ role }) => {
                       className="w-full bg-black border border-[#2D2D2D] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#BFF367] min-h-[80px]"
                     />
                     <div className="flex gap-2 justify-end">
-                      <button 
+                      <button
                         type="button"
                         onClick={() => setReplyingTo(null)}
                         className="border border-[#2D2D2D] hover:bg-white/5 text-white font-semibold rounded-lg px-3 py-1.5 text-xs"
                       >
                         Cancel
                       </button>
-                      <button 
+                      <button
                         type="submit"
                         disabled={isSubmittingReply}
                         className="bg-[#BFF367] hover:bg-[#44cdd7] text-black font-semibold rounded-lg px-4 py-1.5 text-xs"
@@ -236,7 +266,7 @@ const ReviewsTab = ({ role }) => {
                   </form>
                 ) : (
                   <div className="flex justify-end pr-2">
-                    <button 
+                    <button
                       onClick={() => {
                         setReplyingTo(review.id);
                         setReplyText("");

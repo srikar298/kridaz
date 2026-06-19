@@ -20,22 +20,30 @@ import logger from "./logger.js";
  */
 export function createCircuitBreaker(fn, opts = {}) {
   const defaults = {
-    timeout: 10_000,                 // 10s max per call
-    errorThresholdPercentage: 50,    // open after 50% failures
-    resetTimeout: 30_000,            // try again after 30s
-    rollingCountTimeout: 60_000,     // 1-minute rolling window
-    rollingCountBuckets: 6,          // 10s buckets within the window
-    volumeThreshold: 5,              // need at least 5 calls before tripping
+    timeout: 10_000, // 10s max per call
+    errorThresholdPercentage: 50, // open after 50% failures
+    resetTimeout: 30_000, // try again after 30s
+    rollingCountTimeout: 60_000, // 1-minute rolling window
+    rollingCountBuckets: 6, // 10s buckets within the window
+    volumeThreshold: 5, // need at least 5 calls before tripping
     ...opts,
   };
 
   const name = opts.name || fn.name || "anonymous";
   const breaker = new CircuitBreaker(fn, defaults);
 
-  breaker.on("open",     () => logger.warn(`[CIRCUIT_BREAKER] ${name} — circuit OPENED (failing fast)`));
-  breaker.on("halfOpen", () => logger.info(`[CIRCUIT_BREAKER] ${name} — circuit HALF-OPEN (probing)`));
-  breaker.on("close",    () => logger.info(`[CIRCUIT_BREAKER] ${name} — circuit CLOSED (recovered)`));
-  breaker.on("fallback", () => logger.warn(`[CIRCUIT_BREAKER] ${name} — fallback triggered`));
+  breaker.on("open", () =>
+    logger.warn(`[CIRCUIT_BREAKER] ${name} — circuit OPENED (failing fast)`)
+  );
+  breaker.on("halfOpen", () =>
+    logger.info(`[CIRCUIT_BREAKER] ${name} — circuit HALF-OPEN (probing)`)
+  );
+  breaker.on("close", () =>
+    logger.info(`[CIRCUIT_BREAKER] ${name} — circuit CLOSED (recovered)`)
+  );
+  breaker.on("fallback", () =>
+    logger.warn(`[CIRCUIT_BREAKER] ${name} — fallback triggered`)
+  );
 
   return breaker;
 }

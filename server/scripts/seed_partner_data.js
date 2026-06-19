@@ -15,11 +15,13 @@ const seedPartnerData = async () => {
   try {
     logger.info("Connecting to database...");
     await prisma.$connect();
-    
+
     const hashedPassword = await argon2.hash(PASSWORD);
 
     // 1. Create/Update Coach
-    let coachUser = await prisma.user.findUnique({ where: { email: COACH_EMAIL } });
+    let coachUser = await prisma.user.findUnique({
+      where: { email: COACH_EMAIL },
+    });
     if (!coachUser) {
       coachUser = await prisma.user.create({
         data: {
@@ -27,26 +29,30 @@ const seedPartnerData = async () => {
           email: COACH_EMAIL,
           username: "expert_coach",
           password: hashedPassword,
-          role: "COACH"
-        }
+          role: "COACH",
+        },
       });
     }
 
-    let coachProfile = await prisma.ownerProfile.findUnique({ where: { userId: coachUser.id } });
+    let coachProfile = await prisma.ownerProfile.findUnique({
+      where: { userId: coachUser.id },
+    });
     if (!coachProfile) {
       coachProfile = await prisma.ownerProfile.create({
         data: {
           userId: coachUser.id,
           businessName: "Coach Academy",
           role: "coach",
-          verified: true
-        }
+          verified: true,
+        },
       });
       logger.info("Coach account created.");
     }
 
     // 2. Create/Update Umpire
-    let umpireUser = await prisma.user.findUnique({ where: { email: UMPIRE_EMAIL } });
+    let umpireUser = await prisma.user.findUnique({
+      where: { email: UMPIRE_EMAIL },
+    });
     if (!umpireUser) {
       umpireUser = await prisma.user.create({
         data: {
@@ -54,26 +60,31 @@ const seedPartnerData = async () => {
           email: UMPIRE_EMAIL,
           username: "pro_umpire",
           password: hashedPassword,
-          role: "UMPIRE"
-        }
+          role: "UMPIRE",
+        },
       });
     }
 
-    let umpireProfile = await prisma.ownerProfile.findUnique({ where: { userId: umpireUser.id } });
+    let umpireProfile = await prisma.ownerProfile.findUnique({
+      where: { userId: umpireUser.id },
+    });
     if (!umpireProfile) {
       umpireProfile = await prisma.ownerProfile.create({
         data: {
           userId: umpireUser.id,
           businessName: "Elite Umpiring",
           role: "umpire",
-          verified: true
-        }
+          verified: true,
+        },
       });
       logger.info("Umpire account created.");
     }
 
     // 3. Create some Test Users (Students/Players)
-    let players = await prisma.user.findMany({ take: 5, where: { role: 'USER' } });
+    let players = await prisma.user.findMany({
+      take: 5,
+      where: { role: "USER" },
+    });
     if (players.length === 0) {
       const player = await prisma.user.create({
         data: {
@@ -81,18 +92,18 @@ const seedPartnerData = async () => {
           email: "player@test.com",
           username: "test_player",
           password: hashedPassword,
-          role: "USER"
-        }
+          role: "USER",
+        },
       });
       players = [player];
       logger.info("Test player created.");
     }
 
-    const playerIds = players.map(p => p.id);
+    const playerIds = players.map((p) => p.id);
 
     // 4. Seed Matches (HostedGame) for Umpire
     await prisma.hostedGame.deleteMany({
-      where: { umpireId: umpireUser.id }
+      where: { umpireId: umpireUser.id },
     });
 
     const matchData = [
@@ -104,7 +115,7 @@ const seedPartnerData = async () => {
         umpireId: umpireUser.id,
         status: "ACTIVE",
         city: "Mumbai",
-        state: "Maharashtra"
+        state: "Maharashtra",
       },
       {
         hostId: coachUser.id,
@@ -114,8 +125,8 @@ const seedPartnerData = async () => {
         umpireId: umpireUser.id,
         status: "ACTIVE",
         city: "Pune",
-        state: "Maharashtra"
-      }
+        state: "Maharashtra",
+      },
     ];
 
     for (const m of matchData) {
@@ -125,7 +136,7 @@ const seedPartnerData = async () => {
 
     // 5. Seed Sessions for Coach
     await prisma.professionalSession.deleteMany({
-      where: { ownerId: coachProfile.id }
+      where: { ownerId: coachProfile.id },
     });
 
     const sessionData = [
@@ -137,8 +148,8 @@ const seedPartnerData = async () => {
         startTime: "06:00 PM",
         status: "UPCOMING",
         students: {
-          connect: playerIds.map(id => ({ id }))
-        }
+          connect: playerIds.map((id) => ({ id })),
+        },
       },
       {
         ownerId: coachProfile.id,
@@ -148,9 +159,9 @@ const seedPartnerData = async () => {
         startTime: "08:00 AM",
         status: "UPCOMING",
         students: {
-          connect: [{ id: playerIds[0] }]
-        }
-      }
+          connect: [{ id: playerIds[0] }],
+        },
+      },
     ];
 
     for (const s of sessionData) {
@@ -169,4 +180,3 @@ const seedPartnerData = async () => {
 };
 
 seedPartnerData();
-

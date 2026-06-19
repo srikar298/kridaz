@@ -1,5 +1,5 @@
 import QRCode from "qrcode";
-import cloudinary from "./cloudinary.js"
+import cloudinary from "./cloudinary.js";
 import logger from "./logger.js";
 
 async function generateQRCode(url) {
@@ -9,7 +9,7 @@ async function generateQRCode(url) {
 
     // Upload the QR code to Cloudinary
     const uploadResponse = await cloudinary.uploader.upload(qrCodeDataURL, {
-      folder: "kridaz/qrcode"
+      folder: "kridaz/qrcode",
     });
 
     logger.info("QR code URL generated and uploaded successfully!");

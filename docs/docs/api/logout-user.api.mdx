@@ -24,36 +24,18 @@ import Translate from "@docusaurus/Translate";
   as={"h1"}
   className={"openapi__heading"}
   children={"Logout user"}
->
-</Heading>
+></Heading>
 
 <MethodEndpoint
   method={"post"}
   path={"/user/auth/logout"}
   context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+></MethodEndpoint>
 
 Clears authentication cookies and invalidates the session.
 
-<ParamsDetails>
-  
-</ParamsDetails>
+<ParamsDetails></ParamsDetails>
 
-<RequestSchema
-  {...require("./logout-user.RequestSchema.json")}
->
-  
-</RequestSchema>
+<RequestSchema {...require("./logout-user.RequestSchema.json")}></RequestSchema>
 
-<StatusCodes
-  {...require("./logout-user.StatusCodes.json")}
->
-  
-</StatusCodes>
-
-
-      
+<StatusCodes {...require("./logout-user.StatusCodes.json")}></StatusCodes>

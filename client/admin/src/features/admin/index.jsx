@@ -24,4 +24,5 @@ export { default as ProfessionalDetailsPage } from "./ProfessionalManagement/Pro
 export { default as FinancialMissionControl } from "./Finance/FinancialMissionControl";
 export { default as HostedGamesPage } from "./HostedGames/HostedGamesPage";
 export { default as CouponManagement } from "./Coupons/CouponManagement";
-export { default as ReelReports } from "./Reels/ReelReports";export { default as ErrorLogs } from './ErrorLogs/ErrorLogs';
+export { default as ReelReports } from "./Reels/ReelReports";
+export { default as ErrorLogs } from "./ErrorLogs/ErrorLogs";

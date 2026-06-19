@@ -24,46 +24,26 @@ import Translate from "@docusaurus/Translate";
   as={"h1"}
   className={"openapi__heading"}
   children={"Reject a turf"}
->
-</Heading>
+></Heading>
 
 <MethodEndpoint
   method={"put"}
   path={"/admin/turfs/{id}/reject"}
   context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+></MethodEndpoint>
 
 Rejects a turf application.
 
-<Heading
-  id={"request"}
-  as={"h2"}
-  className={"openapi-tabs__heading"}
->
+<Heading id={"request"} as={"h2"} className={"openapi-tabs__heading"}>
   <Translate id="theme.openapi.request.title">Request</Translate>
 </Heading>
 
 <ParamsDetails
   {...require("./reject-a-turf.ParamsDetails.json")}
->
-  
-</ParamsDetails>
+></ParamsDetails>
 
 <RequestSchema
   {...require("./reject-a-turf.RequestSchema.json")}
->
-  
-</RequestSchema>
+></RequestSchema>
 
-<StatusCodes
-  {...require("./reject-a-turf.StatusCodes.json")}
->
-  
-</StatusCodes>
-
-
-      
+<StatusCodes {...require("./reject-a-turf.StatusCodes.json")}></StatusCodes>

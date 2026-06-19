@@ -1,6 +1,6 @@
 import express from "express";
-import { 
-  registerUser, 
+import {
+  registerUser,
   login,
   sendOtp,
   verifyOtp,
@@ -25,13 +25,13 @@ import {
   verifyEmailToken,
   verifyEmailGoogle,
   updateProfileEmailWithGoogle,
-  updateProfileEmailWithOtp
+  updateProfileEmailWithOtp,
 } from "../auth.controller.js";
-import { 
-  userRegisterSchema, 
+import {
+  userRegisterSchema,
   userLoginSchema,
   sendOtpSchema,
-  loginStep1Schema
+  loginStep1Schema,
 } from "../auth.validator.js";
 import { validate } from "../../../middleware/validate.middleware.js";
 import userAuth from "../../../middleware/jwt/user.middleware.js";
@@ -72,7 +72,12 @@ router.post("/verify-email-google", authLimiter, verifyEmailGoogle);
  *     summary: Register a new user
  *     tags: [Auth]
  */
-router.post("/register", authLimiter, validate(userRegisterSchema), registerUser);
+router.post(
+  "/register",
+  authLimiter,
+  validate(userRegisterSchema),
+  registerUser
+);
 
 /**
  * @swagger
@@ -173,11 +178,25 @@ router.post("/logout-all", userAuth, logoutAll);
  *       - BearerAuth: []
  */
 router.put("/updateProfile", userAuth, updateProfile);
-router.post("/profile-picture", userAuth, upload.single("profilePicture"), updateProfilePicture);
-router.post("/banner-picture", userAuth, upload.single("bannerPicture"), updateBannerPicture);
+router.post(
+  "/profile-picture",
+  userAuth,
+  upload.single("profilePicture"),
+  updateProfilePicture
+);
+router.post(
+  "/banner-picture",
+  userAuth,
+  upload.single("bannerPicture"),
+  updateBannerPicture
+);
 router.post("/send-phone-verification-otp", userAuth, sendPhoneVerificationOtp);
 router.post("/verify-phone-otp", userAuth, verifyPhoneOtp);
-router.post("/profile/verify-email-google", userAuth, updateProfileEmailWithGoogle);
+router.post(
+  "/profile/verify-email-google",
+  userAuth,
+  updateProfileEmailWithGoogle
+);
 router.post("/profile/verify-email-otp", userAuth, updateProfileEmailWithOtp);
 
 /**
@@ -200,7 +219,12 @@ router.post("/recovery/generate", userAuth, generateRecoveryTokens);
  *     security:
  *       - BearerAuth: []
  */
-router.post("/upgrade-request", userAuth, upload.array("documents", 10), upgradeRequest);
+router.post(
+  "/upgrade-request",
+  userAuth,
+  upload.array("documents", 10),
+  upgradeRequest
+);
 
 // â”€â”€ Password Reset Routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post("/forgot-password-otp", forgotPasswordOtp);

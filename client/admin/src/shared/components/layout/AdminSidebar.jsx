@@ -16,7 +16,7 @@ import {
   ShieldCheck,
   LogOut,
   Trophy,
-  Tag
+  Tag,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logout } from "@redux/slices/authSlice.js";
@@ -39,7 +39,11 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
 
   const mainNavItems = [
     { to: "/admin", label: "Dashboard", icon: LayoutGrid },
-    { to: "/admin/verification-center", label: "Verification Center", icon: ShieldCheck },
+    {
+      to: "/admin/verification-center",
+      label: "Verification Center",
+      icon: ShieldCheck,
+    },
     {
       label: "Roles",
       icon: Users,
@@ -95,7 +99,11 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
 
   const renderNavItem = (item) => {
     const isLogout = item.action === "logout";
-    const isActive = !isLogout && (item.to ? location.pathname === item.to : item.subItems?.some(sub => location.pathname === sub.to));
+    const isActive =
+      !isLogout &&
+      (item.to
+        ? location.pathname === item.to
+        : item.subItems?.some((sub) => location.pathname === sub.to));
     const Icon = item.icon;
     const isMenuOpen = openMenu === item.label;
 
@@ -104,7 +112,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
         <div key={item.label} className="space-y-1">
           <button
             onClick={() => !isMinimized && toggleMenu(item.label)}
-            className={`flex items-center justify-between w-full px-4 py-3 group relative transition-all duration-300 ${ isActive ? "text-black" : "text-white/40 hover:text-white" }`}
+            className={`flex items-center justify-between w-full px-4 py-3 group relative transition-all duration-300 ${isActive ? "text-black" : "text-white/40 hover:text-white"}`}
           >
             {isActive && (
               <div className="absolute inset-x-2 inset-y-1 bg-[#55DEE8] rounded-[8px] -z-10 shadow-[0_0_15px_rgba(204,255,0,0.3)] transition-all duration-300" />
@@ -112,24 +120,35 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
             {!isActive && (
               <div className="absolute inset-x-2 inset-y-1 bg-white/5 rounded-[8px] -z-10 opacity-0 group-hover:opacity-100 transition-all duration-300" />
             )}
-            
+
             <div className="flex items-center">
               <div className="flex-shrink-0 flex items-center justify-center w-6">
-                <Icon size={18} className={`transition-colors ${isActive ? "text-black" : "text-white/20 group-hover:text-[#55DEE8]"}`} />
+                <Icon
+                  size={18}
+                  className={`transition-colors ${isActive ? "text-black" : "text-white/20 group-hover:text-[#55DEE8]"}`}
+                />
               </div>
-              <span className={`font-medium text-sm tracking-wide ml-4 whitespace-nowrap overflow-hidden transition-all duration-300 ${isMinimized ? "opacity-0 w-0" : "opacity-100 w-auto"}`}>
+              <span
+                className={`font-medium text-sm tracking-wide ml-4 whitespace-nowrap overflow-hidden transition-all duration-300 ${isMinimized ? "opacity-0 w-0" : "opacity-100 w-auto"}`}
+              >
                 {item.label}
               </span>
             </div>
-            
+
             {!isMinimized && (
               <div className="transition-all duration-300">
-                {isMenuOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                {isMenuOpen ? (
+                  <ChevronUp size={14} />
+                ) : (
+                  <ChevronDown size={14} />
+                )}
               </div>
             )}
           </button>
-          
-          <div className={`overflow-hidden transition-all duration-500 ${!isMinimized && isMenuOpen ? "max-h-96 opacity-100 mb-2" : "max-h-0 opacity-0"}`}>
+
+          <div
+            className={`overflow-hidden transition-all duration-500 ${!isMinimized && isMenuOpen ? "max-h-96 opacity-100 mb-2" : "max-h-0 opacity-0"}`}
+          >
             <div className="ml-10 space-y-1 border-l border-white/10 mt-1">
               {item.subItems.map((subItem) => {
                 const isSubActive = location.pathname === subItem.to;
@@ -137,9 +156,11 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
                   <Link
                     key={subItem.to}
                     to={subItem.to}
-                    className={`flex items-center px-4 py-2 transition-all duration-300 ${ isSubActive ? "text-[#55DEE8]" : "text-white/30 hover:text-white" }`}
+                    className={`flex items-center px-4 py-2 transition-all duration-300 ${isSubActive ? "text-[#55DEE8]" : "text-white/30 hover:text-white"}`}
                   >
-                    <span className={`font-medium tracking-wide ${isSubActive ? "text-sm" : "text-xs"}`}>
+                    <span
+                      className={`font-medium tracking-wide ${isSubActive ? "text-sm" : "text-xs"}`}
+                    >
                       {subItem.label}
                     </span>
                   </Link>
@@ -155,7 +176,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
       <Link
         key={item.to || item.label}
         to={item.to || "#"}
-        className={`flex items-center px-4 py-3 group relative transition-all duration-300 ${ isLogout ? "text-white/40 hover:text-red-500" : isActive ? "text-black" : "text-white/40 hover:text-white" }`}
+        className={`flex items-center px-4 py-3 group relative transition-all duration-300 ${isLogout ? "text-white/40 hover:text-red-500" : isActive ? "text-black" : "text-white/40 hover:text-white"}`}
         onClick={(e) => {
           if (isLogout) {
             e.preventDefault();
@@ -170,7 +191,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
         {isActive && !isLogout && (
           <div className="absolute inset-x-2 inset-y-1 bg-[#55DEE8] rounded-[8px] -z-10 shadow-[0_0_15px_rgba(204,255,0,0.3)] transition-all duration-300" />
         )}
-        
+
         {!isActive && !isLogout && (
           <div className="absolute inset-x-2 inset-y-1 bg-white/5 rounded-[8px] -z-10 opacity-0 group-hover:opacity-100 transition-all duration-300" />
         )}
@@ -178,15 +199,17 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
         {isLogout && (
           <div className="absolute inset-x-2 inset-y-1 bg-white/5 rounded-[8px] -z-10 opacity-0 group-hover:opacity-100 group-hover:bg-red-500/10 transition-all duration-300" />
         )}
-        
+
         <div className="flex-shrink-0 flex items-center justify-center w-6">
-          <Icon 
-            size={18} 
-            className={`transition-colors duration-300 ${ isLogout ? "text-white/20 group-hover:text-red-500" : isActive ? "text-black" : "text-white/20 group-hover:text-[#55DEE8]" }`} 
+          <Icon
+            size={18}
+            className={`transition-colors duration-300 ${isLogout ? "text-white/20 group-hover:text-red-500" : isActive ? "text-black" : "text-white/20 group-hover:text-[#55DEE8]"}`}
           />
         </div>
 
-        <span className={`font-medium text-sm tracking-wide ml-4 whitespace-nowrap overflow-hidden transition-all duration-300 ${isMinimized ? "opacity-0 w-0" : "opacity-100 w-auto"}`}>
+        <span
+          className={`font-medium text-sm tracking-wide ml-4 whitespace-nowrap overflow-hidden transition-all duration-300 ${isMinimized ? "opacity-0 w-0" : "opacity-100 w-auto"}`}
+        >
           {item.label}
         </span>
       </Link>
@@ -199,16 +222,17 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
     >
       <div className="flex flex-col p-4 border-b border-white/5 bg-black/20 gap-4 lg:hidden">
         <div className="flex items-center justify-end">
-          <button onClick={toggleSidebar} className="text-white hover:text-[#55DEE8] transition-colors">
+          <button
+            onClick={toggleSidebar}
+            className="text-white hover:text-[#55DEE8] transition-colors"
+          >
             <X size={20} />
           </button>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto no-scrollbar py-6">
-        <nav className="px-2 space-y-1">
-          {mainNavItems.map(renderNavItem)}
-        </nav>
+        <nav className="px-2 space-y-1">{mainNavItems.map(renderNavItem)}</nav>
       </div>
 
       <div className="p-2 border-t border-white/5 space-y-1 mb-4">
@@ -217,6 +241,5 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
     </aside>
   );
 };
-
 
 export default AdminSidebar;

@@ -16,8 +16,8 @@ const SearchBar = ({ searchTerm, handleSearch }) => {
       />
       <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
         <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-white/5 rounded-[6px] border border-white/10">
-           <Command size={11} className="text-white/40" />
-           <span className="text-[10px] font-black text-white/40">K</span>
+          <Command size={11} className="text-white/40" />
+          <span className="text-[10px] font-black text-white/40">K</span>
         </div>
       </div>
     </div>

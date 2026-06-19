@@ -18,22 +18,26 @@ The **Teams** system enables athletes to form clubs, manage rosters, send invita
 The teams feature set is implemented within the following files:
 
 ### 1. `Teams.jsx`
-* **Path:** [Teams.jsx](file:///Users/prem/kridaz/client/user/src/features/teams/pages/Teams.jsx)
-* **Functionality:** Renders the main directory of user-created teams, invitations inbox, and the CTA button to trigger team creation.
+
+- **Path:** [Teams.jsx](file:///Users/prem/kridaz/client/user/src/features/teams/pages/Teams.jsx)
+- **Functionality:** Renders the main directory of user-created teams, invitations inbox, and the CTA button to trigger team creation.
 
 ### 2. `TeamProfile.jsx`
-* **Path:** [TeamProfile.jsx](file:///Users/prem/kridaz/client/user/src/features/teams/pages/TeamProfile.jsx)
-* **Functionality:** Provides the dashboard view for a single team. Lists members, player positions, stats, and handles direct edits by team managers.
-* **Key Code Snippet:**
+
+- **Path:** [TeamProfile.jsx](file:///Users/prem/kridaz/client/user/src/features/teams/pages/TeamProfile.jsx)
+- **Functionality:** Provides the dashboard view for a single team. Lists members, player positions, stats, and handles direct edits by team managers.
+- **Key Code Snippet:**
   ```javascript
   // Inviting a member to the team
   const inviteMember = async (targetUserId) => {
     try {
       setSendingInvite(true);
-      const res = await axiosInstance.post(`/api/teams/${teamId}/invite`, { userId: targetUserId });
+      const res = await axiosInstance.post(`/api/teams/${teamId}/invite`, {
+        userId: targetUserId,
+      });
       toast.success("Teammate invitation sent!");
       // Refresh pending list
-      setPendingInvites(prev => [...prev, res.data.invite]);
+      setPendingInvites((prev) => [...prev, res.data.invite]);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to send invitation");
     } finally {
@@ -43,12 +47,14 @@ The teams feature set is implemented within the following files:
   ```
 
 ### 3. `TeamPass.jsx`
-* **Path:** [TeamPass.jsx](file:///Users/prem/kridaz/client/user/src/features/teams/pages/TeamPass.jsx)
-* **Functionality:** Formats a ticket-themed graphic representation of the team, complete with a scannable QR code and roster list. Includes basic printing styling rules.
+
+- **Path:** [TeamPass.jsx](file:///Users/prem/kridaz/client/user/src/features/teams/pages/TeamPass.jsx)
+- **Functionality:** Formats a ticket-themed graphic representation of the team, complete with a scannable QR code and roster list. Includes basic printing styling rules.
 
 ### 4. `CreateTeamModal.jsx`
-* **Path:** [CreateTeamModal.jsx](file:///Users/prem/kridaz/client/user/src/features/teams/components/CreateTeamModal.jsx)
-* **Functionality:** A glassmorphism form configuration wizard to name the club, assign a home sport, upload logo assets, and select initial team founders.
+
+- **Path:** [CreateTeamModal.jsx](file:///Users/prem/kridaz/client/user/src/features/teams/components/CreateTeamModal.jsx)
+- **Functionality:** A glassmorphism form configuration wizard to name the club, assign a home sport, upload logo assets, and select initial team founders.
 
 ---
 
@@ -62,7 +68,7 @@ sequenceDiagram
     participant QR as Docusaurus / React UI (TeamPass.jsx)
     participant Admin as Venue Checker / Referee App
     participant DB as MongoDB / Redis DB
-    
+
     Capt->>QR: Request Team Pass View
     QR->>DB: Fetch Team ID & Roster status
     DB-->>QR: Return validation details
@@ -79,6 +85,6 @@ sequenceDiagram
 
 ## Styling & Design Integration
 
-* **Digital Ticket Card:** The `TeamPass.jsx` utilizes a design with rounded side cuts resembling a perforated movie ticket.
-* **Brand Colors:** Main headers are colored using the brand gradient (`#55DEE8` to `#BFF367`) styled over flat `#121212` backgrounds.
-* **Responsive Layout:** Sidebar roster components collapse to standard full-width panels on screens under 768px (`flex-col md:flex-row`).
+- **Digital Ticket Card:** The `TeamPass.jsx` utilizes a design with rounded side cuts resembling a perforated movie ticket.
+- **Brand Colors:** Main headers are colored using the brand gradient (`#55DEE8` to `#BFF367`) styled over flat `#121212` backgrounds.
+- **Responsive Layout:** Sidebar roster components collapse to standard full-width panels on screens under 768px (`flex-col md:flex-row`).

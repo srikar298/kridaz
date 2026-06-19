@@ -21,7 +21,7 @@ const seedOtp = async (email, phone) => {
       phone,
       emailOtp: "123456",
       phoneOtp: "123456",
-      expiresAt: new Date(Date.now() + 600000)
+      expiresAt: new Date(Date.now() + 600000),
     },
   });
 };
@@ -29,28 +29,38 @@ const seedOtp = async (email, phone) => {
 describe("Story Module API", () => {
   beforeAll(async () => {
     // Clean up
-    await prisma.story.deleteMany({ where: { user: { email: userEmail } } }).catch(() => {});
-    await prisma.refreshToken.deleteMany({ where: { user: { email: userEmail } } }).catch(() => {});
-    await prisma.user.deleteMany({ where: { email: userEmail } }).catch(() => {});
-    await prisma.oTP.deleteMany({ where: { email: userEmail } }).catch(() => {});
+    await prisma.story
+      .deleteMany({ where: { user: { email: userEmail } } })
+      .catch(() => {});
+    await prisma.refreshToken
+      .deleteMany({ where: { user: { email: userEmail } } })
+      .catch(() => {});
+    await prisma.user
+      .deleteMany({ where: { email: userEmail } })
+      .catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: userEmail } })
+      .catch(() => {});
 
     await seedOtp(userEmail, userPhone);
 
     // Register user
-    const otpRes_regRes = await request(app).post('/api/user/auth/verify-otp').send({ email: userEmail, phone: userPhone, otp: "123456" });
-    const regRes = await request(app)
-      .post("/api/user/auth/register")
-      .send({
-        name: "Story Tester",
-        email: userEmail,
-        username: userName,
-        phone: userPhone,
-        gender: "Male",
-        location: "Test City",
-        password: "Story@Pass123",
-        confirmPassword: "Story@Pass123",
-        otp: "123456",
-        phoneOtp: "123456", registrationToken: otpRes_regRes.body.registrationToken});
+    const otpRes_regRes = await request(app)
+      .post("/api/user/auth/verify-otp")
+      .send({ email: userEmail, phone: userPhone, otp: "123456" });
+    const regRes = await request(app).post("/api/user/auth/register").send({
+      name: "Story Tester",
+      email: userEmail,
+      username: userName,
+      phone: userPhone,
+      gender: "Male",
+      location: "Test City",
+      password: "Story@Pass123",
+      confirmPassword: "Story@Pass123",
+      otp: "123456",
+      phoneOtp: "123456",
+      registrationToken: otpRes_regRes.body.registrationToken,
+    });
 
     if (regRes.statusCode === 201) {
       userToken = regRes.body.token;
@@ -62,11 +72,17 @@ describe("Story Module API", () => {
   afterAll(async () => {
     const user = await prisma.user.findFirst({ where: { email: userEmail } });
     if (user) {
-      await prisma.story.deleteMany({ where: { userId: user.id } }).catch(() => {});
-      await prisma.refreshToken.deleteMany({ where: { userId: user.id } }).catch(() => {});
+      await prisma.story
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
+      await prisma.refreshToken
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
       await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
     }
-    await prisma.oTP.deleteMany({ where: { email: userEmail } }).catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: userEmail } })
+      .catch(() => {});
     await prisma.$disconnect();
   });
 
@@ -122,7 +138,8 @@ describe("Story Module API", () => {
 
   describe("POST /api/user/stories/:id/view", () => {
     it("should record view successfully with auth token", async () => {
-      if (!userToken || !createdStoryId) return logger.warn("Skipped: missing dependencies");
+      if (!userToken || !createdStoryId)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
         .post(`/api/user/stories/${createdStoryId}/view`)
@@ -135,7 +152,8 @@ describe("Story Module API", () => {
 
   describe("DELETE /api/user/stories/:id", () => {
     it("should delete the story successfully", async () => {
-      if (!userToken || !createdStoryId) return logger.warn("Skipped: missing dependencies");
+      if (!userToken || !createdStoryId)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
         .delete(`/api/user/stories/${createdStoryId}`)

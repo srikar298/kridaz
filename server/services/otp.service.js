@@ -24,10 +24,15 @@ export class OTPService {
         },
       });
 
-      logger.info(`[OTPService] Generated check-in OTP for booking ${bookingId}`);
+      logger.info(
+        `[OTPService] Generated check-in OTP for booking ${bookingId}`
+      );
       return otpCode;
     } catch (error) {
-      logger.error(`[OTPService] Failed to generate OTP for booking ${bookingId}:`, error);
+      logger.error(
+        `[OTPService] Failed to generate OTP for booking ${bookingId}:`,
+        error
+      );
       throw error;
     }
   }
@@ -47,7 +52,11 @@ export class OTPService {
       });
 
       if (!booking) {
-        return { success: false, status: "NOT_FOUND", message: "Booking not found" };
+        return {
+          success: false,
+          status: "NOT_FOUND",
+          message: "Booking not found",
+        };
       }
 
       if (booking.status !== "CONFIRMED") {
@@ -83,7 +92,9 @@ export class OTPService {
           },
         });
 
-        logger.info(`[OTPService] Check-in successful for booking ${bookingId}`);
+        logger.info(
+          `[OTPService] Check-in successful for booking ${bookingId}`
+        );
 
         // Notify user and professional via socket
         const io = getIO();
@@ -93,14 +104,21 @@ export class OTPService {
             message: "Professional has checked in. Match has started!",
           });
           if (booking.professional?.userId) {
-            io.to(booking.professional.userId).emit("professional:check_in_success", {
-              bookingId,
-              message: "Check-in successful. Enjoy the session!",
-            });
+            io.to(booking.professional.userId).emit(
+              "professional:check_in_success",
+              {
+                bookingId,
+                message: "Check-in successful. Enjoy the session!",
+              }
+            );
           }
         }
 
-        return { success: true, status: "IN_PROGRESS", booking: updatedBooking };
+        return {
+          success: true,
+          status: "IN_PROGRESS",
+          booking: updatedBooking,
+        };
       } else {
         // Incorrect OTP
         const newAttempts = booking.otpAttempts + 1;
@@ -111,7 +129,9 @@ export class OTPService {
             where: { id: bookingId },
             data: { otpAttempts: 0 },
           });
-          logger.warn(`[OTPService] Booking ${bookingId} check-in locked due to 3 failed attempts.`);
+          logger.warn(
+            `[OTPService] Booking ${bookingId} check-in locked due to 3 failed attempts.`
+          );
           return {
             success: false,
             status: "LOCKED",
@@ -132,7 +152,10 @@ export class OTPService {
         }
       }
     } catch (error) {
-      logger.error(`[OTPService] Error verifying OTP check-in for booking ${bookingId}:`, error);
+      logger.error(
+        `[OTPService] Error verifying OTP check-in for booking ${bookingId}:`,
+        error
+      );
       return { success: false, status: "ERROR", message: error.message };
     }
   }

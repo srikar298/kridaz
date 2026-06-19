@@ -1,5 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight, ExternalLink, Volume2, VolumeX, Play, Pause } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  Volume2,
+  VolumeX,
+  Play,
+  Pause,
+} from "lucide-react";
 import { gsap } from "gsap";
 
 const PRI = "#BFF367";
@@ -28,14 +36,14 @@ export const AdBannerSection = ({ banners = [] }) => {
 
   const startTimer = () => {
     stopTimer();
-    
+
     // Reset and animate progress bar
     gsap.set(progressRef.current, { width: "0%" });
     gsap.to(progressRef.current, {
       width: "100%",
       duration: bannerDuration / 1000,
       ease: "none",
-      onComplete: nextSlide
+      onComplete: nextSlide,
     });
   };
 
@@ -84,10 +92,8 @@ export const AdBannerSection = ({ banners = [] }) => {
     <section className="relative w-full overflow-hidden bg-black py-0">
       <div className="w-full px-1 md:px-2">
         <div className="relative group aspect-[16/9] rounded-[8px] md:rounded-[8px] overflow-hidden border border-white/10 shadow-2xl">
-
-
           {/* Banner Media Container (Horizontal Slides) */}
-          <div 
+          <div
             className="flex h-full w-full transition-transform duration-700 ease-in-out"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
@@ -107,14 +113,19 @@ export const AdBannerSection = ({ banners = [] }) => {
                       playsInline
                     />
                   ) : (
-                    <img 
-                      src={banner.imageUrl} 
+                    <img
+                      src={banner.imageUrl}
                       alt={banner.title}
                       className="w-full h-full object-cover opacity-90"
                     />
                   )}
                   {banner.targetUrl && (
-                    <a href={banner.targetUrl} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-20" />
+                    <a
+                      href={banner.targetUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="absolute inset-0 z-20"
+                    />
                   )}
                 </div>
               );
@@ -129,7 +140,11 @@ export const AdBannerSection = ({ banners = [] }) => {
                 className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-primary hover:text-black transition-all"
                 title={isPlaying ? "Pause" : "Play"}
               >
-                {isPlaying ? <Pause size={14} /> : <Play size={14} className="fill-white hover:fill-black" />}
+                {isPlaying ? (
+                  <Pause size={14} />
+                ) : (
+                  <Play size={14} className="fill-white hover:fill-black" />
+                )}
               </button>
               <button
                 onClick={toggleMute}
@@ -141,15 +156,13 @@ export const AdBannerSection = ({ banners = [] }) => {
             </div>
           )}
 
-
-
           {/* Indicators */}
           <div className="absolute bottom-6 right-8 flex gap-2 z-20">
             {banners.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}
-                className={`h-1 rounded-full transition-all ${ idx === currentIndex ? "w-6 bg-primary" : "w-1.5 bg-white/20 hover:bg-white/40" }`}
+                className={`h-1 rounded-full transition-all ${idx === currentIndex ? "w-6 bg-primary" : "w-1.5 bg-white/20 hover:bg-white/40"}`}
                 style={idx === currentIndex ? { backgroundColor: PRI } : {}}
               />
             ))}

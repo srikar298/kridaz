@@ -4,7 +4,7 @@ const initialState = {
   loginModal: {
     isOpen: false,
     title: "Login Required",
-    message: "Please log in to continue with this action."
+    message: "Please log in to continue with this action.",
   },
   userLocation: null, // { lat, lng, city, state }
   locationStatus: "detecting", // "detecting" | "granted" | "denied"
@@ -23,7 +23,9 @@ const uiSlice = createSlice({
     openLoginModal: (state, action) => {
       state.loginModal.isOpen = true;
       state.loginModal.title = action.payload?.title || "Login Required";
-      state.loginModal.message = action.payload?.message || "Please log in to continue with this action.";
+      state.loginModal.message =
+        action.payload?.message ||
+        "Please log in to continue with this action.";
     },
     closeLoginModal: (state) => {
       state.loginModal.isOpen = false;
@@ -45,9 +47,18 @@ const uiSlice = createSlice({
     },
     closeMainSidebar: (state) => {
       state.mainSidebar.isOpen = false;
-    }
-  }
+    },
+  },
 });
 
-export const { openLoginModal, closeLoginModal, setUserLocation, setLocationStatus, openLocationSidebar, closeLocationSidebar, openMainSidebar, closeMainSidebar } = uiSlice.actions;
+export const {
+  openLoginModal,
+  closeLoginModal,
+  setUserLocation,
+  setLocationStatus,
+  openLocationSidebar,
+  closeLocationSidebar,
+  openMainSidebar,
+  closeMainSidebar,
+} = uiSlice.actions;
 export default uiSlice.reducer;

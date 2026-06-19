@@ -26,9 +26,15 @@ const useErrorLogs = () => {
 
   const resolveLog = async (id) => {
     try {
-      const res = await axiosInstance.patch(`/api/admin/error-logs/${id}/resolve`);
+      const res = await axiosInstance.patch(
+        `/api/admin/error-logs/${id}/resolve`
+      );
       if (res.data?.success) {
-        setLogs((prev) => prev.map((log) => (log.id === id ? { ...log, isResolved: true } : log)));
+        setLogs((prev) =>
+          prev.map((log) =>
+            log.id === id ? { ...log, isResolved: true } : log
+          )
+        );
       }
     } catch (error) {
       console.error("Failed to resolve error log", error);

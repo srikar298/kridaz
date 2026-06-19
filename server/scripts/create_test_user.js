@@ -14,8 +14,8 @@ async function main() {
         password: hashedPassword,
         name: "Team Tester",
         username: "team_tester",
-        role: "USER"
-      }
+        role: "USER",
+      },
     });
     console.log("Updated team_tester user successfully!");
   } else {
@@ -26,8 +26,8 @@ async function main() {
         username: "team_tester",
         password: hashedPassword,
         role: "USER",
-        phone: "1111111111"
-      }
+        phone: "1111111111",
+      },
     });
     console.log("Created team_tester user successfully!");
   }

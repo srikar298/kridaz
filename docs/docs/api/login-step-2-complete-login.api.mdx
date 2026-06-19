@@ -24,44 +24,26 @@ import Translate from "@docusaurus/Translate";
   as={"h1"}
   className={"openapi__heading"}
   children={"Login Step 2 - Complete login"}
->
-</Heading>
+></Heading>
 
 <MethodEndpoint
   method={"post"}
   path={"/user/auth/login"}
   context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+></MethodEndpoint>
 
 Finalizes the login process, optionally verifying an OTP. Sets auth cookies.
 
-<Heading
-  id={"request"}
-  as={"h2"}
-  className={"openapi-tabs__heading"}
->
+<Heading id={"request"} as={"h2"} className={"openapi-tabs__heading"}>
   <Translate id="theme.openapi.request.title">Request</Translate>
 </Heading>
 
-<ParamsDetails>
-  
-</ParamsDetails>
+<ParamsDetails></ParamsDetails>
 
 <RequestSchema
   {...require("./login-step-2-complete-login.RequestSchema.json")}
->
-  
-</RequestSchema>
+></RequestSchema>
 
 <StatusCodes
   {...require("./login-step-2-complete-login.StatusCodes.json")}
->
-  
-</StatusCodes>
-
-
-      
+></StatusCodes>

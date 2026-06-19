@@ -1,1 +1,10 @@
-{"parameters":[{"in":"path","name":"id","required":true,"schema":{"type":"string","format":"uuid"}}]}
+{
+  "parameters": [
+    {
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": { "type": "string", "format": "uuid" }
+    }
+  ]
+}

@@ -26,7 +26,9 @@ const InviteDashboard = () => {
 
   const resendInvite = async (id) => {
     try {
-      const res = await axiosInstance.post(`/api/admin/venue-invites/${id}/resend`);
+      const res = await axiosInstance.post(
+        `/api/admin/venue-invites/${id}/resend`
+      );
       toast.success(res.data.message);
       fetchInvites();
     } catch (err) {
@@ -36,7 +38,9 @@ const InviteDashboard = () => {
 
   const revokeInvite = async (id) => {
     try {
-      const res = await axiosInstance.post(`/api/admin/venue-invites/${id}/revoke`);
+      const res = await axiosInstance.post(
+        `/api/admin/venue-invites/${id}/revoke`
+      );
       toast.success(res.data.message);
       fetchInvites();
     } catch (err) {
@@ -53,7 +57,9 @@ const InviteDashboard = () => {
   if (loading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-[#0a0a0a] text-[#B3DC26]">
-        <div className="text-sm font-bold tracking-widest uppercase animate-pulse">Loading Invites...</div>
+        <div className="text-sm font-bold tracking-widest uppercase animate-pulse">
+          Loading Invites...
+        </div>
       </div>
     );
   }
@@ -65,17 +71,19 @@ const InviteDashboard = () => {
           <h1 className="text-4xl md:text-5xl font-black tracking-tight uppercase text-white leading-none">
             Invite <span className="text-[#B3DC26]">Management</span>
           </h1>
-          <p className="text-white/50 text-xs font-bold uppercase tracking-widest mt-3">Monitor and manage venue owner invitations</p>
+          <p className="text-white/50 text-xs font-bold uppercase tracking-widest mt-3">
+            Monitor and manage venue owner invitations
+          </p>
         </div>
         <div className="flex gap-4">
-          <button 
-            onClick={() => navigate("/admin/turfs")} 
+          <button
+            onClick={() => navigate("/admin/turfs")}
             className="px-6 py-2 rounded-[8px] border border-white/10 text-xs font-bold uppercase tracking-widest hover:bg-white/5"
           >
             Back to Venues
           </button>
-          <button 
-            onClick={() => navigate("/admin/turfs/invite/new")} 
+          <button
+            onClick={() => navigate("/admin/turfs/invite/new")}
             className="px-6 py-2 flex items-center gap-2 rounded-[8px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-black text-xs font-bold uppercase tracking-widest shadow-[0_4px_12px_rgba(179,220,38,0.2)]"
           >
             <Plus size={16} /> New Invite
@@ -98,51 +106,94 @@ const InviteDashboard = () => {
             <tbody className="divide-y divide-white/10">
               {invites.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="px-6 py-12 text-center text-white/40 text-xs font-bold uppercase tracking-widest">
+                  <td
+                    colSpan="5"
+                    className="px-6 py-12 text-center text-white/40 text-xs font-bold uppercase tracking-widest"
+                  >
                     No invites found
                   </td>
                 </tr>
-              ) : invites.map(invite => (
-                <tr key={invite.id} className="hover:bg-white/5 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="font-bold text-white truncate max-w-[200px]">{invite.turf?.name || "N/A"}</div>
-                    <div className="text-[10px] text-white/50 uppercase tracking-widest mt-1">{invite.turf?.city || "N/A"}</div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-white/80 font-mono text-xs">{invite.email || invite.phone || "N/A"}</div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-[16px] text-[10px] font-bold uppercase tracking-widest ${
-                      invite.status === 'PENDING' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' :
-                      invite.status === 'ACCEPTED' ? 'bg-[#B3DC26]/10 text-[#B3DC26] border border-[#B3DC26]/20' :
-                      'bg-red-500/10 text-red-500 border border-red-500/20'
-                    }`}>
-                      {invite.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-xs text-white/70">{new Date(invite.createdAt).toLocaleDateString()}</div>
-                    <div className="text-[10px] text-white/40 mt-1">Exp: {new Date(invite.expiresAt).toLocaleDateString()}</div>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      {invite.status === 'PENDING' && (
-                        <>
-                          <button onClick={() => copyMagicLink(invite.token)} className="p-2 bg-[#1B1B1B] hover:bg-[#2A2A2A] rounded-lg border border-white/5 hover:border-white/20 transition-all group" title="Copy Magic Link">
-                            <Copy size={14} className="text-white/70 group-hover:text-white" />
-                          </button>
-                          <button onClick={() => resendInvite(invite.id)} className="p-2 bg-[#1B1B1B] hover:bg-[#2A2A2A] rounded-lg border border-white/5 hover:border-white/20 transition-all group" title="Resend">
-                            <RotateCw size={14} className="text-blue-400 group-hover:text-blue-300" />
-                          </button>
-                          <button onClick={() => revokeInvite(invite.id)} className="p-2 bg-[#1B1B1B] hover:bg-[#2A2A2A] rounded-lg border border-white/5 hover:border-white/20 transition-all group" title="Revoke">
-                            <XCircle size={14} className="text-red-400 group-hover:text-red-300" />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              ) : (
+                invites.map((invite) => (
+                  <tr
+                    key={invite.id}
+                    className="hover:bg-white/5 transition-colors"
+                  >
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-white truncate max-w-[200px]">
+                        {invite.turf?.name || "N/A"}
+                      </div>
+                      <div className="text-[10px] text-white/50 uppercase tracking-widest mt-1">
+                        {invite.turf?.city || "N/A"}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-white/80 font-mono text-xs">
+                        {invite.email || invite.phone || "N/A"}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`px-3 py-1 rounded-[16px] text-[10px] font-bold uppercase tracking-widest ${
+                          invite.status === "PENDING"
+                            ? "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"
+                            : invite.status === "ACCEPTED"
+                              ? "bg-[#B3DC26]/10 text-[#B3DC26] border border-[#B3DC26]/20"
+                              : "bg-red-500/10 text-red-500 border border-red-500/20"
+                        }`}
+                      >
+                        {invite.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-xs text-white/70">
+                        {new Date(invite.createdAt).toLocaleDateString()}
+                      </div>
+                      <div className="text-[10px] text-white/40 mt-1">
+                        Exp: {new Date(invite.expiresAt).toLocaleDateString()}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        {invite.status === "PENDING" && (
+                          <>
+                            <button
+                              onClick={() => copyMagicLink(invite.token)}
+                              className="p-2 bg-[#1B1B1B] hover:bg-[#2A2A2A] rounded-lg border border-white/5 hover:border-white/20 transition-all group"
+                              title="Copy Magic Link"
+                            >
+                              <Copy
+                                size={14}
+                                className="text-white/70 group-hover:text-white"
+                              />
+                            </button>
+                            <button
+                              onClick={() => resendInvite(invite.id)}
+                              className="p-2 bg-[#1B1B1B] hover:bg-[#2A2A2A] rounded-lg border border-white/5 hover:border-white/20 transition-all group"
+                              title="Resend"
+                            >
+                              <RotateCw
+                                size={14}
+                                className="text-blue-400 group-hover:text-blue-300"
+                              />
+                            </button>
+                            <button
+                              onClick={() => revokeInvite(invite.id)}
+                              className="p-2 bg-[#1B1B1B] hover:bg-[#2A2A2A] rounded-lg border border-white/5 hover:border-white/20 transition-all group"
+                              title="Revoke"
+                            >
+                              <XCircle
+                                size={14}
+                                className="text-red-400 group-hover:text-red-300"
+                              />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

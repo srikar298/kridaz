@@ -1,9 +1,17 @@
 import asyncHandler from "../../utils/asyncHandler.js";
 import generateEmail from "../../utils/generateEmail.js";
-import { BadRequestError, UnauthorizedError, InternalError } from '@kridaz/common';
+import {
+  BadRequestError,
+  UnauthorizedError,
+  InternalError,
+} from "@kridaz/common";
 import * as argon2 from "argon2";
 import { OAuth2Client } from "google-auth-library";
-import { generateUserToken, generateOwnerToken, generateRefreshToken } from "../../utils/generateJwtToken.js";
+import {
+  generateUserToken,
+  generateOwnerToken,
+  generateRefreshToken,
+} from "../../utils/generateJwtToken.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import NotificationService from "../../services/notification.service.js";
@@ -11,7 +19,12 @@ import cloudinary, { uploadToCloudinary } from "../../utils/cloudinary.js";
 import { getIO } from "../../config/socket.js";
 import { redisClient } from "../../config/redis.js";
 import { prisma } from "../../config/prisma.js";
-import { addUsernameToBloom, checkUsernameBloom, blacklistOtpIdentifier, isOtpBlacklisted } from "../../utils/bloomFilter.js";
+import {
+  addUsernameToBloom,
+  checkUsernameBloom,
+  blacklistOtpIdentifier,
+  isOtpBlacklisted,
+} from "../../utils/bloomFilter.js";
 import { logAudit } from "../../utils/auditLogger.js";
 import logger from "../../utils/logger.js";
 import { userRegistrationTotal } from "../../utils/metrics.js";
@@ -37,30 +50,42 @@ const REFRESH_TOKEN_LIFETIME_MS_HELPER = 30 * 24 * 60 * 60 * 1000;
  */
 const issueTokens = async (res, userId, token) => {
   // Generate new refresh token (random string, hashed & saved in DB)
-  const clientIp = res.req.ip || res.req.headers['x-forwarded-for'] || res.req.socket?.remoteAddress || null;
+  const clientIp =
+    res.req.ip ||
+    res.req.headers["x-forwarded-for"] ||
+    res.req.socket?.remoteAddress ||
+    null;
   const refreshToken = await generateRefreshToken(userId, clientIp);
-  const isProd = process.env.NODE_ENV === "production" || !!process.env.RAILWAY_ENVIRONMENT || !!process.env.RAILWAY_ENVIRONMENT_NAME || !!process.env.RAILWAY_PROJECT_ID;
+  const isProd =
+    process.env.NODE_ENV === "production" ||
+    !!process.env.RAILWAY_ENVIRONMENT ||
+    !!process.env.RAILWAY_ENVIRONMENT_NAME ||
+    !!process.env.RAILWAY_PROJECT_ID;
   const now = Date.now();
-  const accessTokenExpiresAt = new Date(now + ACCESS_TOKEN_LIFETIME_MS_HELPER).toISOString();
-  const refreshTokenExpiresAt = new Date(now + REFRESH_TOKEN_LIFETIME_MS_HELPER).toISOString();
+  const accessTokenExpiresAt = new Date(
+    now + ACCESS_TOKEN_LIFETIME_MS_HELPER
+  ).toISOString();
+  const refreshTokenExpiresAt = new Date(
+    now + REFRESH_TOKEN_LIFETIME_MS_HELPER
+  ).toISOString();
   res.cookie("auth_token", token, {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? "none" : "lax",
     maxAge: ACCESS_TOKEN_LIFETIME_MS_HELPER,
-    path: "/"
+    path: "/",
   });
   res.cookie("refresh_token", refreshToken, {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? "none" : "lax",
     maxAge: REFRESH_TOKEN_LIFETIME_MS_HELPER,
-    path: "/"
+    path: "/",
   });
   return {
     refreshToken,
     accessTokenExpiresAt,
-    refreshTokenExpiresAt
+    refreshTokenExpiresAt,
   };
 };
 const generateOTP = () => {
@@ -79,29 +104,41 @@ const generateOTP = () => {
  * the blacklist.
  */
 const REG_TOKEN_TTL_S = 35 * 60;
-const claimRegistrationToken = async token => {
+const claimRegistrationToken = async (token) => {
   if (!token) {
-    throw new BadRequestError("Registration token is missing. Please verify your OTP again.", {
-      code: "REGISTRATION_TOKEN_MISSING"
-    });
+    throw new BadRequestError(
+      "Registration token is missing. Please verify your OTP again.",
+      {
+        code: "REGISTRATION_TOKEN_MISSING",
+      }
+    );
   }
   let decoded;
   try {
     decoded = jwt.verify(token, getRegistrationSecret());
   } catch (err) {
-    throw new BadRequestError("Registration token is invalid or expired. Please start over.", {
-      code: "REGISTRATION_TOKEN_INVALID"
-    });
+    throw new BadRequestError(
+      "Registration token is invalid or expired. Please start over.",
+      {
+        code: "REGISTRATION_TOKEN_INVALID",
+      }
+    );
   }
 
   // Older tokens minted before the jti rollout don't have one; let them through
   // so users mid-registration during the deploy don't get stranded. New tokens
   // always carry a jti.
   if (decoded.jti) {
-    const claimed = await redisClient.set(`reg:used:${decoded.jti}`, "1", "EX", REG_TOKEN_TTL_S, "NX");
+    const claimed = await redisClient.set(
+      `reg:used:${decoded.jti}`,
+      "1",
+      "EX",
+      REG_TOKEN_TTL_S,
+      "NX"
+    );
     if (claimed !== "OK") {
       throw new BadRequestError("Registration token has already been used.", {
-        code: "REGISTRATION_TOKEN_USED"
+        code: "REGISTRATION_TOKEN_USED",
       });
     }
   }
@@ -125,60 +162,73 @@ const claimRegistrationToken = async token => {
 const migrateCustomInvitesForUser = async (tx, userId, phone) => {
   const customInvites = await tx.teamCustomMember.findMany({
     where: {
-      phone
+      phone,
     },
     select: {
       id: true,
-      teamId: true
-    }
+      teamId: true,
+    },
   });
   if (!customInvites.length) return;
 
   // Pre-fetch existing memberships across all relevant teams so we know which
   // teamMember.create calls to skip. One IN query replaces N findFirst calls.
-  const teamIds = [...new Set(customInvites.map(c => c.teamId))];
+  const teamIds = [...new Set(customInvites.map((c) => c.teamId))];
   const existingMembers = await tx.teamMember.findMany({
     where: {
       userId,
       teamId: {
-        in: teamIds
-      }
+        in: teamIds,
+      },
     },
     select: {
-      teamId: true
-    }
+      teamId: true,
+    },
   });
-  const alreadyJoined = new Set(existingMembers.map(m => m.teamId));
-  await Promise.all(customInvites.map(custom => Promise.all([!alreadyJoined.has(custom.teamId) ? tx.teamMember.create({
-    data: {
-      teamId: custom.teamId,
-      userId,
-      role: "PLAYER",
-      status: "ACCEPTED"
-    }
-  }) : Promise.resolve(), tx.matchPlayerStat.updateMany({
-    where: {
-      userId: custom.id
-    },
-    data: {
-      userId
-    }
-  }), tx.gameSlot.updateMany({
-    where: {
-      customPlayerId: custom.id
-    },
-    data: {
-      userId,
-      customPlayerId: null
-    }
-  }), tx.teamCustomMember.delete({
-    where: {
-      id: custom.id
-    }
-  })])));
+  const alreadyJoined = new Set(existingMembers.map((m) => m.teamId));
+  await Promise.all(
+    customInvites.map((custom) =>
+      Promise.all([
+        !alreadyJoined.has(custom.teamId)
+          ? tx.teamMember.create({
+              data: {
+                teamId: custom.teamId,
+                userId,
+                role: "PLAYER",
+                status: "ACCEPTED",
+              },
+            })
+          : Promise.resolve(),
+        tx.matchPlayerStat.updateMany({
+          where: {
+            userId: custom.id,
+          },
+          data: {
+            userId,
+          },
+        }),
+        tx.gameSlot.updateMany({
+          where: {
+            customPlayerId: custom.id,
+          },
+          data: {
+            userId,
+            customPlayerId: null,
+          },
+        }),
+        tx.teamCustomMember.delete({
+          where: {
+            id: custom.id,
+          },
+        }),
+      ])
+    )
+  );
 };
-const generateUniqueUsername = async baseName => {
-  let username = baseName ? baseName.toLowerCase().replace(/[^a-z0-9]/g, '') : "player";
+const generateUniqueUsername = async (baseName) => {
+  let username = baseName
+    ? baseName.toLowerCase().replace(/[^a-z0-9]/g, "")
+    : "player";
   if (!username) username = "player";
   let isUnique = false;
   let counter = 0;
@@ -198,41 +248,45 @@ const generateUniqueUsername = async baseName => {
 
 // Check Username Availability
 export const checkUsername = asyncHandler(async (req, res) => {
-  const {
-    username
-  } = req.query;
+  const { username } = req.query;
   if (!username) {
     return res.status(400).json({
       success: false,
-      message: "Username is required"
+      message: "Username is required",
     });
   }
   // High-performance check using Bloom Filter logic
   const available = await checkUsernameBloom(username);
   return res.status(200).json({
     success: true,
-    available
+    available,
   });
 });
 
 // Send OTP for Registration (Email & Phone)
 export const sendOtp = asyncHandler(async (req, res) => {
-  const {
-    email,
-    phone,
-    deliveryMethod
-  } = req.body;
+  const { email, phone, deliveryMethod } = req.body;
   const conditions = [];
-  if (email) conditions.push({
-    email
-  });
-  if (phone) conditions.push({
-    phone
-  });
+  if (email) conditions.push({ email });
+  if (phone) {
+    conditions.push({ phone });
+    const withoutCountry = phone.length >= 10 ? phone.slice(-10) : phone;
+    if (withoutCountry && withoutCountry !== phone) {
+      conditions.push({ phone: withoutCountry });
+    }
+    if (!phone.startsWith("+")) {
+      if (phone.length > 10) {
+        conditions.push({ phone: `+${phone}` });
+      } else {
+        conditions.push({ phone: `+91${phone}` });
+      }
+    }
+  }
+
   if (conditions.length === 0) {
     return res.status(400).json({
       success: false,
-      message: "Email or Phone required"
+      message: "Email or Phone required",
     });
   }
 
@@ -240,35 +294,42 @@ export const sendOtp = asyncHandler(async (req, res) => {
   if (req.body.type === "signup") {
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: conditions
-      }
+        OR: conditions,
+      },
     });
     if (existingUser) {
       let msg = "Email or Phone already registered";
-      if (email && phone) msg = "This email and phone number are already registered on our platform.";
+      if (email && phone)
+        msg =
+          "This email and phone number are already registered on our platform.";
       else if (email) msg = "This email is already registered on our platform.";
-      else if (phone) msg = "This phone number is already registered on our platform. Please log in.";
-      
+      else if (phone)
+        msg =
+          "This phone number is already registered on our platform. Please log in.";
+
       return res.status(400).json({
         success: false,
-        message: msg
+        message: msg,
       });
     }
   }
 
   // ── SECURITY BLOOM ─────────────────────────────────────────────────────
-  if (email && (await isOtpBlacklisted(email)) || phone && (await isOtpBlacklisted(phone))) {
+  if (
+    (email && (await isOtpBlacklisted(email))) ||
+    (phone && (await isOtpBlacklisted(phone)))
+  ) {
     return res.status(429).json({
       success: false,
-      message: "Too many attempts. Please try again later."
+      message: "Too many attempts. Please try again later.",
     });
   }
   const emailOtp = email ? generateOTP() : null;
   const phoneOtp = phone ? generateOTP() : null;
   await prisma.oTP.deleteMany({
     where: {
-      OR: conditions
-    }
+      OR: conditions,
+    },
   });
   await prisma.oTP.create({
     data: {
@@ -276,8 +337,8 @@ export const sendOtp = asyncHandler(async (req, res) => {
       phone,
       emailOtp,
       phoneOtp,
-      expiresAt: new Date(Date.now() + 10 * 60 * 1000)
-    }
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+    },
   });
 
   // Send OTPs via NotificationService (Queued)
@@ -286,26 +347,26 @@ export const sendOtp = asyncHandler(async (req, res) => {
     email,
     deliveryMethod,
     otp: phoneOtp || emailOtp,
-    phoneTemplate: process.env.MSG91_WHATSAPP_OTP_TEMPLATE || "otp_verification",
+    phoneTemplate:
+      process.env.MSG91_WHATSAPP_OTP_TEMPLATE || "otp_verification",
     emailSubject: "Your Kridaz Verification Code",
-    emailHtml: emailOtp ? `<p>Your verification code is <strong>${emailOtp}</strong>. It will expire in 10 minutes.</p>` : null
+    emailHtml: emailOtp
+      ? `<p>Your verification code is <strong>${emailOtp}</strong>. It will expire in 10 minutes.</p>`
+      : null,
   });
   let msg = "";
   if (email && phone) msg = "OTPs sent to your email and WhatsApp successfully";
   else if (email) msg = "OTP sent to your email successfully";
-  else if (deliveryMethod === 'sms') msg = "OTP sent to your phone via SMS successfully";
+  else if (deliveryMethod === "sms")
+    msg = "OTP sent to your phone via SMS successfully";
   else msg = "OTP sent to your WhatsApp successfully";
   return res.status(200).json({
     success: true,
-    message: msg
+    message: msg,
   });
 });
 export const verifyOtp = asyncHandler(async (req, res) => {
-  const {
-    email,
-    phone,
-    otp
-  } = req.body;
+  const { email, phone, otp } = req.body;
   let firebaseVerified = false;
 
   // Check if the otp is actually a Firebase idToken (it's a JWT, so it's long)
@@ -317,19 +378,22 @@ export const verifyOtp = asyncHandler(async (req, res) => {
       // Ensure the verified phone matches the requested phone
       // Firebase phone includes country code (e.g., +916205170591).
       // req.body.phone might be "6205170591" or "+916205170591". We do a loose match or exact.
-      if (firebasePhone && (firebasePhone === phone || firebasePhone.endsWith(phone))) {
+      if (
+        firebasePhone &&
+        (firebasePhone === phone || firebasePhone.endsWith(phone))
+      ) {
         firebaseVerified = true;
       } else {
         return res.status(400).json({
           success: false,
-          message: "Phone number mismatch with Firebase Auth"
+          message: "Phone number mismatch with Firebase Auth",
         });
       }
     } catch (fbError) {
       logger.error("Firebase verifyIdToken error in verifyOtp:", fbError);
       return res.status(400).json({
         success: false,
-        message: "Invalid Firebase Token"
+        message: "Invalid Firebase Token",
       });
     }
   }
@@ -337,76 +401,81 @@ export const verifyOtp = asyncHandler(async (req, res) => {
   if (!firebaseVerified) {
     otpRecord = await prisma.oTP.findFirst({
       where: {
-        OR: [{
-          email: email || "",
-          emailOtp: otp
-        }, {
-          phone: phone || "",
-          phoneOtp: otp
-        }]
-      }
+        OR: [
+          {
+            email: email || "",
+            emailOtp: otp,
+          },
+          {
+            phone: phone || "",
+            phoneOtp: otp,
+          },
+        ],
+      },
     });
     if (!otpRecord) {
       return res.status(400).json({
         success: false,
-        message: "OTP is wrong"
+        message: "OTP is wrong",
       });
     }
   }
   if (otpRecord && otpRecord.expiresAt < new Date()) {
     return res.status(400).json({
       success: false,
-      message: "OTP has expired"
+      message: "OTP has expired",
     });
   }
 
   // Generate Registration Token valid for 30 minutes.
   // jti makes the token single-use: register() atomically claims it via
   // Redis SET NX. Replays return REGISTRATION_TOKEN_USED.
-  const registrationToken = jwt.sign({
-    verifiedEmail: email || otpRecord?.email,
-    verifiedPhone: phone || otpRecord?.phone,
-    otpVerified: true,
-    jti: crypto.randomUUID()
-  }, getRegistrationSecret(), {
-    expiresIn: '30m'
-  });
+  const registrationToken = jwt.sign(
+    {
+      verifiedEmail: email || otpRecord?.email,
+      verifiedPhone: phone || otpRecord?.phone,
+      otpVerified: true,
+      jti: crypto.randomUUID(),
+    },
+    getRegistrationSecret(),
+    {
+      expiresIn: "30m",
+    }
+  );
 
   // Delete OTP after verification (Industry Practice)
   if (otpRecord) {
     await prisma.oTP.delete({
       where: {
-        id: otpRecord.id
-      }
+        id: otpRecord.id,
+      },
     });
   }
   return res.status(200).json({
     success: true,
     message: "OTP verified successfully",
-    registrationToken
+    registrationToken,
   });
 });
 
 // Check Umpire Invite Details
 export const getUmpireInviteDetails = asyncHandler(async (req, res) => {
-  const {
-    token
-  } = req.query;
+  const { token } = req.query;
   if (!token) {
     return res.status(400).json({
       success: false,
-      message: "Token is required"
+      message: "Token is required",
     });
   }
   const game = await prisma.hostedGame.findFirst({
     where: {
-      customUmpireInviteToken: token
-    }
+      customUmpireInviteToken: token,
+    },
   });
   if (!game) {
     return res.status(404).json({
       success: false,
-      message: "Invitation not found or expired"
+      message: "Invitation not found or expired",
     });
   }
   return res.status(200).json({
@@ -415,8 +484,8 @@ export const getUmpireInviteDetails = asyncHandler(async (req, res) => {
       name: game.customUmpireName,
       email: game.customUmpireEmail,
       phone: game.customUmpirePhone,
-      gameId: game.id
-    }
+      gameId: game.id,
+    },
   });
 });
 export const requestUpgrade = asyncHandler(async (req, res) => {
@@ -424,28 +493,22 @@ export const requestUpgrade = asyncHandler(async (req, res) => {
   if (!userId) {
     return res.status(401).json({
       success: false,
-      message: "Unauthorized"
+      message: "Unauthorized",
     });
   }
-  const {
-    city,
-    bio,
-    experience,
-    specialization,
-    phone
-  } = req.body;
+  const { city, bio, experience, specialization, phone } = req.body;
   const user = await prisma.user.findUnique({
     where: {
-      id: userId
+      id: userId,
     },
     include: {
-      ownerProfile: true
-    }
+      ownerProfile: true,
+    },
   });
   if (!user) {
     return res.status(404).json({
       success: false,
-      message: "User not found"
+      message: "User not found",
     });
   }
   let owner = user.ownerProfile;
@@ -453,34 +516,37 @@ export const requestUpgrade = asyncHandler(async (req, res) => {
     if (phone || city) {
       await prisma.user.update({
         where: {
-          id: userId
+          id: userId,
         },
         data: {
           city: city || user.city,
-          phone: phone || user.phone
-        }
+          phone: phone || user.phone,
+        },
       });
     }
     owner = await prisma.ownerProfile.update({
       where: {
-        id: owner.id
+        id: owner.id,
       },
       data: {
         bio: bio || owner.bio,
         experience: experience || owner.experience,
-        specialization: specialization || owner.specialization
-      }
+        specialization: specialization || owner.specialization,
+      },
     });
-  } else if (user.role?.toLowerCase().includes("umpire") || user.role?.toLowerCase().includes("coach")) {
+  } else if (
+    user.role?.toLowerCase().includes("umpire") ||
+    user.role?.toLowerCase().includes("coach")
+  ) {
     if (phone || city) {
       await prisma.user.update({
         where: {
-          id: user.id
+          id: user.id,
         },
         data: {
           phone: phone || user.phone,
-          city: city || user.city
-        }
+          city: city || user.city,
+        },
       });
     }
     owner = await prisma.ownerProfile.create({
@@ -489,19 +555,19 @@ export const requestUpgrade = asyncHandler(async (req, res) => {
         bio: bio || "",
         experience: experience || "",
         specialization: specialization || "Cricket",
-        businessName: user.name || "Independent Partner"
-      }
+        businessName: user.name || "Independent Partner",
+      },
     });
   }
   if (!owner) {
     return res.status(404).json({
       success: false,
-      message: "Professional profile not found. Please register first."
+      message: "Professional profile not found. Please register first.",
     });
   }
   res.status(200).json({
     success: true,
-    message: "Upgrade request submitted successfully"
+    message: "Upgrade request submitted successfully",
   });
 });
 export const registerUser = asyncHandler(async (req, res) => {
@@ -513,29 +579,39 @@ export const registerUser = asyncHandler(async (req, res) => {
     gender,
     dob,
     location,
+    city,
+    state,
     registrationToken,
     phoneRegistrationToken,
     emailRegistrationToken,
     username,
     sportTypes,
     umpireInvite,
-    inviteToken
+    inviteToken,
   } = req.body;
+  const orConditions = [];
+  if (email) orConditions.push({ email });
+  if (username) orConditions.push({ username: username.toLowerCase() });
+  if (phone) {
+    orConditions.push({ phone });
+    const withoutCountry = phone.replace(/^\+\d{1,3}/, "");
+    if (withoutCountry && withoutCountry !== phone) {
+      orConditions.push({ phone: withoutCountry });
+    }
+    if (!phone.startsWith("+")) {
+      orConditions.push({ phone: `+91${phone}` });
+    }
+  }
+
   const existingUser = await prisma.user.findFirst({
     where: {
-      OR: [{
-        email
-      }, {
-        phone
-      }, {
-        username: username?.toLowerCase()
-      }]
-    }
+      OR: orConditions,
+    },
   });
   if (existingUser) {
     return res.status(400).json({
       success: false,
-      message: "Email, Phone or Username already registered"
+      message: "Email, Phone or Username already registered",
     });
   }
   try {
@@ -544,7 +620,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     return res.status(err.status || 400).json({
       success: false,
       code: err.code,
-      message: err.message
+      message: err.message,
     });
   }
 
@@ -555,11 +631,15 @@ export const registerUser = asyncHandler(async (req, res) => {
     } catch (err) {
       // Map to a phone-verification-specific code so the client can show the
       // right "verify your phone again" copy rather than the generic one.
-      const code = err.code === "REGISTRATION_TOKEN_USED" ? "PHONE_REGISTRATION_TOKEN_USED" : "PHONE_REGISTRATION_TOKEN_INVALID";
+      const code =
+        err.code === "REGISTRATION_TOKEN_USED"
+          ? "PHONE_REGISTRATION_TOKEN_USED"
+          : "PHONE_REGISTRATION_TOKEN_INVALID";
       return res.status(err.status || 400).json({
         success: false,
         code,
-        message: "Phone verification token is invalid, expired, or already used. Please verify your phone again."
+        message:
+          "Phone verification token is invalid, expired, or already used. Please verify your phone again.",
       });
     }
   }
@@ -568,18 +648,24 @@ export const registerUser = asyncHandler(async (req, res) => {
   if (emailRegistrationToken) {
     try {
       const decodedEmail = await claimRegistrationToken(emailRegistrationToken);
-      if (decodedEmail && decodedEmail.emailVerified && decodedEmail.verifiedEmail === email) {
+      if (
+        decodedEmail &&
+        decodedEmail.emailVerified &&
+        decodedEmail.verifiedEmail === email
+      ) {
         isEmailVerified = true;
       }
     } catch (err) {
       return res.status(err.status || 400).json({
         success: false,
-        message: "Email verification token is invalid or expired."
+        message: "Email verification token is invalid or expired.",
       });
     }
   }
   const hashedPassword = await argon2.hash(password);
-  const finalUsername = username ? username.toLowerCase() : await generateUniqueUsername(name);
+  const finalUsername = username
+    ? username.toLowerCase()
+    : await generateUniqueUsername(name);
   let role = "USER";
 
   // Check for Umpire Invite
@@ -587,14 +673,14 @@ export const registerUser = asyncHandler(async (req, res) => {
   if (umpireInvite) {
     inviteGame = await prisma.hostedGame.findFirst({
       where: {
-        customUmpireInviteToken: umpireInvite
-      }
+        customUmpireInviteToken: umpireInvite,
+      },
     });
     if (inviteGame) {
       role = "UMPIRE";
     }
   }
-  const result = await prisma.$transaction(async tx => {
+  const result = await prisma.$transaction(async (tx) => {
     // 1. Create User
     const user = await tx.user.create({
       data: {
@@ -605,7 +691,8 @@ export const registerUser = asyncHandler(async (req, res) => {
         phone,
         gender,
         dob: dob ? new Date(dob) : null,
-        city: location || "",
+        city: city || location || "",
+        state: state || null,
         sportTypes: sportTypes || [],
         role,
         isEmailVerified,
@@ -615,10 +702,10 @@ export const registerUser = asyncHandler(async (req, res) => {
         wallet: {
           create: {
             balance: 50,
-            reservedBalance: 0
-          }
-        }
-      }
+            reservedBalance: 0,
+          },
+        },
+      },
     });
     let ownerProfileId = null;
 
@@ -628,8 +715,8 @@ export const registerUser = asyncHandler(async (req, res) => {
         data: {
           userId: user.id,
           gender,
-          businessName: name || "Independent Partner"
-        }
+          businessName: name || "Independent Partner",
+        },
       });
       ownerProfileId = owner.id;
 
@@ -637,12 +724,12 @@ export const registerUser = asyncHandler(async (req, res) => {
       if (inviteGame) {
         await tx.hostedGame.update({
           where: {
-            id: inviteGame.id
+            id: inviteGame.id,
           },
           data: {
             umpireId: owner.id,
-            customUmpireInviteStatus: "ACCEPTED"
-          }
+            customUmpireInviteStatus: "ACCEPTED",
+          },
         });
       }
     }
@@ -651,18 +738,18 @@ export const registerUser = asyncHandler(async (req, res) => {
     if (inviteToken) {
       const slot = await tx.gameSlot.findFirst({
         where: {
-          inviteToken: inviteToken
-        }
+          inviteToken: inviteToken,
+        },
       });
       if (slot) {
         await tx.gameSlot.update({
           where: {
-            id: slot.id
+            id: slot.id,
           },
           data: {
             userId: user.id,
-            status: "JOINED"
-          }
+            status: "JOINED",
+          },
         });
       }
     }
@@ -674,8 +761,8 @@ export const registerUser = asyncHandler(async (req, res) => {
         amount: 50,
         type: "OFFER",
         status: "SUCCESS",
-        description: "Platform Welcome Bonus: Rs 50 Credits"
-      }
+        description: "Platform Welcome Bonus: Rs 50 Credits",
+      },
     });
 
     // 5. Migrate Custom Player Data — invites are independent, so the per-row
@@ -686,13 +773,10 @@ export const registerUser = asyncHandler(async (req, res) => {
     }
     return {
       user,
-      ownerProfileId
+      ownerProfileId,
     };
   });
-  const {
-    user,
-    ownerProfileId
-  } = result;
+  const { user, ownerProfileId } = result;
 
   // Async: Update the username bloom filter
   addUsernameToBloom(user.username);
@@ -700,7 +784,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   // Track registration metric
   userRegistrationTotal.inc({
     role: user.role || "USER",
-    method: "email"
+    method: "email",
   });
   const token = await generateUserToken(user.id, user.role, ownerProfileId);
   const tokens = await issueTokens(res, user.id, token);
@@ -710,7 +794,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     token,
     ...tokens,
     user: sanitizeUser(user),
-    role: user.role
+    role: user.role,
   });
 });
 
@@ -724,10 +808,12 @@ export const registerOwner = asyncHandler(async (req, res) => {
     role,
     gender,
     location,
+    city,
+    state,
     registrationToken,
     phoneRegistrationToken,
     businessName,
-    inviteToken
+    inviteToken,
   } = req.body;
   let stubUser = null;
   let stubOwner = null;
@@ -735,10 +821,14 @@ export const registerOwner = asyncHandler(async (req, res) => {
   if (inviteToken) {
     const invite = await prisma.venueInvite.findUnique({
       where: { token: inviteToken },
-      include: { turf: { include: { owner: { include: { user: true } } } } }
+      include: { turf: { include: { owner: { include: { user: true } } } } },
     });
 
-    if (invite && invite.status === "PENDING" && new Date() <= invite.expiresAt) {
+    if (
+      invite &&
+      invite.status === "PENDING" &&
+      new Date() <= invite.expiresAt
+    ) {
       stubUser = invite.turf.owner.user;
       stubOwner = invite.turf.owner;
     }
@@ -746,34 +836,47 @@ export const registerOwner = asyncHandler(async (req, res) => {
 
   const existingUser = await prisma.user.findFirst({
     where: {
-      OR: [{ email }, { phone }]
-    }
+      OR: [{ email }, { phone }],
+    },
   });
-  
+
   if (existingUser) {
     if (stubUser && existingUser.id === stubUser.id) {
       // It's the stub user, we can claim it
     } else {
       if (inviteToken) {
-        const professionalRolesSet = new Set(["COACH", "UMPIRE", "STREAMER", "SCORER", "VENUE_OWNER", "OWNER", "VENU_OWNERS"]);
-        if (existingUser.role && existingUser.role.toUpperCase() !== "USER" && professionalRolesSet.has(existingUser.role.toUpperCase())) {
+        const professionalRolesSet = new Set([
+          "COACH",
+          "UMPIRE",
+          "STREAMER",
+          "SCORER",
+          "VENUE_OWNER",
+          "OWNER",
+          "VENU_OWNERS",
+        ]);
+        if (
+          existingUser.role &&
+          existingUser.role.toUpperCase() !== "USER" &&
+          professionalRolesSet.has(existingUser.role.toUpperCase())
+        ) {
           return res.status(400).json({
             success: false,
-            message: `You already have a professional role (${existingUser.role}) and cannot accept this venue invite. Kridaz supports only one professional role per account.`
+            message: `You already have a professional role (${existingUser.role}) and cannot accept this venue invite. Kridaz supports only one professional role per account.`,
           });
         }
-        
+
         const isMatch = await argon2.verify(existingUser.password, password);
         if (!isMatch) {
           return res.status(401).json({
             success: false,
-            message: "This email/phone is already registered. To claim the invite, please enter your existing account password."
+            message:
+              "This email/phone is already registered. To claim the invite, please enter your existing account password.",
           });
         }
       } else {
         return res.status(400).json({
           success: false,
-          message: "Email or Phone already registered"
+          message: "Email or Phone already registered",
         });
       }
     }
@@ -785,18 +888,22 @@ export const registerOwner = asyncHandler(async (req, res) => {
     return res.status(err.status || 400).json({
       success: false,
       code: err.code,
-      message: err.message
+      message: err.message,
     });
   }
   if (phoneRegistrationToken) {
     try {
       await claimRegistrationToken(phoneRegistrationToken);
     } catch (err) {
-      const code = err.code === "REGISTRATION_TOKEN_USED" ? "PHONE_REGISTRATION_TOKEN_USED" : "PHONE_REGISTRATION_TOKEN_INVALID";
+      const code =
+        err.code === "REGISTRATION_TOKEN_USED"
+          ? "PHONE_REGISTRATION_TOKEN_USED"
+          : "PHONE_REGISTRATION_TOKEN_INVALID";
       return res.status(err.status || 400).json({
         success: false,
         code,
-        message: "Phone verification token is invalid, expired, or already used. Please verify your phone again."
+        message:
+          "Phone verification token is invalid, expired, or already used. Please verify your phone again.",
       });
     }
   }
@@ -808,14 +915,14 @@ export const registerOwner = asyncHandler(async (req, res) => {
       where: {
         user: {
           role: {
-            in: ["COACH", "UMPIRE"]
-          }
-        }
-      }
+            in: ["COACH", "UMPIRE"],
+          },
+        },
+      },
     });
     waitlistPosition = count + 1;
   }
-  const result = await prisma.$transaction(async tx => {
+  const result = await prisma.$transaction(async (tx) => {
     let user;
     let owner;
 
@@ -829,7 +936,7 @@ export const registerOwner = asyncHandler(async (req, res) => {
             role: "VENUE_OWNER",
             // Keep their existing name, email, phone, password, username, gender
             // We just upgrade their role.
-          }
+          },
         });
 
         // 2. Re-link the stub OwnerProfile to existingUser
@@ -837,8 +944,12 @@ export const registerOwner = asyncHandler(async (req, res) => {
           where: { id: stubOwner.id },
           data: {
             userId: existingUser.id,
-            businessName: businessName || name || stubOwner.businessName || "Independent Partner"
-          }
+            businessName:
+              businessName ||
+              name ||
+              stubOwner.businessName ||
+              "Independent Partner",
+          },
         });
 
         // 3. Delete the stubUser
@@ -855,9 +966,10 @@ export const registerOwner = asyncHandler(async (req, res) => {
             password: hashedPassword,
             role: "VENUE_OWNER",
             gender,
-            city: location || "",
-            isVerified: true
-          }
+            city: city || location || "",
+            state: state || null,
+            isVerified: true,
+          },
         });
 
         // 2. Update existing OwnerProfile
@@ -865,8 +977,12 @@ export const registerOwner = asyncHandler(async (req, res) => {
           where: { id: stubOwner.id },
           data: {
             gender,
-            businessName: businessName || name || stubOwner.businessName || "Independent Partner"
-          }
+            businessName:
+              businessName ||
+              name ||
+              stubOwner.businessName ||
+              "Independent Partner",
+          },
         });
       }
     } else {
@@ -880,9 +996,10 @@ export const registerOwner = asyncHandler(async (req, res) => {
           password: hashedPassword,
           role: role?.toUpperCase() || "OWNER",
           gender,
-          city: location || "",
-          isVerified: true
-        }
+          city: city || location || "",
+          state: state || null,
+          isVerified: true,
+        },
       });
 
       // 2. Create OwnerProfile
@@ -890,8 +1007,8 @@ export const registerOwner = asyncHandler(async (req, res) => {
         data: {
           userId: user.id,
           gender,
-          businessName: businessName || name || "Independent Partner"
-        }
+          businessName: businessName || name || "Independent Partner",
+        },
       });
     }
 
@@ -901,30 +1018,39 @@ export const registerOwner = asyncHandler(async (req, res) => {
     }
 
     // 4. Create OwnerRequest for verification center
-    if (professionalRoles.includes(role) || ["OWNER", "VENU_OWNERS", "VENUE_OWNERS", "VENUE_OWNER"].includes(role?.toUpperCase()) || stubUser) {
+    if (
+      professionalRoles.includes(role) ||
+      ["OWNER", "VENU_OWNERS", "VENUE_OWNERS", "VENUE_OWNER"].includes(
+        role?.toUpperCase()
+      ) ||
+      stubUser
+    ) {
       await tx.ownerRequest.create({
         data: {
           userId: user.id,
           name: user.name,
           email: user.email || `${user.id}@noemail.com`,
           phone: user.phone || "",
-          role: stubUser ? "venue_owner" : (role === "venu_owners" ? "venue_owner" : (role || "venue_owner")),
-          businessDetails: { businessName: businessName || name || "Independent Partner" },
+          role: stubUser
+            ? "venue_owner"
+            : role === "venu_owners"
+              ? "venue_owner"
+              : role || "venue_owner",
+          businessDetails: {
+            businessName: businessName || name || "Independent Partner",
+          },
           documents: [],
-          status: "pending"
-        }
+          status: "pending",
+        },
       });
     }
 
     return {
       user,
-      owner
+      owner,
     };
   });
-  const {
-    user,
-    owner
-  } = result;
+  const { user, owner } = result;
 
   // Async: Update the username bloom filter
   addUsernameToBloom(user.username);
@@ -932,50 +1058,68 @@ export const registerOwner = asyncHandler(async (req, res) => {
   // Track registration metric
   userRegistrationTotal.inc({
     role: user.role || "OWNER",
-    method: "email"
+    method: "email",
   });
   const token = await generateOwnerToken(user.id, owner.role, owner.id);
   const tokens = await issueTokens(res, user.id, token);
   return res.status(201).json({
     success: true,
-    message: waitlistPosition ? "You've been added to the waitlist!" : "Account created successfully",
+    message: waitlistPosition
+      ? "You've been added to the waitlist!"
+      : "Account created successfully",
     token,
     ...tokens,
     role: owner.role,
     user: sanitizeUser(user),
-    waitlistNumber: waitlistPosition
+    waitlistNumber: waitlistPosition,
   });
 });
 
 // Login Step 1 (Now Unified Login - direct login bypassing OTP)
 export const loginStep1 = asyncHandler(async (req, res) => {
-  let {
-    email,
-    password
-  } = req.body;
+  let { email, password } = req.body;
   if (email) email = email.toLowerCase();
+  let phoneChecks = [{ phone: email }];
+  if (email) {
+    const cleanEmail = email.replace(/^\+/, "");
+    const withoutCountry =
+      cleanEmail.length >= 10 ? cleanEmail.slice(-10) : cleanEmail;
+    if (withoutCountry && withoutCountry !== email) {
+      phoneChecks.push({ phone: withoutCountry });
+    }
+    if (!email.startsWith("+")) {
+      if (cleanEmail.length > 10) {
+        phoneChecks.push({ phone: `+${cleanEmail}` });
+      } else if (/^\d{10}$/.test(cleanEmail)) {
+        phoneChecks.push({ phone: `+91${cleanEmail}` });
+        phoneChecks.push({ phone: `91${cleanEmail}` });
+      }
+    }
+  }
+
   const user = await prisma.user.findFirst({
     where: {
-      OR: [{
-        email
-      }, {
-        phone: email
-      }]
+      OR: [
+        {
+          email,
+        },
+        ...phoneChecks,
+      ],
     },
     include: {
-      ownerProfile: true
-    }
+      ownerProfile: true,
+    },
   });
   if (!user) {
     return res.status(400).json({
       success: false,
-      message: "Account not found. Please sign up first."
+      message: "Account not found. Please sign up first.",
     });
   }
   if (user.status === "blocked") {
     return res.status(403).json({
       success: false,
-      message: "Your account has been blocked by an administrator."
+      message: "Your account has been blocked by an administrator.",
     });
   }
   if (user.password) {
@@ -983,26 +1127,30 @@ export const loginStep1 = asyncHandler(async (req, res) => {
     if (!isPasswordCorrect) {
       return res.status(400).json({
         success: false,
-        message: "Incorrect password"
+        message: "Incorrect password",
       });
     }
   } else {
     return res.status(400).json({
       success: false,
-      message: "Please log in with Google"
+      message: "Please log in with Google",
     });
   }
   const isSuperAdmin = user.role?.toUpperCase() === "ADMIN";
   const role = user.role;
   const ownerProfileId = user.ownerProfile ? user.ownerProfile.id : null;
-  const token = await (isSuperAdmin ? generateUserToken(user.id, role, ownerProfileId) : user.ownerProfile ? generateOwnerToken(user.id, role, ownerProfileId) : generateUserToken(user.id, role));
+  const token = await (isSuperAdmin
+    ? generateUserToken(user.id, role, ownerProfileId)
+    : user.ownerProfile
+      ? generateOwnerToken(user.id, role, ownerProfileId)
+      : generateUserToken(user.id, role));
   const tokens = await issueTokens(res, user.id, token);
   if (role?.toUpperCase() === "ADMIN") {
     await logAudit({
       userId: user.id,
       action: "ADMIN_LOGIN_SUCCESS",
       module: "AUTH",
-      req
+      req,
     });
   }
   return res.status(200).json({
@@ -1011,47 +1159,46 @@ export const loginStep1 = asyncHandler(async (req, res) => {
     token,
     ...tokens,
     role,
-    user: sanitizeUser(user)
+    user: sanitizeUser(user),
   });
 });
 
 // Unified Login
 export const login = asyncHandler(async (req, res) => {
-  let {
-    email,
-    password,
-    otp
-  } = req.body;
+  let { email, password, otp } = req.body;
   if (email) email = email.toLowerCase();
   const user = await prisma.user.findFirst({
     where: {
-      OR: [{
-        email
-      }, {
-        phone: email
-      }]
+      OR: [
+        {
+          email,
+        },
+        {
+          phone: email,
+        },
+      ],
     },
     include: {
-      ownerProfile: true
-    }
+      ownerProfile: true,
+    },
   });
   if (!user) {
     return res.status(400).json({
       success: false,
-      message: "Account not found. Please sign up first."
+      message: "Account not found. Please sign up first.",
     });
   }
   if (user.status === "blocked") {
     return res.status(403).json({
       success: false,
-      message: "Your account has been blocked by an administrator."
+      message: "Your account has been blocked by an administrator.",
     });
   }
   const isPasswordCorrect = await argon2.verify(user.password, password);
   if (!isPasswordCorrect) {
     return res.status(400).json({
       success: false,
-      message: "Incorrect password"
+      message: "Incorrect password",
     });
   }
   let firebaseVerified = false;
@@ -1059,7 +1206,10 @@ export const login = asyncHandler(async (req, res) => {
     try {
       const decodedToken = await firebaseAdmin.auth().verifyIdToken(otp);
       const firebasePhone = decodedToken.phone_number;
-      if (firebasePhone && (firebasePhone === email || firebasePhone.endsWith(email))) {
+      if (
+        firebasePhone &&
+        (firebasePhone === email || firebasePhone.endsWith(email))
+      ) {
         firebaseVerified = true;
       }
     } catch (fbError) {
@@ -1068,10 +1218,11 @@ export const login = asyncHandler(async (req, res) => {
   }
   const otpRecord = await prisma.oTP.findFirst({
     where: {
-      email
-    }
+      email,
+    },
   });
-  const isOtpValid = firebaseVerified || otpRecord && otp === otpRecord.emailOtp;
+  const isOtpValid =
+    firebaseVerified || (otpRecord && otp === otpRecord.emailOtp);
   if (!isOtpValid) {
     // Track failed OTP attempts in Redis
     const failKey = `otp_fails:${email}`;
@@ -1084,32 +1235,37 @@ export const login = asyncHandler(async (req, res) => {
         action: "ADMIN_2FA_FAILED",
         module: "AUTH",
         details: {
-          attempt: fails
+          attempt: fails,
         },
-        req
+        req,
       });
     }
     if (fails >= 5) {
       await blacklistOtpIdentifier(email, 1800); // 30 mins block
       return res.status(429).json({
         success: false,
-        message: "Too many invalid OTP attempts. Account temporarily throttled."
+        message:
+          "Too many invalid OTP attempts. Account temporarily throttled.",
       });
     }
     return res.status(400).json({
       success: false,
-      message: `Invalid or expired OTP. ${5 - fails} attempts remaining.`
+      message: `Invalid or expired OTP. ${5 - fails} attempts remaining.`,
     });
   }
   const isSuperAdmin = user.role?.toUpperCase() === "ADMIN";
   const role = user.role;
   const ownerProfileId = user.ownerProfile ? user.ownerProfile.id : null;
-  const token = await (isSuperAdmin ? generateUserToken(user.id, role, ownerProfileId) : user.ownerProfile ? generateOwnerToken(user.id, role, ownerProfileId) : generateUserToken(user.id, role));
+  const token = await (isSuperAdmin
+    ? generateUserToken(user.id, role, ownerProfileId)
+    : user.ownerProfile
+      ? generateOwnerToken(user.id, role, ownerProfileId)
+      : generateUserToken(user.id, role));
   if (otpRecord) {
     await prisma.oTP.delete({
       where: {
-        id: otpRecord.id
-      }
+        id: otpRecord.id,
+      },
     });
   }
   const tokens = await issueTokens(res, user.id, token);
@@ -1118,7 +1274,7 @@ export const login = asyncHandler(async (req, res) => {
       userId: user.id,
       action: "ADMIN_LOGIN_SUCCESS",
       module: "AUTH",
-      req
+      req,
     });
   }
   return res.status(200).json({
@@ -1127,7 +1283,7 @@ export const login = asyncHandler(async (req, res) => {
     token,
     ...tokens,
     role,
-    user: sanitizeUser(user)
+    user: sanitizeUser(user),
   });
 });
 
@@ -1143,40 +1299,40 @@ export const generateRecoveryTokens = asyncHandler(async (req, res) => {
   if (role?.toUpperCase() !== "ADMIN") {
     return res.status(403).json({
       success: false,
-      message: "Only administrators can generate recovery tokens"
+      message: "Only administrators can generate recovery tokens",
     });
   }
   // Generate a secure random token
-  const rawToken = crypto.randomBytes(16).toString('hex'); // 32 chars
-  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+  const rawToken = crypto.randomBytes(16).toString("hex"); // 32 chars
+  const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
 
   // Store in DB (one token per admin for simplicity, or we could support multiple)
   await prisma.recoveryToken.upsert({
     where: {
-      userId
+      userId,
     },
     update: {
       tokenHash,
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       // 1 year expiry
-      usedAt: null
+      usedAt: null,
     },
     create: {
       userId,
       tokenHash,
-      expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
-    }
+      expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    },
   });
   await logAudit({
     userId,
     action: "ADMIN_RECOVERY_TOKEN_GENERATED",
     module: "AUTH",
-    req
+    req,
   });
   return res.status(200).json({
     success: true,
     message: "Recovery token generated successfully. Store this safely!",
-    recoveryToken: rawToken
+    recoveryToken: rawToken,
   });
 });
 
@@ -1184,60 +1340,60 @@ export const generateRecoveryTokens = asyncHandler(async (req, res) => {
  * Allows login using an emergency recovery token if 2FA fails.
  */
 export const loginWithRecoveryToken = asyncHandler(async (req, res) => {
-  let {
-    email,
-    recoveryToken
-  } = req.body;
+  let { email, recoveryToken } = req.body;
   if (email) email = email.toLowerCase();
   const user = await prisma.user.findUnique({
     where: {
-      email
+      email,
     },
     include: {
       ownerProfile: true,
-      recoveryToken: true
-    }
+      recoveryToken: true,
+    },
   });
   if (!user || user.role?.toUpperCase() !== "ADMIN") {
     return res.status(403).json({
       success: false,
-      message: "Recovery token login only permitted for administrators"
+      message: "Recovery token login only permitted for administrators",
     });
   }
   if (!user.recoveryToken) {
     return res.status(400).json({
       success: false,
-      message: "No recovery token found for this account"
+      message: "No recovery token found for this account",
     });
   }
   if (user.recoveryToken.usedAt) {
     return res.status(400).json({
       success: false,
-      message: "This recovery token has already been used"
+      message: "This recovery token has already been used",
     });
   }
   if (new Date() > user.recoveryToken.expiresAt) {
     return res.status(400).json({
       success: false,
-      message: "Recovery token has expired"
+      message: "Recovery token has expired",
     });
   }
-  const tokenHash = crypto.createHash('sha256').update(recoveryToken).digest('hex');
+  const tokenHash = crypto
+    .createHash("sha256")
+    .update(recoveryToken)
+    .digest("hex");
   if (tokenHash !== user.recoveryToken.tokenHash) {
     return res.status(400).json({
       success: false,
-      message: "Invalid recovery token"
+      message: "Invalid recovery token",
     });
   }
 
   // Mark as used
   await prisma.recoveryToken.update({
     where: {
-      userId: user.id
+      userId: user.id,
     },
     data: {
-      usedAt: new Date()
-    }
+      usedAt: new Date(),
+    },
   });
   const role = user.role;
   const token = await generateUserToken(user.id, user.role);
@@ -1246,7 +1402,7 @@ export const loginWithRecoveryToken = asyncHandler(async (req, res) => {
     userId: user.id,
     action: "ADMIN_LOGIN_RECOVERY_SUCCESS",
     module: "AUTH",
-    req
+    req,
   });
   return res.status(200).json({
     success: true,
@@ -1254,7 +1410,7 @@ export const loginWithRecoveryToken = asyncHandler(async (req, res) => {
     token,
     ...tokens,
     role,
-    user: sanitizeUser(user)
+    user: sanitizeUser(user),
   });
 });
 
@@ -1271,30 +1427,41 @@ export const googleAuth = asyncHandler(async (req, res) => {
     role: requestedRole,
     umpireInvite,
     inviteToken,
-    mode
+    mode,
   } = req.body;
   let payload;
   if (credential) {
     const ticket = await client.verifyIdToken({
       idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
     payload = ticket.getPayload();
   } else if (accessToken) {
     try {
       const tokenInfo = await client.getTokenInfo(accessToken);
-      if (tokenInfo.aud !== process.env.GOOGLE_CLIENT_ID && tokenInfo.azp !== process.env.GOOGLE_CLIENT_ID) {
-        return res.status(401).json({ success: false, message: "Invalid token audience (Confused Deputy Prevention)" });
+      if (
+        tokenInfo.aud !== process.env.GOOGLE_CLIENT_ID &&
+        tokenInfo.azp !== process.env.GOOGLE_CLIENT_ID
+      ) {
+        return res.status(401).json({
+          success: false,
+          message: "Invalid token audience (Confused Deputy Prevention)",
+        });
       }
     } catch (err) {
       logger.error("Google token info verification failed:", err);
-      return res.status(401).json({ success: false, message: "Invalid Google access token" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid Google access token" });
     }
-    const response = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
+    const response = await fetch(
+      `https://www.googleapis.com/oauth2/v3/userinfo`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       }
-    });
+    );
     if (!response.ok) {
       const errorBody = await response.text();
       logger.error("Google userinfo fetch failed:", response.status, errorBody);
@@ -1307,31 +1474,28 @@ export const googleAuth = asyncHandler(async (req, res) => {
   } else {
     return res.status(400).json({
       success: false,
-      message: "No Google credentials provided"
+      message: "No Google credentials provided",
     });
   }
-  let {
-    name,
-    email,
-    sub: googleId
-  } = payload;
+  let { name, email, sub: googleId } = payload;
   if (!email) {
     logger.error("Google Auth: payload missing email", payload);
     return res.status(400).json({
       success: false,
-      message: "Could not retrieve email from Google. Please ensure your Google account has a verified email."
+      message:
+        "Could not retrieve email from Google. Please ensure your Google account has a verified email.",
     });
   }
-  
+
   email = email.toLowerCase();
-  
+
   let user = await prisma.user.findUnique({
     where: {
-      email
+      email,
     },
     include: {
-      ownerProfile: true
-    }
+      ownerProfile: true,
+    },
   });
   let token;
   let roleToReturn;
@@ -1340,14 +1504,16 @@ export const googleAuth = asyncHandler(async (req, res) => {
   if (!user && (mode === "signin" || mode === "login")) {
     return res.status(400).json({
       success: false,
-      message: "Account not found. Please sign up first."
+      message: "Account not found. Please sign up first.",
     });
   }
 
   if (user) {
     roleToReturn = user.role;
     const ownerProfileId = user.ownerProfile ? user.ownerProfile.id : null;
-    token = await (user.ownerProfile ? generateOwnerToken(user.id, roleToReturn, ownerProfileId) : generateUserToken(user.id, user.role));
+    token = await (user.ownerProfile
+      ? generateOwnerToken(user.id, roleToReturn, ownerProfileId)
+      : generateUserToken(user.id, user.role));
   } else {
     // New account creation via Google.
     // Always seed a random hash — the user authenticates via Google, not
@@ -1357,7 +1523,7 @@ export const googleAuth = asyncHandler(async (req, res) => {
     const randomPassword = crypto.randomBytes(32).toString("hex");
     const hashedPassword = await argon2.hash(randomPassword);
     const generatedUsername = await generateUniqueUsername(name);
-    const result = await prisma.$transaction(async tx => {
+    const result = await prisma.$transaction(async (tx) => {
       // Create User
       const newUser = await tx.user.create({
         data: {
@@ -1366,15 +1532,20 @@ export const googleAuth = asyncHandler(async (req, res) => {
           googleId,
           username: generatedUsername,
           walletBalance: 50,
-          role: requestedRole && requestedRole !== "user" && requestedRole.toUpperCase() !== "ADMIN" ? requestedRole.toUpperCase() : "USER",
+          role:
+            requestedRole &&
+            requestedRole !== "user" &&
+            requestedRole.toUpperCase() !== "ADMIN"
+              ? requestedRole.toUpperCase()
+              : "USER",
           password: hashedPassword,
           wallet: {
             create: {
               balance: 50,
-              reservedBalance: 0
-            }
-          }
-        }
+              reservedBalance: 0,
+            },
+          },
+        },
       });
       let ownerProfileId = null;
       if (requestedRole && requestedRole !== "user") {
@@ -1382,16 +1553,16 @@ export const googleAuth = asyncHandler(async (req, res) => {
           where: {
             user: {
               role: {
-                in: ["COACH", "UMPIRE"]
-              }
-            }
-          }
+                in: ["COACH", "UMPIRE"],
+              },
+            },
+          },
         });
         const owner = await tx.ownerProfile.create({
           data: {
             userId: newUser.id,
-            businessName: name || "Independent Partner"
-          }
+            businessName: name || "Independent Partner",
+          },
         });
         ownerProfileId = owner.id;
 
@@ -1402,11 +1573,14 @@ export const googleAuth = asyncHandler(async (req, res) => {
             name: newUser.name,
             email: newUser.email || `${newUser.id}@noemail.com`,
             phone: newUser.phone || "",
-            role: requestedRole === "venu_owners" ? "venue_owner" : (requestedRole || "venue_owner"),
+            role:
+              requestedRole === "venu_owners"
+                ? "venue_owner"
+                : requestedRole || "venue_owner",
             businessDetails: { businessName: name || "Independent Partner" },
             documents: [],
-            status: "pending"
-          }
+            status: "pending",
+          },
         });
       }
 
@@ -1417,18 +1591,25 @@ export const googleAuth = asyncHandler(async (req, res) => {
           amount: 50,
           type: "OFFER",
           status: "SUCCESS",
-          description: "Platform Welcome Bonus: Rs 50 Credits"
-        }
+          description: "Platform Welcome Bonus: Rs 50 Credits",
+        },
       });
       return {
         newUser,
-        ownerProfileId
+        ownerProfileId,
       };
     });
     user = result.newUser;
     isNewAccountCreated = true;
-    roleToReturn = requestedRole && requestedRole !== "user" && requestedRole.toUpperCase() !== "ADMIN" ? requestedRole.toUpperCase() : "USER";
-    token = await (result.ownerProfileId ? generateOwnerToken(user.id, roleToReturn, result.ownerProfileId) : generateUserToken(user.id, user.role));
+    roleToReturn =
+      requestedRole &&
+      requestedRole !== "user" &&
+      requestedRole.toUpperCase() !== "ADMIN"
+        ? requestedRole.toUpperCase()
+        : "USER";
+    token = await (result.ownerProfileId
+      ? generateOwnerToken(user.id, roleToReturn, result.ownerProfileId)
+      : generateUserToken(user.id, user.role));
 
     // Update Bloom Filter for new Google users
     addUsernameToBloom(user.username);
@@ -1440,18 +1621,18 @@ export const googleAuth = asyncHandler(async (req, res) => {
     if (inviteToken) {
       const slot = await prisma.gameSlot.findFirst({
         where: {
-          inviteToken: inviteToken
-        }
+          inviteToken: inviteToken,
+        },
       });
       if (slot) {
         await prisma.gameSlot.update({
           where: {
-            id: slot.id
+            id: slot.id,
           },
           data: {
             userId: user.id,
-            status: "JOINED"
-          }
+            status: "JOINED",
+          },
         });
       }
     }
@@ -1460,8 +1641,8 @@ export const googleAuth = asyncHandler(async (req, res) => {
     if (umpireInvite) {
       const inviteGame = await prisma.hostedGame.findFirst({
         where: {
-          customUmpireInviteToken: umpireInvite
-        }
+          customUmpireInviteToken: umpireInvite,
+        },
       });
       if (inviteGame) {
         let targetOwner = user.ownerProfile;
@@ -1470,28 +1651,28 @@ export const googleAuth = asyncHandler(async (req, res) => {
           targetOwner = await prisma.ownerProfile.create({
             data: {
               userId: user.id,
-              businessName: user.name || "Independent Partner"
-            }
+              businessName: user.name || "Independent Partner",
+            },
           });
           await prisma.user.update({
             where: {
-              id: user.id
+              id: user.id,
             },
             data: {
-              role: "UMPIRE"
-            }
+              role: "UMPIRE",
+            },
           });
         }
 
         // Link match
         await prisma.hostedGame.update({
           where: {
-            id: inviteGame.id
+            id: inviteGame.id,
           },
           data: {
             umpireId: targetOwner.id,
-            customUmpireInviteStatus: "ACCEPTED"
-          }
+            customUmpireInviteStatus: "ACCEPTED",
+          },
         });
         roleToReturn = "UMPIRE";
         token = await generateOwnerToken(user.id, roleToReturn, targetOwner.id);
@@ -1501,7 +1682,7 @@ export const googleAuth = asyncHandler(async (req, res) => {
   if (user.status === "blocked") {
     return res.status(403).json({
       success: false,
-      message: "Your account has been blocked by an administrator."
+      message: "Your account has been blocked by an administrator.",
     });
   }
   const tokens = await issueTokens(res, user.id, token);
@@ -1513,7 +1694,7 @@ export const googleAuth = asyncHandler(async (req, res) => {
     ...tokens,
     role: roleToReturn,
     user: sanitizeUser(user),
-    isNewUser
+    isNewUser,
   });
 });
 
@@ -1521,32 +1702,39 @@ export const googleAuth = asyncHandler(async (req, res) => {
 export const logout = asyncHandler(async (req, res) => {
   const refreshToken = req.cookies?.refresh_token;
   if (refreshToken) {
-    const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
     await prisma.refreshToken.updateMany({
       where: {
-        tokenHash: tokenHash
+        tokenHash: tokenHash,
       },
       data: {
-        revokedAt: new Date()
-      }
+        revokedAt: new Date(),
+      },
     });
   }
-  const isProd = process.env.NODE_ENV === "production" || !!process.env.RAILWAY_ENVIRONMENT || !!process.env.RAILWAY_ENVIRONMENT_NAME || !!process.env.RAILWAY_PROJECT_ID;
+  const isProd =
+    process.env.NODE_ENV === "production" ||
+    !!process.env.RAILWAY_ENVIRONMENT ||
+    !!process.env.RAILWAY_ENVIRONMENT_NAME ||
+    !!process.env.RAILWAY_PROJECT_ID;
   res.clearCookie("auth_token", {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? "none" : "lax",
-    path: "/"
+    path: "/",
   });
   res.clearCookie("refresh_token", {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? "none" : "lax",
-    path: "/"
+    path: "/",
   });
   return res.status(200).json({
     success: true,
-    message: "Logged out successfully"
+    message: "Logged out successfully",
   });
 });
 
@@ -1561,35 +1749,39 @@ export const logoutAll = asyncHandler(async (req, res) => {
   if (!userId) {
     return res.status(401).json({
       success: false,
-      message: "Unauthorized"
+      message: "Unauthorized",
     });
   }
   await bumpTokenVersion(userId);
   await prisma.refreshToken.updateMany({
     where: {
       userId,
-      revokedAt: null
+      revokedAt: null,
     },
     data: {
-      revokedAt: new Date()
-    }
+      revokedAt: new Date(),
+    },
   });
-  const isProd = process.env.NODE_ENV === "production" || !!process.env.RAILWAY_ENVIRONMENT || !!process.env.RAILWAY_ENVIRONMENT_NAME || !!process.env.RAILWAY_PROJECT_ID;
+  const isProd =
+    process.env.NODE_ENV === "production" ||
+    !!process.env.RAILWAY_ENVIRONMENT ||
+    !!process.env.RAILWAY_ENVIRONMENT_NAME ||
+    !!process.env.RAILWAY_PROJECT_ID;
   res.clearCookie("auth_token", {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? "none" : "lax",
-    path: "/"
+    path: "/",
   });
   res.clearCookie("refresh_token", {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? "none" : "lax",
-    path: "/"
+    path: "/",
   });
   return res.status(200).json({
     success: true,
-    message: "Logged out from all devices."
+    message: "Logged out from all devices.",
   });
 });
 
@@ -1614,16 +1806,19 @@ export const refreshToken = asyncHandler(async (req, res) => {
     return res.status(401).json({
       success: false,
       code: "NO_REFRESH_TOKEN",
-      message: "No refresh token provided"
+      message: "No refresh token provided",
     });
   }
-  const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+  const tokenHash = crypto
+    .createHash("sha256")
+    .update(refreshToken)
+    .digest("hex");
 
   // Find the token in the DB
   const tokenDoc = await prisma.refreshToken.findUnique({
     where: {
-      tokenHash: tokenHash
-    }
+      tokenHash: tokenHash,
+    },
   });
 
   // 1. If token doesn't exist, it's invalid
@@ -1631,45 +1826,46 @@ export const refreshToken = asyncHandler(async (req, res) => {
     return res.status(401).json({
       success: false,
       code: "INVALID_REFRESH_TOKEN",
-      message: "Invalid refresh token"
+      message: "Invalid refresh token",
     });
   }
 
   // 2. REUSE DETECTION: If token is already revoked, someone might be attempting an attack
   if (tokenDoc.revokedAt) {
     const gracePeriodMs = REFRESH_REVOKE_GRACE_MS;
-    const timeSinceRevocation = new Date().getTime() - new Date(tokenDoc.revokedAt).getTime();
+    const timeSinceRevocation =
+      new Date().getTime() - new Date(tokenDoc.revokedAt).getTime();
     if (timeSinceRevocation > gracePeriodMs) {
       // Revoke all tokens for this user for safety
       await prisma.refreshToken.updateMany({
         where: {
-          userId: tokenDoc.userId
+          userId: tokenDoc.userId,
         },
         data: {
-          revokedAt: new Date()
-        }
+          revokedAt: new Date(),
+        },
       });
       return res.status(401).json({
         success: false,
         code: "REFRESH_TOKEN_REUSE",
-        message: "Token compromise detected. Please login again."
+        message: "Token compromise detected. Please login again.",
       });
     }
 
     // Within the grace period, let's find the user and issue a new access token (no new refresh token needed)
     const user = await prisma.user.findUnique({
       where: {
-        id: tokenDoc.userId
+        id: tokenDoc.userId,
       },
       include: {
-        ownerProfile: true
-      }
+        ownerProfile: true,
+      },
     });
     if (!user || user.status === "blocked") {
       return res.status(401).json({
         success: false,
         code: "ACCOUNT_BLOCKED",
-        message: "User status invalid"
+        message: "User status invalid",
       });
     }
     let role = user.role;
@@ -1678,40 +1874,51 @@ export const refreshToken = asyncHandler(async (req, res) => {
     const isSuperAdmin = user.role?.toUpperCase() === "ADMIN";
     if (isSuperAdmin) {
       role = user.role;
-      newToken = await generateUserToken(user.id, role, user.ownerProfile?.id || null);
-      if (user.ownerProfile) account = {
-        ...user,
-        ...user.ownerProfile
-      };
+      newToken = await generateUserToken(
+        user.id,
+        role,
+        user.ownerProfile?.id || null
+      );
+      if (user.ownerProfile)
+        account = {
+          ...user,
+          ...user.ownerProfile,
+        };
     } else if (user.ownerProfile) {
       role = user.role;
       newToken = await generateOwnerToken(user.id, role, user.ownerProfile.id);
       account = {
         ...user,
-        ...user.ownerProfile
+        ...user.ownerProfile,
       };
     } else {
       newToken = await generateUserToken(user.id, user.role);
     }
 
     // Update auth_token cookie with new token
-    const isProd = process.env.NODE_ENV === "production" || !!process.env.RAILWAY_ENVIRONMENT || !!process.env.RAILWAY_ENVIRONMENT_NAME || !!process.env.RAILWAY_PROJECT_ID;
+    const isProd =
+      process.env.NODE_ENV === "production" ||
+      !!process.env.RAILWAY_ENVIRONMENT ||
+      !!process.env.RAILWAY_ENVIRONMENT_NAME ||
+      !!process.env.RAILWAY_PROJECT_ID;
     res.cookie("auth_token", newToken, {
       httpOnly: true,
       secure: isProd,
       sameSite: isProd ? "none" : "lax",
       maxAge: 15 * 60 * 1000,
       // 15 mins
-      path: "/"
+      path: "/",
     });
     return res.status(200).json({
       success: true,
       token: newToken,
       role,
       user: sanitizeUser(account),
-      accessTokenExpiresAt: new Date(Date.now() + ACCESS_TOKEN_LIFETIME_MS).toISOString(),
+      accessTokenExpiresAt: new Date(
+        Date.now() + ACCESS_TOKEN_LIFETIME_MS
+      ).toISOString(),
       // Same refresh token kept during grace period — its original expiry stands.
-      refreshTokenExpiresAt: new Date(tokenDoc.expiresAt).toISOString()
+      refreshTokenExpiresAt: new Date(tokenDoc.expiresAt).toISOString(),
     });
   }
 
@@ -1720,31 +1927,31 @@ export const refreshToken = asyncHandler(async (req, res) => {
     return res.status(401).json({
       success: false,
       code: "REFRESH_TOKEN_EXPIRED",
-      message: "Refresh token expired"
+      message: "Refresh token expired",
     });
   }
 
   // 4. Token is valid, let's rotate
   const user = await prisma.user.findUnique({
     where: {
-      id: tokenDoc.userId
+      id: tokenDoc.userId,
     },
     include: {
-      ownerProfile: true
-    }
+      ownerProfile: true,
+    },
   });
   if (!user) {
     return res.status(401).json({
       success: false,
       code: "USER_NOT_FOUND",
-      message: "User not found"
+      message: "User not found",
     });
   }
   if (user.status === "blocked") {
     return res.status(403).json({
       success: false,
       code: "ACCOUNT_BLOCKED",
-      message: "Account blocked"
+      message: "Account blocked",
     });
   }
   let role = user.role;
@@ -1753,17 +1960,22 @@ export const refreshToken = asyncHandler(async (req, res) => {
   const isSuperAdmin = user.role?.toUpperCase() === "ADMIN";
   if (isSuperAdmin) {
     role = user.role;
-    newToken = await generateUserToken(user.id, role, user.ownerProfile?.id || null);
-    if (user.ownerProfile) account = {
-      ...user,
-      ...user.ownerProfile
-    };
+    newToken = await generateUserToken(
+      user.id,
+      role,
+      user.ownerProfile?.id || null
+    );
+    if (user.ownerProfile)
+      account = {
+        ...user,
+        ...user.ownerProfile,
+      };
   } else if (user.ownerProfile) {
     role = user.role;
     newToken = await generateOwnerToken(user.id, role, user.ownerProfile.id);
     account = {
       ...user,
-      ...user.ownerProfile
+      ...user.ownerProfile,
     };
   } else {
     newToken = await generateUserToken(user.id, user.role);
@@ -1772,11 +1984,11 @@ export const refreshToken = asyncHandler(async (req, res) => {
   // Invalidate current token
   await prisma.refreshToken.update({
     where: {
-      id: tokenDoc.id
+      id: tokenDoc.id,
     },
     data: {
-      revokedAt: new Date()
-    }
+      revokedAt: new Date(),
+    },
   });
 
   // Issue new access and refresh token (Rotation) — issueTokens returns
@@ -1787,29 +1999,22 @@ export const refreshToken = asyncHandler(async (req, res) => {
     token: newToken,
     ...tokens,
     role,
-    user: sanitizeUser(account)
+    user: sanitizeUser(account),
   });
 });
 
 // Owner Request (Waitlist/Inquiry)
 export const ownerRequest = asyncHandler(async (req, res) => {
-  const {
-    name,
-    email,
-    phone,
-    role,
-    businessDetails,
-    documents
-  } = req.body;
+  const { name, email, phone, role, businessDetails, documents } = req.body;
   const existingRequest = await prisma.ownerRequest.findUnique({
     where: {
-      email: email.toLowerCase()
-    }
+      email: email.toLowerCase(),
+    },
   });
   if (existingRequest) {
     return res.status(400).json({
       success: false,
-      message: "Owner request already exists"
+      message: "Owner request already exists",
     });
   }
   await prisma.ownerRequest.create({
@@ -1819,8 +2024,8 @@ export const ownerRequest = asyncHandler(async (req, res) => {
       phone,
       role: role === "venu_owners" ? "venue_owner" : role || "venue_owner",
       businessDetails: businessDetails || {},
-      documents: documents || []
-    }
+      documents: documents || [],
+    },
   });
 
   // Notify Admin (Queued)
@@ -1828,23 +2033,17 @@ export const ownerRequest = asyncHandler(async (req, res) => {
     title: "New Partner Inquiry",
     message: `New request from ${name} for role: ${role || "venu_owners"}`,
     type: "SYSTEM",
-    link: "/admin/partners"
+    link: "/admin/partners",
   });
   return res.status(201).json({
     success: true,
-    message: "Owner request created successfully"
+    message: "Owner request created successfully",
   });
 });
 
 // Submit Role Upgrade Request
 export const upgradeRequest = asyncHandler(async (req, res) => {
-  const {
-    name,
-    email,
-    phone,
-    role,
-    portfolioUrl
-  } = req.body;
+  const { name, email, phone, role, portfolioUrl } = req.body;
   const userId = req.user?.id;
   logger.info(`[UPGRADE_START] Request from ${email} for role ${role}`);
 
@@ -1862,50 +2061,51 @@ export const upgradeRequest = asyncHandler(async (req, res) => {
   if (email) {
     const userWithProfile = await prisma.user.findUnique({
       where: {
-        email: email.toLowerCase()
+        email: email.toLowerCase(),
       },
       include: {
-        ownerProfile: true
-      }
+        ownerProfile: true,
+      },
     });
     const ownerAccount = userWithProfile?.ownerProfile;
     if (ownerAccount) {
       return res.status(400).json({
         success: false,
-        message: `Account already has a professional role (${ownerAccount.role}).`
+        message: `Account already has a professional role (${ownerAccount.role}).`,
       });
     }
   } else {
     return res.status(400).json({
       success: false,
-      message: "Email is required for verification."
+      message: "Email is required for verification.",
     });
   }
 
   // 3. Check for existing requests
   const existingRequest = await prisma.ownerRequest.findUnique({
     where: {
-      email: email.toLowerCase()
-    }
+      email: email.toLowerCase(),
+    },
   });
   if (existingRequest) {
     if (existingRequest.status === "pending") {
       return res.status(400).json({
         success: false,
-        message: "You already have a pending application. Please wait for our team to review it."
+        message:
+          "You already have a pending application. Please wait for our team to review it.",
       });
     }
     if (existingRequest.status === "approved") {
       return res.status(400).json({
         success: false,
-        message: "Your application has already been approved."
+        message: "Your application has already been approved.",
       });
     }
     if (existingRequest.status === "rejected") {
       await prisma.ownerRequest.delete({
         where: {
-          id: existingRequest.id
-        }
+          id: existingRequest.id,
+        },
       });
     }
   }
@@ -1915,17 +2115,23 @@ export const upgradeRequest = asyncHandler(async (req, res) => {
   if (req.files && req.files.length > 0) {
     const uploadPromises = req.files.map(async (file) => {
       try {
-        const url = await uploadToCloudinary(file.buffer, "kridaz/verification");
+        const url = await uploadToCloudinary(
+          file.buffer,
+          "kridaz/verification"
+        );
         return {
           name: file.originalname,
-          url: url
+          url: url,
         };
       } catch (uploadErr) {
-        logger.error(`[UPGRADE] Error uploading ${file.originalname}:`, uploadErr);
+        logger.error(
+          `[UPGRADE] Error uploading ${file.originalname}:`,
+          uploadErr
+        );
         return null;
       }
     });
-    
+
     const results = await Promise.all(uploadPromises);
     documents = results.filter((doc) => doc !== null);
   }
@@ -1941,8 +2147,8 @@ export const upgradeRequest = asyncHandler(async (req, res) => {
       businessDetails: businessDetails || {},
       documents: documents || [],
       portfolioUrl,
-      status: "pending"
-    }
+      status: "pending",
+    },
   });
 
   // 6. Notify Admin (Queued)
@@ -1950,11 +2156,12 @@ export const upgradeRequest = asyncHandler(async (req, res) => {
     title: "Role Upgrade Request",
     message: `User ${name} requested upgrade to ${role || "venu_owners"}`,
     type: "SYSTEM",
-    link: "/admin/partners"
+    link: "/admin/partners",
   });
   return res.status(201).json({
     success: true,
-    message: "Your application has been submitted and is under review. Our team will verify your documents shortly."
+    message:
+      "Your application has been submitted and is under review. Our team will verify your documents shortly.",
   });
 });
 
@@ -1964,12 +2171,10 @@ export const getMe = asyncHandler(async (req, res) => {
   if (!decoded) {
     return res.status(401).json({
       success: false,
-      message: "Unauthorized"
+      message: "Unauthorized",
     });
   }
-  const {
-    id
-  } = decoded;
+  const { id } = decoded;
 
   // Single round-trip for the common case + the legacy "decoded.id is an
   // ownerProfile.id" fallback. getMe is called on every cold app start so
@@ -1977,29 +2182,32 @@ export const getMe = asyncHandler(async (req, res) => {
   // on success.
   const user = await prisma.user.findFirst({
     where: {
-      OR: [{
-        id
-      }, {
-        ownerProfile: {
-          id
-        }
-      }]
+      OR: [
+        {
+          id,
+        },
+        {
+          ownerProfile: {
+            id,
+          },
+        },
+      ],
     },
     include: {
-      ownerProfile: true
-    }
+      ownerProfile: true,
+    },
   });
   if (!user) {
     return res.status(404).json({
       success: false,
       code: "ACCOUNT_NOT_FOUND",
-      message: "Account not found"
+      message: "Account not found",
     });
   }
   if (user.status === "blocked") {
     return res.status(403).json({
       success: false,
-      message: "Your account has been blocked by an administrator."
+      message: "Your account has been blocked by an administrator.",
     });
   }
   let applicationStatus = null;
@@ -2007,45 +2215,50 @@ export const getMe = asyncHandler(async (req, res) => {
   if (!user.ownerProfile) {
     const existingRequest = await prisma.ownerRequest.findFirst({
       where: {
-        userId: user.id
+        userId: user.id,
       },
       orderBy: {
-        createdAt: "desc"
-      }
+        createdAt: "desc",
+      },
     });
     if (existingRequest && existingRequest.status !== "rejected") {
       applicationStatus = existingRequest.status;
       applicationRole = existingRequest.role;
     }
   }
-  const token = req.cookies.auth_token || req.headers.authorization?.split(" ")[1];
+  const token =
+    req.cookies.auth_token || req.headers.authorization?.split(" ")[1];
 
   // Strip secrets — password hash, fcmToken, googleId, refreshTokens.
   const safeUser = sanitizeUser(user);
 
   // Safely merge only the ownerProfile fields we want to expose, without
   // overwriting critical user fields (id, role, createdAt, etc.)
-  const ownerProfileData = user.ownerProfile ? {
-    ownerId: user.ownerProfile.id,
-    businessName: user.ownerProfile.businessName,
-    businessType: user.ownerProfile.businessType,
-    ownerRole: user.role,
-    ownerVerified: user.ownerProfile.isVerified,
-    isOnline: user.ownerProfile.isOnline
-  } : {};
+  const ownerProfileData = user.ownerProfile
+    ? {
+        ownerId: user.ownerProfile.id,
+        businessName: user.ownerProfile.businessName,
+        businessType: user.ownerProfile.businessType,
+        ownerRole: user.role,
+        ownerVerified: user.ownerProfile.isVerified,
+        isOnline: user.ownerProfile.isOnline,
+      }
+    : {};
   const account = {
     ...safeUser,
     ...ownerProfileData,
     applicationStatus,
-    applicationRole
+    applicationRole,
   };
   const isSuperAdmin = user.role?.toUpperCase() === "ADMIN";
-  const activeRole = isSuperAdmin ? user.role : user.ownerProfile?.role || user.role;
+  const activeRole = isSuperAdmin
+    ? user.role
+    : user.ownerProfile?.role || user.role;
   return res.status(200).json({
     success: true,
     user: account,
     role: activeRole,
-    token
+    token,
   });
 });
 
@@ -2054,57 +2267,60 @@ export const updateProfilePicture = asyncHandler(async (req, res) => {
   if (!req.file) {
     return res.status(400).json({
       success: false,
-      message: "No image file provided"
+      message: "No image file provided",
     });
   }
   const decoded = req.user || req.owner;
   if (!decoded) {
     return res.status(401).json({
       success: false,
-      message: "Unauthorized"
+      message: "Unauthorized",
     });
   }
-  const {
-    id
-  } = decoded;
+  const { id } = decoded;
 
   // Find User
   let user = await prisma.user.findUnique({
     where: {
-      id: id
+      id: id,
     },
     include: {
-      ownerProfile: true
-    }
+      ownerProfile: true,
+    },
   });
   if (!user) {
     const profile = await prisma.ownerProfile.findUnique({
       where: {
-        id: id
+        id: id,
       },
       include: {
-        user: true
-      }
+        user: true,
+      },
     });
-    if (profile) user = {
-      ...profile.user,
-      ownerProfile: profile
-    };
+    if (profile)
+      user = {
+        ...profile.user,
+        ownerProfile: profile,
+      };
   }
   if (!user) {
     return res.status(404).json({
       success: false,
-      message: "Account not found"
+      message: "Account not found",
     });
   }
 
   // Upload to Cloudinary
   const uploadResult = await new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream({
-      folder: `kridaz/profiles/${user.role}`
-    }, (error, result) => {
-      if (error) reject(error);else resolve(result);
-    });
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: `kridaz/profiles/${user.role}`,
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
     uploadStream.end(req.file.buffer);
   });
   const profilePictureUrl = uploadResult.secure_url;
@@ -2112,11 +2328,11 @@ export const updateProfilePicture = asyncHandler(async (req, res) => {
   // Unified update: always update User and OwnerProfile
   await prisma.user.update({
     where: {
-      id: user.id
+      id: user.id,
     },
     data: {
-      profilePicture: profilePictureUrl
-    }
+      profilePicture: profilePictureUrl,
+    },
   });
   // The OwnerProfile schema doesn't have a profilePicture field (it relies on User.profilePicture)
 
@@ -2125,7 +2341,7 @@ export const updateProfilePicture = asyncHandler(async (req, res) => {
   if (io) {
     io.emit(SOCKET.USER_PROFILE_UPDATED, {
       userId: user.id,
-      profilePicture: profilePictureUrl
+      profilePicture: profilePictureUrl,
     });
   }
   return res.status(200).json({
@@ -2134,8 +2350,8 @@ export const updateProfilePicture = asyncHandler(async (req, res) => {
     profilePicture: profilePictureUrl,
     user: sanitizeUser({
       ...user,
-      profilePicture: profilePictureUrl
-    })
+      profilePicture: profilePictureUrl,
+    }),
   });
 });
 
@@ -2144,40 +2360,43 @@ export const updateBannerPicture = asyncHandler(async (req, res) => {
   if (!req.file) {
     return res.status(400).json({
       success: false,
-      message: "No image file provided"
+      message: "No image file provided",
     });
   }
   const decoded = req.user || req.owner;
   if (!decoded) {
     return res.status(401).json({
       success: false,
-      message: "Unauthorized"
+      message: "Unauthorized",
     });
   }
   const { id } = decoded;
 
   let user = await prisma.user.findUnique({
     where: { id },
-    include: { ownerProfile: true }
+    include: { ownerProfile: true },
   });
   if (!user) {
     return res.status(404).json({
       success: false,
-      message: "Account not found"
+      message: "Account not found",
     });
   }
 
-  const bannerPictureUrl = await uploadToCloudinary(req.file.buffer, `kridaz/banners/${user.role}`);
+  const bannerPictureUrl = await uploadToCloudinary(
+    req.file.buffer,
+    `kridaz/banners/${user.role}`
+  );
 
   await prisma.user.update({
     where: { id: user.id },
-    data: { bannerPicture: bannerPictureUrl }
+    data: { bannerPicture: bannerPictureUrl },
   });
-  
+
   if (user.ownerProfile) {
     await prisma.ownerProfile.update({
       where: { id: user.ownerProfile.id },
-      data: { bannerUrl: bannerPictureUrl }
+      data: { bannerUrl: bannerPictureUrl },
     });
   }
 
@@ -2185,63 +2404,60 @@ export const updateBannerPicture = asyncHandler(async (req, res) => {
   if (io) {
     io.emit(SOCKET.USER_PROFILE_UPDATED, {
       userId: user.id,
-      bannerPicture: bannerPictureUrl
+      bannerPicture: bannerPictureUrl,
     });
   }
-  
+
   return res.status(200).json({
     success: true,
     message: "Banner picture updated successfully",
     bannerPicture: bannerPictureUrl,
     user: sanitizeUser({
       ...user,
-      bannerPicture: bannerPictureUrl
-    })
+      bannerPicture: bannerPictureUrl,
+    }),
   });
 });
 
 export const updateInterests = asyncHandler(async (req, res) => {
-  const {
-    sportTypes
-  } = req.body;
-  const {
-    id
-  } = req.user;
+  const { sportTypes } = req.body;
+  const { id } = req.user;
   const user = await prisma.user.findUnique({
     where: {
-      id
+      id,
     },
     include: {
-      ownerProfile: true
-    }
+      ownerProfile: true,
+    },
   });
-  if (!user) return res.status(404).json({
-    success: false,
-    message: "User not found"
-  });
+  if (!user)
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
   await prisma.user.update({
     where: {
-      id
+      id,
     },
     data: {
       sportTypes,
       profile: {
         upsert: {
           create: {
-            sportTypes
+            sportTypes,
           },
           update: {
-            sportTypes
-          }
-        }
-      }
-    }
+            sportTypes,
+          },
+        },
+      },
+    },
   });
   // OwnerProfile schema does not have interests or gameTypes fields (relies on User profile)
   return res.status(200).json({
     success: true,
     message: "Interests updated",
-    sportTypes
+    sportTypes,
   });
 });
 export const updateProfile = asyncHandler(async (req, res) => {
@@ -2257,46 +2473,45 @@ export const updateProfile = asyncHandler(async (req, res) => {
     location,
     sportTypes,
     interests,
-    password
+    password,
   } = req.body;
   const decoded = req.user || req.owner;
   if (!decoded) {
     return res.status(401).json({
       success: false,
-      message: "Unauthorized"
+      message: "Unauthorized",
     });
   }
-  const {
-    id
-  } = decoded;
+  const { id } = decoded;
 
   // Resolve User
   let user = await prisma.user.findUnique({
     where: {
-      id
+      id,
     },
     include: {
-      ownerProfile: true
-    }
+      ownerProfile: true,
+    },
   });
   if (!user) {
     const profile = await prisma.ownerProfile.findUnique({
       where: {
-        id
+        id,
       },
       include: {
-        user: true
-      }
+        user: true,
+      },
     });
-    if (profile) user = {
-      ...profile.user,
-      ownerProfile: profile
-    };
+    if (profile)
+      user = {
+        ...profile.user,
+        ownerProfile: profile,
+      };
   }
   if (!user) {
     return res.status(404).json({
       success: false,
-      message: "Account not found"
+      message: "Account not found",
     });
   }
 
@@ -2306,32 +2521,41 @@ export const updateProfile = asyncHandler(async (req, res) => {
       where: {
         username: username.toLowerCase(),
         NOT: {
-          id: user.id
-        }
-      }
+          id: user.id,
+        },
+      },
     });
     if (conflict) {
       return res.status(400).json({
         success: false,
-        message: "Username already taken"
+        message: "Username already taken",
       });
     }
   }
 
   // Check if phone is taken
   if (phone) {
+    const phoneConditions = [{ phone }];
+    const withoutCountry = phone.replace(/^\+\d{1,3}/, "");
+    if (withoutCountry && withoutCountry !== phone) {
+      phoneConditions.push({ phone: withoutCountry });
+    }
+    if (!phone.startsWith("+")) {
+      phoneConditions.push({ phone: `+91${phone}` });
+    }
+
     const conflictPhone = await prisma.user.findFirst({
       where: {
-        phone,
+        OR: phoneConditions,
         NOT: {
-          id: user.id
-        }
-      }
+          id: user.id,
+        },
+      },
     });
     if (conflictPhone) {
       return res.status(400).json({
         success: false,
-        message: "Phone number already registered to another account"
+        message: "Phone number already registered to another account",
       });
     }
   }
@@ -2340,11 +2564,11 @@ export const updateProfile = asyncHandler(async (req, res) => {
   if (password) {
     hashedPassword = await argon2.hash(password);
   }
-  const cleanObject = obj => {
+  const cleanObject = (obj) => {
     const copy = {
-      ...obj
+      ...obj,
     };
-    Object.keys(copy).forEach(key => {
+    Object.keys(copy).forEach((key) => {
       if (copy[key] === undefined) delete copy[key];
     });
     return copy;
@@ -2359,10 +2583,13 @@ export const updateProfile = asyncHandler(async (req, res) => {
     city: city || location,
     state,
     sportTypes: finalInterests,
-    isOnboarded: req.body.isOnboarded === true || req.body.isOnboarded === 'true' ? true : undefined,
+    isOnboarded:
+      req.body.isOnboarded === true || req.body.isOnboarded === "true"
+        ? true
+        : undefined,
     ...(hashedPassword && {
-      password: hashedPassword
-    })
+      password: hashedPassword,
+    }),
   });
   const profileData = cleanObject({
     bio: updateData.bio,
@@ -2371,44 +2598,42 @@ export const updateProfile = asyncHandler(async (req, res) => {
     city: updateData.city,
     state: updateData.state,
     sportTypes: updateData.sportTypes,
-    interests: interests || []
+    interests: interests || [],
   });
   const updatedUser = await prisma.user.update({
     where: {
-      id: user.id
+      id: user.id,
     },
     data: {
       ...updateData,
       profile: {
         upsert: {
           create: profileData,
-          update: profileData
-        }
-      }
-    }
+          update: profileData,
+        },
+      },
+    },
   });
   // OwnerProfile schema does not have gameTypes or interests fields (relies on User schema)
   return res.status(200).json({
     success: true,
     message: "Profile updated successfully",
-    user: sanitizeUser(updatedUser)
+    user: sanitizeUser(updatedUser),
   });
 });
 export const sendPhoneVerificationOtp = asyncHandler(async (req, res) => {
-  const {
-    phone
-  } = req.body;
+  const { phone } = req.body;
   const userId = req.user?.id || req.user?.userId;
   if (!userId) {
     return res.status(401).json({
       success: false,
-      message: "Unauthorized"
+      message: "Unauthorized",
     });
   }
   if (!phone) {
     return res.status(400).json({
       success: false,
-      message: "Phone number is required"
+      message: "Phone number is required",
     });
   }
 
@@ -2417,33 +2642,36 @@ export const sendPhoneVerificationOtp = asyncHandler(async (req, res) => {
     where: {
       phone,
       NOT: {
-        id: userId
-      }
-    }
+        id: userId,
+      },
+    },
   });
   if (conflict) {
     return res.status(400).json({
       success: false,
-      message: "Phone number already in use by another account"
+      message: "Phone number already in use by another account",
     });
   }
   const phoneOtp = generateOTP();
   const user = await prisma.user.findUnique({
     where: {
-      id: userId
-    }
+      id: userId,
+    },
   });
   const email = user.email;
 
   // Delete existing OTP record for this email/phone if any
   await prisma.oTP.deleteMany({
     where: {
-      OR: [{
-        email
-      }, {
-        phone: phone
-      }]
-    }
+      OR: [
+        {
+          email,
+        },
+        {
+          phone: phone,
+        },
+      ],
+    },
   });
 
   // Create a new OTP record
@@ -2453,8 +2681,8 @@ export const sendPhoneVerificationOtp = asyncHandler(async (req, res) => {
       phone,
       emailOtp: email ? generateOTP() : null,
       phoneOtp,
-      expiresAt: new Date(Date.now() + 10 * 60 * 1000)
-    }
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+    },
   });
 
   // Send the OTP
@@ -2463,9 +2691,10 @@ export const sendPhoneVerificationOtp = asyncHandler(async (req, res) => {
       phone,
       email,
       otp: phoneOtp,
-      phoneTemplate: process.env.MSG91_WHATSAPP_OTP_TEMPLATE || "otp_verification",
+      phoneTemplate:
+        process.env.MSG91_WHATSAPP_OTP_TEMPLATE || "otp_verification",
       emailSubject: "Your Kridaz Phone Verification Code",
-      emailHtml: `<p>Your phone verification code is <strong>${phoneOtp}</strong>. It will expire in 10 minutes.</p>`
+      emailHtml: `<p>Your phone verification code is <strong>${phoneOtp}</strong>. It will expire in 10 minutes.</p>`,
     });
   } catch (notifErr) {
     logger.error("NotificationService.sendOTP error:", notifErr);
@@ -2475,25 +2704,22 @@ export const sendPhoneVerificationOtp = asyncHandler(async (req, res) => {
   // Developers can read it from server logs or directly from the DB.
   return res.status(200).json({
     success: true,
-    message: "Verification OTP sent to your phone/WhatsApp successfully"
+    message: "Verification OTP sent to your phone/WhatsApp successfully",
   });
 });
 export const verifyPhoneOtp = asyncHandler(async (req, res) => {
-  const {
-    phone,
-    otp
-  } = req.body;
+  const { phone, otp } = req.body;
   const userId = req.user?.id || req.user?.userId;
   if (!userId) {
     return res.status(401).json({
       success: false,
-      message: "Unauthorized"
+      message: "Unauthorized",
     });
   }
   const user = await prisma.user.findUnique({
     where: {
-      id: userId
-    }
+      id: userId,
+    },
   });
   const email = user.email;
   let firebaseVerified = false;
@@ -2501,19 +2727,22 @@ export const verifyPhoneOtp = asyncHandler(async (req, res) => {
     try {
       const decodedToken = await firebaseAdmin.auth().verifyIdToken(otp);
       const firebasePhone = decodedToken.phone_number;
-      if (firebasePhone && (firebasePhone === phone || firebasePhone.endsWith(phone))) {
+      if (
+        firebasePhone &&
+        (firebasePhone === phone || firebasePhone.endsWith(phone))
+      ) {
         firebaseVerified = true;
       } else {
         return res.status(400).json({
           success: false,
-          message: "Phone number mismatch with Firebase Auth"
+          message: "Phone number mismatch with Firebase Auth",
         });
       }
     } catch (fbError) {
       logger.error("Firebase verifyIdToken error in verifyPhoneOtp:", fbError);
       return res.status(400).json({
         success: false,
-        message: "Invalid Firebase Token"
+        message: "Invalid Firebase Token",
       });
     }
   }
@@ -2522,19 +2751,19 @@ export const verifyPhoneOtp = asyncHandler(async (req, res) => {
     otpRecord = await prisma.oTP.findFirst({
       where: {
         phone,
-        phoneOtp: otp
-      }
+        phoneOtp: otp,
+      },
     });
     if (!otpRecord) {
       return res.status(400).json({
         success: false,
-        message: "OTP is wrong"
+        message: "OTP is wrong",
       });
     }
     if (otpRecord.expiresAt < new Date()) {
       return res.status(400).json({
         success: false,
-        message: "OTP has expired"
+        message: "OTP has expired",
       });
     }
   }
@@ -2542,47 +2771,51 @@ export const verifyPhoneOtp = asyncHandler(async (req, res) => {
     // Delete the OTP record
     await prisma.oTP.delete({
       where: {
-        id: otpRecord.id
-      }
+        id: otpRecord.id,
+      },
     });
   }
   return res.status(200).json({
     success: true,
-    message: "Phone number verified successfully"
+    message: "Phone number verified successfully",
   });
 });
 export const forgotPasswordOtp = asyncHandler(async (req, res) => {
-  const {
-    email
-  } = req.body;
+  const { email } = req.body;
   const searchIdentifier = email ? email.toLowerCase() : "";
   const user = await prisma.user.findFirst({
     where: {
-      OR: [{
-        email: searchIdentifier
-      }, {
-        phone: searchIdentifier
-      }]
-    }
+      OR: [
+        {
+          email: searchIdentifier,
+        },
+        {
+          phone: searchIdentifier,
+        },
+      ],
+    },
   });
   if (!user) {
     return res.status(404).json({
       success: false,
-      message: 'User not found'
+      message: "User not found",
     });
   }
   const emailOtp = crypto.randomInt(100000, 1000000).toString();
-  const isPhone = !searchIdentifier.includes('@');
+  const isPhone = !searchIdentifier.includes("@");
 
   // Upsert OTP
   await prisma.oTP.deleteMany({
     where: {
-      OR: [{
-        email: user.email
-      }, {
-        phone: user.phone
-      }]
-    }
+      OR: [
+        {
+          email: user.email,
+        },
+        {
+          phone: user.phone,
+        },
+      ],
+    },
   });
   await prisma.oTP.create({
     data: {
@@ -2590,52 +2823,51 @@ export const forgotPasswordOtp = asyncHandler(async (req, res) => {
       emailOtp,
       phone: user.phone || null,
       phoneOtp: emailOtp,
-      expiresAt: new Date(Date.now() + 10 * 60 * 1000)
-    }
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+    },
   });
   if (isPhone && user.phone) {
     return res.status(200).json({
       success: true,
-      message: 'OTP required via Firebase Phone Auth',
+      message: "OTP required via Firebase Phone Auth",
       requiresOtp: true,
-      otp: null
+      otp: null,
     });
   } else {
     NotificationService.sendEmail({
       to: user.email,
-      subject: 'Your Password Reset Code',
-      html: `<p>Your password reset code is <strong>${emailOtp}</strong>. It will expire in 10 minutes.</p>`
+      subject: "Your Password Reset Code",
+      html: `<p>Your password reset code is <strong>${emailOtp}</strong>. It will expire in 10 minutes.</p>`,
     });
     // Never expose the OTP in the response body, even in dev.
     return res.status(200).json({
       success: true,
-      message: 'OTP sent to your email'
+      message: "OTP sent to your email",
     });
   }
 });
 export const resetPassword = asyncHandler(async (req, res) => {
-  const {
-    email,
-    otp,
-    newPassword
-  } = req.body;
+  const { email, otp, newPassword } = req.body;
   const searchIdentifier = email ? email.toLowerCase() : "";
   const user = await prisma.user.findFirst({
     where: {
-      OR: [{
-        email: searchIdentifier
-      }, {
-        phone: searchIdentifier
-      }]
+      OR: [
+        {
+          email: searchIdentifier,
+        },
+        {
+          phone: searchIdentifier,
+        },
+      ],
     },
     include: {
-      ownerProfile: true
-    }
+      ownerProfile: true,
+    },
   });
   if (!user) {
     return res.status(404).json({
       success: false,
-      message: 'Account not found'
+      message: "Account not found",
     });
   }
   let firebaseVerified = false;
@@ -2643,7 +2875,10 @@ export const resetPassword = asyncHandler(async (req, res) => {
     try {
       const decodedToken = await firebaseAdmin.auth().verifyIdToken(otp);
       const firebasePhone = decodedToken.phone_number;
-      if (firebasePhone && (firebasePhone === user.phone || firebasePhone.endsWith(user.phone))) {
+      if (
+        firebasePhone &&
+        (firebasePhone === user.phone || firebasePhone.endsWith(user.phone))
+      ) {
         firebaseVerified = true;
       }
     } catch (fbError) {
@@ -2654,59 +2889,71 @@ export const resetPassword = asyncHandler(async (req, res) => {
   if (!firebaseVerified) {
     otpRecord = await prisma.oTP.findFirst({
       where: {
-        OR: [{
-          email: user.email,
-          emailOtp: otp
-        }, {
-          phone: user.phone,
-          phoneOtp: otp
-        }]
-      }
+        OR: [
+          {
+            email: user.email,
+            emailOtp: otp,
+          },
+          {
+            phone: user.phone,
+            phoneOtp: otp,
+          },
+        ],
+      },
     });
     if (!otpRecord) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid or expired OTP'
+        message: "Invalid or expired OTP",
       });
     }
   }
   const hashedPassword = await argon2.hash(newPassword);
   await prisma.user.update({
     where: {
-      id: user.id
+      id: user.id,
     },
     data: {
-      password: hashedPassword
-    }
+      password: hashedPassword,
+    },
   });
 
   await prisma.oTP.deleteMany({
     where: {
-      OR: [{
-        email: user.email
-      }, {
-        phone: user.phone
-      }]
-    }
+      OR: [
+        {
+          email: user.email,
+        },
+        {
+          phone: user.phone,
+        },
+      ],
+    },
   });
   return res.status(200).json({
     success: true,
-    message: 'Password updated successfully'
+    message: "Password updated successfully",
   });
 });
 
 export const sendEmailVerificationLink = asyncHandler(async (req, res) => {
   const { email, source } = req.body;
   if (!email) {
-    return res.status(400).json({ success: false, message: "Email is required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Email is required" });
   }
 
   // Generate a JWT valid for 1 hour for the email link
-  const token = jwt.sign({ email, source }, process.env.JWT_SECRET || getRegistrationSecret(), { expiresIn: '1h' });
-  
+  const token = jwt.sign(
+    { email, source },
+    process.env.JWT_SECRET || getRegistrationSecret(),
+    { expiresIn: "1h" }
+  );
+
   // Construct link (Frontend URL is typically on port 5174 in dev)
   const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5174";
-  const path = source === 'profile' ? '/profile' : '/signup';
+  const path = source === "profile" ? "/profile" : "/signup";
   const verifyLink = `${frontendUrl}${path}?verifyToken=${token}`;
 
   const html = `
@@ -2722,55 +2969,67 @@ export const sendEmailVerificationLink = asyncHandler(async (req, res) => {
     // Wait, generateEmail is imported in the file? Let me check.
     // Yes, but I need to make sure. I will check imports if it fails.
     await generateEmail(email, "Verify Your Kridaz Email", html);
-    return res.status(200).json({ success: true, message: "Verification link sent successfully" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Verification link sent successfully" });
   } catch (error) {
     logger.error("Failed to send email verification link:", error);
-    return res.status(500).json({ success: false, message: "Failed to send verification email" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to send verification email" });
   }
 });
 
 export const verifyEmailToken = asyncHandler(async (req, res) => {
   const { token } = req.body;
   if (!token) {
-    return res.status(400).json({ success: false, message: "Token is required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Token is required" });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || getRegistrationSecret());
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || getRegistrationSecret()
+    );
     const { email, source } = decoded;
 
     // Generate a registration token that can be claimed during registerUser
     const emailRegistrationToken = jwt.sign(
       { verifiedEmail: email, emailVerified: true, jti: crypto.randomUUID() },
       getRegistrationSecret(),
-      { expiresIn: '30m' }
+      { expiresIn: "30m" }
     );
 
     // If source is profile, try to update existing user
-    if (source === 'profile') {
+    if (source === "profile") {
       const user = await prisma.user.findUnique({ where: { email } });
       if (user) {
         await prisma.user.update({
           where: { id: user.id },
-          data: { isEmailVerified: true }
+          data: { isEmailVerified: true },
         });
-        return res.status(200).json({ 
-          success: true, 
-          message: "Email verified successfully", 
+        return res.status(200).json({
+          success: true,
+          message: "Email verified successfully",
           emailRegistrationToken,
-          email 
+          email,
         });
       }
     }
 
-    return res.status(200).json({ 
-      success: true, 
-      message: "Email verified successfully", 
+    return res.status(200).json({
+      success: true,
+      message: "Email verified successfully",
       emailRegistrationToken,
-      email 
+      email,
     });
   } catch (err) {
-    return res.status(400).json({ success: false, message: "Invalid or expired verification link" });
+    return res.status(400).json({
+      success: false,
+      message: "Invalid or expired verification link",
+    });
   }
 });
 
@@ -2780,23 +3039,28 @@ export const verifyEmailGoogle = asyncHandler(async (req, res) => {
   if (credential) {
     const ticket = await client.verifyIdToken({
       idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
     payload = ticket.getPayload();
   } else if (accessToken) {
-    const response = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
+    const response = await fetch(
+      `https://www.googleapis.com/oauth2/v3/userinfo`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       }
-    });
+    );
     if (!response.ok) {
-      return res.status(401).json({ success: false, message: "Invalid Google access token" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid Google access token" });
     }
     payload = await response.json();
   } else {
     return res.status(400).json({
       success: false,
-      message: "No Google credentials provided"
+      message: "No Google credentials provided",
     });
   }
 
@@ -2804,7 +3068,8 @@ export const verifyEmailGoogle = asyncHandler(async (req, res) => {
   if (!email) {
     return res.status(400).json({
       success: false,
-      message: "Could not retrieve email from Google. Please ensure your Google account has a verified email."
+      message:
+        "Could not retrieve email from Google. Please ensure your Google account has a verified email.",
     });
   }
 
@@ -2812,86 +3077,103 @@ export const verifyEmailGoogle = asyncHandler(async (req, res) => {
   const emailRegistrationToken = jwt.sign(
     { verifiedEmail: email, emailVerified: true, jti: crypto.randomUUID() },
     getRegistrationSecret(),
-    { expiresIn: '30m' }
+    { expiresIn: "30m" }
   );
 
   // If source is profile, try to update existing user
-  if (source === 'profile') {
+  if (source === "profile") {
     const user = await prisma.user.findUnique({ where: { email } });
     if (user) {
       await prisma.user.update({
         where: { id: user.id },
-        data: { isEmailVerified: true }
+        data: { isEmailVerified: true },
       });
     }
   }
 
-  return res.status(200).json({ 
-    success: true, 
-    message: "Email verified successfully via Google", 
+  return res.status(200).json({
+    success: true,
+    message: "Email verified successfully via Google",
     emailRegistrationToken,
-    email 
+    email,
   });
 });
 
 export const updateProfileEmailWithGoogle = asyncHandler(async (req, res) => {
   const { credential, accessToken, expectedEmail } = req.body;
   if (!expectedEmail) {
-    return res.status(400).json({ success: false, message: "Expected email is required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Expected email is required" });
   }
 
   let payload;
   if (credential) {
     const ticket = await client.verifyIdToken({
       idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
     payload = ticket.getPayload();
   } else if (accessToken) {
-    const response = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo`, {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    });
+    const response = await fetch(
+      `https://www.googleapis.com/oauth2/v3/userinfo`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
     if (!response.ok) {
-      return res.status(401).json({ success: false, message: "Invalid Google access token" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid Google access token" });
     }
     payload = await response.json();
   } else {
-    return res.status(400).json({ success: false, message: "No Google credentials provided" });
+    return res
+      .status(400)
+      .json({ success: false, message: "No Google credentials provided" });
   }
 
   const { email } = payload;
   if (!email || email.toLowerCase() !== expectedEmail.toLowerCase()) {
     return res.status(400).json({
       success: false,
-      message: "Google account is different than field. Please select the matching Google account."
+      message:
+        "Google account is different than field. Please select the matching Google account.",
     });
   }
 
-  const existingUser = await prisma.user.findUnique({ where: { email: expectedEmail.toLowerCase() } });
+  const existingUser = await prisma.user.findUnique({
+    where: { email: expectedEmail.toLowerCase() },
+  });
   if (existingUser && existingUser.id !== req.user.id) {
-    return res.status(400).json({ success: false, message: "This email is already taken by another account." });
+    return res.status(400).json({
+      success: false,
+      message: "This email is already taken by another account.",
+    });
   }
 
   await prisma.user.update({
     where: { id: req.user.id },
-    data: { email: expectedEmail.toLowerCase(), isEmailVerified: true }
+    data: { email: expectedEmail.toLowerCase(), isEmailVerified: true },
   });
 
-  return res.status(200).json({ 
-    success: true, 
-    message: "Email verified successfully via Google", 
-    email: expectedEmail.toLowerCase()
+  return res.status(200).json({
+    success: true,
+    message: "Email verified successfully via Google",
+    email: expectedEmail.toLowerCase(),
   });
 });
 
 export const updateProfileEmailWithOtp = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
   if (!email || !otp) {
-    return res.status(400).json({ success: false, message: "Email and OTP are required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Email and OTP are required" });
   }
 
   const otpRecord = await prisma.oTP.findFirst({
-    where: { email: email.toLowerCase(), emailOtp: otp }
+    where: { email: email.toLowerCase(), emailOtp: otp },
   });
 
   if (!otpRecord) {
@@ -2902,22 +3184,26 @@ export const updateProfileEmailWithOtp = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: "OTP has expired" });
   }
 
-  const existingUser = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+  const existingUser = await prisma.user.findUnique({
+    where: { email: email.toLowerCase() },
+  });
   if (existingUser && existingUser.id !== req.user.id) {
-    return res.status(400).json({ success: false, message: "This email is already taken by another account." });
+    return res.status(400).json({
+      success: false,
+      message: "This email is already taken by another account.",
+    });
   }
 
   await prisma.oTP.delete({ where: { id: otpRecord.id } });
 
   await prisma.user.update({
     where: { id: req.user.id },
-    data: { email: email.toLowerCase(), isEmailVerified: true }
+    data: { email: email.toLowerCase(), isEmailVerified: true },
   });
 
   return res.status(200).json({
     success: true,
     message: "Email verified successfully",
-    email: email.toLowerCase()
+    email: email.toLowerCase(),
   });
 });
-

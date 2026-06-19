@@ -2,17 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useGetTurfDetailsQuery } from "@redux/api/turfApi";
-import { 
-  IndianRupee, 
-  ShieldCheck, 
-  Clock, 
-  Calendar, 
-  MapPin, 
-  ChevronLeft, 
-  Zap, 
-  Wallet, 
-  Smartphone, 
-  CreditCard, 
+import {
+  IndianRupee,
+  ShieldCheck,
+  Clock,
+  Calendar,
+  MapPin,
+  ChevronLeft,
+  Zap,
+  Wallet,
+  Smartphone,
+  CreditCard,
   ArrowRight,
   ArrowLeft,
   Check,
@@ -21,16 +21,19 @@ import {
   Tag,
   Info,
   Shield,
-  Lock
+  Lock,
 } from "lucide-react";
 import { format } from "date-fns";
 import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { handlePayment, createOrder } from "@infrastructure/razorpay";
-import GlobalBackButton from '@/shared/components/GlobalBackButton';
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
 
-const SUBHEADING_STYLE = { fontFamily: "'Inter 28pt Light', sans-serif", fontWeight: 300 };
+const SUBHEADING_STYLE = {
+  fontFamily: "'Inter 28pt Light', sans-serif",
+  fontWeight: 300,
+};
 
 // Helper: parse "01:00 PM" slot time + date into ISO string
 const buildDateTime = (dateStr, timeStr, addHrs = 0) => {
@@ -48,30 +51,32 @@ const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useSelector((/** @type {any} */ state) => state.auth);
-  
+
   // Fetch real data
   const { data: turfData } = useGetTurfDetailsQuery(turfId, { skip: !turfId });
   const turf = turfData?.turf || turfData;
 
   // Extract booking data from location state or fallback
   const bookingData = location.state || {};
-  const { 
-    turfName, 
-    selectedDate, 
-    startTime, 
-    duration, 
+  const {
+    turfName,
+    selectedDate,
+    startTime,
+    duration,
     amount,
-    location: turfLocation 
+    location: turfLocation,
   } = bookingData;
 
-  const [paymentPercentage, setPaymentPercentage] = useState(30); 
+  const [paymentPercentage, setPaymentPercentage] = useState(30);
   const [paymentMode, setPaymentMode] = useState("WALLET");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [currentBalance, setCurrentBalance] = useState(user?.walletBalance || 0);
+  const [currentBalance, setCurrentBalance] = useState(
+    user?.walletBalance || 0
+  );
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [isValidating, setIsValidating] = useState(false);
-  const [step, setStep] = useState("PAYMENT"); 
+  const [step, setStep] = useState("PAYMENT");
   const [bookingId, setBookingId] = useState(null);
 
   const [settings, setSettings] = useState(null);
@@ -93,7 +98,9 @@ const CheckoutPage = () => {
       try {
         const response = await axiosInstance.get("/api/user/wallet/data");
         if (response.data) {
-          setCurrentBalance(response.data.usableBalance ?? response.data.balance);
+          setCurrentBalance(
+            response.data.usableBalance ?? response.data.balance
+          );
         }
       } catch (err) {
         console.error("Failed to fetch wallet data:", err);
@@ -107,7 +114,7 @@ const CheckoutPage = () => {
   // Calculations
   const fetchedPrice = (turf?.pricePerHour || 0) * (duration || 1);
   const venueCharges = amount || fetchedPrice;
-  const serviceCharge = Math.round(venueCharges * 0.0125) || 25; 
+  const serviceCharge = Math.round(venueCharges * 0.0125) || 25;
   const gstAmount = 0;
   const discount = appliedCoupon ? appliedCoupon.discount : 0;
   const total = venueCharges + serviceCharge + gstAmount - discount;
@@ -125,15 +132,18 @@ const CheckoutPage = () => {
     if (!couponCode) return;
     setIsValidating(true);
     try {
-      const res = await axiosInstance.post("/api/user/booking/validate-coupon", {
-        code: couponCode,
-        turfId,
-        amount: venueCharges
-      });
+      const res = await axiosInstance.post(
+        "/api/user/booking/validate-coupon",
+        {
+          code: couponCode,
+          turfId,
+          amount: venueCharges,
+        }
+      );
       if (res.data.success) {
-        setAppliedCoupon({ 
-          code: couponCode, 
-          discount: res.data.discount 
+        setAppliedCoupon({
+          code: couponCode,
+          discount: res.data.discount,
         });
         toast.success("Coupon applied successfully!");
       }
@@ -167,10 +177,13 @@ const CheckoutPage = () => {
           balanceAmount,
           paymentType,
           paymentPercentage,
-          ...(appliedCoupon?.code && { couponCode: appliedCoupon.code })
+          ...(appliedCoupon?.code && { couponCode: appliedCoupon.code }),
         };
 
-        const res = await axiosInstance.post("/api/user/booking/book-with-wallet", bookingPayload);
+        const res = await axiosInstance.post(
+          "/api/user/booking/book-with-wallet",
+          bookingPayload
+        );
 
         if (res.data.success) {
           setCurrentBalance(res.data.newBalance ?? currentBalance);
@@ -182,20 +195,23 @@ const CheckoutPage = () => {
         const { order } = await createOrder(advanceAmount);
         const paymentResult = await handlePayment(order, user);
 
-        const res = await axiosInstance.post("/api/user/booking/verify-payment", {
-          turfId,
-          startTime: startISO,
-          endTime: endISO,
-          selectedTurfDate: dateISO,
-          totalPrice: total,
-          advanceAmount,
-          balanceAmount,
-          paymentType,
-          paymentId: paymentResult.razorpay_payment_id,
-          orderId: paymentResult.razorpay_order_id,
-          razorpay_signature: paymentResult.razorpay_signature,
-          paymentMethod: paymentMode
-        });
+        const res = await axiosInstance.post(
+          "/api/user/booking/verify-payment",
+          {
+            turfId,
+            startTime: startISO,
+            endTime: endISO,
+            selectedTurfDate: dateISO,
+            totalPrice: total,
+            advanceAmount,
+            balanceAmount,
+            paymentType,
+            paymentId: paymentResult.razorpay_payment_id,
+            orderId: paymentResult.razorpay_order_id,
+            razorpay_signature: paymentResult.razorpay_signature,
+            paymentMethod: paymentMode,
+          }
+        );
 
         if (res.data.success) {
           setBookingId(res.data.bookingId);
@@ -205,7 +221,10 @@ const CheckoutPage = () => {
       }
     } catch (error) {
       console.error("Payment Error:", error);
-      const msg = error.response?.data?.message || error.message || "Payment failed. Please try again.";
+      const msg =
+        error.response?.data?.message ||
+        error.message ||
+        "Payment failed. Please try again.";
       toast.error(msg);
       if (msg.toLowerCase().includes("insufficient")) {
         navigate("/wallet");
@@ -220,13 +239,19 @@ const CheckoutPage = () => {
       <div className="bg-[#000000] flex items-center justify-center px-1 pt-24 pb-12">
         <svg width="0" height="0" className="hidden">
           <defs>
-            <linearGradient id="theme-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <linearGradient
+              id="theme-gradient"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="0%"
+            >
               <stop offset="0%" stopColor="#55DEE8" />
               <stop offset="100%" stopColor="#B3DC26" />
             </linearGradient>
           </defs>
         </svg>
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="bg-[#121212] border border-[rgba(255,255,255,0.08)] p-3 rounded-[12px] text-center max-w-xl w-full relative overflow-hidden"
@@ -235,19 +260,23 @@ const CheckoutPage = () => {
           <div className="w-10 h-10 bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] rounded-full flex items-center justify-center mx-auto mb-3 shadow-[0px_8px_24px_rgba(191,243,103,0.15)]">
             <Check size={20} className="text-[#000000] stroke-[3px]" />
           </div>
-          
-          <h2 className="text-[16px] font-[700] text-[#FFFFFF] uppercase tracking-tighter mb-1 font-inter">Slot Secured!</h2>
-          <p className="text-[rgba(255,255,255,0.70)] uppercase text-[10px] tracking-widest mb-4">Your booking at {turfName} is confirmed.</p>
-          
+
+          <h2 className="text-[16px] font-[700] text-[#FFFFFF] uppercase tracking-tighter mb-1 font-inter">
+            Slot Secured!
+          </h2>
+          <p className="text-[rgba(255,255,255,0.70)] uppercase text-[10px] tracking-widest mb-4">
+            Your booking at {turfName} is confirmed.
+          </p>
+
           <div className="grid grid-cols-1 gap-2">
-            <Link 
+            <Link
               to={`/booking-pass/${bookingId}`}
               className="w-full h-[36px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] rounded-[8px] font-[700] text-[12px] flex items-center justify-center gap-2 shadow-[0px_8px_24px_rgba(191,243,103,0.15)] border-none"
             >
               Download Digital Pass
               <ArrowRight size={14} />
             </Link>
-            <Link 
+            <Link
               to="/booking-history"
               className="w-full h-[36px] bg-[#1B1B1B] text-[#FFFFFF] border border-[rgba(255,255,255,0.08)] rounded-[8px] font-[700] text-[12px] flex items-center justify-center gap-2"
             >
@@ -276,7 +305,9 @@ const CheckoutPage = () => {
         <div className="flex items-center gap-4 mb-6">
           <GlobalBackButton />
           <div>
-            <h1 className="text-[24px] md:text-[28px] font-[800] tracking-tight uppercase font-inter text-[#FFFFFF]">Checkout</h1>
+            <h1 className="text-[24px] md:text-[28px] font-[800] tracking-tight uppercase font-inter text-[#FFFFFF]">
+              Checkout
+            </h1>
           </div>
         </div>
 
@@ -286,17 +317,29 @@ const CheckoutPage = () => {
             {/* Hero Image & Turf Title */}
             <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[16px] overflow-hidden">
               <div className="h-[120px] md:h-[160px] w-full bg-[#1B1B1B]">
-                <img src={turf?.images?.[0] || "/banner-1.png"} className="w-full h-full object-cover" alt="Venue" />
+                <img
+                  src={turf?.images?.[0] || "/banner-1.png"}
+                  className="w-full h-full object-cover"
+                  alt="Venue"
+                />
               </div>
               <div className="px-4 py-3">
                 <div>
-                  <h2 className="text-[18px] font-[700] text-[#FFFFFF] uppercase tracking-tight font-inter">{turfName || turf?.name || "Kridaz Venue"}</h2>
+                  <h2 className="text-[18px] font-[700] text-[#FFFFFF] uppercase tracking-tight font-inter">
+                    {turfName || turf?.name || "Kridaz Venue"}
+                  </h2>
                   <div className="flex items-center gap-3 text-[rgba(255,255,255,0.70)] text-[12px] mt-1.5 font-[600] uppercase tracking-wide">
-                    <Clock className="w-3.5 h-3.5" /> 
-                    <span>{startTime} ({duration || 1} hr)</span> 
-                    <span className="text-[rgba(255,255,255,0.08)]">|</span> 
-                    <Calendar className="w-3.5 h-3.5" /> 
-                    <span>{selectedDate ? format(new Date(selectedDate), "MM/dd/yyyy") : "Select Date"}</span>
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>
+                      {startTime} ({duration || 1} hr)
+                    </span>
+                    <span className="text-[rgba(255,255,255,0.08)]">|</span>
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>
+                      {selectedDate
+                        ? format(new Date(selectedDate), "MM/dd/yyyy")
+                        : "Select Date"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -304,15 +347,17 @@ const CheckoutPage = () => {
 
             {/* Payment Plan Section */}
             <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[12px] px-4 py-3 flex items-center justify-between">
-              <span className="text-[14px] font-[700] text-[#FFFFFF] uppercase tracking-widest font-inter">Payment Plan</span>
+              <span className="text-[14px] font-[700] text-[#FFFFFF] uppercase tracking-widest font-inter">
+                Payment Plan
+              </span>
               <div className="flex bg-[#1B1B1B] rounded-[8px] p-1 border border-[rgba(255,255,255,0.08)]">
                 {[30, 50, 100].map((pct) => (
                   <button
                     key={pct}
                     onClick={() => setPaymentPercentage(pct)}
                     className={`px-3 py-1.5 rounded-[6px] text-[12px] font-[700] uppercase tracking-wider transition-all ${
-                      paymentPercentage === pct 
-                        ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] shadow-[0px_2px_8px_rgba(191,243,103,0.15)]" 
+                      paymentPercentage === pct
+                        ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] shadow-[0px_2px_8px_rgba(191,243,103,0.15)]"
                         : "text-[rgba(255,255,255,0.70)] hover:text-[#FFFFFF]"
                     }`}
                   >
@@ -324,13 +369,18 @@ const CheckoutPage = () => {
 
             {/* Price Details */}
             <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[12px] px-4 py-3 space-y-2.5">
-              <h3 className="text-[12px] font-[700] text-[#FFFFFF] uppercase tracking-widest font-inter mb-1">Price Details</h3>
+              <h3 className="text-[12px] font-[700] text-[#FFFFFF] uppercase tracking-widest font-inter mb-1">
+                Price Details
+              </h3>
               <div className="flex justify-between text-[14px] text-[rgba(255,255,255,0.70)] font-[400]">
                 <span>Slot Price</span>
                 <span className="text-[#FFFFFF]">₹ {venueCharges}</span>
               </div>
               <div className="flex justify-between text-[14px] text-[rgba(255,255,255,0.70)] font-[400]">
-                <span className="flex items-center gap-1.5">Service Charge <Info className="w-3.5 h-3.5 text-[rgba(255,255,255,0.70)]" /></span>
+                <span className="flex items-center gap-1.5">
+                  Service Charge{" "}
+                  <Info className="w-3.5 h-3.5 text-[rgba(255,255,255,0.70)]" />
+                </span>
                 <span className="text-[#FFFFFF]">₹ {serviceCharge}</span>
               </div>
               {appliedCoupon && (
@@ -339,15 +389,23 @@ const CheckoutPage = () => {
                   <span>-₹ {discount}</span>
                 </div>
               )}
-              
+
               <div className="pt-2 border-t border-[rgba(255,255,255,0.08)] flex justify-between items-center">
-                <span className="text-[#FFFFFF] font-[700] uppercase text-[14px] tracking-wide font-inter">Total Amount</span>
-                <span className="font-[700] text-[20px] tracking-tight text-[#B3DC26]">₹ {amountToPay}</span>
+                <span className="text-[#FFFFFF] font-[700] uppercase text-[14px] tracking-wide font-inter">
+                  Total Amount
+                </span>
+                <span className="font-[700] text-[20px] tracking-tight text-[#B3DC26]">
+                  ₹ {amountToPay}
+                </span>
               </div>
               {paymentPercentage !== 100 && (
                 <div className="pt-2 flex justify-between items-center">
-                  <span className="text-[rgba(255,255,255,0.70)] font-[600] uppercase text-[12px] tracking-wide font-inter">Pay at Venue</span>
-                  <span className="font-[700] text-[16px] tracking-tight text-[#FFFFFF]">₹ {balanceAtVenue}</span>
+                  <span className="text-[rgba(255,255,255,0.70)] font-[600] uppercase text-[12px] tracking-wide font-inter">
+                    Pay at Venue
+                  </span>
+                  <span className="font-[700] text-[16px] tracking-tight text-[#FFFFFF]">
+                    ₹ {balanceAtVenue}
+                  </span>
                 </div>
               )}
             </div>
@@ -356,21 +414,30 @@ const CheckoutPage = () => {
             <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[12px] p-3">
               <div className="flex gap-2">
                 <div className="relative flex-1">
-                  <Tag size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.70)]" />
-                  <input 
-                    type="text" 
+                  <Tag
+                    size={16}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.70)]"
+                  />
+                  <input
+                    type="text"
                     placeholder="ENTER COUPON CODE"
                     value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    onChange={(e) =>
+                      setCouponCode(e.target.value.toUpperCase())
+                    }
                     className="w-full bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[8px] py-[10px] pl-[36px] pr-[16px] text-[13px] font-[400] text-[#FFFFFF] outline-none focus:border-[#55DEE8] transition-all placeholder:text-[rgba(255,255,255,0.70)]"
                   />
                 </div>
-                <button 
+                <button
                   onClick={handleApplyCoupon}
                   disabled={isValidating || !couponCode}
                   className="bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] text-[#FFFFFF] px-5 rounded-[8px] text-[12px] font-[700] uppercase tracking-widest disabled:opacity-40"
                 >
-                  {isValidating ? <Loader2 size={16} className="animate-spin" /> : "APPLY"}
+                  {isValidating ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    "APPLY"
+                  )}
                 </button>
               </div>
             </div>
@@ -378,27 +445,36 @@ const CheckoutPage = () => {
 
           {/* Right Column: Payment Plan & Payment Method */}
           <div className="lg:col-span-5 space-y-4 pb-4">
-            
             {/* Payment Method */}
             <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-4 md:p-5">
-
               <div className="grid grid-cols-2 gap-4">
                 {/* Wallet */}
-                <button 
+                <button
                   onClick={() => setPaymentMode("WALLET")}
-                  className={`relative p-4 rounded-[12px] border transition-all flex flex-col items-center justify-center gap-2 text-center ${ paymentMode === "WALLET" ? "bg-[#1B1B1B] border-[#B3DC26]" : "bg-[#1B1B1B] border-[rgba(255,255,255,0.08)]" }`}
+                  className={`relative p-4 rounded-[12px] border transition-all flex flex-col items-center justify-center gap-2 text-center ${paymentMode === "WALLET" ? "bg-[#1B1B1B] border-[#B3DC26]" : "bg-[#1B1B1B] border-[rgba(255,255,255,0.08)]"}`}
                 >
                   {paymentMode === "WALLET" && (
                     <div className="absolute top-2 right-2">
-                      <Check className="w-4 h-4" style={{ stroke: 'url(#theme-gradient)' }} />
+                      <Check
+                        className="w-4 h-4"
+                        style={{ stroke: "url(#theme-gradient)" }}
+                      />
                     </div>
                   )}
-                  <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${paymentMode === "WALLET" ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000]" : "bg-[#121212] border border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)]"}`}>
+                  <div
+                    className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${paymentMode === "WALLET" ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000]" : "bg-[#121212] border border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)]"}`}
+                  >
                     <Wallet className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className={`text-[12px] font-[700] uppercase tracking-wide ${paymentMode === "WALLET" ? "text-[#FFFFFF]" : "text-[rgba(255,255,255,0.70)]"}`}>Wallet</div>
-                    <div className="text-[10px] text-[rgba(255,255,255,0.70)] font-[500] mt-0.5">₹{currentBalance}</div>
+                    <div
+                      className={`text-[12px] font-[700] uppercase tracking-wide ${paymentMode === "WALLET" ? "text-[#FFFFFF]" : "text-[rgba(255,255,255,0.70)]"}`}
+                    >
+                      Wallet
+                    </div>
+                    <div className="text-[10px] text-[rgba(255,255,255,0.70)] font-[500] mt-0.5">
+                      ₹{currentBalance}
+                    </div>
                   </div>
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#B3DC26] text-[#000000] text-[9px] font-[800] px-2 py-0.5 rounded-[4px] uppercase whitespace-nowrap shadow-sm">
                     {settings?.cashbackPercentage || 5}% BACK
@@ -406,21 +482,32 @@ const CheckoutPage = () => {
                 </button>
 
                 {/* UPI */}
-                <button 
+                <button
                   onClick={() => setPaymentMode("UPI")}
-                  className={`relative p-4 rounded-[12px] border transition-all flex flex-col items-center justify-center gap-2 text-center ${ paymentMode === "UPI" ? "bg-[#1B1B1B] border-[#B3DC26]" : "bg-[#1B1B1B] border-[rgba(255,255,255,0.08)]" }`}
+                  className={`relative p-4 rounded-[12px] border transition-all flex flex-col items-center justify-center gap-2 text-center ${paymentMode === "UPI" ? "bg-[#1B1B1B] border-[#B3DC26]" : "bg-[#1B1B1B] border-[rgba(255,255,255,0.08)]"}`}
                 >
                   {paymentMode === "UPI" && (
                     <div className="absolute top-2 right-2">
-                      <Check className="w-4 h-4" style={{ stroke: 'url(#theme-gradient)' }} />
+                      <Check
+                        className="w-4 h-4"
+                        style={{ stroke: "url(#theme-gradient)" }}
+                      />
                     </div>
                   )}
-                  <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${paymentMode === "UPI" ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000]" : "bg-[#121212] border border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)]"}`}>
+                  <div
+                    className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${paymentMode === "UPI" ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000]" : "bg-[#121212] border border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)]"}`}
+                  >
                     <Smartphone className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className={`text-[12px] font-[700] uppercase tracking-wide ${paymentMode === "UPI" ? "text-[#FFFFFF]" : "text-[rgba(255,255,255,0.70)]"}`}>Instant UPI</div>
-                    <div className="text-[10px] text-[rgba(255,255,255,0.70)] font-[500] mt-0.5">GPay, PhonePe</div>
+                    <div
+                      className={`text-[12px] font-[700] uppercase tracking-wide ${paymentMode === "UPI" ? "text-[#FFFFFF]" : "text-[rgba(255,255,255,0.70)]"}`}
+                    >
+                      Instant UPI
+                    </div>
+                    <div className="text-[10px] text-[rgba(255,255,255,0.70)] font-[500] mt-0.5">
+                      GPay, PhonePe
+                    </div>
                   </div>
                 </button>
               </div>
@@ -432,7 +519,8 @@ const CheckoutPage = () => {
                     <div className="border border-[rgba(255,255,255,0.08)] bg-[#1B1B1B] rounded-[12px] p-4 flex gap-3 items-center mb-4">
                       <Info className="text-[rgba(255,255,255,0.70)] w-5 h-5 shrink-0" />
                       <p className="text-[12px] text-[rgba(255,255,255,0.70)] font-[400] leading-snug">
-                        Your wallet balance is insufficient for this booking.<br />
+                        Your wallet balance is insufficient for this booking.
+                        <br />
                         Required: ₹{amountToPay}
                       </p>
                     </div>
@@ -450,17 +538,18 @@ const CheckoutPage = () => {
                     className="w-full h-[48px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] rounded-[12px] flex items-center justify-between px-5 font-[700] text-[14px] md:text-[16px] transition-all disabled:opacity-40 shadow-[0px_8px_24px_rgba(191,243,103,0.15)] border-none"
                   >
                     <div className="flex items-center gap-2 tracking-wide">
-                      {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Lock className="w-4 h-4" />} 
+                      {isProcessing ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <Lock className="w-4 h-4" />
+                      )}
                       {isProcessing ? "PROCESSING..." : "PAY NOW"}
                     </div>
                     <span className="text-[18px]">₹ {amountToPay}</span>
                   </button>
                 )}
-                
-
               </div>
             </div>
-
           </div>
         </div>
       </div>

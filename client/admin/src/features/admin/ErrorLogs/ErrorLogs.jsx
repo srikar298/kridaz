@@ -40,28 +40,47 @@ const ErrorLogs = () => {
           <div className="space-y-4">
             {logs.length === 0 ? (
               <div className="p-20 rounded-[8px] border border-[#2D2D2D] bg-[#000000] text-center">
-                <p className="text-2xl font-black text-[#CCFF00] uppercase tracking-tighter">No Errors Logged</p>
-                <p className="text-[#999999] mt-2">Systems operating nominally.</p>
+                <p className="text-2xl font-black text-[#CCFF00] uppercase tracking-tighter">
+                  No Errors Logged
+                </p>
+                <p className="text-[#999999] mt-2">
+                  Systems operating nominally.
+                </p>
               </div>
             ) : (
               logs.map((log) => (
-                <div key={log.id} className="relative p-6 rounded-[12px] bg-[#0d0d0d] border border-[#2D2D2D] hover:border-[#CCFF00]/50 transition-all flex flex-col md:flex-row gap-6 md:items-center justify-between overflow-hidden group">
+                <div
+                  key={log.id}
+                  className="relative p-6 rounded-[12px] bg-[#0d0d0d] border border-[#2D2D2D] hover:border-[#CCFF00]/50 transition-all flex flex-col md:flex-row gap-6 md:items-center justify-between overflow-hidden group"
+                >
                   {log.isResolved ? null : (
                     <div className="absolute top-0 left-0 w-1 h-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div>
                   )}
 
                   <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-[8px] ${log.isResolved ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
-                      {log.isResolved ? <CheckCircle size={24} /> : <AlertTriangle size={24} />}
+                    <div
+                      className={`p-3 rounded-[8px] ${log.isResolved ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"}`}
+                    >
+                      {log.isResolved ? (
+                        <CheckCircle size={24} />
+                      ) : (
+                        <AlertTriangle size={24} />
+                      )}
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-white mb-1">{log.errorMessage}</h3>
+                      <h3 className="text-lg font-bold text-white mb-1">
+                        {log.errorMessage}
+                      </h3>
                       <div className="flex gap-4 text-xs font-black tracking-wider text-[#999999] uppercase">
                         <span>Level: {log.level}</span>
                         <span>•</span>
                         <span>{new Date(log.createdAt).toLocaleString()}</span>
                         <span>•</span>
-                        <span className={log.isResolved ? "text-green-500" : "text-red-500"}>
+                        <span
+                          className={
+                            log.isResolved ? "text-green-500" : "text-red-500"
+                          }
+                        >
                           {log.isResolved ? "Resolved" : "Active"}
                         </span>
                       </div>

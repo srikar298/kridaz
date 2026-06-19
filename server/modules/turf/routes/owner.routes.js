@@ -40,7 +40,7 @@ router.post(
     { name: "gstRegistration", maxCount: 1 },
     { name: "rentalAgreement", maxCount: 1 },
     { name: "ownershipAgreement", maxCount: 1 },
-    { name: "googleProfileScreenshot", maxCount: 1 }
+    { name: "googleProfileScreenshot", maxCount: 1 },
   ]),
   validate(turfRegisterSchema),
   turfRegister

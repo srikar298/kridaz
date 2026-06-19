@@ -2,7 +2,7 @@ name: Kridaz Monorepo CI/CD
 
 on:
   push:
-    branches: [ Production ]
+    branches: [Production]
   workflow_dispatch:
 
 concurrency:
@@ -20,7 +20,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -96,23 +96,23 @@ jobs:
       - name: Deploy Backend to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'Kridaz'
-          images: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-backend:${{ github.sha }}'
+          app-name: "Kridaz"
+          images: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-backend:${{ github.sha }}"
 
       - name: Deploy User Frontend to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'kridaz-web'
-          images: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-user-web:${{ github.sha }}'
+          app-name: "kridaz-web"
+          images: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-user-web:${{ github.sha }}"
 
       - name: Deploy Admin Frontend to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'kridaz-admin'
-          images: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-admin-web:${{ github.sha }}'
+          app-name: "kridaz-admin"
+          images: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-admin-web:${{ github.sha }}"
 
       - name: Deploy Worker to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'kridaz-worker'
-          images: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-backend:${{ github.sha }}'
+          app-name: "kridaz-worker"
+          images: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-backend:${{ github.sha }}"

@@ -1,12 +1,13 @@
-import { prisma } from './config/prisma.js';
-import argon2 from 'argon2';
-import crypto from 'crypto';
+import { prisma } from "./config/prisma.js";
+import argon2 from "argon2";
+import crypto from "crypto";
 
 async function main() {
   const adminEmail = process.env.ADMIN_SEED_EMAIL || "admin@kridaz.com";
   const adminPhone = process.env.ADMIN_SEED_PHONE || "+910000000000";
   const adminUsername = "kridazadmin";
-  const adminPassword = process.env.ADMIN_SEED_PASSWORD || crypto.randomBytes(12).toString('hex');
+  const adminPassword =
+    process.env.ADMIN_SEED_PASSWORD || crypto.randomBytes(12).toString("hex");
 
   // Check if admin already exists
   const existingAdmin = await prisma.user.findFirst({
@@ -14,9 +15,9 @@ async function main() {
       OR: [
         { email: adminEmail },
         { phone: adminPhone },
-        { username: adminUsername }
-      ]
-    }
+        { username: adminUsername },
+      ],
+    },
   });
 
   if (existingAdmin) {
@@ -36,8 +37,8 @@ async function main() {
       role: "ADMIN",
       isVerified: true,
       isOnboarded: true,
-      status: "active"
-    }
+      status: "active",
+    },
   });
 
   console.log("====================================");
@@ -45,7 +46,7 @@ async function main() {
   console.log("ID:", admin.id);
   console.log("Email:", adminEmail);
   console.log("Username:", adminUsername);
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== "production") {
     console.log("Password:", adminPassword);
   } else {
     console.log("Password: [set via ADMIN_SEED_PASSWORD env var]");

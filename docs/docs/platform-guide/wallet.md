@@ -6,9 +6,10 @@ The **Digital Wallet** is a core component of the Kridaz financial ecosystem. It
 
 ## UI Overview
 
-The Wallet Page (`client/user/src/features/wallet/pages/Wallet.jsx`) provides a comprehensive view of the user's financial standing within the platform. 
+The Wallet Page (`client/user/src/features/wallet/pages/Wallet.jsx`) provides a comprehensive view of the user's financial standing within the platform.
 
 ### Key Elements
+
 1. **Balance Card (Glassmorphism UI):**
    Displays the user's coins with a premium glassmorphism gradient (cyan to neon yellow). It clearly breaks down the balance into:
    - **Total:** Overall coin count.
@@ -38,9 +39,12 @@ const handleTopup = async () => {
   setIsProcessing(true);
   try {
     // 1. Create Order
-    const { data } = await axiosInstance.post("/api/user/wallet/topup/create-order", {
-      amount: Number(topupAmount),
-    });
+    const { data } = await axiosInstance.post(
+      "/api/user/wallet/topup/create-order",
+      {
+        amount: Number(topupAmount),
+      }
+    );
 
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -48,7 +52,10 @@ const handleTopup = async () => {
       order_id: data.order.id,
       handler: async (response) => {
         // 3. Verify Payment
-        const verifyRes = await axiosInstance.post("/api/user/wallet/topup/verify", response);
+        const verifyRes = await axiosInstance.post(
+          "/api/user/wallet/topup/verify",
+          response
+        );
         if (verifyRes.data.success) fetchWalletData(); // Refresh balance
       },
       theme: { color: "#55DEE8" },
@@ -75,11 +82,13 @@ const fetchWalletData = async () => {
   setBalance(response.data.balance);
   setReservedBalance(response.data.reservedBalance);
   setUsableBalance(response.data.usableBalance);
-  
+
   // Sync globally
-  dispatch(updateUser({ 
-    walletBalance: response.data.balance,
-    reservedBalance: response.data.reservedBalance 
-  }));
+  dispatch(
+    updateUser({
+      walletBalance: response.data.balance,
+      reservedBalance: response.data.reservedBalance,
+    })
+  );
 };
 ```

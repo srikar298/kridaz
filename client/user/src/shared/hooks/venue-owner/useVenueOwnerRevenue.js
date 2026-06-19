@@ -5,7 +5,10 @@ import axiosInstance from "@hooks/useAxiosInstance";
 export default function useVenueOwnerRevenue() {
   const [loading, setLoading] = useState(true);
   const [revenueData, setRevenueData] = useState(null);
-  const [transactionsData, setTransactionsData] = useState({ transactions: [], pagination: {} });
+  const [transactionsData, setTransactionsData] = useState({
+    transactions: [],
+    pagination: {},
+  });
   const [loadingTransactions, setLoadingTransactions] = useState(false);
 
   const fetchRevenueSummary = async () => {

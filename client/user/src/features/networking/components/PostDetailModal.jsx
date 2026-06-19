@@ -3,7 +3,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useGetPostByIdQuery } from "@redux/api/communityApi";
 import PostItem from "./PostItem";
 
-const PostDetailModal = ({ postId, onClose, user, isAdmin, gateInteraction, onUpdatePost, onDeletePost, onSharePost, onReportPost }) => {
+const PostDetailModal = ({
+  postId,
+  onClose,
+  user,
+  isAdmin,
+  gateInteraction,
+  onUpdatePost,
+  onDeletePost,
+  onSharePost,
+  onReportPost,
+}) => {
   const { data, isLoading, error } = useGetPostByIdQuery(postId);
 
   return (
@@ -45,8 +55,10 @@ const PostDetailModal = ({ postId, onClose, user, isAdmin, gateInteraction, onUp
             </div>
           ) : error || !data?.post ? (
             <div className="flex flex-col items-center justify-center py-20 gap-2">
-              <p className="text-white/50 text-sm font-medium">Post not found or deleted.</p>
-              <button 
+              <p className="text-white/50 text-sm font-medium">
+                Post not found or deleted.
+              </p>
+              <button
                 onClick={onClose}
                 className="mt-4 px-4 py-2 bg-white/10 rounded-full text-white text-xs font-bold"
               >

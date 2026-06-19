@@ -1,12 +1,15 @@
 import express from "express";
-import { 
+import {
   getAllWithdrawalRequests,
   approveWithdrawalRequest,
-  rejectWithdrawalRequest
+  rejectWithdrawalRequest,
 } from "../../admin/admin.controller.js";
 
 import { validate } from "../../../middleware/validate.middleware.js";
-import { approveWithdrawalSchema, rejectWithdrawalSchema } from "../../admin/admin.validator.js";
+import {
+  approveWithdrawalSchema,
+  rejectWithdrawalSchema,
+} from "../../admin/admin.validator.js";
 
 const router = express.Router();
 
@@ -48,7 +51,11 @@ router.get("/list", getAllWithdrawalRequests);
  *       200:
  *         description: Withdrawal approved
  */
-router.put("/:id/approve", validate(approveWithdrawalSchema), approveWithdrawalRequest);
+router.put(
+  "/:id/approve",
+  validate(approveWithdrawalSchema),
+  approveWithdrawalRequest
+);
 
 /**
  * @swagger
@@ -75,6 +82,10 @@ router.put("/:id/approve", validate(approveWithdrawalSchema), approveWithdrawalR
  *       200:
  *         description: Withdrawal rejected
  */
-router.put("/:id/reject", validate(rejectWithdrawalSchema), rejectWithdrawalRequest);
+router.put(
+  "/:id/reject",
+  validate(rejectWithdrawalSchema),
+  rejectWithdrawalRequest
+);
 
 export default router;

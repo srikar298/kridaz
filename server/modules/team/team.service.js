@@ -1,4 +1,4 @@
-import { InternalError } from '@kridaz/common';
+import { InternalError } from "@kridaz/common";
 import crypto from "crypto";
 import { prisma } from "../../config/prisma.js";
 import logger from "../../utils/logger.js";
@@ -30,7 +30,10 @@ export const createUniqueTeamCode = async () => {
   do {
     code = generateTeamCode();
     attempts++;
-    if (attempts > 10) throw new InternalError("Failed to generate unique team code", { code: "INTERNAL_ERROR" });
+    if (attempts > 10)
+      throw new InternalError("Failed to generate unique team code", {
+        code: "INTERNAL_ERROR",
+      });
   } while (await prisma.team.findUnique({ where: { teamCode: code } }));
   return code;
 };
@@ -43,14 +46,19 @@ export const getTeamWithDetails = async (id) => {
     where: { id },
     include: {
       owner: {
-        select: { id: true, name: true, profilePicture: true, username: true }
+        select: { id: true, name: true, profilePicture: true, username: true },
       },
       members: {
         include: {
           user: {
-            select: { id: true, name: true, profilePicture: true, sportTypes: true }
-          }
-        }
+            select: {
+              id: true,
+              name: true,
+              profilePicture: true,
+              sportTypes: true,
+            },
+          },
+        },
       },
       Team_A: {
         select: {
@@ -62,9 +70,14 @@ export const getTeamWithDetails = async (id) => {
           logo: true,
           image: true,
           owner: {
-            select: { id: true, name: true, profilePicture: true, username: true }
-          }
-        }
+            select: {
+              id: true,
+              name: true,
+              profilePicture: true,
+              username: true,
+            },
+          },
+        },
       },
       Team_B: {
         select: {
@@ -76,18 +89,29 @@ export const getTeamWithDetails = async (id) => {
           logo: true,
           image: true,
           owner: {
-            select: { id: true, name: true, profilePicture: true, username: true }
-          }
-        }
+            select: {
+              id: true,
+              name: true,
+              profilePicture: true,
+              username: true,
+            },
+          },
+        },
       },
       opponentRequestsReceived: {
         include: {
           from: {
-            select: { id: true, name: true, image: true, logo: true, teamCode: true }
-          }
-        }
-      }
-    }
+            select: {
+              id: true,
+              name: true,
+              image: true,
+              logo: true,
+              teamCode: true,
+            },
+          },
+        },
+      },
+    },
   });
 };
 
@@ -95,14 +119,17 @@ export const getTeamWithDetails = async (id) => {
  * Generate and save team QR code
  */
 export const ensureTeamQRCode = async (teamId) => {
-  const frontendUrl = process.env.USER_URL || process.env.CLIENT_URLS?.split(",")[0] || "https://kridaz.com";
+  const frontendUrl =
+    process.env.USER_URL ||
+    process.env.CLIENT_URLS?.split(",")[0] ||
+    "https://kridaz.com";
   const qrUrl = `${frontendUrl}/team/${teamId}`;
 
   try {
     const qrCodeUrl = await generateQRCode(qrUrl);
     return await prisma.team.update({
       where: { id: teamId },
-      data: { qrCode: qrCodeUrl }
+      data: { qrCode: qrCodeUrl },
     });
   } catch (error) {
     logger.error("QR Generation failed in service:", error);
@@ -136,11 +163,11 @@ export const getTeamMatchStats = async (teamId) => {
         teams: {
           some: {
             slots: {
-              some: { teamId }
-            }
-          }
-        }
-      }
+              some: { teamId },
+            },
+          },
+        },
+      },
     });
 
     // Sum all batting runs from Innings for games this team participated in.
@@ -155,23 +182,26 @@ export const getTeamMatchStats = async (teamId) => {
             teams: {
               some: {
                 slots: {
-                  some: { teamId }
-                }
-              }
-            }
-          }
-        }
+                  some: { teamId },
+                },
+              },
+            },
+          },
+        },
       },
-      _sum: { totalRuns: true }
+      _sum: { totalRuns: true },
     });
 
     return {
       matchesPlayed: matchCount,
-      totalScore: scoreResult._sum.totalRuns ?? 0
+      totalScore: scoreResult._sum.totalRuns ?? 0,
     };
   } catch (error) {
     // Non-fatal: return zeroes if tables don't have data yet
-    logger.warn(`[TeamService] getTeamMatchStats failed for team ${teamId}:`, error.message);
+    logger.warn(
+      `[TeamService] getTeamMatchStats failed for team ${teamId}:`,
+      error.message
+    );
     return { matchesPlayed: 0, totalScore: 0 };
   }
 };
@@ -200,16 +230,20 @@ export const processInvitee = async (teamId, invitee, team) => {
  */
 const _inviteRegisteredUser = async (teamId, userId, team) => {
   const existingMember = await prisma.teamMember.findFirst({
-    where: { teamId, userId }
+    where: { teamId, userId },
   });
 
   if (existingMember) {
-    return { user: userId, status: "already_exists", message: "User already in team" };
+    return {
+      user: userId,
+      status: "already_exists",
+      message: "User already in team",
+    };
   }
 
   await prisma.$transaction([
     prisma.teamMember.create({
-      data: { teamId, userId, role: "PLAYER", status: "PENDING" }
+      data: { teamId, userId, role: "PLAYER", status: "PENDING" },
     }),
     prisma.notification.create({
       data: {
@@ -217,9 +251,9 @@ const _inviteRegisteredUser = async (teamId, userId, team) => {
         type: "TEAM_INVITE",
         title: "Team Invitation",
         message: `You have been invited to join the team "${team.name}"`,
-        metadata: { teamId: team.id }
-      }
-    })
+        metadata: { teamId: team.id },
+      },
+    }),
   ]);
 
   return { user: userId, status: "invited" };
@@ -234,13 +268,15 @@ const _inviteCustomUser = async (teamId, invitee, team) => {
   if (invitee.phone) orConditions.push({ phone: invitee.phone });
 
   if (orConditions.length > 0) {
-    const existingUser = await prisma.user.findFirst({ where: { OR: orConditions } });
+    const existingUser = await prisma.user.findFirst({
+      where: { OR: orConditions },
+    });
     if (existingUser) {
       return {
         email: invitee.email,
         phone: invitee.phone,
         status: "error",
-        message: "User already registered. Invite by user ID instead."
+        message: "User already registered. Invite by user ID instead.",
       };
     }
   }
@@ -253,8 +289,8 @@ const _inviteCustomUser = async (teamId, invitee, team) => {
       email: invitee.email,
       phone: invitee.phone,
       inviteToken,
-      status: "PENDING"
-    }
+      status: "PENDING",
+    },
   });
 
   return { name: invitee.name, token: inviteToken, status: "invited_custom" };

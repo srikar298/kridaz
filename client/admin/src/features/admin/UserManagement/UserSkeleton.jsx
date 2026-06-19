@@ -7,7 +7,7 @@ const UserSkeleton = () => {
         <div className="h-16 bg-[#2D2D2D]/20 rounded-[12px] w-full max-w-xl"></div>
         <div className="h-14 bg-[#2D2D2D]/20 rounded-[12px] w-full max-w-md"></div>
       </div>
-      
+
       <div className="space-y-6">
         <div className="hidden lg:grid grid-cols-12 gap-4 px-8 py-4 bg-[#0d0d0d] border border-[#2D2D2D]/30 rounded-[12px]">
           <div className="col-span-4 h-3 bg-[#2D2D2D]/50 rounded w-1/2"></div>
@@ -18,7 +18,10 @@ const UserSkeleton = () => {
 
         <div className="space-y-3">
           {[...Array(8)].map((_, index) => (
-            <div key={index} className="bg-[#000000] border border-[#2D2D2D]/30 rounded-[12px] p-5">
+            <div
+              key={index}
+              className="bg-[#000000] border border-[#2D2D2D]/30 rounded-[12px] p-5"
+            >
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
                 <div className="lg:col-span-4 flex items-center gap-5">
                   <div className="w-11 h-11 rounded-full bg-[#2D2D2D]/50"></div>

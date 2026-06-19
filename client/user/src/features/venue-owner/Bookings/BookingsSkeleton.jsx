@@ -20,7 +20,10 @@ const BookingsSkeleton = () => {
         <div className="h-12 w-full bg-[#151617] border-b border-white/10"></div>
         <div className="p-4 space-y-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="flex gap-4 items-center border-b border-white/10/30 pb-4">
+            <div
+              key={i}
+              className="flex gap-4 items-center border-b border-white/10/30 pb-4"
+            >
               <div className="h-10 w-48 bg-[#1B1B1B] rounded-[16px] animate-pulse"></div>
               <div className="h-10 flex-1 bg-[#1B1B1B] rounded-[16px] animate-pulse opacity-70"></div>
               <div className="h-10 w-24 bg-[#1B1B1B] rounded-[16px] animate-pulse"></div>

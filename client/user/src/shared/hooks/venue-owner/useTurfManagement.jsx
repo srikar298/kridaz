@@ -21,8 +21,13 @@ const useTurfManagement = () => {
   }, []);
 
   const deleteTurf = async (id) => {
-    if (!window.confirm("Are you sure you want to decommission this arena? All associated slots and data will be permanently removed.")) return;
-    
+    if (
+      !window.confirm(
+        "Are you sure you want to decommission this arena? All associated slots and data will be permanently removed."
+      )
+    )
+      return;
+
     try {
       await axiosInstance.delete(`/api/owner/turf/owner/${id}`);
       setTurfs((prev) => prev.filter((turf) => turf._id !== id));
@@ -34,8 +39,14 @@ const useTurfManagement = () => {
 
   const toggleVisibility = async (id) => {
     try {
-      const response = await axiosInstance.put(`/api/owner/turf/owner/${id}/visibility`);
-      setTurfs((prev) => prev.map(t => t._id === id ? { ...t, isActive: response.data.isActive } : t));
+      const response = await axiosInstance.put(
+        `/api/owner/turf/owner/${id}/visibility`
+      );
+      setTurfs((prev) =>
+        prev.map((t) =>
+          t._id === id ? { ...t, isActive: response.data.isActive } : t
+        )
+      );
       toast.success(response.data.message);
     } catch (err) {
       toast.error("Failed to update visibility");
@@ -51,6 +62,5 @@ const useTurfManagement = () => {
     toggleVisibility,
   };
 };
-
 
 export default useTurfManagement;

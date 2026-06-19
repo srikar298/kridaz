@@ -1,9 +1,8 @@
 ﻿import { useState } from "react";
- 
 
-const Carousel = ({slides}) => {
+const Carousel = ({ slides }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
-   
+
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
@@ -17,7 +16,7 @@ const Carousel = ({slides}) => {
       {slides.map((slide, index) => (
         <div
           key={index}
-          className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ease-in-out ${ index === currentSlide ? "opacity-100" : "opacity-0" }`}
+          className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ease-in-out ${index === currentSlide ? "opacity-100" : "opacity-0"}`}
         >
           <img
             src={slide}
@@ -37,6 +36,5 @@ const Carousel = ({slides}) => {
     </div>
   );
 };
-
 
 export default Carousel;

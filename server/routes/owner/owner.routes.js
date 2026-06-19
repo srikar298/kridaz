@@ -1,12 +1,12 @@
-import { Router } from "express"
-import authRouter from "../../modules/auth/auth.routes.js"
-import turfRouter from "../../modules/turf/turf.routes.js"
-import reviewsRouter from "../../modules/review/review.routes.js"
-import ownerOperationsRouter from "../../modules/owner/owner.routes.js"
-import walletRouter from "../../modules/wallet/wallet.routes.js"
-import notificationRouter from "../../modules/notification/notification.routes.js"
+import { Router } from "express";
+import authRouter from "../../modules/auth/auth.routes.js";
+import turfRouter from "../../modules/turf/turf.routes.js";
+import reviewsRouter from "../../modules/review/review.routes.js";
+import ownerOperationsRouter from "../../modules/owner/owner.routes.js";
+import walletRouter from "../../modules/wallet/wallet.routes.js";
+import notificationRouter from "../../modules/notification/notification.routes.js";
 
-const ownerRouter = Router()
+const ownerRouter = Router();
 
 ownerRouter.use("/auth", authRouter);
 ownerRouter.use("/turf", turfRouter);

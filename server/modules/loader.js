@@ -170,7 +170,10 @@ export const createDomainRouter = async () => {
       });
     } catch (err) {
       failed.push({ path: entry.mountPath, reason: err.message });
-      logger.error(`[ModuleLoader] Failed to load "${entry.module}" → ${entry.mountPath}:`, err);
+      logger.error(
+        `[ModuleLoader] Failed to load "${entry.module}" → ${entry.mountPath}:`,
+        err
+      );
     }
   }
 
@@ -191,12 +194,16 @@ export const createDomainRouter = async () => {
 
   if (skipped.length > 0) {
     logger.warn("⏭️   Skipped (route file missing):");
-    skipped.forEach(({ path, reason }) => logger.warn(`    ${path} — ${reason}`));
+    skipped.forEach(({ path, reason }) =>
+      logger.warn(`    ${path} — ${reason}`)
+    );
   }
 
   if (failed.length > 0) {
     logger.error("❌  Failed (check errors above):");
-    failed.forEach(({ path, reason }) => logger.error(`    ${path} — ${reason}`));
+    failed.forEach(({ path, reason }) =>
+      logger.error(`    ${path} — ${reason}`)
+    );
   }
 
   logger.info(`${divider}\n`);

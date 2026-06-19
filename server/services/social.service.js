@@ -1,4 +1,4 @@
-import { prisma } from '../config/prisma.js';
+import { prisma } from "../config/prisma.js";
 
 /**
  * Social Service
@@ -21,15 +21,15 @@ class SocialService {
         userId_targetId_type: {
           userId: fId,
           targetId: tId,
-          type: 'FOLLOW'
-        }
+          type: "FOLLOW",
+        },
       },
       update: {},
       create: {
         userId: fId,
         targetId: tId,
-        type: 'FOLLOW'
-      }
+        type: "FOLLOW",
+      },
     });
 
     return { success: true };
@@ -46,8 +46,8 @@ class SocialService {
       where: {
         userId: fId,
         targetId: tId,
-        type: 'FOLLOW'
-      }
+        type: "FOLLOW",
+      },
     });
 
     return { success: true };
@@ -63,8 +63,8 @@ class SocialService {
       where: {
         userId: followerId.toString(),
         targetId: followingId.toString(),
-        type: 'FOLLOW'
-      }
+        type: "FOLLOW",
+      },
     });
 
     return count > 0;
@@ -77,12 +77,12 @@ class SocialService {
     const follows = await prisma.userRelationship.findMany({
       where: {
         targetId: userId.toString(),
-        type: 'FOLLOW'
+        type: "FOLLOW",
       },
-      select: { userId: true }
+      select: { userId: true },
     });
 
-    return follows.map(f => f.userId);
+    return follows.map((f) => f.userId);
   }
 
   /**
@@ -92,12 +92,12 @@ class SocialService {
     const follows = await prisma.userRelationship.findMany({
       where: {
         userId: userId.toString(),
-        type: 'FOLLOW'
+        type: "FOLLOW",
       },
-      select: { targetId: true }
+      select: { targetId: true },
     });
 
-    return follows.map(f => f.targetId);
+    return follows.map((f) => f.targetId);
   }
 
   /**
@@ -106,22 +106,21 @@ class SocialService {
   async getBatchNetworkStats(userIds) {
     if (!userIds || userIds.length === 0) return new Map();
 
-    const ids = userIds.map(id => id.toString());
+    const ids = userIds.map((id) => id.toString());
 
     const relationships = await prisma.userRelationship.findMany({
       where: {
-        OR: [
-          { userId: { in: ids } },
-          { targetId: { in: ids } }
-        ],
-        type: 'FOLLOW'
-      }
+        OR: [{ userId: { in: ids } }, { targetId: { in: ids } }],
+        type: "FOLLOW",
+      },
     });
 
     const statsMap = new Map();
-    ids.forEach(id => statsMap.set(id, { followerIds: [], followingIds: [] }));
+    ids.forEach((id) =>
+      statsMap.set(id, { followerIds: [], followingIds: [] })
+    );
 
-    relationships.forEach(r => {
+    relationships.forEach((r) => {
       // If the user is being followed
       if (statsMap.has(r.targetId)) {
         statsMap.get(r.targetId).followerIds.push(r.userId);
@@ -143,13 +142,13 @@ class SocialService {
 
     const [followersRel, followingRel] = await Promise.all([
       prisma.userRelationship.findMany({
-        where: { targetId: userIdStr, type: 'FOLLOW' },
-        include: { user: { include: { ownerProfile: true } } }
+        where: { targetId: userIdStr, type: "FOLLOW" },
+        include: { user: { include: { ownerProfile: true } } },
       }),
       prisma.userRelationship.findMany({
-        where: { userId: userIdStr, type: 'FOLLOW' },
-        include: { target: { include: { ownerProfile: true } } }
-      })
+        where: { userId: userIdStr, type: "FOLLOW" },
+        include: { target: { include: { ownerProfile: true } } },
+      }),
     ]);
 
     const formatUser = (u) => ({
@@ -159,12 +158,12 @@ class SocialService {
       profilePicture: u.profilePicture,
       location: u.city ? `${u.city}, ${u.state}` : null,
       bio: null, // Bio not in current relational User schema but can be added or fetched if needed
-      sportTypes: u.sportTypes || []
+      sportTypes: u.sportTypes || [],
     });
 
     return {
-      followers: followersRel.map(f => formatUser(f.user)),
-      following: followingRel.map(f => formatUser(f.target))
+      followers: followersRel.map((f) => formatUser(f.user)),
+      following: followingRel.map((f) => formatUser(f.target)),
     };
   }
 
@@ -174,7 +173,7 @@ class SocialService {
   async getNetworkIds(userId) {
     const [followers, following] = await Promise.all([
       this.getFollowerIds(userId),
-      this.getFollowingIds(userId)
+      this.getFollowingIds(userId),
     ]);
     return [...new Set([...followers, ...following])];
   }

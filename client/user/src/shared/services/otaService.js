@@ -1,5 +1,5 @@
-import { CapacitorUpdater } from '@capgo/capacitor-updater';
-import { Capacitor } from '@capacitor/core';
+import { CapacitorUpdater } from "@capgo/capacitor-updater";
+import { Capacitor } from "@capacitor/core";
 
 export const otaService = {
   /**
@@ -27,7 +27,7 @@ export const otaService = {
    * Get the active bundle information (e.g., currently running version).
    */
   async current() {
-    if (!this.isNative()) return { bundle: { version: 'web' } };
+    if (!this.isNative()) return { bundle: { version: "web" } };
     try {
       return await CapacitorUpdater.current();
     } catch (error) {
@@ -86,5 +86,5 @@ export const otaService = {
       console.error("otaService: reload error:", error);
       throw error;
     }
-  }
+  },
 };

@@ -31,6 +31,7 @@ The page (`client/user/src/pages/Home.jsx`) is designed with a premium, high-imp
 The homepage heavily utilizes React hooks for data fetching and state management.
 
 ### Data Fetching
+
 The page aggregates data from multiple endpoints in parallel to minimize load times:
 
 ```javascript
@@ -40,7 +41,7 @@ useEffect(() => {
       const results = await Promise.allSettled([
         axiosInstance.get("/api/features"),
         axiosInstance.get("/api/features/marketing"),
-        axiosInstance.get("/api/user/community")
+        axiosInstance.get("/api/user/community"),
       ]);
       // State updates for feature flags, marketing banners, and social posts
     } catch (error) {
@@ -52,6 +53,7 @@ useEffect(() => {
 ```
 
 ### Location Context
+
 The page proactively attempts to detect the user's location (via browser Geolocation API or an IP fallback) to provide hyper-localized venue and player recommendations.
 
 ```javascript
@@ -59,7 +61,12 @@ const fallbackToIPLocation = async () => {
   try {
     const res = await fetch("https://ipapi.co/json/");
     const data = await res.json();
-    setUserLocation({ lat: data.latitude, lng: data.longitude, city: data.city, state: data.region });
+    setUserLocation({
+      lat: data.latitude,
+      lng: data.longitude,
+      city: data.city,
+      state: data.region,
+    });
   } catch (error) {
     setLocationStatus("denied");
   }

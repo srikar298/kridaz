@@ -10,12 +10,12 @@
  * @type {Readonly<Record<string, string>>}
  */
 export const BOOKING_STATUS = Object.freeze({
-  PENDING: 'PENDING',
-  CONFIRMED: 'CONFIRMED',
-  CANCELLED: 'CANCELLED',
-  COMPLETED: 'COMPLETED',
-  REFUNDED: 'REFUNDED',
-  NO_SHOW: 'NO_SHOW',
+  PENDING: "PENDING",
+  CONFIRMED: "CONFIRMED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  REFUNDED: "REFUNDED",
+  NO_SHOW: "NO_SHOW",
 });
 
 /**
@@ -23,11 +23,11 @@ export const BOOKING_STATUS = Object.freeze({
  * @type {Readonly<Record<string, string>>}
  */
 export const PAYMENT_STATUS = Object.freeze({
-  PENDING: 'pending',
-  PAID: 'paid',
-  FAILED: 'failed',
-  REFUNDED: 'refunded',
-  PARTIALLY_REFUNDED: 'partially_refunded',
+  PENDING: "pending",
+  PAID: "paid",
+  FAILED: "failed",
+  REFUNDED: "refunded",
+  PARTIALLY_REFUNDED: "partially_refunded",
 });
 
 /**
@@ -35,9 +35,9 @@ export const PAYMENT_STATUS = Object.freeze({
  * @type {Readonly<Record<string, string>>}
  */
 export const WALLET_TRANSACTION_TYPE = Object.freeze({
-  CREDIT: 'credit',
-  DEBIT: 'debit',
-  REFUND: 'refund',
-  WITHDRAWAL: 'withdrawal',
-  TOPUP: 'topup',
+  CREDIT: "credit",
+  DEBIT: "debit",
+  REFUND: "refund",
+  WITHDRAWAL: "withdrawal",
+  TOPUP: "topup",
 });

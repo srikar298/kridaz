@@ -43,7 +43,9 @@ const backfillPlayTimes = async () => {
     }
 
     if (count > 0) {
-      logger.info(`[SETTLEMENT] Backfilled playStartTime on ${count} legacy bookings.`);
+      logger.info(
+        `[SETTLEMENT] Backfilled playStartTime on ${count} legacy bookings.`
+      );
     }
   } catch (err) {
     logger.error("[SETTLEMENT] Backfill error", err);
@@ -69,14 +71,16 @@ export const runPlayingTransition = async () => {
     });
 
     if (result.count > 0) {
-      logger.info(`[SETTLEMENT] Phase A-1: ${result.count} booking(s) → PLAYING`);
-      
+      logger.info(
+        `[SETTLEMENT] Phase A-1: ${result.count} booking(s) → PLAYING`
+      );
+
       const updatedBookings = await prisma.booking.findMany({
         where: {
           status: "PLAYING",
-          playStartTime: { lte: now }
+          playStartTime: { lte: now },
         },
-        include: { turf: true, user: true }
+        include: { turf: true, user: true },
       });
 
       for (const b of updatedBookings) {
@@ -86,13 +90,15 @@ export const runPlayingTransition = async () => {
           email: b.user?.email,
           phone: b.user?.phone,
           turfName: b.turf?.name,
-          bookingId: b.id
+          bookingId: b.id,
         });
       }
     }
   } catch (err) {
     logger.error("[SETTLEMENT] Phase A-1 error:", err);
-    Sentry.captureException(err, { tags: { job: "runPlayingTransition_Phase1" } });
+    Sentry.captureException(err, {
+      tags: { job: "runPlayingTransition_Phase1" },
+    });
   }
 
   // ── Step 2: PLAYING → IN_REVIEW_WINDOW ───────────────────────────────────
@@ -117,7 +123,7 @@ export const runPlayingTransition = async () => {
 
     await prisma.$transaction(async (tx) => {
       const ownerBalanceChanges = new Map();
-      const bookingIds = playingBookings.map(b => b.id);
+      const bookingIds = playingBookings.map((b) => b.id);
 
       for (const booking of playingBookings) {
         if (!booking.turf?.owner) continue;
@@ -126,10 +132,13 @@ export const runPlayingTransition = async () => {
         const ownerId = booking.turf.owner.id;
 
         // Group balance updates
-        const current = ownerBalanceChanges.get(ownerId) || { pending: 0, inProgress: 0 };
+        const current = ownerBalanceChanges.get(ownerId) || {
+          pending: 0,
+          inProgress: 0,
+        };
         ownerBalanceChanges.set(ownerId, {
           pending: current.pending - ownerRevenue,
-          inProgress: current.inProgress + ownerRevenue
+          inProgress: current.inProgress + ownerRevenue,
         });
       }
 
@@ -155,10 +164,14 @@ export const runPlayingTransition = async () => {
       });
     });
 
-    logger.info(`[SETTLEMENT] Phase A-2: ${playingBookings.length} booking(s) → IN_REVIEW_WINDOW`);
+    logger.info(
+      `[SETTLEMENT] Phase A-2: ${playingBookings.length} booking(s) → IN_REVIEW_WINDOW`
+    );
   } catch (err) {
     logger.error("[SETTLEMENT] Phase A-2 error:", err);
-    Sentry.captureException(err, { tags: { job: "runPlayingTransition_Phase2" } });
+    Sentry.captureException(err, {
+      tags: { job: "runPlayingTransition_Phase2" },
+    });
   }
 };
 
@@ -190,7 +203,7 @@ export const runAutoSettle = async () => {
     await prisma.$transaction(async (tx) => {
       const ownerBalanceChanges = new Map();
       const walletTransactions = [];
-      const bookingIds = eligibleBookings.map(b => b.id);
+      const bookingIds = eligibleBookings.map((b) => b.id);
 
       for (const booking of eligibleBookings) {
         if (!booking.turf?.owner) continue;
@@ -200,10 +213,13 @@ export const runAutoSettle = async () => {
         const userId = booking.turf.owner.userId;
 
         // Group balance updates
-        const current = ownerBalanceChanges.get(ownerId) || { inProgress: 0, wallet: 0 };
+        const current = ownerBalanceChanges.get(ownerId) || {
+          inProgress: 0,
+          wallet: 0,
+        };
         ownerBalanceChanges.set(ownerId, {
           inProgress: current.inProgress - ownerRevenue,
-          wallet: current.wallet + ownerRevenue
+          wallet: current.wallet + ownerRevenue,
         });
 
         // Collect wallet transactions for bulk create
@@ -231,7 +247,7 @@ export const runAutoSettle = async () => {
       // 2. Bulk Create Wallet Transactions
       if (walletTransactions.length > 0) {
         await tx.walletTransaction.createMany({
-          data: walletTransactions
+          data: walletTransactions,
         });
       }
 
@@ -257,11 +273,13 @@ export const runAutoSettle = async () => {
         ownerName: booking.turf.owner.user?.name || "Partner",
         amount: ownerRevenue,
         turfName: booking.turf.name,
-        bookingId: booking.id
+        bookingId: booking.id,
       });
     }
 
-    logger.info(`[SETTLEMENT] Phase B: Auto-settled ${eligibleBookings.length} booking(s) ✓`);
+    logger.info(
+      `[SETTLEMENT] Phase B: Auto-settled ${eligibleBookings.length} booking(s) ✓`
+    );
   } catch (err) {
     logger.error("[SETTLEMENT] Phase B error:", err);
     Sentry.captureException(err, { tags: { job: "runAutoSettle" } });
@@ -310,10 +328,13 @@ const runLegacySettlement = async () => {
 
         eligibleBookingIds.push(booking.id);
 
-        const current = ownerBalanceChanges.get(ownerId) || { pending: 0, wallet: 0 };
+        const current = ownerBalanceChanges.get(ownerId) || {
+          pending: 0,
+          wallet: 0,
+        };
         ownerBalanceChanges.set(ownerId, {
           pending: current.pending - amount,
-          wallet: current.wallet + amount
+          wallet: current.wallet + amount,
         });
 
         walletTransactions.push({
@@ -340,7 +361,7 @@ const runLegacySettlement = async () => {
       // 2. Bulk Create Wallet Transactions
       if (walletTransactions.length > 0) {
         await tx.walletTransaction.createMany({
-          data: walletTransactions
+          data: walletTransactions,
         });
       }
 
@@ -358,7 +379,9 @@ const runLegacySettlement = async () => {
     });
 
     if (legacyCount > 0) {
-      logger.info(`[SETTLEMENT] Legacy: settled ${legacyCount} old booking(s) ✓`);
+      logger.info(
+        `[SETTLEMENT] Legacy: settled ${legacyCount} old booking(s) ✓`
+      );
     }
   } catch (err) {
     logger.error("[SETTLEMENT] Legacy settlement error", err);
@@ -378,22 +401,34 @@ export const initSettlementWorker = () => {
   backfillPlayTimes();
 
   // Startup run — guarded by a 2-minute Redis lock
-  const lockKey = 'kridaz:settlement:startup:lock';
-  redis.set(lockKey, '1', 'EX', 120, 'NX').then((result) => {
-    if (result === 'OK') {
-      logger.info('[SETTLEMENT] Startup lock acquired. Running immediate jobs...');
+  const lockKey = "kridaz:settlement:startup:lock";
+  redis
+    .set(lockKey, "1", "EX", 120, "NX")
+    .then((result) => {
+      if (result === "OK") {
+        logger.info(
+          "[SETTLEMENT] Startup lock acquired. Running immediate jobs..."
+        );
+        runPlayingTransition();
+        runAutoSettle();
+        runLegacySettlement();
+      } else {
+        logger.info(
+          "[SETTLEMENT] Startup lock already held. Skipping immediate run."
+        );
+      }
+    })
+    .catch((err) => {
+      logger.warn(
+        `[SETTLEMENT] Redis lock failed. Running immediate jobs anyway.`,
+        err
+      );
       runPlayingTransition();
       runAutoSettle();
       runLegacySettlement();
-    } else {
-      logger.info('[SETTLEMENT] Startup lock already held. Skipping immediate run.');
-    }
-  }).catch((err) => {
-    logger.warn(`[SETTLEMENT] Redis lock failed. Running immediate jobs anyway.`, err);
-    runPlayingTransition();
-    runAutoSettle();
-    runLegacySettlement();
-  });
+    });
 
-  logger.info('[SETTLEMENT] Worker functions ready. Scheduling handled by BullMQ.');
+  logger.info(
+    "[SETTLEMENT] Worker functions ready. Scheduling handled by BullMQ."
+  );
 };

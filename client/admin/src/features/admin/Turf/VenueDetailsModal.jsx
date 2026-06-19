@@ -1,6 +1,16 @@
 import React from "react";
-import { 
-  X, MapPin, Clock, Calendar, Check, X as XIcon, Shield, Info, Phone, User, Globe
+import {
+  X,
+  MapPin,
+  Clock,
+  Calendar,
+  Check,
+  X as XIcon,
+  Shield,
+  Info,
+  Phone,
+  User,
+  Globe,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
@@ -13,7 +23,7 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-6 lg:p-10">
           {/* Backdrop */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -22,7 +32,7 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
           />
 
           {/* Modal Container */}
-          <motion.div 
+          <motion.div
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
@@ -31,15 +41,18 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
           >
             {/* Header / Hero Section */}
             <div className="relative h-[40vh] min-h-[300px] shrink-0">
-              <img 
-                src={turf.image} 
+              <img
+                src={turf.image}
                 alt={turf.name}
                 className="w-full h-full object-cover"
-                onError={(e) => { e.target.onerror = null; e.target.src = "/banner-2.png"; }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "/banner-2.png";
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/20 to-transparent" />
-              
-              <button 
+
+              <button
                 onClick={onClose}
                 className="absolute top-6 right-6 p-3 bg-black/50 backdrop-blur-md border border-white/10 text-white rounded-[8px] hover:bg-white/10 transition-all z-20"
               >
@@ -51,7 +64,9 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
                   <span className="px-4 py-1.5 bg-[#CCFF00] text-black text-[10px] font-black uppercase tracking-widest rounded-full">
                     Venue Verification
                   </span>
-                  <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${ turf.status === 'approved' ? 'bg-green-500/10 text-green-500 border-green-500/20' : turf.status === 'rejected' ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' }`}>
+                  <span
+                    className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${turf.status === "approved" ? "bg-green-500/10 text-green-500 border-green-500/20" : turf.status === "rejected" ? "bg-red-500/10 text-red-500 border-red-500/20" : "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"}`}
+                  >
                     {turf.status}
                   </span>
                 </div>
@@ -64,10 +79,8 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
             {/* Content Area */}
             <div className="flex-1 overflow-y-auto custom-scrollbar p-8 lg:p-12">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                
                 {/* Left Column: Details */}
                 <div className="lg:col-span-2 space-y-12">
-                  
                   {/* Description */}
                   <section className="space-y-4">
                     <div className="flex items-center gap-2 text-[#CCFF00] text-xs font-black uppercase tracking-[0.2em]">
@@ -75,7 +88,8 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
                       <span>The Proposition</span>
                     </div>
                     <p className="text-gray-400 text-lg leading-relaxed">
-                      {turf.description || "No description provided for this venue."}
+                      {turf.description ||
+                        "No description provided for this venue."}
                     </p>
                   </section>
 
@@ -88,8 +102,15 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         {turf.images.map((img, i) => (
-                          <div key={i} className="aspect-video rounded-[8px] overflow-hidden border border-[#2D2D2D]">
-                            <img src={img} className="w-full h-full object-cover" alt={`Gallery ${i}`} />
+                          <div
+                            key={i}
+                            className="aspect-video rounded-[8px] overflow-hidden border border-[#2D2D2D]"
+                          >
+                            <img
+                              src={img}
+                              className="w-full h-full object-cover"
+                              alt={`Gallery ${i}`}
+                            />
                           </div>
                         ))}
                       </div>
@@ -104,8 +125,13 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {turf.facilities?.map((facility, i) => (
-                        <div key={i} className="p-4 bg-white/5 border border-white/5 rounded-[8px] flex flex-col items-center gap-3 text-center group hover:border-[#CCFF00]/30 transition-all">
-                           <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{facility}</span>
+                        <div
+                          key={i}
+                          className="p-4 bg-white/5 border border-white/5 rounded-[8px] flex flex-col items-center gap-3 text-center group hover:border-[#CCFF00]/30 transition-all"
+                        >
+                          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                            {facility}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -114,35 +140,74 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
 
                 {/* Right Column: Metadata & Operations */}
                 <div className="space-y-8">
-                  
                   {/* Pricing Card */}
                   <div className="p-8 bg-[#CCFF00] rounded-[8px] space-y-1 shadow-2xl shadow-[#CCFF00]/10">
-                    <p className="text-black/60 text-[10px] font-black uppercase tracking-widest">Base Hourly Rate</p>
+                    <p className="text-black/60 text-[10px] font-black uppercase tracking-widest">
+                      Base Hourly Rate
+                    </p>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-black text-black">Rs {turf.pricePerHour}</span>
-                      <span className="text-black/60 font-bold text-sm">/HR</span>
+                      <span className="text-4xl font-black text-black">
+                        Rs {turf.pricePerHour}
+                      </span>
+                      <span className="text-black/60 font-bold text-sm">
+                        /HR
+                      </span>
                     </div>
                   </div>
 
                   {/* Meta Details */}
                   <div className="space-y-6 p-8 bg-white/[0.02] border border-white/5 rounded-[8px]">
-                    <MetaItem icon={MapPin} label="LOCATION" val={turf.location} />
-                    <MetaItem icon={Clock} label="OPERATING HOURS" val={`${turf.openTime} - ${turf.closeTime}`} />
-                    <MetaItem icon={Calendar} label="LISTING DATE" val={turf.createdAt ? format(new Date(turf.createdAt), "PPP") : "N/A"} />
-                    <MetaItem icon={User} label="OWNER IDENTIFIER" val={turf.owner?.name || turf.owner || "Anonymous Partner"} />
+                    <MetaItem
+                      icon={MapPin}
+                      label="LOCATION"
+                      val={turf.location}
+                    />
+                    <MetaItem
+                      icon={Clock}
+                      label="OPERATING HOURS"
+                      val={`${turf.openTime} - ${turf.closeTime}`}
+                    />
+                    <MetaItem
+                      icon={Calendar}
+                      label="LISTING DATE"
+                      val={
+                        turf.createdAt
+                          ? format(new Date(turf.createdAt), "PPP")
+                          : "N/A"
+                      }
+                    />
+                    <MetaItem
+                      icon={User}
+                      label="OWNER IDENTIFIER"
+                      val={
+                        turf.owner?.name || turf.owner || "Anonymous Partner"
+                      }
+                    />
                   </div>
 
                   {/* Contact Info */}
                   {turf.managerContacts && turf.managerContacts.length > 0 && (
                     <div className="space-y-6 p-8 bg-white/[0.02] border border-white/5 rounded-[8px]">
-                      <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4">On-Site Managers</div>
+                      <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4">
+                        On-Site Managers
+                      </div>
                       {turf.managerContacts.map((contact, i) => (
-                        <div key={i} className="flex items-center justify-between">
+                        <div
+                          key={i}
+                          className="flex items-center justify-between"
+                        >
                           <div className="flex flex-col">
-                            <span className="text-white font-bold text-sm">{contact.name}</span>
-                            <span className="text-gray-500 text-xs">{contact.phone}</span>
+                            <span className="text-white font-bold text-sm">
+                              {contact.name}
+                            </span>
+                            <span className="text-gray-500 text-xs">
+                              {contact.phone}
+                            </span>
                           </div>
-                          <a href={`tel:${contact.phone}`} className="p-2 bg-[#CCFF00]/10 text-[#CCFF00] rounded-full">
+                          <a
+                            href={`tel:${contact.phone}`}
+                            className="p-2 bg-[#CCFF00]/10 text-[#CCFF00] rounded-full"
+                          >
                             <Phone size={14} />
                           </a>
                         </div>
@@ -154,17 +219,17 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
             </div>
 
             {/* Footer Actions */}
-            {turf.status === 'pending' && (
+            {turf.status === "pending" && (
               <div className="p-8 lg:p-12 bg-black border-t border-[#2D2D2D] shrink-0 relative z-10">
                 <div className="flex gap-6">
-                  <button 
+                  <button
                     onClick={() => onReject(turf._id)}
                     className="flex-1 py-5 border border-red-500/50 text-red-500 font-black uppercase tracking-widest text-xs rounded-[8px] hover:bg-red-500/10 transition-all flex items-center justify-center gap-3"
                   >
                     <XIcon size={16} />
                     Decline Venue
                   </button>
-                  <button 
+                  <button
                     onClick={() => onApprove(turf._id)}
                     className="flex-1 py-5 bg-[#CCFF00] text-black font-black uppercase tracking-widest text-xs rounded-[8px] hover:bg-[#CCFF00]/80 transition-all flex items-center justify-center gap-3 shadow-xl shadow-[#CCFF00]/20"
                   >
@@ -185,7 +250,9 @@ const MetaItem = ({ icon: Icon, label, val }) => (
   <div className="space-y-2">
     <div className="flex items-center gap-2 text-gray-500">
       <Icon size={12} className="text-[#CCFF00]" />
-      <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
+      <span className="text-[10px] font-black uppercase tracking-widest">
+        {label}
+      </span>
     </div>
     <p className="text-white font-bold text-sm leading-tight">{val}</p>
   </div>

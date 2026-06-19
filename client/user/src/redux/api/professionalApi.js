@@ -84,4 +84,3 @@ export const {
   useGetTrustScoreHistoryQuery,
   useCompleteProfessionalBookingMutation,
 } = professionalApi;
-

@@ -24,46 +24,26 @@ import Translate from "@docusaurus/Translate";
   as={"h1"}
   className={"openapi__heading"}
   children={"Approve a turf"}
->
-</Heading>
+></Heading>
 
 <MethodEndpoint
   method={"put"}
   path={"/admin/turfs/{id}/approve"}
   context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+></MethodEndpoint>
 
 Marks a turf as active and verified.
 
-<Heading
-  id={"request"}
-  as={"h2"}
-  className={"openapi-tabs__heading"}
->
+<Heading id={"request"} as={"h2"} className={"openapi-tabs__heading"}>
   <Translate id="theme.openapi.request.title">Request</Translate>
 </Heading>
 
 <ParamsDetails
   {...require("./approve-a-turf.ParamsDetails.json")}
->
-  
-</ParamsDetails>
+></ParamsDetails>
 
 <RequestSchema
   {...require("./approve-a-turf.RequestSchema.json")}
->
-  
-</RequestSchema>
+></RequestSchema>
 
-<StatusCodes
-  {...require("./approve-a-turf.StatusCodes.json")}
->
-  
-</StatusCodes>
-
-
-      
+<StatusCodes {...require("./approve-a-turf.StatusCodes.json")}></StatusCodes>

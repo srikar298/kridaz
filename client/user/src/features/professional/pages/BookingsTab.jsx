@@ -1,16 +1,13 @@
 import React, { useState } from "react";
-import { 
-  Calendar, 
-  MapPin, 
-  User, 
-  Trophy, 
-  Clock, 
-  Info
-} from "lucide-react";
+import { Calendar, MapPin, User, Trophy, Clock, Info } from "lucide-react";
 import { useGetMyOnDemandBookingsQuery } from "../../../redux/api/professionalApi";
 
 const BookingsTab = ({ role }) => {
-  const { data: bookingsData, isLoading, refetch } = useGetMyOnDemandBookingsQuery();
+  const {
+    data: bookingsData,
+    isLoading,
+    refetch,
+  } = useGetMyOnDemandBookingsQuery();
   const [activeSubTab, setActiveSubTab] = useState("active");
 
   const bookings = bookingsData?.bookings || [];
@@ -23,11 +20,14 @@ const BookingsTab = ({ role }) => {
     ...bookings.filter(
       (b) => b.status === "ASSIGNED" || b.status === "IN_PROGRESS"
     ),
-    ...pendingBookings
+    ...pendingBookings,
   ];
-  
+
   const completedBookings = bookings.filter(
-    (b) => b.status === "COMPLETED" || b.status === "CANCELLED" || b.status === "NO_SHOW"
+    (b) =>
+      b.status === "COMPLETED" ||
+      b.status === "CANCELLED" ||
+      b.status === "NO_SHOW"
   );
 
   const getStatusStyle = (status) => {
@@ -55,32 +55,46 @@ const BookingsTab = ({ role }) => {
 
   const getStatusLabel = (status) => {
     switch (status) {
-      case "PENDING": return "Pending";
-      case "ASSIGNED": return "Assigned";
-      case "IN_PROGRESS": return "In Progress";
-      case "COMPLETED": return "Completed";
-      case "CANCELLED": return "Cancelled";
-      case "NO_SHOW": return "No Show";
-      case "NOT_ACCEPTED": return "Not Accepted";
-      case "SKIPPED": return "Skipped";
-      default: return status;
+      case "PENDING":
+        return "Pending";
+      case "ASSIGNED":
+        return "Assigned";
+      case "IN_PROGRESS":
+        return "In Progress";
+      case "COMPLETED":
+        return "Completed";
+      case "CANCELLED":
+        return "Cancelled";
+      case "NO_SHOW":
+        return "No Show";
+      case "NOT_ACCEPTED":
+        return "Not Accepted";
+      case "SKIPPED":
+        return "Skipped";
+      default:
+        return status;
     }
   };
 
-  const currentList = activeSubTab === "active" 
-    ? activeBookings 
-    : activeSubTab === "history" 
-      ? completedBookings 
-      : activeSubTab === "nonAccepted"
-        ? nonAcceptedBookings
-        : skippedBookings;
+  const currentList =
+    activeSubTab === "active"
+      ? activeBookings
+      : activeSubTab === "history"
+        ? completedBookings
+        : activeSubTab === "nonAccepted"
+          ? nonAcceptedBookings
+          : skippedBookings;
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "N/A";
     try {
       const d = new Date(dateStr);
       if (isNaN(d.getTime())) return dateStr;
-      return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+      return d.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
     } catch {
       return dateStr;
     }
@@ -95,29 +109,45 @@ const BookingsTab = ({ role }) => {
             onClick={() => setActiveSubTab("active")}
             className={`pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "active" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
           >
-            <span className="block sm:hidden">Active ({activeBookings.length})</span>
-            <span className="hidden sm:block">Active ({activeBookings.length})</span>
+            <span className="block sm:hidden">
+              Active ({activeBookings.length})
+            </span>
+            <span className="hidden sm:block">
+              Active ({activeBookings.length})
+            </span>
           </button>
           <button
             onClick={() => setActiveSubTab("history")}
             className={`pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "history" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
           >
-            <span className="block sm:hidden">History ({completedBookings.length})</span>
-            <span className="hidden sm:block">History ({completedBookings.length})</span>
+            <span className="block sm:hidden">
+              History ({completedBookings.length})
+            </span>
+            <span className="hidden sm:block">
+              History ({completedBookings.length})
+            </span>
           </button>
           <button
             onClick={() => setActiveSubTab("nonAccepted")}
             className={`pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "nonAccepted" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
           >
-            <span className="block sm:hidden">Rejected ({nonAcceptedBookings.length})</span>
-            <span className="hidden sm:block">Rejected ({nonAcceptedBookings.length})</span>
+            <span className="block sm:hidden">
+              Rejected ({nonAcceptedBookings.length})
+            </span>
+            <span className="hidden sm:block">
+              Rejected ({nonAcceptedBookings.length})
+            </span>
           </button>
           <button
             onClick={() => setActiveSubTab("skipped")}
             className={`pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "skipped" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
           >
-            <span className="block sm:hidden">Skipped ({skippedBookings.length})</span>
-            <span className="hidden sm:block">Skipped ({skippedBookings.length})</span>
+            <span className="block sm:hidden">
+              Skipped ({skippedBookings.length})
+            </span>
+            <span className="hidden sm:block">
+              Skipped ({skippedBookings.length})
+            </span>
           </button>
         </div>
       </div>
@@ -125,7 +155,9 @@ const BookingsTab = ({ role }) => {
       {isLoading ? (
         <div className="py-20 text-center flex flex-col items-center justify-center gap-3">
           <div className="w-8 h-8 rounded-full border-2 border-t-transparent border-[#BFF367] animate-spin" />
-          <p className="text-xs font-bold uppercase tracking-widest text-gray-500">Syncing assignments...</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-500">
+            Syncing assignments...
+          </p>
         </div>
       ) : currentList.length === 0 ? (
         <div className="p-16 text-center bg-[#0D0D0D] border border-[#1A1A1A] rounded-2xl space-y-4">
@@ -133,10 +165,12 @@ const BookingsTab = ({ role }) => {
             <Info size={24} />
           </div>
           <div className="space-y-1">
-            <h4 className="font-bold text-sm sm:text-base text-white">No Bookings Found</h4>
+            <h4 className="font-bold text-sm sm:text-base text-white">
+              No Bookings Found
+            </h4>
             <p className="text-xs text-gray-500 max-w-sm mx-auto leading-relaxed">
-              {activeSubTab === "active" 
-                ? "You do not have any active or pending match assignments right now." 
+              {activeSubTab === "active"
+                ? "You do not have any active or pending match assignments right now."
                 : activeSubTab === "history"
                   ? "No completed or historical matching records found on this account."
                   : activeSubTab === "nonAccepted"
@@ -148,18 +182,22 @@ const BookingsTab = ({ role }) => {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {currentList.map((booking) => (
-            <div 
-              key={booking.id} 
+            <div
+              key={booking.id}
               className={`p-5 rounded-2xl bg-[#0D0D0D] border transition-all duration-300 flex flex-col justify-between gap-5 relative overflow-hidden ${
-                booking.status === "PENDING" 
-                  ? "border-yellow-500/20 hover:border-yellow-500/40" 
+                booking.status === "PENDING"
+                  ? "border-yellow-500/20 hover:border-yellow-500/40"
                   : "border-[#1A1A1A] hover:border-[#BFF367]/30"
               }`}
             >
               {/* Background gradient card glow */}
-              <div className={`absolute top-0 right-0 w-24 h-24 blur-3xl pointer-events-none rounded-full ${
-                booking.status === "PENDING" ? "bg-yellow-500/5" : "bg-[#BFF367]/5"
-              }`} />
+              <div
+                className={`absolute top-0 right-0 w-24 h-24 blur-3xl pointer-events-none rounded-full ${
+                  booking.status === "PENDING"
+                    ? "bg-yellow-500/5"
+                    : "bg-[#BFF367]/5"
+                }`}
+              />
 
               {/* Pending indicator pulse */}
               {booking.status === "PENDING" && (
@@ -168,7 +206,9 @@ const BookingsTab = ({ role }) => {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-400" />
                   </span>
-                  <span className="text-[8px] font-black text-yellow-400 uppercase tracking-widest">Awaiting Response</span>
+                  <span className="text-[8px] font-black text-yellow-400 uppercase tracking-widest">
+                    Awaiting Response
+                  </span>
                 </div>
               )}
 
@@ -176,7 +216,9 @@ const BookingsTab = ({ role }) => {
                 {/* Header: Status & Price */}
                 <div className="flex justify-between items-start gap-2">
                   <div className="flex flex-wrap gap-2 items-center">
-                    <span className={`text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider ${getStatusStyle(booking.status)}`}>
+                    <span
+                      className={`text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider ${getStatusStyle(booking.status)}`}
+                    >
                       {getStatusLabel(booking.status)}
                     </span>
                     {booking.role && (
@@ -187,8 +229,12 @@ const BookingsTab = ({ role }) => {
                     )}
                   </div>
                   <div className="text-right">
-                    <span className="block text-[8px] font-black text-gray-500 uppercase tracking-widest leading-none">Hourly rate</span>
-                    <span className="text-[#BFF367] font-black text-base sm:text-lg block mt-1">₹{booking.hourlyRate}</span>
+                    <span className="block text-[8px] font-black text-gray-500 uppercase tracking-widest leading-none">
+                      Hourly rate
+                    </span>
+                    <span className="text-[#BFF367] font-black text-base sm:text-lg block mt-1">
+                      ₹{booking.hourlyRate}
+                    </span>
                   </div>
                 </div>
 
@@ -207,7 +253,7 @@ const BookingsTab = ({ role }) => {
                       <Clock size={10} /> Shift Timings
                     </span>
                     <span className="text-xs font-bold text-white block">
-                      {booking.matchStartTime && booking.matchEndTime 
+                      {booking.matchStartTime && booking.matchEndTime
                         ? `${booking.matchStartTime} - ${booking.matchEndTime}`
                         : "Flexible Shift"}
                     </span>
@@ -220,12 +266,16 @@ const BookingsTab = ({ role }) => {
                     <MapPin size={16} className="text-[#BFF367]" />
                   </div>
                   <div className="min-w-0">
-                    <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest block leading-none mb-1.5">Venue Location</span>
+                    <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest block leading-none mb-1.5">
+                      Venue Location
+                    </span>
                     <h5 className="text-xs font-bold text-white truncate">
                       {booking.ground?.name || "Custom Ground / Court"}
                     </h5>
                     <p className="text-[11px] text-gray-400 mt-1 leading-relaxed line-clamp-2">
-                      {booking.ground?.location || booking.customLocation?.address || "Location Address not available"}
+                      {booking.ground?.location ||
+                        booking.customLocation?.address ||
+                        "Location Address not available"}
                     </p>
                   </div>
                 </div>
@@ -235,10 +285,10 @@ const BookingsTab = ({ role }) => {
               <div className="p-3 bg-[#121212] border border-[#1A1A1A] rounded-xl flex items-center gap-3">
                 <div className="flex items-center gap-2.5 min-w-0">
                   {booking.user?.profilePicture ? (
-                    <img 
-                      src={booking.user.profilePicture} 
-                      alt="" 
-                      className="w-9 h-9 rounded-full object-cover border border-[#BFF367]/20 shrink-0" 
+                    <img
+                      src={booking.user.profilePicture}
+                      alt=""
+                      className="w-9 h-9 rounded-full object-cover border border-[#BFF367]/20 shrink-0"
                     />
                   ) : (
                     <div className="w-9 h-9 rounded-full bg-[#BFF367]/10 text-[#BFF367] border border-[#BFF367]/20 flex items-center justify-center font-bold text-xs uppercase shrink-0">
@@ -246,7 +296,9 @@ const BookingsTab = ({ role }) => {
                     </div>
                   )}
                   <div className="min-w-0">
-                    <h6 className="text-xs font-black text-white truncate leading-none">{booking.user?.name || "Client Name"}</h6>
+                    <h6 className="text-xs font-black text-white truncate leading-none">
+                      {booking.user?.name || "Client Name"}
+                    </h6>
                     <p className="text-[9px] text-gray-500 font-semibold uppercase tracking-wider mt-1 flex items-center gap-1">
                       <User size={10} /> Requester
                     </p>

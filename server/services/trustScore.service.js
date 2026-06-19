@@ -15,7 +15,14 @@ export class TrustScoreLedgerService {
    * @param {string} [reason] - Optional description/reason for audit purposes
    * @param {object} [tx] - Optional Prisma transaction client
    */
-  static async recordEvent(professionalId, eventType, delta, bookingId = null, reason = null, tx = null) {
+  static async recordEvent(
+    professionalId,
+    eventType,
+    delta,
+    bookingId = null,
+    reason = null,
+    tx = null
+  ) {
     const client = tx || prisma;
     try {
       const event = await client.trustScoreEvent.create({
@@ -27,10 +34,15 @@ export class TrustScoreLedgerService {
           reason,
         },
       });
-      logger.info(`[TrustScoreLedger] Recorded event ${eventType} for pro ${professionalId} with delta ${delta}`);
+      logger.info(
+        `[TrustScoreLedger] Recorded event ${eventType} for pro ${professionalId} with delta ${delta}`
+      );
       return event;
     } catch (error) {
-      logger.error(`[TrustScoreLedger] Failed to record event for pro ${professionalId}:`, error);
+      logger.error(
+        `[TrustScoreLedger] Failed to record event for pro ${professionalId}:`,
+        error
+      );
       throw error;
     }
   }
@@ -58,20 +70,27 @@ export class TrustScoreLedgerService {
       const onboardingConfig = await client.platformConfig.findUnique({
         where: { key: "ONBOARDING_TRUST_SCORE" },
       });
-      const defaultOnboardingScore = onboardingConfig ? parseFloat(onboardingConfig.value) : 100;
+      const defaultOnboardingScore = onboardingConfig
+        ? parseFloat(onboardingConfig.value)
+        : 100;
 
       // If no events exist, default to the onboarding score
       if (events.length === 0) {
         return defaultOnboardingScore;
       }
 
-      const rawScore = defaultOnboardingScore + events.reduce((sum, event) => sum + event.delta, 0);
-      
+      const rawScore =
+        defaultOnboardingScore +
+        events.reduce((sum, event) => sum + event.delta, 0);
+
       // Cap the score at maxScore and ensure it doesn't go below 0
       const finalScore = Math.max(0, Math.min(rawScore, maxScore));
       return parseFloat(finalScore.toFixed(2));
     } catch (error) {
-      logger.error(`[TrustScoreLedger] Failed to calculate trust score for pro ${professionalId}:`, error);
+      logger.error(
+        `[TrustScoreLedger] Failed to calculate trust score for pro ${professionalId}:`,
+        error
+      );
       throw error;
     }
   }

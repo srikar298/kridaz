@@ -15,7 +15,9 @@ const verifyAuth = async (req, res, next) => {
   }
 
   if (!token) {
-    return next(new UnauthorizedError("No token provided", { code: "NO_TOKEN" }));
+    return next(
+      new UnauthorizedError("No token provided", { code: "NO_TOKEN" })
+    );
   }
 
   let decoded;
@@ -23,25 +25,42 @@ const verifyAuth = async (req, res, next) => {
     decoded = jwt.verify(token, getAccessSecret());
   } catch (err) {
     if (err.name === "TokenExpiredError") {
-      return next(new UnauthorizedError("Session expired", { code: "TOKEN_EXPIRED" }));
+      return next(
+        new UnauthorizedError("Session expired", { code: "TOKEN_EXPIRED" })
+      );
     }
-    return next(new UnauthorizedError("Invalid token", { code: "INVALID_TOKEN" }));
+    return next(
+      new UnauthorizedError("Invalid token", { code: "INVALID_TOKEN" })
+    );
   }
 
   if (!decoded) {
-    return next(new UnauthorizedError("Invalid token", { code: "INVALID_TOKEN" }));
+    return next(
+      new UnauthorizedError("Invalid token", { code: "INVALID_TOKEN" })
+    );
   }
 
   // tokenVersion enforcement — rejects sessions revoked via /logout-all.
   // Tokens issued before this rollout don't carry `tv` and pass through.
   if (await isTokenVersionStale(decoded)) {
-    return next(new UnauthorizedError("Session revoked. Please log in again.", { code: "TOKEN_REVOKED" }));
+    return next(
+      new UnauthorizedError("Session revoked. Please log in again.", {
+        code: "TOKEN_REVOKED",
+      })
+    );
   }
 
   const role = decoded.role?.toLowerCase() || "";
 
   // Check if it's a partner/business role
-  const isBusinessRole = ["admin", "venue_owner", "coach", "umpire", "streamer", "scorer"].some(r => role.includes(r));
+  const isBusinessRole = [
+    "admin",
+    "venue_owner",
+    "coach",
+    "umpire",
+    "streamer",
+    "scorer",
+  ].some((r) => role.includes(r));
 
   // Unified Identity: Always use 'id' as User ID, and 'ownerId' for business document reference
   const normalizedUser = {
@@ -49,7 +68,7 @@ const verifyAuth = async (req, res, next) => {
     userId: decoded.id, // Alias for clarity
     ownerId: decoded.ownerId,
     role: role,
-    ...decoded
+    ...decoded,
   };
 
   // Attach to request
@@ -102,14 +121,21 @@ export const optionalAuth = async (req, res, next) => {
     }
 
     const role = decoded.role?.toLowerCase() || "";
-    const isBusinessRole = ["admin", "venue_owner", "coach", "umpire", "streamer", "scorer"].some(r => role.includes(r));
+    const isBusinessRole = [
+      "admin",
+      "venue_owner",
+      "coach",
+      "umpire",
+      "streamer",
+      "scorer",
+    ].some((r) => role.includes(r));
 
     const normalizedUser = {
       id: decoded.id,
       userId: decoded.id,
       ownerId: decoded.ownerId,
       role: role,
-      ...decoded
+      ...decoded,
     };
 
     req.user = normalizedUser;
@@ -132,17 +158,24 @@ export const optionalAuth = async (req, res, next) => {
 export const authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!req.user || !req.user.role) {
-      return next(new ForbiddenError("No user role on request", { code: "FORBIDDEN_NO_ROLE" }));
+      return next(
+        new ForbiddenError("No user role on request", {
+          code: "FORBIDDEN_NO_ROLE",
+        })
+      );
     }
 
     const userRole = req.user.role.toLowerCase();
-    const hasRole = roles.some(r => userRole === r.toLowerCase());
+    const hasRole = roles.some((r) => userRole === r.toLowerCase());
 
     if (!hasRole) {
-      return next(new ForbiddenError(
-        `Access restricted to ${roles.join(", ")} roles`,
-        { code: "FORBIDDEN_ROLE", required: roles, actual: userRole }
-      ));
+      return next(
+        new ForbiddenError(`Access restricted to ${roles.join(", ")} roles`, {
+          code: "FORBIDDEN_ROLE",
+          required: roles,
+          actual: userRole,
+        })
+      );
     }
 
     next();

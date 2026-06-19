@@ -38,9 +38,10 @@ const turfSlice = createSlice({
     },
     resetFilters: (state) => {
       state.filters = initialState.filters;
-    }
+    },
   },
 });
 
-export const { setTurfs, setLoading, setError, setFilters, resetFilters } = turfSlice.actions;
+export const { setTurfs, setLoading, setError, setFilters, resetFilters } =
+  turfSlice.actions;
 export default turfSlice.reducer;

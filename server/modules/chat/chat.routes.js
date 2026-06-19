@@ -4,7 +4,7 @@ import userChatRouter from "./routes/user.routes.js";
 /**
  * Chat Domain Router
  * Mounts actor-specific sub-routers for the Chat module.
- * 
+ *
  * Routes:
  * /api/chat/...
  */

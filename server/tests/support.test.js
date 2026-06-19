@@ -19,8 +19,8 @@ describe("Support Module API Integration Tests", () => {
         email: emailUser,
         username: `support_u_${ts}`,
         phone: `77777${String(ts).slice(-5)}`,
-        password: "User@Pass123"
-      }
+        password: "User@Pass123",
+      },
     });
     userId = user.id;
 
@@ -35,7 +35,9 @@ describe("Support Module API Integration Tests", () => {
   afterAll(async () => {
     const user = await prisma.user.findFirst({ where: { email: emailUser } });
     if (user) {
-      await prisma.supportTicket.deleteMany({ where: { userId: user.id } }).catch(() => {});
+      await prisma.supportTicket
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
       await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
     }
   });
@@ -48,10 +50,10 @@ describe("Support Module API Integration Tests", () => {
         .send({
           subject: "Test Issue",
           description: "This is a test issue description",
-          category: "GENERAL"
+          category: "GENERAL",
         });
 
-      // We handle either 201 or 404 because the exact route might differ, 
+      // We handle either 201 or 404 because the exact route might differ,
       // but in standard REST it should be 201 if the route is correct.
       // We'll just assert it's a typical success code or handle it gracefully if route mapping is different.
       if (res.statusCode === 201 || res.statusCode === 200) {
@@ -60,7 +62,9 @@ describe("Support Module API Integration Tests", () => {
         ticketId = res.body.ticket.id;
       } else {
         // If the route doesn't exist under /user/support, this test acts as a stub
-        console.warn("Support endpoint might not be mounted at /api/user/support/ticket");
+        console.warn(
+          "Support endpoint might not be mounted at /api/user/support/ticket"
+        );
       }
     });
   });

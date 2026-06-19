@@ -9,6 +9,7 @@ The **Venues Search** module is built to provide users with lightning-fast, loca
 The interface (`client/user/src/shared/components/search/SearchTurf.jsx`) is designed to handle multiple layers of filtering without cluttering the screen.
 
 ### Key Elements
+
 - **Unified Search Bar:** A prominent input field that handles both text queries (e.g., "Olympia Arena") and dynamic location selection.
 - **Sport Filter Chips:** Horizontal scrolling pills (`All Sports`, `Football`, `Cricket`, etc.) for quick categorization.
 - **Advanced Filters:** A dedicated button to open modal filters for rating thresholds (`4+ Stars`) and price ranges.
@@ -17,6 +18,7 @@ The interface (`client/user/src/shared/components/search/SearchTurf.jsx`) is des
 ## Technical Implementation
 
 ### Geolocation & Distance Calculation
+
 To provide accurate "Distance Away" metrics, the component requests the user's browser location. The backend or frontend utility then computes the Haversine distance between the user's coordinates and the venue's geocoded location.
 
 ```javascript
@@ -26,13 +28,14 @@ const handleSearch = () => {
     searchTerm,
     city: selectedCity,
     sportType: selectedSport,
-    maxDistance: distanceLimit // based on userLocation
+    maxDistance: distanceLimit, // based on userLocation
   };
   onSearch(filters); // Triggers API call in parent component
 };
 ```
 
 ### Component Architecture
+
 The Search module is built as a reusable `SearchTurf` component, allowing it to be embedded directly on the Homepage hero section or utilized as a standalone full-page directory.
 
 - **Debouncing:** Text inputs inside the search bar utilize debouncing (e.g., via `lodash.debounce` or custom hooks) to prevent excessive API calls while typing.

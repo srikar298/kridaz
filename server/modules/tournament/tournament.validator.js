@@ -2,15 +2,20 @@ import { z } from "zod";
 
 export const createTournamentSchema = z.object({
   body: z.object({
-    name: z.string().min(3, "Tournament name must be at least 3 characters").max(100),
+    name: z
+      .string()
+      .min(3, "Tournament name must be at least 3 characters")
+      .max(100),
     sport: z.string().min(1, "Sport is required"),
     format: z.string().min(1, "Format is required"),
-    details: z.object({
-      about: z.string().optional(),
-      awards: z.string().optional(),
-      facilities: z.string().optional(),
-      refreshments: z.string().optional(),
-    }).optional(),
+    details: z
+      .object({
+        about: z.string().optional(),
+        awards: z.string().optional(),
+        facilities: z.string().optional(),
+        refreshments: z.string().optional(),
+      })
+      .optional(),
   }),
 });
 

@@ -1,9 +1,9 @@
 import { prisma } from "../../config/prisma.js";
 
-
 export const createCoupon = async (req, res) => {
   try {
-    const { code, discountType, discountValue, validUntil, usageLimit } = req.body;
+    const { code, discountType, discountValue, validUntil, usageLimit } =
+      req.body;
 
     if (!code || !discountType || !discountValue || !validUntil) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -20,10 +20,12 @@ export const createCoupon = async (req, res) => {
       },
     });
 
-    res.status(201).json({ message: "Coupon created successfully", coupon: newCoupon });
+    res
+      .status(201)
+      .json({ message: "Coupon created successfully", coupon: newCoupon });
   } catch (error) {
     console.error("Error creating coupon:", error);
-    if (error.code === 'P2002') {
+    if (error.code === "P2002") {
       return res.status(400).json({ error: "Coupon code already exists" });
     }
     res.status(500).json({ error: "Internal server error" });
@@ -52,7 +54,9 @@ export const toggleCouponStatus = async (req, res) => {
       data: { isActive },
     });
 
-    res.status(200).json({ message: "Coupon status updated", coupon: updatedCoupon });
+    res
+      .status(200)
+      .json({ message: "Coupon status updated", coupon: updatedCoupon });
   } catch (error) {
     console.error("Error updating coupon status:", error);
     res.status(500).json({ error: "Internal server error" });

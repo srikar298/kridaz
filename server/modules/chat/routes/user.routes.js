@@ -12,17 +12,17 @@ import {
   addGroupsToCommunity,
   makeGroupAdmin,
   dismissGroupAdmin,
-  togglePinChat
+  togglePinChat,
 } from "../chat.controller.js";
-import { 
-  allMessages, 
-  sendMessage, 
-  markMessagesRead, 
-  deleteMessages, 
-  clearChat, 
-  getChatMedia, 
-  forwardMessage, 
-  broadcastMessage 
+import {
+  allMessages,
+  sendMessage,
+  markMessagesRead,
+  deleteMessages,
+  clearChat,
+  getChatMedia,
+  forwardMessage,
+  broadcastMessage,
 } from "../message.controller.js";
 import upload from "../../../middleware/uploads/upload.middleware.js";
 
@@ -67,7 +67,7 @@ router.post("/group", createGroupChat);
  *     summary: Update group info
  *     tags: [Chat]
  */
-router.put("/group/update", upload.single('groupImage'), updateGroup);
+router.put("/group/update", upload.single("groupImage"), updateGroup);
 
 /**
  * @swagger

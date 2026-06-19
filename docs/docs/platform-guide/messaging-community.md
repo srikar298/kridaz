@@ -9,18 +9,21 @@ The **Chat & Community Portal** powers all real-time social interactions on the 
 Kridaz supports three distinct messaging structures to cater to different levels of social engagement:
 
 ### 1. Direct Messages (DMs)
+
 - Private 1-on-1 conversations between users (e.g., players, coaches, or venue owners).
 - Initiated directly from user profiles, player lists, or when responding to hosted game slots.
 - Messages are encrypted in transit and synced in real time.
 
 ### 2. Group Chats
+
 - Multi-user conversations where members can coordinate matches, turf bookings, and team schedules.
 - Created dynamically by inviting connections (mutual followers).
 - Features customizable group profiles (group name, display image) and member management.
 
 ### 3. Communities & Channels
+
 - Organization-level wrappers (`isCommunity: true`) that function as a directory of sub-groups (channels).
-- Designed for clubs, leagues, or local turf regulars (e.g., *"FC Mumbai Community"*, *"Turf Players Group"*).
+- Designed for clubs, leagues, or local turf regulars (e.g., _"FC Mumbai Community"_, _"Turf Players Group"_).
 - **Sub-Groups (Channels)** are linked to a parent community using the `parentCommunity` identifier.
 - Only community admins can add sub-groups/channels or manage administrative rights.
 
@@ -48,17 +51,21 @@ The chat interface is built as a single, fluid dashboard that fits within the vi
 The backend follows the **Vertical Slice Architecture**, keeping routes, controllers, and services grouped together by module.
 
 ### Module Folders
+
 - **[Chat Module](file:///Users/prem/kridaz/server/modules/chat/)**: Handles chat/group creation, participant additions, and message persistence.
 - **[Community Module](file:///Users/prem/kridaz/server/modules/community/)**: Oversees the social feed, user posts, stories, and social reactions (likes/comments).
 
 ### Key Database Models (PostgreSQL & Prisma)
+
 In the database schema, conversations are stored under a unified `Chat` model:
+
 - `isGroupChat`: Boolean flag determining whether the conversation has multiple participants.
 - `isCommunity`: Boolean flag denoting if the entity is a parent community folder.
 - `parentCommunityId`: Relation pointing to the parent `Chat` if the row is a sub-group/channel of a community.
 - `groupAdmin`: Array of user IDs designating the managers of a group/community.
 
 ### REST API Endpoints (`/api/chat`)
+
 - `POST /api/chat`: Access or create a 1-on-1 private chat.
 - `GET /api/chat`: Retrieve the list of active chats for the logged-in user.
 - `POST /api/chat/group`: Create a group chat or community.

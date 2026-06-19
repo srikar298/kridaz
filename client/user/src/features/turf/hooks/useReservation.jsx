@@ -11,13 +11,19 @@ const useReservation = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(
-    location.state?.selectedDate ? new Date(location.state.selectedDate) : new Date()
+    location.state?.selectedDate
+      ? new Date(location.state.selectedDate)
+      : new Date()
   );
   const [selectedStartTime, setSelectedStartTime] = useState(
     location.state?.selectedSlot?.startTime || null
   );
   const [bookedTime, setBookedTime] = useState([]);
-  const [timeSlots, setTimeSlots] = useState({ openTime: "", closeTime: "", generatedSlots: [] });
+  const [timeSlots, setTimeSlots] = useState({
+    openTime: "",
+    closeTime: "",
+    generatedSlots: [],
+  });
   const [pricePerHour, setPricePerHour] = useState(0);
   const [duration, setDuration] = useState(1);
 
@@ -58,10 +64,16 @@ const useReservation = () => {
 
   const totalPrice = useMemo(() => {
     if (!selectedStartTime || !timeSlots?.generatedSlots) return 0;
-    
-    const startIndex = timeSlots.generatedSlots.findIndex(s => s.startTime === (typeof selectedStartTime === 'object' ? selectedStartTime.startTime : selectedStartTime));
+
+    const startIndex = timeSlots.generatedSlots.findIndex(
+      (s) =>
+        s.startTime ===
+        (typeof selectedStartTime === "object"
+          ? selectedStartTime.startTime
+          : selectedStartTime)
+    );
     if (startIndex === -1) return 0;
-    
+
     let sum = 0;
     for (let i = 0; i < duration; i++) {
       const slot = timeSlots.generatedSlots[startIndex + i];

@@ -1,17 +1,13 @@
-import React, { useState } from 'react';
-import { useCreateGroupChatMutation } from '@redux/api/chatApi';
-import { 
-  Globe, 
-  X, 
-  ChevronRight, 
-  Camera
-} from 'lucide-react';
+import React, { useState } from "react";
+import { useCreateGroupChatMutation } from "@redux/api/chatApi";
+import { Globe, X, ChevronRight, Camera } from "lucide-react";
 
 const CreateCommunityModal = ({ isOpen, onClose, onSuccess }) => {
-  const [communityName, setCommunityName] = useState('');
-  const [communityDescription, setCommunityDescription] = useState('');
+  const [communityName, setCommunityName] = useState("");
+  const [communityDescription, setCommunityDescription] = useState("");
 
-  const [createGroupChat, { isLoading: isCreating }] = useCreateGroupChatMutation();
+  const [createGroupChat, { isLoading: isCreating }] =
+    useCreateGroupChatMutation();
 
   if (!isOpen) return null;
 
@@ -24,7 +20,7 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }) => {
         name: communityName,
         isCommunity: true,
         description: communityDescription,
-        users: JSON.stringify([]) 
+        users: JSON.stringify([]),
       }).unwrap();
 
       onSuccess(communityRoot);
@@ -37,8 +33,8 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }) => {
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
       <div className="bg-[#111111] border border-white/10 rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl relative animate-scale-up p-5 sm:p-6">
-        <button 
-          onClick={onClose} 
+        <button
+          onClick={onClose}
           className="absolute top-4 right-4 p-2 hover:bg-white/5 rounded-full transition-colors text-white/20 hover:text-white z-10"
         >
           <X size={18} />
@@ -51,11 +47,14 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }) => {
               <Camera size={16} className="text-white" />
             </div>
           </div>
-          
+
           <div>
-            <h2 className="text-lg font-semibold text-white">Create a New Community</h2>
+            <h2 className="text-lg font-semibold text-white">
+              Create a New Community
+            </h2>
             <p className="text-white/40 text-xs font-medium leading-relaxed mt-1 max-w-xs mx-auto">
-              Bring your related groups like neighborhoods, schools, or work teams together under one umbrella.
+              Bring your related groups like neighborhoods, schools, or work
+              teams together under one umbrella.
             </p>
           </div>
         </div>
@@ -83,7 +82,10 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
             <div>
               <p className="text-white font-bold text-xs">Organize groups</p>
-              <p className="text-white/30 text-[10px] mt-0.5 leading-snug">Once created, you can add and manage groups under this community.</p>
+              <p className="text-white/30 text-[10px] mt-0.5 leading-snug">
+                Once created, you can add and manage groups under this
+                community.
+              </p>
             </div>
           </div>
 
@@ -92,10 +94,10 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }) => {
             disabled={isCreating || !communityName.trim()}
             className="w-full mt-2 py-3 bg-[#BFF367] text-black font-bold uppercase text-sm tracking-wider rounded-[8px] hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-30 flex items-center justify-center gap-2"
           >
-            {isCreating ? 'Creating...' : 'Create Community'} <ChevronRight size={16} />
+            {isCreating ? "Creating..." : "Create Community"}{" "}
+            <ChevronRight size={16} />
           </button>
         </div>
-
       </div>
     </div>
   );

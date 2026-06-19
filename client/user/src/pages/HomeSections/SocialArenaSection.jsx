@@ -21,7 +21,7 @@ const SocialArenaReelCard = ({ reel, shouldPlay, navigate }) => {
     if (!videoUrl) return videoUrl;
     const cdnUrl = import.meta.env.VITE_REELS_CDN_URL;
     if (import.meta.env.DEV && cdnUrl && videoUrl.startsWith(cdnUrl)) {
-      return videoUrl.replace(cdnUrl, '/r2-reels');
+      return videoUrl.replace(cdnUrl, "/r2-reels");
     }
     return videoUrl;
   }, [videoUrl]);
@@ -35,11 +35,14 @@ const SocialArenaReelCard = ({ reel, shouldPlay, navigate }) => {
 
     video.muted = true; // Force muted for autoplay
 
-    if (finalHlsUrl && (finalHlsUrl.endsWith('.m3u8') || finalHlsUrl.includes('.m3u8'))) {
+    if (
+      finalHlsUrl &&
+      (finalHlsUrl.endsWith(".m3u8") || finalHlsUrl.includes(".m3u8"))
+    ) {
       if (Hls.isSupported()) {
         const hls = new Hls({
           capLevelToPlayerSize: true,
-          autoStartLoad: false
+          autoStartLoad: false,
         });
         hlsRef.current = hls;
         hls.loadSource(finalHlsUrl);
@@ -48,10 +51,10 @@ const SocialArenaReelCard = ({ reel, shouldPlay, navigate }) => {
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           if (shouldPlay) {
             hls.startLoad();
-            video.play().catch(e => console.warn('HLS Autoplay failed:', e));
+            video.play().catch((e) => console.warn("HLS Autoplay failed:", e));
           }
         });
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
         video.src = finalHlsUrl;
       }
     } else {
@@ -78,7 +81,7 @@ const SocialArenaReelCard = ({ reel, shouldPlay, navigate }) => {
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
-          console.warn('Video auto-play failed:', err);
+          console.warn("Video auto-play failed:", err);
         });
       }
     } else {
@@ -118,7 +121,7 @@ const SocialArenaReelCard = ({ reel, shouldPlay, navigate }) => {
             <img
               src={thumbnailUrl}
               alt="Reel thumbnail"
-              className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 absolute top-0 left-0 pointer-events-none ${isPlaying ? 'opacity-0' : 'opacity-100'}`}
+              className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 absolute top-0 left-0 pointer-events-none ${isPlaying ? "opacity-0" : "opacity-100"}`}
               style={{ zIndex: 1 }}
             />
           )}
@@ -142,10 +145,16 @@ const SocialArenaReelCard = ({ reel, shouldPlay, navigate }) => {
         <div className="flex items-center gap-1.5 w-fit px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-full border border-white/10 shadow-sm">
           <Eye size={16} className="text-white" strokeWidth={2.5} />
           <span className="text-white text-xs font-bold tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-            {Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(
-              typeof reel.views === 'number' ? reel.views :
-                reel.stats?.views || reel.viewsCount || 0
-            ).toLowerCase()}
+            {Intl.NumberFormat("en-US", {
+              notation: "compact",
+              maximumFractionDigits: 1,
+            })
+              .format(
+                typeof reel.views === "number"
+                  ? reel.views
+                  : reel.stats?.views || reel.viewsCount || 0
+              )
+              .toLowerCase()}
           </span>
         </div>
       </div>
@@ -237,14 +246,22 @@ export default function SocialArenaSection({ reelsFeed }) {
                 const isVisible = visibleIndices.has(idx);
                 // Allow playing if visible and under max 3
                 let shouldPlay = false;
-                const hasVideo = !!(reel.hlsUrl || reel.mediaUrl || reel.rawVideoUrl);
+                const hasVideo = !!(
+                  reel.hlsUrl ||
+                  reel.mediaUrl ||
+                  reel.rawVideoUrl
+                );
                 if (isVisible && hasVideo && playingCount < 3) {
                   shouldPlay = true;
                   playingCount++;
                 }
 
                 return (
-                  <div key={`reel-${idx}`} data-index={idx} className="shrink-0 snap-start">
+                  <div
+                    key={`reel-${idx}`}
+                    data-index={idx}
+                    className="shrink-0 snap-start"
+                  >
                     <SocialArenaReelCard
                       reel={reel}
                       shouldPlay={shouldPlay}
@@ -260,4 +277,3 @@ export default function SocialArenaSection({ reelsFeed }) {
     </section>
   );
 }
-

@@ -4,7 +4,10 @@
  * Ensures domain models remain decoupled from backend-specific serialization.
  */
 
-import { IUserProfile, IAuthUserContract } from "../../../contracts/user.contract";
+import {
+  IUserProfile,
+  IAuthUserContract,
+} from "../../../contracts/user.contract";
 
 export class AuthMapper {
   /**

@@ -9,10 +9,16 @@ import logger from "./logger.js";
  * @param {String} targetId - ID of the affected resource
  * @param {Object} details - Additional metadata
  */
-export const logAdminAction = async (req, action, module, targetId = null, details = {}) => {
+export const logAdminAction = async (
+  req,
+  action,
+  module,
+  targetId = null,
+  details = {}
+) => {
   try {
     const adminId = req.user?.id;
-    
+
     await prisma.auditLog.create({
       data: {
         userId: adminId,
@@ -20,9 +26,13 @@ export const logAdminAction = async (req, action, module, targetId = null, detai
         module,
         targetId,
         details,
-        ipAddress: req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || "unknown_ip",
-        userAgent: req.headers['user-agent']
-      }
+        ipAddress:
+          req.ip ||
+          req.headers["x-forwarded-for"] ||
+          req.socket?.remoteAddress ||
+          "unknown_ip",
+        userAgent: req.headers["user-agent"],
+      },
     });
   } catch (error) {
     logger.error("FAILED_TO_LOG_AUDIT_ACTION", error);
@@ -32,10 +42,22 @@ export const logAdminAction = async (req, action, module, targetId = null, detai
 /**
  * Enhanced audit logger that accepts explicit userId.
  */
-export const logAudit = async ({ userId, action, module, targetId, details, req }) => {
+export const logAudit = async ({
+  userId,
+  action,
+  module,
+  targetId,
+  details,
+  req,
+}) => {
   try {
-    const ipAddress = req ? (req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || "unknown_ip") : null;
-    const userAgent = req ? req.headers['user-agent'] : null;
+    const ipAddress = req
+      ? req.ip ||
+        req.headers["x-forwarded-for"] ||
+        req.socket?.remoteAddress ||
+        "unknown_ip"
+      : null;
+    const userAgent = req ? req.headers["user-agent"] : null;
 
     await prisma.auditLog.create({
       data: {
@@ -45,8 +67,8 @@ export const logAudit = async ({ userId, action, module, targetId, details, req 
         targetId,
         details,
         ipAddress,
-        userAgent
-      }
+        userAgent,
+      },
     });
   } catch (error) {
     logger.error("Audit Logging Error", error);

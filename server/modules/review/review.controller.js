@@ -8,7 +8,9 @@ export const addReview = async (req, res) => {
   const { rating, review: comment } = req.body;
 
   if (!rating || !comment) {
-    return res.status(400).json({ message: "Please provide all the required fields" });
+    return res
+      .status(400)
+      .json({ message: "Please provide all the required fields" });
   }
 
   try {
@@ -22,8 +24,8 @@ export const addReview = async (req, res) => {
         userId,
         turfId: id,
         rating: parseInt(rating),
-        comment
-      }
+        comment,
+      },
     });
 
     await invalidateCache("turfs:list:*");
@@ -40,21 +42,23 @@ export const viewReviewsByTurf = async (req, res) => {
   try {
     const reviews = await prisma.review.findMany({
       where: { turfId: id },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       include: {
         user: {
           select: {
             id: true,
             name: true,
-            profilePicture: true
-          }
-        }
-      }
+            profilePicture: true,
+          },
+        },
+      },
     });
-      
-    const averageRating = reviews.length > 0
-      ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length
-      : 0;
+
+    const averageRating =
+      reviews.length > 0
+        ? reviews.reduce((acc, review) => acc + review.rating, 0) /
+          reviews.length
+        : 0;
 
     return res.status(200).json({
       message: "Reviews retrieved successfully",
@@ -73,10 +77,7 @@ export const getOwnerTurfReviews = async (req, res) => {
   try {
     const owner = await prisma.ownerProfile.findFirst({
       where: {
-        OR: [
-          ...(ownerId ? [{ id: ownerId }] : []),
-          { userId: ownerId }
-        ]
+        OR: [...(ownerId ? [{ id: ownerId }] : []), { userId: ownerId }],
       },
       include: {
         turfs: {
@@ -87,40 +88,43 @@ export const getOwnerTurfReviews = async (req, res) => {
                   select: {
                     id: true,
                     name: true,
-                    profilePicture: true
-                  }
-                }
+                    profilePicture: true,
+                  },
+                },
               },
-              orderBy: { createdAt: 'desc' }
-            }
-          }
-        }
-      }
+              orderBy: { createdAt: "desc" },
+            },
+          },
+        },
+      },
     });
 
     if (!owner) {
-      return res.status(404).json({ success: false, message: "Owner not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Owner not found" });
     }
 
-    const turfsWithReviews = owner.turfs.map(turf => {
+    const turfsWithReviews = owner.turfs.map((turf) => {
       const reviewCount = turf.reviews.length;
       const totalRating = turf.reviews.reduce((acc, r) => acc + r.rating, 0);
-      const avgRating = reviewCount > 0 ? (totalRating / reviewCount).toFixed(1) : 0;
+      const avgRating =
+        reviewCount > 0 ? (totalRating / reviewCount).toFixed(1) : 0;
 
       return {
         id: turf.id,
         name: turf.name,
         avgRating: parseFloat(avgRating),
         reviewCount,
-        reviews: turf.reviews.map(r => ({
+        reviews: turf.reviews.map((r) => ({
           id: r.id,
           userId: r.userId,
           userName: r.user?.name || "Anonymous Player",
           userProfile: r.user?.profilePicture,
           rating: r.rating,
           comment: r.comment,
-          createdAt: r.createdAt
-        }))
+          createdAt: r.createdAt,
+        })),
       };
     });
 
@@ -130,4 +134,3 @@ export const getOwnerTurfReviews = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-

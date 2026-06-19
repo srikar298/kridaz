@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { getRevenueSummary, getRevenueTransactions } from "../revenue.controller.js";
+import {
+  getRevenueSummary,
+  getRevenueTransactions,
+} from "../revenue.controller.js";
 import verifyOwnerToken from "../../../middleware/jwt/owner.middleware.js";
 
 const revenueRouter = Router();

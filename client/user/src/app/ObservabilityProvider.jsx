@@ -45,7 +45,7 @@ export function ObservabilityProvider({ children }) {
       metricName: metric.name,
       value: metric.value,
       id: metric.id,
-      delta: metric.delta
+      delta: metric.delta,
     };
 
     if (timeoutRef.current) {
@@ -84,5 +84,3 @@ export function ObservabilityProvider({ children }) {
 
   return <>{children}</>;
 }
-
-

@@ -5,7 +5,7 @@ import adminProfessionalRouter from "./routes/admin.routes.js";
 /**
  * Professional Domain Router
  * Mounts actor-specific sub-routers for the Professional module (umpires, scorers, streamers, coaches).
- * 
+ *
  * Routes:
  * /api/professional/...
  */

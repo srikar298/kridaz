@@ -7,64 +7,107 @@ import toast from "react-hot-toast";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-const addTurfSchema = z.object({
-  name: z.string()
-    .min(1, "Enter the name of the turf")
-    .min(3, "Name must be at least 3 characters long"),
-  description: z.string()
-    .min(1, "Enter the description of the turf")
-    .min(3, "Description must be at least 3 characters long"),
-  policies: z.string()
-    .min(1, "Venue policies and rules are required")
-    .min(200, "Policies must be at least 200 characters long")
-    .max(10000, "Policies must be at most 10,000 characters long"),
-  location: z.string()
-    .min(1, "Enter the location of the turf")
-    .min(3, "Location must be at least 3 characters long"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().min(1, "State is required"),
-  latitude: z.string().optional(),
-  longitude: z.string().optional(),
-  pricePerHour: z.preprocess((val) => Number(val), z.number()
-    .min(500, "Price per hour must be at least 500 rupees")
-    .max(3000, "Price per hour must be at most 3000 rupees")),
-  images: z.any()
-    .refine((value) => {
+const addTurfSchema = z
+  .object({
+    name: z
+      .string()
+      .min(1, "Enter the name of the turf")
+      .min(3, "Name must be at least 3 characters long"),
+    description: z
+      .string()
+      .min(1, "Enter the description of the turf")
+      .min(3, "Description must be at least 3 characters long"),
+    policies: z
+      .string()
+      .min(1, "Venue policies and rules are required")
+      .min(200, "Policies must be at least 200 characters long")
+      .max(10000, "Policies must be at most 10,000 characters long"),
+    location: z
+      .string()
+      .min(1, "Enter the location of the turf")
+      .min(3, "Location must be at least 3 characters long"),
+    city: z.string().min(1, "City is required"),
+    state: z.string().min(1, "State is required"),
+    latitude: z.string().optional(),
+    longitude: z.string().optional(),
+    pricePerHour: z.preprocess(
+      (val) => Number(val),
+      z
+        .number()
+        .min(500, "Price per hour must be at least 500 rupees")
+        .max(3000, "Price per hour must be at most 3000 rupees")
+    ),
+    images: z.any().refine((value) => {
       if (!value || value.length === 0) return false;
       if (value.length > 10) return false;
       const acceptedFormats = ["image/png", "image/jpeg", "image/webp"];
-      return Array.from(value).every((file) => acceptedFormats.includes(file.type));
+      return Array.from(value).every((file) =>
+        acceptedFormats.includes(file.type)
+      );
     }, "Please upload at least one valid image (PNG, JPEG, or WebP). Max 10 images."),
-  youtubeUrl: z.union([z.literal(""), z.string().url("Invalid YouTube URL")]).optional().nullable(),
-  openTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Open time is required"),
-  closeTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Close time is required"),
-  sportTypes: z.array(z.string()).min(1, "At least one sport type is required"),
-  groundTypes: z.array(z.string()).min(1, "At least one ground type is required"),
-  facilities: z.array(z.string()).min(1, "At least one facility is required"),
-  slotDuration: z.preprocess((val) => Number(val), z.number().min(30).max(240)),
-  breakTime: z.preprocess((val) => Number(val), z.number().min(0).max(60).optional().default(0)),
-  slotsConfigDuration: z.enum(["Until Changed", "Fixed Weeks"], { required_error: "Configuration duration is required" }),
-  slotsConfigWeeks: z.preprocess((val) => Number(val), z.number().min(1).max(52).optional().default(1)),
-  mapUrl: z.union([z.literal(""), z.string().url("Invalid Google Maps URL")]).optional().nullable(),
-  managerContacts: z.array(
-    z.object({
-      name: z.string().min(1, "Manager name is required"),
-      phone: z.string().regex(/^\d{10}$/, "Phone must be 10 digits"),
-    })
-  ).optional(),
-  gstRegistration: z.any().optional(),
-  saleDeed: z.any().refine((val) => val != null, "Sale Deed is mandatory"),
-  rentalAgreement: z.any().optional(),
-  ownershipAgreement: z.any().optional(),
-  googleProfileScreenshot: z.any().optional(),
-  electricityBill: z.any().refine((val) => val != null, "Electricity Bill is mandatory"),
-}).refine(data => {
-  if (!data.openTime || !data.closeTime) return true;
-  return true; // Removing strict comparison to allow past midnight like 02:00
-}, {
-  message: "Close time must be valid",
-  path: ["closeTime"],
-});
+    youtubeUrl: z
+      .union([z.literal(""), z.string().url("Invalid YouTube URL")])
+      .optional()
+      .nullable(),
+    openTime: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Open time is required"),
+    closeTime: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Close time is required"),
+    sportTypes: z
+      .array(z.string())
+      .min(1, "At least one sport type is required"),
+    groundTypes: z
+      .array(z.string())
+      .min(1, "At least one ground type is required"),
+    facilities: z.array(z.string()).min(1, "At least one facility is required"),
+    slotDuration: z.preprocess(
+      (val) => Number(val),
+      z.number().min(30).max(240)
+    ),
+    breakTime: z.preprocess(
+      (val) => Number(val),
+      z.number().min(0).max(60).optional().default(0)
+    ),
+    slotsConfigDuration: z.enum(["Until Changed", "Fixed Weeks"], {
+      required_error: "Configuration duration is required",
+    }),
+    slotsConfigWeeks: z.preprocess(
+      (val) => Number(val),
+      z.number().min(1).max(52).optional().default(1)
+    ),
+    mapUrl: z
+      .union([z.literal(""), z.string().url("Invalid Google Maps URL")])
+      .optional()
+      .nullable(),
+    managerContacts: z
+      .array(
+        z.object({
+          name: z.string().min(1, "Manager name is required"),
+          phone: z.string().regex(/^\d{10}$/, "Phone must be 10 digits"),
+        })
+      )
+      .optional(),
+    gstRegistration: z.any().optional(),
+    saleDeed: z.any().refine((val) => val != null, "Sale Deed is mandatory"),
+    rentalAgreement: z.any().optional(),
+    ownershipAgreement: z.any().optional(),
+    googleProfileScreenshot: z.any().optional(),
+    electricityBill: z
+      .any()
+      .refine((val) => val != null, "Electricity Bill is mandatory"),
+  })
+  .refine(
+    (data) => {
+      if (!data.openTime || !data.closeTime) return true;
+      return true; // Removing strict comparison to allow past midnight like 02:00
+    },
+    {
+      message: "Close time must be valid",
+      path: ["closeTime"],
+    }
+  );
 
 export default function useAddTurf() {
   const [loading, setLoading] = useState(false);
@@ -100,7 +143,15 @@ export default function useAddTurf() {
       longitude: "",
       mapUrl: "",
       managerContacts: [],
-      availableDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      availableDays: [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+      ],
       offDays: [],
       slotsConfigDuration: "Until Changed",
       slotsConfigWeeks: 1,
@@ -118,12 +169,14 @@ export default function useAddTurf() {
   const [newGroundType, setNewGroundType] = useState("");
   const [newFacility, setNewFacility] = useState("");
   const [generatedSlots, setGeneratedSlots] = useState([]);
-  
+
   // Load draft from local storage on mount, or fetch invite data
   useEffect(() => {
     const fetchInviteData = async () => {
       try {
-        const response = await axiosInstance.get(`/api/public/venue-invites/verify/${inviteToken}`);
+        const response = await axiosInstance.get(
+          `/api/public/venue-invites/verify/${inviteToken}`
+        );
         const { turf } = response.data.data.invite;
         if (turf) {
           setValue("name", turf.name || "");
@@ -135,11 +188,11 @@ export default function useAddTurf() {
           setValue("closeTime", turf.closeTime || "");
           setValue("pricePerHour", turf.pricePerHour || 0);
           setValue("slotDuration", turf.slotDuration || 60);
-          
+
           if (turf.sportTypes) setSportTypes(turf.sportTypes);
           if (turf.groundTypes) setGroundTypes(turf.groundTypes);
           if (turf.facilities) setFacilities(turf.facilities);
-          
+
           toast.success("Loaded invited venue details.");
         }
       } catch (e) {
@@ -162,7 +215,8 @@ export default function useAddTurf() {
               setValue(key, parsed[key]);
             }
           });
-          if (parsed.managerContacts) setManagerContacts(parsed.managerContacts);
+          if (parsed.managerContacts)
+            setManagerContacts(parsed.managerContacts);
           if (parsed.sportTypes) setSportTypes(parsed.sportTypes);
           if (parsed.groundTypes) setGroundTypes(parsed.groundTypes);
           if (parsed.facilities) setFacilities(parsed.facilities);
@@ -188,7 +242,7 @@ export default function useAddTurf() {
     localStorage.setItem("addVenueDraft", JSON.stringify(dataToSave));
     toast.success("Draft saved successfully! (Files are not saved)");
   };
-  
+
   const openTime = watch("openTime");
   const closeTime = watch("closeTime");
   const slotDuration = watch("slotDuration");
@@ -218,7 +272,10 @@ export default function useAddTurf() {
         toast.error("Phone number must be 10 digits");
         return;
       }
-      setManagerContacts([...managerContacts, { name: newManagerName, phone: newManagerPhone }]);
+      setManagerContacts([
+        ...managerContacts,
+        { name: newManagerName, phone: newManagerPhone },
+      ]);
       setNewManagerName("");
       setNewManagerPhone("");
     } else {
@@ -231,7 +288,7 @@ export default function useAddTurf() {
   };
 
   const addSportType = (type) => {
-    const sport = typeof type === 'string' ? type : newSportType;
+    const sport = typeof type === "string" ? type : newSportType;
     if (sport && !sportTypes.includes(sport)) {
       setSportTypes([...sportTypes, sport]);
       setNewSportType("");
@@ -243,7 +300,7 @@ export default function useAddTurf() {
   };
 
   const addGroundType = (type) => {
-    const ground = typeof type === 'string' ? type : newGroundType;
+    const ground = typeof type === "string" ? type : newGroundType;
     if (ground && !groundTypes.includes(ground)) {
       setGroundTypes([...groundTypes, ground]);
       setNewGroundType("");
@@ -255,7 +312,7 @@ export default function useAddTurf() {
   };
 
   const addFacility = (item) => {
-    const facility = typeof item === 'string' ? item : newFacility;
+    const facility = typeof item === "string" ? item : newFacility;
     if (facility && !facilities.includes(facility)) {
       setFacilities([...facilities, facility]);
       setNewFacility("");
@@ -269,15 +326,21 @@ export default function useAddTurf() {
   const toggleDay = (day) => {
     const currentDays = watch("availableDays");
     const currentOff = watch("offDays");
-    
+
     if (currentDays.includes(day)) {
-      setValue("availableDays", currentDays.filter(d => d !== day));
+      setValue(
+        "availableDays",
+        currentDays.filter((d) => d !== day)
+      );
       if (!currentOff.includes(day)) {
         setValue("offDays", [...currentOff, day]);
       }
     } else {
       setValue("availableDays", [...currentDays, day]);
-      setValue("offDays", currentOff.filter(d => d !== day));
+      setValue(
+        "offDays",
+        currentOff.filter((d) => d !== day)
+      );
     }
   };
 
@@ -286,29 +349,32 @@ export default function useAddTurf() {
   useEffect(() => {
     if (openTime && closeTime && slotDuration) {
       const slots = [];
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toISOString().split("T")[0];
       let current = new Date(`${today}T${openTime}`);
       let end = new Date(`${today}T${closeTime}`);
-      
+
       if (end <= current) {
         end.setDate(end.getDate() + 1);
       }
-      
-      const defaultSlotPrice = (Number(pricePerHour) * (Number(slotDuration) / 60)).toFixed(2);
+
+      const defaultSlotPrice = (
+        Number(pricePerHour) *
+        (Number(slotDuration) / 60)
+      ).toFixed(2);
 
       while (current < end) {
         const slotStart = new Date(current);
         const slotEnd = new Date(current.getTime() + slotDuration * 60000);
-        
+
         if (slotEnd <= end) {
           slots.push({
             startTime: format(slotStart, "hh:mm aa"),
             endTime: format(slotEnd, "hh:mm aa"),
             isActive: true,
-            price: Number(defaultSlotPrice)
+            price: Number(defaultSlotPrice),
           });
         }
-        
+
         current = new Date(slotEnd.getTime() + (breakTime || 0) * 60000);
       }
       setGeneratedSlots(slots);
@@ -340,17 +406,21 @@ export default function useAddTurf() {
           });
         }
       } else if (key === "openTime" || key === "closeTime") {
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date().toISOString().split("T")[0];
         const dateObj = new Date(`${today}T${data[key]}`);
         formData.append(key, format(dateObj, "hh:mm aa"));
-      } else if (key === "sportTypes" || key === "groundTypes" || key === "facilities") {
+      } else if (
+        key === "sportTypes" ||
+        key === "groundTypes" ||
+        key === "facilities"
+      ) {
         if (Array.isArray(data[key])) {
           data[key].forEach((item) => {
             formData.append(key, item);
           });
         }
       } else if (key === "availableDays" || key === "offDays") {
-        data[key].forEach(day => formData.append(key, day));
+        data[key].forEach((day) => formData.append(key, day));
       } else if (key === "managerContacts") {
         formData.append(key, JSON.stringify(data[key]));
       } else {
@@ -376,10 +446,10 @@ export default function useAddTurf() {
           },
         }
       );
-       const result = response.data;
+      const result = response.data;
       toast.success(result.message);
       navigate("/venue-owner/turfs");
-     } catch (error) {
+    } catch (error) {
       if (error.response) {
         toast.error(error.response?.data?.message);
       } else if (error.request) {
@@ -413,7 +483,9 @@ export default function useAddTurf() {
       (error) => {
         console.error("Error getting location:", error);
         setIsLocating(false);
-        toast.error("Unable to retrieve your location. Please check permissions.");
+        toast.error(
+          "Unable to retrieve your location. Please check permissions."
+        );
       }
     );
   };
@@ -464,6 +536,6 @@ export default function useAddTurf() {
     trigger,
     clearErrors,
     getValues,
-    saveDraft
+    saveDraft,
   };
 }

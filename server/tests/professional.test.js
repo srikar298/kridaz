@@ -26,8 +26,8 @@ let bookingId = "";
 const seedOtp = async (email, phone) => {
   await prisma.oTP.deleteMany({
     where: {
-      OR: [{ email }, { phone }]
-    }
+      OR: [{ email }, { phone }],
+    },
   });
   await prisma.oTP.create({
     data: {
@@ -35,7 +35,7 @@ const seedOtp = async (email, phone) => {
       phone,
       emailOtp: "123456",
       phoneOtp: "123456",
-      expiresAt: new Date(Date.now() + 600000)
+      expiresAt: new Date(Date.now() + 600000),
     },
   });
 };
@@ -46,22 +46,48 @@ describe("Professional Module API", () => {
     for (const email of [emailUser, emailOwner]) {
       const user = await prisma.user.findFirst({ where: { email } });
       if (user) {
-        await prisma.walletTransaction.deleteMany({ where: { userId: user.id } }).catch(() => {});
-        await prisma.wallet.deleteMany({ where: { userId: user.id } }).catch(() => {});
-        await prisma.review.deleteMany({ where: { userId: user.id } }).catch(() => {});
+        await prisma.walletTransaction
+          .deleteMany({ where: { userId: user.id } })
+          .catch(() => {});
+        await prisma.wallet
+          .deleteMany({ where: { userId: user.id } })
+          .catch(() => {});
+        await prisma.review
+          .deleteMany({ where: { userId: user.id } })
+          .catch(() => {});
 
-        const owner = await prisma.ownerProfile.findFirst({ where: { userId: user.id } });
+        const owner = await prisma.ownerProfile.findFirst({
+          where: { userId: user.id },
+        });
         if (owner) {
-          await prisma.professionalMatchOffer.deleteMany({ where: { professionalId: owner.id } }).catch(() => {});
-          await prisma.onDemandProfessionalBooking.deleteMany({ where: { professionalId: owner.id } }).catch(() => {});
-          await prisma.professionalTask.deleteMany({ where: { professionalId: owner.id } }).catch(() => {});
-          await prisma.professionalCustomer.deleteMany({ where: { professionalId: owner.id } }).catch(() => {});
-          await prisma.withdrawalRequest.deleteMany({ where: { ownerId: owner.id } }).catch(() => {});
-          await prisma.ownerProfile.delete({ where: { id: owner.id } }).catch(() => {});
+          await prisma.professionalMatchOffer
+            .deleteMany({ where: { professionalId: owner.id } })
+            .catch(() => {});
+          await prisma.onDemandProfessionalBooking
+            .deleteMany({ where: { professionalId: owner.id } })
+            .catch(() => {});
+          await prisma.professionalTask
+            .deleteMany({ where: { professionalId: owner.id } })
+            .catch(() => {});
+          await prisma.professionalCustomer
+            .deleteMany({ where: { professionalId: owner.id } })
+            .catch(() => {});
+          await prisma.withdrawalRequest
+            .deleteMany({ where: { ownerId: owner.id } })
+            .catch(() => {});
+          await prisma.ownerProfile
+            .delete({ where: { id: owner.id } })
+            .catch(() => {});
         }
-        await prisma.professionalMatchRequest.deleteMany({ where: { userId: user.id } }).catch(() => {});
-        await prisma.onDemandProfessionalBooking.deleteMany({ where: { userId: user.id } }).catch(() => {});
-        await prisma.professionalBooking.deleteMany({ where: { userId: user.id } }).catch(() => {});
+        await prisma.professionalMatchRequest
+          .deleteMany({ where: { userId: user.id } })
+          .catch(() => {});
+        await prisma.onDemandProfessionalBooking
+          .deleteMany({ where: { userId: user.id } })
+          .catch(() => {});
+        await prisma.professionalBooking
+          .deleteMany({ where: { userId: user.id } })
+          .catch(() => {});
         await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
       }
       await prisma.oTP.deleteMany({ where: { email } }).catch(() => {});
@@ -83,20 +109,18 @@ describe("Professional Module API", () => {
     const ownerRegToken = verifyOwner.body.registrationToken;
 
     // 3. Register User
-    const regUser = await request(app)
-      .post("/api/user/auth/register")
-      .send({
-        name: "User Book",
-        email: emailUser,
-        username: userNameUser,
-        phone: phoneUser,
-        gender: "Male",
-        location: "Mumbai",
-        password: "User@Pass123",
-        confirmPassword: "User@Pass123",
-        otp: "123456",
-        registrationToken: userRegToken
-      });
+    const regUser = await request(app).post("/api/user/auth/register").send({
+      name: "User Book",
+      email: emailUser,
+      username: userNameUser,
+      phone: phoneUser,
+      gender: "Male",
+      location: "Mumbai",
+      password: "User@Pass123",
+      confirmPassword: "User@Pass123",
+      otp: "123456",
+      registrationToken: userRegToken,
+    });
 
     if (regUser.statusCode === 201) {
       userToken = regUser.body.token;
@@ -118,7 +142,7 @@ describe("Professional Module API", () => {
         password: "Owner@Pass123",
         businessName: "Mumbai Cricket Officials",
         otp: "123456",
-        registrationToken: ownerRegToken
+        registrationToken: ownerRegToken,
       });
 
     if (regOwner.statusCode === 201) {
@@ -131,7 +155,7 @@ describe("Professional Module API", () => {
     // Direct Discovery of ownerProfileId
     if (ownerUserId) {
       const ownerProfile = await prisma.ownerProfile.findUnique({
-        where: { userId: ownerUserId }
+        where: { userId: ownerUserId },
       });
       if (ownerProfile) {
         ownerProfileId = ownerProfile.id;
@@ -143,7 +167,7 @@ describe("Professional Module API", () => {
       await prisma.wallet.upsert({
         where: { userId },
         update: { balance: 2000 },
-        create: { userId, balance: 2000, reservedBalance: 0 }
+        create: { userId, balance: 2000, reservedBalance: 0 },
       });
     }
 
@@ -151,7 +175,7 @@ describe("Professional Module API", () => {
     if (ownerProfileId) {
       await prisma.ownerProfile.update({
         where: { id: ownerProfileId },
-        data: { price: 150.00 }
+        data: { price: 150.0 },
       });
     }
   }, 30000);
@@ -159,16 +183,30 @@ describe("Professional Module API", () => {
   afterAll(async () => {
     // Cleanup matching records
     if (ownerProfileId) {
-      await prisma.professionalMatchOffer.deleteMany({ where: { professionalId: ownerProfileId } }).catch(() => {});
-      await prisma.onDemandProfessionalBooking.deleteMany({ where: { professionalId: ownerProfileId } }).catch(() => {});
-      await prisma.professionalBooking.deleteMany({ where: { professionalId: ownerProfileId } }).catch(() => {});
-      await prisma.review.deleteMany({ where: { professionalId: ownerProfileId } }).catch(() => {});
-      await prisma.ownerProfile.delete({ where: { id: ownerProfileId } }).catch(() => {});
+      await prisma.professionalMatchOffer
+        .deleteMany({ where: { professionalId: ownerProfileId } })
+        .catch(() => {});
+      await prisma.onDemandProfessionalBooking
+        .deleteMany({ where: { professionalId: ownerProfileId } })
+        .catch(() => {});
+      await prisma.professionalBooking
+        .deleteMany({ where: { professionalId: ownerProfileId } })
+        .catch(() => {});
+      await prisma.review
+        .deleteMany({ where: { professionalId: ownerProfileId } })
+        .catch(() => {});
+      await prisma.ownerProfile
+        .delete({ where: { id: ownerProfileId } })
+        .catch(() => {});
     }
     for (const id of [userId, ownerUserId]) {
       if (id) {
-        await prisma.walletTransaction.deleteMany({ where: { userId: id } }).catch(() => {});
-        await prisma.wallet.deleteMany({ where: { userId: id } }).catch(() => {});
+        await prisma.walletTransaction
+          .deleteMany({ where: { userId: id } })
+          .catch(() => {});
+        await prisma.wallet
+          .deleteMany({ where: { userId: id } })
+          .catch(() => {});
         await prisma.user.delete({ where: { id } }).catch(() => {});
       }
     }
@@ -189,8 +227,7 @@ describe("Professional Module API", () => {
 
   describe("GET /api/professional/filters", () => {
     it("should retrieve filter options for states and cities", async () => {
-      const res = await request(app)
-        .get("/api/professional/filters");
+      const res = await request(app).get("/api/professional/filters");
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty("states");
@@ -200,8 +237,9 @@ describe("Professional Module API", () => {
 
   describe("GET /api/professional/details/:id", () => {
     it("should retrieve professional details by ID", async () => {
-      const res = await request(app)
-        .get(`/api/professional/details/${ownerProfileId}`);
+      const res = await request(app).get(
+        `/api/professional/details/${ownerProfileId}`
+      );
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty("professional");
@@ -216,8 +254,8 @@ describe("Professional Module API", () => {
         .set("Authorization", `Bearer ${ownerToken}`)
         .send({
           isOnline: true,
-          latitude: 19.0760,
-          longitude: 72.8777
+          latitude: 19.076,
+          longitude: 72.8777,
         });
 
       expect(res.statusCode).toBe(200);
@@ -232,10 +270,10 @@ describe("Professional Module API", () => {
         .post("/api/professional/match-request")
         .set("Authorization", `Bearer ${userToken}`)
         .send({
-          customLocation: { latitude: 19.0760, longitude: 72.8777 },
+          customLocation: { latitude: 19.076, longitude: 72.8777 },
           roles: ["UMPIRE"],
-          minBudget: 100.00,
-          maxBudget: 5000.00 // User wallet has only 2000 coins
+          minBudget: 100.0,
+          maxBudget: 5000.0, // User wallet has only 2000 coins
         });
 
       expect(res.statusCode).toBe(400);
@@ -247,10 +285,10 @@ describe("Professional Module API", () => {
         .post("/api/professional/match-request")
         .set("Authorization", `Bearer ${userToken}`)
         .send({
-          customLocation: { latitude: 19.0760, longitude: 72.8777 },
+          customLocation: { latitude: 19.076, longitude: 72.8777 },
           roles: ["UMPIRE"],
-          minBudget: 100.00,
-          maxBudget: 300.00
+          minBudget: 100.0,
+          maxBudget: 300.0,
         });
 
       expect(res.statusCode).toBe(201);
@@ -260,7 +298,7 @@ describe("Professional Module API", () => {
 
       // Verify that a pending match offer was automatically generated for the online professional
       const offer = await prisma.professionalMatchOffer.findFirst({
-        where: { requestId: matchRequestId, professionalId: ownerProfileId }
+        where: { requestId: matchRequestId, professionalId: ownerProfileId },
       });
       expect(offer).toBeDefined();
       matchOfferId = offer.id;
@@ -277,19 +315,25 @@ describe("Professional Module API", () => {
       expect(res.body.success).toBe(true);
       expect(res.body.booking).toBeDefined();
       expect(res.body.otp).toBeDefined();
-      
+
       bookingId = res.body.booking.id;
       // Store plain text OTP from response to perform check-in verification
       const plainOtp = res.body.otp;
 
       // Verify DB status transitions
-      const updatedReq = await prisma.professionalMatchRequest.findUnique({ where: { id: matchRequestId } });
+      const updatedReq = await prisma.professionalMatchRequest.findUnique({
+        where: { id: matchRequestId },
+      });
       expect(updatedReq.status).toBe("MATCHED");
 
-      const updatedOffer = await prisma.professionalMatchOffer.findUnique({ where: { id: matchOfferId } });
+      const updatedOffer = await prisma.professionalMatchOffer.findUnique({
+        where: { id: matchOfferId },
+      });
       expect(updatedOffer.status).toBe("ACCEPTED");
 
-      const booking = await prisma.onDemandProfessionalBooking.findUnique({ where: { id: bookingId } });
+      const booking = await prisma.onDemandProfessionalBooking.findUnique({
+        where: { id: bookingId },
+      });
       expect(booking.status).toBe("ASSIGNED");
 
       // Verify OTP verification check-in route
@@ -303,7 +347,9 @@ describe("Professional Module API", () => {
       expect(checkinRes.body.message).toContain("Check-in successful");
 
       // Verify escrow released to professional wallet
-      const activeBooking = await prisma.onDemandProfessionalBooking.findUnique({ where: { id: bookingId } });
+      const activeBooking = await prisma.onDemandProfessionalBooking.findUnique(
+        { where: { id: bookingId } }
+      );
       expect(activeBooking.status).toBe("IN_PROGRESS");
     }, 15000);
   });
@@ -340,7 +386,7 @@ describe("Professional Module API", () => {
         .send({
           professionalId: ownerProfileId,
           rating: 5,
-          comment: "Brilliant officiating work!"
+          comment: "Brilliant officiating work!",
         });
 
       expect(res.statusCode).toBe(201);

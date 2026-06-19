@@ -16,10 +16,10 @@ const PartnerLayout = () => {
     <div className="flex flex-col min-h-screen bg-black partner-panel">
       <ScrollToTop />
       <AuthenticatedNavbar toggleSidebar={toggleSidebar} />
-      
+
       <div className="flex flex-1 pt-16 lg:pt-20">
-        <div 
-          onMouseEnter={() => window.innerWidth >= 1024 && setIsHovered(true)} 
+        <div
+          onMouseEnter={() => window.innerWidth >= 1024 && setIsHovered(true)}
           onMouseLeave={() => window.innerWidth >= 1024 && setIsHovered(false)}
           className="z-50"
         >
@@ -27,7 +27,7 @@ const PartnerLayout = () => {
             isOpen={isOpen}
             toggleSidebar={toggleSidebar}
             isMinimized={isMinimized}
-            className={`${ isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0" }`}
+            className={`${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
           />
         </div>
         <main

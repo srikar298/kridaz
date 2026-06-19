@@ -1,7 +1,7 @@
 import { notificationQueue } from "../queues/notification.queue.js";
 import logger from "../utils/logger.js";
-import * as Sentry from '@sentry/node';
-import { saveToDeadLetter } from '../utils/deadLetter.js';
+import * as Sentry from "@sentry/node";
+import { saveToDeadLetter } from "../utils/deadLetter.js";
 
 /**
  * NotificationService - The single entry point for sending any notification.
@@ -16,8 +16,13 @@ const NotificationService = {
       await notificationQueue.add("SEND_OTP", payload);
       return true;
     } catch (error) {
-      logger.error("[Notification Service] Error queuing SEND_OTP — saving to dead-letter:", error);
-      Sentry.captureException(error, { extra: { jobName: "SEND_OTP", payload } });
+      logger.error(
+        "[Notification Service] Error queuing SEND_OTP — saving to dead-letter:",
+        error
+      );
+      Sentry.captureException(error, {
+        extra: { jobName: "SEND_OTP", payload },
+      });
       await saveToDeadLetter("notifications", "SEND_OTP", payload);
       return false;
     }
@@ -31,8 +36,13 @@ const NotificationService = {
       await notificationQueue.add("ADMIN_ALERT", payload);
       return true;
     } catch (error) {
-      logger.error("[Notification Service] Error queuing ADMIN_ALERT — saving to dead-letter:", error);
-      Sentry.captureException(error, { extra: { jobName: "ADMIN_ALERT", payload } });
+      logger.error(
+        "[Notification Service] Error queuing ADMIN_ALERT — saving to dead-letter:",
+        error
+      );
+      Sentry.captureException(error, {
+        extra: { jobName: "ADMIN_ALERT", payload },
+      });
       await saveToDeadLetter("notifications", "ADMIN_ALERT", payload);
       return false;
     }
@@ -46,8 +56,13 @@ const NotificationService = {
       await notificationQueue.add("IN_APP_NOTIF", payload);
       return true;
     } catch (error) {
-      logger.error("[Notification Service] Error queuing IN_APP_NOTIF — saving to dead-letter:", error);
-      Sentry.captureException(error, { extra: { jobName: "IN_APP_NOTIF", payload } });
+      logger.error(
+        "[Notification Service] Error queuing IN_APP_NOTIF — saving to dead-letter:",
+        error
+      );
+      Sentry.captureException(error, {
+        extra: { jobName: "IN_APP_NOTIF", payload },
+      });
       await saveToDeadLetter("notifications", "IN_APP_NOTIF", payload);
       return false;
     }
@@ -61,8 +76,13 @@ const NotificationService = {
       await notificationQueue.add("SEND_EMAIL", payload);
       return true;
     } catch (error) {
-      logger.error("[Notification Service] Error queuing SEND_EMAIL — saving to dead-letter:", error);
-      Sentry.captureException(error, { extra: { jobName: "SEND_EMAIL", payload } });
+      logger.error(
+        "[Notification Service] Error queuing SEND_EMAIL — saving to dead-letter:",
+        error
+      );
+      Sentry.captureException(error, {
+        extra: { jobName: "SEND_EMAIL", payload },
+      });
       await saveToDeadLetter("notifications", "SEND_EMAIL", payload);
       return false;
     }
@@ -76,8 +96,13 @@ const NotificationService = {
       await notificationQueue.add("SEND_WHATSAPP", payload);
       return true;
     } catch (error) {
-      logger.error("[Notification Service] Error queuing SEND_WHATSAPP — saving to dead-letter:", error);
-      Sentry.captureException(error, { extra: { jobName: "SEND_WHATSAPP", payload } });
+      logger.error(
+        "[Notification Service] Error queuing SEND_WHATSAPP — saving to dead-letter:",
+        error
+      );
+      Sentry.captureException(error, {
+        extra: { jobName: "SEND_WHATSAPP", payload },
+      });
       await saveToDeadLetter("notifications", "SEND_WHATSAPP", payload);
       return false;
     }
@@ -91,8 +116,13 @@ const NotificationService = {
       await notificationQueue.add("NOTIFY_NEW_GAME", payload);
       return true;
     } catch (error) {
-      logger.error("[Notification Service] Error queuing NOTIFY_NEW_GAME — saving to dead-letter:", error);
-      Sentry.captureException(error, { extra: { jobName: "NOTIFY_NEW_GAME", payload } });
+      logger.error(
+        "[Notification Service] Error queuing NOTIFY_NEW_GAME — saving to dead-letter:",
+        error
+      );
+      Sentry.captureException(error, {
+        extra: { jobName: "NOTIFY_NEW_GAME", payload },
+      });
       await saveToDeadLetter("notifications", "NOTIFY_NEW_GAME", payload);
       return false;
     }
@@ -106,8 +136,13 @@ const NotificationService = {
       await notificationQueue.add("CUSTOM_PLAYER_INVITE", payload);
       return true;
     } catch (error) {
-      logger.error("[Notification Service] Error queuing CUSTOM_PLAYER_INVITE — saving to dead-letter:", error);
-      Sentry.captureException(error, { extra: { jobName: "CUSTOM_PLAYER_INVITE", payload } });
+      logger.error(
+        "[Notification Service] Error queuing CUSTOM_PLAYER_INVITE — saving to dead-letter:",
+        error
+      );
+      Sentry.captureException(error, {
+        extra: { jobName: "CUSTOM_PLAYER_INVITE", payload },
+      });
       await saveToDeadLetter("notifications", "CUSTOM_PLAYER_INVITE", payload);
       return false;
     }
@@ -121,8 +156,13 @@ const NotificationService = {
       await notificationQueue.add("CUSTOM_UMPIRE_INVITE", payload);
       return true;
     } catch (error) {
-      logger.error("[Notification Service] Error queuing CUSTOM_UMPIRE_INVITE — saving to dead-letter:", error);
-      Sentry.captureException(error, { extra: { jobName: "CUSTOM_UMPIRE_INVITE", payload } });
+      logger.error(
+        "[Notification Service] Error queuing CUSTOM_UMPIRE_INVITE — saving to dead-letter:",
+        error
+      );
+      Sentry.captureException(error, {
+        extra: { jobName: "CUSTOM_UMPIRE_INVITE", payload },
+      });
       await saveToDeadLetter("notifications", "CUSTOM_UMPIRE_INVITE", payload);
       return false;
     }
@@ -138,12 +178,20 @@ const NotificationService = {
       await notificationQueue.add("APP_EVENT", { eventName, payload });
       return true;
     } catch (error) {
-      logger.error(`[Notification Service] Error queuing APP_EVENT (${eventName}) — saving to dead-letter:`, error);
-      Sentry.captureException(error, { extra: { jobName: "APP_EVENT", eventName, payload } });
-      await saveToDeadLetter("notifications", "APP_EVENT", { eventName, payload });
+      logger.error(
+        `[Notification Service] Error queuing APP_EVENT (${eventName}) — saving to dead-letter:`,
+        error
+      );
+      Sentry.captureException(error, {
+        extra: { jobName: "APP_EVENT", eventName, payload },
+      });
+      await saveToDeadLetter("notifications", "APP_EVENT", {
+        eventName,
+        payload,
+      });
       return false;
     }
-  }
+  },
 };
 
 export default NotificationService;

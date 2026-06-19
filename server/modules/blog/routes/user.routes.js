@@ -1,9 +1,5 @@
 import { Router } from "express";
-import {
-  getBlogs,
-  getBlogById,
-  likeBlog,
-} from "../blog.controller.js";
+import { getBlogs, getBlogById, likeBlog } from "../blog.controller.js";
 
 const router = Router();
 

@@ -1,31 +1,38 @@
-import React, { useState } from 'react';
-import { Camera, Image as ImageIcon, Paintbrush, ArrowRight, Upload } from 'lucide-react';
-import { useUploadTournamentPosterMutation } from '../../../redux/api/tournamentApi';
+import React, { useState } from "react";
+import {
+  Camera,
+  Image as ImageIcon,
+  Paintbrush,
+  ArrowRight,
+  Upload,
+} from "lucide-react";
+import { useUploadTournamentPosterMutation } from "../../../redux/api/tournamentApi";
 
 const Step1Cover = ({ formData, onNext, isLoading, tournamentId }) => {
   const [localData, setLocalData] = useState({
-    name: formData.name || '',
-    posterUrl: formData.posterUrl || '',
+    name: formData.name || "",
+    posterUrl: formData.posterUrl || "",
     details: {
-      about: formData.details?.about || '',
-      awards: formData.details?.awards || '',
-      facilities: formData.details?.facilities || '',
-      refreshments: formData.details?.refreshments || '',
-    }
+      about: formData.details?.about || "",
+      awards: formData.details?.awards || "",
+      facilities: formData.details?.facilities || "",
+      refreshments: formData.details?.refreshments || "",
+    },
   });
 
-  const [uploadPoster, { isLoading: isUploading }] = useUploadTournamentPosterMutation();
+  const [uploadPoster, { isLoading: isUploading }] =
+    useUploadTournamentPosterMutation();
 
   const handleTextChange = (e) => {
     const { name, value } = e.target;
-    setLocalData(prev => ({ ...prev, [name]: value }));
+    setLocalData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleDetailsChange = (e) => {
     const { name, value } = e.target;
-    setLocalData(prev => ({
+    setLocalData((prev) => ({
       ...prev,
-      details: { ...prev.details, [name]: value }
+      details: { ...prev.details, [name]: value },
     }));
   };
 
@@ -46,19 +53,29 @@ const Step1Cover = ({ formData, onNext, isLoading, tournamentId }) => {
     <div className="space-y-8 animate-fade-in pb-12">
       {/* Poster Upload Section */}
       <section>
-        <h2 className="text-sm font-black text-white/90 uppercase tracking-widest mb-4">Tournament Cover</h2>
-        
+        <h2 className="text-sm font-black text-white/90 uppercase tracking-widest mb-4">
+          Tournament Cover
+        </h2>
+
         <div className="relative w-full aspect-video md:aspect-[21/9] bg-[#111] rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center overflow-hidden group hover:border-[#BFF367]/50 transition-colors">
           {localData.posterUrl ? (
-            <img src={localData.posterUrl} alt="Cover" className="w-full h-full object-cover" />
+            <img
+              src={localData.posterUrl}
+              alt="Cover"
+              className="w-full h-full object-cover"
+            />
           ) : (
             <div className="text-center p-6">
               <div className="w-16 h-16 bg-[#1a1a1a] rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                 <Upload className="text-[#BFF367]" size={24} />
               </div>
-              <p className="text-sm font-bold text-white mb-1">Upload Tournament Poster</p>
-              <p className="text-xs text-white/40 mb-6">16:9 ratio recommended</p>
-              
+              <p className="text-sm font-bold text-white mb-1">
+                Upload Tournament Poster
+              </p>
+              <p className="text-xs text-white/40 mb-6">
+                16:9 ratio recommended
+              </p>
+
               <div className="flex flex-wrap justify-center gap-3">
                 <button className="flex items-center gap-2 px-4 py-2 bg-[#1a1a1a] rounded-full text-xs font-bold hover:bg-white/10 transition-colors">
                   <ImageIcon size={14} /> Gallery
@@ -72,18 +89,24 @@ const Step1Cover = ({ formData, onNext, isLoading, tournamentId }) => {
               </div>
             </div>
           )}
-          
+
           {/* Hidden File Input */}
-          <input 
-            type="file" 
-            accept="image/*" 
+          <input
+            type="file"
+            accept="image/*"
             className="absolute inset-0 opacity-0 cursor-pointer"
             onChange={handlePosterUpload}
             disabled={!tournamentId} // Just as an example, needs better UX if not draft yet
-            title={!tournamentId ? "Name your tournament first to upload poster" : ""}
+            title={
+              !tournamentId ? "Name your tournament first to upload poster" : ""
+            }
           />
         </div>
-        {!tournamentId && <p className="text-[10px] text-white/40 mt-2 text-center">Save tournament name first to upload a poster</p>}
+        {!tournamentId && (
+          <p className="text-[10px] text-white/40 mt-2 text-center">
+            Save tournament name first to upload a poster
+          </p>
+        )}
       </section>
 
       {/* Basic Info */}
@@ -110,7 +133,7 @@ const Step1Cover = ({ formData, onNext, isLoading, tournamentId }) => {
           <div className="w-1.5 h-4 bg-[#BFF367] rounded-full" />
           Tournament Description
         </h2>
-        
+
         <div className="space-y-3">
           <textarea
             name="about"
@@ -161,12 +184,11 @@ const Step1Cover = ({ formData, onNext, isLoading, tournamentId }) => {
             disabled={!isFormValid || isLoading}
             className="flex items-center gap-2 bg-[#BFF367] text-black font-black px-8 py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-xs"
           >
-            {isLoading ? 'Saving...' : 'Continue'}
+            {isLoading ? "Saving..." : "Continue"}
             <ArrowRight size={16} />
           </button>
         </div>
       </div>
-
     </div>
   );
 };

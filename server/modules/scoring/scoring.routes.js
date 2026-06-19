@@ -39,7 +39,17 @@ import {
 } from "./scoring.controller.js";
 import verifyAuth from "../../middleware/jwt/auth.middleware.js";
 import { validate } from "../../middleware/validate.middleware.js";
-import { startScoringSchema, updateScoreSchema, tossSchema, setupScoringGameSchema, undoLastBallSchema, completeMatchSchema, startNextInningsSchema, setPlayersSchema, updateHouseRulesSchema } from "./scoring.validator.js";
+import {
+  startScoringSchema,
+  updateScoreSchema,
+  tossSchema,
+  setupScoringGameSchema,
+  undoLastBallSchema,
+  completeMatchSchema,
+  startNextInningsSchema,
+  setPlayersSchema,
+  updateHouseRulesSchema,
+} from "./scoring.validator.js";
 
 const router = Router();
 
@@ -209,7 +219,12 @@ router.use(verifyAuth);
  *       200:
  *         description: Match created
  */
-router.post("/setup", verifyAuth, validate(setupScoringGameSchema), setupScoringGame);
+router.post(
+  "/setup",
+  verifyAuth,
+  validate(setupScoringGameSchema),
+  setupScoringGame
+);
 
 /**
  * @swagger
@@ -243,8 +258,6 @@ router.get("/my-games", verifyAuth, getMyScoringGames);
  *         description: Full game details
  */
 router.get("/game/:gameId", verifyAuth, getScoringGameById);
-
-
 
 /**
  * @swagger
@@ -468,7 +481,11 @@ router.post("/powerplay", setPowerplayOvers);
  *       200:
  *         description: Innings started
  */
-router.post("/next-innings", validate(startNextInningsSchema), startNextInnings);
+router.post(
+  "/next-innings",
+  validate(startNextInningsSchema),
+  startNextInnings
+);
 
 /**
  * @swagger
@@ -567,7 +584,12 @@ router.put("/penalty", verifyAuth, addPenalty);
  *       derived from the scoring-app password (POST /scoring/auth/:gameId).
  *     tags: [Scoring]
  */
-router.patch("/house-rules", verifyAuth, validate(updateHouseRulesSchema), updateHouseRules);
+router.patch(
+  "/house-rules",
+  verifyAuth,
+  validate(updateHouseRulesSchema),
+  updateHouseRules
+);
 
 /**
  * @swagger

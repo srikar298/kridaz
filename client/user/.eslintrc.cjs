@@ -4,20 +4,21 @@ module.exports = {
     "no-restricted-imports": [
       "error",
       {
-        "patterns": [
+        patterns: [
           {
-            "group": [
+            group: [
               "@features/*/*/**",
               "src/features/*/*/**",
               "../features/*/*/**",
               "../../features/*/*/**",
-              "**/features/*/*/**"
+              "**/features/*/*/**",
             ],
-            "message": "Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
-          }
-        ]
-      }
+            message:
+              "Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components.",
+          },
+        ],
+      },
     ],
-    "react/no-unescaped-entities": "warn"
-  }
+    "react/no-unescaped-entities": "warn",
+  },
 };

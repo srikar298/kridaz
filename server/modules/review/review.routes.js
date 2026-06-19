@@ -5,7 +5,7 @@ import ownerReviewRouter from "./routes/owner.routes.js";
 /**
  * Review Domain Router
  * Mounts actor-specific sub-routers for Reviews.
- * 
+ *
  * Routes:
  * /api/review/...
  */

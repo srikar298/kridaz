@@ -2,8 +2,17 @@ import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { toast } from "react-hot-toast";
 import {
-  Plus, Trash2, Edit2, FileText, X, Eye, ThumbsUp,
-  UploadCloud, ImageIcon, Loader2, CheckCircle2
+  Plus,
+  Trash2,
+  Edit2,
+  FileText,
+  X,
+  Eye,
+  ThumbsUp,
+  UploadCloud,
+  ImageIcon,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react";
 
 // ── Image Upload Zone ─────────────────────────────────────────────────────────
@@ -37,11 +46,14 @@ const ImageUploadZone = ({ value, onChange, onFileSelect }) => {
     <div className="flex flex-col gap-3">
       {/* Drag-and-drop zone */}
       <div
-        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragging(true);
+        }}
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
-        className={`relative flex flex-col items-center justify-center w-full h-36 rounded-[8px] border-2 border-dashed cursor-pointer transition-all ${dragging ? "border-[#84CC16] bg-[#84CC16]/10 scale-[1.01]" : value ? "border-[#84CC16]/40 bg-[#84CC16]/5 hover:border-[#84CC16]/60" : "border-white/10 bg-white/2 hover:bg-white/5 hover:border-white/20" }`}
+        className={`relative flex flex-col items-center justify-center w-full h-36 rounded-[8px] border-2 border-dashed cursor-pointer transition-all ${dragging ? "border-[#84CC16] bg-[#84CC16]/10 scale-[1.01]" : value ? "border-[#84CC16]/40 bg-[#84CC16]/5 hover:border-[#84CC16]/60" : "border-white/10 bg-white/2 hover:bg-white/5 hover:border-white/20"}`}
       >
         <input
           ref={inputRef}
@@ -53,16 +65,25 @@ const ImageUploadZone = ({ value, onChange, onFileSelect }) => {
         {value ? (
           <>
             <CheckCircle2 size={28} className="text-[#84CC16] mb-2" />
-            <p className="text-[11px] font-bold text-[#84CC16] uppercase tracking-widest">Image Ready</p>
-            <p className="text-[10px] text-gray-600 mt-1 uppercase tracking-wider">Click to replace</p>
+            <p className="text-[11px] font-bold text-[#84CC16] uppercase tracking-widest">
+              Image Ready
+            </p>
+            <p className="text-[10px] text-gray-600 mt-1 uppercase tracking-wider">
+              Click to replace
+            </p>
           </>
         ) : (
           <>
-            <UploadCloud size={32} className={`mb-2 transition-colors ${dragging ? "text-[#84CC16]" : "text-gray-500"}`} />
+            <UploadCloud
+              size={32}
+              className={`mb-2 transition-colors ${dragging ? "text-[#84CC16]" : "text-gray-500"}`}
+            />
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
               {dragging ? "Drop to Upload" : "Click or Drag & Drop"}
             </p>
-            <p className="text-[10px] text-gray-600 mt-1 uppercase tracking-wider">JPG · PNG · WEBP · max 8 MB</p>
+            <p className="text-[10px] text-gray-600 mt-1 uppercase tracking-wider">
+              JPG · PNG · WEBP · max 8 MB
+            </p>
           </>
         )}
       </div>
@@ -70,11 +91,19 @@ const ImageUploadZone = ({ value, onChange, onFileSelect }) => {
       {/* Live preview */}
       {value && (
         <div className="relative aspect-video w-full rounded-[8px] overflow-hidden border border-white/10 group/preview">
-          <img src={value} alt="Preview" className="w-full h-full object-cover" />
+          <img
+            src={value}
+            alt="Preview"
+            className="w-full h-full object-cover"
+          />
           <div className="absolute inset-0 bg-black/0 group-hover/preview:bg-black/40 transition-all flex items-center justify-center">
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); onChange(""); onFileSelect(null); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange("");
+                onFileSelect(null);
+              }}
               className="opacity-0 group-hover/preview:opacity-100 transition-opacity w-10 h-10 flex items-center justify-center rounded-full bg-red-500 text-white shadow-lg"
             >
               <X size={18} />
@@ -101,14 +130,22 @@ export const BlogManagement = () => {
     subtitle: "",
     content: "",
     readTime: "5 mins read",
-    date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }).toUpperCase(),
+    date: new Date()
+      .toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+      .toUpperCase(),
     category: "Sports",
     author: "Kridaz Team",
     order: 0,
     status: "published",
   });
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -129,7 +166,9 @@ export const BlogManagement = () => {
       const localUrl = URL.createObjectURL(file);
       setImagePreview(localUrl);
     } else {
-      setImagePreview(editingItem?.imageUrl || editingItem?.featuredImage || "");
+      setImagePreview(
+        editingItem?.imageUrl || editingItem?.featuredImage || ""
+      );
     }
   };
 
@@ -157,7 +196,13 @@ export const BlogManagement = () => {
         subtitle: "",
         content: "",
         readTime: "5 mins read",
-        date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }).toUpperCase(),
+        date: new Date()
+          .toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })
+          .toUpperCase(),
         category: "Sports",
         author: "Kridaz Team",
         order: blogs.length + 1,
@@ -191,7 +236,11 @@ export const BlogManagement = () => {
       const config = { withCredentials: true };
 
       if (editingItem) {
-        await axiosInstance.put(`/api/admin/blogs/admin/${editingItem.id || editingItem._id}`, data, config);
+        await axiosInstance.put(
+          `/api/admin/blogs/admin/${editingItem.id || editingItem._id}`,
+          data,
+          config
+        );
         toast.success("Blog updated successfully");
       } else {
         await axiosInstance.post("/api/admin/blogs/admin", data);
@@ -210,7 +259,9 @@ export const BlogManagement = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this blog?")) return;
     try {
-      await axiosInstance.delete(`/api/admin/blogs/admin/${id}`, { withCredentials: true });
+      await axiosInstance.delete(`/api/admin/blogs/admin/${id}`, {
+        withCredentials: true,
+      });
       toast.success("Blog deleted successfully");
       fetchData();
     } catch {
@@ -263,8 +314,12 @@ export const BlogManagement = () => {
                 {String(index + 1).padStart(2, "0")}
               </div>
               <div className="absolute top-4 right-4 flex flex-col items-end gap-1">
-                <span className="text-[10px] font-bold text-white/60">{blog.date}</span>
-                <span className="text-[10px] font-bold text-lime-500 uppercase tracking-wider">{blog.readTime}</span>
+                <span className="text-[10px] font-bold text-white/60">
+                  {blog.date}
+                </span>
+                <span className="text-[10px] font-bold text-lime-500 uppercase tracking-wider">
+                  {blog.readTime}
+                </span>
               </div>
               <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black to-transparent">
                 <h3 className="font-display-heavy text-xl text-white leading-tight uppercase group-hover:text-primary transition-colors">
@@ -312,8 +367,12 @@ export const BlogManagement = () => {
             <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 border border-white/10">
               <FileText size={32} className="text-gray-600" />
             </div>
-            <h3 className="text-white font-bold text-xl tracking-tight uppercase">No Articles Found</h3>
-            <p className="text-gray-500 text-sm mt-1">Start by creating your first business article.</p>
+            <h3 className="text-white font-bold text-xl tracking-tight uppercase">
+              No Articles Found
+            </h3>
+            <p className="text-gray-500 text-sm mt-1">
+              Start by creating your first business article.
+            </p>
           </div>
         )}
       </div>
@@ -322,7 +381,6 @@ export const BlogManagement = () => {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
           <div className="w-full max-w-2xl bg-[#0A0A0A] border border-white/10 rounded-[8px] overflow-hidden shadow-2xl relative">
-
             {/* Modal Header */}
             <div className="p-8 border-b border-white/10 flex items-center justify-between bg-black/40">
               <div>
@@ -331,7 +389,9 @@ export const BlogManagement = () => {
                 </h2>
                 <div className="flex items-center gap-2 mt-1">
                   <div className="w-2 h-2 rounded-full bg-[#84CC16] animate-pulse" />
-                  <span className="text-[10px] font-bold text-[#84CC16] uppercase tracking-widest">System Ready</span>
+                  <span className="text-[10px] font-bold text-[#84CC16] uppercase tracking-widest">
+                    System Ready
+                  </span>
                 </div>
               </div>
               <button
@@ -343,17 +403,23 @@ export const BlogManagement = () => {
             </div>
 
             {/* Modal Form */}
-            <form onSubmit={handleSubmit} className="p-8 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+            <form
+              onSubmit={handleSubmit}
+              className="p-8 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar"
+            >
               <div className="grid grid-cols-2 gap-6">
-
                 {/* Headline */}
                 <div className="col-span-2">
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">Headline</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">
+                    Headline
+                  </label>
                   <input
                     type="text"
                     required
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
                     className="w-full bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-white focus:outline-none focus:border-lime-500 transition-all font-bold placeholder:text-white/10"
                     placeholder="ENTER ARTICLE HEADLINE..."
                   />
@@ -361,11 +427,15 @@ export const BlogManagement = () => {
 
                 {/* Subtitle */}
                 <div className="col-span-2">
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">Lead / Subtitle</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">
+                    Lead / Subtitle
+                  </label>
                   <input
                     type="text"
                     value={formData.subtitle}
-                    onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, subtitle: e.target.value })
+                    }
                     className="w-full bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-white focus:outline-none focus:border-lime-500 transition-all placeholder:text-white/10"
                     placeholder="Short summary for the card..."
                   />
@@ -375,7 +445,8 @@ export const BlogManagement = () => {
                 <div className="col-span-2">
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2 flex items-center gap-2">
                     <ImageIcon size={12} />
-                    Article Image {!editingItem && <span className="text-red-500">*</span>}
+                    Article Image{" "}
+                    {!editingItem && <span className="text-red-500">*</span>}
                   </label>
                   <ImageUploadZone
                     value={imagePreview}
@@ -389,10 +460,14 @@ export const BlogManagement = () => {
 
                 {/* Category */}
                 <div className="col-span-2 md:col-span-1">
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">Category</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">
+                    Category
+                  </label>
                   <select
                     value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, category: e.target.value })
+                    }
                     className="w-full bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-white focus:outline-none focus:border-lime-500 transition-all appearance-none"
                   >
                     <option value="Sports">SPORTS</option>
@@ -406,11 +481,15 @@ export const BlogManagement = () => {
 
                 {/* Read Time */}
                 <div className="col-span-2 md:col-span-1">
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">Read Time</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">
+                    Read Time
+                  </label>
                   <input
                     type="text"
                     value={formData.readTime}
-                    onChange={(e) => setFormData({ ...formData, readTime: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, readTime: e.target.value })
+                    }
                     className="w-full bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-white focus:outline-none focus:border-lime-500 transition-all"
                     placeholder="e.g. 5 MINS READ"
                   />
@@ -418,11 +497,15 @@ export const BlogManagement = () => {
 
                 {/* Date */}
                 <div className="col-span-2 md:col-span-1">
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">Date String</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">
+                    Date String
+                  </label>
                   <input
                     type="text"
                     value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, date: e.target.value })
+                    }
                     className="w-full bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-white focus:outline-none focus:border-lime-500 transition-all"
                     placeholder="e.g. 4 MAY 2026"
                   />
@@ -430,23 +513,34 @@ export const BlogManagement = () => {
 
                 {/* Order */}
                 <div className="col-span-2 md:col-span-1">
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">Order</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">
+                    Order
+                  </label>
                   <input
                     type="number"
                     value={formData.order}
-                    onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        order: parseInt(e.target.value),
+                      })
+                    }
                     className="w-full bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-white focus:outline-none focus:border-lime-500 transition-all"
                   />
                 </div>
 
                 {/* Content */}
                 <div className="col-span-2">
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">Article Content (Markdown/HTML)</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">
+                    Article Content (Markdown/HTML)
+                  </label>
                   <textarea
                     required
                     rows={8}
                     value={formData.content}
-                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, content: e.target.value })
+                    }
                     className="w-full bg-white/5 border border-white/10 rounded-[8px] px-6 py-4 text-white focus:outline-none focus:border-lime-500 transition-all resize-none custom-scrollbar"
                     placeholder="Write your article content here..."
                   />
@@ -484,4 +578,3 @@ export const BlogManagement = () => {
     </div>
   );
 };
-

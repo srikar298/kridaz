@@ -18,9 +18,10 @@ The **Match Hosting & Joining** system serves as the matchmaker for local commun
 The matches subsystem is built using these files:
 
 ### 1. `HostGame.jsx`
-* **Path:** [HostGame.jsx](file:///Users/prem/kridaz/client/user/src/features/games/pages/HostGame.jsx)
-* **Functionality:** Displays the multi-step form to configure match types (competitive vs casual), slot availability limits, venue attachments, and fee parameters.
-* **Key Code Snippet:**
+
+- **Path:** [HostGame.jsx](file:///Users/prem/kridaz/client/user/src/features/games/pages/HostGame.jsx)
+- **Functionality:** Displays the multi-step form to configure match types (competitive vs casual), slot availability limits, venue attachments, and fee parameters.
+- **Key Code Snippet:**
   ```javascript
   // Form submission in HostGame
   const handleCreateGame = async (formData) => {
@@ -31,12 +32,14 @@ The matches subsystem is built using these files:
         slots: parseInt(formData.maxSlots),
         date: formData.matchDate,
         time: formData.matchTime,
-        costPerPlayer: formData.costSharing ? formData.totalCost / formData.maxSlots : 0,
-        venueId: formData.selectedVenueId || null
+        costPerPlayer: formData.costSharing
+          ? formData.totalCost / formData.maxSlots
+          : 0,
+        venueId: formData.selectedVenueId || null,
       };
-      const response = await axiosInstance.post('/api/games/host', payload);
+      const response = await axiosInstance.post("/api/games/host", payload);
       toast.success("Match hosted successfully!");
-      navigate('/games/my-hosted');
+      navigate("/games/my-hosted");
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to host match");
     } finally {
@@ -46,16 +49,19 @@ The matches subsystem is built using these files:
   ```
 
 ### 2. `JoinGames.jsx`
-* **Path:** [JoinGames.jsx](file:///Users/prem/kridaz/client/user/src/features/games/pages/JoinGames.jsx)
-* **Functionality:** Fetches public matches based on user filters and presents them in a card grid using the `GameCard` component.
+
+- **Path:** [JoinGames.jsx](file:///Users/prem/kridaz/client/user/src/features/games/pages/JoinGames.jsx)
+- **Functionality:** Fetches public matches based on user filters and presents them in a card grid using the `GameCard` component.
 
 ### 3. `MyHostedGames.jsx` & `MyJoinedGames.jsx`
-* **Paths:** [MyHostedGames.jsx](file:///Users/prem/kridaz/client/user/src/features/games/pages/MyHostedGames.jsx) / [MyJoinedGames.jsx](file:///Users/prem/kridaz/client/user/src/features/games/pages/MyJoinedGames.jsx)
-* **Functionality:** Tabs allowing the user to manage games they've created (e.g. approve joins, cancel matches) or games they've signed up to play.
+
+- **Paths:** [MyHostedGames.jsx](file:///Users/prem/kridaz/client/user/src/features/games/pages/MyHostedGames.jsx) / [MyJoinedGames.jsx](file:///Users/prem/kridaz/client/user/src/features/games/pages/MyJoinedGames.jsx)
+- **Functionality:** Tabs allowing the user to manage games they've created (e.g. approve joins, cancel matches) or games they've signed up to play.
 
 ### 4. `GameDetailsModal.jsx`
-* **Path:** [GameDetailsModal.jsx](file:///Users/prem/kridaz/client/user/src/features/games/components/GameDetailsModal.jsx)
-* **Functionality:** The modal overlay showing full roster details, host info, venue directions, game rules, and slot booking CTA.
+
+- **Path:** [GameDetailsModal.jsx](file:///Users/prem/kridaz/client/user/src/features/games/components/GameDetailsModal.jsx)
+- **Functionality:** The modal overlay showing full roster details, host info, venue directions, game rules, and slot booking CTA.
 
 ---
 
@@ -78,6 +84,6 @@ stateDiagram-v2
 
 ## Styling & Design Integration
 
-* **Slot Progress Bar:** Indicates vacancy levels using a progress bar styled in neon cyan (`#55DEE8`) with a smooth fill transition.
-* **Accents:** Game status tags use lime green (`#BFF367`) for "Open" statuses and warning amber/red for "Almost Full" or "Locked".
-* **Layout Grid:** Displayed as a responsive grid (`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6`) using modern card elements with a slight shadow glow.
+- **Slot Progress Bar:** Indicates vacancy levels using a progress bar styled in neon cyan (`#55DEE8`) with a smooth fill transition.
+- **Accents:** Game status tags use lime green (`#BFF367`) for "Open" statuses and warning amber/red for "Almost Full" or "Locked".
+- **Layout Grid:** Displayed as a responsive grid (`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6`) using modern card elements with a slight shadow glow.

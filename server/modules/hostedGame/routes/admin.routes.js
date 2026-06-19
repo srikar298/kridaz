@@ -1,11 +1,11 @@
 ﻿import express from "express";
-import { 
+import {
   getAllHostedGames,
   deleteHostedGame,
   batchDeleteGames,
   batchUpdateGameStatus,
   getAllDisputes,
-  resolveDispute
+  resolveDispute,
 } from "../../admin/admin.controller.js";
 
 const router = express.Router();
@@ -74,8 +74,6 @@ router.post("/batch-delete", batchDeleteGames);
 router.put("/batch-status", batchUpdateGameStatus);
 
 export default router;
-
-
 
 /**
  * @swagger

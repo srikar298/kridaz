@@ -7,18 +7,24 @@ import { prisma } from "../../config/prisma.js";
  * Standard utility to catch thrown errors from the service layer
  * and map them directly to the appropriate HTTP status codes.
  */
-const handleControllerError = (res, error, fallbackMsg = "Internal Server Error") => {
+const handleControllerError = (
+  res,
+  error,
+  fallbackMsg = "Internal Server Error"
+) => {
   const status = error.statusCode || 500;
-  res.status(status).json({ success: false, message: error.message || fallbackMsg });
+  res
+    .status(status)
+    .json({ success: false, message: error.message || fallbackMsg });
 };
 
 export const setupScoringGame = async (req, res) => {
   try {
     const userId = req.user.id;
     const matchData = req.body;
-    
+
     const game = await scoringService.createScoringMatch(userId, matchData);
-    
+
     res.status(201).json({ success: true, game });
   } catch (error) {
     logger.error("[Scoring] Setup Scoring Game Error:", error);
@@ -30,7 +36,7 @@ export const getMyScoringGames = async (req, res) => {
   try {
     const userId = req.user.id;
     const games = await scoringService.getUserScoringGames(userId);
-    
+
     res.status(200).json({ success: true, games });
   } catch (error) {
     logger.error("[Scoring] Get My Games Error:", error);
@@ -46,7 +52,9 @@ export const getScoringGameById = async (req, res) => {
     const { gameId } = req.params;
     const game = await scoringService.getScoringGameById(gameId);
     if (!game) {
-      return res.status(404).json({ success: false, message: "Game not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Game not found" });
     }
     res.status(200).json({ success: true, game });
   } catch (error) {
@@ -66,7 +74,9 @@ export const authenticateScoringApp = async (req, res) => {
     const { password } = req.body;
 
     if (!password) {
-      return res.status(400).json({ success: false, message: "Password is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Password is required" });
     }
 
     const result = await scoringService.verifyScoringPassword(gameId, password);
@@ -79,8 +89,16 @@ export const authenticateScoringApp = async (req, res) => {
     });
   } catch (error) {
     logger.error("[Scoring] Auth Error:", error);
-    if (error.message === "INVALID_PASSWORD" || error.message === "GAME_NOT_FOUND") {
-      return res.status(401).json({ success: false, message: "Invalid password or game not found" });
+    if (
+      error.message === "INVALID_PASSWORD" ||
+      error.message === "GAME_NOT_FOUND"
+    ) {
+      return res
+        .status(401)
+        .json({
+          success: false,
+          message: "Invalid password or game not found",
+        });
     }
     handleControllerError(res, error);
   }
@@ -91,12 +109,22 @@ export const authenticateScoringApp = async (req, res) => {
 export const notifyPlayers = async (req, res) => {
   try {
     const { matchId } = req.body;
-    if (!matchId) return res.status(400).json({ success: false, message: "matchId is required" });
-    
+    if (!matchId)
+      return res
+        .status(400)
+        .json({ success: false, message: "matchId is required" });
+
     // Simulate async notification dispatch
-    logger.info(`[Scoring] Dispatched notifications to players for match ${matchId}`);
-    
-    res.status(200).json({ success: true, message: "Notifications dispatched successfully" });
+    logger.info(
+      `[Scoring] Dispatched notifications to players for match ${matchId}`
+    );
+
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Notifications dispatched successfully",
+      });
   } catch (error) {
     logger.error("[Scoring] Notify Players Error:", error);
     handleControllerError(res, error);
@@ -110,10 +138,10 @@ export const goLive = async (req, res) => {
   try {
     const { matchId } = req.params;
     const result = await scoringService.goLiveSession(matchId);
-    
-    res.status(200).json({ 
-      success: true, 
-      ...result
+
+    res.status(200).json({
+      success: true,
+      ...result,
     });
   } catch (error) {
     logger.error("[Scoring] Go Live Controller Error:", error);
@@ -128,15 +156,13 @@ export const endLive = async (req, res) => {
   try {
     const { matchId } = req.params;
     await scoringService.endLiveSession(matchId);
-    
+
     res.status(200).json({ success: true, message: "Live stream ended." });
   } catch (error) {
     logger.error("[Scoring] End Live Controller Error:", error);
     handleControllerError(res, error);
   }
 };
-
-
 
 /**
  * Finalize Cricket Match and run user/umpire stats aggregation.
@@ -146,10 +172,10 @@ export const completeMatch = async (req, res) => {
     const { scoringId } = req.body;
     const { earnedBadges } = await scoringService.finalizeMatch(scoringId);
 
-    res.status(200).json({ 
-      success: true, 
+    res.status(200).json({
+      success: true,
       message: "Match completed and stats aggregated",
-      earnedBadges
+      earnedBadges,
     });
   } catch (error) {
     logger.error("[Scoring] Complete Controller Error:", error);
@@ -164,7 +190,7 @@ export const searchMatch = async (req, res) => {
   try {
     const { shortId } = req.params;
     const match = await scoringService.lookupMatchByShortId(shortId);
-    
+
     res.status(200).json({ success: true, match });
   } catch (error) {
     logger.error("[Scoring] Search Controller Error:", error);
@@ -180,19 +206,19 @@ export const startScoring = async (req, res) => {
     const { matchId, gameId, battingTeamId, battingTeam } = req.body;
     const finalMatchId = matchId || gameId;
     const finalBattingTeam = battingTeamId || battingTeam || "teamA";
-    
+
     const umpireId = req.user?.id;
     if (!umpireId) {
-      return res.status(401).json({ 
-        success: false, 
-        message: "Umpire identity not found. Please log in again." 
+      return res.status(401).json({
+        success: false,
+        message: "Umpire identity not found. Please log in again.",
       });
     }
 
     const scoring = await scoringService.initializeScoringSession(
-      finalMatchId, 
-      finalBattingTeam, 
-      umpireId, 
+      finalMatchId,
+      finalBattingTeam,
+      umpireId,
       req.user?.role,
       req.body.tossWinner,
       req.body.tossDecision
@@ -211,7 +237,10 @@ export const startScoring = async (req, res) => {
 export const startNextInnings = async (req, res) => {
   try {
     const { scoringId, battingTeamId } = req.body;
-    const scoring = await scoringService.advanceToNextInnings(scoringId, battingTeamId);
+    const scoring = await scoringService.advanceToNextInnings(
+      scoringId,
+      battingTeamId
+    );
 
     res.status(200).json({ success: true, scoring });
   } catch (error) {
@@ -241,7 +270,11 @@ export const updateMatchStatus = async (req, res) => {
 export const reviseTargetAndOvers = async (req, res) => {
   try {
     const { scoringId, revisedTarget, revisedOvers } = req.body;
-    const scoring = await scoringService.reviseTargetAndOvers(scoringId, revisedTarget, revisedOvers);
+    const scoring = await scoringService.reviseTargetAndOvers(
+      scoringId,
+      revisedTarget,
+      revisedOvers
+    );
 
     res.status(200).json({ success: true, scoring });
   } catch (error) {
@@ -256,7 +289,10 @@ export const reviseTargetAndOvers = async (req, res) => {
 export const setMatchOfficials = async (req, res) => {
   try {
     const { scoringId, officials } = req.body;
-    const scoring = await scoringService.setMatchOfficials(scoringId, officials);
+    const scoring = await scoringService.setMatchOfficials(
+      scoringId,
+      officials
+    );
 
     res.status(200).json({ success: true, scoring });
   } catch (error) {
@@ -271,7 +307,12 @@ export const setMatchOfficials = async (req, res) => {
 export const substitutePlayer = async (req, res) => {
   try {
     const { scoringId, userId, substituteForId, inningsIndex } = req.body;
-    const stat = await scoringService.substitutePlayer(scoringId, userId, substituteForId, inningsIndex);
+    const stat = await scoringService.substitutePlayer(
+      scoringId,
+      userId,
+      substituteForId,
+      inningsIndex
+    );
 
     res.status(200).json({ success: true, stat });
   } catch (error) {
@@ -286,7 +327,12 @@ export const substitutePlayer = async (req, res) => {
 export const useReview = async (req, res) => {
   try {
     const { scoringId, inningsIndex, team, isSuccessful } = req.body;
-    const scoring = await scoringService.useReview(scoringId, inningsIndex, team, isSuccessful);
+    const scoring = await scoringService.useReview(
+      scoringId,
+      inningsIndex,
+      team,
+      isSuccessful
+    );
 
     res.status(200).json({ success: true, scoring });
   } catch (error) {
@@ -301,7 +347,11 @@ export const useReview = async (req, res) => {
 export const setPowerplayOvers = async (req, res) => {
   try {
     const { scoringId, inningsIndex, overs } = req.body;
-    const scoring = await scoringService.setPowerplayOvers(scoringId, inningsIndex, overs);
+    const scoring = await scoringService.setPowerplayOvers(
+      scoringId,
+      inningsIndex,
+      overs
+    );
 
     res.status(200).json({ success: true, scoring });
   } catch (error) {
@@ -318,15 +368,19 @@ export const setToss = async (req, res) => {
     const { scoringId, winnerTeam, wonByTeamId, decision } = req.body;
     const finalWinnerTeam = winnerTeam || wonByTeamId;
 
-    const scoring = await scoringService.updateTossResult(scoringId, finalWinnerTeam, decision);
+    const scoring = await scoringService.updateTossResult(
+      scoringId,
+      finalWinnerTeam,
+      decision
+    );
 
-    res.status(200).json({ 
-      success: true, 
-      scoring, 
-      toss: { 
-        winnerTeam: scoring.tossWinner, 
-        decision: scoring.tossDecision 
-      } 
+    res.status(200).json({
+      success: true,
+      scoring,
+      toss: {
+        winnerTeam: scoring.tossWinner,
+        decision: scoring.tossDecision,
+      },
     });
   } catch (error) {
     logger.error("[Scoring] SetToss Controller Error:", error);
@@ -339,12 +393,13 @@ export const setToss = async (req, res) => {
  */
 export const setPlayers = async (req, res) => {
   try {
-    const { scoringId, strikerId, nonStrikerId, bowlerId, wicketKeeperId } = req.body;
-    const scoring = await scoringService.updateActivePlayers(scoringId, { 
-      strikerId, 
-      nonStrikerId, 
+    const { scoringId, strikerId, nonStrikerId, bowlerId, wicketKeeperId } =
+      req.body;
+    const scoring = await scoringService.updateActivePlayers(scoringId, {
+      strikerId,
+      nonStrikerId,
       bowlerId,
-      wicketKeeperId
+      wicketKeeperId,
     });
 
     res.status(200).json({ success: true, scoring });
@@ -375,7 +430,10 @@ export const undoLastBall = async (req, res) => {
 export const updateScore = async (req, res) => {
   try {
     const { scoringId, ballData } = req.body;
-    const { scoring, liveData } = await scoringService.processScoreUpdate(scoringId, ballData);
+    const { scoring, liveData } = await scoringService.processScoreUpdate(
+      scoringId,
+      ballData
+    );
 
     res.status(200).json({ success: true, scoring, liveData });
   } catch (error) {
@@ -393,15 +451,17 @@ export const getMatchStatus = async (req, res) => {
     const result = await scoringService.fetchMatchStatus(matchId);
 
     if (result.type === "SCORING_EXISTS") {
-      return res.status(200).json({ 
-        success: true, 
-        scoring: result.scoring, 
+      return res.status(200).json({
+        success: true,
+        scoring: result.scoring,
         scoringSnapshot: result.scoringSnapshot,
-        hostedGame: result.hostedGame
+        hostedGame: result.hostedGame,
       });
     }
 
-    return res.status(200).json({ success: true, hostedGame: result.hostedGame });
+    return res
+      .status(200)
+      .json({ success: true, hostedGame: result.hostedGame });
   } catch (error) {
     logger.error("[Scoring] Status Controller Error:", error);
     handleControllerError(res, error);
@@ -416,10 +476,10 @@ export const getMatchAnalytics = async (req, res) => {
     const { matchId } = req.params;
     const result = await scoringService.fetchMatchAnalytics(matchId);
 
-    res.status(200).json({ 
-      success: true, 
-      scoring: result.scoring, 
-      analytics: result.analytics
+    res.status(200).json({
+      success: true,
+      scoring: result.scoring,
+      analytics: result.analytics,
     });
   } catch (error) {
     logger.error("[Scoring] Analytics Controller Error:", error);
@@ -433,7 +493,8 @@ export const getMatchAnalytics = async (req, res) => {
 export const getLiveScore = async (req, res) => {
   try {
     const { matchId } = req.params;
-    const { data, source } = await scoringService.fetchLiveScoreSnapshot(matchId);
+    const { data, source } =
+      await scoringService.fetchLiveScoreSnapshot(matchId);
 
     return res.status(200).json({ success: true, data, source });
   } catch (error) {
@@ -451,7 +512,9 @@ export const deleteMatch = async (req, res) => {
     const userId = req.user.id;
     // For now just pass it to service, or perform basic verification
     await scoringService.deleteScoringMatch(matchId, userId);
-    res.status(200).json({ success: true, message: "Match deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Match deleted successfully" });
   } catch (error) {
     logger.error("[Scoring] Delete Match Error:", error);
     handleControllerError(res, error);
@@ -461,10 +524,20 @@ export const deleteMatch = async (req, res) => {
 export const updateCommentarySettings = async (req, res) => {
   try {
     const { matchId } = req.params;
-    const { isAiCommentaryEnabled, commentaryVoice, commentaryLanguage, commentaryStyle } = req.body;
+    const {
+      isAiCommentaryEnabled,
+      commentaryVoice,
+      commentaryLanguage,
+      commentaryStyle,
+    } = req.body;
     const updatedGame = await prisma.hostedGame.update({
       where: { id: matchId },
-      data: { isAiCommentaryEnabled, commentaryVoice, commentaryLanguage, commentaryStyle }
+      data: {
+        isAiCommentaryEnabled,
+        commentaryVoice,
+        commentaryLanguage,
+        commentaryStyle,
+      },
     });
     res.status(200).json({ success: true, data: updatedGame });
   } catch (error) {
@@ -478,7 +551,9 @@ export const toggleTimer = async (req, res) => {
     // Accept both matchId (Flutter) and scoringId (web) for backward compat
     const matchId = req.body.matchId ?? req.body.scoringId;
     if (!matchId) {
-      return res.status(400).json({ success: false, message: "matchId is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "matchId is required" });
     }
     const result = await scoringService.toggleMatchTimer(matchId);
     res.status(200).json({ success: true, ...result });
@@ -557,7 +632,9 @@ export const getOvers = async (req, res) => {
     // we 304 and skip the whole shaping step.
     const etag = await scoringViews.computeMatchEtag(req.params.matchId);
     if (handleEtag(req, res, etag)) return;
-    const data = await scoringViews.buildOvers(req.params.matchId, innings, { afterBallId });
+    const data = await scoringViews.buildOvers(req.params.matchId, innings, {
+      afterBallId,
+    });
     res.status(200).json({ success: true, data });
   } catch (error) {
     logger.error("[Scoring] Overs Error:", error);
@@ -581,12 +658,32 @@ export const updateHouseRules = async (req, res) => {
   try {
     const { scoringId, houseRules } = req.body;
     if (!scoringId) {
-      return res.status(400).json({ success: false, code: "MISSING_SCORING_ID", message: "scoringId is required" });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          code: "MISSING_SCORING_ID",
+          message: "scoringId is required",
+        });
     }
-    if (!houseRules || typeof houseRules !== "object" || Array.isArray(houseRules)) {
-      return res.status(400).json({ success: false, code: "INVALID_HOUSE_RULES", message: "houseRules must be an object" });
+    if (
+      !houseRules ||
+      typeof houseRules !== "object" ||
+      Array.isArray(houseRules)
+    ) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          code: "INVALID_HOUSE_RULES",
+          message: "houseRules must be an object",
+        });
     }
-    const result = await scoringService.updateHouseRules(scoringId, req.user, houseRules);
+    const result = await scoringService.updateHouseRules(
+      scoringId,
+      req.user,
+      houseRules
+    );
     res.status(200).json({ success: true, data: result });
   } catch (error) {
     logger.error("[Scoring] Update House Rules Error:", error);

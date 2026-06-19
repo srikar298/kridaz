@@ -1,7 +1,14 @@
- 
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Star, Shield, Video, Activity, Award, Check, ChevronRight } from "lucide-react";
+import {
+  Star,
+  Shield,
+  Video,
+  Activity,
+  Award,
+  Check,
+  ChevronRight,
+} from "lucide-react";
 
 const GRAD = "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)";
 
@@ -73,7 +80,8 @@ export default function ProfessionalsSection({
               to="/professionals"
               className="flex items-center gap-1 font-semibold text-[10px] md:text-[15px] transition-all hover:text-[#BFF367] text-[#888] whitespace-nowrap"
             >
-              View All <span className="hidden md:inline">Pros</span> <ChevronRight size={16} />
+              View All <span className="hidden md:inline">Pros</span>{" "}
+              <ChevronRight size={16} />
             </Link>
           </div>
         </div>
@@ -98,7 +106,9 @@ export default function ProfessionalsSection({
               <div
                 key={pro._id || pro.id}
                 className="group cursor-pointer"
-                onClick={() => navigate(`/profile/${pro.userId || pro.id || pro._id}`)}
+                onClick={() =>
+                  navigate(`/profile/${pro.userId || pro.id || pro._id}`)
+                }
               >
                 <div className="relative bg-[#121212] rounded-[8px] p-1.5 border border-white/5 transition-all duration-500 hover:border-[#BFF367]/20 hover:shadow-[0_15px_30px_rgba(0,0,0,0.4)]">
                   {/* Compact Profile Image Section */}
@@ -206,7 +216,9 @@ export default function ProfessionalsSection({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/profile/${pro.userId || pro.id || pro._id}`);
+                          navigate(
+                            `/profile/${pro.userId || pro.id || pro._id}`
+                          );
                         }}
                         className="px-4 py-2 rounded-[8px] font-black text-[9px] uppercase tracking-wider transition-all duration-300 text-black hover:scale-105 shadow-[0_0_15px_rgba(85,222,232,0.3)]"
                         style={{ background: GRAD }}
@@ -224,4 +236,3 @@ export default function ProfessionalsSection({
     </section>
   );
 }
-

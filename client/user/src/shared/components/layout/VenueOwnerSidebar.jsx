@@ -1,17 +1,17 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { 
-  X, 
-  LayoutGrid, 
-  BookOpen, 
-  MapPin, 
-  Users, 
-  IndianRupee, 
-  BarChart3, 
-  Star, 
-  Tag, 
+import {
+  X,
+  LayoutGrid,
+  BookOpen,
+  MapPin,
+  Users,
+  IndianRupee,
+  BarChart3,
+  Star,
+  Tag,
   HelpCircle,
-  Landmark
+  Landmark,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logout } from "@redux/slices/authSlice.js";
@@ -38,8 +38,6 @@ const PartnerSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
     { to: "/venue-owner/reviews", label: "Reviews", icon: Star },
   ];
 
-
-
   const renderNavItem = (item) => {
     const isLogout = item.action === "logout";
     const isActive = !isLogout && location.pathname === item.to;
@@ -49,7 +47,7 @@ const PartnerSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
       <Link
         key={item.to || item.label}
         to={item.to || "#"}
-        className={`flex items-center h-[48px] px-4 group relative transition-all duration-300 rounded-[8px] mx-2 mb-1 border border-transparent ${ isActive ? "bg-[#BFF367] text-black shadow-[0_4px_15px_rgba(204,255,0,0.2)] border-[#BFF367]/20" : "bg-transparent text-[#999999] hover:bg-[#BFF367]/5 hover:text-[#BFF367] hover:border-[#BFF367]/10" } ${isLogout ? "hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/20" : ""}`}
+        className={`flex items-center h-[48px] px-4 group relative transition-all duration-300 rounded-[8px] mx-2 mb-1 border border-transparent ${isActive ? "bg-[#BFF367] text-black shadow-[0_4px_15px_rgba(204,255,0,0.2)] border-[#BFF367]/20" : "bg-transparent text-[#999999] hover:bg-[#BFF367]/5 hover:text-[#BFF367] hover:border-[#BFF367]/10"} ${isLogout ? "hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/20" : ""}`}
         onClick={(e) => {
           if (isLogout) {
             e.preventDefault();
@@ -62,13 +60,15 @@ const PartnerSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
         }}
       >
         <div className="flex-shrink-0 flex items-center justify-center w-6">
-          <Icon 
-            size={20} 
-            className={`transition-colors duration-300 ${ isActive ? "text-black" : "text-[#999999] group-hover:text-[#BFF367]" } ${isLogout ? "group-hover:text-red-500" : ""}`} 
+          <Icon
+            size={20}
+            className={`transition-colors duration-300 ${isActive ? "text-black" : "text-[#999999] group-hover:text-[#BFF367]"} ${isLogout ? "group-hover:text-red-500" : ""}`}
           />
         </div>
 
-        <span className={`text-[13px] font-bold uppercase tracking-widest ml-4 whitespace-nowrap overflow-hidden transition-all duration-300 ${isMinimized ? "opacity-0 w-0" : "opacity-100 w-auto"} ${isActive ? "text-black" : ""}`}>
+        <span
+          className={`text-[13px] font-bold uppercase tracking-widest ml-4 whitespace-nowrap overflow-hidden transition-all duration-300 ${isMinimized ? "opacity-0 w-0" : "opacity-100 w-auto"} ${isActive ? "text-black" : ""}`}
+        >
           {item.label}
         </span>
       </Link>
@@ -81,21 +81,20 @@ const PartnerSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
     >
       <div className="flex flex-col p-4 border-b border-[#2D2D2D] bg-[#000000] gap-4 lg:hidden">
         <div className="flex items-center justify-end">
-          <button onClick={toggleSidebar} className="text-[#999999] hover:text-[#BFF367] transition-colors">
+          <button
+            onClick={toggleSidebar}
+            className="text-[#999999] hover:text-[#BFF367] transition-colors"
+          >
             <X size={20} />
           </button>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto no-scrollbar py-6">
-        <nav className="space-y-1">
-          {mainNavItems.map(renderNavItem)}
-        </nav>
+        <nav className="space-y-1">{mainNavItems.map(renderNavItem)}</nav>
       </div>
-
     </aside>
   );
 };
-
 
 export default PartnerSidebar;

@@ -3,18 +3,21 @@ import { getIO } from "../../config/socket.js";
 import logger from "../../utils/logger.js";
 import { SOCKET } from "@kridaz/shared-constants/socketEvents";
 
-
 // Helper: resolve the correct user IDs and model for the current request
 function resolveCurrentUser(req) {
-  const isOwner = req.user?.role?.includes("venue") || req.user?.role === "owner" || req.owner?.role?.includes("venue") || req.owner?.role === "owner";
+  const isOwner =
+    req.user?.role?.includes("venue") ||
+    req.user?.role === "owner" ||
+    req.owner?.role?.includes("venue") ||
+    req.owner?.role === "owner";
 
   const currentUserId = isOwner
-    ? (req.user?.ownerId || req.owner?.ownerId || req.user?.id || req.owner?.id)
-    : (req.user?.id || req.user?.userId);
+    ? req.user?.ownerId || req.owner?.ownerId || req.user?.id || req.owner?.id
+    : req.user?.id || req.user?.userId;
 
   const currentUserModel = isOwner ? "Owner" : "User";
-  
-  const participantData = isOwner 
+
+  const participantData = isOwner
     ? { ownerId: currentUserId, userId: null, onModel: "Owner" }
     : { userId: currentUserId, ownerId: null, onModel: "User" };
 
@@ -28,37 +31,49 @@ async function checkIsAdmin(chatId, participantData) {
       chatId,
       userId: participantData.userId,
       ownerId: participantData.ownerId,
-      isAdmin: true
-    }
+      isAdmin: true,
+    },
   });
-  
+
   if (participant) return true;
 
   // For announcement channels, also check if user is an admin of the parent community
   const chat = await prisma.chat.findUnique({
     where: { id: chatId },
-    select: { parentCommunityId: true, isAnnouncementGroup: true, chatName: true }
+    select: {
+      parentCommunityId: true,
+      isAnnouncementGroup: true,
+      chatName: true,
+    },
   });
 
-  if (chat && chat.parentCommunityId && (chat.isAnnouncementGroup || chat.chatName === "Announcements")) {
+  if (
+    chat &&
+    chat.parentCommunityId &&
+    (chat.isAnnouncementGroup || chat.chatName === "Announcements")
+  ) {
     const parentParticipant = await prisma.chatParticipant.findFirst({
       where: {
         chatId: chat.parentCommunityId,
         userId: participantData.userId,
         ownerId: participantData.ownerId,
-        isAdmin: true
-      }
+        isAdmin: true,
+      },
     });
     if (parentParticipant) return true;
 
     // Check if they are the creator of the parent community
     const parentChat = await prisma.chat.findUnique({
       where: { id: chat.parentCommunityId },
-      select: { createdByUserId: true, createdByOwnerId: true }
+      select: { createdByUserId: true, createdByOwnerId: true },
     });
-    if (parentChat && 
-        ((parentChat.createdByUserId && parentChat.createdByUserId === participantData.userId) || 
-         (parentChat.createdByOwnerId && parentChat.createdByOwnerId === participantData.ownerId))) {
+    if (
+      parentChat &&
+      ((parentChat.createdByUserId &&
+        parentChat.createdByUserId === participantData.userId) ||
+        (parentChat.createdByOwnerId &&
+          parentChat.createdByOwnerId === participantData.ownerId))
+    ) {
       return true;
     }
   }
@@ -80,15 +95,19 @@ export const allMessages = async (req, res) => {
         deletedBy: {
           none: {
             userId: participantData.userId,
-            ownerId: participantData.ownerId
-          }
-        }
+            ownerId: participantData.ownerId,
+          },
+        },
       },
       include: {
-        senderUser: { select: { id: true, name: true, profilePicture: true, email: true } },
-        senderOwner: { include: { user: { select: { name: true, profilePicture: true } } } },
+        senderUser: {
+          select: { id: true, name: true, profilePicture: true, email: true },
+        },
+        senderOwner: {
+          include: { user: { select: { name: true, profilePicture: true } } },
+        },
       },
-      orderBy: { createdAt: "asc" }
+      orderBy: { createdAt: "asc" },
     });
     res.json(messages);
   } catch (error) {
@@ -109,14 +128,16 @@ export const sendMessage = async (req, res) => {
 
   if ((!content && !media) || !chatId) {
     console.log("SEND_MESSAGE: Invalid data passed");
-    return res.status(400).json({ message: "Invalid data passed into request" });
+    return res
+      .status(400)
+      .json({ message: "Invalid data passed into request" });
   }
 
   try {
     console.log("SEND_MESSAGE: Querying chat...");
     const chat = await prisma.chat.findUnique({
       where: { id: chatId },
-      include: { participants: true }
+      include: { participants: true },
     });
 
     if (!chat) {
@@ -130,22 +151,31 @@ export const sendMessage = async (req, res) => {
       console.log("SEND_MESSAGE: Checking admin restriction...");
       if (!(await checkIsAdmin(chatId, participantData))) {
         console.log("SEND_MESSAGE: Not admin, forbidden");
-        return res.status(403).json({ message: "Only admins can send messages in this group" });
+        return res
+          .status(403)
+          .json({ message: "Only admins can send messages in this group" });
       }
     }
 
     // Find the participant record for the sender in-memory to avoid an extra DB roundtrip
     console.log("SEND_MESSAGE: Finding sender participant in-memory...");
-    let senderParticipant = chat.participants.find(p => 
-      p.userId === participantData.userId && p.ownerId === participantData.ownerId
+    let senderParticipant = chat.participants.find(
+      (p) =>
+        p.userId === participantData.userId &&
+        p.ownerId === participantData.ownerId
     );
-    console.log("SEND_MESSAGE: Sender participant in-memory result:", JSON.stringify(senderParticipant));
+    console.log(
+      "SEND_MESSAGE: Sender participant in-memory result:",
+      JSON.stringify(senderParticipant)
+    );
 
     if (!senderParticipant) {
       // Check if user is an admin of the parent community or the chat
       const isAllowedAdmin = await checkIsAdmin(chatId, participantData);
       if (isAllowedAdmin) {
-        console.log("SEND_MESSAGE: Sender is authorized admin, auto-creating participant record...");
+        console.log(
+          "SEND_MESSAGE: Sender is authorized admin, auto-creating participant record..."
+        );
         senderParticipant = await prisma.chatParticipant.create({
           data: {
             chatId,
@@ -153,12 +183,14 @@ export const sendMessage = async (req, res) => {
             ownerId: participantData.ownerId,
             onModel: participantData.onModel || "User",
             isAdmin: true,
-            isPending: false
-          }
+            isPending: false,
+          },
         });
       } else {
         console.log("SEND_MESSAGE: Sender participant not found in chat");
-        return res.status(400).json({ message: "Sender is not a participant of this chat" });
+        return res
+          .status(400)
+          .json({ message: "Sender is not a participant of this chat" });
       }
     }
 
@@ -172,31 +204,44 @@ export const sendMessage = async (req, res) => {
         senderModel: participantData.onModel,
         media: media || [],
         readBy: {
-          connect: { id: senderParticipant.id }
-        }
+          connect: { id: senderParticipant.id },
+        },
       },
       include: {
-        senderUser: { select: { id: true, name: true, profilePicture: true, email: true } },
-        senderOwner: { include: { user: { select: { name: true, profilePicture: true } } } },
+        senderUser: {
+          select: { id: true, name: true, profilePicture: true, email: true },
+        },
+        senderOwner: {
+          include: { user: { select: { name: true, profilePicture: true } } },
+        },
         chat: {
           include: {
             participants: {
               include: {
-                user: { select: { id: true, name: true, profilePicture: true } },
-                owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-              }
-            }
-          }
-        }
-      }
+                user: {
+                  select: { id: true, name: true, profilePicture: true },
+                },
+                owner: {
+                  include: {
+                    user: { select: { name: true, profilePicture: true } },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
-    console.log("SEND_MESSAGE: Message created successfully in DB, ID:", message.id);
+    console.log(
+      "SEND_MESSAGE: Message created successfully in DB, ID:",
+      message.id
+    );
 
     // Update latest message in chat
     console.log("SEND_MESSAGE: Updating chat latestMessageId...");
     await prisma.chat.update({
       where: { id: chatId },
-      data: { latestMessageId: message.id }
+      data: { latestMessageId: message.id },
     });
     console.log("SEND_MESSAGE: Chat latestMessageId updated successfully");
 
@@ -204,7 +249,7 @@ export const sendMessage = async (req, res) => {
     console.log("SEND_MESSAGE: Emmitting socket message...");
     const io = getIO();
     if (io) {
-      message.chat.participants.forEach(p => {
+      message.chat.participants.forEach((p) => {
         const uid = p.userId || p.ownerId;
         if (uid === (participantData.userId || participantData.ownerId)) return;
         io.to(uid).emit(SOCKET.MESSAGE_RECEIVED, message);
@@ -228,25 +273,36 @@ export const forwardMessage = async (req, res) => {
   const { participantData: self } = resolveCurrentUser(req);
 
   if (!messageId || (chatIds.length === 0 && userIds.length === 0)) {
-    return res.status(400).json({ message: "Invalid data passed into request" });
+    return res
+      .status(400)
+      .json({ message: "Invalid data passed into request" });
   }
 
   try {
-    const originalMessage = await prisma.message.findUnique({ where: { id: messageId } });
-    if (!originalMessage) return res.status(404).json({ message: "Message not found" });
+    const originalMessage = await prisma.message.findUnique({
+      where: { id: messageId },
+    });
+    if (!originalMessage)
+      return res.status(404).json({ message: "Message not found" });
 
     let finalChatIds = [...chatIds];
-    
+
     // For direct userIds, find or create 1-on-1 chats
     for (const targetUserId of userIds) {
       let chat = await prisma.chat.findFirst({
         where: {
           isGroupChat: false,
           AND: [
-            { participants: { some: { userId: self.userId, ownerId: self.ownerId } } },
-            { participants: { some: { userId: targetUserId, onModel: "User" } } }
-          ]
-        }
+            {
+              participants: {
+                some: { userId: self.userId, ownerId: self.ownerId },
+              },
+            },
+            {
+              participants: { some: { userId: targetUserId, onModel: "User" } },
+            },
+          ],
+        },
       });
 
       if (!chat) {
@@ -256,11 +312,16 @@ export const forwardMessage = async (req, res) => {
             isGroupChat: false,
             participants: {
               create: [
-                { userId: self.userId, ownerId: self.ownerId, onModel: self.onModel, isPending: false },
-                { userId: targetUserId, onModel: "User", isPending: false }
-              ]
-            }
-          }
+                {
+                  userId: self.userId,
+                  ownerId: self.ownerId,
+                  onModel: self.onModel,
+                  isPending: false,
+                },
+                { userId: targetUserId, onModel: "User", isPending: false },
+              ],
+            },
+          },
         });
       }
       finalChatIds.push(chat.id);
@@ -274,8 +335,8 @@ export const forwardMessage = async (req, res) => {
         where: {
           chatId,
           userId: self.userId,
-          ownerId: self.ownerId
-        }
+          ownerId: self.ownerId,
+        },
       });
 
       const message = await prisma.message.create({
@@ -287,30 +348,43 @@ export const forwardMessage = async (req, res) => {
           content: originalMessage.content,
           media: originalMessage.media || [],
           isForwarded: true,
-          readBy: { connect: { id: senderParticipant.id } }
+          readBy: { connect: { id: senderParticipant.id } },
         },
         include: {
-          senderUser: { select: { id: true, name: true, profilePicture: true, email: true } },
-          senderOwner: { include: { user: { select: { name: true, profilePicture: true } } } },
+          senderUser: {
+            select: { id: true, name: true, profilePicture: true, email: true },
+          },
+          senderOwner: {
+            include: { user: { select: { name: true, profilePicture: true } } },
+          },
           chat: {
             include: {
               participants: {
                 include: {
-                  user: { select: { id: true, name: true, profilePicture: true } },
-                  owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-                }
-              }
-            }
-          }
-        }
+                  user: {
+                    select: { id: true, name: true, profilePicture: true },
+                  },
+                  owner: {
+                    include: {
+                      user: { select: { name: true, profilePicture: true } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       });
 
-      await prisma.chat.update({ where: { id: chatId }, data: { latestMessageId: message.id } });
+      await prisma.chat.update({
+        where: { id: chatId },
+        data: { latestMessageId: message.id },
+      });
       forwardedMessages.push(message);
 
       const io = getIO();
       if (io) {
-        message.chat.participants.forEach(p => {
+        message.chat.participants.forEach((p) => {
           const uid = p.userId || p.ownerId;
           if (uid === (self.userId || self.ownerId)) return;
           io.to(uid).emit(SOCKET.MESSAGE_RECEIVED, message);
@@ -331,22 +405,33 @@ export const broadcastMessage = async (req, res) => {
   const { content, media = [], chatIds = [], userIds = [] } = req.body;
   const { participantData: self } = resolveCurrentUser(req);
 
-  if ((!content && media.length === 0) || (chatIds.length === 0 && userIds.length === 0)) {
-    return res.status(400).json({ message: "Invalid data passed into request" });
+  if (
+    (!content && media.length === 0) ||
+    (chatIds.length === 0 && userIds.length === 0)
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Invalid data passed into request" });
   }
 
   try {
     let finalChatIds = [...chatIds];
-    
+
     for (const targetUserId of userIds) {
       let chat = await prisma.chat.findFirst({
         where: {
           isGroupChat: false,
           AND: [
-            { participants: { some: { userId: self.userId, ownerId: self.ownerId } } },
-            { participants: { some: { userId: targetUserId, onModel: "User" } } }
-          ]
-        }
+            {
+              participants: {
+                some: { userId: self.userId, ownerId: self.ownerId },
+              },
+            },
+            {
+              participants: { some: { userId: targetUserId, onModel: "User" } },
+            },
+          ],
+        },
       });
 
       if (!chat) {
@@ -356,11 +441,16 @@ export const broadcastMessage = async (req, res) => {
             isGroupChat: false,
             participants: {
               create: [
-                { userId: self.userId, ownerId: self.ownerId, onModel: self.onModel, isPending: false },
-                { userId: targetUserId, onModel: "User", isPending: false }
-              ]
-            }
-          }
+                {
+                  userId: self.userId,
+                  ownerId: self.ownerId,
+                  onModel: self.onModel,
+                  isPending: false,
+                },
+                { userId: targetUserId, onModel: "User", isPending: false },
+              ],
+            },
+          },
         });
       }
       finalChatIds.push(chat.id);
@@ -374,8 +464,8 @@ export const broadcastMessage = async (req, res) => {
         where: {
           chatId,
           userId: self.userId,
-          ownerId: self.ownerId
-        }
+          ownerId: self.ownerId,
+        },
       });
 
       const message = await prisma.message.create({
@@ -387,30 +477,43 @@ export const broadcastMessage = async (req, res) => {
           content,
           media: media || [],
           isForwarded: true,
-          readBy: { connect: { id: senderParticipant.id } }
+          readBy: { connect: { id: senderParticipant.id } },
         },
         include: {
-          senderUser: { select: { id: true, name: true, profilePicture: true, email: true } },
-          senderOwner: { include: { user: { select: { name: true, profilePicture: true } } } },
+          senderUser: {
+            select: { id: true, name: true, profilePicture: true, email: true },
+          },
+          senderOwner: {
+            include: { user: { select: { name: true, profilePicture: true } } },
+          },
           chat: {
             include: {
               participants: {
                 include: {
-                  user: { select: { id: true, name: true, profilePicture: true } },
-                  owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-                }
-              }
-            }
-          }
-        }
+                  user: {
+                    select: { id: true, name: true, profilePicture: true },
+                  },
+                  owner: {
+                    include: {
+                      user: { select: { name: true, profilePicture: true } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       });
 
-      await prisma.chat.update({ where: { id: chatId }, data: { latestMessageId: message.id } });
+      await prisma.chat.update({
+        where: { id: chatId },
+        data: { latestMessageId: message.id },
+      });
       sentMessages.push(message);
 
       const io = getIO();
       if (io) {
-        message.chat.participants.forEach(p => {
+        message.chat.participants.forEach((p) => {
           const uid = p.userId || p.ownerId;
           if (uid === (self.userId || self.ownerId)) return;
           io.to(uid).emit(SOCKET.MESSAGE_RECEIVED, message);
@@ -436,8 +539,8 @@ export const markMessagesRead = async (req, res) => {
       where: {
         chatId,
         userId: self.userId,
-        ownerId: self.ownerId
-      }
+        ownerId: self.ownerId,
+      },
     });
 
     if (!participant) return res.status(404).json({ success: false });
@@ -446,10 +549,10 @@ export const markMessagesRead = async (req, res) => {
       where: {
         chatId,
         readBy: {
-          none: { id: participant.id }
-        }
+          none: { id: participant.id },
+        },
       },
-      select: { id: true }
+      select: { id: true },
     });
 
     for (const msg of unreadMessages) {
@@ -457,9 +560,9 @@ export const markMessagesRead = async (req, res) => {
         where: { id: msg.id },
         data: {
           readBy: {
-            connect: { id: participant.id }
-          }
-        }
+            connect: { id: participant.id },
+          },
+        },
       });
     }
 
@@ -489,8 +592,8 @@ export const deleteMessages = async (req, res) => {
         where: {
           chatId,
           userId: self.userId,
-          ownerId: self.ownerId
-        }
+          ownerId: self.ownerId,
+        },
       });
 
       if (participant) {
@@ -498,8 +601,8 @@ export const deleteMessages = async (req, res) => {
           await prisma.message.update({
             where: { id: msgId },
             data: {
-              deletedBy: { connect: { id: participant.id } }
-            }
+              deletedBy: { connect: { id: participant.id } },
+            },
           });
         }
       }
@@ -513,15 +616,15 @@ export const deleteMessages = async (req, res) => {
           deletedBy: {
             none: {
               userId: self.userId,
-              ownerId: self.ownerId
-            }
-          }
+              ownerId: self.ownerId,
+            },
+          },
         },
-        orderBy: { createdAt: "desc" }
+        orderBy: { createdAt: "desc" },
       });
       await prisma.chat.update({
         where: { id: chatId },
-        data: { latestMessageId: latestRemaining?.id || null }
+        data: { latestMessageId: latestRemaining?.id || null },
       });
     }
 
@@ -547,26 +650,26 @@ export const clearChat = async (req, res) => {
       where: {
         chatId,
         userId: self.userId,
-        ownerId: self.ownerId
-      }
+        ownerId: self.ownerId,
+      },
     });
 
     if (participant) {
       const messages = await prisma.message.findMany({
-        where: { chatId, deletedBy: { none: { id: participant.id } } }
+        where: { chatId, deletedBy: { none: { id: participant.id } } },
       });
 
       for (const msg of messages) {
         await prisma.message.update({
           where: { id: msg.id },
-          data: { deletedBy: { connect: { id: participant.id } } }
+          data: { deletedBy: { connect: { id: participant.id } } },
         });
       }
     }
 
     await prisma.chat.update({
       where: { id: chatId },
-      data: { latestMessageId: null }
+      data: { latestMessageId: null },
     });
 
     res.json({ success: true });
@@ -590,17 +693,20 @@ export const getChatMedia = async (req, res) => {
         deletedBy: {
           none: {
             userId: self.userId,
-            ownerId: self.ownerId
-          }
-        }
+            ownerId: self.ownerId,
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
-      select: { media: true, createdAt: true }
+      select: { media: true, createdAt: true },
     });
-    
+
     const allMedia = mediaMessages.reduce((acc, msg) => {
       const mediaList = Array.isArray(msg.media) ? msg.media : [];
-      const flattened = mediaList.map(m => ({ ...m, createdAt: msg.createdAt }));
+      const flattened = mediaList.map((m) => ({
+        ...m,
+        createdAt: msg.createdAt,
+      }));
       return acc.concat(flattened);
     }, []);
 

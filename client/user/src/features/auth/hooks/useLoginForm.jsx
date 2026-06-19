@@ -10,15 +10,26 @@ import { useNavigate } from "react-router-dom";
 import { Capacitor } from "@capacitor/core";
 
 const loginSchema = z.object({
-  email: z.string().min(1, "Enter your email or phone number").refine((value) => {
-    const isEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
-    const isPhone = /^[0-9]{10}$/.test(value);
-    return isEmail || isPhone;
-  }, { message: "Enter a valid email or 10-digit phone number" }),
-  password: z.string().min(1, "Enter your password").min(6, "Password must be at least 6 characters long"),
+  email: z
+    .string()
+    .min(1, "Enter your email or phone number")
+    .refine(
+      (value) => {
+        const isEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+          value
+        );
+        const isPhone = /^[0-9]{10}$/.test(value);
+        return isEmail || isPhone;
+      },
+      { message: "Enter a valid email or 10-digit phone number" }
+    ),
+  password: z
+    .string()
+    .min(1, "Enter your password")
+    .min(6, "Password must be at least 6 characters long"),
 });
 
-const useLoginForm = (countryCode = '+91') => {
+const useLoginForm = (countryCode = "+91") => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showOtpInput, setShowOtpInput] = useState(false);
@@ -51,13 +62,24 @@ const useLoginForm = (countryCode = '+91') => {
 
   const handleRoleRedirect = (role) => {
     const normalizedRole = role?.toLowerCase();
-    const professionalRoles = ["coach", "umpire", "streamer", "scorer", "cheerleader", "commentator"];
-    
+    const professionalRoles = [
+      "coach",
+      "umpire",
+      "streamer",
+      "scorer",
+      "cheerleader",
+      "commentator",
+    ];
+
     if (normalizedRole === "admin" || normalizedRole === "bmsp_admin") {
       dispatch(logout());
       toast.error("Administrators must log in via the Platform Admin Console.");
       navigate("/login");
-    } else if (normalizedRole === "owner" || normalizedRole === "venue_owner" || normalizedRole === "venu_owners") {
+    } else if (
+      normalizedRole === "owner" ||
+      normalizedRole === "venue_owner" ||
+      normalizedRole === "venu_owners"
+    ) {
       navigate("/venue-owner");
     } else if (professionalRoles.includes(normalizedRole)) {
       navigate(`/professional/${normalizedRole}`);
@@ -74,49 +96,68 @@ const useLoginForm = (countryCode = '+91') => {
     setAccountNotFound(false); // Reset on new attempt
     try {
       let { email, password } = getValues();
-      
+
       const isPhoneInput = /^[0-9]{10}$/.test(email);
       if (isPhoneInput) {
-        const cleanCountryCode = countryCode.replace('+', '');
-        email = cleanCountryCode + email;
+        email = countryCode + email;
       }
 
-      const response = await axiosInstance.post("/api/user/auth/login-step1", { email, password });
+      const response = await axiosInstance.post("/api/user/auth/login-step1", {
+        email,
+        password,
+      });
       const result = response.data;
 
       if (result.token) {
-        dispatch(login({ token: result.token, role: result.role, user: result.user }));
-        axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${result.token}`;
+        dispatch(
+          login({ token: result.token, role: result.role, user: result.user })
+        );
+        axiosInstance.defaults.headers.common["Authorization"] =
+          `Bearer ${result.token}`;
         toast.success("Logged in successfully!");
         handleRoleRedirect(result.role);
         return;
       }
 
       if (result.requiresOtp) {
-        const isPhoneCheck = /^[0-9]+$/.test(email) || email.startsWith('+');
+        const isPhoneCheck = /^[0-9]+$/.test(email) || email.startsWith("+");
         setIsPhoneAuth(isPhoneCheck);
         if (isPhoneCheck) {
           if (forceSms) {
-            const payload = { phone: email.startsWith('+') ? email.replace('+', '') : email, deliveryMethod: 'sms' };
-            const otpRes = await axiosInstance.post('/api/user/auth/send-otp', payload);
+            const payload = {
+              phone: email.startsWith("+") ? email.replace("+", "") : email,
+              deliveryMethod: "sms",
+            };
+            const otpRes = await axiosInstance.post(
+              "/api/user/auth/send-otp",
+              payload
+            );
             toast.success(otpRes.data.message || "OTP sent via SMS");
             setShowOtpInput(true);
             setTimeLeft(60);
           } else {
-            const payload = { phone: email.startsWith('+') ? email.replace('+', '') : email };
-            const otpRes = await axiosInstance.post('/api/user/auth/send-otp', payload);
+            const payload = {
+              phone: email.startsWith("+") ? email.replace("+", "") : email,
+            };
+            const otpRes = await axiosInstance.post(
+              "/api/user/auth/send-otp",
+              payload
+            );
             toast.success(otpRes.data.message || "OTP sent via WhatsApp");
             if (Capacitor.isNativePlatform()) {
-              toast((t) => (
-                <div className="flex flex-col gap-1 p-1">
-                  <div className="font-bold text-sm text-black flex items-center gap-1">
-                    🔔 Kridaz Notification
+              toast(
+                (t) => (
+                  <div className="flex flex-col gap-1 p-1">
+                    <div className="font-bold text-sm text-black flex items-center gap-1">
+                      🔔 Kridaz Notification
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      OTP sent to your device. Please enter it below.
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-600">
-                    OTP sent to your device. Please enter it below.
-                  </div>
-                </div>
-              ), { position: 'top-center', duration: 8000 });
+                ),
+                { position: "top-center", duration: 8000 }
+              );
             }
             setShowOtpInput(true);
             setTimeLeft(60);
@@ -124,16 +165,19 @@ const useLoginForm = (countryCode = '+91') => {
         } else {
           // Email OTP
           if (Capacitor.isNativePlatform()) {
-            toast((t) => (
-              <div className="flex flex-col gap-1 p-1">
-                <div className="font-bold text-sm text-black flex items-center gap-1">
-                  🔔 Kridaz Notification
+            toast(
+              (t) => (
+                <div className="flex flex-col gap-1 p-1">
+                  <div className="font-bold text-sm text-black flex items-center gap-1">
+                    🔔 Kridaz Notification
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    OTP sent to your email. Please enter it below.
+                  </div>
                 </div>
-                <div className="text-xs text-gray-600">
-                  OTP sent to your email. Please enter it below.
-                </div>
-              </div>
-            ), { position: 'top-center', duration: 8000 });
+              ),
+              { position: "top-center", duration: 8000 }
+            );
           }
           toast.success("OTP sent to your email");
           setShowOtpInput(true);
@@ -143,7 +187,7 @@ const useLoginForm = (countryCode = '+91') => {
       }
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Login failed";
-      
+
       if (errorMessage.toLowerCase().includes("account not found")) {
         setAccountNotFound(true);
         toast.error("Account not found. Redirecting to sign up...");
@@ -162,23 +206,28 @@ const useLoginForm = (countryCode = '+91') => {
       let { email } = getValues();
       const isPhoneInput = /^[0-9]{10}$/.test(email);
       if (isPhoneInput) {
-        const cleanCountryCode = countryCode.replace('+', '');
-        email = cleanCountryCode + email;
+        email = countryCode + email;
       }
 
-      const payload = { 
-        email, 
-        otp: data.otp, 
-        password: data.password 
+      const payload = {
+        email,
+        otp: data.otp,
+        password: data.password,
       };
 
-      const response = await axiosInstance.post("/api/user/auth/login", payload);
+      const response = await axiosInstance.post(
+        "/api/user/auth/login",
+        payload
+      );
       const result = response.data;
-      
-      dispatch(login({ token: result.token, role: result.role, user: result.user }));
-      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${result.token}`;
+
+      dispatch(
+        login({ token: result.token, role: result.role, user: result.user })
+      );
+      axiosInstance.defaults.headers.common["Authorization"] =
+        `Bearer ${result.token}`;
       toast.success(result.message);
-      
+
       handleRoleRedirect(result.role);
     } catch (error) {
       toast.error(error.response?.data?.message || "Verification failed");
@@ -199,7 +248,7 @@ const useLoginForm = (countryCode = '+91') => {
     try {
       const payload = {
         role: "user",
-        mode: "signin"
+        mode: "signin",
       };
 
       if (googleResponse.credential) {
@@ -208,17 +257,27 @@ const useLoginForm = (countryCode = '+91') => {
         payload.accessToken = googleResponse.access_token;
       }
 
-      const response = await axiosInstance.post("/api/user/auth/google-auth", payload);
+      const response = await axiosInstance.post(
+        "/api/user/auth/google-auth",
+        payload
+      );
       const result = response.data;
-      
-      dispatch(login({ token: result.token, role: result.role, user: result.user }));
-      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${result.token}`;
+
+      dispatch(
+        login({ token: result.token, role: result.role, user: result.user })
+      );
+      axiosInstance.defaults.headers.common["Authorization"] =
+        `Bearer ${result.token}`;
       toast.success("Logged in with Google!");
-      
+
       handleRoleRedirect(result.role);
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Google login failed";
-      if (errorMessage.toLowerCase().includes("account not found") || errorMessage.toLowerCase().includes("sign up first")) {
+      const errorMessage =
+        error.response?.data?.message || "Google login failed";
+      if (
+        errorMessage.toLowerCase().includes("account not found") ||
+        errorMessage.toLowerCase().includes("sign up first")
+      ) {
         toast.error("Account not found. Redirecting to sign up...");
         navigate("/signup");
       } else {
@@ -248,9 +307,8 @@ const useLoginForm = (countryCode = '+91') => {
     timeLeft,
     handleSendOtp: handleLoginStep1,
     isPhoneAuth,
-    watch
+    watch,
   };
 };
 
 export default useLoginForm;
-

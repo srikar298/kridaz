@@ -13,7 +13,5 @@ export const featuresApi = baseApi.injectEndpoints({
   }),
 });
 
-export const {
-  useGetFeaturesFlagsQuery,
-  useGetMarketingContentQuery,
-} = featuresApi;
+export const { useGetFeaturesFlagsQuery, useGetMarketingContentQuery } =
+  featuresApi;

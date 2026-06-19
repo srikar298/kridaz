@@ -1,15 +1,15 @@
 import { Router } from "express";
-import { 
-  getFailedJobs, 
-  retryJob, 
+import {
+  getFailedJobs,
+  retryJob,
   removeFailedJob,
-  sendAdminPushNotification
+  sendAdminPushNotification,
 } from "../admin.notification.controller.js";
 import {
   getMyNotifications,
   markAsRead,
   markAllAsRead,
-  clearNotifications
+  clearNotifications,
 } from "../notification.controller.js";
 
 const router = Router();
@@ -105,4 +105,3 @@ router.post("/failed/:jobId/retry", retryJob);
 router.delete("/failed/:jobId", removeFailedJob);
 
 export default router;
-

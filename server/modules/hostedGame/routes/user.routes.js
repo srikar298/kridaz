@@ -1,5 +1,7 @@
 import express from "express";
-import verifyUser, { optionalUserAuth } from "../../../middleware/jwt/user.middleware.js";
+import verifyUser, {
+  optionalUserAuth,
+} from "../../../middleware/jwt/user.middleware.js";
 import * as controller from "../hostedGame.controller.js";
 
 import { validate } from "../../../middleware/validate.middleware.js";
@@ -206,7 +208,12 @@ router.post("/validate-coupon", verifyUser, controller.validateCoupon);
  *           application/json:
  *             schema: { $ref: '#/components/schemas/HostedGame' }
  */
-router.post("/create", verifyUser, validate(createHostedGameSchema), controller.createHostedGame);
+router.post(
+  "/create",
+  verifyUser,
+  validate(createHostedGameSchema),
+  controller.createHostedGame
+);
 
 /**
  * @swagger
@@ -418,7 +425,11 @@ router.post("/request-umpire", verifyUser, controller.requestToUmpire);
  *       200:
  *         description: Request handled
  */
-router.post("/handle-umpire-request", verifyUser, controller.handleUmpireRequest);
+router.post(
+  "/handle-umpire-request",
+  verifyUser,
+  controller.handleUmpireRequest
+);
 
 /**
  * @swagger
@@ -446,7 +457,11 @@ router.post("/request-streamer", verifyUser, controller.requestToStreamer);
  *       200:
  *         description: Request handled
  */
-router.post("/handle-streamer-request", verifyUser, controller.handleStreamerRequest);
+router.post(
+  "/handle-streamer-request",
+  verifyUser,
+  controller.handleStreamerRequest
+);
 
 /**
  * @swagger
@@ -474,7 +489,11 @@ router.post("/request-scorer", verifyUser, controller.requestToScorer);
  *       200:
  *         description: Request handled
  */
-router.post("/handle-scorer-request", verifyUser, controller.handleScorerRequest);
+router.post(
+  "/handle-scorer-request",
+  verifyUser,
+  controller.handleScorerRequest
+);
 
 /**
  * @swagger
@@ -502,7 +521,11 @@ router.post("/invite-official", verifyUser, controller.inviteOfficial);
  *       200:
  *         description: Response recorded
  */
-router.post("/respond-to-official-invitation", verifyUser, controller.respondToOfficialInvitation);
+router.post(
+  "/respond-to-official-invitation",
+  verifyUser,
+  controller.respondToOfficialInvitation
+);
 
 /**
  * @swagger
@@ -540,7 +563,11 @@ router.post("/:id/stream-config", verifyUser, controller.updateStreamConfig);
  *       200:
  *         description: Theme updated
  */
-router.post("/update-ticker-theme/:id", verifyUser, controller.updateTickerTheme);
+router.post(
+  "/update-ticker-theme/:id",
+  verifyUser,
+  controller.updateTickerTheme
+);
 
 /**
  * @swagger

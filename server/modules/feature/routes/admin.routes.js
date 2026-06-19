@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { toggleFeatureFlag, seedFeatureFlags } from "../../admin/featureFlag.controller.js";
+import {
+  toggleFeatureFlag,
+  seedFeatureFlags,
+} from "../../admin/featureFlag.controller.js";
 
 const router = Router();
 

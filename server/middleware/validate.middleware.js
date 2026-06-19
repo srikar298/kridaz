@@ -1,6 +1,6 @@
 /**
  * Generic Validation Middleware using Zod
- * @param {import('zod').ZodSchema} schema 
+ * @param {import('zod').ZodSchema} schema
  */
 export const validate = (schema) => (req, res, next) => {
   try {

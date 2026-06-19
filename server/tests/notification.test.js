@@ -22,7 +22,7 @@ const seedOtp = async (email, phone) => {
       phone,
       emailOtp: "123456",
       phoneOtp: "123456",
-      expiresAt: new Date(Date.now() + 600000)
+      expiresAt: new Date(Date.now() + 600000),
     },
   });
 };
@@ -30,32 +30,44 @@ const seedOtp = async (email, phone) => {
 describe("Notification Module API Integration Tests", () => {
   beforeAll(async () => {
     // Clean up
-    const existingUser = await prisma.user.findFirst({ where: { email: emailUser } });
+    const existingUser = await prisma.user.findFirst({
+      where: { email: emailUser },
+    });
     if (existingUser) {
-      await prisma.notification.deleteMany({ where: { userId: existingUser.id } }).catch(() => {});
-      await prisma.userDevice.deleteMany({ where: { userId: existingUser.id } }).catch(() => {});
-      await prisma.user.delete({ where: { id: existingUser.id } }).catch(() => {});
+      await prisma.notification
+        .deleteMany({ where: { userId: existingUser.id } })
+        .catch(() => {});
+      await prisma.userDevice
+        .deleteMany({ where: { userId: existingUser.id } })
+        .catch(() => {});
+      await prisma.user
+        .delete({ where: { id: existingUser.id } })
+        .catch(() => {});
     }
-    await prisma.oTP.deleteMany({ where: { email: emailUser } }).catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: emailUser } })
+      .catch(() => {});
 
     // Seed OTP
     await seedOtp(emailUser, phoneUser);
 
     // Register general USER
-    const otpRes_regUser = await request(app).post('/api/user/auth/verify-otp').send({ email: emailUser, phone: phoneUser, otp: "123456" });
-    const regUser = await request(app)
-      .post("/api/user/auth/register")
-      .send({
-        name: "Notify General User",
-        email: emailUser,
-        username: userNameUser,
-        phone: phoneUser,
-        gender: "Male",
-        location: "Delhi",
-        password: "User@Pass123",
-        confirmPassword: "User@Pass123",
-        otp: "123456",
-        phoneOtp: "123456", registrationToken: otpRes_regUser.body.registrationToken});
+    const otpRes_regUser = await request(app)
+      .post("/api/user/auth/verify-otp")
+      .send({ email: emailUser, phone: phoneUser, otp: "123456" });
+    const regUser = await request(app).post("/api/user/auth/register").send({
+      name: "Notify General User",
+      email: emailUser,
+      username: userNameUser,
+      phone: phoneUser,
+      gender: "Male",
+      location: "Delhi",
+      password: "User@Pass123",
+      confirmPassword: "User@Pass123",
+      otp: "123456",
+      phoneOtp: "123456",
+      registrationToken: otpRes_regUser.body.registrationToken,
+    });
 
     if (regUser.statusCode === 201) {
       userToken = regUser.body.token;
@@ -71,8 +83,8 @@ describe("Notification Module API Integration Tests", () => {
           title: "Test Notification",
           message: "This is a test notification",
           type: "INFO",
-          isRead: false
-        }
+          isRead: false,
+        },
       });
       notificationId = notif.id;
 
@@ -83,8 +95,8 @@ describe("Notification Module API Integration Tests", () => {
           title: "Test Notification 2",
           message: "This is a second test notification",
           type: "INFO",
-          isRead: false
-        }
+          isRead: false,
+        },
       });
     }
   }, 30000);
@@ -92,11 +104,17 @@ describe("Notification Module API Integration Tests", () => {
   afterAll(async () => {
     const user = await prisma.user.findFirst({ where: { email: emailUser } });
     if (user) {
-      await prisma.notification.deleteMany({ where: { userId: user.id } }).catch(() => {});
-      await prisma.userDevice.deleteMany({ where: { userId: user.id } }).catch(() => {});
+      await prisma.notification
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
+      await prisma.userDevice
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
       await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
     }
-    await prisma.oTP.deleteMany({ where: { email: emailUser } }).catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: emailUser } })
+      .catch(() => {});
   });
 
   describe("GET /api/user/notification - Fetch User Notifications", () => {
@@ -121,7 +139,9 @@ describe("Notification Module API Integration Tests", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
 
-      const notif = await prisma.notification.findUnique({ where: { id: notificationId } });
+      const notif = await prisma.notification.findUnique({
+        where: { id: notificationId },
+      });
       expect(notif.isRead).toBe(true);
     });
   });
@@ -135,7 +155,9 @@ describe("Notification Module API Integration Tests", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
 
-      const unreadCount = await prisma.notification.count({ where: { userId, recipientModel: "User", isRead: false } });
+      const unreadCount = await prisma.notification.count({
+        where: { userId, recipientModel: "User", isRead: false },
+      });
       expect(unreadCount).toBe(0);
     });
   });
@@ -177,7 +199,9 @@ describe("Notification Module API Integration Tests", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
 
-      const count = await prisma.notification.count({ where: { userId, recipientModel: "User" } });
+      const count = await prisma.notification.count({
+        where: { userId, recipientModel: "User" },
+      });
       expect(count).toBe(0);
     });
   });

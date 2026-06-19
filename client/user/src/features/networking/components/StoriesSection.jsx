@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Plus, User, Video } from "lucide-react";
-import { useGetStoriesFeedQuery, useDeleteStoryMutation } from "@redux/api/communityApi";
+import {
+  useGetStoriesFeedQuery,
+  useDeleteStoryMutation,
+} from "@redux/api/communityApi";
 import { useNavigate } from "react-router-dom";
 import StoryViewer from "./StoryViewer";
 import toast from "react-hot-toast";
@@ -10,7 +13,8 @@ import toast from "react-hot-toast";
 const getStoryThumb = (story) => {
   if (!story) return null;
   if (story.thumbnailUrl) return story.thumbnailUrl;
-  if (story.mediaUrl && !story.mediaUrl.includes('.m3u8')) return story.mediaUrl;
+  if (story.mediaUrl && !story.mediaUrl.includes(".m3u8"))
+    return story.mediaUrl;
   return null; // HLS-only video — no image to render
 };
 
@@ -30,22 +34,33 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
 
   useEffect(() => {
     const handleOpenCreateStory = () => {
-      gateInteraction(() => navigate('/create-story'));
+      gateInteraction(() => navigate("/create-story"));
     };
-    window.addEventListener('openCreateStory', handleOpenCreateStory);
-    return () => window.removeEventListener('openCreateStory', handleOpenCreateStory);
+    window.addEventListener("openCreateStory", handleOpenCreateStory);
+    return () =>
+      window.removeEventListener("openCreateStory", handleOpenCreateStory);
   }, [gateInteraction]);
 
   const hasSeenGroup = (group) => {
     if (!currentUserId) return false;
     return group.stories.every((story) =>
-      story.viewers?.some((viewer) => (viewer.id || viewer._id || viewer) === currentUserId)
+      story.viewers?.some(
+        (viewer) => (viewer.id || viewer._id || viewer) === currentUserId
+      )
     );
   };
 
   const stories = storiesData?.stories || [];
-  const myStoryGroup = currentUserId ? stories.find((group) => (group.user?._id || group.user?.id) === currentUserId) : null;
-  const otherStories = currentUserId ? stories.filter((group) => (group.user?._id || group.user?.id) !== currentUserId) : stories;
+  const myStoryGroup = currentUserId
+    ? stories.find(
+        (group) => (group.user?._id || group.user?.id) === currentUserId
+      )
+    : null;
+  const otherStories = currentUserId
+    ? stories.filter(
+        (group) => (group.user?._id || group.user?.id) !== currentUserId
+      )
+    : stories;
 
   const handleDeleteStory = async (storyId) => {
     if (!window.confirm("Are you sure you want to delete this story?")) return;
@@ -54,20 +69,25 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
       toast.success("Story deleted");
       setSelectedStoryGroup(null);
     } catch (error) {
-      toast.error(error?.data?.message || error.message || "Failed to delete story");
+      toast.error(
+        error?.data?.message || error.message || "Failed to delete story"
+      );
     }
   };
 
   const handleNextUser = () => {
     const getUserId = (g) => g?.user?._id || g?.user?.id;
-    const isMyStory = myStoryGroup && getUserId(selectedStoryGroup) === getUserId(myStoryGroup);
+    const isMyStory =
+      myStoryGroup && getUserId(selectedStoryGroup) === getUserId(myStoryGroup);
 
     if (isMyStory) {
       setSelectedStoryGroup(null);
       return;
     }
 
-    const currentIndex = otherStories.findIndex((g) => getUserId(g) === getUserId(selectedStoryGroup));
+    const currentIndex = otherStories.findIndex(
+      (g) => getUserId(g) === getUserId(selectedStoryGroup)
+    );
     if (currentIndex !== -1 && currentIndex < otherStories.length - 1) {
       setSelectedStoryGroup(otherStories[currentIndex + 1]);
     } else {
@@ -77,11 +97,14 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
 
   const handlePrevUser = () => {
     const getUserId = (g) => g?.user?._id || g?.user?.id;
-    const isMyStory = myStoryGroup && getUserId(selectedStoryGroup) === getUserId(myStoryGroup);
+    const isMyStory =
+      myStoryGroup && getUserId(selectedStoryGroup) === getUserId(myStoryGroup);
 
     if (isMyStory) return;
 
-    const currentIndex = otherStories.findIndex((g) => getUserId(g) === getUserId(selectedStoryGroup));
+    const currentIndex = otherStories.findIndex(
+      (g) => getUserId(g) === getUserId(selectedStoryGroup)
+    );
     if (currentIndex > 0) {
       setSelectedStoryGroup(otherStories[currentIndex - 1]);
     }
@@ -94,7 +117,9 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
         <div className="flex flex-col items-center gap-2.5 shrink-0 group relative">
           <div
             className={`w-[72px] h-[72px] rounded-full p-[2px] relative ${
-              myStoryGroup && hasSeenGroup(myStoryGroup) ? "bg-white/20" : "bg-gradient-to-r from-[#BFF367] to-[#BFF367]"
+              myStoryGroup && hasSeenGroup(myStoryGroup)
+                ? "bg-white/20"
+                : "bg-gradient-to-r from-[#BFF367] to-[#BFF367]"
             }`}
           >
             <div
@@ -102,55 +127,64 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
                 if (myStoryGroup) {
                   setSelectedStoryGroup(myStoryGroup);
                 } else {
-                  gateInteraction(() => navigate('/create-story'));
+                  gateInteraction(() => navigate("/create-story"));
                 }
               }}
               className="w-full h-full rounded-full bg-[#0A0A0A] p-[2px] cursor-pointer"
             >
               <div className="w-full h-full rounded-full flex items-center justify-center overflow-hidden bg-[#111]">
-              {myStoryGroup && getStoryThumb(myStoryGroup.stories[0]) ? (
-                <img
-                  src={getStoryThumb(myStoryGroup.stories[0])}
-                  className={`w-full h-full object-cover ${
-                    myStoryGroup.stories.some((s) => s.status === "pending" || s.status === "processing") ? "blur-sm opacity-50" : ""
-                  }`}
-                  alt="Your story"
-                />
-              ) : myStoryGroup && myStoryGroup.stories[0].mediaType === 'video' ? (
-                <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#111] to-[#1a1a1a]">
-                  <Video size={24} className="text-[#BFF367] mb-1" />
-                  <span className="text-[7px] font-bold text-white/40 uppercase tracking-wider">Video</span>
-                </div>
-              ) : myStoryGroup && myStoryGroup.stories[0].content ? (
-                <div className="w-full h-full flex items-center justify-center text-[7px] p-2 text-center text-[#BFF367] font-bold bg-[#111]">
-                  {myStoryGroup.stories[0].content?.slice(0, 15)}
-                </div>
-              ) : user?.profilePicture || user?.profileImage ? (
-                <>
+                {myStoryGroup && getStoryThumb(myStoryGroup.stories[0]) ? (
                   <img
-                    src={user.profilePicture || user.profileImage}
-                    className="w-full h-full object-cover opacity-60"
-                    alt="Profile"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                      e.currentTarget.nextElementSibling.style.display = 'flex';
-                    }}
+                    src={getStoryThumb(myStoryGroup.stories[0])}
+                    className={`w-full h-full object-cover ${
+                      myStoryGroup.stories.some(
+                        (s) =>
+                          s.status === "pending" || s.status === "processing"
+                      )
+                        ? "blur-sm opacity-50"
+                        : ""
+                    }`}
+                    alt="Your story"
                   />
-                  <div className="hidden w-full h-full items-center justify-center bg-[#111]">
+                ) : myStoryGroup &&
+                  myStoryGroup.stories[0].mediaType === "video" ? (
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#111] to-[#1a1a1a]">
+                    <Video size={24} className="text-[#BFF367] mb-1" />
+                    <span className="text-[7px] font-bold text-white/40 uppercase tracking-wider">
+                      Video
+                    </span>
+                  </div>
+                ) : myStoryGroup && myStoryGroup.stories[0].content ? (
+                  <div className="w-full h-full flex items-center justify-center text-[7px] p-2 text-center text-[#BFF367] font-bold bg-[#111]">
+                    {myStoryGroup.stories[0].content?.slice(0, 15)}
+                  </div>
+                ) : user?.profilePicture || user?.profileImage ? (
+                  <>
+                    <img
+                      src={user.profilePicture || user.profileImage}
+                      className="w-full h-full object-cover opacity-60"
+                      alt="Profile"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                        e.currentTarget.nextElementSibling.style.display =
+                          "flex";
+                      }}
+                    />
+                    <div className="hidden w-full h-full items-center justify-center bg-[#111]">
+                      <User size={32} className="text-gray-600" />
+                    </div>
+                  </>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-[#111]">
                     <User size={32} className="text-gray-600" />
                   </div>
-                </>
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-[#111]">
-                  <User size={32} className="text-gray-600" />
-                </div>
-              )}
+                )}
               </div>
             </div>
             <div
               onClick={(e) => {
                 e.stopPropagation();
-                gateInteraction(() => navigate('/create-story'));
+                gateInteraction(() => navigate("/create-story"));
               }}
               className="absolute bottom-0 right-0 w-[24px] h-[24px] bg-gradient-to-r from-[#BFF367] to-[#BFF367] rounded-full flex items-center justify-center border-2 border-[#0A0A0A] cursor-pointer hover:scale-110 transition-transform z-10 shadow-lg"
             >
@@ -169,7 +203,9 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
             onClick={() => setSelectedStoryGroup(group)}
             className="flex flex-col items-center gap-2.5 shrink-0 cursor-pointer group"
           >
-            <div className={`w-[72px] h-[72px] rounded-full p-[2px] relative ${hasSeenGroup(group) ? "bg-white/20" : "bg-gradient-to-r from-[#BFF367] to-[#BFF367]"}`}>
+            <div
+              className={`w-[72px] h-[72px] rounded-full p-[2px] relative ${hasSeenGroup(group) ? "bg-white/20" : "bg-gradient-to-r from-[#BFF367] to-[#BFF367]"}`}
+            >
               <div className="w-full h-full rounded-full bg-[#0A0A0A] p-[2px]">
                 <div className="w-full h-full rounded-full overflow-hidden bg-[#111]">
                   {getStoryThumb(group.stories[0]) ? (
@@ -177,13 +213,20 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
                       src={getStoryThumb(group.stories[0])}
                       alt=""
                       className={`w-full h-full object-cover ${
-                        group.stories.some((s) => s.status === "pending" || s.status === "processing") ? "blur-sm opacity-50" : ""
+                        group.stories.some(
+                          (s) =>
+                            s.status === "pending" || s.status === "processing"
+                        )
+                          ? "blur-sm opacity-50"
+                          : ""
                       }`}
                     />
-                  ) : group.stories[0].mediaType === 'video' ? (
+                  ) : group.stories[0].mediaType === "video" ? (
                     <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#111] to-[#1a1a1a]">
                       <Video size={24} className="text-[#BFF367] mb-1" />
-                      <span className="text-[7px] font-bold text-white/40 uppercase tracking-wider">Video</span>
+                      <span className="text-[7px] font-bold text-white/40 uppercase tracking-wider">
+                        Video
+                      </span>
                     </div>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-[7px] p-2 text-center text-[#BFF367] font-bold bg-[#111]">
@@ -199,7 +242,6 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
           </div>
         ))}
       </div>
-
 
       {selectedStoryGroup && (
         <StoryViewer
@@ -217,4 +259,3 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
 };
 
 export default StoriesSection;
-

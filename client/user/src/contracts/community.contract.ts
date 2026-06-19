@@ -2,7 +2,12 @@ import { z } from "zod";
 
 export const mediaTypeSchema = z.enum(["IMAGE", "VIDEO"]);
 
-export const mediaStatusSchema = z.enum(["PENDING", "PROCESSING", "COMPLETED", "FAILED"]);
+export const mediaStatusSchema = z.enum([
+  "PENDING",
+  "PROCESSING",
+  "COMPLETED",
+  "FAILED",
+]);
 
 export const communityPostSchema = z.object({
   id: z.string().uuid(),
@@ -16,7 +21,7 @@ export const communityPostSchema = z.object({
   authorPicture: z.string().optional(),
   likesCount: z.number().nonnegative().default(0),
   commentsCount: z.number().nonnegative().default(0),
-  createdAt: z.string().datetime()
+  createdAt: z.string().datetime(),
 });
 
 export const communityStorySchema = z.object({
@@ -28,14 +33,14 @@ export const communityStorySchema = z.object({
   authorName: z.string().min(1),
   authorPicture: z.string().optional(),
   expiresAt: z.string().datetime(),
-  createdAt: z.string().datetime()
+  createdAt: z.string().datetime(),
 });
 
 export const createPostSchema = z.object({
   title: z.string().min(1, "Caption must be provided"),
   content: z.string().optional(),
   mediaUrl: z.string().optional(),
-  mediaType: mediaTypeSchema.optional()
+  mediaType: mediaTypeSchema.optional(),
 });
 
 export type MediaType = z.infer<typeof mediaTypeSchema>;

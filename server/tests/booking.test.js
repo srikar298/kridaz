@@ -6,24 +6,24 @@ import logger from "../utils/logger.js";
 
 dotenv.config();
 
-const ts        = Date.now();
+const ts = Date.now();
 const userEmail = `booker_${ts}@kridaz.test`;
 const userPhone = `92222${String(ts).slice(-5)}`;
-const userName  = `booker_${ts}`;
-let userToken   = "";
-let testTurfId  = "";
+const userName = `booker_${ts}`;
+let userToken = "";
+let testTurfId = "";
 let testBookingId = "";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const seedOtp = async (email, phone) => {
   await prisma.oTP.deleteMany({ where: { email } });
   await prisma.oTP.create({
-    data: { 
-      email, 
-      phone, 
-      emailOtp: "123456", 
+    data: {
+      email,
+      phone,
+      emailOtp: "123456",
       phoneOtp: "123456",
-      expiresAt: new Date(Date.now() + 600000)
+      expiresAt: new Date(Date.now() + 600000),
     },
   });
 };
@@ -54,29 +54,39 @@ describe("Booking Module API", () => {
   // ── Setup — register user and find a live turf ────────────────────────
   beforeAll(async () => {
     // Clean up any leftover test data
-    await prisma.walletTransaction.deleteMany({ where: { user: { email: userEmail } } }).catch(() => {});
-    await prisma.refreshToken.deleteMany({ where: { user: { email: userEmail } } }).catch(() => {});
-    await prisma.booking.deleteMany({ where: { user: { email: userEmail } } }).catch(() => {});
-    await prisma.user.deleteMany({ where: { email: userEmail } }).catch(() => {});
+    await prisma.walletTransaction
+      .deleteMany({ where: { user: { email: userEmail } } })
+      .catch(() => {});
+    await prisma.refreshToken
+      .deleteMany({ where: { user: { email: userEmail } } })
+      .catch(() => {});
+    await prisma.booking
+      .deleteMany({ where: { user: { email: userEmail } } })
+      .catch(() => {});
+    await prisma.user
+      .deleteMany({ where: { email: userEmail } })
+      .catch(() => {});
     await prisma.oTP.deleteMany({ where: { email: userEmail } });
 
     await seedOtp(userEmail, userPhone);
 
     // Register test user
-    const otpRes_regRes = await request(app).post('/api/user/auth/verify-otp').send({ email: userEmail, phone: userPhone, otp: "123456" });
-    const regRes = await request(app)
-      .post("/api/user/auth/register")
-      .send({
-        name:            "Booking Tester",
-        email:           userEmail,
-        username:        userName,
-        phone:           userPhone,
-        gender:          "Male",
-        location:        "Test City",
-        password:        "Booker@Pass123",
-        confirmPassword: "Booker@Pass123",
-        otp:             "123456",
-        phoneOtp: "123456", registrationToken: otpRes_regRes.body.registrationToken});
+    const otpRes_regRes = await request(app)
+      .post("/api/user/auth/verify-otp")
+      .send({ email: userEmail, phone: userPhone, otp: "123456" });
+    const regRes = await request(app).post("/api/user/auth/register").send({
+      name: "Booking Tester",
+      email: userEmail,
+      username: userName,
+      phone: userPhone,
+      gender: "Male",
+      location: "Test City",
+      password: "Booker@Pass123",
+      confirmPassword: "Booker@Pass123",
+      otp: "123456",
+      phoneOtp: "123456",
+      registrationToken: otpRes_regRes.body.registrationToken,
+    });
 
     if (regRes.statusCode !== 201) {
       logger.info("[booking setup register]", regRes.body);
@@ -91,7 +101,9 @@ describe("Booking Module API", () => {
       testTurfId = turfs[0].id;
       logger.info("[booking setup] Using turf:", testTurfId);
     } else {
-      logger.warn("[booking setup] No approved turfs found — booking flow tests will be skipped.");
+      logger.warn(
+        "[booking setup] No approved turfs found — booking flow tests will be skipped."
+      );
     }
   }, 30000);
 
@@ -99,12 +111,20 @@ describe("Booking Module API", () => {
     // Clean up bookings created by this test user
     const user = await prisma.user.findFirst({ where: { email: userEmail } });
     if (user) {
-      await prisma.walletTransaction.deleteMany({ where: { userId: user.id } }).catch(() => {});
-      await prisma.refreshToken.deleteMany({ where: { userId: user.id } }).catch(() => {});
-      await prisma.booking.deleteMany({ where: { userId: user.id } }).catch(() => {});
+      await prisma.walletTransaction
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
+      await prisma.refreshToken
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
+      await prisma.booking
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
       await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
     }
-    await prisma.oTP.deleteMany({ where: { email: userEmail } }).catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: userEmail } })
+      .catch(() => {});
     await prisma.$disconnect();
   });
 
@@ -155,11 +175,11 @@ describe("Booking Module API", () => {
       const res = await request(app)
         .post("/api/booking/user/book-with-wallet")
         .send({
-          turfId:           "dummy-id",
-          startTime:        slotStart(),
-          endTime:          slotEnd(),
+          turfId: "dummy-id",
+          startTime: slotStart(),
+          endTime: slotEnd(),
           selectedTurfDate: futureDateStr(),
-          totalPrice:       500,
+          totalPrice: 500,
         });
 
       expect(res.statusCode).toBe(401);
@@ -183,28 +203,29 @@ describe("Booking Module API", () => {
         .post("/api/booking/user/book-with-wallet")
         .set("Authorization", `Bearer ${userToken}`)
         .send({
-          turfId:           "non-existent-turf-id-00000",
-          startTime:        slotStart(),
-          endTime:          slotEnd(),
+          turfId: "non-existent-turf-id-00000",
+          startTime: slotStart(),
+          endTime: slotEnd(),
           selectedTurfDate: futureDateStr(),
-          totalPrice:       500,
+          totalPrice: 500,
         });
 
       expect([400, 404, 422]).toContain(res.statusCode);
     });
 
     it("should attempt wallet booking on real turf (insufficient funds guard)", async () => {
-      if (!userToken || !testTurfId) return logger.warn("Skipped: no token or turf");
+      if (!userToken || !testTurfId)
+        return logger.warn("Skipped: no token or turf");
 
       const res = await request(app)
         .post("/api/booking/user/book-with-wallet")
         .set("Authorization", `Bearer ${userToken}`)
         .send({
-          turfId:           testTurfId,
-          startTime:        slotStart(),
-          endTime:          slotEnd(),
+          turfId: testTurfId,
+          startTime: slotStart(),
+          endTime: slotEnd(),
           selectedTurfDate: futureDateStr(),
-          totalPrice:       9999999, // deliberately too high → insufficient wallet balance
+          totalPrice: 9999999, // deliberately too high → insufficient wallet balance
         });
 
       if (res.statusCode !== 200) logger.info("[wallet-book]", res.body);
@@ -238,7 +259,9 @@ describe("Booking Module API", () => {
   // ── 4. Get Booking By ID ──────────────────────────────────────────────
   describe("GET /api/booking/user/:id", () => {
     it("should return 404 for a non-existent booking ID", async () => {
-      const res = await request(app).get("/api/booking/user/nonexistent-booking-id");
+      const res = await request(app).get(
+        "/api/booking/user/nonexistent-booking-id"
+      );
       expect([404, 400]).toContain(res.statusCode);
     });
   });

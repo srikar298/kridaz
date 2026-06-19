@@ -4,29 +4,42 @@ import axiosInstance from "@hooks/useAxiosInstance";
 import OwnerList from "./OwnerList";
 import SearchBar from "./SearchBar";
 import OwnersSkeleton from "./OwnersSkeleton";
-import { Users, Building, Activity, ShieldCheck, Trash2, Ban, CheckCircle, X } from "lucide-react";
+import {
+  Users,
+  Building,
+  Activity,
+  ShieldCheck,
+  Trash2,
+  Ban,
+  CheckCircle,
+  X,
+} from "lucide-react";
 import CountUp from "react-countup";
 import ConfirmationModal from "@components/shared/ConfirmationModal";
 
 const OwnerViewer = () => {
-  const { 
-    owners, 
-    loading, 
-    searchTerm, 
-    handleSearch, 
-    deleteOwner, 
-    batchDeleteOwners, 
-    batchUpdateOwnerStatus 
+  const {
+    owners,
+    loading,
+    searchTerm,
+    handleSearch,
+    deleteOwner,
+    batchDeleteOwners,
+    batchUpdateOwnerStatus,
   } = useOwners();
 
   const [stats, setStats] = useState({
     totalOwners: 0,
     activeOwners: 0,
-    growthRate: "+12.5%"
+    growthRate: "+12.5%",
   });
 
   const [selectedIds, setSelectedIds] = useState([]);
-  const [modalConfig, setModalConfig] = useState({ isOpen: false, type: "", target: null });
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    type: "",
+    target: null,
+  });
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -35,7 +48,7 @@ const OwnerViewer = () => {
         setStats({
           totalOwners: response.data.totalOwners || 0,
           activeOwners: owners.length,
-          growthRate: "+12.5%"
+          growthRate: "+12.5%",
         });
       } catch (err) {
         console.error("Error fetching stats:", err);
@@ -45,8 +58,8 @@ const OwnerViewer = () => {
   }, [owners.length]);
 
   const handleSelect = (id) => {
-    setSelectedIds(prev => 
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
@@ -54,7 +67,7 @@ const OwnerViewer = () => {
     if (selectedIds.length === owners.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(owners.map(o => o._id));
+      setSelectedIds(owners.map((o) => o._id));
     }
   };
 
@@ -65,7 +78,7 @@ const OwnerViewer = () => {
       target: owner,
       title: "Delete Venue Owner",
       message: `Are you sure you want to PERMANENTLY delete ${owner.name}? This will remove their owner profile and system access.`,
-      confirmText: "Delete Record"
+      confirmText: "Delete Record",
     });
   };
 
@@ -76,20 +89,20 @@ const OwnerViewer = () => {
       target: selectedIds,
       title: "Batch Delete Owners",
       message: `Are you sure you want to PERMANENTLY delete ${selectedIds.length} selected records? This action is irreversible.`,
-      confirmText: `Delete ${selectedIds.length} Records`
+      confirmText: `Delete ${selectedIds.length} Records`,
     });
   };
 
   const handleConfirmAction = async () => {
     const { type, target } = modalConfig;
-    
+
     if (type === "DELETE_SINGLE") {
       await deleteOwner(target._id);
     } else if (type === "DELETE_BATCH") {
       await batchDeleteOwners(target);
       setSelectedIds([]);
     }
-    
+
     setModalConfig({ ...modalConfig, isOpen: false });
   };
 
@@ -107,7 +120,6 @@ const OwnerViewer = () => {
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#CCFF00]/5 blur-[120px] pointer-events-none" />
 
         <div className="space-y-12 lg:space-y-16 relative z-10">
-          
           {/* Header Section */}
           <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-10 border-b border-[#2D2D2D] pb-10">
             <div className="relative">
@@ -133,9 +145,11 @@ const OwnerViewer = () => {
                   <div className="w-6 h-6 rounded bg-[#CCFF00] flex items-center justify-center text-black font-black text-xs">
                     {selectedIds.length}
                   </div>
-                  <span className="text-xs font-black uppercase tracking-widest text-[#CCFF00]">Selected</span>
+                  <span className="text-xs font-black uppercase tracking-widest text-[#CCFF00]">
+                    Selected
+                  </span>
                 </div>
-                <button 
+                <button
                   onClick={() => setSelectedIds([])}
                   className="text-white/40 hover:text-white transition-colors"
                 >
@@ -144,20 +158,20 @@ const OwnerViewer = () => {
               </div>
 
               <div className="flex items-center gap-3">
-                <button 
+                <button
                   onClick={() => handleBatchStatusUpdate("blocked")}
                   className="px-4 py-2 bg-orange-500/10 border border-orange-500/20 rounded-[8px] text-orange-400 font-black text-[10px] uppercase tracking-widest hover:bg-orange-500/20 transition-all flex items-center gap-2"
                 >
                   <Ban size={14} /> Block
                 </button>
-                <button 
+                <button
                   onClick={() => handleBatchStatusUpdate("active")}
                   className="px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-[8px] text-green-400 font-black text-[10px] uppercase tracking-widest hover:bg-green-500/20 transition-all flex items-center gap-2"
                 >
                   <CheckCircle size={14} /> Activate
                 </button>
                 <div className="w-px h-6 bg-white/10 mx-2" />
-                <button 
+                <button
                   onClick={openBatchDeleteModal}
                   className="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-[8px] text-red-400 font-black text-[10px] uppercase tracking-widest hover:bg-red-500/20 transition-all flex items-center gap-2"
                 >
@@ -204,9 +218,11 @@ const OwnerViewer = () => {
             {/* Table Header */}
             <div className="hidden lg:grid grid-cols-12 gap-4 px-8 py-4 bg-[#0d0d0d] border border-[#2D2D2D] rounded-[12px] text-[10px] font-black text-[#878C9F] uppercase tracking-[0.2em] shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] items-center">
               <div className="col-span-1 flex justify-center">
-                <input 
-                  type="checkbox" 
-                  checked={owners.length > 0 && selectedIds.length === owners.length}
+                <input
+                  type="checkbox"
+                  checked={
+                    owners.length > 0 && selectedIds.length === owners.length
+                  }
                   onChange={handleSelectAll}
                   className="w-5 h-5 rounded border-[#2D2D2D] bg-[#0d0d0d] text-[#CCFF00] focus:ring-[#CCFF00]/50"
                 />
@@ -217,8 +233,8 @@ const OwnerViewer = () => {
               <div className="col-span-1">Account Status</div>
               <div className="col-span-2 text-right">Action</div>
             </div>
-            <OwnerList 
-              owners={owners} 
+            <OwnerList
+              owners={owners}
               selectedIds={selectedIds}
               onSelect={handleSelect}
               onDelete={openDeleteModal}
@@ -228,7 +244,7 @@ const OwnerViewer = () => {
         </div>
       </div>
 
-      <ConfirmationModal 
+      <ConfirmationModal
         isOpen={modalConfig.isOpen}
         onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
         onConfirm={handleConfirmAction}
@@ -241,10 +257,17 @@ const OwnerViewer = () => {
   );
 };
 
-const StatsCard = ({ title, value, prefix = "", suffix = "", icon: Icon, trend }) => (
+const StatsCard = ({
+  title,
+  value,
+  prefix = "",
+  suffix = "",
+  icon: Icon,
+  trend,
+}) => (
   <div className="bg-[#000000] border border-[#2D2D2D] rounded-[12px] p-6 flex flex-col relative overflow-hidden group hover:border-[#CCFF00]/30 transition-all duration-500 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
     <Icon className="absolute -right-4 -bottom-4 w-24 h-24 text-white/[0.02] group-hover:text-white/[0.05] transition-all duration-700 rotate-12 pointer-events-none" />
-    
+
     <div className="flex items-center justify-between mb-6 relative z-10">
       <div className="w-12 h-12 bg-[#CCFF00]/10 rounded-[10px] text-[#CCFF00] flex items-center justify-center border border-[#CCFF00]/20 shadow-[0_0_15px_rgba(204,255,0,0.1)] transition-transform group-hover:scale-110">
         <Icon size={22} />
@@ -255,11 +278,22 @@ const StatsCard = ({ title, value, prefix = "", suffix = "", icon: Icon, trend }
     </div>
 
     <div className="space-y-1 relative z-10">
-      <h3 className="text-[11px] font-bold text-[#878C9F] uppercase tracking-[2px]">{title}</h3>
+      <h3 className="text-[11px] font-bold text-[#878C9F] uppercase tracking-[2px]">
+        {title}
+      </h3>
       <div className="text-3xl font-black text-white tracking-tighter flex items-baseline gap-1">
-        {prefix && <span className="text-xl text-white/40 font-bold">{prefix}</span>}
-        <CountUp end={value} duration={2} separator="," decimals={value % 1 === 0 ? 0 : 1} />
-        {suffix && <span className="text-xl text-white/40 font-bold">{suffix}</span>}
+        {prefix && (
+          <span className="text-xl text-white/40 font-bold">{prefix}</span>
+        )}
+        <CountUp
+          end={value}
+          duration={2}
+          separator=","
+          decimals={value % 1 === 0 ? 0 : 1}
+        />
+        {suffix && (
+          <span className="text-xl text-white/40 font-bold">{suffix}</span>
+        )}
       </div>
     </div>
   </div>

@@ -18,8 +18,8 @@ describe("Upload Module API Integration Tests", () => {
         email: emailUser,
         username: `upload_u_${ts}`,
         phone: `77777${String(ts).slice(-5)}`,
-        password: "User@Pass123"
-      }
+        password: "User@Pass123",
+      },
     });
 
     const jwt = (await import("jsonwebtoken")).default;
@@ -49,7 +49,7 @@ describe("Upload Module API Integration Tests", () => {
 
     it("should process valid image upload successfully", async () => {
       const buffer = Buffer.from("fake image content");
-      
+
       const res = await request(app)
         .post("/api/upload")
         .set("Authorization", `Bearer ${userToken}`)

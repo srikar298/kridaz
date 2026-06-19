@@ -1,4 +1,9 @@
-import { redisClient, bullmqConnection, pubClient, subClient } from "../config/redis.js";
+import {
+  redisClient,
+  bullmqConnection,
+  pubClient,
+  subClient,
+} from "../config/redis.js";
 import { prisma } from "../config/prisma.js";
 
 // Global teardown to clean up connection pools and prevent Jest open handle warnings/crashes

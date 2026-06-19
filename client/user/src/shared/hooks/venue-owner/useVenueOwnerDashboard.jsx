@@ -21,7 +21,7 @@ const useVenueOwnerDashboard = (venueId = null) => {
       try {
         setLoading(true);
         const response = await axiosInstance.get("/api/owner/dashboard", {
-          params: venueId ? { venueId } : {}
+          params: venueId ? { venueId } : {},
         });
         setDashboardData(response.data);
         setLoading(false);

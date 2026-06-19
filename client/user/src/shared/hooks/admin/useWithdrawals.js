@@ -27,11 +27,16 @@ const useWithdrawals = () => {
     }
     setProcessingId(id);
     try {
-      const response = await axiosInstance.put(`/api/admin/withdrawals/${id}/approve`, { transactionId, screenshot });
+      const response = await axiosInstance.put(
+        `/api/admin/withdrawals/${id}/approve`,
+        { transactionId, screenshot }
+      );
       toast.success(response.data.message);
       fetchWithdrawals(); // Refresh list
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to approve withdrawal");
+      toast.error(
+        err.response?.data?.message || "Failed to approve withdrawal"
+      );
     } finally {
       setProcessingId("");
     }
@@ -44,7 +49,10 @@ const useWithdrawals = () => {
     }
     setProcessingId(id);
     try {
-      const response = await axiosInstance.put(`/api/admin/withdrawals/${id}/reject`, { reason });
+      const response = await axiosInstance.put(
+        `/api/admin/withdrawals/${id}/reject`,
+        { reason }
+      );
       toast.success(response.data.message);
       fetchWithdrawals(); // Refresh list
     } catch (err) {
@@ -64,7 +72,7 @@ const useWithdrawals = () => {
     processingId,
     handleApprove,
     handleReject,
-    refresh: fetchWithdrawals
+    refresh: fetchWithdrawals,
   };
 };
 

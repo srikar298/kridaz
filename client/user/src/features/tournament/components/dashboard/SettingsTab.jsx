@@ -1,17 +1,19 @@
-import React from 'react';
-import { Settings, Save, Trash2, AlertTriangle } from 'lucide-react';
+import React from "react";
+import { Settings, Save, Trash2, AlertTriangle } from "lucide-react";
 
 const SettingsTab = ({ tournament }) => {
   return (
     <div className="space-y-6 animate-fade-in pb-20">
-      
       {/* Warning Banner */}
       <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-4 flex gap-3">
         <AlertTriangle className="text-yellow-500 flex-shrink-0" size={20} />
         <div>
-          <p className="text-sm font-bold text-yellow-500 mb-1">Editing Published Tournaments</p>
+          <p className="text-sm font-bold text-yellow-500 mb-1">
+            Editing Published Tournaments
+          </p>
           <p className="text-xs text-yellow-500/70">
-            Changing entry fees or rules while registration is open may confuse teams. Proceed with caution.
+            Changing entry fees or rules while registration is open may confuse
+            teams. Proceed with caution.
           </p>
         </div>
       </div>
@@ -30,7 +32,9 @@ const SettingsTab = ({ tournament }) => {
 
         <div className="space-y-4">
           <div>
-            <label className="text-xs text-white/50 block mb-2">Tournament Name</label>
+            <label className="text-xs text-white/50 block mb-2">
+              Tournament Name
+            </label>
             <input
               type="text"
               defaultValue={tournament.name}
@@ -39,16 +43,20 @@ const SettingsTab = ({ tournament }) => {
           </div>
 
           <div>
-            <label className="text-xs text-white/50 block mb-2">About Tournament</label>
+            <label className="text-xs text-white/50 block mb-2">
+              About Tournament
+            </label>
             <textarea
-              defaultValue={tournament.details?.about || ''}
+              defaultValue={tournament.details?.about || ""}
               className="w-full bg-[#1a1a1a] border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#55DEE8] transition-colors min-h-[100px]"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-white/50 block mb-2">Entry Fee (â‚¹)</label>
+              <label className="text-xs text-white/50 block mb-2">
+                Entry Fee (â‚¹)
+              </label>
               <input
                 type="number"
                 defaultValue={tournament.entryFee}
@@ -56,7 +64,9 @@ const SettingsTab = ({ tournament }) => {
               />
             </div>
             <div>
-              <label className="text-xs text-white/50 block mb-2">Prize Pool (â‚¹)</label>
+              <label className="text-xs text-white/50 block mb-2">
+                Prize Pool (â‚¹)
+              </label>
               <input
                 type="number"
                 defaultValue={tournament.prizePool}
@@ -69,12 +79,16 @@ const SettingsTab = ({ tournament }) => {
 
       {/* Danger Zone */}
       <div className="border border-red-500/30 rounded-2xl p-6">
-        <h3 className="text-sm font-black text-red-500 uppercase tracking-widest mb-4">Danger Zone</h3>
+        <h3 className="text-sm font-black text-red-500 uppercase tracking-widest mb-4">
+          Danger Zone
+        </h3>
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-bold text-white">Cancel Tournament</p>
             <p className="text-xs text-white/50 mt-1 max-w-md">
-              Canceling a published tournament will refund all collected entry fees to the teams' wallets and notify all captains. This action cannot be undone.
+              Canceling a published tournament will refund all collected entry
+              fees to the teams' wallets and notify all captains. This action
+              cannot be undone.
             </p>
           </div>
           <button className="flex items-center gap-2 bg-red-500/10 text-red-500 border border-red-500/20 px-6 py-3 rounded-full text-xs font-bold hover:bg-red-500 hover:text-white transition-colors">
@@ -82,7 +96,6 @@ const SettingsTab = ({ tournament }) => {
           </button>
         </div>
       </div>
-
     </div>
   );
 };

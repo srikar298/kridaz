@@ -1,4 +1,3 @@
- 
 const ReviewsSkeleton = () => {
   return (
     <div className="p-4">

@@ -14,7 +14,9 @@ const useVenueOwnerReviews = () => {
   const fetchTurfs = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get("/api/owner/reviews/owner/turfs-with-reviews");
+      const response = await axiosInstance.get(
+        "/api/owner/reviews/owner/turfs-with-reviews"
+      );
       setTurfs(Array.isArray(response.data) ? response.data : []);
       setLoading(false);
     } catch (err) {

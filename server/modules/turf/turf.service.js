@@ -2,7 +2,7 @@ import { prisma } from "../../config/prisma.js";
 
 export const calculateAvgRating = async (turfId) => {
   const reviews = await prisma.review.findMany({
-    where: { turfId }
+    where: { turfId },
   });
   if (reviews.length === 0) return 0;
   const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);

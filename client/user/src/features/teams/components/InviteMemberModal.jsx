@@ -1,26 +1,42 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { X, Search, UserPlus, Phone, Loader2, Sparkles, MessageCircle, Users } from 'lucide-react';
-import { useSearchPlayersQuery, useInviteMemberMutation, useAddCustomMemberMutation } from '@redux/api/teamApi';
-import { useSelector } from 'react-redux';
-import toast from 'react-hot-toast';
-import { countryCodes } from '../../../utils/countryCodes';
-import { useEffect } from 'react';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import {
+  X,
+  Search,
+  UserPlus,
+  Phone,
+  Loader2,
+  Sparkles,
+  MessageCircle,
+  Users,
+} from "lucide-react";
+import {
+  useSearchPlayersQuery,
+  useInviteMemberMutation,
+  useAddCustomMemberMutation,
+} from "@redux/api/teamApi";
+import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { countryCodes } from "../../../utils/countryCodes";
+import { useEffect } from "react";
 
 const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
-  const [activeTab, setActiveTab] = useState('search'); // 'search' or 'custom'
-  const [searchTerm, setSearchTerm] = useState('');
-  
+  const [activeTab, setActiveTab] = useState("search"); // 'search' or 'custom'
+  const [searchTerm, setSearchTerm] = useState("");
+
   // Custom Player Fields
-  const [customName, setCustomName] = useState('');
-  const [customPhone, setCustomPhone] = useState('');
-  const [customCountryCode, setCustomCountryCode] = useState('91');
+  const [customName, setCustomName] = useState("");
+  const [customPhone, setCustomPhone] = useState("");
+  const [customCountryCode, setCustomCountryCode] = useState("91");
   const [customInviteData, setCustomInviteData] = useState(null);
 
   const [supportsContacts, setSupportsContacts] = useState(false);
 
   useEffect(() => {
-    const isMobileView = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobi/i.test(navigator.userAgent);
+    const isMobileView =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobi/i.test(
+        navigator.userAgent
+      );
     if (isMobileView) {
       setSupportsContacts(true);
     }
@@ -28,11 +44,13 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
 
   const handleImportFromContacts = async () => {
     try {
-      if (!('contacts' in navigator && 'ContactsManager' in window)) {
-        toast.error('Contacts API is only supported on a real mobile device. Please test this on your phone.');
+      if (!("contacts" in navigator && "ContactsManager" in window)) {
+        toast.error(
+          "Contacts API is only supported on a real mobile device. Please test this on your phone."
+        );
         return;
       }
-      const props = ['name', 'tel'];
+      const props = ["name", "tel"];
       const opts = { multiple: false };
       const contacts = await navigator.contacts.select(props, opts);
       if (contacts && contacts.length > 0) {
@@ -41,7 +59,7 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
           setCustomName(contact.name[0]);
         }
         if (contact.tel && contact.tel.length > 0) {
-          const rawPhone = contact.tel[0].replace(/\D/g, '');
+          const rawPhone = contact.tel[0].replace(/\D/g, "");
           if (rawPhone.length >= 10) {
             setCustomPhone(rawPhone.slice(-10));
           } else {
@@ -50,50 +68,54 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
         }
       }
     } catch (ex) {
-      console.log('Contacts API failed:', ex);
+      console.log("Contacts API failed:", ex);
     }
   };
 
   useEffect(() => {
     if (isOpen) {
-      fetch('https://ipapi.co/json/')
-        .then(res => res.json())
-        .then(data => {
+      fetch("https://ipapi.co/json/")
+        .then((res) => res.json())
+        .then((data) => {
           if (data && data.country_calling_code) {
-            const code = data.country_calling_code.replace('+', '');
+            const code = data.country_calling_code.replace("+", "");
             setCustomCountryCode(code);
           }
         })
-        .catch(err => console.error('Failed to fetch country code', err));
+        .catch((err) => console.error("Failed to fetch country code", err));
     }
   }, [isOpen]);
 
   const { user: currentUser } = useSelector((state) => state.auth);
 
-  const { data: searchResults, isLoading: isSearching } = useSearchPlayersQuery(searchTerm, {
-    skip: !searchTerm || activeTab !== 'search',
-  });
+  const { data: searchResults, isLoading: isSearching } = useSearchPlayersQuery(
+    searchTerm,
+    {
+      skip: !searchTerm || activeTab !== "search",
+    }
+  );
 
   const [invitePlayer, { isLoading: isInviting }] = useInviteMemberMutation();
-  const [addCustomPlayer, { isLoading: isAddingCustom }] = useAddCustomMemberMutation();
+  const [addCustomPlayer, { isLoading: isAddingCustom }] =
+    useAddCustomMemberMutation();
 
   const handleInvite = async (userId) => {
     try {
       const result = await invitePlayer({ teamId, userId }).unwrap();
       if (result.success) {
-        toast.success('Invitation sent to player!');
+        toast.success("Invitation sent to player!");
       }
     } catch (err) {
-      toast.error(err.data?.message || 'Failed to send invitation');
+      toast.error(err.data?.message || "Failed to send invitation");
     }
   };
 
   const handleAddCustom = async (e) => {
     e.preventDefault();
-    if (!customName.trim()) return toast.error('Player Name is required');
+    if (!customName.trim()) return toast.error("Player Name is required");
 
-    if (customPhone && customPhone.replace(/\D/g, '').length !== 10) {
-      return toast.error('Phone number must be exactly 10 digits');
+    if (customPhone && customPhone.replace(/\D/g, "").length !== 10) {
+      return toast.error("Phone number must be exactly 10 digits");
     }
 
     try {
@@ -105,37 +127,41 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
 
       if (result.success) {
         const inviteResult = result.results?.[0];
-        
+
         if (inviteResult?.status === "auto_added_existing_user") {
-           toast.success(`User exists (${inviteResult.existingUserName}) and was automatically added to your team!`);
-           setCustomName('');
-           setCustomPhone('');
-           return;
+          toast.success(
+            `User exists (${inviteResult.existingUserName}) and was automatically added to your team!`
+          );
+          setCustomName("");
+          setCustomPhone("");
+          return;
         }
-        
+
         if (inviteResult?.status === "error" && inviteResult?.existingUserId) {
-           toast.success(`User exists (${inviteResult.existingUserName}). Inviting them now...`);
-           handleInvite(inviteResult.existingUserId);
-           return;
+          toast.success(
+            `User exists (${inviteResult.existingUserName}). Inviting them now...`
+          );
+          handleInvite(inviteResult.existingUserId);
+          return;
         }
 
         if (inviteResult?.status === "invited_custom") {
-           setCustomInviteData({
-              token: inviteResult.token,
-              phone: customPhone,
-              countryCode: customCountryCode,
-              name: customName
-           });
-           toast.success('Player added! Send them a WhatsApp invite.');
+          setCustomInviteData({
+            token: inviteResult.token,
+            phone: customPhone,
+            countryCode: customCountryCode,
+            name: customName,
+          });
+          toast.success("Player added! Send them a WhatsApp invite.");
         } else {
-           toast.success('Custom player added to team!');
-           setCustomName('');
-           setCustomPhone('');
-           onClose();
+          toast.success("Custom player added to team!");
+          setCustomName("");
+          setCustomPhone("");
+          onClose();
         }
       }
     } catch (err) {
-      toast.error(err.data?.message || 'Failed to add player');
+      toast.error(err.data?.message || "Failed to add player");
     }
   };
 
@@ -143,10 +169,13 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
-      
-      <motion.div 
-         initial={{ opacity: 0, scale: 0.9, y: 20 }}
+      <div
+        className="absolute inset-0 bg-black/80 backdrop-blur-md"
+        onClick={onClose}
+      />
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
         className="relative w-full max-w-md bg-[#0d0d0d] border border-white/10 rounded-[8px] overflow-hidden shadow-2xl"
@@ -154,10 +183,17 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
         {/* Header */}
         <div className="p-6 border-b border-white/5 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-black text-white italic uppercase tracking-tight">Add Roster</h2>
-            <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-1">Grow {teamName || 'your'} team squad</p>
+            <h2 className="text-xl font-black text-white italic uppercase tracking-tight">
+              Add Roster
+            </h2>
+            <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-1">
+              Grow {teamName || "your"} team squad
+            </p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-[8px] transition-colors">
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-white/5 rounded-[8px] transition-colors"
+          >
             <X size={20} className="text-white/40" />
           </button>
         </div>
@@ -165,15 +201,15 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
         {/* Tab switch */}
         <div className="p-6 pb-2">
           <div className="flex gap-2 p-1 bg-white/[0.03] border border-white/5 rounded-[8px]">
-            <button 
-              onClick={() => setActiveTab('search')}
-              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${ activeTab === 'search' ? 'bg-[#CCFF00] text-black shadow-lg shadow-[#CCFF00]/10' : 'text-white/40 hover:text-white' }`}
+            <button
+              onClick={() => setActiveTab("search")}
+              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === "search" ? "bg-[#CCFF00] text-black shadow-lg shadow-[#CCFF00]/10" : "text-white/40 hover:text-white"}`}
             >
               Search Players
             </button>
-            <button 
-              onClick={() => setActiveTab('custom')}
-              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${ activeTab === 'custom' ? 'bg-[#CCFF00] text-black shadow-lg shadow-[#CCFF00]/10' : 'text-white/40 hover:text-white' }`}
+            <button
+              onClick={() => setActiveTab("custom")}
+              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === "custom" ? "bg-[#CCFF00] text-black shadow-lg shadow-[#CCFF00]/10" : "text-white/40 hover:text-white"}`}
             >
               Add Custom Player
             </button>
@@ -182,11 +218,14 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
 
         {/* Content */}
         <div className="p-6 pt-2">
-          {activeTab === 'search' ? (
+          {activeTab === "search" ? (
             <div className="space-y-4">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
-                <input 
+                <Search
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"
+                  size={16}
+                />
+                <input
                   type="text"
                   placeholder="SEARCH USERNAME OR EMAIL..."
                   className="w-full bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 pl-12 pr-4 text-white text-sm font-bold placeholder-white/20 focus:outline-none focus:border-[#CCFF00]/50 uppercase transition-all"
@@ -202,18 +241,32 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
                     <Loader2 className="animate-spin" size={24} />
                   </div>
                 ) : searchResults?.players?.length > 0 ? (
-                  searchResults.players.map(player => (
-                    <div key={player._id} className="flex items-center justify-between p-3 rounded-[8px] bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all">
+                  searchResults.players.map((player) => (
+                    <div
+                      key={player._id}
+                      className="flex items-center justify-between p-3 rounded-[8px] bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all"
+                    >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full border border-white/10 bg-white/5 overflow-hidden">
-                          <img src={player.profilePic || `https://api.dicebear.com/7.x/avataaars/svg?seed=${player.username}`} alt="" className="w-full h-full object-cover" />
+                          <img
+                            src={
+                              player.profilePic ||
+                              `https://api.dicebear.com/7.x/avataaars/svg?seed=${player.username}`
+                            }
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-white uppercase">@{player.username}</p>
-                          <p className="text-[9px] text-white/40 uppercase mt-0.5">{player.city || 'N/A'}</p>
+                          <p className="text-sm font-bold text-white uppercase">
+                            @{player.username}
+                          </p>
+                          <p className="text-[9px] text-white/40 uppercase mt-0.5">
+                            {player.city || "N/A"}
+                          </p>
                         </div>
                       </div>
-                      <button 
+                      <button
                         onClick={() => handleInvite(player._id)}
                         disabled={isInviting}
                         className="p-2.5 bg-[#CCFF00] hover:bg-[#b8e600] disabled:bg-white/5 disabled:text-white/20 text-black rounded-[8px] transition-all"
@@ -222,8 +275,12 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
                       </button>
                     </div>
                   ))
-                ) : searchTerm && (
-                  <p className="text-center py-6 text-white/30 text-xs">No active players found</p>
+                ) : (
+                  searchTerm && (
+                    <p className="text-center py-6 text-white/30 text-xs">
+                      No active players found
+                    </p>
+                  )
                 )}
               </div>
             </div>
@@ -232,16 +289,25 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
               <div className="w-16 h-16 bg-[#25D366]/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-[#25D366]/20">
                 <MessageCircle size={32} className="text-[#25D366]" />
               </div>
-              <h3 className="text-white text-lg font-black uppercase tracking-tight">Invite via WhatsApp</h3>
-              <p className="text-white/60 text-sm">Send an invite link to {customInviteData.name} ({customInviteData.phone}).</p>
-              
-              <button 
+              <h3 className="text-white text-lg font-black uppercase tracking-tight">
+                Invite via WhatsApp
+              </h3>
+              <p className="text-white/60 text-sm">
+                Send an invite link to {customInviteData.name} (
+                {customInviteData.phone}).
+              </p>
+
+              <button
                 onClick={() => {
-                  const myName = currentUser?.name || currentUser?.username || 'Someone';
+                  const myName =
+                    currentUser?.name || currentUser?.username || "Someone";
                   const domain = window.location.origin;
                   const link = `${domain}/signup?inviteToken=${customInviteData.token}&inviter=${encodeURIComponent(myName)}&teamId=${teamId}`;
                   const message = `Hey ${customInviteData.name}, you are invited by ${myName} to join ${teamName} on Kridaz! Click here to join: ${link}`;
-                  window.open(`https://wa.me/${customInviteData.countryCode}${customInviteData.phone}?text=${encodeURIComponent(message)}`, '_blank');
+                  window.open(
+                    `https://wa.me/${customInviteData.countryCode}${customInviteData.phone}?text=${encodeURIComponent(message)}`,
+                    "_blank"
+                  );
                   onClose();
                   setCustomInviteData(null);
                 }}
@@ -250,7 +316,7 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
                 <MessageCircle size={18} />
                 Send WhatsApp Invite
               </button>
-              <button 
+              <button
                 onClick={() => setCustomInviteData(null)}
                 className="w-full py-2 mt-2 text-white/40 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors"
               >
@@ -269,8 +335,10 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
                 </button>
               )}
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">Player Name</label>
-                <input 
+                <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">
+                  Player Name
+                </label>
+                <input
                   type="text"
                   placeholder="EX: RAHUL SHARMA"
                   className="w-full bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 px-4 text-white text-sm font-bold focus:outline-none focus:border-[#CCFF00]/50 uppercase transition-all"
@@ -281,39 +349,56 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">Contact Number (Optional)</label>
+                <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">
+                  Contact Number (Optional)
+                </label>
                 <div className="flex gap-2">
                   <select
                     value={customCountryCode}
                     onChange={(e) => setCustomCountryCode(e.target.value)}
                     className="bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 px-2 text-white text-sm font-bold focus:outline-none focus:border-[#CCFF00]/50 transition-all cursor-pointer w-24 appearance-none text-center"
                   >
-                    {countryCodes.map(c => (
-                      <option key={c.code} value={c.dial_code} className="text-black">
+                    {countryCodes.map((c) => (
+                      <option
+                        key={c.code}
+                        value={c.dial_code}
+                        className="text-black"
+                      >
                         {c.code} (+{c.dial_code})
                       </option>
                     ))}
                   </select>
                   <div className="relative flex-1">
-                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
-                    <input 
+                    <Phone
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"
+                      size={16}
+                    />
+                    <input
                       type="tel"
                       placeholder="10-digit number"
                       className="w-full bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 pl-12 pr-4 text-white text-sm font-bold focus:outline-none focus:border-[#CCFF00]/50 transition-all"
                       value={customPhone}
-                      onChange={(e) => setCustomPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                      onChange={(e) =>
+                        setCustomPhone(
+                          e.target.value.replace(/\D/g, "").slice(0, 10)
+                        )
+                      }
                       maxLength={10}
                     />
                   </div>
                 </div>
               </div>
 
-              <button 
+              <button
                 type="submit"
                 disabled={isAddingCustom}
                 className="w-full py-4 bg-[#CCFF00] hover:bg-[#b8e600] disabled:bg-white/5 disabled:text-white/20 text-black font-black uppercase tracking-[0.2em] rounded-[8px] shadow-xl shadow-[#CCFF00]/10 transition-all flex items-center justify-center gap-2 mt-6"
               >
-                {isAddingCustom ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={16} />}
+                {isAddingCustom ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <Sparkles size={16} />
+                )}
                 Add Player to Roster
               </button>
             </form>

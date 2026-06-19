@@ -1,4 +1,3 @@
- 
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Users, MapPin, Check, MessageCircle } from "lucide-react";
@@ -61,13 +60,13 @@ export default function PlayersSection({
           <div className="text-center py-12" style={{ color: "#888" }}>
             <Users size={40} className="mx-auto mb-3 opacity-30" />
             <p className="font-display text-2xl">No Players Yet</p>
-            <p className="text-sm mt-1">
-              Be the first to join the community!
-            </p>
+            <p className="text-sm mt-1">Be the first to join the community!</p>
             <Link
               to="/login"
               className="inline-flex items-center gap-2 mt-4 font-bold text-black px-6 py-2.5 rounded-full"
-              style={{ background: "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)" }}
+              style={{
+                background: "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)",
+              }}
             >
               Join Now
             </Link>
@@ -88,7 +87,11 @@ export default function PlayersSection({
               const city = p.city ? p.city.split(",")[0].trim() : "Nearby";
               const country = p.country || "India";
               const locationText = `${city}, ${country}`;
-              const primarySport = p.preferredSport || (p.sportTypes && p.sportTypes[0]) || (p.interests && p.interests[0]) || "Athlete";
+              const primarySport =
+                p.preferredSport ||
+                (p.sportTypes && p.sportTypes[0]) ||
+                (p.interests && p.interests[0]) ||
+                "Athlete";
 
               return (
                 <div
@@ -111,10 +114,14 @@ export default function PlayersSection({
                   <div
                     className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-[#000000]"
                     style={{
-                      display: p.profilePicture || p.profileImage ? "none" : "flex",
+                      display:
+                        p.profilePicture || p.profileImage ? "none" : "flex",
                     }}
                   >
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] font-[700] text-2xl opacity-50" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    <span
+                      className="text-transparent bg-clip-text bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] font-[700] text-2xl opacity-50"
+                      style={{ fontFamily: "'Inter', sans-serif" }}
+                    >
                       {initials}
                     </span>
                   </div>
@@ -129,16 +136,22 @@ export default function PlayersSection({
                   >
                     {primarySport}
                   </div>
-                  
+
                   {/* Bottom Content */}
                   <div className="absolute bottom-0 left-0 right-0 p-2 flex flex-col z-10">
                     {/* Player Name */}
-                    <h3 className="text-[#FFFFFF] text-[10px] font-[600] leading-[14px] line-clamp-1 mb-0.5" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    <h3
+                      className="text-[#FFFFFF] text-[10px] font-[600] leading-[14px] line-clamp-1 mb-0.5"
+                      style={{ fontFamily: "'Inter', sans-serif" }}
+                    >
                       {p.name || "Anonymous"}
                     </h3>
-                    
+
                     {/* Location: City */}
-                    <p className="text-[rgba(255,255,255,0.70)] text-[8px] font-[400] leading-[10px] line-clamp-1 mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    <p
+                      className="text-[rgba(255,255,255,0.70)] text-[8px] font-[400] leading-[10px] line-clamp-1 mb-2"
+                      style={{ fontFamily: "'Inter', sans-serif" }}
+                    >
                       {locationText}
                     </p>
 
@@ -158,11 +171,13 @@ export default function PlayersSection({
                       >
                         {isFollowing ? "Following" : "Follow"}
                       </button>
-                      
+
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          gateInteraction(() => navigate(`/messages?userId=${playerId}`));
+                          gateInteraction(() =>
+                            navigate(`/messages?userId=${playerId}`)
+                          );
                         }}
                         className="w-5 h-5 rounded-[4px] text-[#FFFFFF] bg-[#1B1B1B]/80 backdrop-blur-md border border-[rgba(255,255,255,0.08)] hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center shrink-0"
                         title="Message"
@@ -176,10 +191,7 @@ export default function PlayersSection({
             })}
           </div>
         )}
-
-
       </div>
     </section>
   );
 }
-

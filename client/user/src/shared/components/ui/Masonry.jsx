@@ -1,19 +1,22 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { gsap } from 'gsap';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { gsap } from "gsap";
 
-import './Masonry.css';
+import "./Masonry.css";
 
 const useMedia = (queries, values, defaultValue) => {
-  const get = () => values[queries.findIndex(q => matchMedia(q).matches)] ?? defaultValue;
+  const get = () =>
+    values[queries.findIndex((q) => matchMedia(q).matches)] ?? defaultValue;
 
   const [value, setValue] = useState(get);
 
   useEffect(() => {
     const handler = () => setValue(get);
-    queries.forEach(q => matchMedia(q).addEventListener('change', handler));
-    return () => queries.forEach(q => matchMedia(q).removeEventListener('change', handler));
-
+    queries.forEach((q) => matchMedia(q).addEventListener("change", handler));
+    return () =>
+      queries.forEach((q) =>
+        matchMedia(q).removeEventListener("change", handler)
+      );
   }, [queries]);
 
   return value;
@@ -36,11 +39,11 @@ const useMeasure = () => {
   return [ref, size];
 };
 
-const preloadImages = async urls => {
+const preloadImages = async (urls) => {
   await Promise.all(
     urls.map(
-      src =>
-        new Promise(resolve => {
+      (src) =>
+        new Promise((resolve) => {
           const img = new Image();
           img.src = src;
           img.onload = img.onerror = () => resolve();
@@ -51,17 +54,22 @@ const preloadImages = async urls => {
 
 const Masonry = ({
   items,
-  ease = 'power3.out',
+  ease = "power3.out",
   duration = 0.6,
   stagger = 0.05,
-  animateFrom = 'bottom',
+  animateFrom = "bottom",
   scaleOnHover = true,
   hoverScale = 0.95,
   blurToFocus = true,
-  colorShiftOnHover = false
+  colorShiftOnHover = false,
 }) => {
   const columns = useMedia(
-    ['(min-width:1500px)', '(min-width:1000px)', '(min-width:600px)', '(min-width:400px)'],
+    [
+      "(min-width:1500px)",
+      "(min-width:1000px)",
+      "(min-width:600px)",
+      "(min-width:400px)",
+    ],
     [5, 4, 3, 2],
     1
   );
@@ -70,30 +78,30 @@ const Masonry = ({
   const [imagesReady, setImagesReady] = useState(false);
   const [selectedImg, setSelectedImg] = useState(null);
 
-  const getInitialPosition = item => {
+  const getInitialPosition = (item) => {
     const containerRect = containerRef.current?.getBoundingClientRect();
     if (!containerRect) return { x: item.x, y: item.y };
 
     let direction = animateFrom;
 
-    if (animateFrom === 'random') {
-      const directions = ['top', 'bottom', 'left', 'right'];
+    if (animateFrom === "random") {
+      const directions = ["top", "bottom", "left", "right"];
       direction = directions[Math.floor(Math.random() * directions.length)];
     }
 
     switch (direction) {
-      case 'top':
+      case "top":
         return { x: item.x, y: -200 };
-      case 'bottom':
+      case "bottom":
         return { x: item.x, y: window.innerHeight + 200 };
-      case 'left':
+      case "left":
         return { x: -200, y: item.y };
-      case 'right':
+      case "right":
         return { x: window.innerWidth + 200, y: item.y };
-      case 'center':
+      case "center":
         return {
           x: containerRect.width / 2 - item.w / 2,
-          y: containerRect.height / 2 - item.h / 2
+          y: containerRect.height / 2 - item.h / 2,
         };
       default:
         return { x: item.x, y: item.y + 100 };
@@ -101,7 +109,7 @@ const Masonry = ({
   };
 
   useEffect(() => {
-    preloadImages(items.map(i => i.img)).then(() => setImagesReady(true));
+    preloadImages(items.map((i) => i.img)).then(() => setImagesReady(true));
   }, [items]);
 
   const { grid, maxHeight } = useMemo(() => {
@@ -110,7 +118,7 @@ const Masonry = ({
     const colHeights = new Array(columns).fill(0);
     const columnWidth = width / columns;
 
-    const gridItems = items.map(child => {
+    const gridItems = items.map((child) => {
       const col = colHeights.indexOf(Math.min(...colHeights));
       const x = columnWidth * col;
       const height = child.height / 2;
@@ -135,7 +143,7 @@ const Masonry = ({
         x: item.x,
         y: item.y,
         width: item.w,
-        height: item.h
+        height: item.h,
       };
 
       if (!hasMounted.current) {
@@ -146,29 +154,28 @@ const Masonry = ({
           y: initialPos.y,
           width: item.w,
           height: item.h,
-          ...(blurToFocus && { filter: 'blur(10px)' })
+          ...(blurToFocus && { filter: "blur(10px)" }),
         };
 
         gsap.fromTo(selector, initialState, {
           opacity: 1,
           ...animationProps,
-          ...(blurToFocus && { filter: 'blur(0px)' }),
+          ...(blurToFocus && { filter: "blur(0px)" }),
           duration: 0.8,
-          ease: 'power3.out',
-          delay: index * stagger
+          ease: "power3.out",
+          delay: index * stagger,
         });
       } else {
         gsap.to(selector, {
           ...animationProps,
           duration: duration,
           ease: ease,
-          overwrite: 'auto'
+          overwrite: "auto",
         });
       }
     });
 
     hasMounted.current = true;
-
   }, [grid, imagesReady, stagger, animateFrom, blurToFocus, duration, ease]);
 
   const handleMouseEnter = (e, item) => {
@@ -179,16 +186,16 @@ const Masonry = ({
       gsap.to(selector, {
         scale: hoverScale,
         duration: 0.3,
-        ease: 'power2.out'
+        ease: "power2.out",
       });
     }
 
     if (colorShiftOnHover) {
-      const overlay = element.querySelector('.color-overlay');
+      const overlay = element.querySelector(".color-overlay");
       if (overlay) {
         gsap.to(overlay, {
           opacity: 0.3,
-          duration: 0.3
+          duration: 0.3,
         });
       }
     }
@@ -202,47 +209,55 @@ const Masonry = ({
       gsap.to(selector, {
         scale: 1,
         duration: 0.3,
-        ease: 'power2.out'
+        ease: "power2.out",
       });
     }
 
     if (colorShiftOnHover) {
-      const overlay = element.querySelector('.color-overlay');
+      const overlay = element.querySelector(".color-overlay");
       if (overlay) {
         gsap.to(overlay, {
           opacity: 0,
-          duration: 0.3
+          duration: 0.3,
         });
       }
     }
   };
 
   return (
-    <div ref={containerRef} className="list" style={{ height: maxHeight, minHeight: maxHeight }}>
-      {grid.map(item => {
+    <div
+      ref={containerRef}
+      className="list"
+      style={{ height: maxHeight, minHeight: maxHeight }}
+    >
+      {grid.map((item) => {
         return (
           <div
             key={item.id}
             data-key={item.id}
             className="item-wrapper"
             onClick={() => setSelectedImg(item.img)}
-            onMouseEnter={e => handleMouseEnter(e, item)}
-            onMouseLeave={e => handleMouseLeave(e, item)}
+            onMouseEnter={(e) => handleMouseEnter(e, item)}
+            onMouseLeave={(e) => handleMouseLeave(e, item)}
           >
-            <div className="item-img" style={{ backgroundImage: `url(${item.img})` }}>
+            <div
+              className="item-img"
+              style={{ backgroundImage: `url(${item.img})` }}
+            >
               {colorShiftOnHover && (
                 <div
                   className="color-overlay"
                   style={{
-                    position: 'absolute',
+                    position: "absolute",
                     top: 0,
                     left: 0,
-                    width: '100%',
-                    height: '100%',
-                    background: 'linear-gradient(45deg, rgba(255,0,150,0.5), rgba(0,150,255,0.5))',
+                    width: "100%",
+                    height: "100%",
+                    background:
+                      "linear-gradient(45deg, rgba(255,0,150,0.5), rgba(0,150,255,0.5))",
                     opacity: 0,
-                    pointerEvents: 'none',
-                    borderRadius: '8px'
+                    pointerEvents: "none",
+                    borderRadius: "8px",
                   }}
                 />
               )}
@@ -251,26 +266,40 @@ const Masonry = ({
         );
       })}
 
-      {selectedImg && createPortal(
-        <div 
-          className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-4 backdrop-blur-md cursor-zoom-out"
-          onClick={() => setSelectedImg(null)}
-        >
-          <img 
-            src={selectedImg} 
-            alt="Full size" 
-            className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl animate-in zoom-in duration-300" 
-            onClick={(e) => e.stopPropagation()}
-          />
-          <button 
-            className="absolute top-6 right-6 text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors"
+      {selectedImg &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-4 backdrop-blur-md cursor-zoom-out"
             onClick={() => setSelectedImg(null)}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-          </button>
-        </div>,
-        document.body
-      )}
+            <img
+              src={selectedImg}
+              alt="Full size"
+              className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl animate-in zoom-in duration-300"
+              onClick={(e) => e.stopPropagation()}
+            />
+            <button
+              className="absolute top-6 right-6 text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors"
+              onClick={() => setSelectedImg(null)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

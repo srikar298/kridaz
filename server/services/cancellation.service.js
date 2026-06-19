@@ -25,7 +25,9 @@ export class CancellationService {
       }
 
       if (booking.status !== "CONFIRMED") {
-        throw new Error(`Only CONFIRMED bookings can be cancelled. Current status: ${booking.status}`);
+        throw new Error(
+          `Only CONFIRMED bookings can be cancelled. Current status: ${booking.status}`
+        );
       }
 
       const matchStartTime = new Date(booking.matchStartTime);
@@ -39,20 +41,33 @@ export class CancellationService {
         await prisma.$transaction(async (tx) => {
           if (diffHours > 72) {
             // User Cancellation > 72h: 100% Refund, 0% Pro, 0% Platform
-            await WalletBlockingService.releaseBlockedFunds(booking.userId, bookingId, blockedAmt, false, tx);
-            
+            await WalletBlockingService.releaseBlockedFunds(
+              booking.userId,
+              bookingId,
+              blockedAmt,
+              false,
+              tx
+            );
+
             await tx.onDemandProfessionalBooking.update({
               where: { id: bookingId },
               data: { status: "CANCELLED_BY_USER" },
             });
-            logger.info(`[CancellationService] Booking ${bookingId} cancelled by USER > 72h before start. 100% Refund.`);
-            bookingCancelledTotal.inc({ reason: "USER_INITIATED", refund_type: "FULL" });
+            logger.info(
+              `[CancellationService] Booking ${bookingId} cancelled by USER > 72h before start. 100% Refund.`
+            );
+            bookingCancelledTotal.inc({
+              reason: "USER_INITIATED",
+              refund_type: "FULL",
+            });
           } else if (diffHours >= 48 && diffHours <= 72) {
             // User Cancellation 48h - 72h: 50% Refund, 0% Pro, 50% Platform fee
             const platformFee = blockedAmt * 0.5;
             const refundAmount = blockedAmt * 0.5;
 
-            const wallet = await tx.wallet.findUnique({ where: { userId: booking.userId } });
+            const wallet = await tx.wallet.findUnique({
+              where: { userId: booking.userId },
+            });
             await tx.wallet.update({
               where: { userId: booking.userId },
               data: {
@@ -89,14 +104,21 @@ export class CancellationService {
               where: { id: bookingId },
               data: { status: "CANCELLED_BY_USER" },
             });
-            logger.info(`[CancellationService] Booking ${bookingId} cancelled by USER 48-72h. 50% Refund, 50% Platform Fee.`);
-            bookingCancelledTotal.inc({ reason: "USER_INITIATED", refund_type: "PARTIAL" });
+            logger.info(
+              `[CancellationService] Booking ${bookingId} cancelled by USER 48-72h. 50% Refund, 50% Platform Fee.`
+            );
+            bookingCancelledTotal.inc({
+              reason: "USER_INITIATED",
+              refund_type: "PARTIAL",
+            });
           } else {
             // User Cancellation < 48h: 0% Refund, 10% Pro, 90% Platform fee
             const platformFee = blockedAmt * 0.9;
             const proPayout = blockedAmt * 0.1;
 
-            const wallet = await tx.wallet.findUnique({ where: { userId: booking.userId } });
+            const wallet = await tx.wallet.findUnique({
+              where: { userId: booking.userId },
+            });
             await tx.wallet.update({
               where: { userId: booking.userId },
               data: {
@@ -129,18 +151,31 @@ export class CancellationService {
               where: { id: bookingId },
               data: { status: "CANCELLED_BY_USER" },
             });
-            logger.info(`[CancellationService] Booking ${bookingId} cancelled by USER < 48h. 0% Refund, 10% Pro Payout, 90% Platform Fee.`);
-            bookingCancelledTotal.inc({ reason: "USER_INITIATED", refund_type: "NONE" });
+            logger.info(
+              `[CancellationService] Booking ${bookingId} cancelled by USER < 48h. 0% Refund, 10% Pro Payout, 90% Platform Fee.`
+            );
+            bookingCancelledTotal.inc({
+              reason: "USER_INITIATED",
+              refund_type: "NONE",
+            });
           }
         });
       } else if (actorType === "PROFESSIONAL") {
         if (diffHours < 72) {
-          throw new Error("Cancellation Blocked: Professionals cannot cancel within 72 hours of match start.");
+          throw new Error(
+            "Cancellation Blocked: Professionals cannot cancel within 72 hours of match start."
+          );
         }
 
         // Professional Cancellation > 72h: Allowed. Full refund to user, deduct -0.5 trust score.
         await prisma.$transaction(async (tx) => {
-          await WalletBlockingService.releaseBlockedFunds(booking.userId, bookingId, blockedAmt, false, tx);
+          await WalletBlockingService.releaseBlockedFunds(
+            booking.userId,
+            bookingId,
+            blockedAmt,
+            false,
+            tx
+          );
 
           await tx.onDemandProfessionalBooking.update({
             where: { id: bookingId },
@@ -157,8 +192,13 @@ export class CancellationService {
           );
         });
 
-        logger.info(`[CancellationService] Booking ${bookingId} cancelled by PROFESSIONAL > 72h before start. Trust penalty applied.`);
-        bookingCancelledTotal.inc({ reason: "PRO_INITIATED", refund_type: "FULL" });
+        logger.info(
+          `[CancellationService] Booking ${bookingId} cancelled by PROFESSIONAL > 72h before start. Trust penalty applied.`
+        );
+        bookingCancelledTotal.inc({
+          reason: "PRO_INITIATED",
+          refund_type: "FULL",
+        });
       } else {
         throw new Error("Invalid actor type for cancellation");
       }

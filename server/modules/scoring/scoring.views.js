@@ -25,7 +25,8 @@ import { resolveHouseRules } from "./scoring.utils.js";
 // (e.g. timer-state oscillation) shouldn't bust caches; only score-affecting
 // changes do.
 
-const hash = (str) => crypto.createHash("sha1").update(str).digest("hex").slice(0, 16);
+const hash = (str) =>
+  crypto.createHash("sha1").update(str).digest("hex").slice(0, 16);
 
 /**
  * Etag for /scorecard, /live-score, /overs — anything that depends on the
@@ -35,7 +36,14 @@ const hash = (str) => crypto.createHash("sha1").update(str).digest("hex").slice(
 export const computeMatchEtag = async (matchId) => {
   const scoring = await prisma.cricketMatch.findFirst({
     where: { OR: [{ id: matchId }, { gameId: matchId }] },
-    select: { id: true, updatedAt: true, status: true, currentInningsIndex: true, result: true, houseRules: true },
+    select: {
+      id: true,
+      updatedAt: true,
+      status: true,
+      currentInningsIndex: true,
+      result: true,
+      houseRules: true,
+    },
   });
   if (!scoring) return null;
 
@@ -162,21 +170,47 @@ const buildPlayerLookup = async (cricketMatch, hostedGame) => {
   ]);
 
   const map = new Map();
-  for (const u of users) map.set(u.id, { id: u.id, name: u.name, profilePicture: u.profilePicture, isCustom: false });
-  for (const c of customs) map.set(c.id, { id: c.id, name: c.name, profilePicture: null, isCustom: true });
+  for (const u of users)
+    map.set(u.id, {
+      id: u.id,
+      name: u.name,
+      profilePicture: u.profilePicture,
+      isCustom: false,
+    });
+  for (const c of customs)
+    map.set(c.id, {
+      id: c.id,
+      name: c.name,
+      profilePicture: null,
+      isCustom: true,
+    });
 
-  const get = (id) => (id ? map.get(id) || { id, name: "Player", profilePicture: null, isCustom: false } : null);
+  const get = (id) =>
+    id
+      ? map.get(id) || {
+          id,
+          name: "Player",
+          profilePicture: null,
+          isCustom: false,
+        }
+      : null;
   return { get, all: map };
 };
 
 const teamNameForKey = (hostedGame, teamKey) => {
-  const team = hostedGame.teams?.find(t => t.teamKey === teamKey);
+  const team = hostedGame.teams?.find((t) => t.teamKey === teamKey);
   return team?.name || (teamKey === "teamA" ? "Team A" : "Team B");
 };
 
 const sumExtras = (extras) => {
   if (!extras || typeof extras !== "object") return 0;
-  return (extras.wides || 0) + (extras.noBalls || 0) + (extras.byes || 0) + (extras.legByes || 0) + (extras.penalty || 0);
+  return (
+    (extras.wides || 0) +
+    (extras.noBalls || 0) +
+    (extras.byes || 0) +
+    (extras.legByes || 0) +
+    (extras.penalty || 0)
+  );
 };
 
 // ── data loader (shared by every endpoint) ───────────────────────────────
@@ -232,14 +266,24 @@ export const buildScorecard = async (matchId) => {
   const ballsPerOver = houseRules.ballsPerOver;
 
   const innings = scoring.innings.map((inn) => {
-    const isTeamA = inn.battingTeam === "teamA" || inn.battingTeam === hostedGame.teams?.find(t => t.teamKey === "teamA")?.id;
+    const isTeamA =
+      inn.battingTeam === "teamA" ||
+      inn.battingTeam ===
+        hostedGame.teams?.find((t) => t.teamKey === "teamA")?.id;
     const battingTeamKey = isTeamA ? "teamA" : "teamB";
     const battingTeamName = teamNameForKey(hostedGame, battingTeamKey);
-    const fieldingTeamName = teamNameForKey(hostedGame, isTeamA ? "teamB" : "teamA");
+    const fieldingTeamName = teamNameForKey(
+      hostedGame,
+      isTeamA ? "teamB" : "teamA"
+    );
 
     // Per-innings balls + stats
-    const inningsBalls = scoring.timeline.filter((b) => b.inningsIndex === inn.inningsIndex);
-    const inningsStats = scoring.playerStats.filter((s) => s.inningsIndex === inn.inningsIndex);
+    const inningsBalls = scoring.timeline.filter(
+      (b) => b.inningsIndex === inn.inningsIndex
+    );
+    const inningsStats = scoring.playerStats.filter(
+      (s) => s.inningsIndex === inn.inningsIndex
+    );
 
     // --- Batting (in order of first appearance in timeline) ---
     const batterOrder = [];
@@ -264,7 +308,10 @@ export const buildScorecard = async (matchId) => {
       const p = players.get(userId);
       // Dismissal string e.g. "lbw b Atkinson", "c Emilio Gay b Robinson", "run out", "not out"
       const dismissal = formatDismissal(s, players);
-      const sr = s.battingBalls > 0 ? ((s.battingRuns / s.battingBalls) * 100).toFixed(2) : "0.00";
+      const sr =
+        s.battingBalls > 0
+          ? ((s.battingRuns / s.battingBalls) * 100).toFixed(2)
+          : "0.00";
       return {
         id: userId,
         name: p?.name || "Player",
@@ -276,8 +323,12 @@ export const buildScorecard = async (matchId) => {
         strikeRate: Number(sr),
         outStatus: s.outStatus || "NOT_OUT",
         dismissal,
-        isStriker: scoring.strikerId === userId && scoring.currentInningsIndex === inn.inningsIndex,
-        isNonStriker: scoring.nonStrikerId === userId && scoring.currentInningsIndex === inn.inningsIndex,
+        isStriker:
+          scoring.strikerId === userId &&
+          scoring.currentInningsIndex === inn.inningsIndex,
+        isNonStriker:
+          scoring.nonStrikerId === userId &&
+          scoring.currentInningsIndex === inn.inningsIndex,
       };
     });
 
@@ -294,9 +345,10 @@ export const buildScorecard = async (matchId) => {
       const s = inningsStats.find((x) => x.userId === userId) || {};
       const p = players.get(userId);
       const overs = `${Math.floor((s.bowlingBalls || 0) / ballsPerOver)}.${(s.bowlingBalls || 0) % ballsPerOver}`;
-      const er = (s.bowlingBalls || 0) > 0
-        ? ((s.bowlingRuns / s.bowlingBalls) * ballsPerOver).toFixed(2)
-        : "0.00";
+      const er =
+        (s.bowlingBalls || 0) > 0
+          ? ((s.bowlingRuns / s.bowlingBalls) * ballsPerOver).toFixed(2)
+          : "0.00";
       return {
         id: userId,
         name: p?.name || "Bowler",
@@ -308,7 +360,9 @@ export const buildScorecard = async (matchId) => {
         wides: s.bowlingWides || 0,
         noBalls: s.bowlingNoBalls || 0,
         economyRate: Number(er),
-        isCurrent: scoring.bowlerId === userId && scoring.currentInningsIndex === inn.inningsIndex,
+        isCurrent:
+          scoring.bowlerId === userId &&
+          scoring.currentInningsIndex === inn.inningsIndex,
       };
     });
 
@@ -322,7 +376,7 @@ export const buildScorecard = async (matchId) => {
         const b = inningsBalls[k];
         const legal =
           b.extraType !== "PENALTY" &&
-          (b.extraType !== "WIDE"    || houseRules.wideIsLegalBall) &&
+          (b.extraType !== "WIDE" || houseRules.wideIsLegalBall) &&
           (b.extraType !== "NO_BALL" || houseRules.noBallIsLegalBall);
         if (legal) count++;
       }
@@ -354,13 +408,22 @@ export const buildScorecard = async (matchId) => {
     const partnerships = buildPartnerships(inningsBalls, players, ballsPerOver);
 
     // --- Extras ---
-    const extras = inn.extras || { wides: 0, noBalls: 0, byes: 0, legByes: 0, penalty: 0 };
+    const extras = inn.extras || {
+      wides: 0,
+      noBalls: 0,
+      byes: 0,
+      legByes: 0,
+      penalty: 0,
+    };
     const extrasTotal = sumExtras(extras);
 
     // --- Innings header totals ---
     const totalValidBalls = inn.totalBalls || 0;
     const oversString = `${Math.floor(totalValidBalls / ballsPerOver)}.${totalValidBalls % ballsPerOver}`;
-    const crr = totalValidBalls > 0 ? ((inn.totalRuns / totalValidBalls) * ballsPerOver).toFixed(2) : "0.00";
+    const crr =
+      totalValidBalls > 0
+        ? ((inn.totalRuns / totalValidBalls) * ballsPerOver).toFixed(2)
+        : "0.00";
 
     return {
       inningsIndex: inn.inningsIndex,
@@ -377,7 +440,10 @@ export const buildScorecard = async (matchId) => {
       bowlers,
       fallOfWickets,
       partnerships,
-      reviews: { batting: inn.battingTeamReviews ?? 2, fielding: inn.fieldingTeamReviews ?? 2 },
+      reviews: {
+        batting: inn.battingTeamReviews ?? 2,
+        fielding: inn.fieldingTeamReviews ?? 2,
+      },
       powerplayOvers: inn.powerplayOvers || 0,
     };
   });
@@ -412,22 +478,35 @@ const formatDismissal = (stat, players) => {
   const fielderName = fielder?.name || "";
 
   switch (status) {
-    case "BOWLED":       return bowlerName ? `b ${bowlerName}` : "bowled";
-    case "LBW":          return bowlerName ? `lbw b ${bowlerName}` : "lbw";
+    case "BOWLED":
+      return bowlerName ? `b ${bowlerName}` : "bowled";
+    case "LBW":
+      return bowlerName ? `lbw b ${bowlerName}` : "lbw";
     case "CAUGHT":
-      if (bowler && fielder && bowler.id === fielder.id) return `c & b ${bowlerName}`;
+      if (bowler && fielder && bowler.id === fielder.id)
+        return `c & b ${bowlerName}`;
       if (fielder && bowler) return `c ${fielderName} b ${bowlerName}`;
       return "caught";
-    case "STUMPED":      return bowlerName ? `st b ${bowlerName}` : "stumped";
-    case "HIT_WICKET":   return bowlerName ? `hit wicket b ${bowlerName}` : "hit wicket";
-    case "RUN_OUT":      return fielderName ? `run out (${fielderName})` : "run out";
-    case "RETIRED_HURT": return "retired hurt";
-    case "RETIRED_OUT":  return "retired out";
-    case "OBSTRUCTING_FIELD": return "obstructing the field";
-    case "HIT_BALL_TWICE":    return "hit ball twice";
-    case "HANDLED_BALL":      return "handled the ball";
-    case "TIMED_OUT":         return "timed out";
-    default:                  return status.toLowerCase().replaceAll("_", " ");
+    case "STUMPED":
+      return bowlerName ? `st b ${bowlerName}` : "stumped";
+    case "HIT_WICKET":
+      return bowlerName ? `hit wicket b ${bowlerName}` : "hit wicket";
+    case "RUN_OUT":
+      return fielderName ? `run out (${fielderName})` : "run out";
+    case "RETIRED_HURT":
+      return "retired hurt";
+    case "RETIRED_OUT":
+      return "retired out";
+    case "OBSTRUCTING_FIELD":
+      return "obstructing the field";
+    case "HIT_BALL_TWICE":
+      return "hit ball twice";
+    case "HANDLED_BALL":
+      return "handled the ball";
+    case "TIMED_OUT":
+      return "timed out";
+    default:
+      return status.toLowerCase().replaceAll("_", " ");
   }
 };
 
@@ -458,7 +537,10 @@ const buildPartnerships = (inningsBalls, players, ballsPerOver) => {
     const offBat = b.runs || 0;
     current[target].runs += offBat;
     // Balls faced = legal deliveries facing this batter
-    const isLegal = b.extraType !== "PENALTY" && b.extraType !== "WIDE" && b.extraType !== "NO_BALL";
+    const isLegal =
+      b.extraType !== "PENALTY" &&
+      b.extraType !== "WIDE" &&
+      b.extraType !== "NO_BALL";
     if (isLegal) {
       current[target].balls += 1;
       current.balls += 1;
@@ -466,12 +548,25 @@ const buildPartnerships = (inningsBalls, players, ballsPerOver) => {
     current.runs += offBat + (b.extraRuns || 0);
 
     if (b.isWicket && b.wicketType !== "RETIRED_HURT") {
-      const partner = current.playerA.id === b.playerOutId ? "playerB" : "playerA";
+      const partner =
+        current.playerA.id === b.playerOutId ? "playerB" : "playerA";
       const pA = players.get(current.playerA.id);
       const pB = current.playerB.id ? players.get(current.playerB.id) : null;
       out.push({
-        playerA: { id: current.playerA.id, name: pA?.name || "Player", runs: current.playerA.runs, balls: current.playerA.balls },
-        playerB: pB ? { id: current.playerB.id, name: pB?.name || "Player", runs: current.playerB.runs, balls: current.playerB.balls } : null,
+        playerA: {
+          id: current.playerA.id,
+          name: pA?.name || "Player",
+          runs: current.playerA.runs,
+          balls: current.playerA.balls,
+        },
+        playerB: pB
+          ? {
+              id: current.playerB.id,
+              name: pB?.name || "Player",
+              runs: current.playerB.runs,
+              balls: current.playerB.balls,
+            }
+          : null,
         runs: current.runs,
         balls: current.balls,
       });
@@ -484,8 +579,20 @@ const buildPartnerships = (inningsBalls, players, ballsPerOver) => {
     const pA = players.get(current.playerA.id);
     const pB = current.playerB.id ? players.get(current.playerB.id) : null;
     out.push({
-      playerA: { id: current.playerA.id, name: pA?.name || "Player", runs: current.playerA.runs, balls: current.playerA.balls },
-      playerB: pB ? { id: current.playerB.id, name: pB?.name || "Player", runs: current.playerB.runs, balls: current.playerB.balls } : null,
+      playerA: {
+        id: current.playerA.id,
+        name: pA?.name || "Player",
+        runs: current.playerA.runs,
+        balls: current.playerA.balls,
+      },
+      playerB: pB
+        ? {
+            id: current.playerB.id,
+            name: pB?.name || "Player",
+            runs: current.playerB.runs,
+            balls: current.playerB.balls,
+          }
+        : null,
       runs: current.runs,
       balls: current.balls,
       isUnbroken: true,
@@ -504,16 +611,29 @@ export const buildSquads = async (matchId) => {
   const { hostedGame, players } = await loadScoringContext(matchId);
 
   const mkSide = (teamKey) => {
-    const team = hostedGame.teams?.find(t => t.teamKey === teamKey);
-    if (!team) return { name: teamKey === "teamA" ? "Team A" : "Team B", key: teamKey, playingXi: [], bench: [] };
+    const team = hostedGame.teams?.find((t) => t.teamKey === teamKey);
+    if (!team)
+      return {
+        name: teamKey === "teamA" ? "Team A" : "Team B",
+        key: teamKey,
+        playingXi: [],
+        bench: [],
+      };
 
     const playingXi = [];
     const bench = [];
 
     for (const slot of team.slots || []) {
       const userInfo = slot.userId ? players.get(slot.userId) : null;
-      const customInfo = slot.customPlayerId ? players.get(slot.customPlayerId) : null;
-      const display = userInfo || customInfo || { id: slot.id, name: slot.customPlayer?.name || "Open Slot", profilePicture: null };
+      const customInfo = slot.customPlayerId
+        ? players.get(slot.customPlayerId)
+        : null;
+      const display = userInfo ||
+        customInfo || {
+          id: slot.id,
+          name: slot.customPlayer?.name || "Open Slot",
+          profilePicture: null,
+        };
       const entry = {
         slotId: slot.id,
         id: display.id,
@@ -522,7 +642,9 @@ export const buildSquads = async (matchId) => {
         role: slot.role || "Player",
         isCustom: !!customInfo,
         isCaptain: slot.role?.toUpperCase().includes("CAPTAIN") || false,
-        isWicketKeeper: slot.role?.toUpperCase().includes("WICKET") || slot.role?.toUpperCase().includes("WK"),
+        isWicketKeeper:
+          slot.role?.toUpperCase().includes("WICKET") ||
+          slot.role?.toUpperCase().includes("WK"),
         status: slot.status,
       };
 
@@ -567,11 +689,15 @@ export const buildOvers = async (matchId, requestedInnings, opts = {}) => {
   const ballsPerOver = houseRules.ballsPerOver;
 
   // Default to the first innings the user asks for; otherwise return both.
-  const targets = requestedInnings != null
-    ? scoring.innings.filter((inn) => inn.inningsIndex === Number(requestedInnings))
-    : scoring.innings;
+  const targets =
+    requestedInnings != null
+      ? scoring.innings.filter(
+          (inn) => inn.inningsIndex === Number(requestedInnings)
+        )
+      : scoring.innings;
 
-  if (!targets.length) return { matchId: scoring.gameId, innings: [], nextCursor: null };
+  if (!targets.length)
+    return { matchId: scoring.gameId, innings: [], nextCursor: null };
 
   // Cursor support — `afterBallId` lets the client say "I've already seen
   // every ball up to and including this one; only send overs containing a
@@ -582,7 +708,12 @@ export const buildOvers = async (matchId, requestedInnings, opts = {}) => {
   if (opts.afterBallId) {
     const c = await prisma.matchBall.findUnique({
       where: { id: opts.afterBallId },
-      select: { inningsIndex: true, over: true, ballInOver: true, matchId: true },
+      select: {
+        inningsIndex: true,
+        over: true,
+        ballInOver: true,
+        matchId: true,
+      },
     });
     if (c && c.matchId === scoring.id) {
       cursorPos = c;
@@ -590,8 +721,10 @@ export const buildOvers = async (matchId, requestedInnings, opts = {}) => {
   }
 
   const labelFor = (b) => {
-    if (b.isWicket && (b.runs + (b.extraRuns || 0)) === 0) {
-      return b.extraType && b.extraType !== "NONE" ? `W${suffixFor(b.extraType)}` : "W";
+    if (b.isWicket && b.runs + (b.extraRuns || 0) === 0) {
+      return b.extraType && b.extraType !== "NONE"
+        ? `W${suffixFor(b.extraType)}`
+        : "W";
     }
     const total = (b.runs || 0) + (b.extraRuns || 0);
     if (b.extraType && b.extraType !== "NONE") {
@@ -607,7 +740,9 @@ export const buildOvers = async (matchId, requestedInnings, opts = {}) => {
   let latestBallTs = 0;
 
   const innings = targets.map((inn) => {
-    const inningsBalls = scoring.timeline.filter((b) => b.inningsIndex === inn.inningsIndex);
+    const inningsBalls = scoring.timeline.filter(
+      (b) => b.inningsIndex === inn.inningsIndex
+    );
 
     // Group by over number. The "over number" we display is 1-indexed, but
     // MatchBall.over is 0-indexed.
@@ -629,15 +764,21 @@ export const buildOvers = async (matchId, requestedInnings, opts = {}) => {
     // Walk in chronological order and build a cumulative score after each over.
     // Cumulative totals always walk every ball (so scoreAtEnd stays correct),
     // but we only push overs that pass the cursor filter into the response.
-    const cursorAppliesHere = cursorPos && cursorPos.inningsIndex === inn.inningsIndex;
+    const cursorAppliesHere =
+      cursorPos && cursorPos.inningsIndex === inn.inningsIndex;
     let cumRuns = 0;
     let cumWickets = 0;
     const overs = [];
     for (const overNumber of [...byOver.keys()].sort((a, b) => a - b)) {
       const balls = byOver.get(overNumber);
-      const runsThisOver = balls.reduce((acc, b) => acc + (b.runs || 0) + (b.extraRuns || 0), 0);
+      const runsThisOver = balls.reduce(
+        (acc, b) => acc + (b.runs || 0) + (b.extraRuns || 0),
+        0
+      );
       cumRuns += runsThisOver;
-      cumWickets += balls.filter((b) => b.isWicket && b.wicketType !== "RETIRED_HURT").length;
+      cumWickets += balls.filter(
+        (b) => b.isWicket && b.wicketType !== "RETIRED_HURT"
+      ).length;
 
       // Cursor filter — skip overs whose last ball is at-or-before the cursor.
       // The cursor's own over is still emitted if it has NEWER balls than
@@ -646,21 +787,27 @@ export const buildOvers = async (matchId, requestedInnings, opts = {}) => {
       if (cursorAppliesHere) {
         if (overNumber < cursorPos.over) continue;
         if (overNumber === cursorPos.over) {
-          const hasNewerBall = balls.some(b => b.ballInOver > cursorPos.ballInOver);
+          const hasNewerBall = balls.some(
+            (b) => b.ballInOver > cursorPos.ballInOver
+          );
           if (!hasNewerBall) continue;
         }
       }
       // If the cursor is for a later innings entirely, skip the whole inning.
       if (cursorPos && cursorPos.inningsIndex > inn.inningsIndex) continue;
 
-      const strikerIds = [...new Set(balls.map((b) => b.batterId).filter(Boolean))];
+      const strikerIds = [
+        ...new Set(balls.map((b) => b.batterId).filter(Boolean)),
+      ];
       const bowlerId = balls[0]?.bowlerId;
       const bowlerName = players.get(bowlerId)?.name || "Bowler";
-      const facedByNames = strikerIds.map((id) => players.get(id)?.name || "Batter");
+      const facedByNames = strikerIds.map(
+        (id) => players.get(id)?.name || "Batter"
+      );
       const header = `${bowlerName} to ${facedByNames.join(" & ")}`;
 
       overs.push({
-        overNumber: overNumber + 1,           // 1-indexed for display
+        overNumber: overNumber + 1, // 1-indexed for display
         label: `Ov ${overNumber + 1}`,
         bowler: { id: bowlerId, name: bowlerName },
         facedBy: facedByNames,
@@ -682,7 +829,12 @@ export const buildOvers = async (matchId, requestedInnings, opts = {}) => {
 
     return {
       inningsIndex: inn.inningsIndex,
-      battingTeam: { name: teamNameForKey(hostedGame, inn.battingTeam === "teamA" ? "teamA" : "teamB") },
+      battingTeam: {
+        name: teamNameForKey(
+          hostedGame,
+          inn.battingTeam === "teamA" ? "teamA" : "teamB"
+        ),
+      },
       overs: overs.reverse(), // latest over first (Cricinfo convention)
     };
   });
@@ -692,12 +844,18 @@ export const buildOvers = async (matchId, requestedInnings, opts = {}) => {
 
 const suffixFor = (extraType) => {
   switch (extraType) {
-    case "WIDE":    return "wd";
-    case "NO_BALL": return "nb";
-    case "BYE":     return "b";
-    case "LEG_BYE": return "lb";
-    case "PENALTY": return "p";
-    default:        return "";
+    case "WIDE":
+      return "wd";
+    case "NO_BALL":
+      return "nb";
+    case "BYE":
+      return "b";
+    case "LEG_BYE":
+      return "lb";
+    case "PENALTY":
+      return "p";
+    default:
+      return "";
   }
 };
 
@@ -725,7 +883,14 @@ export const listLiveMatches = async ({ limit = 50 } = {}) => {
           oversPerInnings: true,
           houseRules: true,
           innings: {
-            select: { inningsIndex: true, totalRuns: true, totalWickets: true, totalBalls: true, battingTeam: true, isCompleted: true },
+            select: {
+              inningsIndex: true,
+              totalRuns: true,
+              totalWickets: true,
+              totalBalls: true,
+              battingTeam: true,
+              isCompleted: true,
+            },
             orderBy: { inningsIndex: "asc" },
           },
         },
@@ -739,8 +904,12 @@ export const listLiveMatches = async ({ limit = 50 } = {}) => {
 };
 
 const shapeLiveCard = (game) => {
-  const teamA = game.teams?.find(t => t.teamKey === "teamA") || { name: "Team A" };
-  const teamB = game.teams?.find(t => t.teamKey === "teamB") || { name: "Team B" };
+  const teamA = game.teams?.find((t) => t.teamKey === "teamA") || {
+    name: "Team A",
+  };
+  const teamB = game.teams?.find((t) => t.teamKey === "teamB") || {
+    name: "Team B",
+  };
   const cm = game.cricketMatch;
   const innings = cm?.innings || [];
   const houseRules = resolveHouseRules(cm?.houseRules);

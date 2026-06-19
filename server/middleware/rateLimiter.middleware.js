@@ -1,11 +1,13 @@
-import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
-import RedisStore   from 'rate-limit-redis';
-import CircuitBreaker from 'opossum';
-import { redisClient as redis } from '../config/redis.js';
-import logger from '../utils/logger.js';
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import RedisStore from "rate-limit-redis";
+import CircuitBreaker from "opossum";
+import { redisClient as redis } from "../config/redis.js";
+import logger from "../utils/logger.js";
 
-const isTestOrDev  = process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development';
-const defaultWindow = parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000;
+const isTestOrDev =
+  process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development";
+const defaultWindow =
+  parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000;
 
 /**
  * Creates a RedisStore wrapped in an Opossum circuit breaker.
@@ -28,34 +30,40 @@ const createRedisStoreWithBreaker = (prefix) => {
       await redis.ping();
     },
     {
-      timeout: 3000,                   // 3s probe timeout = failure
-      errorThresholdPercentage: 50,    // 50% failures → circuit opens
-      resetTimeout: 30_000,            // retry Redis after 30s
+      timeout: 3000, // 3s probe timeout = failure
+      errorThresholdPercentage: 50, // 50% failures → circuit opens
+      resetTimeout: 30_000, // retry Redis after 30s
     }
   );
 
-  breaker.on('open', () => {
+  breaker.on("open", () => {
     usingRedis = false;
-    logger.warn(`[RATE_LIMITER] Circuit OPEN — Redis unavailable, falling back to memory (${prefix})`);
+    logger.warn(
+      `[RATE_LIMITER] Circuit OPEN — Redis unavailable, falling back to memory (${prefix})`
+    );
   });
-  breaker.on('halfOpen', () => {
+  breaker.on("halfOpen", () => {
     logger.info(`[RATE_LIMITER] Circuit HALF-OPEN — testing Redis (${prefix})`);
   });
-  breaker.on('close', () => {
+  breaker.on("close", () => {
     usingRedis = true;
     logger.info(`[RATE_LIMITER] Circuit CLOSED — Redis restored (${prefix})`);
   });
 
   // Keep probing in the background
   setInterval(async () => {
-    try { await breaker.fire(); } catch (_) { /* breaker handles logging */ }
+    try {
+      await breaker.fire();
+    } catch (_) {
+      /* breaker handles logging */
+    }
   }, 10_000);
 
   // Return a dynamic store selector
   // When circuit is open, returning undefined makes express-rate-limit use memory
   return new RedisStore({
     sendCommand: async (...args) => {
-      if (!usingRedis) throw new Error('Circuit open');
+      if (!usingRedis) throw new Error("Circuit open");
       return redis.call(...args);
     },
     prefix,
@@ -99,8 +107,12 @@ export const authLimiter = rateLimit({
   max: parseInt(process.env.RATE_LIMIT_AUTH_MAX) || 10,
   standardHeaders: true,
   legacyHeaders: false,
-  store: createRedisStoreWithBreaker('rl:auth'),
-  message: { success: false, code: 'RATE_LIMITED', message: 'Too many attempts. Please try again in 15 minutes.' },
+  store: createRedisStoreWithBreaker("rl:auth"),
+  message: {
+    success: false,
+    code: "RATE_LIMITED",
+    message: "Too many attempts. Please try again in 15 minutes.",
+  },
   skipSuccessfulRequests: true,
   skip: (req) => isTestOrDev,
 });
@@ -114,10 +126,14 @@ export const otpLimiter = rateLimit({
   max: parseInt(process.env.RATE_LIMIT_OTP_MAX) || 5,
   standardHeaders: true,
   legacyHeaders: false,
-  store: createRedisStoreWithBreaker('rl:otp'),
+  store: createRedisStoreWithBreaker("rl:otp"),
   keyGenerator: otpKeyGenerator,
-  message: { success: false, code: 'RATE_LIMITED', message: 'Too many OTP requests. Please wait a while.' },
-  skip: (req) => process.env.NODE_ENV === 'test',
+  message: {
+    success: false,
+    code: "RATE_LIMITED",
+    message: "Too many OTP requests. Please wait a while.",
+  },
+  skip: (req) => process.env.NODE_ENV === "test",
 });
 
 /**
@@ -129,9 +145,13 @@ export const paymentLimiter = rateLimit({
   max: parseInt(process.env.RATE_LIMIT_PAYMENT_MAX) || 10,
   standardHeaders: true,
   legacyHeaders: false,
-  store: createRedisStoreWithBreaker('rl:payment'),
+  store: createRedisStoreWithBreaker("rl:payment"),
   keyGenerator: userOrIpKey,
-  message: { success: false, code: 'RATE_LIMITED', message: 'Too many payment requests. Please slow down.' },
+  message: {
+    success: false,
+    code: "RATE_LIMITED",
+    message: "Too many payment requests. Please slow down.",
+  },
   skip: (req) => isTestOrDev,
 });
 
@@ -145,9 +165,13 @@ export const refreshLimiter = rateLimit({
   max: parseInt(process.env.RATE_LIMIT_REFRESH_MAX) || 10,
   standardHeaders: true,
   legacyHeaders: false,
-  store: createRedisStoreWithBreaker('rl:refresh'),
+  store: createRedisStoreWithBreaker("rl:refresh"),
   keyGenerator: userOrIpKey,
-  message: { success: false, code: 'RATE_LIMITED', message: 'Too many refresh attempts.' },
+  message: {
+    success: false,
+    code: "RATE_LIMITED",
+    message: "Too many refresh attempts.",
+  },
   skip: (req) => isTestOrDev,
 });
 
@@ -160,8 +184,13 @@ export const globalLimiter = rateLimit({
   max: parseInt(process.env.RATE_LIMIT_GLOBAL_MAX) || 200,
   standardHeaders: true,
   legacyHeaders: false,
-  store: createRedisStoreWithBreaker('rl:global'),
+  store: createRedisStoreWithBreaker("rl:global"),
   keyGenerator: userOrIpKey,
-  message: { success: false, code: 'RATE_LIMITED', message: 'Too many requests. Please slow down.' },
-  skip: (req) => isTestOrDev || req.path === '/health' || req.path === '/api/health',
+  message: {
+    success: false,
+    code: "RATE_LIMITED",
+    message: "Too many requests. Please slow down.",
+  },
+  skip: (req) =>
+    isTestOrDev || req.path === "/health" || req.path === "/api/health",
 });

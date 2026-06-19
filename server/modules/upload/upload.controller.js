@@ -8,7 +8,9 @@ import logger from "../../utils/logger.js";
 export const handleSingleUpload = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ success: false, message: "No file provided" });
+      return res
+        .status(400)
+        .json({ success: false, message: "No file provided" });
     }
 
     const folder = req.body.folder || "kridaz/verification";
@@ -19,10 +21,12 @@ export const handleSingleUpload = async (req, res) => {
       url: result,
       name: req.file.originalname,
       size: req.file.size,
-      mimetype: req.file.mimetype
+      mimetype: req.file.mimetype,
     });
   } catch (error) {
     logger.error("[UPLOAD ERROR]", error);
-    return res.status(500).json({ success: false, message: "File upload failed" });
+    return res
+      .status(500)
+      .json({ success: false, message: "File upload failed" });
   }
 };

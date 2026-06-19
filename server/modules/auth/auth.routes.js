@@ -5,7 +5,7 @@ import ownerAuthRouter from "./routes/owner.routes.js";
 /**
  * Auth Domain Router
  * Mounts actor-specific sub-routers for Authentication and Profile management.
- * 
+ *
  * Routes:
  * /api/auth/...
  */

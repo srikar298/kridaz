@@ -1,16 +1,26 @@
-import { useState, useMemo } from 'react';
-import { X, Search, Check, Send } from 'lucide-react';
-import { useGetFollowersFollowingQuery, useForwardMessageMutation } from '@redux/api/chatApi';
+import { useState, useMemo } from "react";
+import { X, Search, Check, Send } from "lucide-react";
+import {
+  useGetFollowersFollowingQuery,
+  useForwardMessageMutation,
+} from "@redux/api/chatApi";
 
 const ForwardModal = ({ isOpen, onClose, messageId }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const { data: networkData, isLoading } = useGetFollowersFollowingQuery(undefined, { skip: !isOpen });
-  const [forwardMessage, { isLoading: isForwarding }] = useForwardMessageMutation();
+  const { data: networkData, isLoading } = useGetFollowersFollowingQuery(
+    undefined,
+    { skip: !isOpen }
+  );
+  const [forwardMessage, { isLoading: isForwarding }] =
+    useForwardMessageMutation();
 
   const connections = useMemo(() => {
     if (!networkData) return [];
-    const all = [...(networkData.followers || []), ...(networkData.following || [])];
+    const all = [
+      ...(networkData.followers || []),
+      ...(networkData.following || []),
+    ];
     // Deduplicate by ID
     const unique = [];
     const seen = new Set();
@@ -24,16 +34,17 @@ const ForwardModal = ({ isOpen, onClose, messageId }) => {
   }, [networkData]);
 
   const filteredConnections = useMemo(() => {
-    return connections.filter(user => 
-      user.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      user.username?.toLowerCase().includes(searchQuery.toLowerCase())
+    return connections.filter(
+      (user) =>
+        user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.username?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [connections, searchQuery]);
 
   const toggleUser = (userId) => {
-    setSelectedUsers(prev => 
-      prev.includes(userId) 
-        ? prev.filter(id => id !== userId)
+    setSelectedUsers((prev) =>
+      prev.includes(userId)
+        ? prev.filter((id) => id !== userId)
         : [...prev, userId]
     );
   };
@@ -45,7 +56,7 @@ const ForwardModal = ({ isOpen, onClose, messageId }) => {
       onClose();
       // Optional: show toast notification here
       setSelectedUsers([]);
-      setSearchQuery('');
+      setSearchQuery("");
     } catch (err) {
       console.error("Failed to forward message:", err);
       alert(err.data?.message || "Failed to forward message");
@@ -56,14 +67,16 @@ const ForwardModal = ({ isOpen, onClose, messageId }) => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-      <div 
+      <div
         className="bg-[#1a1a1a] border border-white/10 rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl flex flex-col animate-scale-up"
-        style={{ maxHeight: '80vh' }}
+        style={{ maxHeight: "80vh" }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-4 border-b border-white/10 shrink-0">
-          <h2 className="text-white font-black tracking-wider uppercase text-lg">Forward to</h2>
-          <button 
+          <h2 className="text-white font-black tracking-wider uppercase text-lg">
+            Forward to
+          </h2>
+          <button
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
           >
@@ -73,7 +86,10 @@ const ForwardModal = ({ isOpen, onClose, messageId }) => {
 
         <div className="p-4 shrink-0 border-b border-white/5">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={18} />
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
+              size={18}
+            />
             <input
               type="text"
               placeholder="Search followers..."
@@ -97,42 +113,62 @@ const ForwardModal = ({ isOpen, onClose, messageId }) => {
             filteredConnections.map((user) => {
               const isSelected = selectedUsers.includes(user._id);
               return (
-                <div 
+                <div
                   key={user._id}
                   onClick={() => toggleUser(user._id)}
-                  className={`flex items-center justify-between p-2 rounded-[8px] cursor-pointer transition-all ${ isSelected ? 'bg-[#BFF367]/10' : 'hover:bg-white/5' }`}
+                  className={`flex items-center justify-between p-2 rounded-[8px] cursor-pointer transition-all ${isSelected ? "bg-[#BFF367]/10" : "hover:bg-white/5"}`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full border border-white/10 bg-white/5 flex items-center justify-center overflow-hidden">
                       {user.profilePicture || user.profileImage ? (
-                        <img 
-                          src={user.profilePicture || user.profileImage} 
-                          alt={user.name} 
+                        <img
+                          src={user.profilePicture || user.profileImage}
+                          alt={user.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.style.display = "none";
                             const next = e.currentTarget.nextElementSibling;
                             if (next) {
-                              next.style.display = 'flex';
+                              next.style.display = "flex";
                             }
                           }}
                         />
                       ) : null}
-                      <div 
+                      <div
                         className="w-full h-full flex items-center justify-center bg-gradient-to-br from-white/10 to-white/5"
-                        style={{ display: (user.profilePicture || user.profileImage) ? 'none' : 'flex' }}
+                        style={{
+                          display:
+                            user.profilePicture || user.profileImage
+                              ? "none"
+                              : "flex",
+                        }}
                       >
                         <span className="text-[#BFF367] font-black text-xs tracking-tighter">
-                          {user.name ? user.name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) : "?"}
+                          {user.name
+                            ? user.name
+                                .split(" ")
+                                .map((w) => w[0])
+                                .join("")
+                                .toUpperCase()
+                                .slice(0, 2)
+                            : "?"}
                         </span>
                       </div>
                     </div>
                     <div>
-                      <p className="text-white text-sm font-semibold">{user.name}</p>
-                      <p className="text-white/40 text-xs">@{user.username || user.name.toLowerCase().replace(' ', '')}</p>
+                      <p className="text-white text-sm font-semibold">
+                        {user.name}
+                      </p>
+                      <p className="text-white/40 text-xs">
+                        @
+                        {user.username ||
+                          user.name.toLowerCase().replace(" ", "")}
+                      </p>
                     </div>
                   </div>
-                  <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${ isSelected ? 'bg-[#BFF367] border-[#BFF367]' : 'border-white/20' }`}>
+                  <div
+                    className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${isSelected ? "bg-[#BFF367] border-[#BFF367]" : "border-white/20"}`}
+                  >
                     {isSelected && <Check size={14} className="text-black" />}
                   </div>
                 </div>
@@ -149,7 +185,9 @@ const ForwardModal = ({ isOpen, onClose, messageId }) => {
               className="w-full flex items-center justify-center gap-2 py-3 bg-[#BFF367] text-black font-black uppercase tracking-wider text-sm rounded-[8px] hover:bg-[#95e61a] transition-colors disabled:opacity-50"
             >
               <Send size={16} />
-              {isForwarding ? "Forwarding..." : `Forward to ${selectedUsers.length} user${selectedUsers.length > 1 ? 's' : ''}`}
+              {isForwarding
+                ? "Forwarding..."
+                : `Forward to ${selectedUsers.length} user${selectedUsers.length > 1 ? "s" : ""}`}
             </button>
           </div>
         )}

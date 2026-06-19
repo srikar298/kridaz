@@ -4,7 +4,7 @@ import {
   listVenueInvites,
   resendVenueInvite,
   revokeVenueInvite,
-  verifyPublicInvite
+  verifyPublicInvite,
 } from "../venueInvites.controller.js";
 
 const router = Router();

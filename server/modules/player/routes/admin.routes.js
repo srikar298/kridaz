@@ -1,5 +1,11 @@
 import express from "express";
-import { getAllUsers, deleteUser, updateUserStatus, batchDeleteUsers, batchUpdateUserStatus } from "../../admin/admin.controller.js";
+import {
+  getAllUsers,
+  deleteUser,
+  updateUserStatus,
+  batchDeleteUsers,
+  batchUpdateUserStatus,
+} from "../../admin/admin.controller.js";
 
 const router = express.Router();
 

@@ -12,6 +12,7 @@ Due to recent security hardening, all authentication bypass mechanisms have been
 This document outlines the standard operating procedure for recovering a compromised or inaccessible Super Admin account.
 
 ## Prohibited Actions
+
 - **NEVER** modify `server/modules/auth/auth.controller.js` to bypass OTP for admin roles. This is considered a critical security violation.
 - **NEVER** hardcode access tokens in the source code.
 
@@ -20,10 +21,12 @@ This document outlines the standard operating procedure for recovering a comprom
 If an admin loses access to their registered email and phone number, another Super Admin or the Database Administrator must perform the following actions directly within the production PostgreSQL instance.
 
 ### Prerequisites
+
 - Access to the Kridaz PostgreSQL Production Database.
 - Database Administrative credentials.
 
 ### Steps
+
 1. Connect to the production database using pgAdmin, DBeaver, or the PostgreSQL command-line shell (`psql`).
 2. Select the database and query the users/owners table.
 3. Locate the locked admin account. You can query by their known username or legacy email:

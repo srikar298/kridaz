@@ -1,11 +1,11 @@
-import express from 'express';
-import userStoryRouter from './routes/user.routes.js';
-import adminStoryRouter from './routes/admin.routes.js';
+import express from "express";
+import userStoryRouter from "./routes/user.routes.js";
+import adminStoryRouter from "./routes/admin.routes.js";
 
 /**
  * Story Domain Router
  * Mounts actor-specific sub-routers for the Story module.
- * 
+ *
  * Routes:
  * /api/story/user/...
  * /api/story/admin/...
@@ -14,10 +14,10 @@ import adminStoryRouter from './routes/admin.routes.js';
 const storyRouter = express.Router();
 
 // Mount Actor Sub-Routers
-storyRouter.use('/user', userStoryRouter);
-storyRouter.use('/admin', adminStoryRouter);
+storyRouter.use("/user", userStoryRouter);
+storyRouter.use("/admin", adminStoryRouter);
 
 // Fallback / Root - Map to user routes
-storyRouter.use('/', userStoryRouter);
+storyRouter.use("/", userStoryRouter);
 
 export default storyRouter;

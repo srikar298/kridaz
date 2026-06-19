@@ -17,10 +17,13 @@ const useRecommendations = (options = {}) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axiosInstance.get("/api/user/turf/user/recommendations", {
-        params: { lat, lng, limit },
-        timeout: 10000
-      });
+      const response = await axiosInstance.get(
+        "/api/user/turf/user/recommendations",
+        {
+          params: { lat, lng, limit },
+          timeout: 10000,
+        }
+      );
 
       if (response.data && response.data.data) {
         setRecommendations(response.data.data);
@@ -28,7 +31,10 @@ const useRecommendations = (options = {}) => {
         setRecommendations([]);
       }
     } catch (err) {
-      console.error("[useRecommendations] Error fetching ground recommendations:", err);
+      console.error(
+        "[useRecommendations] Error fetching ground recommendations:",
+        err
+      );
       let errMsg = "Failed to load personalized recommendations";
       if (err.response?.data?.message) {
         errMsg = err.response.data.message;

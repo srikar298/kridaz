@@ -1,4 +1,4 @@
-import { NotFoundError, ConflictError, BadRequestError } from '@kridaz/common';
+import { NotFoundError, ConflictError, BadRequestError } from "@kridaz/common";
 import { prisma } from "../../config/prisma.js";
 import { logAdminAction } from "../../utils/auditLogger.js";
 import NotificationService from "../../services/notification.service.js";
@@ -12,45 +12,56 @@ import crypto from "crypto";
  */
 const cleanupUserData = async (userIds) => {
   if (!Array.isArray(userIds)) userIds = [userIds];
-  
+
   try {
-    const owners = await prisma.ownerProfile.findMany({ where: { userId: { in: userIds } } });
-    const ownerIds = owners.map(o => o.id);
-    
+    const owners = await prisma.ownerProfile.findMany({
+      where: { userId: { in: userIds } },
+    });
+    const ownerIds = owners.map((o) => o.id);
+
     // Find all stories for these users to clean up R2
     const userStories = await prisma.story.findMany({
-      where: { userId: { in: userIds } }
+      where: { userId: { in: userIds } },
     });
     if (userStories.length > 0) {
       const { deleteStoryFilesFromR2 } = await import("../../utils/r2.js");
       await Promise.all(
-        userStories.map(story => deleteStoryFilesFromR2(story).catch(err => logger.error(`[ADMIN_CLEANUP] R2 cleanup error for user story ${story.id}:`, err)))
+        userStories.map((story) =>
+          deleteStoryFilesFromR2(story).catch((err) =>
+            logger.error(
+              `[ADMIN_CLEANUP] R2 cleanup error for user story ${story.id}:`,
+              err
+            )
+          )
+        )
       );
     }
-    
+
     await prisma.$transaction([
       // 1. Content: Posts & Stories
       prisma.post.deleteMany({ where: { authorId: { in: userIds } } }),
       prisma.story.deleteMany({ where: { userId: { in: userIds } } }),
-      
+
       // 2. Gameplay: Games & Matches
       prisma.hostedGame.deleteMany({ where: { hostId: { in: userIds } } }),
-      
+
       // 3. Transactions & Feedback
       prisma.booking.deleteMany({ where: { userId: { in: userIds } } }),
       prisma.review.deleteMany({ where: { userId: { in: userIds } } }),
-      
+
       // 4. Requests & Lifecycle
       prisma.ownerRequest.deleteMany({ where: { userId: { in: userIds } } }),
-      
+
       // 5. Support & Disputes
       prisma.supportTicket.deleteMany({ where: { userId: { in: userIds } } }),
       prisma.dispute.deleteMany({ where: { raisedById: { in: userIds } } }),
-      
+
       // 6. Wallet & Communication
-      prisma.walletTransaction.deleteMany({ where: { userId: { in: userIds } } }),
+      prisma.walletTransaction.deleteMany({
+        where: { userId: { in: userIds } },
+      }),
       prisma.notification.deleteMany({ where: { userId: { in: userIds } } }),
-      
+
       // 7. Messaging
       prisma.chatParticipant.deleteMany({ where: { userId: { in: userIds } } }),
       prisma.message.deleteMany({ where: { senderUserId: { in: userIds } } }),
@@ -58,10 +69,14 @@ const cleanupUserData = async (userIds) => {
 
     if (ownerIds.length > 0) {
       await prisma.$transaction([
-        prisma.review.deleteMany({ where: { professionalId: { in: ownerIds } } }),
-        prisma.withdrawalRequest.deleteMany({ where: { ownerId: { in: ownerIds } } }),
+        prisma.review.deleteMany({
+          where: { professionalId: { in: ownerIds } },
+        }),
+        prisma.withdrawalRequest.deleteMany({
+          where: { ownerId: { in: ownerIds } },
+        }),
         prisma.turf.deleteMany({ where: { ownerId: { in: ownerIds } } }),
-        prisma.ownerProfile.deleteMany({ where: { id: { in: ownerIds } } })
+        prisma.ownerProfile.deleteMany({ where: { id: { in: ownerIds } } }),
       ]);
     }
   } catch (error) {
@@ -73,20 +88,22 @@ const cleanupUserData = async (userIds) => {
 export const getAllUsers = async (req, res) => {
   const admin = req.admin.role;
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
 
   try {
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, parseInt(req.query.limit) || 20);
     const skip = (page - 1) * limit;
-    const search = req.query.search || '';
+    const search = req.query.search || "";
 
     const where = {};
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, mode: "insensitive" } },
       ];
     }
 
@@ -102,11 +119,11 @@ export const getAllUsers = async (req, res) => {
           walletBalance: true,
           isVerified: true,
           status: true,
-          createdAt: true
+          createdAt: true,
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         skip,
-        take: limit
+        take: limit,
       }),
       prisma.user.count({ where }),
     ]);
@@ -147,10 +164,12 @@ export const getAdminDashboardData = async (req, res) => {
       totalCommunityPosts,
       totalHostedGames,
       publishedBlogs,
-      userWalletAggr
+      userWalletAggr,
     ] = await Promise.all([
       prisma.user.count(),
-      prisma.ownerProfile.count({ where: { user: { role: { in: ["VENUE_OWNER", "OWNER"] } } } }),
+      prisma.ownerProfile.count({
+        where: { user: { role: { in: ["VENUE_OWNER", "OWNER"] } } },
+      }),
       prisma.turf.count(),
       prisma.turf.count({ where: { status: "pending" } }),
       prisma.booking.count(),
@@ -161,7 +180,7 @@ export const getAdminDashboardData = async (req, res) => {
       prisma.ownerProfile.count({ where: { user: { role: "SCORER" } } }),
       prisma.withdrawalRequest.aggregate({
         where: { status: "COMPLETED" },
-        _sum: { amount: true }
+        _sum: { amount: true },
       }),
       prisma.supportTicket.count({ where: { status: "OPEN" } }),
       prisma.dispute.count({ where: { status: "PENDING" } }),
@@ -169,35 +188,37 @@ export const getAdminDashboardData = async (req, res) => {
       prisma.hostedGame.count(),
       prisma.blog.count({ where: { status: "PUBLISHED" } }),
       prisma.user.aggregate({
-        _sum: { walletBalance: true }
-      })
+        _sum: { walletBalance: true },
+      }),
     ]);
 
     const recentAuditLogs = await prisma.auditLog.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       take: 5,
-      include: { user: { select: { name: true } } }
+      include: { user: { select: { name: true } } },
     });
 
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
+
     // Simple group by for booking history
     const bookingHistoryRaw = await prisma.booking.findMany({
       where: { createdAt: { gte: thirtyDaysAgo } },
-      select: { createdAt: true, totalPrice: true }
+      select: { createdAt: true, totalPrice: true },
     });
 
     const historyMap = bookingHistoryRaw.reduce((acc, b) => {
-      const date = b.createdAt.toISOString().split('T')[0];
+      const date = b.createdAt.toISOString().split("T")[0];
       acc[date] = (acc[date] || 0) + Number(b.totalPrice);
       return acc;
     }, {});
 
-    const bookingHistory = Object.keys(historyMap).sort().map(date => ({
-      date,
-      amount: historyMap[date]
-    }));
+    const bookingHistory = Object.keys(historyMap)
+      .sort()
+      .map((date) => ({
+        date,
+        amount: historyMap[date],
+      }));
 
     const responseData = {
       totalUsers,
@@ -217,25 +238,25 @@ export const getAdminDashboardData = async (req, res) => {
       totalHostedGames,
       publishedBlogs,
       totalUserWalletBalance: userWalletAggr._sum.walletBalance || 0,
-      recentAuditLogs: recentAuditLogs.map(log => ({
+      recentAuditLogs: recentAuditLogs.map((log) => ({
         ...log,
-        admin: log.user
+        admin: log.user,
       })),
       bookingHistory,
       platformHealth: {
         uptime: "99.9%",
         syncStatus: "Active",
-        professionalGrowth: "+12%"
-      }
+        professionalGrowth: "+12%",
+      },
     };
-    
+
     return res.status(200).json(responseData);
   } catch (err) {
     logger.error("CRITICAL ERROR in getAdminDashboardData:", err);
-    return res.status(500).json({ 
-      success: false, 
-      message: "Error getting dashboard", 
-      error: err.message
+    return res.status(500).json({
+      success: false,
+      message: "Error getting dashboard",
+      error: err.message,
     });
   }
 };
@@ -243,16 +264,18 @@ export const getAdminDashboardData = async (req, res) => {
 export const getAllTransactions = async (req, res) => {
   const admin = req.admin.role;
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
   try {
     const transactions = await prisma.booking.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       take: 100,
       include: {
         user: { select: { name: true } },
-        turf: { select: { name: true } }
-      }
+        turf: { select: { name: true } },
+      },
     });
 
     return res.status(200).json({
@@ -268,14 +291,25 @@ export const getAllTransactions = async (req, res) => {
 export const getAllOwners = async (req, res) => {
   const admin = req.admin.role;
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
   try {
     const owners = await prisma.ownerProfile.findMany({
       where: {
         user: {
-          role: { in: ["VENUE_OWNER", "OWNER", "COACH", "UMPIRE", "STREAMER", "SCORER"] }
-        }
+          role: {
+            in: [
+              "VENUE_OWNER",
+              "OWNER",
+              "COACH",
+              "UMPIRE",
+              "STREAMER",
+              "SCORER",
+            ],
+          },
+        },
       },
       include: {
         user: {
@@ -284,20 +318,20 @@ export const getAllOwners = async (req, res) => {
             email: true,
             phone: true,
             status: true,
-            createdAt: true
-          }
-        }
+            createdAt: true,
+          },
+        },
       },
-      take: 200
+      take: 200,
     });
 
-    const mappedOwners = owners.map(o => ({
+    const mappedOwners = owners.map((o) => ({
       ...o,
       name: o.user?.name || o.businessName,
       email: o.user?.email || "",
       phone: o.user?.phone || "",
       status: o.user?.status || "active",
-      createdAt: o.user?.createdAt || o.createdAt
+      createdAt: o.user?.createdAt || o.createdAt,
     }));
 
     res.status(200).json({
@@ -314,34 +348,37 @@ export const getTurfByOwnerId = async (req, res) => {
   const admin = req.admin.role;
   const { id } = req.params;
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
   try {
     const turfs = await prisma.turf.findMany({
       where: { ownerId: id },
       include: {
-        reviews: { select: { rating: true } }
-      }
+        reviews: { select: { rating: true } },
+      },
     });
 
     const owner = await prisma.ownerProfile.findUnique({
-      where: { id }
+      where: { id },
     });
 
-    const turfsWithAvgRating = turfs.map(t => {
-      const avgRating = t.reviews.length > 0 
-        ? t.reviews.reduce((acc, r) => acc + r.rating, 0) / t.reviews.length 
-        : 0;
+    const turfsWithAvgRating = turfs.map((t) => {
+      const avgRating =
+        t.reviews.length > 0
+          ? t.reviews.reduce((acc, r) => acc + r.rating, 0) / t.reviews.length
+          : 0;
       return {
         ...t,
-        avgRating: Number(avgRating.toFixed(1))
+        avgRating: Number(avgRating.toFixed(1)),
       };
     });
 
     return res.status(200).json({
       message: "Fetched turf and owner",
       turfs: turfsWithAvgRating,
-      owner: owner
+      owner: owner,
     });
   } catch (error) {
     logger.error("Error in getTurfByOwnerId: ", error);
@@ -352,23 +389,31 @@ export const getTurfByOwnerId = async (req, res) => {
 export const getAllRequestedOwners = async (req, res) => {
   const admin = req.admin.role;
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
   try {
     const ownerRequests = await prisma.ownerRequest.findMany({
-      where: { status: "pending", role: { in: ["venu_owners", "owner", "venue_owner"] } },
-      include: { user: { select: { profilePicture: true, name: true } } }
+      where: {
+        status: "pending",
+        role: { in: ["venu_owners", "owner", "venue_owner"] },
+      },
+      include: { user: { select: { profilePicture: true, name: true } } },
     });
     const ownerRejectedRequests = await prisma.ownerRequest.findMany({
-      where: { status: "rejected", role: { in: ["venu_owners", "owner", "venue_owner"] } },
-      include: { user: { select: { profilePicture: true, name: true } } }
+      where: {
+        status: "rejected",
+        role: { in: ["venu_owners", "owner", "venue_owner"] },
+      },
+      include: { user: { select: { profilePicture: true, name: true } } },
     });
 
     // Map fields for frontend compatibility
     const mapRequest = (r) => ({
       ...r,
       userId_ref: r.user,
-      userId: r.user
+      userId: r.user,
     });
 
     res.status(200).json({
@@ -386,14 +431,16 @@ export const getAllRequestedOwners = async (req, res) => {
 export const getAllProfessionals = async (req, res) => {
   const admin = req.admin.role;
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
   try {
     const professionals = await prisma.ownerProfile.findMany({
       where: {
         user: {
-          role: { in: ["COACH", "UMPIRE", "STREAMER", "SCORER"] }
-        }
+          role: { in: ["COACH", "UMPIRE", "STREAMER", "SCORER"] },
+        },
       },
       include: {
         user: {
@@ -403,21 +450,21 @@ export const getAllProfessionals = async (req, res) => {
             phone: true,
             role: true,
             status: true,
-            createdAt: true
-          }
-        }
+            createdAt: true,
+          },
+        },
       },
-      take: 200
+      take: 200,
     });
 
-    const mappedProfessionals = professionals.map(p => ({
+    const mappedProfessionals = professionals.map((p) => ({
       ...p,
       name: p.user?.name || p.businessName,
       email: p.user?.email || "",
       phone: p.user?.phone || "",
       role: p.user?.role || "",
       status: p.user?.status || "active",
-      createdAt: p.user?.createdAt || p.createdAt
+      createdAt: p.user?.createdAt || p.createdAt,
     }));
 
     res.status(200).json({
@@ -433,25 +480,36 @@ export const getAllProfessionals = async (req, res) => {
 export const getProfessionalDetails = async (req, res) => {
   const admin = req.admin.role;
   const { id } = req.params;
-  
+
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
-  
+
   try {
     const professional = await prisma.ownerProfile.findUnique({
       where: { id },
       include: {
         profBookings: {
           include: {
-            user: { select: { name: true, profilePicture: true, email: true, phone: true } }
-          }
-        }
-      }
+            user: {
+              select: {
+                name: true,
+                profilePicture: true,
+                email: true,
+                phone: true,
+              },
+            },
+          },
+        },
+      },
     });
-      
+
     if (!professional) {
-      return res.status(404).json({ success: false, message: "Professional not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Professional not found" });
     }
 
     // Fetch hosted games officiated by this umpire
@@ -459,20 +517,20 @@ export const getProfessionalDetails = async (req, res) => {
       where: { umpireId: id },
       include: {
         host: { select: { id: true, name: true, email: true } },
-        turf: { select: { name: true, location: true } }
+        turf: { select: { name: true, location: true } },
       },
-      orderBy: { date: 'desc' }
+      orderBy: { date: "desc" },
     });
 
-    const formattedMatches = matches.map(m => ({
+    const formattedMatches = matches.map((m) => ({
       ...m,
-      ground: m.turf
+      ground: m.turf,
     }));
 
     return res.status(200).json({
       success: true,
       profile: { ...professional, bookings: professional.profBookings },
-      matches: formattedMatches
+      matches: formattedMatches,
     });
   } catch (error) {
     logger.error("Error in getProfessionalDetails: ", error);
@@ -483,35 +541,38 @@ export const getProfessionalDetails = async (req, res) => {
 export const getAllRequestedProfessionals = async (req, res) => {
   const admin = req.admin.role;
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
   try {
     const professionalRequests = await prisma.ownerRequest.findMany({
-      where: { 
-        status: "pending", 
-        role: { in: ["coach", "umpire", "streamer", "scorer"] } 
+      where: {
+        status: "pending",
+        role: { in: ["coach", "umpire", "streamer", "scorer"] },
       },
-      include: { user: { select: { profilePicture: true, name: true } } }
+      include: { user: { select: { profilePicture: true, name: true } } },
     });
     const professionalRejectedRequests = await prisma.ownerRequest.findMany({
       where: {
         status: "rejected",
-        role: { in: ["coach", "umpire", "streamer", "scorer"] }
+        role: { in: ["coach", "umpire", "streamer", "scorer"] },
       },
-      include: { user: { select: { profilePicture: true, name: true } } }
+      include: { user: { select: { profilePicture: true, name: true } } },
     });
 
     const mapRequest = (r) => ({
       ...r,
       userId_ref: r.user,
-      userId: r.user
+      userId: r.user,
     });
 
     res.status(200).json({
       success: true,
       message: "success",
       professionalRequests: professionalRequests.map(mapRequest),
-      professionalRejectedRequests: professionalRejectedRequests.map(mapRequest),
+      professionalRejectedRequests:
+        professionalRejectedRequests.map(mapRequest),
     });
   } catch (err) {
     logger.error("Error in getAllRequestedProfessionals: ", err);
@@ -522,24 +583,26 @@ export const getAllRequestedProfessionals = async (req, res) => {
 export const getAllVerificationRequests = async (req, res) => {
   const admin = req.admin.role;
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
   try {
     const pendingRequests = await prisma.ownerRequest.findMany({
       where: { status: "pending" },
       include: { user: { select: { profilePicture: true, name: true } } },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: "desc" },
     });
     const rejectedRequests = await prisma.ownerRequest.findMany({
       where: { status: "rejected" },
       include: { user: { select: { profilePicture: true, name: true } } },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: "desc" },
     });
-    
+
     const mapRequest = (r) => ({
       ...r,
       userId_ref: r.user,
-      userId: r.user
+      userId: r.user,
     });
 
     res.status(200).json({
@@ -549,7 +612,9 @@ export const getAllVerificationRequests = async (req, res) => {
     });
   } catch (err) {
     logger.error("Error in getAllVerificationRequests: ", err);
-    return res.status(500).json({ success: false, message: "Internal server error" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -558,45 +623,54 @@ export const approveOwnerRequest = async (req, res) => {
   const { id } = req.params;
   const { adminName, adminDesignation } = req.body;
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
   try {
     const ownerRequest = await prisma.ownerRequest.findUnique({
-      where: { id }
+      where: { id },
     });
     if (!ownerRequest) {
-      return res.status(404).json({ success: false, message: "Owner request not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Owner request not found" });
     }
 
     const result = await prisma.$transaction(async (tx) => {
       let targetUserId = ownerRequest.userId;
-      
+
       let roleToSet = ownerRequest.role.toUpperCase();
       if (roleToSet === "VENU_OWNERS") roleToSet = "VENUE_OWNER";
 
       if (!targetUserId) {
         let existingUser = await tx.user.findUnique({
-          where: { email: ownerRequest.email }
+          where: { email: ownerRequest.email },
         });
 
         if (!existingUser) {
           existingUser = await tx.user.create({
             data: {
               email: ownerRequest.email,
-              username: ownerRequest.email.split('@')[0] + '_' + Math.random().toString(36).substring(2, 7),
+              username:
+                ownerRequest.email.split("@")[0] +
+                "_" +
+                Math.random().toString(36).substring(2, 7),
               name: ownerRequest.name,
               phone: ownerRequest.phone,
-              password: await argon2.hash(crypto.randomBytes(32).toString('hex')), // Secure random placeholder since password can be updated later/via recovery
+              password: await argon2.hash(
+                crypto.randomBytes(32).toString("hex")
+              ), // Secure random placeholder since password can be updated later/via recovery
               role: roleToSet,
-              isVerified: true
-            }
+              isVerified: true,
+            },
           });
         }
         targetUserId = existingUser.id;
       }
 
       let owner = await tx.ownerProfile.findUnique({
-        where: { userId: targetUserId }
+        where: { userId: targetUserId },
       });
 
       if (!owner) {
@@ -606,8 +680,8 @@ export const approveOwnerRequest = async (req, res) => {
             businessName: ownerRequest.name,
             verified: true,
             verificationDocs: ownerRequest.documents || {},
-            businessDetails: ownerRequest.businessDetails || {}
-          }
+            businessDetails: ownerRequest.businessDetails || {},
+          },
         });
       } else {
         owner = await tx.ownerProfile.update({
@@ -615,21 +689,22 @@ export const approveOwnerRequest = async (req, res) => {
           data: {
             verified: true,
             verificationDocs: ownerRequest.documents || owner.verificationDocs,
-            businessDetails: ownerRequest.businessDetails || owner.businessDetails
-          }
+            businessDetails:
+              ownerRequest.businessDetails || owner.businessDetails,
+          },
         });
       }
 
       // Sync role back to User
       await tx.user.update({
         where: { id: targetUserId },
-        data: { role: roleToSet }
+        data: { role: roleToSet },
       });
 
       // Update request status
       return tx.ownerRequest.update({
         where: { id },
-        data: { status: "approved" }
+        data: { status: "approved" },
       });
     });
 
@@ -639,14 +714,25 @@ export const approveOwnerRequest = async (req, res) => {
       phone: ownerRequest.phone,
       recipientId: targetUserId,
       recipientModel: "User",
-      role: ownerRequest.role
-    });
-    await logAdminAction(req, "APPROVE_PARTNER", "USER_MANAGEMENT", ownerRequest.id, {
       role: ownerRequest.role,
-      email: ownerRequest.email
     });
+    await logAdminAction(
+      req,
+      "APPROVE_PARTNER",
+      "USER_MANAGEMENT",
+      ownerRequest.id,
+      {
+        role: ownerRequest.role,
+        email: ownerRequest.email,
+      }
+    );
 
-    return res.status(200).json({ success: true, message: "Owner request approved and profile created" });
+    return res
+      .status(200)
+      .json({
+        success: true,
+        message: "Owner request approved and profile created",
+      });
   } catch (err) {
     logger.error("Error in approveOwnerRequest: ", err);
     return res.status(500).json({ message: "error", data: err.message });
@@ -657,35 +743,47 @@ export const deleteOwnerRequest = async (req, res) => {
   const admin = req.admin.role;
   const { id } = req.params;
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
   try {
     const ownerRequest = await prisma.ownerRequest.findUnique({
-      where: { id }
+      where: { id },
     });
     if (!ownerRequest) {
-      return res.status(404).json({ success: false, message: "Owner request not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Owner request not found" });
     }
 
     await prisma.ownerRequest.update({
       where: { id },
-      data: { status: "rejected" }
+      data: { status: "rejected" },
     });
-    
+
     // Event-driven notification
     await NotificationService.publishEvent("PARTNER_REQUEST_REJECTED", {
       email: ownerRequest.email,
       phone: ownerRequest.phone,
       recipientId: ownerRequest.userId,
       recipientModel: "User",
-      role: ownerRequest.role
-    });
-    await logAdminAction(req, "REJECT_PARTNER", "USER_MANAGEMENT", ownerRequest.id, {
       role: ownerRequest.role,
-      email: ownerRequest.email
     });
+    await logAdminAction(
+      req,
+      "REJECT_PARTNER",
+      "USER_MANAGEMENT",
+      ownerRequest.id,
+      {
+        role: ownerRequest.role,
+        email: ownerRequest.email,
+      }
+    );
 
-    return res.status(200).json({ success: true, message: "Owner request rejected" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Owner request rejected" });
   } catch (err) {
     logger.error("Error in deleteOwnerRequest: ", err);
     return res.status(500).json({ message: "Internal server error" });
@@ -696,21 +794,25 @@ export const reconsiderOwnerRequest = async (req, res) => {
   const admin = req.admin.role;
   const { id } = req.params;
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
   try {
     const ownerRequest = await prisma.ownerRequest.findUnique({
-      where: { id }
+      where: { id },
     });
     if (!ownerRequest) {
-      return res.status(404).json({ success: false, message: "Owner request not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Owner request not found" });
     }
-    
+
     await prisma.ownerRequest.update({
       where: { id },
-      data: { status: "pending" }
+      data: { status: "pending" },
     });
-    
+
     const to = ownerRequest.email;
     const subject = "Your request has been reconsidered";
     const html = ` 
@@ -719,9 +821,11 @@ export const reconsiderOwnerRequest = async (req, res) => {
         <p>We apologize for the inconvenience. Please contact us if you have any further questions.</p>
         <p>Thank you for your understanding.</p>
     </div>`;
-    
+
     NotificationService.sendEmail({ to, subject, html });
-    return res.status(200).json({ success: true, message: "Owner request reconsidered" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Owner request reconsidered" });
   } catch (err) {
     logger.error("Error in reconsiderOwnerRequest: ", err);
     return res.status(500).json({ message: "Internal server error" });
@@ -731,7 +835,9 @@ export const reconsiderOwnerRequest = async (req, res) => {
 export const getAllWithdrawalRequests = async (req, res) => {
   const admin = req.admin.role;
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
   try {
     const requests = await prisma.withdrawalRequest.findMany({
@@ -739,32 +845,39 @@ export const getAllWithdrawalRequests = async (req, res) => {
         owner: {
           include: {
             user: {
-              select: { name: true, email: true, role: true, profilePicture: true }
-            }
-          }
-        }
+              select: {
+                name: true,
+                email: true,
+                role: true,
+                profilePicture: true,
+              },
+            },
+          },
+        },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: "desc" },
     });
-    
-    const formattedRequests = requests.map(req => ({
+
+    const formattedRequests = requests.map((req) => ({
       ...req,
       owner: {
         ...req.owner,
         name: req.owner.user?.name || req.owner.businessName,
         email: req.owner.user?.email,
         role: req.owner.user?.role,
-        profilePicture: req.owner.user?.profilePicture
-      }
+        profilePicture: req.owner.user?.profilePicture,
+      },
     }));
-    
+
     res.status(200).json({
       success: true,
-      requests: formattedRequests
+      requests: formattedRequests,
     });
   } catch (error) {
     logger.error("Error in getAllWithdrawalRequests: ", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -774,42 +887,61 @@ export const approveWithdrawalRequest = async (req, res) => {
   const { transactionId, screenshot } = req.body;
 
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
 
   try {
     const request = await prisma.withdrawalRequest.findUnique({
-      where: { id }
+      where: { id },
     });
     if (!request) {
-      return res.status(404).json({ success: false, message: "Withdrawal request not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Withdrawal request not found" });
     }
 
     if (request.status !== "PENDING") {
-      return res.status(400).json({ success: false, message: `Request is already ${request.status.toLowerCase()}` });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: `Request is already ${request.status.toLowerCase()}`,
+        });
     }
 
     const owner = await prisma.ownerProfile.findUnique({
       where: { id: request.ownerId },
-      include: { user: true }
+      include: { user: true },
     });
     if (!owner) {
-      return res.status(404).json({ success: false, message: "Owner not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Owner not found" });
     }
 
     if (Number(owner.walletBalance) < Number(request.amount)) {
-      return res.status(400).json({ success: false, message: "Insufficient owner wallet balance" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Insufficient owner wallet balance" });
     }
 
-    const currentBankDetails = request.bankDetails && typeof request.bankDetails === 'object' ? request.bankDetails : {};
+    const currentBankDetails =
+      request.bankDetails && typeof request.bankDetails === "object"
+        ? request.bankDetails
+        : {};
 
     await prisma.$transaction([
       prisma.ownerProfile.update({
         where: { id: request.ownerId },
         data: {
           walletBalance: { decrement: request.amount },
-          reservedBalance: owner.reservedBalance >= request.amount ? { decrement: request.amount } : owner.reservedBalance
-        }
+          reservedBalance:
+            owner.reservedBalance >= request.amount
+              ? { decrement: request.amount }
+              : owner.reservedBalance,
+        },
       }),
       prisma.withdrawalRequest.update({
         where: { id },
@@ -819,10 +951,10 @@ export const approveWithdrawalRequest = async (req, res) => {
           processedAt: new Date(),
           bankDetails: {
             ...currentBankDetails,
-            screenshotUrl: screenshot || null
-          }
-        }
-      })
+            screenshotUrl: screenshot || null,
+          },
+        },
+      }),
     ]);
 
     // Event-driven notification
@@ -832,17 +964,21 @@ export const approveWithdrawalRequest = async (req, res) => {
       recipientId: owner.userId,
       recipientModel: "User",
       amount: request.amount,
-      transactionId: transactionId || "N/A"
+      transactionId: transactionId || "N/A",
     });
     await logAdminAction(req, "APPROVE_WITHDRAWAL", "FINANCE", request.id, {
       amount: request.amount,
-      transactionId
+      transactionId,
     });
 
-    res.status(200).json({ success: true, message: "Withdrawal approved and processed" });
+    res
+      .status(200)
+      .json({ success: true, message: "Withdrawal approved and processed" });
   } catch (error) {
     logger.error("Error in approveWithdrawalRequest: ", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -852,31 +988,40 @@ export const rejectWithdrawalRequest = async (req, res) => {
   const { reason } = req.body;
 
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
 
   try {
     const request = await prisma.withdrawalRequest.findUnique({
-      where: { id }
+      where: { id },
     });
     if (!request) {
-      return res.status(404).json({ success: false, message: "Withdrawal request not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Withdrawal request not found" });
     }
 
     if (request.status !== "PENDING") {
-      return res.status(400).json({ success: false, message: `Request is already ${request.status.toLowerCase()}` });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: `Request is already ${request.status.toLowerCase()}`,
+        });
     }
 
     const owner = await prisma.ownerProfile.findUnique({
       where: { id: request.ownerId },
-      include: { user: true }
+      include: { user: true },
     });
 
     await prisma.$transaction(async (tx) => {
       if (owner && owner.reservedBalance >= request.amount) {
         await tx.ownerProfile.update({
           where: { id: request.ownerId },
-          data: { reservedBalance: { decrement: request.amount } }
+          data: { reservedBalance: { decrement: request.amount } },
         });
       }
 
@@ -885,8 +1030,8 @@ export const rejectWithdrawalRequest = async (req, res) => {
         data: {
           status: "REJECTED",
           rejectionReason: reason,
-          processedAt: new Date()
-        }
+          processedAt: new Date(),
+        },
       });
     });
 
@@ -898,19 +1043,23 @@ export const rejectWithdrawalRequest = async (req, res) => {
         recipientId: owner.userId,
         recipientModel: "User",
         amount: request.amount,
-        reason: reason || "No specific reason provided."
+        reason: reason || "No specific reason provided.",
       });
     }
 
     await logAdminAction(req, "REJECT_WITHDRAWAL", "FINANCE", request.id, {
       amount: request.amount,
-      reason
+      reason,
     });
 
-    res.status(200).json({ success: true, message: "Withdrawal request rejected" });
+    res
+      .status(200)
+      .json({ success: true, message: "Withdrawal request rejected" });
   } catch (error) {
     logger.error("Error in rejectWithdrawalRequest: ", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -920,7 +1069,9 @@ export const verifyKYC = async (req, res) => {
   const { status } = req.body;
 
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
 
   try {
@@ -932,12 +1083,16 @@ export const verifyKYC = async (req, res) => {
 
     await prisma.ownerProfile.update({
       where: { id },
-      data: { bankingDetails }
+      data: { bankingDetails },
     });
 
-    await logAdminAction(req, `KYC_${status}`, "USER_MANAGEMENT", owner.id, { status });
+    await logAdminAction(req, `KYC_${status}`, "USER_MANAGEMENT", owner.id, {
+      status,
+    });
 
-    res.status(200).json({ success: true, message: `KYC status updated to ${status}` });
+    res
+      .status(200)
+      .json({ success: true, message: `KYC status updated to ${status}` });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -949,19 +1104,33 @@ export const updateUserStatus = async (req, res) => {
   const { status } = req.body;
 
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
 
   try {
     const user = await prisma.user.update({
       where: { id },
-      data: { status }
+      data: { status },
     });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    await logAdminAction(req, `USER_${status.toUpperCase()}`, "USER_MANAGEMENT", user.id, { status });
+    await logAdminAction(
+      req,
+      `USER_${status.toUpperCase()}`,
+      "USER_MANAGEMENT",
+      user.id,
+      { status }
+    );
 
-    res.status(200).json({ success: true, message: `User status updated to ${status}`, user });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: `User status updated to ${status}`,
+        user,
+      });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -972,7 +1141,9 @@ export const deleteUser = async (req, res) => {
   const { id } = req.params;
 
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
 
   try {
@@ -985,12 +1156,17 @@ export const deleteUser = async (req, res) => {
     // Finally delete the user record
     await prisma.user.delete({ where: { id } });
 
-    await logAdminAction(req, "DELETE_USER", "USER_MANAGEMENT", id, { 
-      name: user.name, 
-      email: user.email 
+    await logAdminAction(req, "DELETE_USER", "USER_MANAGEMENT", id, {
+      name: user.name,
+      email: user.email,
     });
 
-    res.status(200).json({ success: true, message: "User and all associated data permanently deleted" });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "User and all associated data permanently deleted",
+      });
   } catch (error) {
     logger.error("Error in deleteUser:", error);
     res.status(500).json({ message: error.message });
@@ -1002,7 +1178,9 @@ export const deleteOwner = async (req, res) => {
   const { id } = req.params;
 
   if (adminRole?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
 
   try {
@@ -1017,26 +1195,29 @@ export const deleteOwner = async (req, res) => {
       // If no User ID (rare), just cleanup owner-specific data
       await prisma.turf.deleteMany({ where: { ownerId: id } });
       await prisma.withdrawalRequest.deleteMany({ where: { ownerId: id } });
-      await prisma.hostedGame.updateMany({ where: { umpireId: id }, data: { umpireId: null } });
+      await prisma.hostedGame.updateMany({
+        where: { umpireId: id },
+        data: { umpireId: null },
+      });
       await prisma.ownerProfile.delete({ where: { id } });
     }
 
-    await logAdminAction(
-      req,
-      "DELETE_OWNER",
-      "USER_MANAGEMENT",
-      id,
-      { name: owner.name, email: owner.email }
-    );
+    await logAdminAction(req, "DELETE_OWNER", "USER_MANAGEMENT", id, {
+      name: owner.name,
+      email: owner.email,
+    });
 
-    res.status(200).json({ success: true, message: "Owner and all associated data permanently deleted" });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Owner and all associated data permanently deleted",
+      });
   } catch (error) {
     logger.error("Error in deleteOwner:", error);
     res.status(500).json({ message: error.message });
   }
 };
-
-
 
 export const getAllHostedGames = async (req, res) => {
   const adminRole = req.admin.role;
@@ -1046,13 +1227,15 @@ export const getAllHostedGames = async (req, res) => {
 
   try {
     const games = await prisma.hostedGame.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       take: 100,
       include: {
-        host: { select: { id: true, name: true, email: true, profilePicture: true } },
+        host: {
+          select: { id: true, name: true, email: true, profilePicture: true },
+        },
         turf: { select: { id: true, name: true, location: true } },
         umpire: { select: { id: true, name: true } },
-      }
+      },
     });
 
     const formattedGames = games;
@@ -1075,18 +1258,18 @@ export const deleteHostedGame = async (req, res) => {
   try {
     const game = await prisma.hostedGame.delete({ where: { id } });
     if (!game) {
-      return res.status(404).json({ success: false, message: "Game not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Game not found" });
     }
 
-    await logAdminAction(
-      req,
-      "DELETE_HOSTED_GAME",
-      "GAME_MANAGEMENT",
-      id,
-      { gameDetails: { id, date: game.date, type: game.gameType } }
-    );
+    await logAdminAction(req, "DELETE_HOSTED_GAME", "GAME_MANAGEMENT", id, {
+      gameDetails: { id, date: game.date, type: game.gameType },
+    });
 
-    res.status(200).json({ success: true, message: "Game deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Game deleted successfully" });
   } catch (error) {
     logger.error("Error in deleteHostedGame:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -1101,21 +1284,28 @@ export const batchDeleteGames = async (req, res) => {
 
   const { gameIds } = req.body;
   if (!gameIds || !Array.isArray(gameIds)) {
-    return res.status(400).json({ success: false, message: "Invalid game IDs" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid game IDs" });
   }
 
   try {
-    const result = await prisma.hostedGame.deleteMany({ where: { id: { in: gameIds } } });
+    const result = await prisma.hostedGame.deleteMany({
+      where: { id: { in: gameIds } },
+    });
 
-    await logAdminAction(
-      req,
-      "BATCH_DELETE_GAMES",
-      "GAME_MANAGEMENT",
-      null,
-      { count: result.count, gameIds }
-    );
+    await logAdminAction(req, "BATCH_DELETE_GAMES", "GAME_MANAGEMENT", null, {
+      count: result.count,
+      gameIds,
+    });
 
-    res.status(200).json({ success: true, message: `Successfully deleted ${result.count} games`, count: result.count });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: `Successfully deleted ${result.count} games`,
+        count: result.count,
+      });
   } catch (error) {
     logger.error("Error in batchDeleteGames:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -1130,13 +1320,15 @@ export const batchUpdateGameStatus = async (req, res) => {
 
   const { gameIds, status } = req.body;
   if (!gameIds || !Array.isArray(gameIds) || !status) {
-    return res.status(400).json({ success: false, message: "Invalid request parameters" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid request parameters" });
   }
 
   try {
     const result = await prisma.hostedGame.updateMany({
       where: { id: { in: gameIds } },
-      data: { status }
+      data: { status },
     });
 
     await logAdminAction(
@@ -1147,7 +1339,13 @@ export const batchUpdateGameStatus = async (req, res) => {
       { count: result.count, status, gameIds }
     );
 
-    res.status(200).json({ success: true, message: `Successfully updated ${result.count} games to ${status}`, count: result.count });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: `Successfully updated ${result.count} games to ${status}`,
+        count: result.count,
+      });
   } catch (error) {
     logger.error("Error in batchUpdateGameStatus:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -1162,7 +1360,9 @@ export const batchDeleteUsers = async (req, res) => {
 
   const { userIds } = req.body;
   if (!userIds || !Array.isArray(userIds)) {
-    return res.status(400).json({ success: false, message: "Invalid user IDs" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid user IDs" });
   }
 
   try {
@@ -1170,18 +1370,23 @@ export const batchDeleteUsers = async (req, res) => {
     await cleanupUserData(userIds);
 
     // Finally delete the user records
-    const result = await prisma.user.deleteMany({ where: { id: { in: userIds } } });
-    
-    // Log the batch action
-    await logAdminAction(
-      req,
-      "BATCH_DELETE_USERS",
-      "USER_MANAGEMENT",
-      null,
-      { count: result.count, userIds }
-    );
+    const result = await prisma.user.deleteMany({
+      where: { id: { in: userIds } },
+    });
 
-    res.status(200).json({ success: true, message: `Successfully deleted ${result.count} users and all associated data`, count: result.count });
+    // Log the batch action
+    await logAdminAction(req, "BATCH_DELETE_USERS", "USER_MANAGEMENT", null, {
+      count: result.count,
+      userIds,
+    });
+
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: `Successfully deleted ${result.count} users and all associated data`,
+        count: result.count,
+      });
   } catch (error) {
     logger.error("Error in batchDeleteUsers:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -1196,25 +1401,31 @@ export const batchUpdateUserStatus = async (req, res) => {
 
   const { userIds, status } = req.body;
   if (!userIds || !Array.isArray(userIds) || !status) {
-    return res.status(400).json({ success: false, message: "Invalid request parameters" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid request parameters" });
   }
 
   try {
     const result = await prisma.user.updateMany({
       where: { id: { in: userIds } },
-      data: { status }
+      data: { status },
     });
 
     // Log the batch action
-    await logAdminAction(
-      req,
-      "BATCH_STATUS_UPDATE",
-      "USER_MANAGEMENT",
-      null,
-      { count: result.count, status, userIds }
-    );
+    await logAdminAction(req, "BATCH_STATUS_UPDATE", "USER_MANAGEMENT", null, {
+      count: result.count,
+      status,
+      userIds,
+    });
 
-    res.status(200).json({ success: true, message: `Successfully updated ${result.count} users to ${status}`, count: result.count });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: `Successfully updated ${result.count} users to ${status}`,
+        count: result.count,
+      });
   } catch (error) {
     logger.error("Error in batchUpdateUserStatus:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -1229,12 +1440,16 @@ export const batchDeleteOwners = async (req, res) => {
 
   const { ownerIds } = req.body;
   if (!ownerIds || !Array.isArray(ownerIds)) {
-    return res.status(400).json({ success: false, message: "Invalid owner IDs" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid owner IDs" });
   }
 
   try {
-    const owners = await prisma.ownerProfile.findMany({ where: { id: { in: ownerIds } } });
-    const userIds = owners.filter(o => o.userId).map(o => o.userId);
+    const owners = await prisma.ownerProfile.findMany({
+      where: { id: { in: ownerIds } },
+    });
+    const userIds = owners.filter((o) => o.userId).map((o) => o.userId);
 
     // Delete associated User entries if they exist
     if (userIds.length > 0) {
@@ -1242,18 +1457,23 @@ export const batchDeleteOwners = async (req, res) => {
     }
 
     // Delete Owner entries
-    const result = await prisma.ownerProfile.deleteMany({ where: { id: { in: ownerIds } } });
-    
-    // Log the batch action
-    await logAdminAction(
-      req,
-      "BATCH_DELETE_OWNERS",
-      "USER_MANAGEMENT",
-      null,
-      { count: result.count, ownerIds }
-    );
+    const result = await prisma.ownerProfile.deleteMany({
+      where: { id: { in: ownerIds } },
+    });
 
-    res.status(200).json({ success: true, message: `Successfully deleted ${result.count} records`, count: result.count });
+    // Log the batch action
+    await logAdminAction(req, "BATCH_DELETE_OWNERS", "USER_MANAGEMENT", null, {
+      count: result.count,
+      ownerIds,
+    });
+
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: `Successfully deleted ${result.count} records`,
+        count: result.count,
+      });
   } catch (error) {
     logger.error("Error in batchDeleteOwners:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -1268,21 +1488,23 @@ export const batchUpdateOwnerStatus = async (req, res) => {
 
   const { ownerIds, status } = req.body;
   if (!ownerIds || !Array.isArray(ownerIds) || !status) {
-    return res.status(400).json({ success: false, message: "Invalid request parameters" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid request parameters" });
   }
 
   try {
     const owners = await prisma.ownerProfile.findMany({
       where: { id: { in: ownerIds } },
-      select: { userId: true }
+      select: { userId: true },
     });
-    const userIds = owners.map(o => o.userId).filter(Boolean);
+    const userIds = owners.map((o) => o.userId).filter(Boolean);
 
     let count = 0;
     if (userIds.length > 0) {
       const result = await prisma.user.updateMany({
         where: { id: { in: userIds } },
-        data: { status }
+        data: { status },
       });
       count = result.count;
     }
@@ -1296,14 +1518,18 @@ export const batchUpdateOwnerStatus = async (req, res) => {
       { count, status, ownerIds }
     );
 
-    res.status(200).json({ success: true, message: `Successfully updated ${count} records to ${status}`, count });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: `Successfully updated ${count} records to ${status}`,
+        count,
+      });
   } catch (error) {
     logger.error("Error in batchUpdateOwnerStatus:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
-
 
 export const getAllDisputes = async (req, res) => {
   try {
@@ -1311,20 +1537,22 @@ export const getAllDisputes = async (req, res) => {
       where: { coinTransferStatus: "DISPUTED" },
       include: {
         host: {
-          select: { id: true, name: true, phone: true }
+          select: { id: true, name: true, phone: true },
         },
         slots: {
           where: { status: "JOINED", userId: { not: null } },
           include: {
-            user: { select: { id: true, name: true, phone: true, email: true } }
-          }
+            user: {
+              select: { id: true, name: true, phone: true, email: true },
+            },
+          },
         },
         disputes: {
           include: {
-            raisedBy: { select: { id: true, name: true } }
-          }
-        }
-      }
+            raisedBy: { select: { id: true, name: true } },
+          },
+        },
+      },
     });
 
     return res.status(200).json({ success: true, games: disputedGames });
@@ -1338,33 +1566,45 @@ export const resolveDispute = async (req, res) => {
   try {
     const { gameId, action, refunds } = req.body;
 
-    const { default: WalletService } = await import("../services/wallet.service.js");
+    const { default: WalletService } =
+      await import("../services/wallet.service.js");
     const { runInTransaction } = await import("../../utils/dbHelpers.js");
 
     await runInTransaction(async ({ tx }) => {
       const game = await tx.hostedGame.findUnique({
         where: { id: gameId },
-        include: { slots: true }
+        include: { slots: true },
       });
-      if (!game) throw new NotFoundError("Game not found", { code: "GAME_NOT_FOUND" });
+      if (!game)
+        throw new NotFoundError("Game not found", { code: "GAME_NOT_FOUND" });
       if (game.coinTransferStatus !== "DISPUTED") {
-        throw new ConflictError("Game is not in a disputed state", { code: "VALIDATION_ERROR" });
+        throw new ConflictError("Game is not in a disputed state", {
+          code: "VALIDATION_ERROR",
+        });
       }
 
-      const totalPaidSlots = game.slots.filter(s => s.status === "JOINED" && s.userId).length;
-      const totalAmountCollected = Number(game.perPlayerCharge) * totalPaidSlots;
+      const totalPaidSlots = game.slots.filter(
+        (s) => s.status === "JOINED" && s.userId
+      ).length;
+      const totalAmountCollected =
+        Number(game.perPlayerCharge) * totalPaidSlots;
 
       if (action === "TRANSFER_TO_HOST") {
         if (totalAmountCollected > 0) {
-          await WalletService.credit(game.hostId, 'user', totalAmountCollected, tx);
+          await WalletService.credit(
+            game.hostId,
+            "user",
+            totalAmountCollected,
+            tx
+          );
           await tx.walletTransaction.create({
             data: {
               userId: game.hostId,
               amount: totalAmountCollected,
               type: "SLOT_INCOME",
               status: "SUCCESS",
-              description: `Received payment from players for game (Dispute Resolved)`
-            }
+              description: `Received payment from players for game (Dispute Resolved)`,
+            },
           });
         }
       } else if (action === "REFUND_SELECTED") {
@@ -1374,18 +1614,20 @@ export const resolveDispute = async (req, res) => {
           for (const refund of refunds) {
             const { userId, amount } = refund;
             if (amount > game.perPlayerCharge) {
-              throw new BadRequestError("Refund amount cannot exceed limit", { code: "VALIDATION_ERROR" });
+              throw new BadRequestError("Refund amount cannot exceed limit", {
+                code: "VALIDATION_ERROR",
+              });
             }
-            
-            await WalletService.credit(userId, 'user', amount, tx);
+
+            await WalletService.credit(userId, "user", amount, tx);
             await tx.walletTransaction.create({
               data: {
                 userId,
                 amount,
                 type: "REFUND",
                 status: "SUCCESS",
-                description: "Partial refund for disputed game"
-              }
+                description: "Partial refund for disputed game",
+              },
             });
             totalRefunded += amount;
           }
@@ -1393,31 +1635,33 @@ export const resolveDispute = async (req, res) => {
 
         const remainingToHost = totalAmountCollected - totalRefunded;
         if (remainingToHost > 0) {
-          await WalletService.credit(game.hostId, 'user', remainingToHost, tx);
+          await WalletService.credit(game.hostId, "user", remainingToHost, tx);
           await tx.walletTransaction.create({
             data: {
               userId: game.hostId,
               amount: remainingToHost,
               type: "SLOT_INCOME",
               status: "SUCCESS",
-              description: "Received remaining payment for game after refunds"
-            }
+              description: "Received remaining payment for game after refunds",
+            },
           });
         }
       }
 
       await tx.hostedGame.update({
         where: { id: gameId },
-        data: { coinTransferStatus: "RESOLVED" }
+        data: { coinTransferStatus: "RESOLVED" },
       });
 
       await tx.gameDispute.updateMany({
         where: { gameId },
-        data: { status: "RESOLVED", resolvedAt: new Date() }
+        data: { status: "RESOLVED", resolvedAt: new Date() },
       });
     });
 
-    return res.status(200).json({ success: true, message: "Dispute resolved successfully" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Dispute resolved successfully" });
   } catch (error) {
     logger.error("Error resolving dispute:", error);
     return res.status(error.status || 500).json({ message: error.message });
@@ -1432,13 +1676,15 @@ export const getAllErrorLogs = async (req, res) => {
 
   try {
     const alerts = await prisma.sentryAlert.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 200
+      orderBy: { createdAt: "desc" },
+      take: 200,
     });
     return res.status(200).json({ success: true, alerts });
   } catch (error) {
     logger.error("Error fetching sentry alerts:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -1452,11 +1698,13 @@ export const resolveErrorLog = async (req, res) => {
     const { id } = req.params;
     const alert = await prisma.sentryAlert.update({
       where: { id },
-      data: { isResolved: true }
+      data: { isResolved: true },
     });
     return res.status(200).json({ success: true, alert });
   } catch (error) {
     logger.error("Error resolving sentry alert:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };

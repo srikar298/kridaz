@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-import { addDays, parseISO, format } from 'date-fns';
+import { PrismaClient } from "@prisma/client";
+import { addDays, parseISO, format } from "date-fns";
 
 const prisma = new PrismaClient();
 
@@ -12,9 +12,9 @@ const generateRoundRobinMatches = (teams) => {
   const n = teams.length;
   if (n < 2) return [];
 
-  const teamIds = teams.map(t => t.teamId);
+  const teamIds = teams.map((t) => t.teamId);
   const isOdd = n % 2 !== 0;
-  if (isOdd) teamIds.push('BYE');
+  if (isOdd) teamIds.push("BYE");
 
   const totalRounds = teamIds.length - 1;
   const matchesPerRound = teamIds.length / 2;
@@ -24,7 +24,7 @@ const generateRoundRobinMatches = (teams) => {
       const home = teamIds[match];
       const away = teamIds[teamIds.length - 1 - match];
 
-      if (home !== 'BYE' && away !== 'BYE') {
+      if (home !== "BYE" && away !== "BYE") {
         matches.push({ home, away });
       }
     }
@@ -37,26 +37,31 @@ const generateRoundRobinMatches = (teams) => {
 
 /**
  * Auto-generates group stage matches and distributes them over dates based on slot preferences.
- * 
- * @param {string} tournamentId 
- * @param {Date} startDate 
+ *
+ * @param {string} tournamentId
+ * @param {Date} startDate
  * @param {Array<string>} slotTimes - e.g. ["09:00", "14:00", "19:00"]
  */
-export const autoGenerateGroupStage = async (tournamentId, startDate, slotTimes) => {
+export const autoGenerateGroupStage = async (
+  tournamentId,
+  startDate,
+  slotTimes
+) => {
   const tournament = await prisma.tournament.findUnique({
     where: { id: tournamentId },
     include: {
       pools: {
-        include: { teams: true }
-      }
-    }
+        include: { teams: true },
+      },
+    },
   });
 
   if (!tournament) throw new Error("Tournament not found");
-  if (!slotTimes || slotTimes.length === 0) throw new Error("Please provide slot times");
+  if (!slotTimes || slotTimes.length === 0)
+    throw new Error("Please provide slot times");
 
   let allMatches = [];
-  
+
   // 1. Generate unordered pairings for each pool
   for (const pool of tournament.pools) {
     const pairings = generateRoundRobinMatches(pool.teams);
@@ -64,16 +69,16 @@ export const autoGenerateGroupStage = async (tournamentId, startDate, slotTimes)
       allMatches.push({
         poolId: pool.id,
         team1Id: pair.home,
-        team2Id: pair.away
+        team2Id: pair.away,
       });
     }
   }
 
   // Shuffle matches slightly to mix pools, or interleave them
-  // A simple interleaving: 
+  // A simple interleaving:
   const interleavedMatches = [];
   // (In a real scenario, you'd balance matches better so one team doesn't play twice a day, but keeping it simple for now)
-  
+
   let currentDate = parseISO(startDate || new Date().toISOString());
   let slotIndex = 0;
 
@@ -83,25 +88,27 @@ export const autoGenerateGroupStage = async (tournamentId, startDate, slotTimes)
       slotIndex = 0;
       currentDate = addDays(currentDate, 1);
     }
-    
+
     const timeString = slotTimes[slotIndex];
-    const scheduledAt = new Date(`${format(currentDate, 'yyyy-MM-dd')}T${timeString}:00`);
+    const scheduledAt = new Date(
+      `${format(currentDate, "yyyy-MM-dd")}T${timeString}:00`
+    );
 
     slotIndex++;
 
     return {
       tournamentId,
-      tournamentStage: 'GROUP',
+      tournamentStage: "GROUP",
       tournamentPoolId: match.poolId,
-      status: 'SCHEDULED',
-      requestType: 'TOURNAMENT_MATCH',
+      status: "SCHEDULED",
+      requestType: "TOURNAMENT_MATCH",
       scheduledAt,
       teams: {
         create: [
-          { teamId: match.team1Id, score: 0, status: 'ACCEPTED' },
-          { teamId: match.team2Id, score: 0, status: 'ACCEPTED' }
-        ]
-      }
+          { teamId: match.team1Id, score: 0, status: "ACCEPTED" },
+          { teamId: match.team2Id, score: 0, status: "ACCEPTED" },
+        ],
+      },
     };
   });
 
@@ -112,8 +119,8 @@ export const autoGenerateGroupStage = async (tournamentId, startDate, slotTimes)
     const created = await prisma.hostedGame.create({
       data: {
         ...gameDetails,
-        teams: teams
-      }
+        teams: teams,
+      },
     });
     createdGames.push(created);
   }
@@ -126,13 +133,13 @@ export const autoGenerateGroupStage = async (tournamentId, startDate, slotTimes)
  */
 export const getTournamentStandings = async (tournamentId) => {
   const games = await prisma.hostedGame.findMany({
-    where: { tournamentId, tournamentStage: 'GROUP' },
+    where: { tournamentId, tournamentStage: "GROUP" },
     include: {
       teams: { include: { team: true } },
       cricketMatch: {
-        include: { teams: true }
-      }
-    }
+        include: { teams: true },
+      },
+    },
   });
 
   // Initialize standings map
@@ -153,33 +160,33 @@ export const getTournamentStandings = async (tournamentId) => {
         oversFaced: 0,
         runsConceded: 0,
         oversBowled: 0,
-        nrr: 0.0
+        nrr: 0.0,
       };
     }
   };
 
   for (const game of games) {
     if (!game.tournamentPoolId) continue;
-    
+
     for (const gt of game.teams) {
       initTeam(game.tournamentPoolId, gt.teamId, gt.team.name);
     }
 
-    if (game.status === 'COMPLETED' && game.cricketMatch) {
+    if (game.status === "COMPLETED" && game.cricketMatch) {
       const match = game.cricketMatch;
       const t1 = match.teams[0];
       const t2 = match.teams[1];
-      
+
       if (!t1 || !t2) continue;
 
-      const team1Id = game.teams.find(t => t.id === t1.teamId)?.teamId; // mapping HostedGame team to global Team
-      const team2Id = game.teams.find(t => t.id === t2.teamId)?.teamId;
-      
+      const team1Id = game.teams.find((t) => t.id === t1.teamId)?.teamId; // mapping HostedGame team to global Team
+      const team2Id = game.teams.find((t) => t.id === t2.teamId)?.teamId;
+
       // Wait, CricketMatch Teams usually map back to actual teams?
       // HostedGame.teams -> GameTeam. GameTeam.id is what CricketMatch.teams points to.
       // So t1.teamId is GameTeam.id. We need to find the GameTeam to get the real global teamId.
-      const gt1 = game.teams.find(t => t.id === t1.teamId);
-      const gt2 = game.teams.find(t => t.id === t2.teamId);
+      const gt1 = game.teams.find((t) => t.id === t1.teamId);
+      const gt2 = game.teams.find((t) => t.id === t2.teamId);
 
       if (!gt1 || !gt2) continue;
 
@@ -201,15 +208,15 @@ export const getTournamentStandings = async (tournamentId) => {
       s2.oversBowled += t1.overs || 0;
 
       // Determine Winner
-      if (match.result === 'TEAM1_WON') {
+      if (match.result === "TEAM1_WON") {
         s1.won += 1;
         s1.points += 2;
         s2.lost += 1;
-      } else if (match.result === 'TEAM2_WON') {
+      } else if (match.result === "TEAM2_WON") {
         s2.won += 1;
         s2.points += 2;
         s1.lost += 1;
-      } else if (match.result === 'DRAW' || match.result === 'TIE') {
+      } else if (match.result === "DRAW" || match.result === "TIE") {
         s1.tied += 1;
         s2.tied += 1;
         s1.points += 1;
@@ -223,11 +230,12 @@ export const getTournamentStandings = async (tournamentId) => {
   for (const poolId in standings) {
     const teamsInPool = Object.values(standings[poolId]);
     for (const team of teamsInPool) {
-      const rf = team.oversFaced > 0 ? (team.runsScored / team.oversFaced) : 0;
-      const ra = team.oversBowled > 0 ? (team.runsConceded / team.oversBowled) : 0;
+      const rf = team.oversFaced > 0 ? team.runsScored / team.oversFaced : 0;
+      const ra =
+        team.oversBowled > 0 ? team.runsConceded / team.oversBowled : 0;
       team.nrr = parseFloat((rf - ra).toFixed(3));
     }
-    
+
     // Sort by Points, then NRR
     teamsInPool.sort((a, b) => {
       if (b.points !== a.points) return b.points - a.points;
@@ -236,7 +244,7 @@ export const getTournamentStandings = async (tournamentId) => {
 
     result.push({
       poolId,
-      teams: teamsInPool
+      teams: teamsInPool,
     });
   }
 
@@ -246,21 +254,28 @@ export const getTournamentStandings = async (tournamentId) => {
 /**
  * Creates a manual scheduled game
  */
-export const createManualScheduledGame = async (tournamentId, stage, poolId, scheduledAt, team1Id, team2Id) => {
+export const createManualScheduledGame = async (
+  tournamentId,
+  stage,
+  poolId,
+  scheduledAt,
+  team1Id,
+  team2Id
+) => {
   return await prisma.hostedGame.create({
     data: {
       tournamentId,
       tournamentStage: stage,
       tournamentPoolId: poolId,
-      status: 'SCHEDULED',
-      requestType: 'TOURNAMENT_MATCH',
+      status: "SCHEDULED",
+      requestType: "TOURNAMENT_MATCH",
       scheduledAt: new Date(scheduledAt),
       teams: {
         create: [
-          { teamId: team1Id, score: 0, status: 'ACCEPTED' },
-          { teamId: team2Id, score: 0, status: 'ACCEPTED' }
-        ]
-      }
-    }
+          { teamId: team1Id, score: 0, status: "ACCEPTED" },
+          { teamId: team2Id, score: 0, status: "ACCEPTED" },
+        ],
+      },
+    },
   });
 };

@@ -1,12 +1,5 @@
-import {  useEffect, useMemo } from "react";
-import {
-  format,
-  parse,
-  isBefore,
-  isAfter,
-  parseISO,
-  addDays,
-} from "date-fns";
+import { useEffect, useMemo } from "react";
+import { format, parse, isBefore, isAfter, parseISO, addDays } from "date-fns";
 import axiosInstance from "@hooks/useAxiosInstance";
 
 const useTimeSelection = (
@@ -23,17 +16,21 @@ const useTimeSelection = (
   const availableTimes = useMemo(() => {
     if (timeSlots?.generatedSlots && timeSlots.generatedSlots.length > 0) {
       return timeSlots.generatedSlots
-        .filter(slot => slot.isActive)
-        .map(slot => ({
+        .filter((slot) => slot.isActive)
+        .map((slot) => ({
           startTime: slot.startTime,
           endTime: slot.endTime,
-          price: slot.price || timeSlots.pricePerHour || 0
+          price: slot.price || timeSlots.pricePerHour || 0,
         }));
     }
 
     return [];
-
-  }, [timeSlots?.openTime, timeSlots?.closeTime, timeSlots?.generatedSlots, timeSlots?.pricePerHour]);
+  }, [
+    timeSlots?.openTime,
+    timeSlots?.closeTime,
+    timeSlots?.generatedSlots,
+    timeSlots?.pricePerHour,
+  ]);
 
   const handleTimeSelection = (time) => {
     setSelectedStartTime(time);

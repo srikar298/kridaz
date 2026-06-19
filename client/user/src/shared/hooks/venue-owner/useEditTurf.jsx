@@ -7,106 +7,126 @@ import toast from "react-hot-toast";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useNavigate } from "react-router-dom";
 
-const editTurfSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Enter the name of the turf")
-    .min(3, "Name must be at least 3 characters long"),
-  description: z
-    .string()
-    .min(1, "Enter the description of the turf")
-    .min(3, "Description must be at least 3 characters long"),
-  location: z
-    .string()
-    .min(1, "Enter the location of the turf")
-    .min(3, "Location must be at least 3 characters long"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().min(1, "State is required"),
-  latitude: z.string().optional(),
-  longitude: z.string().optional(),
-  pricePerHour: z
-    .number({ invalid_type_error: "Enter the price per hour of the turf" })
-    .min(500, "Price per hour must be at least 500 rupees")
-    .max(3000, "Price per hour must be at most 3000 rupees"),
-  images: z
-    .any()
-    .nullable()
-    .optional()
-    .refine((value) => {
-      if (!value || value.length === 0) return true;
-      if (value.length > 10) return false;
-      const acceptedFormats = ["image/png", "image/jpeg", "image/webp"];
-      return Array.from(value).every(file => acceptedFormats.includes(file.type));
-    }, {
-      message: "Max 10 images allowed (PNG, JPEG, or WebP)."
-    }),
-  youtubeUrl: z
-    .string()
-    .url("Invalid YouTube URL")
-    .or(z.literal(""))
-    .nullable()
-    .optional(),
-  openTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Open time is required"),
-  closeTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Close time is required"),
-  sportTypes: z
-    .array(z.string())
-    .min(1, "At least one sport type is required"),
-  groundTypes: z
-    .array(z.string())
-    .min(1, "At least one ground type is required"),
-  facilities: z
-    .array(z.string())
-    .min(1, "At least one facility is required"),
-  slotDuration: z
-    .number({ required_error: "Slot duration is required" })
-    .min(30)
-    .max(240),
-  breakTime: z.number().min(0).max(60).optional(),
-  slotsConfigDuration: z.enum(["Until Changed", "Fixed Weeks"]),
-  slotsConfigWeeks: z.number().optional(),
-  mapUrl: z
-    .string()
-    .url("Invalid Google Maps URL")
-    .or(z.literal(""))
-    .nullable()
-    .optional(),
-  policies: z
-    .string()
-    .min(1, "Enter the venue policies and rules")
-    .min(200, "Policies must be at least 200 characters long")
-    .max(10000, "Policies cannot exceed 10000 characters"),
-  managerContacts: z
-    .array(
-      z.object({
-        name: z.string().min(1, "Manager name is required"),
-        phone: z
-          .string()
-          .min(1, "Manager phone is required")
-          .regex(/^\d{10}$/, "Phone must be 10 digits"),
-      })
-    )
-    .optional(),
-  gstRegistration: z.any().optional(),
-  saleDeed: z.any().optional(),
-  rentalAgreement: z.any().optional(),
-  ownershipAgreement: z.any().optional(),
-  googleProfileScreenshot: z.any().optional(),
-  electricityBill: z.any().optional(),
-}).refine((data) => {
-  if (data.slotsConfigDuration === "Fixed Weeks") {
-    return data.slotsConfigWeeks !== undefined && data.slotsConfigWeeks >= 1 && data.slotsConfigWeeks <= 52;
-  }
-  return true;
-}, {
-  message: "Number of weeks is required",
-  path: ["slotsConfigWeeks"],
-}).refine((data) => {
-  if (!data.openTime || !data.closeTime) return true;
-  return true;
-}, {
-  message: "Close time must be valid",
-  path: ["closeTime"],
-});
+const editTurfSchema = z
+  .object({
+    name: z
+      .string()
+      .min(1, "Enter the name of the turf")
+      .min(3, "Name must be at least 3 characters long"),
+    description: z
+      .string()
+      .min(1, "Enter the description of the turf")
+      .min(3, "Description must be at least 3 characters long"),
+    location: z
+      .string()
+      .min(1, "Enter the location of the turf")
+      .min(3, "Location must be at least 3 characters long"),
+    city: z.string().min(1, "City is required"),
+    state: z.string().min(1, "State is required"),
+    latitude: z.string().optional(),
+    longitude: z.string().optional(),
+    pricePerHour: z
+      .number({ invalid_type_error: "Enter the price per hour of the turf" })
+      .min(500, "Price per hour must be at least 500 rupees")
+      .max(3000, "Price per hour must be at most 3000 rupees"),
+    images: z
+      .any()
+      .nullable()
+      .optional()
+      .refine(
+        (value) => {
+          if (!value || value.length === 0) return true;
+          if (value.length > 10) return false;
+          const acceptedFormats = ["image/png", "image/jpeg", "image/webp"];
+          return Array.from(value).every((file) =>
+            acceptedFormats.includes(file.type)
+          );
+        },
+        {
+          message: "Max 10 images allowed (PNG, JPEG, or WebP).",
+        }
+      ),
+    youtubeUrl: z
+      .string()
+      .url("Invalid YouTube URL")
+      .or(z.literal(""))
+      .nullable()
+      .optional(),
+    openTime: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Open time is required"),
+    closeTime: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Close time is required"),
+    sportTypes: z
+      .array(z.string())
+      .min(1, "At least one sport type is required"),
+    groundTypes: z
+      .array(z.string())
+      .min(1, "At least one ground type is required"),
+    facilities: z.array(z.string()).min(1, "At least one facility is required"),
+    slotDuration: z
+      .number({ required_error: "Slot duration is required" })
+      .min(30)
+      .max(240),
+    breakTime: z.number().min(0).max(60).optional(),
+    slotsConfigDuration: z.enum(["Until Changed", "Fixed Weeks"]),
+    slotsConfigWeeks: z.number().optional(),
+    mapUrl: z
+      .string()
+      .url("Invalid Google Maps URL")
+      .or(z.literal(""))
+      .nullable()
+      .optional(),
+    policies: z
+      .string()
+      .min(1, "Enter the venue policies and rules")
+      .min(200, "Policies must be at least 200 characters long")
+      .max(10000, "Policies cannot exceed 10000 characters"),
+    managerContacts: z
+      .array(
+        z.object({
+          name: z.string().min(1, "Manager name is required"),
+          phone: z
+            .string()
+            .min(1, "Manager phone is required")
+            .regex(/^\d{10}$/, "Phone must be 10 digits"),
+        })
+      )
+      .optional(),
+    gstRegistration: z.any().optional(),
+    saleDeed: z.any().optional(),
+    rentalAgreement: z.any().optional(),
+    ownershipAgreement: z.any().optional(),
+    googleProfileScreenshot: z.any().optional(),
+    electricityBill: z.any().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.slotsConfigDuration === "Fixed Weeks") {
+        return (
+          data.slotsConfigWeeks !== undefined &&
+          data.slotsConfigWeeks >= 1 &&
+          data.slotsConfigWeeks <= 52
+        );
+      }
+      return true;
+    },
+    {
+      message: "Number of weeks is required",
+      path: ["slotsConfigWeeks"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (!data.openTime || !data.closeTime) return true;
+      return true;
+    },
+    {
+      message: "Close time must be valid",
+      path: ["closeTime"],
+    }
+  );
 
 export default function useEditTurf(turfId) {
   const [loading, setLoading] = useState(false);
@@ -114,7 +134,7 @@ export default function useEditTurf(turfId) {
   const [turf, setTurf] = useState(null);
   const [isLocating, setIsLocating] = useState(false);
   const navigate = useNavigate();
-  
+
   const {
     register,
     handleSubmit,
@@ -141,7 +161,15 @@ export default function useEditTurf(turfId) {
       longitude: "",
       mapUrl: "",
       managerContacts: [],
-      availableDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      availableDays: [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+      ],
       offDays: [],
       slotsConfigDuration: "Until Changed",
       slotsConfigWeeks: 1,
@@ -191,10 +219,13 @@ export default function useEditTurf(turfId) {
     delete dataToSave.ownershipAgreement;
     delete dataToSave.gstRegistration;
     delete dataToSave.googleProfileScreenshot;
-    localStorage.setItem(`editVenueDraft_${turfId}`, JSON.stringify(dataToSave));
+    localStorage.setItem(
+      `editVenueDraft_${turfId}`,
+      JSON.stringify(dataToSave)
+    );
     toast.success("Draft saved successfully! (Files are not saved)");
   };
-  
+
   const openTime = watch("openTime");
   const closeTime = watch("closeTime");
   const slotDuration = watch("slotDuration");
@@ -220,10 +251,12 @@ export default function useEditTurf(turfId) {
   useEffect(() => {
     const fetchTurf = async () => {
       try {
-        const response = await axiosInstance.get(`/api/owner/turf/owner/${turfId}/details`);
-        
+        const response = await axiosInstance.get(
+          `/api/owner/turf/owner/${turfId}/details`
+        );
+
         const turfData = response.data.turf || response.data;
-        
+
         if (!turfData) {
           throw new Error("Turf not found");
         }
@@ -236,23 +269,33 @@ export default function useEditTurf(turfId) {
         setValue("location", turfData.location);
         setValue("city", turfData.city || "");
         setValue("state", turfData.state || "");
-        
-        if (turfData.locationData && turfData.locationData.coordinates && turfData.locationData.coordinates.length === 2) {
+
+        if (
+          turfData.locationData &&
+          turfData.locationData.coordinates &&
+          turfData.locationData.coordinates.length === 2
+        ) {
           // MongoDB GeoJSON is [longitude, latitude]
-          setValue("longitude", turfData.locationData.coordinates[0]?.toString() || "");
-          setValue("latitude", turfData.locationData.coordinates[1]?.toString() || "");
+          setValue(
+            "longitude",
+            turfData.locationData.coordinates[0]?.toString() || ""
+          );
+          setValue(
+            "latitude",
+            turfData.locationData.coordinates[1]?.toString() || ""
+          );
         }
-        
+
         setValue("pricePerHour", turfData.pricePerHour);
         setValue("youtubeUrl", turfData.youtubeUrl || "");
         setValue("mapUrl", turfData.mapUrl || "");
         setValue("policies", turfData.policies || "");
-        
+
         if (turfData.managerContacts) {
           setManagerContacts(turfData.managerContacts);
           setValue("managerContacts", turfData.managerContacts);
         }
-        
+
         setSportTypes(turfData.sportTypes || []);
         setGroundTypes(turfData.groundTypes || []);
         setFacilities(turfData.facilities || []);
@@ -260,37 +303,57 @@ export default function useEditTurf(turfId) {
         if (turfData.openTime) {
           // If the backend returns "hh:mm aa" format like "02:30 PM", we need to convert it to "HH:mm"
           try {
-             if (turfData.openTime.includes("AM") || turfData.openTime.includes("PM")) {
-                const parsedOpen = parse(turfData.openTime, "hh:mm aa", new Date());
-                if (isValid(parsedOpen)) setValue("openTime", format(parsedOpen, "HH:mm"));
-             } else {
-                setValue("openTime", turfData.openTime.substring(0, 5)); // Just in case it's ISO or other string
-             }
-          } catch(e) {
+            if (
+              turfData.openTime.includes("AM") ||
+              turfData.openTime.includes("PM")
+            ) {
+              const parsedOpen = parse(
+                turfData.openTime,
+                "hh:mm aa",
+                new Date()
+              );
+              if (isValid(parsedOpen))
+                setValue("openTime", format(parsedOpen, "HH:mm"));
+            } else {
+              setValue("openTime", turfData.openTime.substring(0, 5)); // Just in case it's ISO or other string
+            }
+          } catch (e) {
             // Ignore parsing errors
           }
         }
         if (turfData.closeTime) {
           try {
-             if (turfData.closeTime.includes("AM") || turfData.closeTime.includes("PM")) {
-                const parsedClose = parse(turfData.closeTime, "hh:mm aa", new Date());
-                if (isValid(parsedClose)) setValue("closeTime", format(parsedClose, "HH:mm"));
-             } else {
-                setValue("closeTime", turfData.closeTime.substring(0, 5));
-             }
-          } catch(e) {
+            if (
+              turfData.closeTime.includes("AM") ||
+              turfData.closeTime.includes("PM")
+            ) {
+              const parsedClose = parse(
+                turfData.closeTime,
+                "hh:mm aa",
+                new Date()
+              );
+              if (isValid(parsedClose))
+                setValue("closeTime", format(parsedClose, "HH:mm"));
+            } else {
+              setValue("closeTime", turfData.closeTime.substring(0, 5));
+            }
+          } catch (e) {
             // Ignore parsing errors
           }
         }
 
-        if (turfData.slotDuration) setValue("slotDuration", turfData.slotDuration);
-        if (turfData.breakTime !== undefined) setValue("breakTime", turfData.breakTime);
-        if (turfData.availableDays) setValue("availableDays", turfData.availableDays);
+        if (turfData.slotDuration)
+          setValue("slotDuration", turfData.slotDuration);
+        if (turfData.breakTime !== undefined)
+          setValue("breakTime", turfData.breakTime);
+        if (turfData.availableDays)
+          setValue("availableDays", turfData.availableDays);
         if (turfData.offDays) setValue("offDays", turfData.offDays);
         if (turfData.generatedSlots) setGeneratedSlots(turfData.generatedSlots);
-        if (turfData.slotsConfigDuration) setValue("slotsConfigDuration", turfData.slotsConfigDuration);
-        if (turfData.slotsConfigWeeks) setValue("slotsConfigWeeks", turfData.slotsConfigWeeks);
-
+        if (turfData.slotsConfigDuration)
+          setValue("slotsConfigDuration", turfData.slotsConfigDuration);
+        if (turfData.slotsConfigWeeks)
+          setValue("slotsConfigWeeks", turfData.slotsConfigWeeks);
       } catch (err) {
         toast.error("Failed to fetch turf details");
         navigate("/venue-owner/turfs");
@@ -323,7 +386,10 @@ export default function useEditTurf(turfId) {
         toast.error("Phone number must be 10 digits");
         return;
       }
-      setManagerContacts([...managerContacts, { name: newManagerName, phone: newManagerPhone }]);
+      setManagerContacts([
+        ...managerContacts,
+        { name: newManagerName, phone: newManagerPhone },
+      ]);
       setNewManagerName("");
       setNewManagerPhone("");
     } else {
@@ -368,15 +434,21 @@ export default function useEditTurf(turfId) {
   const toggleDay = (day) => {
     const currentDays = watch("availableDays");
     const currentOff = watch("offDays");
-    
+
     if (currentDays.includes(day)) {
-      setValue("availableDays", currentDays.filter(d => d !== day));
+      setValue(
+        "availableDays",
+        currentDays.filter((d) => d !== day)
+      );
       if (!currentOff.includes(day)) {
         setValue("offDays", [...currentOff, day]);
       }
     } else {
       setValue("availableDays", [...currentDays, day]);
-      setValue("offDays", currentOff.filter(d => d !== day));
+      setValue(
+        "offDays",
+        currentOff.filter((d) => d !== day)
+      );
     }
   };
 
@@ -385,34 +457,39 @@ export default function useEditTurf(turfId) {
   useEffect(() => {
     if (openTime && closeTime && slotDuration) {
       const slots = [];
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toISOString().split("T")[0];
       let current = new Date(`${today}T${openTime}`);
       let end = new Date(`${today}T${closeTime}`);
-      
+
       if (end <= current) {
         end.setDate(end.getDate() + 1);
       }
-      
-      const defaultSlotPrice = (Number(pricePerHour) * (Number(slotDuration) / 60)).toFixed(2);
+
+      const defaultSlotPrice = (
+        Number(pricePerHour) *
+        (Number(slotDuration) / 60)
+      ).toFixed(2);
 
       while (current < end) {
         const slotStart = new Date(current);
         const slotEnd = new Date(current.getTime() + slotDuration * 60000);
-        
+
         if (slotEnd <= end) {
           const sTime = format(slotStart, "hh:mm aa");
           const eTime = format(slotEnd, "hh:mm aa");
-          
-          const existing = generatedSlots.find(s => s.startTime === sTime && s.endTime === eTime);
-          
+
+          const existing = generatedSlots.find(
+            (s) => s.startTime === sTime && s.endTime === eTime
+          );
+
           slots.push({
             startTime: sTime,
             endTime: eTime,
             isActive: existing ? existing.isActive : true,
-            price: existing ? existing.price : Number(defaultSlotPrice)
+            price: existing ? existing.price : Number(defaultSlotPrice),
           });
         }
-        
+
         current = new Date(slotEnd.getTime() + (breakTime || 0) * 60000);
       }
       setGeneratedSlots(slots);
@@ -443,17 +520,21 @@ export default function useEditTurf(turfId) {
           });
         }
       } else if (key === "openTime" || key === "closeTime") {
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date().toISOString().split("T")[0];
         const dateObj = new Date(`${today}T${data[key]}`);
         formData.append(key, format(dateObj, "hh:mm aa"));
-      } else if (key === "sportTypes" || key === "groundTypes" || key === "facilities") {
+      } else if (
+        key === "sportTypes" ||
+        key === "groundTypes" ||
+        key === "facilities"
+      ) {
         if (Array.isArray(data[key])) {
           data[key].forEach((item) => {
             formData.append(key, item);
           });
         }
       } else if (key === "availableDays" || key === "offDays") {
-        data[key].forEach(day => formData.append(key, day));
+        data[key].forEach((day) => formData.append(key, day));
       } else if (key === "managerContacts") {
         formData.append(key, JSON.stringify(data[key]));
       } else {
@@ -502,7 +583,9 @@ export default function useEditTurf(turfId) {
       (error) => {
         console.error("Error getting location:", error);
         setIsLocating(false);
-        toast.error("Unable to retrieve your location. Please check permissions.");
+        toast.error(
+          "Unable to retrieve your location. Please check permissions."
+        );
       }
     );
   };
@@ -552,4 +635,3 @@ export default function useEditTurf(turfId) {
     saveDraft,
   };
 }
-

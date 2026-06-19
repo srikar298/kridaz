@@ -78,7 +78,6 @@ services:
       - key: GOOGLE_CLIENT_SECRET
         sync: false
 
-
       # ── Monitoring (optional, gracefully skipped if absent) ───────────────
       - key: SENTRY_DSN
         sync: false
@@ -189,4 +188,3 @@ services:
         sync: false
       - key: CLIENT_URL
         sync: false
-

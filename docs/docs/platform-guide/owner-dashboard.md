@@ -18,13 +18,15 @@ The **Venue Owner Dashboard** is the operations control center for facility owne
 The business dashboard features are implemented in the following codebase files:
 
 ### 1. `OwnerDashboard.jsx`
-* **Path:** [OwnerDashboard.jsx](file:///Users/prem/kridaz/client/user/src/features/venue-owner/Dashboard/OwnerDashboard.jsx)
-* **Functionality:** Renders the main dashboard layout, key stats cards (Total Bookings, Active Turf Count, Net Revenue), and active billing alerts.
+
+- **Path:** [OwnerDashboard.jsx](file:///Users/prem/kridaz/client/user/src/features/venue-owner/Dashboard/OwnerDashboard.jsx)
+- **Functionality:** Renders the main dashboard layout, key stats cards (Total Bookings, Active Turf Count, Net Revenue), and active billing alerts.
 
 ### 2. `OwnerCalendar.jsx` & `OwnerBookings.jsx`
-* **Paths:** [OwnerCalendar.jsx](file:///Users/prem/kridaz/client/user/src/features/venue-owner/Calendar/OwnerCalendar.jsx) / [OwnerBookings.jsx](file:///Users/prem/kridaz/client/user/src/features/venue-owner/Bookings/OwnerBookings.jsx)
-* **Functionality:** The calendar management layouts. Syncs turf slots with the database, handles drag actions to move slots, and schedules manual overrides.
-* **Key Code Snippet:**
+
+- **Paths:** [OwnerCalendar.jsx](file:///Users/prem/kridaz/client/user/src/features/venue-owner/Calendar/OwnerCalendar.jsx) / [OwnerBookings.jsx](file:///Users/prem/kridaz/client/user/src/features/venue-owner/Bookings/OwnerBookings.jsx)
+- **Functionality:** The calendar management layouts. Syncs turf slots with the database, handles drag actions to move slots, and schedules manual overrides.
+- **Key Code Snippet:**
   ```javascript
   // Handle blocking a specific calendar slot
   const blockCalendarSlot = async (pitchId, timeSlot, date) => {
@@ -34,9 +36,9 @@ The business dashboard features are implemented in the following codebase files:
         pitchId: pitchId,
         date: date,
         time: timeSlot,
-        reason: "Manual Block (Maintenance)"
+        reason: "Manual Block (Maintenance)",
       };
-      await axiosInstance.post('/api/owner/calendar/block', payload);
+      await axiosInstance.post("/api/owner/calendar/block", payload);
       toast.success("Calendar slot blocked successfully");
       // Reload calendar state
       refreshCalendar();
@@ -49,15 +51,17 @@ The business dashboard features are implemented in the following codebase files:
   ```
 
 ### 3. `OwnerRevenue.jsx`
-* **Path:** [OwnerRevenue.jsx](file:///Users/prem/kridaz/client/user/src/features/venue-owner/Revenue/OwnerRevenue.jsx)
-* **Functionality:** Integrates charting packages (like Recharts) to render visual lines, area charts, and bar diagrams reflecting daily and monthly earnings statistics.
+
+- **Path:** [OwnerRevenue.jsx](file:///Users/prem/kridaz/client/user/src/features/venue-owner/Revenue/OwnerRevenue.jsx)
+- **Functionality:** Integrates charting packages (like Recharts) to render visual lines, area charts, and bar diagrams reflecting daily and monthly earnings statistics.
 
 ### 4. Custom Hooks (`shared/hooks/owner/`)
-* **Paths:**
+
+- **Paths:**
   - [useOwnerDashboard.jsx](file:///Users/prem/kridaz/client/user/src/shared/hooks/owner/useOwnerDashboard.jsx)
   - [useOwnerBookings.jsx](file:///Users/prem/kridaz/client/user/src/shared/hooks/owner/useOwnerBookings.jsx)
   - [useOwnerRevenue.js](file:///Users/prem/kridaz/client/user/src/shared/hooks/owner/useOwnerRevenue.js)
-* **Functionality:** Abstracts query functions and keeps dashboard screens updated via react-query or local sync patterns.
+- **Functionality:** Abstracts query functions and keeps dashboard screens updated via react-query or local sync patterns.
 
 ---
 
@@ -78,8 +82,8 @@ graph TD
 
 ## Styling & Design Integration
 
-* **Glassmorphic Calendar:** The scheduling grid is styled using thin `#1E1E1E` borders, translucent containers (`backdrop-filter: blur(10px)`), and custom colors to denote slots:
+- **Glassmorphic Calendar:** The scheduling grid is styled using thin `#1E1E1E` borders, translucent containers (`backdrop-filter: blur(10px)`), and custom colors to denote slots:
   - **Occupied Slot:** Translucent blue background with matching text.
   - **Blocked Slot:** Slanted grey striping pattern to indicate offline status.
   - **Available Slot:** Deep grey blank area with subtle hover borders.
-* **Accents:** High-level analytics widgets and cards use primary cyan (`#55DEE8`) and lime green (`#BFF367`) highlights to draw focus to critical business figures.
+- **Accents:** High-level analytics widgets and cards use primary cyan (`#55DEE8`) and lime green (`#BFF367`) highlights to draw focus to critical business figures.

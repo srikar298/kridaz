@@ -5,14 +5,17 @@ import { useReportPostMutation } from "@redux/api/communityApi";
 import toast from "react-hot-toast";
 
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
-const SUBHEADING_STYLE = { fontFamily: "'Inter 28pt Light', sans-serif", fontWeight: 300 };
+const SUBHEADING_STYLE = {
+  fontFamily: "'Inter 28pt Light', sans-serif",
+  fontWeight: 300,
+};
 
 const reasons = [
   "Spam or misleading",
   "Harassment or hate speech",
   "Inappropriate content",
   "Intellectual property violation",
-  "Other"
+  "Other",
 ];
 
 const ReportModal = ({ postId, onClose }) => {
@@ -22,7 +25,8 @@ const ReportModal = ({ postId, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const finalReason = selectedReason === "Other" ? customReason.trim() : selectedReason;
+    const finalReason =
+      selectedReason === "Other" ? customReason.trim() : selectedReason;
     if (!finalReason) {
       return toast.error("Please select or enter a reason for reporting");
     }
@@ -54,11 +58,17 @@ const ReportModal = ({ postId, onClose }) => {
         <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-4">
           <div className="flex items-center gap-2">
             <AlertTriangle className="text-yellow-500" size={20} />
-            <h3 className="font-black text-base text-white tracking-wide" style={HEADING_STYLE}>
+            <h3
+              className="font-black text-base text-white tracking-wide"
+              style={HEADING_STYLE}
+            >
               Report Post
             </h3>
           </div>
-          <button onClick={onClose} className="text-white/40 hover:text-white transition-colors">
+          <button
+            onClick={onClose}
+            className="text-white/40 hover:text-white transition-colors"
+          >
             <X size={20} />
           </button>
         </div>
@@ -78,7 +88,10 @@ const ReportModal = ({ postId, onClose }) => {
                   onChange={() => setSelectedReason(reason)}
                   className="accent-[#BFF367]"
                 />
-                <span className="text-xs text-white/90 font-medium" style={SUBHEADING_STYLE}>
+                <span
+                  className="text-xs text-white/90 font-medium"
+                  style={SUBHEADING_STYLE}
+                >
                   {reason}
                 </span>
               </label>
@@ -105,7 +118,11 @@ const ReportModal = ({ postId, onClose }) => {
             </button>
             <button
               type="submit"
-              disabled={isLoading || !selectedReason || (selectedReason === "Other" && !customReason.trim())}
+              disabled={
+                isLoading ||
+                !selectedReason ||
+                (selectedReason === "Other" && !customReason.trim())
+              }
               className="bg-red-600 hover:bg-red-700 disabled:opacity-30 disabled:cursor-not-allowed text-white px-5 h-9 rounded-[8px] font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
             >
               {isLoading && <Loader2 size={13} className="animate-spin" />}

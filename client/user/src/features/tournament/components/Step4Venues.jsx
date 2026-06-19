@@ -1,36 +1,52 @@
-import React, { useState } from 'react';
-import { ArrowRight, ArrowLeft, MapPin, Search, Plus, X, Building2 } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  ArrowRight,
+  ArrowLeft,
+  MapPin,
+  Search,
+  Plus,
+  X,
+  Building2,
+} from "lucide-react";
 // import { useSearchVenuesQuery } from '@redux/api/venueApi'; // If we have one
 
 const Step4Venues = ({ formData, onNext, onBack, isLoading }) => {
   const [localData, setLocalData] = useState({
-    venues: formData.venues || [] // Each venue: { id, name, location, isCustom }
+    venues: formData.venues || [], // Each venue: { id, name, location, isCustom }
   });
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [showCustomForm, setShowCustomForm] = useState(false);
-  const [customVenue, setCustomVenue] = useState({ name: '', location: '' });
+  const [customVenue, setCustomVenue] = useState({ name: "", location: "" });
 
   // Mock search results
   const mockSearchResults = [
-    { id: 'v1', name: 'Hitex Sports Arena', location: 'Madhapur, Hyderabad' },
-    { id: 'v2', name: 'Astro Park', location: 'Banjara Hills, Hyderabad' },
-  ].filter(v => v.name.toLowerCase().includes(searchQuery.toLowerCase()) && searchQuery.length > 1);
+    { id: "v1", name: "Hitex Sports Arena", location: "Madhapur, Hyderabad" },
+    { id: "v2", name: "Astro Park", location: "Banjara Hills, Hyderabad" },
+  ].filter(
+    (v) =>
+      v.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      searchQuery.length > 1
+  );
 
   const addVenue = (venue) => {
-    if (!localData.venues.find(v => v.id === venue.id || v.name === venue.name)) {
-      setLocalData(prev => ({
+    if (
+      !localData.venues.find((v) => v.id === venue.id || v.name === venue.name)
+    ) {
+      setLocalData((prev) => ({
         ...prev,
-        venues: [...prev.venues, venue]
+        venues: [...prev.venues, venue],
       }));
     }
-    setSearchQuery('');
+    setSearchQuery("");
   };
 
   const removeVenue = (idOrName) => {
-    setLocalData(prev => ({
+    setLocalData((prev) => ({
       ...prev,
-      venues: prev.venues.filter(v => v.id !== idOrName && v.name !== idOrName)
+      venues: prev.venues.filter(
+        (v) => v.id !== idOrName && v.name !== idOrName
+      ),
     }));
   };
 
@@ -40,9 +56,9 @@ const Step4Venues = ({ formData, onNext, onBack, isLoading }) => {
         id: `custom-${Date.now()}`,
         name: customVenue.name,
         location: customVenue.location,
-        isCustom: true
+        isCustom: true,
       });
-      setCustomVenue({ name: '', location: '' });
+      setCustomVenue({ name: "", location: "" });
       setShowCustomForm(false);
     }
   };
@@ -56,31 +72,39 @@ const Step4Venues = ({ formData, onNext, onBack, isLoading }) => {
 
   return (
     <div className="space-y-8 animate-fade-in pb-20">
-      
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
             <MapPin size={16} className="text-[#55DEE8]" />
             Tournament Venues
           </h2>
-          <span className="text-xs text-white/50">{localData.venues.length} Added</span>
+          <span className="text-xs text-white/50">
+            {localData.venues.length} Added
+          </span>
         </div>
 
         {/* Selected Venues */}
         {localData.venues.length > 0 && (
           <div className="space-y-2 mb-6">
-            {localData.venues.map(v => (
-              <div key={v.id || v.name} className="flex items-center justify-between bg-[#111] border border-[#BFF367]/30 p-3 rounded-xl">
+            {localData.venues.map((v) => (
+              <div
+                key={v.id || v.name}
+                className="flex items-center justify-between bg-[#111] border border-[#BFF367]/30 p-3 rounded-xl"
+              >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-[#1a1a1a] flex items-center justify-center">
-                    {v.isCustom ? <Building2 size={18} className="text-white/50" /> : <MapPin size={18} className="text-[#BFF367]" />}
+                    {v.isCustom ? (
+                      <Building2 size={18} className="text-white/50" />
+                    ) : (
+                      <MapPin size={18} className="text-[#BFF367]" />
+                    )}
                   </div>
                   <div>
                     <p className="text-sm font-bold text-white">{v.name}</p>
                     <p className="text-[10px] text-white/50">{v.location}</p>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => removeVenue(v.id || v.name)}
                   className="p-2 text-white/40 hover:text-red-500 transition-colors"
                 >
@@ -109,7 +133,7 @@ const Step4Venues = ({ formData, onNext, onBack, isLoading }) => {
         {searchQuery.length > 1 && (
           <div className="bg-[#111] border border-white/10 rounded-xl overflow-hidden mt-2">
             {mockSearchResults.length > 0 ? (
-              mockSearchResults.map(venue => (
+              mockSearchResults.map((venue) => (
                 <button
                   key={venue.id}
                   onClick={() => addVenue(venue)}
@@ -117,7 +141,9 @@ const Step4Venues = ({ formData, onNext, onBack, isLoading }) => {
                 >
                   <div className="text-left">
                     <p className="text-sm font-bold text-white">{venue.name}</p>
-                    <p className="text-[10px] text-white/50">{venue.location}</p>
+                    <p className="text-[10px] text-white/50">
+                      {venue.location}
+                    </p>
                   </div>
                   <Plus size={18} className="text-[#BFF367]" />
                 </button>
@@ -141,19 +167,28 @@ const Step4Venues = ({ formData, onNext, onBack, isLoading }) => {
             </button>
           ) : (
             <div className="bg-[#111] border border-white/5 p-4 rounded-xl space-y-3">
-              <h3 className="text-xs font-bold text-white/70 uppercase mb-2">Custom Venue</h3>
+              <h3 className="text-xs font-bold text-white/70 uppercase mb-2">
+                Custom Venue
+              </h3>
               <input
                 type="text"
                 placeholder="Venue Name"
                 value={customVenue.name}
-                onChange={(e) => setCustomVenue(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setCustomVenue((prev) => ({ ...prev, name: e.target.value }))
+                }
                 className="w-full bg-transparent border-b border-white/10 px-2 py-2 text-sm text-white focus:outline-none focus:border-[#BFF367] transition-colors"
               />
               <input
                 type="text"
                 placeholder="Location / Address"
                 value={customVenue.location}
-                onChange={(e) => setCustomVenue(prev => ({ ...prev, location: e.target.value }))}
+                onChange={(e) =>
+                  setCustomVenue((prev) => ({
+                    ...prev,
+                    location: e.target.value,
+                  }))
+                }
                 className="w-full bg-transparent border-b border-white/10 px-2 py-2 text-sm text-white focus:outline-none focus:border-[#BFF367] transition-colors"
               />
               <div className="flex justify-end gap-2 pt-2">
@@ -185,18 +220,17 @@ const Step4Venues = ({ formData, onNext, onBack, isLoading }) => {
           >
             <ArrowLeft size={16} /> Back
           </button>
-          
+
           <button
             onClick={submit}
             disabled={!isValid || isLoading}
             className="flex items-center gap-2 bg-[#BFF367] text-black font-black px-8 py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-xs"
           >
-            {isLoading ? 'Saving...' : 'Continue'}
+            {isLoading ? "Saving..." : "Continue"}
             <ArrowRight size={16} />
           </button>
         </div>
       </div>
-
     </div>
   );
 };
