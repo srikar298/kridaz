@@ -191,9 +191,17 @@ export const createTopupOrder = async (req, res) => {
     return res.status(200).json({ order, payableAmount });
   } catch (error) {
     logger.error("Error in createTopupOrder:", error);
+    
+    // Extract Razorpay error if available
+    const errorMessage = error?.error?.description || error?.message || "Internal Server Error";
+    
     return res
       .status(500)
-      .json({ success: false, message: "Could not create top-up order." });
+      .json({ 
+        success: false, 
+        message: "Could not create top-up order.",
+        error: errorMessage
+      });
   }
 };
 
