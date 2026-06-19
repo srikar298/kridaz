@@ -35,73 +35,63 @@ export const sendWhatsAppMessage = async (
     let formattedPhone = phone.replace(/\D/g, "");
     if (formattedPhone.length === 10) formattedPhone = "91" + formattedPhone;
 
-    let payload;
-    if (templateName) {
-      // Build the components object e.g., body_1, body_2
-      let componentsObj = {};
-      if (Array.isArray(params)) {
-        params.forEach((param, index) => {
-          componentsObj[`body_${index + 1}`] = {
+    if (!templateName) {
+      logger.error("[WhatsApp Service] MSG91 requires a pre-approved template for outbound messages. Missing templateName. Aborting.");
+      return false;
+    }
+
+    // Build the components object e.g., body_1, body_2
+    let componentsObj = {};
+    if (Array.isArray(params)) {
+      params.forEach((param, index) => {
+        componentsObj[`body_${index + 1}`] = {
+          type: "text",
+          value: String(param),
+        };
+        if (index === 0) {
+          componentsObj[`button_1`] = {
+            subtype: "url",
             type: "text",
             value: String(param),
           };
-          if (index === 0) {
-            componentsObj[`button_1`] = {
-              subtype: "url",
-              type: "text",
-              value: String(param),
-            };
-          }
-        });
-      } else if (typeof params === "object" && params !== null) {
-        Object.entries(params).forEach(([key, value]) => {
-          componentsObj[`body_${key}`] = {
-            type: "text",
-            value: String(value),
-            parameter_name: key,
-          };
-        });
-      }
-
-      payload = {
-        integrated_number: sender,
-        content_type: "template",
-        payload: {
-          messaging_product: "whatsapp",
-          type: "template",
-          template: {
-            name: templateName,
-            language: {
-              code: process.env.MSG91_WHATSAPP_LANG || "en",
-              policy: "deterministic",
-            },
-            namespace:
-              process.env.MSG91_WHATSAPP_NAMESPACE ||
-              "24b8b902_4d4e_4da1_86f9_5160683abccb",
-            to_and_components: [
-              {
-                to: [formattedPhone],
-                components: componentsObj,
-              },
-            ],
-          },
-        },
-      };
-    } else {
-      payload = {
-        integrated_number: sender,
-        content_type: "text",
-        payload: {
-          to: formattedPhone,
+        }
+      });
+    } else if (typeof params === "object" && params !== null) {
+      Object.entries(params).forEach(([key, value]) => {
+        componentsObj[`body_${key}`] = {
           type: "text",
-          text: { body: message },
-        },
-      };
+          value: String(value),
+          parameter_name: key,
+        };
+      });
     }
 
-    const apiUrl = templateName
-      ? "https://api.msg91.com/api/v5/whatsapp/whatsapp-outbound-message/bulk/"
-      : "https://api.msg91.com/api/v5/whatsapp/whatsapp-outbound-message/";
+    const payload = {
+      integrated_number: sender,
+      content_type: "template",
+      payload: {
+        messaging_product: "whatsapp",
+        type: "template",
+        template: {
+          name: templateName,
+          language: {
+            code: process.env.MSG91_WHATSAPP_LANG || "en",
+            policy: "deterministic",
+          },
+          namespace:
+            process.env.MSG91_WHATSAPP_NAMESPACE ||
+            "24b8b902_4d4e_4da1_86f9_5160683abccb",
+          to_and_components: [
+            {
+              to: [formattedPhone],
+              components: componentsObj,
+            },
+          ],
+        },
+      },
+    };
+
+    const apiUrl = "https://api.msg91.com/api/v5/whatsapp/whatsapp-outbound-message/bulk/";
 
     logger.info(
       `[WhatsApp Service] Sending request to MSG91 at ${new Date().toISOString()} for ${formattedPhone}`

@@ -181,6 +181,12 @@ export const verifyBookingPayment = async (userId, paymentData) => {
   const formattedEndTime = format(parseISO(endTime), "hh:mm a");
   const formattedDate = format(parseISO(selectedTurfDate), "d MMM yyyy");
 
+  if (!orderId || !paymentId || !razorpay_signature) {
+    throw new BadRequestError("Missing Razorpay payment parameters.", {
+      code: "PAYMENT_MISSING_PARAMS",
+    });
+  }
+
   // Verify Signature
   const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
   hmac.update(`${orderId}|${paymentId}`);

@@ -210,6 +210,10 @@ export const verifyTopup = async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
     req.body;
 
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+    return res.status(400).json({ success: false, message: "Missing Razorpay payment parameters" });
+  }
+
   try {
     const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
     hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);

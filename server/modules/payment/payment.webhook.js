@@ -25,6 +25,11 @@ export const handleRazorpayWebhook = asyncHandler(async (req, res) => {
   }
   const signature = req.headers["x-razorpay-signature"];
   // 1. Verify Signature
+  if (!req.rawBody) {
+    logger.error("[WEBHOOK] req.rawBody is missing. Cannot verify signature.");
+    return res.status(400).json({ status: "bad_request", message: "Missing rawBody" });
+  }
+
   const shasum = crypto.createHmac("sha256", secret);
   shasum.update(req.rawBody);
   const digest = shasum.digest("hex");
@@ -41,7 +46,11 @@ export const handleRazorpayWebhook = asyncHandler(async (req, res) => {
   // 2. Handle Events
   switch (event) {
     case "payment.captured":
-      await handlePaymentCaptured(payload.payment.entity);
+      if (payload?.payment?.entity) {
+        await handlePaymentCaptured(payload.payment.entity);
+      } else {
+        logger.error("[WEBHOOK] Malformed payment.captured payload.");
+      }
       break;
     case "order.paid":
       // Usually order.paid is triggered when the full amount is captured
