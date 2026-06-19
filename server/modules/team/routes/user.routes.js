@@ -14,7 +14,7 @@ import {
   getOpponentRequestsForTeam,
   updateTeam,
   deleteTeam,
-  handleJoinRequest
+  handleJoinRequest,
 } from "../team.controller.js";
 import { authenticate } from "../../../middleware/auth.middleware.js";
 import upload from "../../../middleware/uploads/upload.middleware.js";

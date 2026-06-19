@@ -39,7 +39,7 @@ API.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
+
     if (
       error.response &&
       error.response.status === 401 &&
@@ -47,7 +47,7 @@ API.interceptors.response.use(
       !originalRequest._retry
     ) {
       if (isRefreshing) {
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
           failedQueue.push({ resolve, reject });
         })
           .then((token) => {
@@ -64,7 +64,7 @@ API.interceptors.response.use(
 
       try {
         const { data } = await API.post("/auth/refresh", {});
-        
+
         if (data.success && data.token) {
           localStorage.setItem("token", data.token);
           API.defaults.headers.common.Authorization = `Bearer ${data.token}`;
@@ -80,9 +80,15 @@ API.interceptors.response.use(
       } finally {
         isRefreshing = false;
       }
-    } else if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+    } else if (
+      error.response &&
+      (error.response.status === 401 || error.response.status === 403)
+    ) {
       // Avoid redirecting to login if we are already trying to login or refresh
-      if (!originalRequest.url.includes("/auth/login") && !originalRequest.url.includes("/auth/refresh")) {
+      if (
+        !originalRequest.url.includes("/auth/login") &&
+        !originalRequest.url.includes("/auth/refresh")
+      ) {
         localStorage.removeItem("token");
         window.location.href = "/login";
       }

@@ -2,8 +2,12 @@ import request from "supertest";
 import app from "../app.js";
 import { prisma } from "../config/prisma.js";
 import dotenv from "dotenv";
-import { redisClient, bullmqConnection, pubClient, subClient } from "../config/redis.js";
-import logger from "../utils/logger.js";
+import {
+  redisClient,
+  bullmqConnection,
+  pubClient,
+  subClient,
+} from "../config/redis.js";
 
 dotenv.config();
 
@@ -31,7 +35,7 @@ const seedOtp = async (email, phone) => {
       phone,
       emailOtp: "123456",
       phoneOtp: "123456",
-      expiresAt: new Date(Date.now() + 600000)
+      expiresAt: new Date(Date.now() + 600000),
     },
   });
 };
@@ -40,57 +44,68 @@ describe("Chat & Message Module Integration Tests", () => {
   beforeAll(async () => {
     // Teardown pre-existing test data if any
     const oldUsers = await prisma.user.findMany({
-      where: { email: { in: [emailA, emailB] } }
+      where: { email: { in: [emailA, emailB] } },
     });
-    
+
     for (const u of oldUsers) {
-      await prisma.chatParticipant.deleteMany({ where: { userId: u.id } }).catch(() => {});
-      await prisma.message.deleteMany({ where: { senderUserId: u.id } }).catch(() => {});
-      await prisma.refreshToken.deleteMany({ where: { userId: u.id } }).catch(() => {});
+      await prisma.chatParticipant
+        .deleteMany({ where: { userId: u.id } })
+        .catch(() => {});
+      await prisma.message
+        .deleteMany({ where: { senderUserId: u.id } })
+        .catch(() => {});
+      await prisma.refreshToken
+        .deleteMany({ where: { userId: u.id } })
+        .catch(() => {});
       await prisma.user.delete({ where: { id: u.id } }).catch(() => {});
     }
-    await prisma.oTP.deleteMany({ where: { email: { in: [emailA, emailB] } } }).catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: { in: [emailA, emailB] } } })
+      .catch(() => {});
 
     // Seed OTPs
     await seedOtp(emailA, phoneA);
     await seedOtp(emailB, phoneB);
 
     // Register User A
-    const otpRes_regResA = await request(app).post('/api/user/auth/verify-otp').send({ email: emailA, phone: phoneA, otp: "123456" });
-    const regResA = await request(app)
-      .post("/api/user/auth/register")
-      .send({
-        name: "Chat User A",
-        email: emailA,
-        username: usernameA,
-        phone: phoneA,
-        gender: "Male",
-        location: "Test City",
-        password: "Password@123",
-        confirmPassword: "Password@123",
-        otp: "123456",
-        phoneOtp: "123456"
-      , registrationToken: otpRes_regResA.body.registrationToken});
-    if (regResA.statusCode !== 201) console.log(regResA.body); expect(regResA.statusCode).toBe(201);
+    const otpRes_regResA = await request(app)
+      .post("/api/user/auth/verify-otp")
+      .send({ email: emailA, phone: phoneA, otp: "123456" });
+    const regResA = await request(app).post("/api/user/auth/register").send({
+      name: "Chat User A",
+      email: emailA,
+      username: usernameA,
+      phone: phoneA,
+      gender: "Male",
+      location: "Test City",
+      password: "Password@123",
+      confirmPassword: "Password@123",
+      otp: "123456",
+      phoneOtp: "123456",
+      registrationToken: otpRes_regResA.body.registrationToken,
+    });
+    if (regResA.statusCode !== 201) console.log(regResA.body);
+    expect(regResA.statusCode).toBe(201);
     tokenA = regResA.body.token;
     userA = await prisma.user.findUnique({ where: { email: emailA } });
 
     // Register User B
-    const otpRes_regResB = await request(app).post('/api/user/auth/verify-otp').send({ email: emailB, phone: phoneB, otp: "123456" });
-    const regResB = await request(app)
-      .post("/api/user/auth/register")
-      .send({
-        name: "Chat User B",
-        email: emailB,
-        username: usernameB,
-        phone: phoneB,
-        gender: "Female",
-        location: "Test City",
-        password: "Password@123",
-        confirmPassword: "Password@123",
-        otp: "123456",
-        phoneOtp: "123456"
-      , registrationToken: otpRes_regResB.body.registrationToken});
+    const otpRes_regResB = await request(app)
+      .post("/api/user/auth/verify-otp")
+      .send({ email: emailB, phone: phoneB, otp: "123456" });
+    const regResB = await request(app).post("/api/user/auth/register").send({
+      name: "Chat User B",
+      email: emailB,
+      username: usernameB,
+      phone: phoneB,
+      gender: "Female",
+      location: "Test City",
+      password: "Password@123",
+      confirmPassword: "Password@123",
+      otp: "123456",
+      phoneOtp: "123456",
+      registrationToken: otpRes_regResB.body.registrationToken,
+    });
     expect(regResB.statusCode).toBe(201);
     tokenB = regResB.body.token;
     userB = await prisma.user.findUnique({ where: { email: emailB } });
@@ -100,42 +115,54 @@ describe("Chat & Message Module Integration Tests", () => {
     // Delete test side effects
     if (userA || userB) {
       const uIds = [userA?.id, userB?.id].filter(Boolean);
-      
+
       // Clean messages
-      await prisma.message.deleteMany({
-        where: {
-          OR: [
-            { senderUserId: { in: uIds } },
-            { chatId: chatId },
-            { chatId: groupId }
-          ]
-        }
-      }).catch(() => {});
+      await prisma.message
+        .deleteMany({
+          where: {
+            OR: [
+              { senderUserId: { in: uIds } },
+              { chatId: chatId },
+              { chatId: groupId },
+            ],
+          },
+        })
+        .catch(() => {});
 
       // Clean participants
-      await prisma.chatParticipant.deleteMany({
-        where: {
-          OR: [
-            { userId: { in: uIds } },
-            { chatId: chatId },
-            { chatId: groupId }
-          ]
-        }
-      }).catch(() => {});
+      await prisma.chatParticipant
+        .deleteMany({
+          where: {
+            OR: [
+              { userId: { in: uIds } },
+              { chatId: chatId },
+              { chatId: groupId },
+            ],
+          },
+        })
+        .catch(() => {});
 
       // Clean chats
-      await prisma.chat.deleteMany({
-        where: { id: { in: [chatId, groupId].filter(Boolean) } }
-      }).catch(() => {});
+      await prisma.chat
+        .deleteMany({
+          where: { id: { in: [chatId, groupId].filter(Boolean) } },
+        })
+        .catch(() => {});
 
       // Clean refreshTokens and users
-      await prisma.refreshToken.deleteMany({ where: { userId: { in: uIds } } }).catch(() => {});
-      await prisma.user.deleteMany({ where: { id: { in: uIds } } }).catch(() => {});
+      await prisma.refreshToken
+        .deleteMany({ where: { userId: { in: uIds } } })
+        .catch(() => {});
+      await prisma.user
+        .deleteMany({ where: { id: { in: uIds } } })
+        .catch(() => {});
     }
 
-    await prisma.oTP.deleteMany({ where: { email: { in: [emailA, emailB] } } }).catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: { in: [emailA, emailB] } } })
+      .catch(() => {});
     await prisma.$disconnect();
-    
+
     // Close redis & bullmq safely to avoid open handles hanging
     await redisClient.quit();
     await bullmqConnection.quit();
@@ -164,7 +191,7 @@ describe("Chat & Message Module Integration Tests", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty("chats");
       expect(Array.isArray(res.body.chats)).toBe(true);
-      const foundChat = res.body.chats.find(c => c.id === chatId);
+      const foundChat = res.body.chats.find((c) => c.id === chatId);
       expect(foundChat).toBeDefined();
     });
   });
@@ -176,12 +203,14 @@ describe("Chat & Message Module Integration Tests", () => {
         .set("Authorization", `Bearer ${tokenA}`)
         .send({
           chatId: chatId,
-          content: "Hello User B! This is an automated integration message."
+          content: "Hello User B! This is an automated integration message.",
         });
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty("id");
-      expect(res.body.content).toBe("Hello User B! This is an automated integration message.");
+      expect(res.body.content).toBe(
+        "Hello User B! This is an automated integration message."
+      );
       expect(res.body.senderUserId).toBe(userA.id);
       messageId = res.body.id;
     });
@@ -193,7 +222,7 @@ describe("Chat & Message Module Integration Tests", () => {
 
       expect(res.statusCode).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
-      const foundMessage = res.body.find(m => m.id === messageId);
+      const foundMessage = res.body.find((m) => m.id === messageId);
       expect(foundMessage).toBeDefined();
     });
 
@@ -236,7 +265,7 @@ describe("Chat & Message Module Integration Tests", () => {
         .set("Authorization", `Bearer ${tokenA}`)
         .send({
           name: "Test Integration Group",
-          users: JSON.stringify([userB.id])
+          users: JSON.stringify([userB.id]),
         });
 
       expect(res.statusCode).toBe(200);

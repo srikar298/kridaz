@@ -2,216 +2,117 @@ name: Kridaz Monorepo CI/CD
 
 on:
   push:
-    branches: [ main, version3 ]
+    branches: [Production]
   workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_PREFIX: prince364133/kridaz
+
 jobs:
-  ci:
-    name: CI (Lint & Build All)
+  build-and-push-images:
+    name: Build and Push Docker Images
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-      - name: Checkout Code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
         with:
-          node-version: '22'
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Backend
+        uses: docker/build-push-action@v5
         with:
-          version: 10.28.0
+          context: .
+          file: ./server/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-backend:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-backend:${{ github.sha }}
 
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build All Packages
-        run: pnpm run build
-
-  build-backend:
-    name: Build Backend Package
-    needs: ci
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 10.28.0
-
-      - name: Install Monorepo Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build Packages
-        run: pnpm --filter common run build && pnpm --filter shared-constants run build
-
-      - name: Generate Prisma Client
-        run: cd server && pnpm dlx prisma generate
-
-      - name: Create Backend Deployment Package
+      - name: Inject User Web Environment Variables
         run: |
-          mkdir -p deploy/packages/common
-          mkdir -p deploy/packages/shared-constants
-          
-          # Copy server files
-          rsync -av --exclude='node_modules' --exclude='scratch' --exclude='logs' --exclude='.env' --exclude='tests' server/ deploy/
-          
-          # Copy common package
-          cp packages/common/package.json deploy/packages/common/
-          cp -r packages/common/dist deploy/packages/common/
-          cp -r packages/common/src deploy/packages/common/
-          
-          # Copy shared-constants
-          cp packages/shared-constants/package.json deploy/packages/shared-constants/
-          cp -r packages/shared-constants/src deploy/packages/shared-constants/
-          
-          # Copy startup script
-          cp startup.sh deploy/
-          
-          cd deploy
-          
-          # Fix workspace references and remove packageManager field
-          sed -i 's/"@kridaz\/common":\s*"workspace:\*"/"@kridaz\/common": "file:.\/packages\/common"/' package.json
-          sed -i 's/"@kridaz\/shared-constants":\s*"workspace:\*"/"@kridaz\/shared-constants": "file:.\/packages\/shared-constants"/' package.json
-          sed -i '/"packageManager":/d' package.json
-          
-          # Fix common's package.json
-          sed -i 's/"@kridaz\/shared-constants":\s*"workspace:\*"/"@kridaz\/shared-constants": "file:..\/shared-constants"/' packages/common/package.json
-          
-          # Install production dependencies for Linux target
-          npm install --omit=dev
-          npm install --os=linux --cpu=x64 sharp
-          
-          # Zip the deployment artifact
-          zip -q -r ../backend-artifact.zip .
+          cat <<EOF > client/user/.env.production
+          VITE_API_URL=https://api.kridaz.com/
+          VITE_USER_URL=https://kridaz.vercel.app,https://www.kridaz.com
+          VITE_GOOGLE_CLIENT_ID=615790581143-k4g37kb3krcfnh1p64aodd2qa3le5q96.apps.googleusercontent.com
+          VITE_RAZORPAY_KEY_ID=rzp_live_SweOO8CAlfwtzg
+          VITE_REELS_CDN_URL=https://pub-cc243bd179ab45ee94097baeca380dd4.r2.dev
+          VITE_TURNSTILE_SITE_KEY=0x4AAAAAADTyPk2TuxnL09q7
+          EOF
 
-      - name: Upload Backend Artifact
-        uses: actions/upload-artifact@v4
+      - name: Build and push User Frontend
+        uses: docker/build-push-action@v5
         with:
-          name: backend-artifact
-          path: backend-artifact.zip
+          context: .
+          file: ./client/user/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-user-web:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-user-web:${{ github.sha }}
 
-  build-frontends:
-    name: Build Frontends
-    needs: ci
+      - name: Inject Admin Web Environment Variables
+        run: |
+          cat <<EOF > client/admin/.env.production
+          VITE_API_URL=https://api.kridaz.com/
+          EOF
+
+      - name: Build and push Admin Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./client/admin/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-admin-web:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-admin-web:${{ github.sha }}
+
+  deploy-to-azure:
+    name: Deploy Containers to Azure
+    needs: build-and-push-images
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/Production'
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 10.28.0
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build User Frontend
-        run: pnpm --filter user run build
-
-      - name: Build Admin Frontend
-        run: pnpm --filter admin run build
-
-      - name: Zip User Frontend Dist
-        run: cd client/user/dist && zip -q -r ../../../user-artifact.zip .
-
-      - name: Zip Admin Frontend Dist
-        run: cd client/admin/dist && zip -q -r ../../../admin-artifact.zip .
-
-      - name: Upload User Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: user-artifact
-          path: user-artifact.zip
-
-      - name: Upload Admin Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: admin-artifact
-          path: admin-artifact.zip
-
-  deploy-backend:
-    name: Deploy Backend to Azure
-    needs: build-backend
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/version3'
-    steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: backend-artifact
-
       - name: Login to Azure
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy to Azure Web App
+      - name: Deploy Backend to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'Kridaz'
-          package: backend-artifact.zip
+          app-name: "Kridaz"
+          images: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-backend:${{ github.sha }}"
 
-  deploy-user-frontend:
-    name: Deploy User Frontend to Azure
-    needs: build-frontends
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/version3'
-    steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: user-artifact
-
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Deploy to Azure Web App
+      - name: Deploy User Frontend to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'kridaz-web'
-          package: user-artifact.zip
-          startup-command: 'pm2 serve /home/site/wwwroot --no-daemon --spa'
+          app-name: "kridaz-web"
+          images: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-user-web:${{ github.sha }}"
 
-  deploy-admin-frontend:
-    name: Deploy Admin Frontend to Azure
-    needs: build-frontends
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/version3'
-    steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: admin-artifact
-
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Deploy to Azure Web App
+      - name: Deploy Admin Frontend to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'kridaz-admin'
-          package: admin-artifact.zip
-          startup-command: 'pm2 serve /home/site/wwwroot --no-daemon --spa'
+          app-name: "kridaz-admin"
+          images: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-admin-web:${{ github.sha }}"
+
+      - name: Deploy Worker to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: "kridaz-worker"
+          images: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-backend:${{ github.sha }}"

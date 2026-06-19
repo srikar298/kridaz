@@ -39,7 +39,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    const isAuthCheck = originalRequest?.url?.includes('/api/user/auth/getMe');
+    const isAuthCheck = originalRequest?.url?.includes("/api/user/auth/getMe");
 
     // Match on the canonical `code` field (Wave 1 server envelope).
     // The server still emits message === "TOKEN_EXPIRED" as a back-compat
@@ -47,7 +47,8 @@ axiosInstance.interceptors.response.use(
     // removed, the message branch becomes dead code.
     const errCode = error.response?.data?.code;
     const errMessage = error.response?.data?.message;
-    const isExpired = errCode === "TOKEN_EXPIRED" || errMessage === "TOKEN_EXPIRED";
+    const isExpired =
+      errCode === "TOKEN_EXPIRED" || errMessage === "TOKEN_EXPIRED";
 
     if (
       error.response?.status === 401 &&
@@ -73,8 +74,12 @@ axiosInstance.interceptors.response.use(
 
       try {
         const refreshUrl = `${import.meta.env.VITE_API_URL || ""}/api/user/auth/refresh`;
-        const { data } = await axios.post(refreshUrl, {}, { withCredentials: true });
-        
+        const { data } = await axios.post(
+          refreshUrl,
+          {},
+          { withCredentials: true }
+        );
+
         if (data.token) {
           store.dispatch(restoreAuth({ token: data.token }));
           processQueue(null, data.token);
@@ -91,9 +96,19 @@ axiosInstance.interceptors.response.use(
       } finally {
         isRefreshing = false;
       }
-    } else if (error.response?.status === 401 || error.response?.status === 403) {
+    } else if (
+      error.response?.status === 401 ||
+      error.response?.status === 403
+    ) {
       if (!isAuthCheck) {
-        console.warn("API returned 401/403. URL:", originalRequest?.url, "Code:", errCode, "Message:", errMessage);
+        console.warn(
+          "API returned 401/403. URL:",
+          originalRequest?.url,
+          "Code:",
+          errCode,
+          "Message:",
+          errMessage
+        );
         // Prefer the stable `code` (Wave 1 envelope); fall back to substring
         // matching on the human message for any older response paths that
         // haven't been migrated yet.
@@ -114,14 +129,3 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
-
-
-
-
-
-
-
-
-
-
-

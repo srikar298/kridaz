@@ -24,7 +24,7 @@ const uploadToCloudinary = (fileBuffer, folder, isVideo = false) => {
 export const getAdBanners = async (req, res) => {
   try {
     const banners = await prisma.adBanner.findMany({
-      orderBy: { order: 'asc' }
+      orderBy: { order: "asc" },
     });
     res.status(200).json({ success: true, banners });
   } catch (error) {
@@ -35,19 +35,23 @@ export const getAdBanners = async (req, res) => {
 export const createAdBanner = async (req, res) => {
   try {
     const { title, description, targetUrl, type, order, isActive } = req.body;
-    
+
     const bannerData = {
       title,
       description,
       targetUrl,
       type: type || "HOME",
       order: order ? Number(order) : 0,
-      isActive: isActive === 'true' || isActive === true
+      isActive: isActive === "true" || isActive === true,
     };
 
     if (req.file) {
       const isVideo = req.file.mimetype.startsWith("video/");
-      const uploadedUrl = await uploadToCloudinary(req.file.buffer, "kridaz/marketing", isVideo);
+      const uploadedUrl = await uploadToCloudinary(
+        req.file.buffer,
+        "kridaz/marketing",
+        isVideo
+      );
       if (isVideo) {
         bannerData.videoUrl = uploadedUrl;
         bannerData.imageUrl = null;
@@ -61,7 +65,7 @@ export const createAdBanner = async (req, res) => {
     }
 
     const banner = await prisma.adBanner.create({
-      data: bannerData
+      data: bannerData,
     });
     res.status(201).json({ success: true, banner });
   } catch (error) {
@@ -72,19 +76,23 @@ export const createAdBanner = async (req, res) => {
 export const updateAdBanner = async (req, res) => {
   try {
     const { title, description, targetUrl, type, order, isActive } = req.body;
-    
+
     const bannerData = {
       title,
       description,
       targetUrl,
       type: type || "HOME",
       order: order ? Number(order) : 0,
-      isActive: isActive === 'true' || isActive === true
+      isActive: isActive === "true" || isActive === true,
     };
 
     if (req.file) {
       const isVideo = req.file.mimetype.startsWith("video/");
-      const uploadedUrl = await uploadToCloudinary(req.file.buffer, "kridaz/marketing", isVideo);
+      const uploadedUrl = await uploadToCloudinary(
+        req.file.buffer,
+        "kridaz/marketing",
+        isVideo
+      );
       if (isVideo) {
         bannerData.videoUrl = uploadedUrl;
         bannerData.imageUrl = null;
@@ -99,7 +107,7 @@ export const updateAdBanner = async (req, res) => {
 
     const banner = await prisma.adBanner.update({
       where: { id: req.params.id },
-      data: bannerData
+      data: bannerData,
     });
     res.status(200).json({ success: true, banner });
   } catch (error) {
@@ -120,7 +128,7 @@ export const deleteAdBanner = async (req, res) => {
 export const getVideos = async (req, res) => {
   try {
     const videos = await prisma.video.findMany({
-      orderBy: { order: 'asc' }
+      orderBy: { order: "asc" },
     });
     res.status(200).json({ success: true, videos });
   } catch (error) {
@@ -135,11 +143,11 @@ export const createVideo = async (req, res) => {
       title,
       youtubeUrl,
       order: order ? Number(order) : undefined,
-      isActive: isActive === 'true' || isActive === true
+      isActive: isActive === "true" || isActive === true,
     };
 
     const video = await prisma.video.create({
-      data: videoData
+      data: videoData,
     });
     res.status(201).json({ success: true, video });
   } catch (error) {
@@ -154,12 +162,12 @@ export const updateVideo = async (req, res) => {
       title,
       youtubeUrl,
       order: order ? Number(order) : undefined,
-      isActive: isActive === 'true' || isActive === true
+      isActive: isActive === "true" || isActive === true,
     };
 
     const video = await prisma.video.update({
       where: { id: req.params.id },
-      data: videoData
+      data: videoData,
     });
     res.status(200).json({ success: true, video });
   } catch (error) {
@@ -180,16 +188,21 @@ export const deleteVideo = async (req, res) => {
 export const getActiveMarketing = async (req, res) => {
   try {
     const [banners, videos] = await Promise.all([
-      prisma.adBanner.findMany({ where: { isActive: true }, orderBy: { order: 'asc' } }),
-      prisma.video.findMany({ where: { isActive: true }, orderBy: { order: 'asc' } }),
+      prisma.adBanner.findMany({
+        where: { isActive: true },
+        orderBy: { order: "asc" },
+      }),
+      prisma.video.findMany({
+        where: { isActive: true },
+        orderBy: { order: "asc" },
+      }),
     ]);
-    res.status(200).json({ 
-        success: true, 
-        banners, 
-        videos 
+    res.status(200).json({
+      success: true,
+      banners,
+      videos,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-

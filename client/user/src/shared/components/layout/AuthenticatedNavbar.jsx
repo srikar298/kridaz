@@ -1,13 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import { 
-  Menu, 
-  Bell, 
-  LogOut, 
-  Trash2, 
-  CheckCircle, 
-  Clock, 
-  Search, 
+import {
+  Menu,
+  Bell,
+  LogOut,
   Plus,
   Command,
   User,
@@ -20,17 +16,21 @@ import {
   ExternalLink,
   ArrowLeft,
   HelpCircle,
-  Zap
+  Info,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, updateUser } from "@redux/slices/authSlice.js";
 import axiosInstance from "@hooks/useAxiosInstance";
 import ManualBookingModal from "@features/venue-owner/ManualBookingModal";
 import useNotifications from "@hooks/shared/useNotifications";
-import { useGetDashboardStatsQuery, useToggleOnlineMutation } from "@redux/api/professionalApi";
-import { formatDistanceToNow } from 'date-fns';
+import {
+  useGetDashboardStatsQuery,
+  useToggleOnlineMutation,
+} from "@redux/api/professionalApi";
+import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
 import { getDynamicProfileRoute } from "@utils/routeUtils";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
 
 /**
  * AuthenticatedNavbar Rs � Role-aware top navigation.
@@ -40,34 +40,59 @@ import { getDynamicProfileRoute } from "@utils/routeUtils";
 const AuthenticatedNavbar = ({ toggleSidebar }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isManualBookingOpen, setIsManualBookingOpen] = useState(false);
-  const notificationRef = useRef(null);
   const profileRef = useRef(null);
+  const mobileMenuRef = useRef(null);
   const location = useLocation();
-  const isProfessionalDashboard = location.pathname.startsWith('/professional');
-  
+  const isProfessionalDashboard = location.pathname.startsWith("/professional");
+
   const user = useSelector((state) => state?.auth?.user);
   const role = useSelector((state) => state?.auth?.role);
   const isScorer = role?.toLowerCase().includes("scorer");
   const themeColor = isScorer ? "#BFF367" : "#BFF367";
 
-  const { data: statsData } = useGetDashboardStatsQuery(undefined, { skip: !isProfessionalDashboard });
+  const { data: statsData } = useGetDashboardStatsQuery(undefined, {
+    skip: !isProfessionalDashboard,
+  });
   const [toggleOnline, { isLoading: isToggling }] = useToggleOnlineMutation();
   const isOnline = user?.isOnline || false;
 
-  const { notifications, loading, unreadCount, markRead, markAllRead, clearAll } = useNotifications();
+  const {
+    notifications,
+    loading,
+    unreadCount,
+    markRead,
+    markAllRead,
+    clearAll,
+  } = useNotifications();
 
   const getBasePath = () => {
     const r = role?.toLowerCase();
     if (r === "admin" || r === "bmsp_admin") return "/admin";
-    if (r === "venu_owners" || r?.includes("venu_owners") || r === "owner" || r === "bmsp_owner" || r === "verified_venue_owner" || r === "venue_owner") return "/venue-owner";
+    if (
+      r === "venu_owners" ||
+      r?.includes("venu_owners") ||
+      r === "owner" ||
+      r === "bmsp_owner" ||
+      r === "verified_venue_owner" ||
+      r === "venue_owner"
+    )
+      return "/venue-owner";
     if (r === "coach" || r === "bmsp_coach") return "/professional/coach";
     if (r?.includes("umpire")) return "/umpire";
-    if (r?.includes("scorer")) return "/scorer";
+    if (r === "scorer" || r?.includes("scorer")) return "/scorer";
     return "";
   };
+
+  const isVenueOwner = [
+    "venu_owners",
+    "owner",
+    "venue_owner",
+    "verified_venue_owner",
+    "bmsp_owner",
+  ].some((r) => role?.toLowerCase()?.includes(r));
 
   const handleProfileClick = () => {
     navigate(getDynamicProfileRoute(user, role));
@@ -75,11 +100,14 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
-        setShowNotifications(false);
-      }
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setShowProfileMenu(false);
+      }
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target)
+      ) {
+        setShowMobileMenu(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -119,7 +147,11 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
     const performToggle = async (coords = {}) => {
       try {
         await toggleOnline({ isOnline: nextState, ...coords }).unwrap();
-        toast.success(nextState ? "You are now online and visible to users" : "You are now offline");
+        toast.success(
+          nextState
+            ? "You are now online and visible to users"
+            : "You are now offline"
+        );
       } catch (err) {
         console.error("Failed to toggle online status", err);
         // Rollback on failure
@@ -152,8 +184,18 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
 
   const trustScore = statsData?.stats?.trustScore || 100;
   const trustMax = 100;
-  const trustPercent = Math.min(100, Math.max(0, (trustScore / trustMax) * 100));
-  const trustLevel = trustScore >= 90 ? "Elite" : trustScore >= 70 ? "Pro" : trustScore >= 50 ? "Rising" : "Rookie";
+  const trustPercent = Math.min(
+    100,
+    Math.max(0, (trustScore / trustMax) * 100)
+  );
+  const trustLevel =
+    trustScore >= 90
+      ? "Elite"
+      : trustScore >= 70
+        ? "Pro"
+        : trustScore >= 50
+          ? "Rising"
+          : "Rookie";
   // SVG ring math (radius=18, circumference=~113)
   const ringRadius = 18;
   const ringCircumference = 2 * Math.PI * ringRadius;
@@ -161,12 +203,18 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
 
   const getNotificationIcon = (type) => {
     switch (type) {
-      case 'BOOKING': return <History size={14} style={{ color: themeColor }} />;
-      case 'PAYMENT': return <CreditCard size={14} className="text-green-500" />;
-      case 'SUPPORT': return <MessageSquare size={14} className="text-blue-500" />;
-      case 'WITHDRAWAL': return <AlertTriangle size={14} className="text-orange-500" />;
-      case 'REVIEW': return <ShieldAlert size={14} className="text-yellow-500" />;
-      default: return <Bell size={14} style={{ color: themeColor }} />;
+      case "BOOKING":
+        return <History size={14} style={{ color: themeColor }} />;
+      case "PAYMENT":
+        return <CreditCard size={14} className="text-green-500" />;
+      case "SUPPORT":
+        return <MessageSquare size={14} className="text-blue-500" />;
+      case "WITHDRAWAL":
+        return <AlertTriangle size={14} className="text-orange-500" />;
+      case "REVIEW":
+        return <ShieldAlert size={14} className="text-yellow-500" />;
+      default:
+        return <Bell size={14} style={{ color: themeColor }} />;
     }
   };
 
@@ -175,154 +223,105 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
     if (notif.link) {
       navigate(notif.link);
     }
-    setShowNotifications(false);
   };
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex flex-col font-inter">
-      <nav className="navbar bg-[#000000] border-b border-[#2D2D2D] px-4 md:px-8 h-16 lg:h-20 shadow-2xl flex items-center justify-between">
-        
-
-        
+      <nav
+        className={`bg-[#000000] border-b border-[#2D2D2D] px-4 md:px-8 pt-2 pb-2 lg:pt-0 h-[56px] lg:h-20 shadow-2xl flex items-center justify-between w-full box-border`}
+      >
         <div className="flex items-center gap-4 lg:min-w-[200px]">
-          {!isProfessionalDashboard ? (
-            <button className="p-2 text-white hover:opacity-80 transition-opacity lg:hidden" style={{ color: themeColor }} onClick={toggleSidebar}>
+          <button
+            onClick={() => navigate(-1)}
+            className="p-1.5 transition-all duration-300 relative text-[#999999] hover:text-white bg-[#0d0d0d] border border-white/5 hover:border-[#BFF367]/30 rounded-full hover:bg-[#BFF367]/10 hover:text-[#BFF367] flex items-center justify-center outline-none"
+            title="Go Back"
+          >
+            <ArrowLeft size={16} strokeWidth={2.5} />
+          </button>
+
+          {!isProfessionalDashboard && !isVenueOwner && (
+            <button
+              className="p-2 text-white hover:opacity-80 transition-opacity lg:hidden"
+              style={{ color: themeColor }}
+              onClick={toggleSidebar}
+            >
               <Menu size={24} />
             </button>
-          ) : (
-            <Link to="/" className="p-2 text-white hover:opacity-80 transition-opacity" style={{ color: themeColor }}>
-              <ArrowLeft size={24} />
-            </Link>
           )}
-          <Link to="/" className="flex items-center gap-4 group">
-            <div className="w-20 h-10 sm:w-32 sm:h-12 bg-transparent flex items-center justify-center overflow-hidden">
-               <img src="/logo.png" alt="Kridaz Logo" className="w-full h-full object-contain" />
-            </div>
-          </Link>
         </div>
 
-
-        
         <div className="flex items-center gap-3 sm:gap-5 lg:min-w-[200px] justify-end">
-          
-
-          
-          {["venu_owners", "owner", "venue_owner", "verified_venue_owner", "bmsp_owner"].some(r => role?.toLowerCase()?.includes(r)) && (
+          {[
+            "venu_owners",
+            "owner",
+            "venue_owner",
+            "verified_venue_owner",
+            "bmsp_owner",
+          ].some((r) => role?.toLowerCase()?.includes(r)) && (
             <>
-              <button 
-                onClick={handleCheckVenue}
-                className="hidden md:flex items-center gap-2 px-6 py-2.5 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all shadow-xl active:scale-95 border border-[#BFF367] text-[#BFF367] hover:bg-[#BFF367]/10"
-              >
-                <ExternalLink size={14} strokeWidth={3} />
-                <span>Check Venue</span>
-              </button>
-              <button 
+              <button
                 onClick={() => setIsManualBookingOpen(true)}
-                className="hidden md:flex items-center gap-2 px-6 py-2.5 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all shadow-xl active:scale-95"
-                style={{ background: 'linear-gradient(90deg, #BFF367 0%, #BFF367 100%)', color: '#000', boxShadow: `0 5px 15px ${themeColor}33` }}
+                className="hidden md:flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all shadow-xl active:scale-95"
+                style={{
+                  background:
+                    "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)",
+                  color: "#000",
+                  boxShadow: `0 5px 15px ${themeColor}33`,
+                }}
+                title="Manual Booking"
               >
                 <Plus size={14} strokeWidth={3} />
                 <span>Manual Booking</span>
               </button>
-              <ManualBookingModal 
-                isOpen={isManualBookingOpen} 
-                onClose={() => setIsManualBookingOpen(false)} 
+              <ManualBookingModal
+                isOpen={isManualBookingOpen}
+                onClose={() => setIsManualBookingOpen(false)}
               />
             </>
           )}
 
+          {[
+            "venu_owners",
+            "owner",
+            "venue_owner",
+            "verified_venue_owner",
+            "bmsp_owner",
+          ].some((r) => role?.toLowerCase()?.includes(r)) && (
+            <Link
+              to="/venue-owner/support"
+              className="hidden md:flex p-2.5 rounded-[8px] bg-[#0d0d0d] text-[#999999] border border-white/5 hover:border-white/10 hover:text-white transition-all duration-300"
+              title="Docs & Support"
+            >
+              <HelpCircle size={20} />
+            </Link>
+          )}
 
-          
-          <div className="relative" ref={notificationRef}>
-            <button 
-              onClick={() => setShowNotifications(!showNotifications)}
-              className={`p-2.5 rounded-[8px] transition-all duration-300 relative border ${ showNotifications ? "" : "bg-[#0d0d0d] text-[#999999] border-white/5 hover:border-white/10" }`}
-              style={{ 
-                backgroundColor: showNotifications ? themeColor : undefined, 
-                color: showNotifications ? '#000' : undefined,
-                borderColor: showNotifications ? themeColor : undefined 
+          <div className="relative">
+            <button
+              onClick={() => {
+                navigate(`${getBasePath()}/notifications`);
+                setShowMobileMenu(false);
               }}
+              className="p-2 transition-all duration-300 relative text-[#999999] hover:text-white bg-transparent outline-none"
             >
               <Bell size={20} />
-              {unreadCount > 0 && <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-black" />}
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 w-2 h-2 bg-[#B3DC26] rounded-full border-2 border-black" />
+              )}
             </button>
-
-            {showNotifications && (
-              <div className="absolute right-0 mt-4 w-80 sm:w-96 bg-[#000000] border border-white/10 rounded-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                <div className="p-5 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
-                   <div className="flex items-center gap-2">
-                      <h3 className="font-black text-white tracking-widest text-[10px] uppercase">Notification Vault</h3>
-                      {unreadCount > 0 && <span className="text-[9px] font-black px-2 py-0.5 rounded-full" style={{ backgroundColor: themeColor, color: '#000' }}>{unreadCount}</span>}
-                   </div>
-                  <div className="flex gap-4">
-                     <button onClick={markAllRead} className="text-[9px] font-black uppercase tracking-widest hover:opacity-80 transition-all" style={{ color: themeColor }}>
-                        Mark All
-                     </button>
-                     <button onClick={clearAll} className="text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-400 transition-colors">
-                        Clear
-                     </button>
-                  </div>
-                </div>
-                <div className="max-h-[400px] overflow-y-auto no-scrollbar">
-                  {notifications.length > 0 ? (
-                    notifications.map((notif) => (
-                      <div 
-                        key={notif.id || notif._id} 
-                        onClick={() => handleNotificationClick(notif)}
-                        className={`p-5 border-b border-white/5 transition-colors cursor-pointer group ${notif.isRead ? 'opacity-60' : 'bg-white/[0.02]'}`}
-                      >
-                        <div className="flex gap-4">
-                           <div className="mt-0.5 p-2 rounded-[8px] border border-white/5 flex items-center justify-center shrink-0" style={{ backgroundColor: notif.isRead ? 'rgba(255,255,255,0.05)' : themeColor + '1A', color: notif.isRead ? '#555' : themeColor }}>
-                             {getNotificationIcon(notif.type)}
-                           </div>
-                           <div className="flex-1 space-y-1">
-                             <div className="flex justify-between items-start">
-                               <h4 className={`text-[12px] font-black transition-colors uppercase tracking-tight ${notif.isRead ? 'text-gray-500' : 'text-white'}`} style={{ '--hover-color': themeColor }}>
-                                 {notif.title}
-                               </h4>
-                               <span className="text-[9px] text-neutral-600 font-bold flex items-center gap-1 uppercase">
-                                  {formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true }).replace('about ', '')}
-                               </span>
-                             </div>
-                             <p className={`text-[11px] leading-relaxed font-medium ${notif.isRead ? 'text-gray-600' : 'text-neutral-400'}`}>{notif.message}</p>
-                           </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="p-16 text-center flex flex-col items-center gap-4">
-                      <div className="w-20 h-20 rounded-full bg-white/[0.02] border border-dashed border-white/10 flex items-center justify-center text-neutral-800"><Bell size={40} /></div>
-                      <p className="text-[10px] text-neutral-600 font-black tracking-widest uppercase">Vault is empty</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
 
           <div className="h-8 w-[1px] bg-white/5 mx-1 hidden sm:block" />
 
           {isProfessionalDashboard && (
-            <div className="relative">
-              <Link 
+            <div className="flex relative">
+              <Link
                 to={`/professional/${role}/support`}
-                className="flex items-center justify-center p-2.5 bg-[#0d0d0d] border border-white/5 hover:border-[#BFF367]/30 rounded-[8px] hover:bg-[#BFF367]/10 hover:text-[#BFF367] text-[#999999] transition-all duration-300"
-                title="Support"
+                className="flex items-center justify-center p-2.5 bg-transparent md:bg-[#0d0d0d] md:border border-white/5 hover:border-[#BFF367]/30 rounded-[8px] hover:bg-[#BFF367]/10 hover:text-[#BFF367] text-[#999999] hover:text-white transition-all duration-300"
+                title="Docs & Support"
               >
-                <HelpCircle size={20} strokeWidth={2.5} />
+                <Info size={24} strokeWidth={2.5} className="md:w-5 md:h-5" />
               </Link>
-            </div>
-          )}
-
-          {!isProfessionalDashboard && (
-            <div className="relative">
-              <button 
-                onClick={handleLogout}
-                className="flex items-center justify-center p-2.5 bg-[#0d0d0d] border border-white/5 hover:border-red-500/30 rounded-[8px] hover:bg-red-500/10 hover:text-red-500 text-[#999999] transition-all duration-300"
-                title="Logout"
-              >
-                <LogOut size={20} strokeWidth={2.5} />
-              </button>
             </div>
           )}
         </div>
@@ -330,125 +329,121 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
 
       {/* Professional Sub-Bar — visible on ALL screen sizes */}
       {isProfessionalDashboard && user && (
-        <div className="bg-[#0A0A0A] border-b border-[#1a1a1a] px-3 sm:px-6 py-2.5">
+        <div className="bg-[#0A0A0A] border-b border-[#1a1a1a] px-6 md:px-8 py-3 w-full box-border">
           <div className="flex items-center justify-between gap-3">
-            {/* Left: Avatar + Greeting */}
-            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-              {/* Avatar with online indicator ring and dropdown */}
-              <div className="relative shrink-0" ref={profileRef}>
-                <button
-                  onClick={() => setShowProfileMenu(prev => !prev)}
-                  className="relative block focus:outline-none transition-transform active:scale-95"
-                >
-                  <img 
-                    src={user.profilePicture || user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'U')}&background=111111&color=BFF367&bold=true&size=80`} 
-                    alt={user.name} 
-                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-offset-1 ring-offset-[#0A0A0A]" 
-                    style={{ ringColor: isOnline ? '#BFF367' : '#555' }}
-                  />
-                  <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-[#0A0A0A] ${isOnline ? 'bg-[#BFF367]' : 'bg-gray-500'}`} />
-                </button>
-
-                {/* Dropdown containing Logout button */}
-                {showProfileMenu && (
-                  <div className="absolute left-0 mt-2 w-48 bg-[#141414] border border-[#2D2D2D] rounded-xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="p-3 border-b border-[#2D2D2D] bg-[#0d0d0d]">
-                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Signed in as</p>
-                      <p className="text-xs font-bold text-white truncate mt-0.5">{user.name}</p>
-                    </div>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center gap-2.5 px-4 py-3 text-left text-xs font-semibold text-red-500 hover:bg-red-500/10 transition-colors duration-200"
-                    >
-                      <LogOut size={14} strokeWidth={2.5} />
-                      <span>Log Out</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-              {/* Greeting */}
-              <div className="flex flex-col min-w-0">
-                <span className="text-[9px] sm:text-[10px] font-semibold text-gray-500 uppercase tracking-wider truncate">{getTimeGreeting()}</span>
-                <span className="text-xs sm:text-sm font-bold text-white truncate">{user.name}</span>
-              </div>
-            </div>
-
-            {/* Center: Trust Score Ring (clickable to go to Trust Score ledger) */}
-            <div 
-              onClick={() => navigate(`/professional/${role?.toLowerCase()}/trust-score`)}
-              className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:opacity-80 transition-opacity active:scale-95 duration-200"
-            >
-              <div className="relative flex items-center justify-center" style={{ width: 44, height: 44 }}>
-                {/* SVG Ring */}
-                <svg width="44" height="44" viewBox="0 0 44 44" className="-rotate-90">
-                  {/* Background track */}
-                  <circle cx="22" cy="22" r={ringRadius} fill="transparent" stroke="#1a1a1a" strokeWidth="3" />
-                  {/* Progress arc */}
-                  <circle 
-                    cx="22" cy="22" r={ringRadius} fill="transparent" 
-                    stroke="#BFF367" strokeWidth="3" strokeLinecap="round"
-                    strokeDasharray={ringCircumference} 
-                    strokeDashoffset={ringOffset}
-                    style={{ transition: 'stroke-dashoffset 0.8s ease', filter: 'drop-shadow(0 0 4px rgba(191,243,103,0.4))' }}
-                  />
-                </svg>
-                {/* Center score */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-[11px] font-black text-[#BFF367] leading-none">{trustScore}</span>
-                </div>
-              </div>
-              {/* Label */}
-              <div className="flex flex-col">
-                <span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">Trust</span>
-                <span className="text-[10px] sm:text-xs font-black text-[#BFF367] uppercase">{trustScore} XP</span>
-              </div>
-            </div>
-
-            {/* Right: Online / Offline Toggle */}
-            <div className="flex items-center gap-2 shrink-0">
-              <div className="flex flex-col items-end gap-0.5">
-                <span className="text-[8px] sm:text-[9px] font-bold uppercase tracking-widest" style={{ color: isOnline ? '#BFF367' : '#555' }}>
-                  {isOnline ? 'Online' : 'Offline'}
-                </span>
-                <span className="text-[9px] font-semibold text-gray-600 uppercase tracking-wider">
-                  {isOnline ? 'Visible' : 'Hidden'}
-                </span>
-              </div>
+            {/* Left: Online / Offline Toggle */}
+            <div className="flex items-center gap-3 flex-1 min-w-0 pr-4">
               <button
                 onClick={handleToggleOnline}
                 disabled={isToggling}
-                title={isOnline ? 'Go Offline' : 'Go Online'}
+                title={isOnline ? "Go Offline" : "Go Online"}
                 className={`relative w-12 h-6 rounded-full border transition-all duration-300 shrink-0 ${
                   isOnline
-                    ? 'border-[#BFF367]/40 bg-[#BFF367]/15'
-                    : 'border-white/10 bg-white/5'
-                } ${isToggling ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:opacity-90 active:scale-95'}`}
+                    ? "border-[#BFF367]/40 bg-[#BFF367]/15"
+                    : "border-white/10 bg-white/5"
+                } ${isToggling ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:opacity-90 active:scale-95"}`}
               >
                 {/* Track glow when online */}
                 {isOnline && (
-                  <span className="absolute inset-0 rounded-full" style={{ boxShadow: '0 0 8px rgba(191,243,103,0.3)' }} />
+                  <span
+                    className="absolute inset-0 rounded-full"
+                    style={{ boxShadow: "0 0 8px rgba(191,243,103,0.3)" }}
+                  />
                 )}
                 {/* Thumb */}
                 <span
                   className={`absolute top-0.5 w-5 h-5 rounded-full shadow-md transition-all duration-300 flex items-center justify-center ${
                     isOnline
-                      ? 'left-[calc(100%-1.375rem)] bg-[#BFF367]'
-                      : 'left-0.5 bg-[#444]'
+                      ? "left-[calc(100%-1.375rem)] bg-[#BFF367]"
+                      : "left-0.5 bg-[#444]"
                   }`}
                 >
                   {/* Dot indicator */}
-                  <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-black' : 'bg-gray-600'}`} />
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-black" : "bg-gray-600"}`}
+                  />
                 </span>
               </button>
+              <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                <span
+                  className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest truncate"
+                  style={{ color: isOnline ? "#BFF367" : "#555" }}
+                >
+                  {isOnline ? "Online" : "Offline"} Mode
+                </span>
+                <span className="text-[9px] font-semibold text-gray-500 tracking-wider truncate">
+                  {isOnline
+                    ? "You are visible to players"
+                    : "Your profile is hidden"}
+                </span>
+              </div>
             </div>
 
+            {/* Right: Trust Score Ring (clickable to go to Trust Score ledger) */}
+            <div
+              onClick={() =>
+                navigate(`/professional/${role?.toLowerCase()}/trust-score`)
+              }
+              className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:opacity-80 transition-opacity active:scale-95 duration-200 justify-end shrink-0"
+            >
+              <div className="flex flex-col text-right hidden sm:flex">
+                <span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">
+                  Trust
+                </span>
+                <span className="text-[10px] sm:text-xs font-black text-[#BFF367] uppercase">
+                  {trustScore} XP
+                </span>
+              </div>
+              <div
+                className="relative flex items-center justify-center"
+                style={{ width: 40, height: 40 }}
+              >
+                {/* SVG Ring */}
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 44 44"
+                  className="-rotate-90"
+                >
+                  {/* Background track */}
+                  <circle
+                    cx="22"
+                    cy="22"
+                    r={ringRadius}
+                    fill="transparent"
+                    stroke="#1a1a1a"
+                    strokeWidth="3"
+                  />
+                  {/* Progress arc */}
+                  <circle
+                    cx="22"
+                    cy="22"
+                    r={ringRadius}
+                    fill="transparent"
+                    stroke="#BFF367"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeDasharray={ringCircumference}
+                    strokeDashoffset={ringOffset}
+                    style={{
+                      transition: "stroke-dashoffset 0.8s ease",
+                      filter: "drop-shadow(0 0 4px rgba(191,243,103,0.4))",
+                    }}
+                  />
+                </svg>
+                {/* Center score */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-[10px] font-black text-[#BFF367] leading-none">
+                    {trustScore}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
-
     </div>
   );
 };
 
 export default AuthenticatedNavbar;
-

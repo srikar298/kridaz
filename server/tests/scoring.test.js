@@ -2,8 +2,12 @@ import request from "supertest";
 import app from "../app.js";
 import { prisma } from "../config/prisma.js";
 import dotenv from "dotenv";
-import { redisClient, bullmqConnection, pubClient, subClient } from "../config/redis.js";
-import logger from "../utils/logger.js";
+import {
+  redisClient,
+  bullmqConnection,
+  pubClient,
+  subClient,
+} from "../config/redis.js";
 
 dotenv.config();
 
@@ -42,7 +46,7 @@ const seedOtp = async (email, phone) => {
       phone,
       emailOtp: "123456",
       phoneOtp: "123456",
-      expiresAt: new Date(Date.now() + 600000)
+      expiresAt: new Date(Date.now() + 600000),
     },
   });
 };
@@ -52,14 +56,26 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
     // Teardown pre-existing test data if any
     const allEmails = [emailHost, emailPlayer1, emailPlayer2, emailBowler];
     const oldUsers = await prisma.user.findMany({
-      where: { email: { in: allEmails } }
+      where: { email: { in: allEmails } },
     });
 
     for (const u of oldUsers) {
-      await prisma.gameSlot.deleteMany({ where: { userId: u.id } }).catch(() => {});
-      await prisma.matchPlayerStat.deleteMany({ where: { userId: u.id } }).catch(() => {});
-      await prisma.matchBall.deleteMany({ where: { OR: [{ batterId: u.id }, { bowlerId: u.id }, { fielderId: u.id }] } }).catch(() => {});
-      await prisma.refreshToken.deleteMany({ where: { userId: u.id } }).catch(() => {});
+      await prisma.gameSlot
+        .deleteMany({ where: { userId: u.id } })
+        .catch(() => {});
+      await prisma.matchPlayerStat
+        .deleteMany({ where: { userId: u.id } })
+        .catch(() => {});
+      await prisma.matchBall
+        .deleteMany({
+          where: {
+            OR: [{ batterId: u.id }, { bowlerId: u.id }, { fielderId: u.id }],
+          },
+        })
+        .catch(() => {});
+      await prisma.refreshToken
+        .deleteMany({ where: { userId: u.id } })
+        .catch(() => {});
       await prisma.user.delete({ where: { id: u.id } }).catch(() => {});
     }
 
@@ -76,36 +92,60 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
         .send({ email, otp: "123456" });
       const regToken = verifyRes.body.registrationToken;
 
-      const res = await request(app)
-        .post("/api/user/auth/register")
-        .send({
-          registrationToken: regToken,
-          name,
-          email,
-          username,
-          phone,
-          gender: "Male",
-          location: "Test Venue",
-          password: "Password@123",
-          confirmPassword: "Password@123"
-        });
+      const res = await request(app).post("/api/user/auth/register").send({
+        registrationToken: regToken,
+        name,
+        email,
+        username,
+        phone,
+        gender: "Male",
+        location: "Test Venue",
+        password: "Password@123",
+        confirmPassword: "Password@123",
+      });
       if (res.statusCode !== 201) {
-         console.log("REGISTER ERROR:", res.body);
+        console.log("REGISTER ERROR:", res.body);
       }
       expect(res.statusCode).toBe(201);
       return res.body;
     };
 
-    const hostData = await registerUser("Host Scorer", emailHost, usernameHost, phoneHost);
+    const hostData = await registerUser(
+      "Host Scorer",
+      emailHost,
+      usernameHost,
+      phoneHost
+    );
     tokenHost = hostData.token;
 
     userHost = await prisma.user.findUnique({ where: { email: emailHost } });
-    const p1Data = await registerUser("Striker Batsman", emailPlayer1, usernamePlayer1, phonePlayer1);
-    userPlayer1 = await prisma.user.findUnique({ where: { email: emailPlayer1 } });
-    const p2Data = await registerUser("Non-Striker Batsman", emailPlayer2, usernamePlayer2, phonePlayer2);
-    userPlayer2 = await prisma.user.findUnique({ where: { email: emailPlayer2 } });
-    const bowlerData = await registerUser("Main Bowler", emailBowler, usernameBowler, phoneBowler);
-    userBowler = await prisma.user.findUnique({ where: { email: emailBowler } });
+    const p1Data = await registerUser(
+      "Striker Batsman",
+      emailPlayer1,
+      usernamePlayer1,
+      phonePlayer1
+    );
+    userPlayer1 = await prisma.user.findUnique({
+      where: { email: emailPlayer1 },
+    });
+    const p2Data = await registerUser(
+      "Non-Striker Batsman",
+      emailPlayer2,
+      usernamePlayer2,
+      phonePlayer2
+    );
+    userPlayer2 = await prisma.user.findUnique({
+      where: { email: emailPlayer2 },
+    });
+    const bowlerData = await registerUser(
+      "Main Bowler",
+      emailBowler,
+      usernameBowler,
+      phoneBowler
+    );
+    userBowler = await prisma.user.findUnique({
+      where: { email: emailBowler },
+    });
 
     // Seed HostedGame
     const game = await prisma.hostedGame.create({
@@ -121,8 +161,8 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
         scoringStatus: "NOT_STARTED",
         oversPerInnings: 2,
         city: "Mumbai",
-        state: "MH"
-      }
+        state: "MH",
+      },
     });
     gameId = game.id;
 
@@ -131,8 +171,8 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
       data: {
         gameId: game.id,
         name: "Lions XI",
-        teamKey: "teamA"
-      }
+        teamKey: "teamA",
+      },
     });
     teamAId = teamA.id;
 
@@ -140,28 +180,54 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
       data: {
         gameId: game.id,
         name: "Tigers XI",
-        teamKey: "teamB"
-      }
+        teamKey: "teamB",
+      },
     });
     teamBId = teamB.id;
 
     // Assign Player Slots
     await prisma.gameSlot.createMany({
       data: [
-        { gameId: game.id, teamId: teamA.id, userId: userPlayer1.id, role: "BATTER", status: "JOINED" },
-        { gameId: game.id, teamId: teamA.id, userId: userPlayer2.id, role: "BATTER", status: "JOINED" },
-        { gameId: game.id, teamId: teamB.id, userId: userBowler.id, role: "BOWLER", status: "JOINED" }
-      ]
+        {
+          gameId: game.id,
+          teamId: teamA.id,
+          userId: userPlayer1.id,
+          role: "BATTER",
+          status: "JOINED",
+        },
+        {
+          gameId: game.id,
+          teamId: teamA.id,
+          userId: userPlayer2.id,
+          role: "BATTER",
+          status: "JOINED",
+        },
+        {
+          gameId: game.id,
+          teamId: teamB.id,
+          userId: userBowler.id,
+          role: "BOWLER",
+          status: "JOINED",
+        },
+      ],
     });
   }, 30000);
 
   afterAll(async () => {
     if (gameId) {
       // Cleanup cricket records
-      await prisma.matchBall.deleteMany({ where: { matchId: scoringId } }).catch(() => {});
-      await prisma.matchPlayerStat.deleteMany({ where: { matchId: scoringId } }).catch(() => {});
-      await prisma.innings.deleteMany({ where: { matchId: scoringId } }).catch(() => {});
-      await prisma.cricketMatch.deleteMany({ where: { gameId: gameId } }).catch(() => {});
+      await prisma.matchBall
+        .deleteMany({ where: { matchId: scoringId } })
+        .catch(() => {});
+      await prisma.matchPlayerStat
+        .deleteMany({ where: { matchId: scoringId } })
+        .catch(() => {});
+      await prisma.innings
+        .deleteMany({ where: { matchId: scoringId } })
+        .catch(() => {});
+      await prisma.cricketMatch
+        .deleteMany({ where: { gameId: gameId } })
+        .catch(() => {});
 
       // Cleanup game records
       await prisma.gameSlot.deleteMany({ where: { gameId } }).catch(() => {});
@@ -169,13 +235,28 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
       await prisma.hostedGame.delete({ where: { id: gameId } }).catch(() => {});
     }
 
-    const uIds = [userHost?.id, userPlayer1?.id, userPlayer2?.id, userBowler?.id].filter(Boolean);
+    const uIds = [
+      userHost?.id,
+      userPlayer1?.id,
+      userPlayer2?.id,
+      userBowler?.id,
+    ].filter(Boolean);
     if (uIds.length > 0) {
-      await prisma.refreshToken.deleteMany({ where: { userId: { in: uIds } } }).catch(() => {});
-      await prisma.user.deleteMany({ where: { id: { in: uIds } } }).catch(() => {});
+      await prisma.refreshToken
+        .deleteMany({ where: { userId: { in: uIds } } })
+        .catch(() => {});
+      await prisma.user
+        .deleteMany({ where: { id: { in: uIds } } })
+        .catch(() => {});
     }
 
-    await prisma.oTP.deleteMany({ where: { email: { in: [emailHost, emailPlayer1, emailPlayer2, emailBowler] } } }).catch(() => {});
+    await prisma.oTP
+      .deleteMany({
+        where: {
+          email: { in: [emailHost, emailPlayer1, emailPlayer2, emailBowler] },
+        },
+      })
+      .catch(() => {});
     await prisma.$disconnect();
 
     await redisClient.quit();
@@ -192,7 +273,7 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
         .send({ gameId });
 
       if (res.statusCode !== 200) {
-          console.log("SCORING START ERROR:", res.body);
+        console.log("SCORING START ERROR:", res.body);
       }
 
       expect(res.statusCode).toBe(200);
@@ -209,7 +290,7 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
         .send({
           scoringId,
           wonByTeamId: teamAId,
-          decision: "BAT"
+          decision: "BAT",
         });
 
       expect(res.statusCode).toBe(200);
@@ -226,7 +307,7 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
           scoringId,
           strikerId: userPlayer1.id,
           nonStrikerId: userPlayer2.id,
-          bowlerId: userBowler.id
+          bowlerId: userBowler.id,
         });
 
       expect(res.statusCode).toBe(200);
@@ -243,12 +324,14 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
         .send({
           scoringId,
           strikerId: userPlayer1.id,
-          nonStrikerId: userPlayer1.id
+          nonStrikerId: userPlayer1.id,
         });
 
       expect(res.statusCode).toBe(400);
       expect(res.body.success).toBe(false);
-      expect(res.body.message).toContain("Striker and Non-Striker cannot be the same player");
+      expect(res.body.message).toContain(
+        "Striker and Non-Striker cannot be the same player"
+      );
     });
   });
 
@@ -262,8 +345,8 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
           ballData: {
             runs: 0,
             batsmanId: userPlayer1.id,
-            bowlerId: userBowler.id
-          }
+            bowlerId: userBowler.id,
+          },
         });
 
       expect(res.statusCode).toBe(200);
@@ -272,8 +355,10 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
       const score = res.body.scoring;
       expect(score.timeline.length).toBe(1);
       expect(score.timeline[0].runs).toBe(0);
-      
-      const batterStat = score.playerStats.find(s => s.userId === userPlayer1.id);
+
+      const batterStat = score.playerStats.find(
+        (s) => s.userId === userPlayer1.id
+      );
       expect(batterStat.battingRuns).toBe(0);
       expect(batterStat.battingBalls).toBe(1);
     });
@@ -289,8 +374,8 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
             isBoundary: true,
             isFour: true,
             batsmanId: userPlayer1.id,
-            bowlerId: userBowler.id
-          }
+            bowlerId: userBowler.id,
+          },
         });
 
       expect(res.statusCode).toBe(200);
@@ -298,8 +383,10 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
 
       const score = res.body.scoring;
       expect(score.timeline.length).toBe(2);
-      
-      const batterStat = score.playerStats.find(s => s.userId === userPlayer1.id);
+
+      const batterStat = score.playerStats.find(
+        (s) => s.userId === userPlayer1.id
+      );
       expect(batterStat.battingRuns).toBe(4);
       expect(batterStat.battingBalls).toBe(2);
       expect(batterStat.battingFours).toBe(1);
@@ -316,8 +403,8 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
             isExtra: true,
             extraType: "WIDE",
             batsmanId: userPlayer1.id,
-            bowlerId: userBowler.id
-          }
+            bowlerId: userBowler.id,
+          },
         });
 
       expect(res.statusCode).toBe(200);
@@ -326,7 +413,9 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
       const score = res.body.scoring;
       expect(score.timeline.length).toBe(3);
 
-      const batterStat = score.playerStats.find(s => s.userId === userPlayer1.id);
+      const batterStat = score.playerStats.find(
+        (s) => s.userId === userPlayer1.id
+      );
       expect(batterStat.battingRuns).toBe(4); // stays at 4 runs
       expect(batterStat.battingBalls).toBe(2); // stays at 2 balls (wide is not a legal ball)
     });
@@ -343,8 +432,8 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
             wicketType: "CAUGHT",
             fielderId: userPlayer2.id,
             batsmanId: userPlayer1.id,
-            bowlerId: userBowler.id
-          }
+            bowlerId: userBowler.id,
+          },
         });
 
       expect(res.statusCode).toBe(200);
@@ -370,13 +459,14 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
       const score = res.body.scoring;
       expect(score.timeline.length).toBe(3); // decremented from 4 to 3
 
-      const bowlerStat = score.playerStats.find(s => s.userId === userBowler.id);
+      const bowlerStat = score.playerStats.find(
+        (s) => s.userId === userBowler.id
+      );
       expect(bowlerStat.bowlingWickets).toBe(0); // wicket reverted
     });
 
     it("should return the current scoreboard snapshot via the status endpoint", async () => {
-      const res = await request(app)
-        .get(`/api/scoring/status/${scoringId}`);
+      const res = await request(app).get(`/api/scoring/status/${scoringId}`);
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
@@ -396,7 +486,9 @@ describe("Cricket Match Scoring Module Integration Tests", () => {
       // but the core finalize (status transition) should succeed
       if (res.statusCode === 200) {
         expect(res.body.success).toBe(true);
-        expect(res.body.message).toContain("Match completed and stats aggregated");
+        expect(res.body.message).toContain(
+          "Match completed and stats aggregated"
+        );
       } else {
         // Accept 500 if aggregation fails due to external service deps
         expect([200, 500]).toContain(res.statusCode);

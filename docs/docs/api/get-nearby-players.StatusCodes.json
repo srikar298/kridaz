@@ -1,1 +1,1 @@
-{"responses":{"200":{"description":"List of nearby players"}}}
+{ "responses": { "200": { "description": "List of nearby players" } } }

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const raiseDisputeSchema = z.object({
   body: z.object({
@@ -29,7 +29,7 @@ export const resolveDisputeSchema = z.object({
       "RELEASE_TO_OWNER",
       "REFUND_TO_USER",
       "PARTIAL_REFUND",
-      "CLOSE_NO_ACTION"
+      "CLOSE_NO_ACTION",
     ]),
     resolutionNotes: z.string().optional(),
     partialAmount: z.number().min(0).optional(),

@@ -31,7 +31,7 @@ export const optionalProtect = async (req, res, next) => {
           id: decoded.id,
           userId: decoded.id,
           role: decoded.role?.toLowerCase() || "",
-          ...decoded
+          ...decoded,
         };
       }
     }

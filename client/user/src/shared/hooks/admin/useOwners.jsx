@@ -51,9 +51,9 @@ const useOwners = () => {
   const deleteOwner = async (id) => {
     try {
       await axiosInstance.delete(`/api/admin/owners/${id}`);
-      setOwners(prev => ({
-        all: prev.all.filter(o => o._id !== id),
-        filtered: prev.filtered.filter(o => o._id !== id)
+      setOwners((prev) => ({
+        all: prev.all.filter((o) => o._id !== id),
+        filtered: prev.filtered.filter((o) => o._id !== id),
       }));
       return true;
     } catch (err) {
@@ -64,10 +64,12 @@ const useOwners = () => {
 
   const batchDeleteOwners = async (ids) => {
     try {
-      await axiosInstance.post("/api/admin/owners/batch-delete", { ownerIds: ids });
-      setOwners(prev => ({
-        all: prev.all.filter(o => !ids.includes(o._id)),
-        filtered: prev.filtered.filter(o => !ids.includes(o._id))
+      await axiosInstance.post("/api/admin/owners/batch-delete", {
+        ownerIds: ids,
+      });
+      setOwners((prev) => ({
+        all: prev.all.filter((o) => !ids.includes(o._id)),
+        filtered: prev.filtered.filter((o) => !ids.includes(o._id)),
       }));
       return true;
     } catch (err) {
@@ -78,10 +80,15 @@ const useOwners = () => {
 
   const batchUpdateOwnerStatus = async (ids, status) => {
     try {
-      await axiosInstance.put("/api/admin/owners/batch-status", { ownerIds: ids, status });
-      setOwners(prev => ({
-        all: prev.all.map(o => ids.includes(o._id) ? { ...o, status } : o),
-        filtered: prev.filtered.map(o => ids.includes(o._id) ? { ...o, status } : o)
+      await axiosInstance.put("/api/admin/owners/batch-status", {
+        ownerIds: ids,
+        status,
+      });
+      setOwners((prev) => ({
+        all: prev.all.map((o) => (ids.includes(o._id) ? { ...o, status } : o)),
+        filtered: prev.filtered.map((o) =>
+          ids.includes(o._id) ? { ...o, status } : o
+        ),
       }));
       return true;
     } catch (err) {
@@ -90,20 +97,19 @@ const useOwners = () => {
     }
   };
 
-
   useEffect(() => {
     fetchOwners();
   }, []);
 
-  return { 
-    owners: owners.filtered, 
-    loading, 
-    searchTerm, 
-    handleSearch, 
-    deleteOwner, 
-    batchDeleteOwners, 
+  return {
+    owners: owners.filtered,
+    loading,
+    searchTerm,
+    handleSearch,
+    deleteOwner,
+    batchDeleteOwners,
     batchUpdateOwnerStatus,
-    refresh: fetchOwners 
+    refresh: fetchOwners,
   };
 };
 

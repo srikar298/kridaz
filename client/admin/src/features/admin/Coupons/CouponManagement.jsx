@@ -1,13 +1,23 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { toast } from "react-hot-toast";
-import { Plus, Trash2, Tag, Percent, IndianRupee, Clock, X, CheckCircle, XCircle } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  Tag,
+  Percent,
+  IndianRupee,
+  Clock,
+  X,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 
 export const CouponManagement = () => {
   const [coupons, setCoupons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     code: "",
     discountType: "PERCENTAGE",
@@ -53,15 +63,15 @@ export const CouponManagement = () => {
         toast.error("Please fill all required fields");
         return;
       }
-      
+
       await axiosInstance.post(API_BASE, {
         code: formData.code,
         discountType: formData.discountType,
         discountValue: parseFloat(formData.discountValue),
         validUntil: formData.validUntil,
-        usageLimit: formData.usageLimit ? parseInt(formData.usageLimit) : 0
+        usageLimit: formData.usageLimit ? parseInt(formData.usageLimit) : 0,
       });
-      
+
       toast.success("Coupon created successfully");
       setIsModalOpen(false);
       fetchCoupons();
@@ -85,7 +95,9 @@ export const CouponManagement = () => {
 
   const handleToggleStatus = async (id, currentStatus) => {
     try {
-      await axiosInstance.patch(`${API_BASE}/${id}/status`, { isActive: !currentStatus });
+      await axiosInstance.patch(`${API_BASE}/${id}/status`, {
+        isActive: !currentStatus,
+      });
       toast.success("Coupon status updated");
       fetchCoupons();
     } catch (error) {
@@ -125,12 +137,15 @@ export const CouponManagement = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {coupons.map((coupon) => {
           const isValid = new Date(coupon.validUntil) > new Date();
-          const isUsable = coupon.isActive && isValid && (coupon.usageLimit === 0 || coupon.usedCount < coupon.usageLimit);
-          
+          const isUsable =
+            coupon.isActive &&
+            isValid &&
+            (coupon.usageLimit === 0 || coupon.usedCount < coupon.usageLimit);
+
           return (
             <div
               key={coupon.id}
-              className={`group relative flex flex-col rounded-[8px] border border-white/10 bg-[#1A1A1A] p-5 transition-all hover:border-yellow-500/50 ${!isUsable ? 'opacity-70' : ''}`}
+              className={`group relative flex flex-col rounded-[8px] border border-white/10 bg-[#1A1A1A] p-5 transition-all hover:border-yellow-500/50 ${!isUsable ? "opacity-70" : ""}`}
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
@@ -138,19 +153,30 @@ export const CouponManagement = () => {
                     <Tag size={20} />
                   </div>
                   <div>
-                    <h3 className="font-black text-xl text-white uppercase tracking-wider">{coupon.code}</h3>
+                    <h3 className="font-black text-xl text-white uppercase tracking-wider">
+                      {coupon.code}
+                    </h3>
                     <p className="text-xs font-bold text-gray-400 flex items-center gap-1">
-                      {coupon.discountType === "PERCENTAGE" ? <Percent size={12} /> : <IndianRupee size={12} />}
-                      {coupon.discountValue} {coupon.discountType === "PERCENTAGE" ? "% OFF" : "OFF"}
+                      {coupon.discountType === "PERCENTAGE" ? (
+                        <Percent size={12} />
+                      ) : (
+                        <IndianRupee size={12} />
+                      )}
+                      {coupon.discountValue}{" "}
+                      {coupon.discountType === "PERCENTAGE" ? "% OFF" : "OFF"}
                     </p>
                   </div>
                 </div>
-                
+
                 <button
                   onClick={() => handleToggleStatus(coupon.id, coupon.isActive)}
-                  className={`px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-[6px] flex items-center gap-1 ${ coupon.isActive ? "bg-green-500/10 text-green-500 border border-green-500/20" : "bg-red-500/10 text-red-500 border border-red-500/20" }`}
+                  className={`px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-[6px] flex items-center gap-1 ${coupon.isActive ? "bg-green-500/10 text-green-500 border border-green-500/20" : "bg-red-500/10 text-red-500 border border-red-500/20"}`}
                 >
-                  {coupon.isActive ? <CheckCircle size={10} /> : <XCircle size={10} />}
+                  {coupon.isActive ? (
+                    <CheckCircle size={10} />
+                  ) : (
+                    <XCircle size={10} />
+                  )}
                   {coupon.isActive ? "Active" : "Disabled"}
                 </button>
               </div>
@@ -158,19 +184,24 @@ export const CouponManagement = () => {
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-500">Valid Until</span>
-                  <span className={`font-bold ${!isValid ? "text-red-400" : "text-white"}`}>
+                  <span
+                    className={`font-bold ${!isValid ? "text-red-400" : "text-white"}`}
+                  >
                     {new Date(coupon.validUntil).toLocaleDateString()}
                   </span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-500">Usage</span>
                   <span className="text-white font-bold">
-                    {coupon.usedCount} / {coupon.usageLimit === 0 ? "âˆž" : coupon.usageLimit}
+                    {coupon.usedCount} /{" "}
+                    {coupon.usageLimit === 0 ? "âˆž" : coupon.usageLimit}
                   </span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-500">Status</span>
-                  <span className={`font-bold ${isUsable ? "text-green-500" : "text-red-500"}`}>
+                  <span
+                    className={`font-bold ${isUsable ? "text-green-500" : "text-red-500"}`}
+                  >
                     {isUsable ? "Usable" : "Not Usable"}
                   </span>
                 </div>
@@ -193,7 +224,9 @@ export const CouponManagement = () => {
           <div className="col-span-full py-20 flex flex-col items-center justify-center border border-dashed border-white/10 rounded-[8px]">
             <Tag size={40} className="text-gray-600 mb-4" />
             <h3 className="text-white font-bold">No coupons found</h3>
-            <p className="text-gray-400 text-sm">Create your first coupon to get started.</p>
+            <p className="text-gray-400 text-sm">
+              Create your first coupon to get started.
+            </p>
           </div>
         )}
       </div>
@@ -205,19 +238,29 @@ export const CouponManagement = () => {
               <h2 className="text-xl font-bold font-bebas tracking-wider text-white">
                 CREATE COUPON
               </h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-gray-400 hover:text-white"
+              >
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Coupon Code</label>
+                <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
+                  Coupon Code
+                </label>
                 <input
                   type="text"
                   required
                   value={formData.code}
-                  onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      code: e.target.value.toUpperCase(),
+                    })
+                  }
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-yellow-500 transition-colors uppercase font-mono"
                   placeholder="e.g. SUMMER2026"
                 />
@@ -225,24 +268,39 @@ export const CouponManagement = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Discount Type</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
+                    Discount Type
+                  </label>
                   <select
                     value={formData.discountType}
-                    onChange={(e) => setFormData({ ...formData, discountType: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, discountType: e.target.value })
+                    }
                     className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-yellow-500 transition-colors text-sm"
                   >
-                    <option value="PERCENTAGE" className="bg-[#111]">Percentage (%)</option>
-                    <option value="FIXED" className="bg-[#111]">Fixed Amount</option>
+                    <option value="PERCENTAGE" className="bg-[#111]">
+                      Percentage (%)
+                    </option>
+                    <option value="FIXED" className="bg-[#111]">
+                      Fixed Amount
+                    </option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Value</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
+                    Value
+                  </label>
                   <input
                     type="number"
                     required
                     min="1"
                     value={formData.discountValue}
-                    onChange={(e) => setFormData({ ...formData, discountValue: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        discountValue: e.target.value,
+                      })
+                    }
                     className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-yellow-500 transition-colors text-sm"
                     placeholder="e.g. 10"
                   />
@@ -250,7 +308,9 @@ export const CouponManagement = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Valid Until</label>
+                <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
+                  Valid Until
+                </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Clock size={14} className="text-gray-500" />
@@ -259,19 +319,25 @@ export const CouponManagement = () => {
                     type="date"
                     required
                     value={formData.validUntil}
-                    onChange={(e) => setFormData({ ...formData, validUntil: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, validUntil: e.target.value })
+                    }
                     className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-white focus:outline-none focus:border-yellow-500 transition-colors text-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Usage Limit (0 = Unlimited)</label>
+                <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
+                  Usage Limit (0 = Unlimited)
+                </label>
                 <input
                   type="number"
                   min="0"
                   value={formData.usageLimit}
-                  onChange={(e) => setFormData({ ...formData, usageLimit: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, usageLimit: e.target.value })
+                  }
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-yellow-500 transition-colors text-sm"
                   placeholder="e.g. 100"
                 />

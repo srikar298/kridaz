@@ -6,12 +6,16 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const RAZORPAY_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || "razorpay_webhook_secret_for_tests";
+const RAZORPAY_SECRET =
+  process.env.RAZORPAY_WEBHOOK_SECRET || "razorpay_webhook_secret_for_tests";
 // Use a test secret for tests if not set
 process.env.RAZORPAY_WEBHOOK_SECRET = RAZORPAY_SECRET;
 
 const generateSignature = (payload, secret) => {
-  return crypto.createHmac("sha256", secret).update(JSON.stringify(payload)).digest("hex");
+  return crypto
+    .createHmac("sha256", secret)
+    .update(JSON.stringify(payload))
+    .digest("hex");
 };
 
 describe("Payment Webhook Integration Tests", () => {
@@ -23,13 +27,25 @@ describe("Payment Webhook Integration Tests", () => {
 
   beforeAll(async () => {
     // Clean up
-    const existingUser = await prisma.user.findFirst({ where: { email: emailUser } });
+    const existingUser = await prisma.user.findFirst({
+      where: { email: emailUser },
+    });
     if (existingUser) {
-      await prisma.walletTransaction.deleteMany({ where: { userId: existingUser.id } }).catch(() => {});
-      await prisma.wallet.deleteMany({ where: { userId: existingUser.id } }).catch(() => {});
-      await prisma.timeSlot.deleteMany({ where: { turf: { owner: { userId: existingUser.id } } } }).catch(() => {});
-      await prisma.booking.deleteMany({ where: { userId: existingUser.id } }).catch(() => {});
-      await prisma.user.delete({ where: { id: existingUser.id } }).catch(() => {});
+      await prisma.walletTransaction
+        .deleteMany({ where: { userId: existingUser.id } })
+        .catch(() => {});
+      await prisma.wallet
+        .deleteMany({ where: { userId: existingUser.id } })
+        .catch(() => {});
+      await prisma.timeSlot
+        .deleteMany({ where: { turf: { owner: { userId: existingUser.id } } } })
+        .catch(() => {});
+      await prisma.booking
+        .deleteMany({ where: { userId: existingUser.id } })
+        .catch(() => {});
+      await prisma.user
+        .delete({ where: { id: existingUser.id } })
+        .catch(() => {});
     }
 
     // Create user and wallet
@@ -40,7 +56,7 @@ describe("Payment Webhook Integration Tests", () => {
         username: `payment_u_${ts}`,
         phone: `99999${String(ts).slice(-5)}`,
         password: "Password123",
-      }
+      },
     });
     userId = user.id;
 
@@ -48,8 +64,8 @@ describe("Payment Webhook Integration Tests", () => {
       data: {
         userId,
         balance: 0,
-        reservedBalance: 0
-      }
+        reservedBalance: 0,
+      },
     });
     walletId = wallet.id;
 
@@ -60,14 +76,14 @@ describe("Payment Webhook Integration Tests", () => {
         email: `owner_${ts}@kridaz.test`,
         username: `owner_${ts}`,
         phone: `88888${String(ts).slice(-5)}`,
-        password: "Password123"
-      }
+        password: "Password123",
+      },
     });
     const ownerProfile = await prisma.ownerProfile.create({
-      data: { 
+      data: {
         userId: ownerUser.id,
-        businessName: "Test Business"
-      }
+        businessName: "Test Business",
+      },
     });
     const turf = await prisma.turf.create({
       data: {
@@ -79,8 +95,8 @@ describe("Payment Webhook Integration Tests", () => {
         image: "test-image.jpg",
         pricePerHour: 1000,
         openTime: "06:00",
-        closeTime: "22:00"
-      }
+        closeTime: "22:00",
+      },
     });
 
     // Create a pending booking
@@ -93,8 +109,8 @@ describe("Payment Webhook Integration Tests", () => {
         balanceAmount: 1000,
         status: "PENDING",
         paymentType: "FULL",
-        orderId: `order_booking_${ts}`
-      }
+        orderId: `order_booking_${ts}`,
+      },
     });
     testBookingId = booking.id;
   }, 30000);
@@ -103,17 +119,31 @@ describe("Payment Webhook Integration Tests", () => {
     // Final cleanup
     const user = await prisma.user.findFirst({ where: { email: emailUser } });
     if (user) {
-      await prisma.walletTransaction.deleteMany({ where: { userId: user.id } }).catch(() => {});
-      await prisma.wallet.deleteMany({ where: { userId: user.id } }).catch(() => {});
-      await prisma.booking.deleteMany({ where: { userId: user.id } }).catch(() => {});
-      
-      const turfOwner = await prisma.user.findFirst({ where: { email: `owner_${ts}@kridaz.test` } });
+      await prisma.walletTransaction
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
+      await prisma.wallet
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
+      await prisma.booking
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
+
+      const turfOwner = await prisma.user.findFirst({
+        where: { email: `owner_${ts}@kridaz.test` },
+      });
       if (turfOwner) {
-        await prisma.turf.deleteMany({ where: { owner: { userId: turfOwner.id } } }).catch(() => {});
-        await prisma.ownerProfile.deleteMany({ where: { userId: turfOwner.id } }).catch(() => {});
-        await prisma.user.delete({ where: { id: turfOwner.id } }).catch(() => {});
+        await prisma.turf
+          .deleteMany({ where: { owner: { userId: turfOwner.id } } })
+          .catch(() => {});
+        await prisma.ownerProfile
+          .deleteMany({ where: { userId: turfOwner.id } })
+          .catch(() => {});
+        await prisma.user
+          .delete({ where: { id: turfOwner.id } })
+          .catch(() => {});
       }
-      
+
       await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
     }
   });
@@ -121,10 +151,8 @@ describe("Payment Webhook Integration Tests", () => {
   describe("POST /api/payment/webhook", () => {
     it("should reject requests with missing signature header", async () => {
       const payload = { event: "payment.captured", payload: {} };
-      
-      const res = await request(app)
-        .post("/api/payment/webhook")
-        .send(payload);
+
+      const res = await request(app).post("/api/payment/webhook").send(payload);
 
       expect(res.statusCode).toBe(400);
       expect(res.body.status).toBe("invalid_signature");
@@ -132,7 +160,7 @@ describe("Payment Webhook Integration Tests", () => {
 
     it("should reject requests with invalid signature", async () => {
       const payload = { event: "payment.captured", payload: {} };
-      
+
       const res = await request(app)
         .post("/api/payment/webhook")
         .set("X-Razorpay-Signature", "invalid_signature")
@@ -145,7 +173,7 @@ describe("Payment Webhook Integration Tests", () => {
     it("should successfully process a top-up payment.captured event and credit wallet idempotently", async () => {
       const razorpayOrderId = `order_topup_${ts}`;
       const razorpayPaymentId = `pay_topup_${ts}`;
-      
+
       // Create pending wallet transaction
       await prisma.walletTransaction.create({
         data: {
@@ -154,8 +182,8 @@ describe("Payment Webhook Integration Tests", () => {
           type: "TOPUP",
           status: "PENDING",
           description: "Wallet Top-up Test",
-          razorpayOrderId
-        }
+          razorpayOrderId,
+        },
       });
 
       const payload = {
@@ -166,12 +194,12 @@ describe("Payment Webhook Integration Tests", () => {
               id: razorpayPaymentId,
               order_id: razorpayOrderId,
               status: "captured",
-              amount: 50000 // in paise
-            }
-          }
-        }
+              amount: 50000, // in paise
+            },
+          },
+        },
       };
-      
+
       const signature = generateSignature(payload, RAZORPAY_SECRET);
 
       // First webhook call
@@ -182,10 +210,14 @@ describe("Payment Webhook Integration Tests", () => {
 
       expect(res1.statusCode).toBe(200);
 
-      const userAfterFirst = await prisma.user.findUnique({ where: { id: userId } });
+      const userAfterFirst = await prisma.user.findUnique({
+        where: { id: userId },
+      });
       expect(Number(userAfterFirst.walletBalance)).toBe(500);
 
-      const txnAfterFirst = await prisma.walletTransaction.findFirst({ where: { razorpayOrderId } });
+      const txnAfterFirst = await prisma.walletTransaction.findFirst({
+        where: { razorpayOrderId },
+      });
       expect(txnAfterFirst.status).toBe("SUCCESS");
 
       // Second webhook call (Idempotency test)
@@ -195,8 +227,10 @@ describe("Payment Webhook Integration Tests", () => {
         .send(payload);
 
       expect(res2.statusCode).toBe(200); // Should return 200 immediately
-      
-      const userAfterSecond = await prisma.user.findUnique({ where: { id: userId } });
+
+      const userAfterSecond = await prisma.user.findUnique({
+        where: { id: userId },
+      });
       expect(Number(userAfterSecond.walletBalance)).toBe(500); // Balance should NOT increment again
     });
 
@@ -212,12 +246,12 @@ describe("Payment Webhook Integration Tests", () => {
               id: razorpayPaymentId,
               order_id: razorpayOrderId,
               status: "captured",
-              amount: 100000 // in paise
-            }
-          }
-        }
+              amount: 100000, // in paise
+            },
+          },
+        },
       };
-      
+
       const signature = generateSignature(payload, RAZORPAY_SECRET);
 
       // First webhook call
@@ -229,7 +263,9 @@ describe("Payment Webhook Integration Tests", () => {
       expect(res1.statusCode).toBe(200);
 
       // Booking status should change to CONFIRMED and paymentId set
-      const bookingAfterFirst = await prisma.booking.findUnique({ where: { id: testBookingId } });
+      const bookingAfterFirst = await prisma.booking.findUnique({
+        where: { id: testBookingId },
+      });
       expect(bookingAfterFirst.status).toBe("CONFIRMED");
       expect(bookingAfterFirst.paymentId).toBe(razorpayPaymentId);
       expect(bookingAfterFirst.paymentStatus).toBe("SUCCESS");
@@ -241,8 +277,10 @@ describe("Payment Webhook Integration Tests", () => {
         .send(payload);
 
       expect(res2.statusCode).toBe(200); // Should return 200 immediately
-      
-      const bookingAfterSecond = await prisma.booking.findUnique({ where: { id: testBookingId } });
+
+      const bookingAfterSecond = await prisma.booking.findUnique({
+        where: { id: testBookingId },
+      });
       expect(bookingAfterSecond.status).toBe("CONFIRMED");
     });
   });

@@ -9,7 +9,7 @@ import adminOwnerRouter from "./routes/admin.routes.js";
 /**
  * Owner Operations Domain Router
  * Mounts sub-routers for Owner-specific domain features.
- * 
+ *
  * Routes:
  * /api/owner/operations/...
  */

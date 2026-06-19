@@ -1,1 +1,5 @@
-{"parameters":[{"in":"query","name":"query","schema":{"type":"string"}}]}
+{
+  "parameters": [
+    { "in": "query", "name": "query", "schema": { "type": "string" } }
+  ]
+}

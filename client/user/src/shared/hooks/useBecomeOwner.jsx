@@ -1,4 +1,4 @@
-import { PHONE_REGEX } from '@kridaz/shared-constants/validation';
+import { PHONE_REGEX } from "@kridaz/shared-constants/validation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -9,10 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 const becomeOwnerSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  email: z
-    .string()
-    .min(1, "Enter your email")
-    .email("Enter a valid email"),
+  email: z.string().min(1, "Enter your email").email("Enter a valid email"),
   phone: z
     .string()
     .min(1, "Enter your phone number")
@@ -35,7 +32,8 @@ const useBecomeOwner = () => {
     setLoading(true);
     try {
       const response = await axiosInstance.post(
-        "/api/owner/auth/ownerRequest", data
+        "/api/owner/auth/ownerRequest",
+        data
       );
       const result = await response.data;
       toast.success(result.message);

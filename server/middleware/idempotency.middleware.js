@@ -27,20 +27,25 @@ import logger from "../utils/logger.js";
  * namespace by user id when available, so it's prevented entirely.
  */
 
-const RESERVE_TTL_S = 5 * 60;       // 5 min — covers the longest realistic POST
-const COMMIT_TTL_S  = 24 * 60 * 60; // 24h  — Stripe's window
+const RESERVE_TTL_S = 5 * 60; // 5 min — covers the longest realistic POST
+const COMMIT_TTL_S = 24 * 60 * 60; // 24h  — Stripe's window
 
 const buildKey = (req, rawKey) => {
-  const actor = req.user?.id || req.user?.userId || req.owner?.id || `ip:${req.ip}`;
+  const actor =
+    req.user?.id || req.user?.userId || req.owner?.id || `ip:${req.ip}`;
   return `idem:${actor}:${rawKey}`;
 };
 
 export const idempotency = async (req, res, next) => {
-  const rawKey = req.headers['idempotency-key'];
+  const rawKey = req.headers["idempotency-key"];
   if (!rawKey) return next();
 
   // Bound key to a sane size to prevent Redis pollution.
-  if (typeof rawKey !== 'string' || rawKey.length === 0 || rawKey.length > 200) {
+  if (
+    typeof rawKey !== "string" ||
+    rawKey.length === 0 ||
+    rawKey.length > 200
+  ) {
     return res.status(400).json({
       success: false,
       code: "INVALID_IDEMPOTENCY_KEY",
@@ -58,7 +63,9 @@ export const idempotency = async (req, res, next) => {
     // Redis is down — fail open so production stays usable. The downside
     // (a brief window where retries can double-write) is preferable to
     // hard-locking out every payment when Redis blips.
-    logger.warn(`[idempotency] Redis GET failed, passing through`, { error: err.message });
+    logger.warn(`[idempotency] Redis GET failed, passing through`, {
+      error: err.message,
+    });
     return next();
   }
 
@@ -67,7 +74,8 @@ export const idempotency = async (req, res, next) => {
       return res.status(409).json({
         success: false,
         code: "IDEMPOTENCY_IN_PROGRESS",
-        message: "A request with this Idempotency-Key is still being processed. Please retry shortly.",
+        message:
+          "A request with this Idempotency-Key is still being processed. Please retry shortly.",
       });
     }
     try {
@@ -75,11 +83,14 @@ export const idempotency = async (req, res, next) => {
       logger.info(`[idempotency] replaying cached response for ${rawKey}`);
       res.status(cached.status || 200);
       if (cached.headers) {
-        for (const [k, v] of Object.entries(cached.headers)) res.setHeader(k, v);
+        for (const [k, v] of Object.entries(cached.headers))
+          res.setHeader(k, v);
       }
       return res.json(cached.body);
     } catch (err) {
-      logger.warn(`[idempotency] cached entry was malformed, ignoring`, { error: err.message });
+      logger.warn(`[idempotency] cached entry was malformed, ignoring`, {
+        error: err.message,
+      });
     }
   }
 
@@ -89,14 +100,17 @@ export const idempotency = async (req, res, next) => {
   try {
     claimed = await redisClient.set(key, "PENDING", "EX", RESERVE_TTL_S, "NX");
   } catch (err) {
-    logger.warn(`[idempotency] Redis SET NX failed, passing through`, { error: err.message });
+    logger.warn(`[idempotency] Redis SET NX failed, passing through`, {
+      error: err.message,
+    });
     return next();
   }
   if (claimed !== "OK") {
     return res.status(409).json({
       success: false,
       code: "IDEMPOTENCY_IN_PROGRESS",
-      message: "A request with this Idempotency-Key is still being processed. Please retry shortly.",
+      message:
+        "A request with this Idempotency-Key is still being processed. Please retry shortly.",
     });
   }
 
@@ -113,7 +127,7 @@ export const idempotency = async (req, res, next) => {
   // 4. On finish, commit (success) or release (error). We only commit
   // 2xx/4xx responses — 5xx responses are presumed transient and should
   // remain retriable.
-  res.on('finish', async () => {
+  res.on("finish", async () => {
     try {
       if (res.statusCode >= 500) {
         await redisClient.del(key);
@@ -125,7 +139,9 @@ export const idempotency = async (req, res, next) => {
       });
       await redisClient.set(key, payload, "EX", COMMIT_TTL_S);
     } catch (err) {
-      logger.warn(`[idempotency] failed to commit ${rawKey}`, { error: err.message });
+      logger.warn(`[idempotency] failed to commit ${rawKey}`, {
+        error: err.message,
+      });
     }
   });
 

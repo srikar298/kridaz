@@ -23,7 +23,7 @@ const seedOtp = async (email, phone) => {
       phone,
       emailOtp: "123456",
       phoneOtp: "123456",
-      expiresAt: new Date(Date.now() + 600000)
+      expiresAt: new Date(Date.now() + 600000),
     },
   });
 };
@@ -31,20 +31,30 @@ const seedOtp = async (email, phone) => {
 describe("Owner Module API Integration Tests", () => {
   beforeAll(async () => {
     // Clean up
-    const existingOwner = await prisma.user.findFirst({ where: { email: emailOwner } });
+    const existingOwner = await prisma.user.findFirst({
+      where: { email: emailOwner },
+    });
     if (existingOwner) {
-      await prisma.turf.deleteMany({ where: { owner: { userId: existingOwner.id } } }).catch(() => {});
-      await prisma.ownerProfile.deleteMany({ where: { userId: existingOwner.id } }).catch(() => {});
-      await prisma.user.delete({ where: { id: existingOwner.id } }).catch(() => {});
+      await prisma.turf
+        .deleteMany({ where: { owner: { userId: existingOwner.id } } })
+        .catch(() => {});
+      await prisma.ownerProfile
+        .deleteMany({ where: { userId: existingOwner.id } })
+        .catch(() => {});
+      await prisma.user
+        .delete({ where: { id: existingOwner.id } })
+        .catch(() => {});
     }
-    await prisma.oTP.deleteMany({ where: { email: emailOwner } }).catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: emailOwner } })
+      .catch(() => {});
 
     // Seed OTP
     await seedOtp(emailOwner, phoneOwner);
 
     // Verify OTP for owner registration
     const otpRes_owner = await request(app)
-      .post('/api/owner/auth/verify-otp')
+      .post("/api/owner/auth/verify-otp")
       .send({ email: emailOwner, phone: phoneOwner, otp: "123456" });
 
     // Register OWNER
@@ -62,7 +72,7 @@ describe("Owner Module API Integration Tests", () => {
         otp: "123456",
         phoneOtp: "123456",
         registrationToken: otpRes_owner.body.registrationToken,
-        businessName: "Test Owner"
+        businessName: "Test Owner",
       });
 
     if (regOwner.statusCode === 201) {
@@ -73,7 +83,7 @@ describe("Owner Module API Integration Tests", () => {
       if (ownerUserId) {
         await prisma.user.update({
           where: { id: ownerUserId },
-          data: { role: "VENUE_OWNER" }
+          data: { role: "VENUE_OWNER" },
         });
 
         // Log in again to obtain a token reflecting the VENUE_OWNER role
@@ -81,7 +91,7 @@ describe("Owner Module API Integration Tests", () => {
           .post("/api/owner/auth/login-step1")
           .send({
             email: emailOwner,
-            password: "Owner@Pass123"
+            password: "Owner@Pass123",
           });
         if (loginRes.body && loginRes.body.token) {
           ownerToken = loginRes.body.token;
@@ -89,7 +99,7 @@ describe("Owner Module API Integration Tests", () => {
       }
 
       const profile = await prisma.ownerProfile.findFirst({
-        where: { userId: ownerUserId }
+        where: { userId: ownerUserId },
       });
       ownerProfileId = profile?.id || "";
 
@@ -105,8 +115,8 @@ describe("Owner Module API Integration Tests", () => {
             image: "test-image.jpg",
             pricePerHour: 1000,
             openTime: "06:00",
-            closeTime: "22:00"
-          }
+            closeTime: "22:00",
+          },
         });
         turfId = turf.id;
       }
@@ -116,11 +126,17 @@ describe("Owner Module API Integration Tests", () => {
   afterAll(async () => {
     const owner = await prisma.user.findFirst({ where: { email: emailOwner } });
     if (owner) {
-      await prisma.turf.deleteMany({ where: { owner: { userId: owner.id } } }).catch(() => {});
-      await prisma.ownerProfile.deleteMany({ where: { userId: owner.id } }).catch(() => {});
+      await prisma.turf
+        .deleteMany({ where: { owner: { userId: owner.id } } })
+        .catch(() => {});
+      await prisma.ownerProfile
+        .deleteMany({ where: { userId: owner.id } })
+        .catch(() => {});
       await prisma.user.delete({ where: { id: owner.id } }).catch(() => {});
     }
-    await prisma.oTP.deleteMany({ where: { email: emailOwner } }).catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: emailOwner } })
+      .catch(() => {});
   });
 
   describe("GET /api/owner/dashboard - Owner Dashboard Overview", () => {
@@ -157,12 +173,12 @@ describe("Owner Module API Integration Tests", () => {
           accountNumber: "1234567890",
           ifscCode: "HDFC0001234",
           bankName: "HDFC Bank",
-          branchName: "Test Branch"
+          branchName: "Test Branch",
         });
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
-      
+
       const resGet = await request(app)
         .get("/api/owner/banking")
         .set("Authorization", `Bearer ${ownerToken}`);

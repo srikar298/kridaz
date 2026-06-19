@@ -6,23 +6,23 @@
 
 export type UserRole =
   // Platform Level Roles
-  | 'BMSP_SUPER_ADMIN'
-  | 'BMSP_ADMIN'
-  | 'BMSP_FINANCE_ADMIN'
-  | 'BMSP_VENUES_ADMIN'
-  | 'BMSP_REGIONAL_VENUES_ADMIN'
-  | 'BMSP_BOOKINGS_ADMIN'
-  | 'BMSP_CUSTOMER_CARE'
+  | "BMSP_SUPER_ADMIN"
+  | "BMSP_ADMIN"
+  | "BMSP_FINANCE_ADMIN"
+  | "BMSP_VENUES_ADMIN"
+  | "BMSP_REGIONAL_VENUES_ADMIN"
+  | "BMSP_BOOKINGS_ADMIN"
+  | "BMSP_CUSTOMER_CARE"
   // Venue Level Roles
-  | 'VENUE_OWNER'
-  | 'SECONDARY_VENUE_NAME_MANAGER'
-  | 'VENUE_OPERATIONS_MANAGER'
-  | 'VENUE_BOOKING_MANAGER'
+  | "VENUE_OWNER"
+  | "SECONDARY_VENUE_NAME_MANAGER"
+  | "VENUE_OPERATIONS_MANAGER"
+  | "VENUE_BOOKING_MANAGER"
   // Standard Client Level Roles
-  | 'USER'
+  | "USER"
   // System Internal Roles
-  | 'SYSTEM'
-  | 'ANONYMOUS';
+  | "SYSTEM"
+  | "ANONYMOUS";
 
 export interface IUserProfile {
   id: string;

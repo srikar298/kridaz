@@ -1,7 +1,7 @@
 import express from "express";
-import { 
-  getAllTurfs, 
-  getTurfById, 
+import {
+  getAllTurfs,
+  getTurfById,
   getTimeSlotByTurfId,
   getTurfLocations,
   toggleTurfLike,
@@ -9,9 +9,12 @@ import {
   recordTurfShare,
   recordTurfInteraction,
   getTurfRecommendations,
-  getSimilarTurfs
+  getSimilarTurfs,
 } from "../turf.controller.js";
-import { protect, optionalProtect } from "../../../middleware/auth.middleware.js";
+import {
+  protect,
+  optionalProtect,
+} from "../../../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -21,7 +24,6 @@ router.post("/share", optionalProtect, recordTurfShare);
 router.post("/interaction", optionalProtect, recordTurfInteraction);
 router.get("/recommendations", optionalProtect, getTurfRecommendations);
 router.get("/:id/similar", optionalProtect, getSimilarTurfs);
-
 
 /**
  * @swagger

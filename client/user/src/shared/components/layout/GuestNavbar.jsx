@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ArrowRight, ShieldCheck, User, LogOut, ChevronDown, LayoutDashboard } from "lucide-react";
+import {
+  Menu,
+  X,
+  ArrowRight,
+  ShieldCheck,
+  User,
+  LogOut,
+  ChevronDown,
+  LayoutDashboard,
+} from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@redux/slices/authSlice.js";
 import { useNavigate } from "react-router-dom";
@@ -29,41 +38,55 @@ const GuestNavbar = () => {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${ scrolled ? "bg-black/80 backdrop-blur-xl border-b border-white/5 py-2" : "bg-transparent py-4" }`}>
+    <nav
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-black/80 backdrop-blur-xl border-b border-white/5 py-2" : "bg-transparent py-4"}`}
+    >
       <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
-        
-        {/* Brand Logo Unit */}
-        <Link to="/" className="group flex items-center gap-4">
-          <div className="flex items-center justify-center">
-            <img src="/logo.png" alt="Kridaz" className="h-8 lg:h-10 w-auto transition-transform duration-500 group-hover:scale-105" />
-          </div>
-        </Link>
+        {/* Brand Logo Unit - Removed from Navbar as requested */}
 
         {/* Navigation (Desktop) */}
         <div className="hidden lg:flex items-center gap-8">
           {/* Business Dropdown */}
           <div className="dropdown dropdown-hover group">
-            <div 
-              tabIndex={0} 
-              className={`flex items-center gap-1 text-sm font-medium transition-all cursor-pointer ${ location.pathname.startsWith("/business") || location.pathname === "/venue-owners" ? "text-[#BFF367]" : "text-white/60 hover:text-white" }`}
+            <div
+              tabIndex={0}
+              className={`flex items-center gap-1 text-sm font-medium transition-all cursor-pointer ${location.pathname.startsWith("/business") || location.pathname === "/venue-owners" ? "text-[#BFF367]" : "text-white/60 hover:text-white"}`}
             >
-              Business <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-300" />
-              <span className={`absolute -bottom-1 left-0 h-[2px] bg-[#BFF367] transition-all duration-300 ${ location.pathname.startsWith("/business") || location.pathname === "/venue-owners" ? "w-full" : "w-0 group-hover:w-full" }`} />
+              Business{" "}
+              <ChevronDown
+                size={14}
+                className="group-hover:rotate-180 transition-transform duration-300"
+              />
+              <span
+                className={`absolute -bottom-1 left-0 h-[2px] bg-[#BFF367] transition-all duration-300 ${location.pathname.startsWith("/business") || location.pathname === "/venue-owners" ? "w-full" : "w-0 group-hover:w-full"}`}
+              />
             </div>
-            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-2xl bg-[#0d0d0d] border border-white/5 rounded-[8px] w-52 mt-0">
+            <ul
+              tabIndex={0}
+              className="dropdown-content z-[1] menu p-2 shadow-2xl bg-[#0d0d0d] border border-white/5 rounded-[8px] w-52 mt-0"
+            >
               <li>
-                <Link to="/venue-owners" className="flex items-center gap-3 p-3 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                <Link
+                  to="/venue-owners"
+                  className="flex items-center gap-3 p-3 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                >
                   Venue Owner Overview
                 </Link>
               </li>
               <div className="h-px bg-white/5 my-1 mx-2" />
               <li>
-                <Link to="/business/venue" className="flex items-center gap-3 p-3 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                <Link
+                  to="/business/venue"
+                  className="flex items-center gap-3 p-3 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                >
                   Venues
                 </Link>
               </li>
               <li>
-                <Link to="/business/professional" className="flex items-center gap-3 p-3 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                <Link
+                  to="/business/professional"
+                  className="flex items-center gap-3 p-3 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                >
                   Professionals
                 </Link>
               </li>
@@ -72,10 +95,12 @@ const GuestNavbar = () => {
 
           <Link
             to="/players"
-            className={`text-sm font-medium transition-all relative group ${ location.pathname === "/players" ? "text-[#BFF367]" : "text-white/60 hover:text-white" }`}
+            className={`text-sm font-medium transition-all relative group ${location.pathname === "/players" ? "text-[#BFF367]" : "text-white/60 hover:text-white"}`}
           >
             Find Players
-            <span className={`absolute -bottom-1 left-0 h-[2px] bg-[#BFF367] transition-all duration-300 ${ location.pathname === "/players" ? "w-full" : "w-0 group-hover:w-full" }`} />
+            <span
+              className={`absolute -bottom-1 left-0 h-[2px] bg-[#BFF367] transition-all duration-300 ${location.pathname === "/players" ? "w-full" : "w-0 group-hover:w-full"}`}
+            />
           </Link>
         </div>
 
@@ -83,37 +108,57 @@ const GuestNavbar = () => {
         <div className="flex items-center gap-6">
           {!isLoggedIn ? (
             <>
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 className="hidden sm:flex items-center gap-2 text-sm font-medium text-white/60 hover:text-[#BFF367] transition-all"
               >
                 <ShieldCheck size={16} className="opacity-50" />
                 Login
               </Link>
-              
-              <Link to="/venue-owners" className="text-black h-10 px-6 rounded-md text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-[#BFF367]/30 hover:scale-105" style={{ background: "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)" }}>
-                Join Now <ArrowRight size={16} />
-              </Link>
             </>
           ) : (
             <div className="flex items-center gap-4">
               <div className="hidden md:flex flex-col items-end border-r border-white/10 pr-4">
-                <span className="text-[10px] text-white/40 uppercase tracking-wider">Account Type</span>
-                <span className="text-sm font-bold text-[#BFF367]">{(role === 'VENUE_OWNER' || role === 'venue_owner' || role === 'partner' || role === 'PARTNER') ? 'Venue Owner' : (role?.charAt(0).toUpperCase() + role?.slice(1) || 'Venue Owner')}</span>
+                <span className="text-[10px] text-white/40 uppercase tracking-wider">
+                  Account Type
+                </span>
+                <span className="text-sm font-bold text-[#BFF367]">
+                  {role === "VENUE_OWNER" ||
+                  role === "venue_owner" ||
+                  role === "partner" ||
+                  role === "PARTNER"
+                    ? "Venue Owner"
+                    : role?.charAt(0).toUpperCase() + role?.slice(1) ||
+                      "Venue Owner"}
+                </span>
               </div>
               <div className="dropdown dropdown-end">
-                <label tabIndex={0} className="w-10 h-10 border border-white/10 flex items-center justify-center bg-white/5 hover:border-[#BFF367]/50 rounded-full transition-all cursor-pointer group">
-                  <User size={20} className="text-white/60 group-hover:text-[#BFF367] transition-colors" />
+                <label
+                  tabIndex={0}
+                  className="w-10 h-10 border border-white/10 flex items-center justify-center bg-white/5 hover:border-[#BFF367]/50 rounded-full transition-all cursor-pointer group"
+                >
+                  <User
+                    size={20}
+                    className="text-white/60 group-hover:text-[#BFF367] transition-colors"
+                  />
                 </label>
-                <ul tabIndex={0} className="dropdown-content mt-4 p-2 shadow-2xl bg-[#121212] border border-white/10 rounded-[8px] w-56 overflow-hidden backdrop-blur-xl animate-fade-in">
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content mt-4 p-2 shadow-2xl bg-[#121212] border border-white/10 rounded-[8px] w-56 overflow-hidden backdrop-blur-xl animate-fade-in"
+                >
                   <li>
-                    <Link 
+                    <Link
                       to={
-                        (role === 'VENUE_OWNER' || role === 'venue_owner' || role === 'partner' || role === 'PARTNER')
+                        role === "VENUE_OWNER" ||
+                        role === "venue_owner" ||
+                        role === "partner" ||
+                        role === "PARTNER"
                           ? "/venue-owner"
-                          : (role === 'admin' || role === 'ADMIN' || role?.includes('ADMIN'))
-                          ? "/admin"
-                          : `/${role?.toLowerCase()}`
+                          : role === "admin" ||
+                              role === "ADMIN" ||
+                              role?.includes("ADMIN")
+                            ? "/admin"
+                            : `/${role?.toLowerCase()}`
                       }
                       className="flex items-center gap-3 p-3 text-sm text-[#BFF367] hover:text-white hover:bg-white/5 rounded-lg transition-all font-bold"
                     >
@@ -121,12 +166,15 @@ const GuestNavbar = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link to="/venue-owner/profile" className="flex items-center gap-3 p-3 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                    <Link
+                      to="/venue-owner/profile"
+                      className="flex items-center gap-3 p-3 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                    >
                       <User size={16} /> My Profile
                     </Link>
                   </li>
                   <li className="mt-1 pt-1 border-t border-white/5">
-                    <button 
+                    <button
                       onClick={handleLogout}
                       className="w-full flex items-center gap-3 p-3 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 rounded-lg transition-all"
                     >
@@ -139,16 +187,21 @@ const GuestNavbar = () => {
           )}
 
           {/* Mobile Menu Trigger */}
-          <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden text-white/60 hover:text-white transition-colors">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="lg:hidden text-white/60 hover:text-white transition-colors"
+          >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
-      <div className={`lg:hidden fixed inset-0 z-40 bg-black/98 backdrop-blur-2xl transition-all duration-500 ${ isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0" }`}>
+      <div
+        className={`lg:hidden fixed inset-0 z-40 bg-black/98 backdrop-blur-2xl transition-all duration-500 ${isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"}`}
+      >
         <div className="flex flex-col h-full pt-28 px-8 gap-8">
-          {navLinks.map((link) => (
+          {navLinks.map((link) =>
             link.isExternal ? (
               <a
                 key={link.name}
@@ -167,18 +220,18 @@ const GuestNavbar = () => {
                 {link.name}
               </Link>
             )
-          ))}
-          
+          )}
+
           <div className="mt-auto pb-12 space-y-6">
             <div className="h-[1px] w-full bg-white/10" />
             <div className="flex items-center justify-end">
-               <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 onClick={() => setIsOpen(false)}
                 className="text-sm font-bold text-[#BFF367] border border-[#BFF367]/30 px-6 py-2 rounded-lg"
-               >
-                 Login
-               </Link>
+              >
+                Login
+              </Link>
             </div>
           </div>
         </div>
@@ -188,4 +241,3 @@ const GuestNavbar = () => {
 };
 
 export default GuestNavbar;
-

@@ -11,7 +11,7 @@ export const turfSchema = z.object({
   sports: z.array(z.string()).default([]),
   status: z.enum(["APPROVED", "PENDING", "REJECTED"]).default("PENDING"),
   createdAt: z.string().datetime().optional(),
-  updatedAt: z.string().datetime().optional()
+  updatedAt: z.string().datetime().optional(),
 });
 
 export const createTurfSchema = z.object({
@@ -20,7 +20,7 @@ export const createTurfSchema = z.object({
   price: z.number().min(0, "Price must be at least 0"),
   amenities: z.array(z.string()).default([]),
   sports: z.array(z.string()).min(1, "At least one sport must be selected"),
-  images: z.array(z.string()).optional()
+  images: z.array(z.string()).optional(),
 });
 
 export type Turf = z.infer<typeof turfSchema>;

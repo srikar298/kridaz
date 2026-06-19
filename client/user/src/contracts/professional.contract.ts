@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-export const professionalRoleSchema = z.enum(["COACH", "UMPIRE", "SCORER", "STREAMER"]);
+export const professionalRoleSchema = z.enum([
+  "COACH",
+  "UMPIRE",
+  "SCORER",
+  "STREAMER",
+]);
 
 export const professionalProfileSchema = z.object({
   id: z.string(),
@@ -11,7 +16,9 @@ export const professionalProfileSchema = z.object({
   specializations: z.array(z.string()).default([]),
   sessionFee: z.number().nonnegative().default(0),
   rating: z.number().min(0).max(5).default(5),
-  availabilityStatus: z.enum(["AVAILABLE", "BUSY", "UNAVAILABLE"]).default("AVAILABLE"),
+  availabilityStatus: z
+    .enum(["AVAILABLE", "BUSY", "UNAVAILABLE"])
+    .default("AVAILABLE"),
   location: z.string().optional(),
   isVerified: z.boolean().default(false),
   name: z.string().optional(),
@@ -22,10 +29,12 @@ export const professionalProfileSchema = z.object({
   gameTypes: z.array(z.string()).default([]),
   _id: z.string().optional(),
   price: z.number().default(0),
-  businessDetails: z.object({
-    specialization: z.string().optional(),
-    experience: z.string().optional()
-  }).optional()
+  businessDetails: z
+    .object({
+      specialization: z.string().optional(),
+      experience: z.string().optional(),
+    })
+    .optional(),
 });
 
 export const updateProfessionalProfileSchema = z.object({
@@ -34,11 +43,12 @@ export const updateProfessionalProfileSchema = z.object({
   specializations: z.array(z.string()).optional(),
   sessionFee: z.number().nonnegative().optional(),
   availabilityStatus: z.enum(["AVAILABLE", "BUSY", "UNAVAILABLE"]).optional(),
-  location: z.string().optional()
+  location: z.string().optional(),
 });
 
 export type ProfessionalRole = z.infer<typeof professionalRoleSchema>;
 export type ProfessionalProfile = z.infer<typeof professionalProfileSchema>;
-export type UpdateProfessionalProfileInput = z.infer<typeof updateProfessionalProfileSchema>;
+export type UpdateProfessionalProfileInput = z.infer<
+  typeof updateProfessionalProfileSchema
+>;
 export type Professional = ProfessionalProfile;
-

@@ -4,7 +4,7 @@ import adminFeatureRouter from "./routes/admin.routes.js";
 /**
  * Feature Domain Router
  * Mounts actor-specific sub-routers for the Feature module.
- * 
+ *
  * Routes:
  * /api/feature/...
  */

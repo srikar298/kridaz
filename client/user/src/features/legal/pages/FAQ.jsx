@@ -94,22 +94,41 @@ const FAQItem = ({ q, a }) => {
   return (
     <div
       className="border rounded-[8px] overflow-hidden transition-all duration-300 cursor-pointer"
-      style={{ borderColor: open ? "rgba(85,222,232,0.3)" : BDR, backgroundColor: open ? "rgba(85,222,232,0.04)" : "#0d0d0d" }}
+      style={{
+        borderColor: open ? "rgba(85,222,232,0.3)" : BDR,
+        backgroundColor: open ? "rgba(85,222,232,0.04)" : "#0d0d0d",
+      }}
       onClick={() => setOpen(!open)}
     >
       <div className="flex items-center justify-between p-5 gap-4">
-        <p className="font-bold text-white text-[15px] leading-snug flex-1" style={{ fontFamily: "'Open Sans', sans-serif" }}>{q}</p>
+        <p
+          className="font-bold text-white text-[15px] leading-snug flex-1"
+          style={{ fontFamily: "'Open Sans', sans-serif" }}
+        >
+          {q}
+        </p>
         <div
           className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all duration-300"
-          style={{ background: open ? GRAD : "rgba(255,255,255,0.07)", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+          style={{
+            background: open ? GRAD : "rgba(255,255,255,0.07)",
+            transform: open ? "rotate(180deg)" : "rotate(0deg)",
+          }}
         >
           <ChevronDown size={14} style={{ color: open ? "#000" : "#fff" }} />
         </div>
       </div>
       {open && (
         <div className="px-5 pb-5">
-          <div className="w-full h-px mb-4" style={{ background: "rgba(85,222,232,0.15)" }} />
-          <p className="text-gray-400 leading-relaxed" style={{ fontFamily: "'Inter', sans-serif", fontSize: "20px" }}>{a}</p>
+          <div
+            className="w-full h-px mb-4"
+            style={{ background: "rgba(85,222,232,0.15)" }}
+          />
+          <p
+            className="text-gray-400 leading-relaxed"
+            style={{ fontFamily: "'Inter', sans-serif", fontSize: "20px" }}
+          >
+            {a}
+          </p>
         </div>
       )}
     </div>
@@ -119,43 +138,76 @@ const FAQItem = ({ q, a }) => {
 const FAQ = () => {
   const [search, setSearch] = useState("");
 
-  const filteredFaqs = faqs.map((cat) => ({
-    ...cat,
-    items: cat.items.filter(
-      (item) =>
-        item.q.toLowerCase().includes(search.toLowerCase()) ||
-        item.a.toLowerCase().includes(search.toLowerCase())
-    ),
-  })).filter((cat) => cat.items.length > 0);
+  const filteredFaqs = faqs
+    .map((cat) => ({
+      ...cat,
+      items: cat.items.filter(
+        (item) =>
+          item.q.toLowerCase().includes(search.toLowerCase()) ||
+          item.a.toLowerCase().includes(search.toLowerCase())
+      ),
+    }))
+    .filter((cat) => cat.items.length > 0);
 
   return (
-    <div className="min-h-screen bg-black text-white" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div
+      className="min-h-screen bg-black text-white"
+      style={{ fontFamily: "'Inter', sans-serif" }}
+    >
       {/* Ambient glow */}
-      <div className="fixed top-0 right-1/3 w-[600px] h-[600px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(85,222,232,0.06) 0%, transparent 70%)" }} />
-      <div className="fixed bottom-0 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(191,243,103,0.04) 0%, transparent 70%)" }} />
+      <div
+        className="fixed top-0 right-1/3 w-[600px] h-[600px] rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(85,222,232,0.06) 0%, transparent 70%)",
+        }}
+      />
+      <div
+        className="fixed bottom-0 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(191,243,103,0.04) 0%, transparent 70%)",
+        }}
+      />
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-
         {/* Header */}
         <div className="text-center mb-14">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-[6px] mb-6 border text-xs font-black uppercase tracking-widest" style={{ borderColor: BDR, background: "rgba(85,222,232,0.07)", color: "#BFF367" }}>
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-[6px] mb-6 border text-xs font-black uppercase tracking-widest"
+            style={{
+              borderColor: BDR,
+              background: "rgba(85,222,232,0.07)",
+              color: "#BFF367",
+            }}
+          >
             <HelpCircle size={12} /> Help Center
           </div>
-          <h1 className="text-5xl md:text-7xl font-black uppercase leading-[0.9] mb-6" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+          <h1
+            className="text-5xl md:text-7xl font-black uppercase leading-[0.9] mb-6"
+            style={{ fontFamily: "'Open Sans', sans-serif" }}
+          >
             Frequently{" "}
             <span className="bg-gradient-to-br from-[#BFF367] to-[#BFF367] bg-clip-text text-transparent">
               Asked
             </span>
-            <br />Questions
+            <br />
+            Questions
           </h1>
-          <p className="text-gray-400 max-w-xl mx-auto" style={{ fontSize: "20px" }}>
+          <p
+            className="text-gray-400 max-w-xl mx-auto"
+            style={{ fontSize: "20px" }}
+          >
             Find quick answers to the most common questions about Kridaz.
           </p>
         </div>
 
         {/* Search */}
         <div className="relative mb-12">
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+          <Search
+            size={18}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+          />
           <input
             type="text"
             value={search}
@@ -163,7 +215,9 @@ const FAQ = () => {
             placeholder="Search questions..."
             className="w-full bg-[#0d0d0d] border rounded-[8px] pl-12 pr-5 py-4 text-white placeholder-gray-600 outline-none transition-all"
             style={{ borderColor: BDR, fontSize: "16px" }}
-            onFocus={(e) => (e.target.style.borderColor = "rgba(85,222,232,0.5)")}
+            onFocus={(e) =>
+              (e.target.style.borderColor = "rgba(85,222,232,0.5)")
+            }
             onBlur={(e) => (e.target.style.borderColor = BDR)}
           />
         </div>
@@ -172,8 +226,15 @@ const FAQ = () => {
         {filteredFaqs.length === 0 ? (
           <div className="text-center py-20">
             <HelpCircle size={48} className="mx-auto mb-4 text-gray-700" />
-            <p className="text-xl font-black" style={{ fontFamily: "'Open Sans', sans-serif" }}>No results found</p>
-            <p className="text-gray-500 mt-2" style={{ fontSize: "20px" }}>Try a different search term</p>
+            <p
+              className="text-xl font-black"
+              style={{ fontFamily: "'Open Sans', sans-serif" }}
+            >
+              No results found
+            </p>
+            <p className="text-gray-500 mt-2" style={{ fontSize: "20px" }}>
+              Try a different search term
+            </p>
           </div>
         ) : (
           <div className="space-y-12">
@@ -181,8 +242,20 @@ const FAQ = () => {
               <div key={i}>
                 {/* Category Label */}
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="w-1 h-6 rounded-full" style={{ background: GRAD }} />
-                  <h2 className="text-sm font-black uppercase tracking-widest" style={{ fontFamily: "'Open Sans', sans-serif", background: GRAD, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                  <div
+                    className="w-1 h-6 rounded-full"
+                    style={{ background: GRAD }}
+                  />
+                  <h2
+                    className="text-sm font-black uppercase tracking-widest"
+                    style={{
+                      fontFamily: "'Open Sans', sans-serif",
+                      background: GRAD,
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                    }}
+                  >
                     {cat.category}
                   </h2>
                 </div>
@@ -198,9 +271,23 @@ const FAQ = () => {
         )}
 
         {/* CTA */}
-        <div className="mt-16 rounded-[8px] p-8 md:p-12 text-center border" style={{ borderColor: BDR, background: "linear-gradient(135deg, rgba(85,222,232,0.06) 0%, rgba(191,243,103,0.04) 100%)" }}>
-          <h3 className="text-2xl font-black mb-3 uppercase" style={{ fontFamily: "'Open Sans', sans-serif" }}>Still have questions?</h3>
-          <p className="text-gray-400 mb-6" style={{ fontSize: "20px" }}>Our support team is ready to help you out.</p>
+        <div
+          className="mt-16 rounded-[8px] p-8 md:p-12 text-center border"
+          style={{
+            borderColor: BDR,
+            background:
+              "linear-gradient(135deg, rgba(85,222,232,0.06) 0%, rgba(191,243,103,0.04) 100%)",
+          }}
+        >
+          <h3
+            className="text-2xl font-black mb-3 uppercase"
+            style={{ fontFamily: "'Open Sans', sans-serif" }}
+          >
+            Still have questions?
+          </h3>
+          <p className="text-gray-400 mb-6" style={{ fontSize: "20px" }}>
+            Our support team is ready to help you out.
+          </p>
           <a
             href="/contact-us"
             className="inline-flex items-center gap-2 px-8 py-4 rounded-[8px] font-black text-black uppercase tracking-wider text-sm hover:scale-105 transition-all shadow-[0_0_30px_rgba(85,222,232,0.2)]"

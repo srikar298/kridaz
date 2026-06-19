@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { AdminSidebar, AuthenticatedNavbar } from "@components/layout";
 
-
 const AdminLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -15,8 +14,8 @@ const AdminLayout = () => {
       <AuthenticatedNavbar toggleSidebar={toggleSidebar} />
 
       <div className="flex flex-1 pt-16 lg:pt-20">
-        <div 
-          onMouseEnter={() => window.innerWidth >= 1024 && setIsHovered(true)} 
+        <div
+          onMouseEnter={() => window.innerWidth >= 1024 && setIsHovered(true)}
           onMouseLeave={() => window.innerWidth >= 1024 && setIsHovered(false)}
           className="z-50"
         >
@@ -35,10 +34,8 @@ const AdminLayout = () => {
           </div>
         </main>
       </div>
-
     </div>
   );
 };
 
 export default AdminLayout;
-

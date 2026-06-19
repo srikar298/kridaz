@@ -14,7 +14,9 @@ const verifyUserToken = async (req, res, next) => {
   }
 
   if (!token) {
-    return next(new UnauthorizedError("No token provided", { code: "NO_TOKEN" }));
+    return next(
+      new UnauthorizedError("No token provided", { code: "NO_TOKEN" })
+    );
   }
 
   let decoded;
@@ -22,24 +24,34 @@ const verifyUserToken = async (req, res, next) => {
     decoded = jwt.verify(token, getAccessSecret());
   } catch (err) {
     if (err.name === "TokenExpiredError") {
-      return next(new UnauthorizedError("Session expired", { code: "TOKEN_EXPIRED" }));
+      return next(
+        new UnauthorizedError("Session expired", { code: "TOKEN_EXPIRED" })
+      );
     }
-    return next(new UnauthorizedError("Invalid token", { code: "INVALID_TOKEN" }));
+    return next(
+      new UnauthorizedError("Invalid token", { code: "INVALID_TOKEN" })
+    );
   }
 
   if (!decoded) {
-    return next(new UnauthorizedError("Invalid token", { code: "INVALID_TOKEN" }));
+    return next(
+      new UnauthorizedError("Invalid token", { code: "INVALID_TOKEN" })
+    );
   }
 
   // tokenVersion enforcement — rejects sessions revoked via /logout-all.
   if (await isTokenVersionStale(decoded)) {
-    return next(new UnauthorizedError("Session revoked. Please log in again.", { code: "TOKEN_REVOKED" }));
+    return next(
+      new UnauthorizedError("Session revoked. Please log in again.", {
+        code: "TOKEN_REVOKED",
+      })
+    );
   }
 
   // Attach the decoded user information to the request with normalization
   req.user = {
     ...decoded,
-    id: decoded.id || (decoded.user && decoded.user.id)
+    id: decoded.id || (decoded.user && decoded.user.id),
   };
   next();
 };
@@ -65,7 +77,7 @@ export const optionalUserAuth = async (req, res, next) => {
     if (decoded && !(await isTokenVersionStale(decoded))) {
       req.user = {
         ...decoded,
-        id: decoded.id || (decoded.user && decoded.user.id)
+        id: decoded.id || (decoded.user && decoded.user.id),
       };
     }
     next();

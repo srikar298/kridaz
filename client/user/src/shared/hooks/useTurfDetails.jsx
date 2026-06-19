@@ -1,47 +1,32 @@
-import { useState, useEffect } from "react";
-import axiosInstance from "@hooks/useAxiosInstance";
+import {
+  useGetTurfDetailsQuery,
+  useGetTurfReviewsQuery,
+} from "@redux/api/turfApi";
 
 const useTurfDetails = (turfId) => {
-  const [turf, setTurf] = useState(null);
-  const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const {
+    data: turfData,
+    isLoading: loadingDetails,
+    refetch: refetchDetails,
+    error: detailsError,
+  } = useGetTurfDetailsQuery(turfId, { skip: !turfId });
+  const {
+    data: reviewsData,
+    isLoading: loadingReviews,
+    refetch: refetchReviews,
+  } = useGetTurfReviewsQuery(turfId, { skip: !turfId });
 
-  const fetchDetailsAndReviews = async () => {
-    if (!turfId) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const [turfRes, reviewsRes] = await Promise.allSettled([
-        axiosInstance.get(`/api/user/turf/details/${turfId}`),
-        axiosInstance.get(`/api/user/review/${turfId}`)
-      ]);
+  const turf = turfData?.turf || null;
+  const reviews = reviewsData?.reviews || [];
+  const loading = loadingDetails || loadingReviews;
+  const error = detailsError ? "Failed to fetch turf details." : null;
 
-      if (turfRes.status === "fulfilled") {
-        setTurf(turfRes.value.data.turf);
-      } else {
-        console.error("Error fetching turf details:", turfRes.reason);
-        setError("Failed to fetch turf details.");
-      }
-
-      if (reviewsRes.status === "fulfilled") {
-        setReviews(reviewsRes.value.data.reviews || []);
-      } else {
-        console.error("Error fetching reviews:", reviewsRes.reason);
-      }
-    } catch (err) {
-      console.error("Error in useTurfDetails:", err);
-      setError("An unexpected error occurred.");
-    } finally {
-      setLoading(false);
-    }
+  const refetch = () => {
+    refetchDetails();
+    refetchReviews();
   };
 
-  useEffect(() => {
-    fetchDetailsAndReviews();
-  }, [turfId]);
-
-  return { turf, reviews, loading, error, refetch: fetchDetailsAndReviews };
+  return { turf, reviews, loading, error, refetch };
 };
 
 export default useTurfDetails;

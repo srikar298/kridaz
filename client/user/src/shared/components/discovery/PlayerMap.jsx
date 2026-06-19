@@ -1,15 +1,27 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, ZoomControl, Circle } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import { Navigation } from 'lucide-react';
+﻿import React, { useState, useEffect, useMemo } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMap,
+  useMapEvents,
+  ZoomControl,
+  Circle,
+} from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { Navigation } from "lucide-react";
 
 // Fix Leaflet default icon issues
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
 const MapController = ({ userLocation, setMap }) => {
@@ -24,9 +36,14 @@ const MapController = ({ userLocation, setMap }) => {
 };
 
 const createMarkerIcon = (item, type) => {
-  const pic = item.profilePicture || item.logo || item.image || "https://bms-common-bucket.s3.ap-south-1.amazonaws.com/default-avatar.png";
-  const mainColor = type === 'players' ? "#BFF367" : "#3B82F6";
-  const shadowColor = type === 'players' ? "rgba(85,222,232,0.3)" : "rgba(59,130,246,0.3)";
+  const pic =
+    item.profilePicture ||
+    item.logo ||
+    item.image ||
+    "https://bms-common-bucket.s3.ap-south-1.amazonaws.com/default-avatar.png";
+  const mainColor = type === "players" ? "#BFF367" : "#3B82F6";
+  const shadowColor =
+    type === "players" ? "rgba(85,222,232,0.3)" : "rgba(59,130,246,0.3)";
 
   const iconHtml = `
     <div class="relative flex items-center justify-center w-10 h-10">
@@ -46,7 +63,15 @@ const createMarkerIcon = (item, type) => {
   });
 };
 
-const PlayerMap = ({ items = [], itemType = 'players', userLocation, onItemClick, onViewportChange, height, selectedRadius = 5 }) => {
+const PlayerMap = ({
+  items = [],
+  itemType = "players",
+  userLocation,
+  onItemClick,
+  onViewportChange,
+  height,
+  selectedRadius = 5,
+}) => {
   const [mapInstance, setMapInstance] = useState(null);
 
   // Handle map invalidation when height changes
@@ -58,32 +83,40 @@ const PlayerMap = ({ items = [], itemType = 'players', userLocation, onItemClick
     }
   }, [height, mapInstance]);
 
-  const currentUserIcon = useMemo(() => L.divIcon({
-    html: `
+  const currentUserIcon = useMemo(
+    () =>
+      L.divIcon({
+        html: `
       <div class="relative flex items-center justify-center w-12 h-12">
         <div class="absolute inset-0 bg-[#BFF367]/20 rounded-full animate-ping opacity-20"></div>
         <div class="absolute inset-2 bg-[#BFF367]/40 rounded-full animate-pulse"></div>
         <div class="relative w-4 h-4 bg-[#BFF367] rounded-full border-2 border-black shadow-[0_0_15px_#BFF367]"></div>
       </div>
     `,
-    className: 'current-user-marker',
-    iconSize: [48, 48],
-    iconAnchor: [24, 24],
-  }), []);
+        className: "current-user-marker",
+        iconSize: [48, 48],
+        iconAnchor: [24, 24],
+      }),
+    []
+  );
 
   const handleRecenter = () => {
     if (mapInstance && userLocation) {
-      const pos = Array.isArray(userLocation) ? userLocation : [userLocation.lat, userLocation.lng];
+      const pos = Array.isArray(userLocation)
+        ? userLocation
+        : [userLocation.lat, userLocation.lng];
       mapInstance.flyTo(pos, 15, {
         duration: 1.5,
-        easeLinearity: 0.25
+        easeLinearity: 0.25,
       });
     }
   };
 
   const mapCenter = useMemo(() => {
     if (!userLocation) return [20.5937, 78.9629];
-    return Array.isArray(userLocation) ? userLocation : [userLocation.lat, userLocation.lng];
+    return Array.isArray(userLocation)
+      ? userLocation
+      : [userLocation.lat, userLocation.lng];
   }, [userLocation]);
 
   return (
@@ -91,16 +124,16 @@ const PlayerMap = ({ items = [], itemType = 'players', userLocation, onItemClick
       <MapContainer
         center={mapCenter}
         zoom={14}
-        style={{ height: '100%', width: '100%', background: '#0a0a0a' }}
+        style={{ height: "100%", width: "100%", background: "#0a0a0a" }}
         zoomControl={false}
       >
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
-          subdomains='abcd'
+          subdomains="abcd"
           maxZoom={20}
         />
-        
+
         <ZoomControl position="bottomright" />
         <MapController userLocation={userLocation} setMap={setMapInstance} />
 
@@ -108,59 +141,78 @@ const PlayerMap = ({ items = [], itemType = 'players', userLocation, onItemClick
           <>
             <Marker position={mapCenter} icon={currentUserIcon}>
               <Popup className="custom-popup-user">
-                <div className="text-[10px] font-black text-black uppercase tracking-widest px-2 py-1">You are here</div>
+                <div className="text-[10px] font-black text-black uppercase tracking-widest px-2 py-1">
+                  You are here
+                </div>
               </Popup>
             </Marker>
-            <Circle 
+            <Circle
               center={mapCenter}
               radius={selectedRadius * 1000}
               pathOptions={{
-                fillColor: '#BFF367',
+                fillColor: "#BFF367",
                 fillOpacity: 0.05,
-                color: '#BFF367',
+                color: "#BFF367",
                 weight: 1,
-                dashArray: '5, 10'
+                dashArray: "5, 10",
               }}
             />
           </>
         )}
 
         {items?.map((item) => {
-          const coords = item.locationData?.coordinates || (item.lat && item.lng ? [item.lng, item.lat] : null);
-          if (!coords || !Array.isArray(coords) || coords.length < 2) return null;
-          
+          const coords =
+            item.locationData?.coordinates ||
+            (item.lat && item.lng ? [item.lng, item.lat] : null);
+          if (!coords || !Array.isArray(coords) || coords.length < 2)
+            return null;
+
           const [lng, lat] = coords;
           if (isNaN(lat) || isNaN(lng)) return null;
 
           return (
-            <Marker 
-              key={item._id} 
-              position={[lat, lng]} 
+            <Marker
+              key={item._id}
+              position={[lat, lng]}
               icon={createMarkerIcon(item, itemType)}
             >
               <Popup className={`custom-${itemType}-popup`}>
                 <div className="flex flex-col gap-3 p-1 min-w-[160px] bg-black text-white">
                   <div className="flex items-center gap-2.5">
-                    <div className={`w-10 h-10 rounded-full border-2 border-${itemType === 'players' ? '[#BFF367]' : '[#3B82F6]'} overflow-hidden bg-black flex-shrink-0 shadow-[0_0_10px_rgba(0,0,0,0.5)]`}>
-                      <img 
-                        src={item.profilePicture || item.logo || item.image || "https://bms-common-bucket.s3.ap-south-1.amazonaws.com/default-avatar.png"} 
-                        className="w-full h-full object-cover" 
+                    <div
+                      className={`w-10 h-10 rounded-full border-2 border-${itemType === "players" ? "[#BFF367]" : "[#3B82F6]"} overflow-hidden bg-black flex-shrink-0 shadow-[0_0_10px_rgba(0,0,0,0.5)]`}
+                    >
+                      <img
+                        src={
+                          item.profilePicture ||
+                          item.logo ||
+                          item.image ||
+                          "https://bms-common-bucket.s3.ap-south-1.amazonaws.com/default-avatar.png"
+                        }
+                        className="w-full h-full object-cover"
                         alt={item.name}
-                        style={{ borderRadius: '50%' }}
+                        style={{ borderRadius: "50%" }}
                       />
                     </div>
                     <div className="overflow-hidden">
-                      <h3 className="font-black text-white text-[11px] uppercase tracking-tight truncate leading-none mb-1">{item.name}</h3>
+                      <h3 className="font-black text-white text-[11px] uppercase tracking-tight truncate leading-none mb-1">
+                        {item.name}
+                      </h3>
                       <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest leading-none">
-                        {itemType === 'players' ? `@${item.username}` : `${item.sportType} Team`}
+                        {itemType === "players"
+                          ? `@${item.username}`
+                          : `${item.sportType} Team`}
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex flex-wrap gap-1.5">
-                    {itemType === 'players' ? (
-                      item.sportTypes?.slice(0, 2).map(s => (
-                        <span key={s} className="text-[8px] bg-[#BFF367]/10 text-[#BFF367] px-2 py-0.5 rounded-md border border-[#BFF367]/20 font-black uppercase tracking-widest">
+                    {itemType === "players" ? (
+                      item.sportTypes?.slice(0, 2).map((s) => (
+                        <span
+                          key={s}
+                          className="text-[8px] bg-[#BFF367]/10 text-[#BFF367] px-2 py-0.5 rounded-md border border-[#BFF367]/20 font-black uppercase tracking-widest"
+                        >
                           {s}
                         </span>
                       ))
@@ -170,36 +222,36 @@ const PlayerMap = ({ items = [], itemType = 'players', userLocation, onItemClick
                       </span>
                     )}
                     {item.distance && (
-                       <span className="text-[8px] bg-white/5 text-white/40 px-2 py-0.5 rounded-md border border-white/10 font-bold tracking-widest">
+                      <span className="text-[8px] bg-white/5 text-white/40 px-2 py-0.5 rounded-md border border-white/10 font-bold tracking-widest">
                         {(item.distance / 1000).toFixed(1)} KM AWAY
-                       </span>
+                      </span>
                     )}
                   </div>
-                  
-                  <button 
+
+                  <button
                     onClick={() => onItemClick?.(item._id)}
-                    className={`w-full bg-${itemType === 'players' ? '[#BFF367]' : '[#3B82F6]'} text-black text-[10px] font-black py-2 rounded-lg mt-1 transition-all uppercase tracking-[0.1em] shadow-lg`}
+                    className={`w-full bg-${itemType === "players" ? "[#BFF367]" : "[#3B82F6]"} text-black text-[10px] font-black py-2 rounded-lg mt-1 transition-all uppercase tracking-[0.1em] shadow-lg`}
                   >
-                    {itemType === 'players' ? 'VIEW IN LIST' : 'VIEW TEAM'}
+                    {itemType === "players" ? "VIEW IN LIST" : "VIEW TEAM"}
                   </button>
                 </div>
               </Popup>
             </Marker>
           );
         })}
-        
+
         <MapEvents onViewportChange={onViewportChange} />
       </MapContainer>
-      
+
       {/* Custom Map Controls Overlay */}
       <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2">
-         <button 
-           onClick={handleRecenter}
-           className="w-10 h-10 bg-black/80 backdrop-blur-md border border-[#BFF367]/30 rounded-[8px] flex items-center justify-center text-[#BFF367] hover:bg-[#BFF367] hover:text-black transition-all shadow-2xl"
-           title="Recenter Map"
-         >
-           <Navigation size={18} />
-         </button>
+        <button
+          onClick={handleRecenter}
+          className="w-10 h-10 bg-black/80 backdrop-blur-md border border-[#BFF367]/30 rounded-[8px] flex items-center justify-center text-[#BFF367] hover:bg-[#BFF367] hover:text-black transition-all shadow-2xl"
+          title="Recenter Map"
+        >
+          <Navigation size={18} />
+        </button>
       </div>
     </div>
   );
@@ -213,9 +265,9 @@ const MapEvents = ({ onViewportChange }) => {
         lat: center.lat,
         lng: center.lng,
         zoom: map.getZoom(),
-        bounds: map.getBounds()
+        bounds: map.getBounds(),
       });
-    }
+    },
   });
   return null;
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { RouterProvider } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import router from "./router";
@@ -42,14 +42,19 @@ import { useWebPushNotifications } from "@hooks/useWebPushNotifications";
 import { useOTAUpdate } from "@hooks/useOTAUpdate";
 
 import { ObservabilityProvider } from "./ObservabilityProvider";
-import LocationSidebar from "../shared/components/modals/LocationSidebar";
+const LocationSidebar = lazy(
+  () => import("../shared/components/modals/LocationSidebar")
+);
 
 export default function App() {
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.theme.current);
   const authState = useSelector((state) => state.auth);
+  const locationSidebarOpen = useSelector(
+    (state) => state.ui.locationSidebar?.isOpen
+  );
   const lastAuthCheckTime = useRef(0);
-  
+
   // Initialize OTA Updates
   useOTAUpdate();
 
@@ -59,6 +64,9 @@ export default function App() {
 
   // Geolocation detection
   useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+
     dispatch(setLocationStatus("detecting"));
     if (!navigator.geolocation) {
       fallbackToIPLocation();
@@ -71,40 +79,65 @@ export default function App() {
         let city = "";
         let state = "";
         try {
-          const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`);
+          const res = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`,
+            { signal: controller.signal }
+          );
           const data = await res.json();
           city = data.city || data.locality || "";
           state = data.principalSubdivision || "";
         } catch (error) {
-          console.warn("Reverse geocoding failed:", error);
+          if (error.name !== "AbortError") {
+            console.warn("Reverse geocoding failed:", error);
+          }
         }
-        dispatch(setUserLocation({ lat, lng, city, state }));
-        dispatch(setLocationStatus("granted"));
+        if (isMounted) {
+          dispatch(setUserLocation({ lat, lng, city, state }));
+          dispatch(setLocationStatus("granted"));
+        }
       },
       (err) => {
         console.warn("Geolocation failed:", err.message);
-        fallbackToIPLocation();
+        if (isMounted) {
+          fallbackToIPLocation();
+        }
       },
       { timeout: 8000, maximumAge: 60000 }
     );
 
     async function fallbackToIPLocation() {
       try {
-        const res = await fetch("https://ipapi.co/json/");
+        const res = await fetch("https://ipapi.co/json/", {
+          signal: controller.signal,
+        });
         const data = await res.json();
-        if (data.latitude && data.longitude) {
-          dispatch(setUserLocation({ lat: data.latitude, lng: data.longitude, city: data.city, state: data.region }));
-          dispatch(setLocationStatus("granted"));
-        } else {
-          dispatch(setLocationStatus("denied"));
+        if (isMounted) {
+          if (data.latitude && data.longitude) {
+            dispatch(
+              setUserLocation({
+                lat: data.latitude,
+                lng: data.longitude,
+                city: data.city,
+                state: data.region,
+              })
+            );
+            dispatch(setLocationStatus("granted"));
+          } else {
+            dispatch(setLocationStatus("denied"));
+          }
         }
       } catch (error) {
-        dispatch(setLocationStatus("denied"));
+        if (isMounted && error.name !== "AbortError") {
+          dispatch(setLocationStatus("denied"));
+        }
       }
     }
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, [dispatch]);
-
-
 
   // If we have a persisted session, don't show the blocking loading screen
   const [loading, setLoading] = useState(false);
@@ -115,8 +148,10 @@ export default function App() {
       // Idle prefetch: Load the reels feed data in the background after auth is ready
       // 3s delay ensures we don't compete with the Home page's critical data
       const idleTimer = setTimeout(() => {
-        dispatch(reelsApi.util.prefetch("getReelsFeed", undefined, { force: false }));
-      }, 3000); 
+        dispatch(
+          reelsApi.util.prefetch("getReelsFeed", undefined, { force: false })
+        );
+      }, 3000);
       return () => clearTimeout(idleTimer);
     }
   }, [authState.isLoggedIn, loading, dispatch]);
@@ -129,7 +164,9 @@ export default function App() {
     let isMounted = true;
     const authTimeout = setTimeout(() => {
       if (isMounted && loading) {
-        console.warn("App.jsx: Auth initialization timed out (5s). Forcing UI render.");
+        console.warn(
+          "App.jsx: Auth initialization timed out (5s). Forcing UI render."
+        );
         setLoading(false);
       }
     }, 5000);
@@ -139,23 +176,34 @@ export default function App() {
       console.log("App.jsx: Starting auth check...");
       try {
         const [meResponse, networkResponse] = await Promise.all([
-          axiosInstance.get("/api/user/auth/getMe", { signal: controller.signal }),
-          axiosInstance.get("/api/user/players/network", { signal: controller.signal }).catch(() => ({ data: { success: false } }))
+          axiosInstance.get("/api/user/auth/getMe", {
+            signal: controller.signal,
+          }),
+          axiosInstance
+            .get("/api/user/players/network", { signal: controller.signal })
+            .catch(() => ({ data: { success: false } })),
         ]);
-        
+
         if (isMounted && meResponse.data.success) {
-          dispatch(restoreAuth({
-            user: meResponse.data.user,
-            role: meResponse.data.role,
-            token: meResponse.data.token,
-            followingIds: networkResponse.data.success 
-              ? (networkResponse.data.following || []).filter(u => u).map(u => u.id || u._id)
-              : []
-          }));
+          dispatch(
+            restoreAuth({
+              user: meResponse.data.user,
+              role: meResponse.data.role,
+              token: meResponse.data.token,
+              followingIds: networkResponse.data.success
+                ? (networkResponse.data.following || [])
+                    .filter((u) => u)
+                    .map((u) => u.id || u._id)
+                : [],
+            })
+          );
         }
       } catch (error) {
         if (isMounted) {
-          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          if (
+            error.response &&
+            (error.response.status === 401 || error.response.status === 403)
+          ) {
             if (authState.isLoggedIn) {
               dispatch(logout());
             }
@@ -185,18 +233,26 @@ export default function App() {
           return; // Skip background check if done in the last 5 minutes
         }
         lastAuthCheckTime.current = now;
-        axiosInstance.get("/api/user/auth/getMe").then(res => {
-          if (res.data.success) {
-            dispatch(restoreAuth({
-              user: res.data.user,
-              role: res.data.role,
-              token: res.data.token,
-              followingIds: authState.followingIds
-            }));
-          }
-        }).catch(err => {
-          console.warn("App.jsx: Background auth check on focus failed.", err.message);
-        });
+        axiosInstance
+          .get("/api/user/auth/getMe")
+          .then((res) => {
+            if (res.data.success) {
+              dispatch(
+                restoreAuth({
+                  user: res.data.user,
+                  role: res.data.role,
+                  token: res.data.token,
+                  followingIds: authState.followingIds,
+                })
+              );
+            }
+          })
+          .catch((err) => {
+            console.warn(
+              "App.jsx: Background auth check on focus failed.",
+              err.message
+            );
+          });
       }
     };
 
@@ -210,25 +266,26 @@ export default function App() {
         <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
           <SocketProvider>
             <RouterProvider router={router} />
-            <Toaster 
+            <Toaster
               position="top-center"
+              containerStyle={{ top: 50 }}
               toastOptions={{
                 duration: 3000,
                 style: {
-                  background: '#18181b',
-                  color: '#fff',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: "#18181b",
+                  color: "#fff",
+                  border: "1px solid rgba(255,255,255,0.1)",
                 },
               }}
             />
-            <LocationSidebar />
+            {locationSidebarOpen && (
+              <Suspense fallback={null}>
+                <LocationSidebar />
+              </Suspense>
+            )}
           </SocketProvider>
         </GoogleOAuthProvider>
       </ObservabilityProvider>
     </RootErrorBoundary>
   );
 }
-
-
- 
-

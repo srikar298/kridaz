@@ -22,7 +22,7 @@ const seedOtp = async (email, phone) => {
       phone,
       emailOtp: "123456",
       phoneOtp: "123456",
-      expiresAt: new Date(Date.now() + 600000)
+      expiresAt: new Date(Date.now() + 600000),
     },
   });
 };
@@ -30,29 +30,41 @@ const seedOtp = async (email, phone) => {
 describe("Community Module API", () => {
   beforeAll(async () => {
     // Clean up
-    await prisma.comment.deleteMany({ where: { user: { email: userEmail } } }).catch(() => {});
-    await prisma.post.deleteMany({ where: { author: { email: userEmail } } }).catch(() => {});
-    await prisma.refreshToken.deleteMany({ where: { user: { email: userEmail } } }).catch(() => {});
-    await prisma.user.deleteMany({ where: { email: userEmail } }).catch(() => {});
-    await prisma.oTP.deleteMany({ where: { email: userEmail } }).catch(() => {});
+    await prisma.comment
+      .deleteMany({ where: { user: { email: userEmail } } })
+      .catch(() => {});
+    await prisma.post
+      .deleteMany({ where: { author: { email: userEmail } } })
+      .catch(() => {});
+    await prisma.refreshToken
+      .deleteMany({ where: { user: { email: userEmail } } })
+      .catch(() => {});
+    await prisma.user
+      .deleteMany({ where: { email: userEmail } })
+      .catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: userEmail } })
+      .catch(() => {});
 
     await seedOtp(userEmail, userPhone);
 
     // Register user
-    const otpRes_regRes = await request(app).post('/api/user/auth/verify-otp').send({ email: userEmail, phone: userPhone, otp: "123456" });
-    const regRes = await request(app)
-      .post("/api/user/auth/register")
-      .send({
-        name: "Community Tester",
-        email: userEmail,
-        username: userName,
-        phone: userPhone,
-        gender: "Male",
-        location: "Test City",
-        password: "Comm@Pass123",
-        confirmPassword: "Comm@Pass123",
-        otp: "123456",
-        phoneOtp: "123456", registrationToken: otpRes_regRes.body.registrationToken});
+    const otpRes_regRes = await request(app)
+      .post("/api/user/auth/verify-otp")
+      .send({ email: userEmail, phone: userPhone, otp: "123456" });
+    const regRes = await request(app).post("/api/user/auth/register").send({
+      name: "Community Tester",
+      email: userEmail,
+      username: userName,
+      phone: userPhone,
+      gender: "Male",
+      location: "Test City",
+      password: "Comm@Pass123",
+      confirmPassword: "Comm@Pass123",
+      otp: "123456",
+      phoneOtp: "123456",
+      registrationToken: otpRes_regRes.body.registrationToken,
+    });
 
     if (regRes.statusCode === 201) {
       userToken = regRes.body.token;
@@ -64,12 +76,20 @@ describe("Community Module API", () => {
   afterAll(async () => {
     const user = await prisma.user.findFirst({ where: { email: userEmail } });
     if (user) {
-      await prisma.comment.deleteMany({ where: { userId: user.id } }).catch(() => {});
-      await prisma.post.deleteMany({ where: { authorId: user.id } }).catch(() => {});
-      await prisma.refreshToken.deleteMany({ where: { userId: user.id } }).catch(() => {});
+      await prisma.comment
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
+      await prisma.post
+        .deleteMany({ where: { authorId: user.id } })
+        .catch(() => {});
+      await prisma.refreshToken
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
       await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
     }
-    await prisma.oTP.deleteMany({ where: { email: userEmail } }).catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: userEmail } })
+      .catch(() => {});
     await prisma.$disconnect();
   });
 
@@ -110,7 +130,8 @@ describe("Community Module API", () => {
         .set("Authorization", `Bearer ${userToken}`)
         .send({
           title: "My First Test Post",
-          content: "Hello community, this is a test post from integration tests!",
+          content:
+            "Hello community, this is a test post from integration tests!",
         });
 
       if (res.statusCode !== 201) logger.info("[create post error]", res.body);
@@ -126,14 +147,16 @@ describe("Community Module API", () => {
     it("should reject like/unlike without auth", async () => {
       if (!createdPostId) return logger.warn("Skipped: no created post ID");
 
-      const res = await request(app)
-        .post(`/api/user/community/${createdPostId}/like`);
+      const res = await request(app).post(
+        `/api/user/community/${createdPostId}/like`
+      );
 
       expect(res.statusCode).toBe(401);
     });
 
     it("should like a post successfully", async () => {
-      if (!userToken || !createdPostId) return logger.warn("Skipped: missing dependencies");
+      if (!userToken || !createdPostId)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
         .post(`/api/user/community/${createdPostId}/like`)
@@ -146,7 +169,8 @@ describe("Community Module API", () => {
     });
 
     it("should unlike a post successfully on second click", async () => {
-      if (!userToken || !createdPostId) return logger.warn("Skipped: missing dependencies");
+      if (!userToken || !createdPostId)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
         .post(`/api/user/community/${createdPostId}/like`)
@@ -171,7 +195,8 @@ describe("Community Module API", () => {
     });
 
     it("should reject comment if validation fails", async () => {
-      if (!userToken || !createdPostId) return logger.warn("Skipped: missing dependencies");
+      if (!userToken || !createdPostId)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
         .post(`/api/user/community/${createdPostId}/comment`)
@@ -182,7 +207,8 @@ describe("Community Module API", () => {
     });
 
     it("should add a comment successfully with valid text", async () => {
-      if (!userToken || !createdPostId) return logger.warn("Skipped: missing dependencies");
+      if (!userToken || !createdPostId)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
         .post(`/api/user/community/${createdPostId}/comment`)
@@ -200,7 +226,8 @@ describe("Community Module API", () => {
 
   describe("PUT /api/user/community/:id/comment/:commentId", () => {
     it("should update a comment successfully", async () => {
-      if (!userToken || !createdPostId || !createdCommentId) return logger.warn("Skipped: missing dependencies");
+      if (!userToken || !createdPostId || !createdCommentId)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
         .put(`/api/user/community/${createdPostId}/comment/${createdCommentId}`)
@@ -209,16 +236,21 @@ describe("Community Module API", () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.comments[0].text).toBe("This is an updated test comment!");
+      expect(res.body.comments[0].text).toBe(
+        "This is an updated test comment!"
+      );
     });
   });
 
   describe("DELETE /api/user/community/:id/comment/:commentId", () => {
     it("should delete a comment successfully", async () => {
-      if (!userToken || !createdPostId || !createdCommentId) return logger.warn("Skipped: missing dependencies");
+      if (!userToken || !createdPostId || !createdCommentId)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
-        .delete(`/api/user/community/${createdPostId}/comment/${createdCommentId}`)
+        .delete(
+          `/api/user/community/${createdPostId}/comment/${createdCommentId}`
+        )
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(res.statusCode).toBe(200);
@@ -229,7 +261,8 @@ describe("Community Module API", () => {
 
   describe("DELETE /api/user/community/:id", () => {
     it("should delete a post successfully", async () => {
-      if (!userToken || !createdPostId) return logger.warn("Skipped: missing dependencies");
+      if (!userToken || !createdPostId)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
         .delete(`/api/user/community/${createdPostId}`)

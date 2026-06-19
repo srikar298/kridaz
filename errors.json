@@ -1,0 +1,61 @@
+[
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\public\\firebase-messaging-sw.js",
+    "msgs": [
+      "no-redeclare:2:'importScripts' is already defined as a built-in global variable."
+    ]
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\games\\pages\\HostGame.jsx",
+    "msgs": ["no-irregular-whitespace:68:Irregular whitespace not allowed."]
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\networking\\pages\\FindPlayers.jsx",
+    "msgs": ["no-empty:301:Empty block statement."]
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\profile\\pages\\Profile.jsx",
+    "msgs": [
+      "no-unsafe-optional-chaining:922:Unsafe usage of optional chaining. If it short-circuits with 'undefined' the evaluation will throw TypeError."
+    ]
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\components\\StartScoringModal.jsx",
+    "msgs": ["no-empty:247:Empty block statement."]
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\pages\\MatchAnalytics.jsx",
+    "msgs": ["no-empty:448:Empty block statement."]
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\venue-owner\\TurfManagement\\AddTurf.jsx",
+    "msgs": ["no-empty:130:Empty block statement."]
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\venue-owner\\TurfManagement\\EditTurf.jsx",
+    "msgs": ["no-empty:128:Empty block statement."]
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\venue-owner\\TurfManagement\\script.js",
+    "msgs": ["null:51:Parsing error: Expecting Unicode escape sequence \\uXXXX"]
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\pages\\NewPost\\NewPostLanding.jsx",
+    "msgs": [
+      "no-empty:76:Empty block statement.",
+      "no-empty:84:Empty block statement."
+    ]
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\redux\\api\\communityApi.js",
+    "msgs": ["no-empty:167:Empty block statement."]
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\shared\\components\\Marketing\\VideoSection.jsx",
+    "msgs": [
+      "no-useless-escape:39:Unnecessary escape character: \\&.",
+      "no-useless-escape:39:Unnecessary escape character: \\&.",
+      "no-useless-escape:39:Unnecessary escape character: \\?."
+    ]
+  }
+]

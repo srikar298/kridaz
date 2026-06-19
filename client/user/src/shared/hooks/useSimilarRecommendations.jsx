@@ -16,10 +16,13 @@ const useSimilarRecommendations = (turfId, options = {}) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axiosInstance.get(`/api/user/turf/user/${turfId}/similar`, {
-        params: { limit },
-        timeout: 10000
-      });
+      const response = await axiosInstance.get(
+        `/api/user/turf/user/${turfId}/similar`,
+        {
+          params: { limit },
+          timeout: 10000,
+        }
+      );
 
       if (response.data && response.data.data) {
         setSimilarTurfs(response.data.data);
@@ -27,7 +30,10 @@ const useSimilarRecommendations = (turfId, options = {}) => {
         setSimilarTurfs([]);
       }
     } catch (err) {
-      console.error("[useSimilarRecommendations] Error fetching similar turfs:", err);
+      console.error(
+        "[useSimilarRecommendations] Error fetching similar turfs:",
+        err
+      );
       let errMsg = "Failed to load similar venue suggestions";
       if (err.response?.data?.message) {
         errMsg = err.response.data.message;

@@ -1,6 +1,6 @@
-﻿import express from "express";
-import { 
-  registerOwner, 
+import express from "express";
+import {
+  registerOwner,
   login,
   loginStep1,
   sendOtp,
@@ -8,14 +8,14 @@ import {
   ownerRequest,
   getMe,
   logout,
-  refreshToken
+  refreshToken,
 } from "../auth.controller.js";
-import { 
-  ownerRegisterSchema, 
+import {
+  ownerRegisterSchema,
   userLoginSchema,
   sendOtpSchema,
   loginStep1Schema,
-  ownerRequestSchema 
+  ownerRequestSchema,
 } from "../auth.validator.js";
 import { validate } from "../../../middleware/validate.middleware.js";
 import ownerAuth from "../../../middleware/jwt/owner.middleware.js";
@@ -42,7 +42,12 @@ const router = express.Router();
  *     summary: Register as a turf owner
  *     tags: [Owner Auth]
  */
-router.post("/register", authLimiter, validate(ownerRegisterSchema), registerOwner);
+router.post(
+  "/register",
+  authLimiter,
+  validate(ownerRegisterSchema),
+  registerOwner
+);
 
 /**
  * @swagger
@@ -60,7 +65,7 @@ router.post("/send-otp", otpLimiter, validate(sendOtpSchema), sendOtp);
  *     summary: Owner Login Step 1
  *     tags: [Owner Auth]
  */
-router.post("/login-step1", otpLimiter, validate(loginStep1Schema), loginStep1);
+router.post("/login-step1", validate(loginStep1Schema), loginStep1);
 
 /**
  * @swagger

@@ -20,7 +20,8 @@ const useProfessionalRequests = () => {
         (request) =>
           request.name.toLowerCase().includes(term.toLowerCase()) ||
           request.email.toLowerCase().includes(term.toLowerCase()) ||
-          (request.role && request.role.toLowerCase().includes(term.toLowerCase()))
+          (request.role &&
+            request.role.toLowerCase().includes(term.toLowerCase()))
       );
       setRequests(filtered);
     },
@@ -30,13 +31,17 @@ const useProfessionalRequests = () => {
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get("/api/admin/professionals/requests");
+      const response = await axiosInstance.get(
+        "/api/admin/professionals/requests"
+      );
       const data = response.data;
       setRequests(data.professionalRequests);
       setAllRequests(data.professionalRequests);
     } catch (err) {
       console.log(err, "err");
-      toast.error(err.response?.data?.message || "Failed to fetch professional requests");
+      toast.error(
+        err.response?.data?.message || "Failed to fetch professional requests"
+      );
     } finally {
       setLoading(false);
     }
@@ -45,7 +50,9 @@ const useProfessionalRequests = () => {
   const handleAccept = async (id) => {
     setRequestId(id);
     try {
-      const response = await axiosInstance.put(`/api/admin/professionals/requests/${id}/accept`);
+      const response = await axiosInstance.put(
+        `/api/admin/professionals/requests/${id}/accept`
+      );
       const result = await response.data;
       toast.success(result.message || "Professional request approved");
       setRequests(requests.filter((request) => request._id !== id));
@@ -61,7 +68,9 @@ const useProfessionalRequests = () => {
   const handleReject = async (id) => {
     setRequestId(id);
     try {
-      const response = await axiosInstance.delete(`/api/admin/professionals/requests/${id}`);
+      const response = await axiosInstance.delete(
+        `/api/admin/professionals/requests/${id}`
+      );
       const result = await response.data;
       toast.success(result.message || "Professional request rejected");
       setRequests(requests.filter((request) => request._id !== id));

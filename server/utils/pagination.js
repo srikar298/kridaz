@@ -14,7 +14,12 @@
 /**
  * @param {{ items: any[], page?: number, limit?: number, totalItems?: number }} args
  */
-export const buildOffsetPage = ({ items, page = 1, limit = 20, totalItems = 0 }) => {
+export const buildOffsetPage = ({
+  items,
+  page = 1,
+  limit = 20,
+  totalItems = 0,
+}) => {
   const safeLimit = Math.max(1, Number(limit) || 1);
   const totalPages = Math.max(1, Math.ceil(totalItems / safeLimit));
   return {
@@ -30,7 +35,12 @@ export const buildOffsetPage = ({ items, page = 1, limit = 20, totalItems = 0 })
 /**
  * @param {{ items: any[], nextCursor: string|null, limit?: number, hasMore?: boolean }} args
  */
-export const buildCursorPage = ({ items, nextCursor, limit = 20, hasMore = !!nextCursor }) => ({
+export const buildCursorPage = ({
+  items,
+  nextCursor,
+  limit = 20,
+  hasMore = !!nextCursor,
+}) => ({
   page: null,
   limit: Number(limit) || items.length || 0,
   totalItems: null,
@@ -50,7 +60,7 @@ export const buildCursorPage = ({ items, nextCursor, limit = 20, hasMore = !!nex
 export const encodeCursor = (obj) => {
   if (obj == null) return null;
   const json = JSON.stringify(obj);
-  return Buffer.from(json, 'utf8').toString('base64url');
+  return Buffer.from(json, "utf8").toString("base64url");
 };
 
 /**
@@ -58,9 +68,9 @@ export const encodeCursor = (obj) => {
  * malformed input — callers should treat that as "start from the beginning".
  */
 export const decodeCursor = (cursor) => {
-  if (!cursor || typeof cursor !== 'string') return null;
+  if (!cursor || typeof cursor !== "string") return null;
   try {
-    const json = Buffer.from(cursor, 'base64url').toString('utf8');
+    const json = Buffer.from(cursor, "base64url").toString("utf8");
     return JSON.parse(json);
   } catch {
     return null;

@@ -1,5 +1,4 @@
-import * as Sentry from "@sentry/react";
-/* eslint-disable */
+ 
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';

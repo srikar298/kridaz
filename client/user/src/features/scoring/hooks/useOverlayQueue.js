@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from "react";
 
 /**
  * Priority Levels:
@@ -15,7 +15,10 @@ export const useOverlayQueue = () => {
   // Add event to queue with priority
   const enqueueEvent = useCallback((event) => {
     setQueue((prevQueue) => {
-      const newQueue = [...prevQueue, { ...event, id: Date.now() + Math.random() }];
+      const newQueue = [
+        ...prevQueue,
+        { ...event, id: Date.now() + Math.random() },
+      ];
       // Sort queue so lower priority number (higher priority) is first
       newQueue.sort((a, b) => a.priority - b.priority);
       return newQueue;
@@ -27,7 +30,7 @@ export const useOverlayQueue = () => {
     if (!isPlayingRef.current && queue.length > 0 && !activeEvent) {
       // Dequeue the highest priority item
       const [nextEvent, ...remainingQueue] = queue;
-      
+
       isPlayingRef.current = true;
       setActiveEvent(nextEvent);
       setQueue(remainingQueue);
@@ -52,6 +55,6 @@ export const useOverlayQueue = () => {
     activeEvent,
     enqueueEvent,
     clearActiveEvent,
-    queueLength: queue.length
+    queueLength: queue.length,
   };
 };

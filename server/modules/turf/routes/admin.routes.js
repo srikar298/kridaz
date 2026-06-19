@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { 
-  adminGetAllTurfs, 
-  adminApproveTurf, 
-  adminRejectTurf, 
-  adminDecommissionTurf, 
-  adminSoftDeleteTurf, 
-  adminHardDeleteTurf 
+import {
+  adminGetAllTurfs,
+  adminApproveTurf,
+  adminRejectTurf,
+  adminDecommissionTurf,
+  adminSoftDeleteTurf,
+  adminHardDeleteTurf,
 } from "../turf.controller.js";
 
 const router = Router();

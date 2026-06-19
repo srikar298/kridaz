@@ -1,5 +1,19 @@
 import { useState } from "react";
-import { ArrowRight, Users, Target, Video, CheckCircle, Trophy, X, Landmark, User, QrCode, FileCheck, Loader2 } from "lucide-react";
+import {
+  ArrowRight,
+  Users,
+  Target,
+  Video,
+  CheckCircle,
+  Trophy,
+  X,
+  Landmark,
+  User,
+  QrCode,
+  FileCheck,
+  Loader2,
+  Clock,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axiosInstance from "@hooks/useAxiosInstance.js";
@@ -10,19 +24,32 @@ const GRADIENT = "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)";
 const GRADIENT_START = "#BFF367";
 
 const benefits = [
-  { icon: Users, title: "Manage Roster", desc: "Easily track student progress, manage subscriptions, and organize batches." },
-  { icon: Target, title: "Attract Athletes", desc: "Get discovered by players looking to improve their skills in your area." },
-  { icon: Video, title: "Host Masterclasses", desc: "Set up exclusive training sessions, bootcamps, and video analysis." }
+  {
+    icon: Users,
+    title: "Manage Roster",
+    desc: "Easily track student progress, manage subscriptions, and organize batches.",
+  },
+  {
+    icon: Target,
+    title: "Attract Athletes",
+    desc: "Get discovered by players looking to improve their skills in your area.",
+  },
+  {
+    icon: Video,
+    title: "Host Masterclasses",
+    desc: "Set up exclusive training sessions, bootcamps, and video analysis.",
+  },
 ];
 
 const availableRoles = [
-  { id: 'coach', label: 'Coach', icon: Trophy },
-  { id: 'umpire', label: 'Umpire', icon: Target },
-  { id: 'streamer', label: 'Streamer', icon: Video },
-  { id: 'commentator', label: 'Commentator', icon: Users }
+  { id: "coach", label: "Coach", icon: Trophy },
+  { id: "umpire", label: "Umpire", icon: Target },
+  { id: "streamer", label: "Streamer", icon: Video },
+  { id: "commentator", label: "Commentator", icon: Users },
 ];
 
-const BG = "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1800&q=80&auto=format&fit=crop";
+const BG =
+  "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1800&q=80&auto=format&fit=crop";
 
 export default function ProfessionalLanding() {
   const [modalStep, setModalStep] = useState(0); // 0: closed, 1: role selection, 2: document upload
@@ -32,9 +59,34 @@ export default function ProfessionalLanding() {
   const [panFront, setPanFront] = useState(null);
   const [panBack, setPanBack] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const navigate = useNavigate();
   const { user, isLoggedIn } = useSelector((state) => state.auth);
+
+  // Compute user registration status
+  const professionalRoles = [
+    "coach",
+    "umpire",
+    "streamer",
+    "commentator",
+    "venue_owner",
+    "venu_owners",
+  ];
+  const hasExistingRole =
+    isLoggedIn &&
+    (user?.ownerProfile ||
+      professionalRoles.includes(user?.role?.toLowerCase()));
+  const hasPendingApplication =
+    isLoggedIn && user?.applicationStatus === "pending";
+
+  const getDashboardPath = () => {
+    const role = user?.role?.toLowerCase();
+    if (role === "venue_owner" || role === "venu_owners" || user?.ownerProfile)
+      return "/venue-owner";
+    if (["coach", "umpire", "streamer", "commentator", "scorer"].includes(role))
+      return `/professional/${role}`;
+    return "/";
+  };
 
   const toggleRole = (roleId) => {
     if (selectedRoles.includes(roleId)) {
@@ -53,9 +105,14 @@ export default function ProfessionalLanding() {
       toast.error("Please login to apply as a professional.");
       return;
     }
-    if (user?.ownerProfile || ["coach", "umpire", "streamer", "commentator", "venue_owner"].includes(user?.role?.toLowerCase())) {
-       toast.error(`You already have a professional role (${user?.role}).`);
-       return;
+    if (
+      user?.ownerProfile ||
+      ["coach", "umpire", "streamer", "commentator", "venue_owner"].includes(
+        user?.role?.toLowerCase()
+      )
+    ) {
+      toast.error(`You already have a professional role (${user?.role}).`);
+      return;
     }
     setModalStep(2);
   };
@@ -63,7 +120,9 @@ export default function ProfessionalLanding() {
   const handleDocumentSubmit = async (e) => {
     e.preventDefault();
     if (!aadharFront || !aadharBack || !panFront || !panBack) {
-      toast.error("Please upload front and back of both Aadhaar and PAN cards.");
+      toast.error(
+        "Please upload front and back of both Aadhaar and PAN cards."
+      );
       return;
     }
 
@@ -74,15 +133,19 @@ export default function ProfessionalLanding() {
       data.append("email", user?.email || "");
       data.append("phone", user?.phone || "");
       data.append("role", selectedRoles[0]);
-      
-      data.append("documents", aadharFront);
-      data.append("documents", aadharBack);
-      data.append("documents", panFront);
-      data.append("documents", panBack);
 
-      const response = await axiosInstance.post("/api/user/auth/upgrade-request", data, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+      data.append("documents", aadharFront, `aadhar_front_${aadharFront.name}`);
+      data.append("documents", aadharBack, `aadhar_back_${aadharBack.name}`);
+      data.append("documents", panFront, `pan_front_${panFront.name}`);
+      data.append("documents", panBack, `pan_back_${panBack.name}`);
+
+      const response = await axiosInstance.post(
+        "/api/user/auth/upgrade-request",
+        data,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
       if (response.data.success) {
         toast.success("Application submitted successfully!");
@@ -95,9 +158,16 @@ export default function ProfessionalLanding() {
       }
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || "Failed to submit application");
-      if (err.response?.data?.message?.includes("already have a pending application") || err.response?.data?.message?.includes("already has a professional role")) {
-         setModalStep(0);
+      toast.error(
+        err.response?.data?.message || "Failed to submit application"
+      );
+      if (
+        err.response?.data?.message?.includes(
+          "already have a pending application"
+        ) ||
+        err.response?.data?.message?.includes("already has a professional role")
+      ) {
+        setModalStep(0);
       }
     } finally {
       setIsSubmitting(false);
@@ -113,7 +183,7 @@ export default function ProfessionalLanding() {
         setAadharBack(file);
       }
     }
-    e.target.value = null; 
+    e.target.value = null;
   };
 
   const handlePanUpload = (e) => {
@@ -125,17 +195,26 @@ export default function ProfessionalLanding() {
         setPanBack(file);
       }
     }
-    e.target.value = null; 
+    e.target.value = null;
   };
 
   return (
-    <div className="relative min-h-screen text-white pt-4 pb-20 overflow-hidden" style={{ backgroundColor: "#000" }}>
+    <div
+      className="relative min-h-screen text-white pt-4 pb-20 overflow-hidden"
+      style={{ backgroundColor: "#000" }}
+    >
       <ScrollToTop />
-      
+
       {/* ── Gradient Definition for Icons ── */}
       <svg width="0" height="0" className="absolute pointer-events-none">
         <defs>
-          <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient
+            id="primaryGradient"
+            x1="0%"
+            y1="0%"
+            x2="100%"
+            y2="0%"
+          >
             <stop offset="0%" stopColor="#BFF367" />
             <stop offset="100%" stopColor="#BFF367" />
           </linearGradient>
@@ -148,16 +227,27 @@ export default function ProfessionalLanding() {
         style={{ backgroundImage: `url(${BG})` }}
       />
       {/* ── Dark overlay */}
-      <div className="absolute inset-0"
-        style={{ background: "linear-gradient(160deg, rgba(0,0,0,0.93) 0%, rgba(0,0,0,0.70) 40%, rgba(0,0,0,0.90) 100%)" }}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(160deg, rgba(0,0,0,0.93) 0%, rgba(0,0,0,0.70) 40%, rgba(0,0,0,0.90) 100%)",
+        }}
       />
       {/* ── Accent dot grid */}
-      <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
-        style={{ backgroundImage: `radial-gradient(${GRADIENT_START} 1px, transparent 1px)`, backgroundSize: "36px 36px" }}
+      <div
+        className="absolute inset-0 opacity-[0.04] pointer-events-none"
+        style={{
+          backgroundImage: `radial-gradient(${GRADIENT_START} 1px, transparent 1px)`,
+          backgroundSize: "36px 36px",
+        }}
       />
       {/* ── Glow blob */}
-      <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full pointer-events-none"
-        style={{ background: `radial-gradient(circle, rgba(85,222,232,0.12) 0%, transparent 70%)` }}
+      <div
+        className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full pointer-events-none"
+        style={{
+          background: `radial-gradient(circle, rgba(85,222,232,0.12) 0%, transparent 70%)`,
+        }}
       />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -166,26 +256,101 @@ export default function ProfessionalLanding() {
           <div className="text-center md:text-left">
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-[6px] border text-[10px] md:text-xs font-semibold mb-4 md:mb-6 uppercase tracking-widest"
-              style={{ background: "rgba(85,222,232,0.08)", borderColor: "rgba(85,222,232,0.25)" }}
+              style={{
+                background: "rgba(85,222,232,0.08)",
+                borderColor: "rgba(85,222,232,0.25)",
+              }}
             >
-              <span style={{ background: GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", fontFamily: "'Inter'" }}>
+              <span
+                style={{
+                  background: GRADIENT,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  fontFamily: "'Inter'",
+                }}
+              >
                 Unified Professionals
               </span>
             </div>
-            <h1 className="text-[48px] md:text-[72px] leading-[1.1] uppercase mb-6 font-bold text-white" style={{ fontFamily: "'Open Sans'" }}>
-              Build Your <br />
-              <span style={{ background: GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Legacy.</span>
-            </h1>
-            <p className="text-gray-400 mb-6 max-w-lg mx-auto md:mx-0 leading-relaxed text-sm md:text-base" style={{ fontFamily: "'Inter 28pt Light', sans-serif", fontWeight: 300 }}>
-              Take your professional career to the next level. Kridaz provides the digital infrastructure to manage your clients, schedule sessions, and grow your brand as a Coach, Umpire, Scorer, or Streamer.
-            </p>
-            <button
-              onClick={() => setModalStep(1)}
-              className="inline-flex items-center gap-3 font-bold text-black rounded-[6px] px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest text-sm md:text-base"
-              style={{ background: GRADIENT }}
+            <h1
+              className="text-[48px] md:text-[72px] leading-[1.1] uppercase mb-6 font-bold text-white"
+              style={{ fontFamily: "'Open Sans'" }}
             >
-              Join as a Professional <ArrowRight size={20} />
-            </button>
+              Build Your <br />
+              <span
+                style={{
+                  background: GRADIENT,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Legacy.
+              </span>
+            </h1>
+            <p
+              className="text-gray-400 mb-6 max-w-lg mx-auto md:mx-0 leading-relaxed text-sm md:text-base"
+              style={{
+                fontFamily: "'Inter 28pt Light', sans-serif",
+                fontWeight: 300,
+              }}
+            >
+              Take your professional career to the next level. Kridaz provides
+              the digital infrastructure to manage your clients, schedule
+              sessions, and grow your brand as a Coach, Umpire, Scorer, or
+              Streamer.
+            </p>
+            {hasExistingRole ? (
+              <div className="w-full max-w-md">
+                <div className="w-full bg-white/5 border border-[#BFF367]/20 backdrop-blur-sm rounded-[10px] p-5 md:p-6 text-center md:text-left">
+                  <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                    <CheckCircle className="w-5 h-5 text-[#BFF367]" />
+                    <span className="text-white font-black uppercase tracking-wider text-sm md:text-base">
+                      Already a Professional
+                    </span>
+                  </div>
+                  <p className="text-white/60 text-xs mb-3 leading-relaxed">
+                    You already have an active role as{" "}
+                    <span className="text-[#BFF367] font-bold">
+                      {user?.role}
+                    </span>
+                    .
+                  </p>
+                  <button
+                    onClick={() => navigate(getDashboardPath())}
+                    className="bg-[#BFF367] text-black font-black uppercase tracking-widest rounded-[8px] hover:brightness-110 transition-all flex items-center justify-center gap-2 mx-auto md:mx-0 px-6 py-2.5 text-xs md:text-sm"
+                  >
+                    Go to Dashboard <ArrowRight size={16} />
+                  </button>
+                </div>
+              </div>
+            ) : hasPendingApplication ? (
+              <div className="w-full max-w-md">
+                <div className="w-full bg-white/5 border border-amber-500/20 backdrop-blur-sm rounded-[10px] p-5 md:p-6 text-center md:text-left">
+                  <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                    <Clock className="w-5 h-5 text-amber-400 animate-pulse" />
+                    <span className="text-white font-black uppercase tracking-wider text-sm md:text-base">
+                      Application Pending
+                    </span>
+                  </div>
+                  <p className="text-white/60 text-xs leading-relaxed">
+                    You have applied for{" "}
+                    <span className="text-amber-400 font-bold">
+                      {user?.applicationRole || "a professional role"}
+                    </span>
+                    . We are verifying your application. You will be notified
+                    once approved.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setModalStep(1)}
+                className="inline-flex items-center gap-3 font-bold text-black rounded-[6px] px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest text-sm md:text-base"
+                style={{ background: GRADIENT }}
+              >
+                Join as a Professional <ArrowRight size={20} />
+              </button>
+            )}
           </div>
 
           <div className="grid gap-4 md:gap-6">
@@ -197,13 +362,30 @@ export default function ProfessionalLanding() {
               >
                 <div
                   className="w-10 h-10 md:w-12 md:h-12 rounded-[8px] flex items-center justify-center shrink-0 border relative"
-                  style={{ borderColor: "rgba(85,222,232,0.2)", backgroundColor: "rgba(85,222,232,0.08)" }}
+                  style={{
+                    borderColor: "rgba(85,222,232,0.2)",
+                    backgroundColor: "rgba(85,222,232,0.08)",
+                  }}
                 >
-                  <b.icon size={20} className="md:w-6 md:h-6" stroke="url(#primaryGradient)" />
+                  <b.icon
+                    size={20}
+                    className="md:w-6 md:h-6"
+                    stroke="url(#primaryGradient)"
+                  />
                 </div>
                 <div>
-                  <h3 className="text-xl md:text-2xl uppercase mb-1 md:mb-2 font-bold text-white" style={{ fontFamily: "'Open Sans'" }}>{b.title}</h3>
-                  <p className="text-gray-400 leading-relaxed text-sm md:text-base" style={{ fontFamily: "'Inter'" }}>{b.desc}</p>
+                  <h3
+                    className="text-xl md:text-2xl uppercase mb-1 md:mb-2 font-bold text-white"
+                    style={{ fontFamily: "'Open Sans'" }}
+                  >
+                    {b.title}
+                  </h3>
+                  <p
+                    className="text-gray-400 leading-relaxed text-sm md:text-base"
+                    style={{ fontFamily: "'Inter'" }}
+                  >
+                    {b.desc}
+                  </p>
                 </div>
               </div>
             ))}
@@ -212,19 +394,52 @@ export default function ProfessionalLanding() {
 
         {/* ── How It Works ── */}
         <div className="mt-20 md:mt-32 text-center">
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-10 md:mb-12 uppercase tracking-tight" style={{ fontFamily: "'Open Sans'" }}>How to Scale Your Profession</h2>
+          <h2
+            className="text-3xl md:text-5xl font-black text-white mb-10 md:mb-12 uppercase tracking-tight"
+            style={{ fontFamily: "'Open Sans'" }}
+          >
+            How to Scale Your Profession
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
             {[
-              { icon: Users, title: "Setup Profile", desc: "List your sports, define your skills, and set your fee structure." },
-              { icon: Target, title: "Manage Bookings", desc: "Digital calendar, match reports, and client communication tools." },
-              { icon: CheckCircle, title: "Automate Billing", desc: "Automatic invoices and payment reminders so you can focus on the game." }
+              {
+                icon: Users,
+                title: "Setup Profile",
+                desc: "List your sports, define your skills, and set your fee structure.",
+              },
+              {
+                icon: Target,
+                title: "Manage Bookings",
+                desc: "Digital calendar, match reports, and client communication tools.",
+              },
+              {
+                icon: CheckCircle,
+                title: "Automate Billing",
+                desc: "Automatic invoices and payment reminders so you can focus on the game.",
+              },
             ].map((step, i) => (
-              <div key={i} className="p-6 md:p-8 bg-white/5 backdrop-blur-sm rounded-[8px] md:rounded-[8px] border border-white/10 hover:border-[#BFF367]/30 transition-all group">
+              <div
+                key={i}
+                className="p-6 md:p-8 bg-white/5 backdrop-blur-sm rounded-[8px] md:rounded-[8px] border border-white/10 hover:border-[#BFF367]/30 transition-all group"
+              >
                 <div className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 mx-auto mb-4 md:mb-6 rounded-[8px] md:rounded-[8px] bg-white/10 group-hover:bg-[#BFF367]/20 transition-colors">
-                  <step.icon className="w-6 h-6 md:w-7 md:h-7 text-white transition-colors" stroke="currentColor" />
+                  <step.icon
+                    className="w-6 h-6 md:w-7 md:h-7 text-white transition-colors"
+                    stroke="currentColor"
+                  />
                 </div>
-                <h3 className="text-lg md:text-xl font-bold text-white mb-2 md:mb-3 uppercase tracking-wider" style={{ fontFamily: "'Open Sans'" }}>{step.title}</h3>
-                <p className="text-gray-400 text-sm md:text-base leading-relaxed" style={{ fontFamily: "'Inter'" }}>{step.desc}</p>
+                <h3
+                  className="text-lg md:text-xl font-bold text-white mb-2 md:mb-3 uppercase tracking-wider"
+                  style={{ fontFamily: "'Open Sans'" }}
+                >
+                  {step.title}
+                </h3>
+                <p
+                  className="text-gray-400 text-sm md:text-base leading-relaxed"
+                  style={{ fontFamily: "'Inter'" }}
+                >
+                  {step.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -232,28 +447,60 @@ export default function ProfessionalLanding() {
 
         {/* ── Testimonials ── */}
         <div className="mt-20 md:mt-32 max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-5xl font-black text-white text-center mb-10 md:mb-16 uppercase tracking-tight" style={{ fontFamily: "'Open Sans'" }}>Professional Spotlight</h2>
+          <h2
+            className="text-3xl md:text-5xl font-black text-white text-center mb-10 md:mb-16 uppercase tracking-tight"
+            style={{ fontFamily: "'Open Sans'" }}
+          >
+            Professional Spotlight
+          </h2>
           <div className="grid gap-6 md:gap-8">
             {[
-              { 
-                text: "“Managing 100+ clients across multiple sports was a nightmare. Kridaz simplified my administrative work by 80%.”", 
-                name: "Coach Arjun", 
-                role: "National Cricket Academy", 
-                icon: Trophy 
-              }
+              {
+                text: "“Managing 100+ clients across multiple sports was a nightmare. Kridaz simplified my administrative work by 80%.”",
+                name: "Coach Arjun",
+                role: "National Cricket Academy",
+                icon: Trophy,
+              },
             ].map((t, i) => (
-              <div key={i} className="p-6 md:p-10 bg-white/5 backdrop-blur-md rounded-[8px] md:rounded-[8px] border border-white/10 relative overflow-hidden group">
+              <div
+                key={i}
+                className="p-6 md:p-10 bg-white/5 backdrop-blur-md rounded-[8px] md:rounded-[8px] border border-white/10 relative overflow-hidden group"
+              >
                 <div className="absolute top-0 right-0 p-4 md:p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                   <t.icon size={60} className="md:w-20 md:h-20" />
                 </div>
-                <p className="text-gray-200 font-medium relative z-10 leading-relaxed mb-6 md:mb-8 text-sm md:text-base" style={{ fontFamily: "'Inter'" }}>
+                <p
+                  className="text-gray-200 font-medium relative z-10 leading-relaxed mb-6 md:mb-8 text-sm md:text-base"
+                  style={{ fontFamily: "'Inter'" }}
+                >
                   {t.text}
                 </p>
                 <div className="flex items-center gap-4 relative z-10">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border" style={{ backgroundColor: "rgba(85,222,232,0.2)", borderColor: "rgba(85,222,232,0.4)" }} />
+                  <div
+                    className="w-10 h-10 md:w-12 md:h-12 rounded-full border"
+                    style={{
+                      backgroundColor: "rgba(85,222,232,0.2)",
+                      borderColor: "rgba(85,222,232,0.4)",
+                    }}
+                  />
                   <div>
-                    <div className="text-white font-bold uppercase tracking-wider" style={{ fontFamily: "'Open Sans'" }}>{t.name}</div>
-                    <div className="font-semibold text-sm md:text-base" style={{ background: GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", fontFamily: "'Inter'" }}>{t.role}</div>
+                    <div
+                      className="text-white font-bold uppercase tracking-wider"
+                      style={{ fontFamily: "'Open Sans'" }}
+                    >
+                      {t.name}
+                    </div>
+                    <div
+                      className="font-semibold text-sm md:text-base"
+                      style={{
+                        background: GRADIENT,
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        fontFamily: "'Inter'",
+                      }}
+                    >
+                      {t.role}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -266,40 +513,79 @@ export default function ProfessionalLanding() {
       {modalStep === 1 && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="bg-[#111] border border-white/10 rounded-[10px] p-6 md:p-8 w-full max-w-lg relative animate-fadeInUp">
-            <button 
+            <button
               onClick={() => setModalStep(0)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
             >
               <X size={24} />
             </button>
-            
-            {user?.ownerProfile || ["coach", "umpire", "streamer", "commentator", "venue_owner"].includes(user?.role?.toLowerCase()) ? (
+
+            {user?.ownerProfile ||
+            [
+              "coach",
+              "umpire",
+              "streamer",
+              "commentator",
+              "venue_owner",
+            ].includes(user?.role?.toLowerCase()) ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 rounded-full border flex items-center justify-center mx-auto mb-6" style={{ borderColor: "rgba(191,243,103,0.3)", backgroundColor: "rgba(191,243,103,0.1)" }}>
+                <div
+                  className="w-16 h-16 rounded-full border flex items-center justify-center mx-auto mb-6"
+                  style={{
+                    borderColor: "rgba(191,243,103,0.3)",
+                    backgroundColor: "rgba(191,243,103,0.1)",
+                  }}
+                >
                   <CheckCircle size={32} className="text-[#BFF367]" />
                 </div>
-                <h2 className="text-2xl font-bold mb-4 uppercase tracking-wider text-white" style={{ fontFamily: "'Open Sans'" }}>Already a Professional</h2>
+                <h2
+                  className="text-2xl font-bold mb-4 uppercase tracking-wider text-white"
+                  style={{ fontFamily: "'Open Sans'" }}
+                >
+                  Already a Professional
+                </h2>
                 <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-                  You already have an active professional role ({user?.role}). You can manage your professional profile from your dashboard.
+                  You already have an active professional role ({user?.role}).
+                  You can manage your professional profile from your dashboard.
                 </p>
-                <button 
-                  onClick={() => { setModalStep(0); navigate("/business/dashboard"); }}
+                <button
+                  onClick={() => {
+                    setModalStep(0);
+                    navigate(getDashboardPath());
+                  }}
                   className="w-full py-4 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all"
                   style={{ background: GRADIENT, fontFamily: "'Inter'" }}
                 >
-                  Go to Dashboard <ArrowRight size={20} className="inline ml-2" />
+                  Go to Dashboard{" "}
+                  <ArrowRight size={20} className="inline ml-2" />
                 </button>
               </div>
             ) : user?.applicationStatus === "pending" ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 rounded-full border flex items-center justify-center mx-auto mb-6" style={{ borderColor: "rgba(85,222,232,0.3)", backgroundColor: "rgba(85,222,232,0.1)" }}>
+                <div
+                  className="w-16 h-16 rounded-full border flex items-center justify-center mx-auto mb-6"
+                  style={{
+                    borderColor: "rgba(85,222,232,0.3)",
+                    backgroundColor: "rgba(85,222,232,0.1)",
+                  }}
+                >
                   <Loader2 size={32} className="text-[#BFF367] animate-spin" />
                 </div>
-                <h2 className="text-2xl font-bold mb-4 uppercase tracking-wider text-white" style={{ fontFamily: "'Open Sans'" }}>Application Pending</h2>
+                <h2
+                  className="text-2xl font-bold mb-4 uppercase tracking-wider text-white"
+                  style={{ fontFamily: "'Open Sans'" }}
+                >
+                  Application Pending
+                </h2>
                 <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-                  You already have a pending application for a professional role. Please wait for our team to review it. We will notify you once a decision is made.
+                  You have applied for{" "}
+                  <span className="text-[#BFF367] font-bold">
+                    {user?.applicationRole || "a professional role"}
+                  </span>
+                  . Please wait for our team to review it. We will notify you
+                  once a decision is made.
                 </p>
-                <button 
+                <button
                   onClick={() => setModalStep(0)}
                   className="w-full py-4 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all"
                   style={{ background: GRADIENT, fontFamily: "'Inter'" }}
@@ -309,9 +595,16 @@ export default function ProfessionalLanding() {
               </div>
             ) : (
               <>
-                <h2 className="text-2xl font-bold mb-2 uppercase tracking-wider text-white text-center" style={{ fontFamily: "'Open Sans'" }}>Select Your Role</h2>
-                <p className="text-gray-400 text-center mb-8 text-sm">Please select your primary profession.</p>
-                
+                <h2
+                  className="text-2xl font-bold mb-2 uppercase tracking-wider text-white text-center"
+                  style={{ fontFamily: "'Open Sans'" }}
+                >
+                  Select Your Role
+                </h2>
+                <p className="text-gray-400 text-center mb-8 text-sm">
+                  Please select your primary profession.
+                </p>
+
                 <div className="grid grid-cols-2 gap-4 mb-8">
                   {availableRoles.map((role) => {
                     const isSelected = selectedRoles.includes(role.id);
@@ -319,16 +612,21 @@ export default function ProfessionalLanding() {
                       <button
                         key={role.id}
                         onClick={() => toggleRole(role.id)}
-                        className={`flex flex-col items-center justify-center p-6 border rounded-[10px] transition-all ${ isSelected ? 'border-[#BFF367] bg-[#BFF367]/10 text-white' : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/30 hover:bg-white/10' }`}
+                        className={`flex flex-col items-center justify-center p-6 border rounded-[10px] transition-all ${isSelected ? "border-[#BFF367] bg-[#BFF367]/10 text-white" : "border-white/10 bg-white/5 text-gray-400 hover:border-white/30 hover:bg-white/10"}`}
                       >
-                        <role.icon size={32} className={`mb-3 ${isSelected ? 'text-[#BFF367]' : ''}`} />
-                        <span className="font-bold uppercase tracking-wider text-sm">{role.label}</span>
+                        <role.icon
+                          size={32}
+                          className={`mb-3 ${isSelected ? "text-[#BFF367]" : ""}`}
+                        />
+                        <span className="font-bold uppercase tracking-wider text-sm">
+                          {role.label}
+                        </span>
                       </button>
-                    )
+                    );
                   })}
                 </div>
 
-                <button 
+                <button
                   onClick={handleRoleContinue}
                   className="w-full py-4 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all"
                   style={{ background: GRADIENT, fontFamily: "'Inter'" }}
@@ -344,32 +642,57 @@ export default function ProfessionalLanding() {
       {modalStep === 2 && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="bg-[#111] border border-white/10 rounded-[10px] p-6 md:p-8 w-full max-w-lg relative animate-fadeInUp">
-            <button 
+            <button
               onClick={() => setModalStep(1)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
             >
               <X size={24} />
             </button>
-            <h2 className="text-2xl font-bold mb-8 uppercase tracking-wider text-white text-center" style={{ fontFamily: "'Open Sans'" }}>Document Verification</h2>
-            
+            <h2
+              className="text-2xl font-bold mb-8 uppercase tracking-wider text-white text-center"
+              style={{ fontFamily: "'Open Sans'" }}
+            >
+              Document Verification
+            </h2>
+
             <form className="space-y-6 mt-4" onSubmit={handleDocumentSubmit}>
-              
               <div className="grid grid-cols-2 gap-4 md:gap-6">
                 {/* Aadhaar Upload Box */}
-                <label className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${aadharFront && aadharBack ? 'opacity-80' : ''}`}>
-                  <span className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base" style={{ fontFamily: "'Inter'" }}>AADHAAR CARD</span>
-                  <div className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] p-2 md:p-3 overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharFront && aadharBack ? 'ring-2 ring-[#BFF367]' : 'group-hover:ring-2 group-hover:ring-[#BFF367]'}`}>
+                <label
+                  className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${aadharFront && aadharBack ? "opacity-80" : ""}`}
+                >
+                  <span
+                    className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base"
+                    style={{ fontFamily: "'Inter'" }}
+                  >
+                    AADHAAR CARD
+                  </span>
+                  <div
+                    className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] p-2 md:p-3 overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharFront && aadharBack ? "ring-2 ring-[#BFF367]" : "group-hover:ring-2 group-hover:ring-[#BFF367]"}`}
+                  >
                     {/* Hover Overlay & Upload Logic */}
                     {aadharFront && aadharBack ? (
                       <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
                         <FileCheck className="text-[#BFF367] mb-2" size={32} />
-                        <span className="text-white font-bold tracking-wider uppercase text-center text-xs" style={{ fontFamily: "'Inter'" }}>Aadhaar Uploaded</span>
+                        <span
+                          className="text-white font-bold tracking-wider uppercase text-center text-xs"
+                          style={{ fontFamily: "'Inter'" }}
+                        >
+                          Aadhaar Uploaded
+                        </span>
                       </div>
                     ) : (
-                      <div className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm transition-opacity ${aadharFront && !aadharBack ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                         <span className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs" style={{ fontFamily: "'Inter'" }}>
-                           {aadharFront ? "Upload Aadhaar Back" : "Upload Aadhaar Front"}
-                         </span>
+                      <div
+                        className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm transition-opacity ${aadharFront && !aadharBack ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+                      >
+                        <span
+                          className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs"
+                          style={{ fontFamily: "'Inter'" }}
+                        >
+                          {aadharFront
+                            ? "Upload Aadhaar Back"
+                            : "Upload Aadhaar Front"}
+                        </span>
                       </div>
                     )}
 
@@ -381,10 +704,13 @@ export default function ProfessionalLanding() {
                         <div className="w-8 md:w-14 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-2 md:gap-3 mt-1 opacity-60">
                       <div className="w-10 h-12 md:w-12 md:h-14 bg-gray-400/30 rounded-[8px] overflow-hidden flex items-end justify-center border border-gray-400/20">
-                        <User className="w-8 h-8 md:w-10 md:h-10 text-gray-600 -mb-1.5" fill="currentColor" />
+                        <User
+                          className="w-8 h-8 md:w-10 md:h-10 text-gray-600 -mb-1.5"
+                          fill="currentColor"
+                        />
                       </div>
                       <div className="flex-1 space-y-2 md:space-y-2.5 mt-0.5 md:mt-1">
                         <div className="w-full h-2 md:h-2.5 bg-gray-500 rounded-full"></div>
@@ -393,24 +719,49 @@ export default function ProfessionalLanding() {
                       </div>
                     </div>
                   </div>
-                  <input type="file" accept="image/*" className="hidden" onChange={handleAadharUpload} disabled={aadharFront && aadharBack} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAadharUpload}
+                    disabled={aadharFront && aadharBack}
+                  />
                 </label>
 
                 {/* PAN Upload Box */}
-                <label className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${panFront && panBack ? 'opacity-80' : ''}`}>
-                  <span className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base" style={{ fontFamily: "'Inter'" }}>PAN CARD</span>
-                  <div className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${panFront && panBack ? 'ring-2 ring-[#BFF367]' : 'group-hover:ring-2 group-hover:ring-[#BFF367]'}`}>
+                <label
+                  className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${panFront && panBack ? "opacity-80" : ""}`}
+                >
+                  <span
+                    className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base"
+                    style={{ fontFamily: "'Inter'" }}
+                  >
+                    PAN CARD
+                  </span>
+                  <div
+                    className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${panFront && panBack ? "ring-2 ring-[#BFF367]" : "group-hover:ring-2 group-hover:ring-[#BFF367]"}`}
+                  >
                     {/* Hover Overlay & Upload Logic */}
                     {panFront && panBack ? (
                       <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
                         <FileCheck className="text-[#BFF367] mb-2" size={32} />
-                        <span className="text-white font-bold tracking-wider uppercase text-center text-xs" style={{ fontFamily: "'Inter'" }}>PAN Uploaded</span>
+                        <span
+                          className="text-white font-bold tracking-wider uppercase text-center text-xs"
+                          style={{ fontFamily: "'Inter'" }}
+                        >
+                          PAN Uploaded
+                        </span>
                       </div>
                     ) : (
-                      <div className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm transition-opacity ${panFront && !panBack ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                         <span className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs" style={{ fontFamily: "'Inter'" }}>
-                           {panFront ? "Upload PAN Back" : "Upload PAN Front"}
-                         </span>
+                      <div
+                        className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm transition-opacity ${panFront && !panBack ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+                      >
+                        <span
+                          className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs"
+                          style={{ fontFamily: "'Inter'" }}
+                        >
+                          {panFront ? "Upload PAN Back" : "Upload PAN Front"}
+                        </span>
                       </div>
                     )}
 
@@ -419,7 +770,7 @@ export default function ProfessionalLanding() {
                       <div className="w-4 h-4 md:w-5 md:h-5 bg-gray-600 rounded-sm"></div>
                       <div className="w-12 md:w-20 h-1.5 md:h-2 bg-gray-600 rounded-full"></div>
                     </div>
-                    
+
                     <div className="p-2 md:p-3 flex-1 flex flex-col justify-between opacity-60">
                       <div className="flex gap-1.5 md:gap-2">
                         <div className="flex-1 space-y-1.5 md:space-y-2 mt-0.5">
@@ -434,32 +785,42 @@ export default function ProfessionalLanding() {
                           <div className="w-8 md:w-14 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
                         </div>
                         <div className="w-10 md:w-14 space-y-1 md:space-y-1.5 mt-0.5">
-                           <div className="w-full h-1 md:h-1.5 bg-gray-500 rounded-full"></div>
-                           <div className="w-3/4 h-1 md:h-1.5 bg-gray-500 rounded-full"></div>
+                          <div className="w-full h-1 md:h-1.5 bg-gray-500 rounded-full"></div>
+                          <div className="w-3/4 h-1 md:h-1.5 bg-gray-500 rounded-full"></div>
                         </div>
                       </div>
-                      
+
                       <div className="flex justify-between items-end mt-1">
-                        <span className="text-gray-600 font-bold tracking-widest font-mono text-[8px] md:text-[10px]">ABCDE1234F</span>
+                        <span className="text-gray-600 font-bold tracking-widest font-mono text-[8px] md:text-[10px]">
+                          ABCDE1234F
+                        </span>
                         <QrCode className="w-6 h-6 md:w-8 md:h-8 text-gray-600" />
                       </div>
                     </div>
                   </div>
-                  <input type="file" accept="image/*" className="hidden" onChange={handlePanUpload} disabled={panFront && panBack} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePanUpload}
+                    disabled={panFront && panBack}
+                  />
                 </label>
               </div>
 
               <div className="flex justify-center mt-6">
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={isSubmitting}
                   className="w-full max-w-[240px] py-3 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
                   style={{ background: GRADIENT, fontFamily: "'Inter'" }}
                 >
                   {isSubmitting ? (
-                     <><Loader2 size={20} className="animate-spin" /> Submitting</>
+                    <>
+                      <Loader2 size={20} className="animate-spin" /> Submitting
+                    </>
                   ) : (
-                     "Submit & Register"
+                    "Submit & Register"
                   )}
                 </button>
               </div>

@@ -4,11 +4,7 @@
     "es2021": true,
     "node": true
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "prettier"
-  ],
+  "extends": ["eslint:recommended", "plugin:react/recommended", "prettier"],
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -16,13 +12,12 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": [
-    "react"
-  ],
+  "plugins": ["react"],
   "rules": {
     "react/react-in-jsx-scope": "off",
     "no-unused-vars": "warn",
-    "no-console": "off"
+    "no-console": "off",
+    "react/prop-types": "off"
   },
   "overrides": [
     {
@@ -33,7 +28,7 @@
           {
             "patterns": [
               {
-                "group": ["@api/*", "**/api/*"],
+                "group": ["@api/*", "src/api/*"],
                 "message": "UI components must not import directly from the API layer. Use Redux RTK Query hooks instead."
               }
             ]

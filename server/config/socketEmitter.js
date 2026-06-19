@@ -18,13 +18,18 @@ export const getEmitter = () => {
       return io;
     }
   } catch (e) {
-    logger.debug("[EMITTER] Failed to retrieve live Socket.io server instance: " + e.message);
+    logger.debug(
+      "[EMITTER] Failed to retrieve live Socket.io server instance: " +
+        e.message
+    );
   }
 
   // 2. Fall back to Redis emitter if no direct IO server instance (e.g. if running in separate processes)
   if (!emitter) {
     if (!pubClient) {
-      logger.warn("[EMITTER] Redis pubClient not initialized. Emitter unavailable.");
+      logger.warn(
+        "[EMITTER] Redis pubClient not initialized. Emitter unavailable."
+      );
       return null;
     }
     emitter = new Emitter(pubClient);

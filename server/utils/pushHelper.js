@@ -20,19 +20,26 @@ const DEAD_TOKEN_ERROR_CODES = new Set([
  * @param {object} [data] - key/value payload (deep-link data, etc.)
  * @returns {Promise<object>} multicast response, with successCount/failureCount
  */
-export const sendPushNotification = async (fcmToken, title, body, data = {}) => {
+export const sendPushNotification = async (
+  fcmToken,
+  title,
+  body,
+  data = {}
+) => {
   if (!fcmToken || (Array.isArray(fcmToken) && fcmToken.length === 0)) return;
 
   const tokens = Array.isArray(fcmToken) ? fcmToken : [fcmToken];
 
   // If Firebase Admin isn't initialized or running in mock mode, skip actual dispatch
   if (!admin || !admin.apps.length) {
-    logger.info(`[Push Notification Mock] To: ${JSON.stringify(tokens)} | Title: ${title} | Body: ${body} | Data: ${JSON.stringify(data)}`);
+    logger.info(
+      `[Push Notification Mock] To: ${JSON.stringify(tokens)} | Title: ${title} | Body: ${body} | Data: ${JSON.stringify(data)}`
+    );
     return {
       successCount: 0,
       failureCount: 0,
       mock: true,
-      responses: []
+      responses: [],
     };
   }
 
@@ -40,7 +47,8 @@ export const sendPushNotification = async (fcmToken, title, body, data = {}) => 
   const stringifiedData = {};
   if (data) {
     Object.entries(data).forEach(([key, val]) => {
-      stringifiedData[key] = val !== null && val !== undefined ? String(val) : "";
+      stringifiedData[key] =
+        val !== null && val !== undefined ? String(val) : "";
     });
   }
 
@@ -72,7 +80,9 @@ export const sendPushNotification = async (fcmToken, title, body, data = {}) => 
 
   try {
     const response = await admin.messaging().sendEachForMulticast(message);
-    logger.info(`[Push Notification] Multicast delivery finished. Success count: ${response.successCount}, Failure count: ${response.failureCount}`);
+    logger.info(
+      `[Push Notification] Multicast delivery finished. Success count: ${response.successCount}, Failure count: ${response.failureCount}`
+    );
 
     // Identify dead tokens and prune from the UserDevice table. Without this,
     // tokens from uninstalled apps stay forever and every send wastes a slot.
@@ -84,7 +94,9 @@ export const sendPushNotification = async (fcmToken, title, body, data = {}) => 
           if (DEAD_TOKEN_ERROR_CODES.has(code)) {
             deadTokens.push(tokens[idx]);
           } else {
-            logger.warn(`[Push Notification] Transient failure for token ${tokens[idx]}: ${resp.error?.message || code}`);
+            logger.warn(
+              `[Push Notification] Transient failure for token ${tokens[idx]}: ${resp.error?.message || code}`
+            );
           }
         }
       });
@@ -94,7 +106,9 @@ export const sendPushNotification = async (fcmToken, title, body, data = {}) => 
           const { count } = await prisma.userDevice.deleteMany({
             where: { token: { in: deadTokens } },
           });
-          logger.info(`[Push Notification] Pruned ${count} stale UserDevice row(s) (FCM rejected ${deadTokens.length} token(s))`);
+          logger.info(
+            `[Push Notification] Pruned ${count} stale UserDevice row(s) (FCM rejected ${deadTokens.length} token(s))`
+          );
         } catch (err) {
           logger.error(`[Push Notification] Failed to prune stale tokens`, err);
         }
@@ -107,7 +121,7 @@ export const sendPushNotification = async (fcmToken, title, body, data = {}) => 
       successCount: 0,
       failureCount: tokens.length,
       error: error.message,
-      responses: tokens.map(() => ({ success: false, error }))
+      responses: tokens.map(() => ({ success: false, error })),
     };
   }
 };

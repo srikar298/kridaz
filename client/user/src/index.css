@@ -1,5 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Dancing+Script:wght@700&family=Inter:wght@400;500;600;700;800;900&family=Space+Mono&family=Bayon&family=Open+Sans:wght@300;400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Dancing+Script:wght@700&family=Inter:wght@400;500;600;700;800;900&family=Space+Mono&family=Bayon&family=Open+Sans:wght@300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 
 @import "tailwindcss/base";
 @import "tailwindcss/components";
@@ -7,8 +8,8 @@
 @import "leaflet/dist/leaflet.css";
 
 @font-face {
-  font-family: 'Inter 28pt Light';
-  src: url('/inter-28pt-light.ttf') format('truetype');
+  font-family: "Inter 28pt Light";
+  src: url("/inter-28pt-light.ttf") format("truetype");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -44,29 +45,39 @@
 }
 
 @keyframes pulse-ring {
-  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0.8; }
-  80%, 100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+  0% {
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0.8;
+  }
+  80%,
+  100% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+  }
 }
 
 .leaflet-control-zoom {
   border: 1px solid var(--border) !important;
   border-radius: 12px !important;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
 }
 
-.leaflet-control-zoom-in, .leaflet-control-zoom-out {
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
   background-color: var(--surface) !important;
   color: var(--fg) !important;
   border: none !important;
 }
 
-.leaflet-control-zoom-in:hover, .leaflet-control-zoom-out:hover {
+.leaflet-control-zoom-in:hover,
+.leaflet-control-zoom-out:hover {
   background-color: var(--charcoal) !important;
   color: var(--primary) !important;
 }
 
-.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
   background-color: var(--surface) !important;
   color: var(--fg) !important;
   border: 1px solid var(--border) !important;
@@ -78,45 +89,46 @@
 }
 
 /* ── Design Tokens ──────────────────────────────────────────────── */
-:root, [data-theme] {
+:root,
+[data-theme] {
   --rounded-btn: 6px;
   --rounded-box: 8px;
 }
 
 :root {
   /* Unified Primary - Main Branch Official */
-  --primary:       #BFF367; /* Updated to Match requested brand Green */
-  --primary-glow:  rgba(191, 243, 103, 0.4);
-  --primary-dark:  #a2d152;
-  
+  --primary: #bff367; /* Updated to Match requested brand Green */
+  --primary-glow: rgba(191, 243, 103, 0.4);
+  --primary-dark: #a2d152;
+
   /* Legacy/Sunny specific names pointing to unified color */
-  --action-green:  #BFF367;
-  --neon-lime:     #BFF367;
-  
+  --action-green: #bff367;
+  --neon-lime: #bff367;
+
   /* Backgrounds & Surfaces */
-  --bg-base:       #000000;
-  --surface:       #0A0A0A;
-  --surface-2:     #111111;
-  --charcoal:      #1A1A1A;
-  --deep-black:    #000000;
-  
+  --bg-base: #000000;
+  --surface: #0a0a0a;
+  --surface-2: #111111;
+  --charcoal: #1a1a1a;
+  --deep-black: #000000;
+
   /* Borders */
-  --border:        rgba(255, 255, 255, 0.05);
-  --border-glow:   rgba(204, 255, 0, 0.2);
-  --card-border:   #2D2D2D;
-  
+  --border: rgba(255, 255, 255, 0.05);
+  --border-glow: rgba(204, 255, 0, 0.2);
+  --card-border: #2d2d2d;
+
   /* Foregrounds */
-  --fg:            #FFFFFF;
-  --muted:         #A0A0A0;
-  --medium-gray:   #999999;
-  --hover-gray:    #878C9F;
+  --fg: #ffffff;
+  --muted: #a0a0a0;
+  --medium-gray: #999999;
+  --hover-gray: #878c9f;
 
   /* Shadow Levels */
   --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.4);
   --shadow-3: 0 4px 12px rgba(0, 0, 0, 0.5);
   --shadow-4: 0 8px 24px rgba(0, 0, 0, 0.6);
-  
+
   /* Border Radius */
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -139,14 +151,16 @@ h1 {
   }
 }
 
-h2, h3, .font-display {
+h2,
+h3,
+.font-display {
   font-family: "Bebas Neue", sans-serif;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .global-subheading {
-  font-family: 'Inter 28pt Light', sans-serif !important;
+  font-family: "Inter 28pt Light", sans-serif !important;
   font-weight: 300 !important;
   font-size: 13px !important;
   line-height: 119% !important;
@@ -161,26 +175,26 @@ h2, h3, .font-display {
 }
 
 /* Scoped styles for the Admin Panel */
-.admin-panel h1, 
-.admin-panel h2, 
-.admin-panel h3, 
-.admin-panel h4, 
-.admin-panel h5, 
+.admin-panel h1,
+.admin-panel h2,
+.admin-panel h3,
+.admin-panel h4,
+.admin-panel h5,
 .admin-panel h6 {
-  font-family: 'Open Sans' !important;
+  font-family: "Open Sans" !important;
   text-transform: uppercase;
   letter-spacing: -0.02em;
 }
 
 .admin-panel .admin-subheading {
-  font-family: 'Inter 28pt Light', sans-serif !important;
+  font-family: "Inter 28pt Light", sans-serif !important;
   font-weight: 300 !important;
   font-size: 20px !important;
   letter-spacing: -0.01em;
 }
 
 .admin-panel .subtitle {
-  font-family: 'Inter' !important;
+  font-family: "Inter" !important;
 }
 
 .font-open-sans {
@@ -204,6 +218,10 @@ h2, h3, .font-display {
 
 .font-inter {
   font-family: "Inter" !important;
+}
+
+.font-poppins {
+  font-family: "Poppins", sans-serif !important;
 }
 
 .messages-page h1,
@@ -244,8 +262,12 @@ h2, h3, .font-display {
 }
 
 .messages-page {
-  --messages-gradient: linear-gradient(90deg, #BFF367 0%, #BFF367 100%);
-  --messages-gradient-soft: linear-gradient(90deg, rgba(85, 222, 232, 0.1) 0%, rgba(191, 243, 103, 0.12) 100%);
+  --messages-gradient: linear-gradient(90deg, #bff367 0%, #bff367 100%);
+  --messages-gradient-soft: linear-gradient(
+    90deg,
+    rgba(85, 222, 232, 0.1) 0%,
+    rgba(191, 243, 103, 0.12) 100%
+  );
   --messages-gradient-border: rgba(191, 243, 103, 0.45);
 }
 
@@ -259,7 +281,7 @@ h2, h3, .font-display {
 
 .messages-page svg[class*="text-[#BFF367]"],
 .messages-page [class*="text-[#BFF367]"] svg {
-  color: #BFF367 !important;
+  color: #bff367 !important;
 }
 
 .messages-page [class*="bg-[#BFF367]"] {
@@ -284,7 +306,7 @@ h2, h3, .font-display {
 }
 
 .messages-page [class*="hover:border-[#BFF367]"]:hover {
-  border-color: #BFF367 !important;
+  border-color: #bff367 !important;
 }
 
 body {
@@ -298,23 +320,39 @@ body {
 }
 
 /* ── Base Reset ─────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 *:focus {
   outline: none !important;
 }
 
 /* Hide scrollbar but keep scrollable */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+}
 @supports (scrollbar-width: none) {
-  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
 }
 
-.scrollbar-hide::-webkit-scrollbar { display: none; }
-.scrollbar-hide { -ms-overflow-style: none; }
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+}
 @supports (scrollbar-width: none) {
-  .scrollbar-hide { scrollbar-width: none; }
+  .scrollbar-hide {
+    scrollbar-width: none;
+  }
 }
 
 /* Custom Scrollbar */
@@ -335,7 +373,7 @@ body {
 /* Force native select elements and options to look dark and use green accent */
 select {
   color-scheme: dark !important;
-  accent-color: #BFF367 !important;
+  accent-color: #bff367 !important;
 }
 
 select::-webkit-scrollbar-thumb {
@@ -344,18 +382,18 @@ select::-webkit-scrollbar-thumb {
 }
 
 select::-webkit-scrollbar-thumb:hover {
-  background: #BFF367 !important;
+  background: #bff367 !important;
 }
 
 select option:checked {
-  background-color: #BFF367 !important;
+  background-color: #bff367 !important;
   color: #000000 !important;
 }
 
 select option:hover,
 select option:focus,
 select option:active {
-  background-color: #BFF367 !important;
+  background-color: #bff367 !important;
   color: #000000 !important;
 }
 
@@ -375,7 +413,7 @@ select option:active {
   @supports (scrollbar-width: none) {
     scrollbar-width: none; /* Firefox */
   }
-  -ms-overflow-style: none;  /* IE/Edge */
+  -ms-overflow-style: none; /* IE/Edge */
 }
 .reels-feed-container::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
@@ -440,10 +478,10 @@ select option:active {
   cursor: pointer;
   transition: all 0.2s;
 }
-.btn-bms-ghost:hover { 
-  border-color: var(--primary); 
-  color: var(--primary); 
-  background-color: rgba(132, 204, 22, 0.05); 
+.btn-bms-ghost:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background-color: rgba(132, 204, 22, 0.05);
 }
 
 /* DaisyUI overrides */
@@ -465,9 +503,9 @@ select option:active {
   overflow: hidden;
   transition: all 0.3s;
 }
-.bms-card:hover { 
-  border-color: var(--primary); 
-  transform: translateY(-2px); 
+.bms-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
 }
 
 /* Badge System */
@@ -483,7 +521,7 @@ select option:active {
 }
 
 .badge-distance {
-  background-color: rgba(0,0,0,0.75);
+  background-color: rgba(0, 0, 0, 0.75);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   color: #fff;
@@ -495,52 +533,104 @@ select option:active {
 
 /* ── Animations ──────────────────────────────────────────────────── */
 @keyframes slowScroll {
-  0%   { background-position: 0% 0%; }
-  100% { background-position: 100% 100%; }
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
 }
-.animate-slowScroll { animation: slowScroll 60s linear infinite; }
+.animate-slowScroll {
+  animation: slowScroll 60s linear infinite;
+}
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.animate-fadeInUp { animation: fadeInUp 0.6s ease-out both; }
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out both;
+}
 
 @keyframes slideLeft {
-  from { opacity: 0; transform: translateX(100px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
-.animate-slide-left { animation: slideLeft 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; }
+.animate-slide-left {
+  animation: slideLeft 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 .animate-shimmer {
   animation: shimmer 2s infinite linear;
 }
 
 @keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 .animate-spin-slow {
   animation: spin-slow 3s linear infinite;
 }
 
 @keyframes marquee {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
 .animate-marquee {
   display: inline-block;
   animation: marquee 10s linear infinite;
 }
 
+@keyframes x-slider {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(calc(-50% - 1.25rem));
+  }
+}
+.animate-x-slider {
+  animation: x-slider 30s linear infinite;
+}
+
 /* ── Utility Classes ─────────────────────────────────────────────── */
-.text-primary  { color: var(--primary) !important; }
-.bg-primary    { background-color: var(--primary) !important; }
-.border-primary{ border-color: var(--primary) !important; }
+.text-primary {
+  color: var(--primary) !important;
+}
+.bg-primary {
+  background-color: var(--primary) !important;
+}
+.border-primary {
+  border-color: var(--primary) !important;
+}
 
 /* ── React DatePicker Dark Theme ─────────────────────────────────── */
 .datepicker-dark .react-datepicker-popper {
@@ -549,22 +639,22 @@ select option:active {
 
 .datepicker-dark .react-datepicker {
   background-color: #111111 !important;
-  border: 1px solid #2D2D2D !important;
+  border: 1px solid #2d2d2d !important;
   border-radius: 8px !important;
-  font-family: 'Inter' !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+  font-family: "Inter" !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
   overflow: hidden !important;
 }
 
 .datepicker-dark .react-datepicker__header {
   background-color: #1a1a1a !important;
-  border-bottom: 1px solid #2D2D2D !important;
+  border-bottom: 1px solid #2d2d2d !important;
   padding: 10px 0 !important;
 }
 
 .datepicker-dark .react-datepicker__time-container {
   background-color: #111111 !important;
-  border-left: 1px solid #2D2D2D !important;
+  border-left: 1px solid #2d2d2d !important;
   width: 100px !important;
 }
 
@@ -584,7 +674,7 @@ select option:active {
 
 .datepicker-dark .react-datepicker__time-list-item {
   background-color: transparent !important;
-  color: #878C9F !important;
+  color: #878c9f !important;
   font-size: 11px !important;
   font-weight: 600 !important;
   text-transform: uppercase !important;
@@ -594,22 +684,25 @@ select option:active {
 }
 
 .datepicker-dark .react-datepicker__time-list-item:hover {
-  background-color: #BFF367 !important;
+  background-color: #bff367 !important;
   color: black !important;
 }
 
 .datepicker-dark .react-datepicker__time-list-item--selected {
-  background-color: #BFF367 !important;
+  background-color: #bff367 !important;
   color: black !important;
 }
 
-.datepicker-dark .react-datepicker__navigation--next--with-time:not(.react-datepicker__navigation--next--with-today-button) {
+.datepicker-dark
+  .react-datepicker__navigation--next--with-time:not(
+    .react-datepicker__navigation--next--with-today-button
+  ) {
   right: 105px !important;
 }
 
-.datepicker-dark .react-datepicker__current-month, 
+.datepicker-dark .react-datepicker__current-month,
 .datepicker-dark .react-datepicker-time__header {
-  color: #BFF367 !important;
+  color: #bff367 !important;
   font-size: 11px !important;
   font-weight: 800 !important;
   text-transform: uppercase !important;
@@ -628,7 +721,100 @@ select option:active {
   overflow: visible !important;
 }
 
+.force-open-sans,
+.force-open-sans * {
+  font-family: "Open Sans", sans-serif !important;
+}
 
-.force-open-sans, .force-open-sans * {
-  font-family: 'Open Sans', sans-serif !important;
+/* Landing Page Specific Scrollbar - Hidden but still scrolls */
+.landing-scrollbar {
+  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: none !important; /* Firefox */
+}
+
+.landing-scrollbar::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari and Opera */
+}
+
+/* ── Fluid Glassmorphism Effect ─────────────────────────────────── */
+.fluid-glass {
+  background: rgba(10, 10, 10, 0.45) !important;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  box-shadow:
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.5);
+}
+
+.fluid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  z-index: -1;
+}
+
+.fluid-glass::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    120deg,
+    rgba(191, 243, 103, 0.2),
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(191, 243, 103, 0.1)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: borderGlow 6s ease-in-out infinite alternate;
+}
+
+@keyframes borderGlow {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ── Vertical Marquee ───────────────────────────────────────────── */
+@keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-50% - 12px));
+  } /* Adjust for gap-6 (24px) half is 12px */
+}
+.animate-marquee-vertical {
+  animation: marquee-vertical 40s linear infinite;
+}
+.mask-vertical-faded {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 30px,
+    black calc(100% - 30px),
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 30px,
+    black calc(100% - 30px),
+    transparent
+  );
 }

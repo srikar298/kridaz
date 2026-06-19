@@ -1,7 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { toast } from "react-hot-toast";
-import { Send, Users, User, Search, Bell, Smartphone, Sparkles, CheckCircle2 } from "lucide-react";
+import {
+  Send,
+  Users,
+  User,
+  Search,
+  Bell,
+  Smartphone,
+  Sparkles,
+  CheckCircle2,
+} from "lucide-react";
 
 export const PushComposer = () => {
   const [targetType, setTargetType] = useState("ALL"); // "ALL" or "SINGLE"
@@ -30,7 +39,9 @@ export const PushComposer = () => {
     const timer = setTimeout(async () => {
       try {
         setLoadingUsers(true);
-        const res = await axiosInstance.get(`/api/admin/users/all?search=${searchQuery}&limit=10`);
+        const res = await axiosInstance.get(
+          `/api/admin/users/all?search=${searchQuery}&limit=10`
+        );
         setUsers(res.data.users || []);
         setShowDropdown(true);
       } catch (err) {
@@ -86,9 +97,13 @@ export const PushComposer = () => {
         },
       };
 
-      const res = await axiosInstance.post("/api/admin/notifications/send", payload);
+      const res = await axiosInstance.post(
+        "/api/admin/notifications/send",
+        payload
+      );
       const summary = res.data.summary;
-      const successMessage = res.data.message || "Push notification sent successfully!";
+      const successMessage =
+        res.data.message || "Push notification sent successfully!";
 
       if (summary?.tokens > 0 && !summary.mock && summary.success === 0) {
         toast.error(successMessage);
@@ -97,7 +112,7 @@ export const PushComposer = () => {
       } else {
         toast.success(successMessage);
       }
-      
+
       // Reset form
       setFormData({
         title: "",
@@ -109,7 +124,9 @@ export const PushComposer = () => {
       setSearchQuery("");
     } catch (err) {
       console.error("Error sending push notification:", err);
-      toast.error(err.response?.data?.message || "Failed to dispatch push notification.");
+      toast.error(
+        err.response?.data?.message || "Failed to dispatch push notification."
+      );
     } finally {
       setSending(false);
     }
@@ -127,15 +144,22 @@ export const PushComposer = () => {
             <Bell size={20} className="animate-bounce" />
           </div>
           <div>
-            <h2 className="text-xl font-bold font-bebas tracking-wider text-white">PUSH COMPOSER</h2>
-            <p className="text-xs text-gray-500 font-medium">Broadcast alerts or target individual players directly on their devices.</p>
+            <h2 className="text-xl font-bold font-bebas tracking-wider text-white">
+              PUSH COMPOSER
+            </h2>
+            <p className="text-xs text-gray-500 font-medium">
+              Broadcast alerts or target individual players directly on their
+              devices.
+            </p>
           </div>
         </div>
 
         <form onSubmit={handleSend} className="space-y-5">
           {/* Target Audience Select */}
           <div className="space-y-3">
-            <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400">Target Audience</label>
+            <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400">
+              Target Audience
+            </label>
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
@@ -171,9 +195,14 @@ export const PushComposer = () => {
           {/* Individual User Selection Dropdown */}
           {targetType === "SINGLE" && (
             <div className="space-y-2 relative" ref={dropdownRef}>
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400">Search User</label>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400">
+                Search User
+              </label>
               <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+                <Search
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"
+                  size={16}
+                />
                 <input
                   type="text"
                   value={searchQuery}
@@ -187,7 +216,10 @@ export const PushComposer = () => {
                   className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-lime-500 focus:ring-1 focus:ring-lime-500 transition-all text-sm"
                 />
                 {selectedUser && (
-                  <CheckCircle2 className="absolute right-3.5 top-1/2 -translate-y-1/2 text-lime-500" size={18} />
+                  <CheckCircle2
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-lime-500"
+                    size={18}
+                  />
                 )}
               </div>
 
@@ -201,8 +233,12 @@ export const PushComposer = () => {
                       onClick={() => handleSelectUser(user)}
                       className="w-full text-left px-4 py-3 hover:bg-lime-500/10 border-b border-white/5 last:border-b-0 flex flex-col gap-0.5 transition-colors"
                     >
-                      <span className="text-white text-sm font-semibold">{user.name}</span>
-                      <span className="text-xs text-gray-500">{user.email} • {user.phone || "No phone"}</span>
+                      <span className="text-white text-sm font-semibold">
+                        {user.name}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {user.email} • {user.phone || "No phone"}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -219,12 +255,16 @@ export const PushComposer = () => {
           {/* Form Fields */}
           <div className="space-y-4">
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">Notification Title</label>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">
+                Notification Title
+              </label>
               <input
                 type="text"
                 required
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
                 placeholder="e.g. Mega Discount this Sunday! ⚡"
                 maxLength={45}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-500 focus:ring-1 focus:ring-lime-500 transition-all text-sm placeholder-gray-600"
@@ -232,12 +272,16 @@ export const PushComposer = () => {
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">Notification Message</label>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">
+                Notification Message
+              </label>
               <textarea
                 required
                 rows={3}
                 value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, message: e.target.value })
+                }
                 placeholder="Write the background push message here..."
                 maxLength={180}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-500 focus:ring-1 focus:ring-lime-500 transition-all text-sm placeholder-gray-600 resize-none custom-scrollbar"
@@ -249,10 +293,14 @@ export const PushComposer = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">Notification Type</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">
+                  Notification Type
+                </label>
                 <select
                   value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, type: e.target.value })
+                  }
                   className="w-full bg-[#161616] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-500 transition-all text-sm"
                 >
                   <option value="SYSTEM">System Alert</option>
@@ -263,11 +311,15 @@ export const PushComposer = () => {
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">Deep Link / Navigation Path</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">
+                  Deep Link / Navigation Path
+                </label>
                 <input
                   type="text"
                   value={formData.link}
-                  onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, link: e.target.value })
+                  }
                   placeholder="e.g. /reels or /booking/details"
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-500 focus:ring-1 focus:ring-lime-500 transition-all text-sm placeholder-gray-600"
                 />
@@ -322,8 +374,12 @@ export const PushComposer = () => {
 
           {/* Lockscreen date and time */}
           <div className="flex flex-col items-center justify-center mt-6 z-10 text-white select-none">
-            <span className="text-4xl font-extralight tracking-tight">22:45</span>
-            <span className="text-[10px] tracking-widest font-bold uppercase text-white/50 mt-1 font-bebas">Saturday, May 30</span>
+            <span className="text-4xl font-extralight tracking-tight">
+              22:45
+            </span>
+            <span className="text-[10px] tracking-widest font-bold uppercase text-white/50 mt-1 font-bebas">
+              Saturday, May 30
+            </span>
           </div>
 
           {/* Mobile Push Notification Mockup Card */}
@@ -334,15 +390,20 @@ export const PushComposer = () => {
                   <div className="w-5 h-5 bg-gradient-to-tr from-lime-500 to-emerald-400 text-black rounded-md flex items-center justify-center font-black text-[9px] shadow-[0_0_10px_rgba(132,204,22,0.3)]">
                     K
                   </div>
-                  <span className="text-[10px] font-bold text-white tracking-wide uppercase">Kridaz App</span>
+                  <span className="text-[10px] font-bold text-white tracking-wide uppercase">
+                    Kridaz App
+                  </span>
                 </div>
-                <span className="text-[9px] text-white/40 font-medium">now</span>
+                <span className="text-[9px] text-white/40 font-medium">
+                  now
+                </span>
               </div>
               <h4 className="text-xs font-bold text-white mb-1.5 truncate transition-all duration-200">
                 {formData.title || "Announcements 📣"}
               </h4>
               <p className="text-[11px] text-white/70 leading-relaxed break-words font-medium transition-all duration-200">
-                {formData.message || "This is a real-time preview of how your custom push notification card will appear on players' lockscreens."}
+                {formData.message ||
+                  "This is a real-time preview of how your custom push notification card will appear on players' lockscreens."}
               </p>
             </div>
           </div>
@@ -350,7 +411,9 @@ export const PushComposer = () => {
           {/* Sparkle decorative */}
           <div className="mt-auto mb-16 flex flex-col items-center justify-center gap-1.5 z-10 text-white/30">
             <Sparkles size={18} className="animate-spin duration-[12s]" />
-            <span className="text-[8px] font-bold tracking-widest uppercase font-mono">Real-time Preview</span>
+            <span className="text-[8px] font-bold tracking-widest uppercase font-mono">
+              Real-time Preview
+            </span>
           </div>
 
           {/* Bottom Swipe Bar */}

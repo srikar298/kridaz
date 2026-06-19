@@ -34,7 +34,7 @@ const seedOtp = async (email, phone) => {
       phone,
       emailOtp: "123456",
       phoneOtp: "123456",
-      expiresAt: new Date(Date.now() + 600000)
+      expiresAt: new Date(Date.now() + 600000),
     },
   });
 };
@@ -46,28 +46,53 @@ describe("Team Module API Integration Tests", () => {
       const user = await prisma.user.findFirst({ where: { email } });
       if (user) {
         // Delete related team members, requests, custom members, and teams
-        const ownedTeams = await prisma.team.findMany({ where: { ownerId: user.id } });
-        const ownedTeamIds = ownedTeams.map(t => t.id);
+        const ownedTeams = await prisma.team.findMany({
+          where: { ownerId: user.id },
+        });
+        const ownedTeamIds = ownedTeams.map((t) => t.id);
 
-        await prisma.teamMember.deleteMany({
-          where: { OR: [{ userId: user.id }, { teamId: { in: ownedTeamIds } }] }
-        }).catch(() => {});
+        await prisma.teamMember
+          .deleteMany({
+            where: {
+              OR: [{ userId: user.id }, { teamId: { in: ownedTeamIds } }],
+            },
+          })
+          .catch(() => {});
 
-        await prisma.teamCustomMember.deleteMany({
-          where: { teamId: { in: ownedTeamIds } }
-        }).catch(() => {});
+        await prisma.teamCustomMember
+          .deleteMany({
+            where: { teamId: { in: ownedTeamIds } },
+          })
+          .catch(() => {});
 
-        await prisma.teamOpponentRequest.deleteMany({
-          where: { OR: [{ fromId: { in: ownedTeamIds } }, { toId: { in: ownedTeamIds } }] }
-        }).catch(() => {});
+        await prisma.teamOpponentRequest
+          .deleteMany({
+            where: {
+              OR: [
+                { fromId: { in: ownedTeamIds } },
+                { toId: { in: ownedTeamIds } },
+              ],
+            },
+          })
+          .catch(() => {});
 
-        await prisma.team.deleteMany({ where: { ownerId: user.id } }).catch(() => {});
-        await prisma.userRelationship.deleteMany({
-          where: { OR: [{ userId: user.id }, { targetId: user.id }] }
-        }).catch(() => {});
-        await prisma.refreshToken.deleteMany({ where: { userId: user.id } }).catch(() => {});
-        await prisma.wallet.deleteMany({ where: { userId: user.id } }).catch(() => {});
-        await prisma.userProfile.deleteMany({ where: { userId: user.id } }).catch(() => {});
+        await prisma.team
+          .deleteMany({ where: { ownerId: user.id } })
+          .catch(() => {});
+        await prisma.userRelationship
+          .deleteMany({
+            where: { OR: [{ userId: user.id }, { targetId: user.id }] },
+          })
+          .catch(() => {});
+        await prisma.refreshToken
+          .deleteMany({ where: { userId: user.id } })
+          .catch(() => {});
+        await prisma.wallet
+          .deleteMany({ where: { userId: user.id } })
+          .catch(() => {});
+        await prisma.userProfile
+          .deleteMany({ where: { userId: user.id } })
+          .catch(() => {});
         await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
       }
       await prisma.oTP.deleteMany({ where: { email } }).catch(() => {});
@@ -78,20 +103,22 @@ describe("Team Module API Integration Tests", () => {
     await seedOtp(emailB, phoneB);
 
     // Register User A
-    const otpRes_regResA = await request(app).post('/api/user/auth/verify-otp').send({ email: emailA, phone: phoneA, otp: "123456" });
-    const regResA = await request(app)
-      .post("/api/user/auth/register")
-      .send({
-        name: "Team Owner A",
-        email: emailA,
-        username: usernameA,
-        phone: phoneA,
-        gender: "Male",
-        location: "Mumbai",
-        password: "Player@Pass123",
-        confirmPassword: "Player@Pass123",
-        otp: "123456",
-        phoneOtp: "123456", registrationToken: otpRes_regResA.body.registrationToken});
+    const otpRes_regResA = await request(app)
+      .post("/api/user/auth/verify-otp")
+      .send({ email: emailA, phone: phoneA, otp: "123456" });
+    const regResA = await request(app).post("/api/user/auth/register").send({
+      name: "Team Owner A",
+      email: emailA,
+      username: usernameA,
+      phone: phoneA,
+      gender: "Male",
+      location: "Mumbai",
+      password: "Player@Pass123",
+      confirmPassword: "Player@Pass123",
+      otp: "123456",
+      phoneOtp: "123456",
+      registrationToken: otpRes_regResA.body.registrationToken,
+    });
 
     if (regResA.statusCode === 201) {
       tokenA = regResA.body.token;
@@ -101,20 +128,22 @@ describe("Team Module API Integration Tests", () => {
     }
 
     // Register User B
-    const otpRes_regResB = await request(app).post('/api/user/auth/verify-otp').send({ email: emailB, phone: phoneB, otp: "123456" });
-    const regResB = await request(app)
-      .post("/api/user/auth/register")
-      .send({
-        name: "Team Owner B",
-        email: emailB,
-        username: usernameB,
-        phone: phoneB,
-        gender: "Male",
-        location: "Mumbai",
-        password: "Player@Pass123",
-        confirmPassword: "Player@Pass123",
-        otp: "123456",
-        phoneOtp: "123456", registrationToken: otpRes_regResB.body.registrationToken});
+    const otpRes_regResB = await request(app)
+      .post("/api/user/auth/verify-otp")
+      .send({ email: emailB, phone: phoneB, otp: "123456" });
+    const regResB = await request(app).post("/api/user/auth/register").send({
+      name: "Team Owner B",
+      email: emailB,
+      username: usernameB,
+      phone: phoneB,
+      gender: "Male",
+      location: "Mumbai",
+      password: "Player@Pass123",
+      confirmPassword: "Player@Pass123",
+      otp: "123456",
+      phoneOtp: "123456",
+      registrationToken: otpRes_regResB.body.registrationToken,
+    });
 
     if (regResB.statusCode === 201) {
       tokenB = regResB.body.token;
@@ -137,28 +166,53 @@ describe("Team Module API Integration Tests", () => {
     for (const email of [emailA, emailB]) {
       const user = await prisma.user.findFirst({ where: { email } });
       if (user) {
-        const ownedTeams = await prisma.team.findMany({ where: { ownerId: user.id } });
-        const ownedTeamIds = ownedTeams.map(t => t.id);
+        const ownedTeams = await prisma.team.findMany({
+          where: { ownerId: user.id },
+        });
+        const ownedTeamIds = ownedTeams.map((t) => t.id);
 
-        await prisma.teamMember.deleteMany({
-          where: { OR: [{ userId: user.id }, { teamId: { in: ownedTeamIds } }] }
-        }).catch(() => {});
+        await prisma.teamMember
+          .deleteMany({
+            where: {
+              OR: [{ userId: user.id }, { teamId: { in: ownedTeamIds } }],
+            },
+          })
+          .catch(() => {});
 
-        await prisma.teamCustomMember.deleteMany({
-          where: { teamId: { in: ownedTeamIds } }
-        }).catch(() => {});
+        await prisma.teamCustomMember
+          .deleteMany({
+            where: { teamId: { in: ownedTeamIds } },
+          })
+          .catch(() => {});
 
-        await prisma.teamOpponentRequest.deleteMany({
-          where: { OR: [{ fromId: { in: ownedTeamIds } }, { toId: { in: ownedTeamIds } }] }
-        }).catch(() => {});
+        await prisma.teamOpponentRequest
+          .deleteMany({
+            where: {
+              OR: [
+                { fromId: { in: ownedTeamIds } },
+                { toId: { in: ownedTeamIds } },
+              ],
+            },
+          })
+          .catch(() => {});
 
-        await prisma.team.deleteMany({ where: { ownerId: user.id } }).catch(() => {});
-        await prisma.userRelationship.deleteMany({
-          where: { OR: [{ userId: user.id }, { targetId: user.id }] }
-        }).catch(() => {});
-        await prisma.refreshToken.deleteMany({ where: { userId: user.id } }).catch(() => {});
-        await prisma.wallet.deleteMany({ where: { userId: user.id } }).catch(() => {});
-        await prisma.userProfile.deleteMany({ where: { userId: user.id } }).catch(() => {});
+        await prisma.team
+          .deleteMany({ where: { ownerId: user.id } })
+          .catch(() => {});
+        await prisma.userRelationship
+          .deleteMany({
+            where: { OR: [{ userId: user.id }, { targetId: user.id }] },
+          })
+          .catch(() => {});
+        await prisma.refreshToken
+          .deleteMany({ where: { userId: user.id } })
+          .catch(() => {});
+        await prisma.wallet
+          .deleteMany({ where: { userId: user.id } })
+          .catch(() => {});
+        await prisma.userProfile
+          .deleteMany({ where: { userId: user.id } })
+          .catch(() => {});
         await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
       }
       await prisma.oTP.deleteMany({ where: { email } }).catch(() => {});
@@ -180,8 +234,8 @@ describe("Team Module API Integration Tests", () => {
           captainName: "Jack Sparrow",
           captainPhone: phoneA,
           city: "Mumbai",
-          latitude: 19.0760,
-          longitude: 72.8777
+          latitude: 19.076,
+          longitude: 72.8777,
         });
 
       expect(res.statusCode).toBe(201);
@@ -205,8 +259,8 @@ describe("Team Module API Integration Tests", () => {
           captainName: "Tony Stark",
           captainPhone: phoneB,
           city: "Mumbai",
-          latitude: 19.0760,
-          longitude: 72.8777
+          latitude: 19.076,
+          longitude: 72.8777,
         });
 
       expect(res.statusCode).toBe(201);
@@ -225,7 +279,7 @@ describe("Team Module API Integration Tests", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
       expect(Array.isArray(res.body.teams)).toBe(true);
-      const teamIds = res.body.teams.map(t => t.id);
+      const teamIds = res.body.teams.map((t) => t.id);
       expect(teamIds).toContain(teamIdA);
       expect(teamIds).toContain(teamIdB);
     });
@@ -259,7 +313,8 @@ describe("Team Module API Integration Tests", () => {
 
   describe("PUT /api/team/:id - Update Team", () => {
     it("should update Team A details", async () => {
-      if (!tokenA || !teamIdA) return logger.warn("Skipped: missing dependencies");
+      if (!tokenA || !teamIdA)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
         .put(`/api/team/${teamIdA}`)
@@ -268,19 +323,22 @@ describe("Team Module API Integration Tests", () => {
           name: `Alpha Warriors Elite ${ts}`,
           description: "Upgraded description for elite squad",
           sportType: "CRICKET",
-          city: "Navi Mumbai"
+          city: "Navi Mumbai",
         });
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.team.name).toBe(`Alpha Warriors Elite ${ts}`);
-      expect(res.body.team.description).toBe("Upgraded description for elite squad");
+      expect(res.body.team.description).toBe(
+        "Upgraded description for elite squad"
+      );
     });
   });
 
   describe("POST /api/team/:id/invite - Invite Members", () => {
     it("should generate a custom member invitation token for non-registered player", async () => {
-      if (!tokenA || !teamIdA) return logger.warn("Skipped: missing dependencies");
+      if (!tokenA || !teamIdA)
+        return logger.warn("Skipped: missing dependencies");
 
       const customEmail = `custom_invite_${ts}@kridaz.test`;
       const res = await request(app)
@@ -291,9 +349,9 @@ describe("Team Module API Integration Tests", () => {
             {
               name: "Custom Player",
               email: customEmail,
-              phone: `93333${String(ts).slice(-5)}`
-            }
-          ]
+              phone: `93333${String(ts).slice(-5)}`,
+            },
+          ],
         });
 
       expect(res.statusCode).toBe(200);
@@ -316,7 +374,8 @@ describe("Team Module API Integration Tests", () => {
 
   describe("POST /api/team/join-request/:id - Join Request", () => {
     it("should allow User A to request to join Team B", async () => {
-      if (!tokenA || !teamIdB) return logger.warn("Skipped: missing dependencies");
+      if (!tokenA || !teamIdB)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
         .post(`/api/team/join-request/${teamIdB}`)
@@ -332,13 +391,14 @@ describe("Team Module API Integration Tests", () => {
     let requestId = "";
 
     it("should send opponent challenge from Team A to Team B", async () => {
-      if (!tokenA || !teamIdA || !teamIdB) return logger.warn("Skipped: missing dependencies");
+      if (!tokenA || !teamIdA || !teamIdB)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
         .post(`/api/team/${teamIdA}/request-opponent`)
         .set("Authorization", `Bearer ${tokenA}`)
         .send({
-          targetTeamId: teamIdB
+          targetTeamId: teamIdB,
         });
 
       expect(res.statusCode).toBe(200);
@@ -347,21 +407,22 @@ describe("Team Module API Integration Tests", () => {
 
       // Verify that request is pending in DB and get the ID
       const reqRecord = await prisma.teamOpponentRequest.findFirst({
-        where: { fromId: teamIdA, toId: teamIdB, status: "PENDING" }
+        where: { fromId: teamIdA, toId: teamIdB, status: "PENDING" },
       });
       expect(reqRecord).not.toBeNull();
       requestId = reqRecord.id;
     });
 
     it("should accept opponent request, linking Team A and Team B as rivals", async () => {
-      if (!tokenB || !teamIdB || !requestId) return logger.warn("Skipped: missing dependencies");
+      if (!tokenB || !teamIdB || !requestId)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
         .post(`/api/team/${teamIdB}/handle-opponent-request`)
         .set("Authorization", `Bearer ${tokenB}`)
         .send({
           requestId: requestId,
-          action: "ACCEPTED"
+          action: "ACCEPTED",
         });
 
       expect(res.statusCode).toBe(200);
@@ -370,7 +431,7 @@ describe("Team Module API Integration Tests", () => {
 
       // Verify that request status is ACCEPTED
       const updatedReq = await prisma.teamOpponentRequest.findUnique({
-        where: { id: requestId }
+        where: { id: requestId },
       });
       expect(updatedReq.status).toBe("ACCEPTED");
     });
@@ -385,7 +446,7 @@ describe("Team Module API Integration Tests", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
       expect(Array.isArray(res.body.teams)).toBe(true);
-      const teamIds = res.body.teams.map(t => t.id);
+      const teamIds = res.body.teams.map((t) => t.id);
       expect(teamIds).toContain(teamIdB);
     });
   });

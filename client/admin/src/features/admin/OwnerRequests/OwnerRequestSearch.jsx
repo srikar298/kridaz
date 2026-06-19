@@ -4,7 +4,10 @@ import { Search } from "lucide-react";
 const OwnerRequestSearch = ({ searchTerm, handleSearch }) => {
   return (
     <div className="relative w-full max-w-2xl">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#999999]" size={14} />
+      <Search
+        className="absolute left-3 top-1/2 -translate-y-1/2 text-[#999999]"
+        size={14}
+      />
       <input
         type="text"
         value={searchTerm}

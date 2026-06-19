@@ -6,4 +6,3 @@ const router = Router();
 // router.get("/venue-ownerships", getTeamPartnerships);
 
 export default router;
-

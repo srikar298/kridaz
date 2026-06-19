@@ -1,4 +1,11 @@
-import { X, Share2, MessageCircle, Instagram, Facebook, Copy } from "lucide-react";
+import {
+  X,
+  Share2,
+  MessageCircle,
+  Instagram,
+  Facebook,
+  Copy,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 
@@ -24,12 +31,15 @@ const ShareModal = ({ postId, onClose }) => {
 
   const handleShareToPlatform = async (platform) => {
     const { getShareLink } = await import("@utils/shareUtils");
-    const url = getShareLink(`${window.location.origin}${window.location.pathname}?post=${postId}`);
+    const url = getShareLink(
+      `${window.location.origin}${window.location.pathname}?post=${postId}`
+    );
     const text = "Check out this post on Kridaz!";
     const encodedUrl = encodeURIComponent(url);
     const encodedText = encodeURIComponent(text);
     const encodedTextWithUrl = encodeURIComponent(`${text} ${url}`);
-    const openShare = (shareUrl) => window.open(shareUrl, "_blank", "noopener,noreferrer");
+    const openShare = (shareUrl) =>
+      window.open(shareUrl, "_blank", "noopener,noreferrer");
 
     if (platform === "native") {
       if (navigator.share) {
@@ -49,21 +59,31 @@ const ShareModal = ({ postId, onClose }) => {
     if (platform === "copy") {
       await copyShareLink(url);
     } else if (platform === "twitter") {
-      openShare(`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`);
+      openShare(
+        `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`
+      );
     } else if (platform === "facebook") {
       openShare(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`);
     } else if (platform === "whatsapp") {
       openShare(`https://api.whatsapp.com/send?text=${encodedTextWithUrl}`);
     } else if (platform === "linkedin") {
-      openShare(`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`);
+      openShare(
+        `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`
+      );
     } else if (platform === "telegram") {
       openShare(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`);
     } else if (platform === "threads") {
-      openShare(`https://www.threads.net/intent/post?text=${encodedTextWithUrl}`);
+      openShare(
+        `https://www.threads.net/intent/post?text=${encodedTextWithUrl}`
+      );
     } else if (platform === "reddit") {
-      openShare(`https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedText}`);
+      openShare(
+        `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedText}`
+      );
     } else if (platform === "pinterest") {
-      openShare(`https://www.pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedText}`);
+      openShare(
+        `https://www.pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedText}`
+      );
     } else if (platform === "email") {
       window.location.href = `mailto:?subject=${encodeURIComponent("Kridaz Community Post")}&body=${encodedTextWithUrl}`;
     } else if (platform === "sms") {
@@ -105,7 +125,9 @@ const ShareModal = ({ postId, onClose }) => {
       >
         <div className="relative flex items-start justify-between gap-4 border-b border-white/5 px-5 py-4 sm:px-6">
           <div>
-            <h3 className="text-lg font-black text-white" style={HEADING_STYLE}>Share post</h3>
+            <h3 className="text-lg font-black text-white" style={HEADING_STYLE}>
+              Share post
+            </h3>
             <p className="mt-1 text-[11px] font-medium text-white/45">
               Choose a platform to send this community post.
             </p>
@@ -126,7 +148,10 @@ const ShareModal = ({ postId, onClose }) => {
               const Icon = app.icon;
 
               return (
-                <div key={app.id} className="flex min-w-0 flex-col items-center gap-2">
+                <div
+                  key={app.id}
+                  className="flex min-w-0 flex-col items-center gap-2"
+                >
                   <button
                     type="button"
                     onClick={() => handleShareToPlatform(app.id)}

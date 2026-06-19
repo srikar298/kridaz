@@ -1,12 +1,14 @@
-import OpenAI from 'openai';
-import dotenv from 'dotenv';
+import OpenAI from "openai";
+import dotenv from "dotenv";
 import logger from "../utils/logger.js";
 
 dotenv.config();
 
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-}) : null;
+const openai = process.env.OPENAI_API_KEY
+  ? new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  : null;
 
 /**
  * Automated Commentary Service
@@ -17,18 +19,27 @@ export const commentaryService = {
    * Generate commentary for a single ball or an over summary
    */
   generateCommentary: async (matchData) => {
-    const { battingTeam, batsman, bowler, event, runs, isWicket, context, isOverComplete } = matchData;
-    
+    const {
+      battingTeam,
+      batsman,
+      bowler,
+      event,
+      runs,
+      isWicket,
+      context,
+      isOverComplete,
+    } = matchData;
+
     // Basic fallback template
-    let fallbackText = '';
+    let fallbackText = "";
     if (isOverComplete) {
-      fallbackText = `End of the over bowled by ${bowler || 'the bowler'}.`;
+      fallbackText = `End of the over bowled by ${bowler || "the bowler"}.`;
     } else if (isWicket) {
-      fallbackText = `Wicket! ${batsman || 'Batsman'} is out, bowled by ${bowler || 'the bowler'}.`;
+      fallbackText = `Wicket! ${batsman || "Batsman"} is out, bowled by ${bowler || "the bowler"}.`;
     } else if (runs > 0) {
-      fallbackText = `${runs} run(s) off the delivery by ${bowler || 'the bowler'} to ${batsman || 'the batsman'}.`;
+      fallbackText = `${runs} run(s) off the delivery by ${bowler || "the bowler"} to ${batsman || "the batsman"}.`;
     } else {
-      fallbackText = `Dot ball by ${bowler || 'the bowler'}.`;
+      fallbackText = `Dot ball by ${bowler || "the bowler"}.`;
     }
 
     try {
@@ -36,12 +47,12 @@ export const commentaryService = {
         return fallbackText;
       }
 
-      let prompt = '';
+      let prompt = "";
       if (isOverComplete) {
         prompt = `You are a professional, high-energy cricket commentator. 
         Generate a short over-completion summary (max 25 words).
         - Bowler who just finished: ${bowler}
-        - Context: ${context || 'End of over'}
+        - Context: ${context || "End of over"}
         
         Make it sound like a TV broadcast wrap-up.`;
       } else {
@@ -51,7 +62,7 @@ export const commentaryService = {
         - Batsman: ${batsman}
         - Bowler: ${bowler}
         - Event: ${event} (Runs: ${runs}, Wicket: ${isWicket})
-        - Context: ${context || 'Regular play'}
+        - Context: ${context || "Regular play"}
         
         Make it sound like a TV broadcast. Be creative and vary your style.`;
       }
@@ -62,10 +73,10 @@ export const commentaryService = {
         max_tokens: 60,
       });
 
-      return response.choices[0].message.content.trim().replace(/^"|"$/g, '');
+      return response.choices[0].message.content.trim().replace(/^"|"$/g, "");
     } catch (err) {
-      logger.error('[AI] Error generating commentary with OpenAI:', err);
+      logger.error("[AI] Error generating commentary with OpenAI:", err);
       return fallbackText;
     }
-  }
+  },
 };

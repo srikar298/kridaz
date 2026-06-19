@@ -4,10 +4,13 @@ const OwnersSkeleton = () => {
   return (
     <div className="p-4 lg:px-10 space-y-12 animate-pulse">
       <div className="h-14 bg-[#2D2D2D]/20 rounded-[12px] w-full max-w-lg"></div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {[...Array(8)].map((_, index) => (
-          <div key={index} className="bg-[#0d0d0d] border border-[#2D2D2D]/30 rounded-[12px] p-5 h-[300px] flex flex-col">
+          <div
+            key={index}
+            className="bg-[#0d0d0d] border border-[#2D2D2D]/30 rounded-[12px] p-5 h-[300px] flex flex-col"
+          >
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 rounded-[10px] bg-[#2D2D2D]/50"></div>
               <div className="flex-1 space-y-3">

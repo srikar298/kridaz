@@ -27,13 +27,21 @@
 
 const required = (label, value) => {
   if (!value) {
-    throw new Error(`[jwtSecrets] ${label} is unset — refusing to start. Set JWT_SECRET (legacy) or the specific JWT_*_SECRET env.`);
+    throw new Error(
+      `[jwtSecrets] ${label} is unset — refusing to start. Set JWT_SECRET (legacy) or the specific JWT_*_SECRET env.`
+    );
   }
   return value;
 };
 
 export const getAccessSecret = () =>
-  required("JWT_ACCESS_SECRET", process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET);
+  required(
+    "JWT_ACCESS_SECRET",
+    process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET
+  );
 
 export const getRegistrationSecret = () =>
-  required("JWT_REGISTRATION_SECRET", process.env.JWT_REGISTRATION_SECRET || process.env.JWT_SECRET);
+  required(
+    "JWT_REGISTRATION_SECRET",
+    process.env.JWT_REGISTRATION_SECRET || process.env.JWT_SECRET
+  );

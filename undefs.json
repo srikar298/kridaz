@@ -1,0 +1,14 @@
+[
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\teams\\pages\\TeamPass.jsx",
+    "line": 231,
+    "message": "'Loader2' is not defined.",
+    "rule": "react/jsx-no-undef"
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\pages\\HomeSections\\ProfessionalsSection.jsx",
+    "line": 76,
+    "message": "'ChevronRight' is not defined.",
+    "rule": "react/jsx-no-undef"
+  }
+]

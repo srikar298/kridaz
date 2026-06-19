@@ -6,7 +6,7 @@ sidebar_label: Tournament Stage Builder
 
 # Reusable Tournament Stage Builder Architecture
 
-This document outlines the product vision, database schemas, JSON configurations, and frontend UI specs for the **Kridaz Unified Tournament Platform**. 
+This document outlines the product vision, database schemas, JSON configurations, and frontend UI specs for the **Kridaz Unified Tournament Platform**.
 
 By building a generic, state-driven stage builder rather than hardcoding stage logic to specific formats (like Knockout or League), Kridaz transitions from a simple venue-booking tool into a comprehensive tournament ecosystem that outperforms established platforms like CricHeroes, Hudle, and Playo.
 
@@ -14,7 +14,7 @@ By building a generic, state-driven stage builder rather than hardcoding stage l
 
 ## 1. Product Vision: Beyond Venue Booking
 
-To beat platforms like CricHeroes, Kridaz must integrate tournament orchestration directly into our social sports network. 
+To beat platforms like CricHeroes, Kridaz must integrate tournament orchestration directly into our social sports network.
 
 ```mermaid
 graph LR
@@ -29,10 +29,10 @@ By allowing organizers to construct custom tournament formats step-by-step, we b
 
 ## 2. Decoupled Architecture Philosophy
 
-Traditional platforms hardcode their stage logic (e.g., selecting a "Knockout" tournament restricts the user to standard single-elimination brackets). 
+Traditional platforms hardcode their stage logic (e.g., selecting a "Knockout" tournament restricts the user to standard single-elimination brackets).
 
-**Kridaz uses a Decoupled Stage Engine.** 
-The tournament type (e.g., Round Robin, League, Box Cricket) determines the **default recommendations** for stages, but does not lock down the architecture. Any tournament format can toggle and enable *any* stage configuration (group stages, position playoffs, qualifiers, custom stages, or super overs).
+**Kridaz uses a Decoupled Stage Engine.**
+The tournament type (e.g., Round Robin, League, Box Cricket) determines the **default recommendations** for stages, but does not lock down the architecture. Any tournament format can toggle and enable _any_ stage configuration (group stages, position playoffs, qualifiers, custom stages, or super overs).
 
 ```mermaid
 graph TD
@@ -56,9 +56,11 @@ When an organizer creates a tournament, they proceed through 5 steps:
 ```
 
 ### Step 3: Expandable Checklist UI (Stage Builder)
+
 Instead of overwhelming the user with massive dropdowns, the UI displays an **Expandable Checklist** representing the stages.
 
 #### Mockup: Tournament Type - Knockout
+
 Organizers can choose which stages are required, which automatically generates the corresponding fixtures.
 
 ```text
@@ -84,6 +86,7 @@ Configure Tournament Stages
 To support a generic stage builder, the configuration must be stored in a flexible JSON format.
 
 ### The Configuration Payload
+
 The database stores this configuration in the `Tournament` table inside a single JSONB column, `stageConfig`.
 
 ```json
@@ -143,10 +146,10 @@ model Tournament {
   mode            TournamentMode // MATCH | TOURNAMENT
   type            String         // "knockout", "round_robin", "custom", etc.
   teamCount       Int
-  
+
   // Decoupled Configuration Payload
   stageConfig     Json           // Stores the StageConfig JSON structure
-  
+
   // Relations
   matches         Match[]
   teams           TournamentTeam[]
@@ -167,8 +170,10 @@ enum TournamentMode {
 The fixture generator consumes the `stageConfig` block and instantiates the `Match` records.
 
 ### Endpoint: `/api/tournament/generate-fixtures`
-* **Method**: `POST`
-* **Payload**:
+
+- **Method**: `POST`
+- **Payload**:
+
 ```json
 {
   "tournamentId": "tournament-uuid-123"
@@ -176,18 +181,19 @@ The fixture generator consumes the `stageConfig` block and instantiates the `Mat
 ```
 
 ### Node.js/Prisma Implementation Snippet
+
 Below is a conceptual snippet showing how the backend schedules the dynamic stages:
 
 ```javascript
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const generateTournamentFixtures = async (req, res) => {
   const { tournamentId } = req.body;
-  
+
   try {
     const tournament = await prisma.tournament.findUnique({
-      where: { id: tournamentId }
+      where: { id: tournamentId },
     });
 
     const { stages, playoffs, rules } = tournament.stageConfig;
@@ -201,7 +207,7 @@ export const generateTournamentFixtures = async (req, res) => {
           stageId: stage.id,
           stageName: stage.name,
           matchName: `${stage.name} - Match ${i + 1}`,
-          status: 'SCHEDULED'
+          status: "SCHEDULED",
         });
       }
     }
@@ -210,36 +216,35 @@ export const generateTournamentFixtures = async (req, res) => {
     if (playoffs.thirdPosition) {
       scheduledMatches.push({
         tournamentId,
-        stageId: 'third_position_playoff',
-        stageName: '3rd Place Playoff',
-        matchName: '3rd Place Match (Loser SF1 vs Loser SF2)',
-        status: 'PENDING_QUALIFIERS'
+        stageId: "third_position_playoff",
+        stageName: "3rd Place Playoff",
+        matchName: "3rd Place Match (Loser SF1 vs Loser SF2)",
+        status: "PENDING_QUALIFIERS",
       });
     }
-    
+
     if (playoffs.fifthPosition) {
       for (let i = 0; i < 2; i++) {
         scheduledMatches.push({
           tournamentId,
-          stageId: 'fifth_position_playoff',
-          stageName: '5th Place Playoff',
+          stageId: "fifth_position_playoff",
+          stageName: "5th Place Playoff",
           matchName: `5th Place Match - Tie ${i + 1}`,
-          status: 'PENDING_QUALIFIERS'
+          status: "PENDING_QUALIFIERS",
         });
       }
     }
 
     // Write generated matches to DB
     const createdMatches = await prisma.match.createMany({
-      data: scheduledMatches
+      data: scheduledMatches,
     });
 
     return res.status(201).json({
       success: true,
       message: `${scheduledMatches.length} matches created successfully.`,
-      data: createdMatches
+      data: createdMatches,
     });
-
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }
@@ -250,9 +255,9 @@ export const generateTournamentFixtures = async (req, res) => {
 
 ## 6. How We Beat CricHeroes (Feature Comparison Matrix)
 
-| Feature | CricHeroes | Kridaz | Why It Wins |
-| :--- | :--- | :--- | :--- |
-| **Stage Customization** | Hardcoded based on selection (e.g., standard Knockout). | Fully modular. Organize "Knockout" and add a 5th place playoff if teams want extra play-time. | Keeps local teams playing more matches (higher engagement). |
-| **Corporate/Weekend Events** | No specific optimizations for corporate-style weekend brackets. | Pre-configured stage presets tailored for fast-paced corporate leagues. | Attracts high-value corporate sponsorships and event planners. |
-| **Super Over Integration** | Manual settings required. | Pre-defined rule option inside stage builder. Automatically triggers a tie-breaker. | Smooth match scoring without admin intervention. |
-| **Custom Match Progression** | Fixed brackets. | Dynamic drag-and-drop hierarchy adjustment. | Handles unexpected team dropouts gracefully without breaking the tournament. |
+| Feature                      | CricHeroes                                                      | Kridaz                                                                                        | Why It Wins                                                                  |
+| :--------------------------- | :-------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------- |
+| **Stage Customization**      | Hardcoded based on selection (e.g., standard Knockout).         | Fully modular. Organize "Knockout" and add a 5th place playoff if teams want extra play-time. | Keeps local teams playing more matches (higher engagement).                  |
+| **Corporate/Weekend Events** | No specific optimizations for corporate-style weekend brackets. | Pre-configured stage presets tailored for fast-paced corporate leagues.                       | Attracts high-value corporate sponsorships and event planners.               |
+| **Super Over Integration**   | Manual settings required.                                       | Pre-defined rule option inside stage builder. Automatically triggers a tie-breaker.           | Smooth match scoring without admin intervention.                             |
+| **Custom Match Progression** | Fixed brackets.                                                 | Dynamic drag-and-drop hierarchy adjustment.                                                   | Handles unexpected team dropouts gracefully without breaking the tournament. |

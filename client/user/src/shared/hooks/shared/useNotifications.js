@@ -1,55 +1,90 @@
-import { useState, useEffect, useCallback } from 'react';
-import axiosInstance from '@hooks/useAxiosInstance';
-import { useSelector } from 'react-redux';
+import { useCallback, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useSocket } from "@context/SocketContext";
+import { baseApi } from "@redux/api/baseApi";
+import {
+  useGetNotificationsQuery,
+  useMarkNotificationReadMutation,
+  useMarkAllNotificationsReadMutation,
+  useClearAllNotificationsMutation,
+} from "@redux/api/userApi";
 
 const useNotifications = () => {
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const dispatch = useDispatch();
+  const { socket } = useSocket();
   const { user, role } = useSelector((state) => state.auth);
 
   const getBaseUrl = useCallback(() => {
     const normalizedRole = (role || user?.role || "").toString().toLowerCase();
 
-    if (normalizedRole === 'admin' || normalizedRole === 'bmsp_admin') {
-      return '/api/admin/notifications';
+    if (normalizedRole === "admin" || normalizedRole === "bmsp_admin") {
+      return "/api/admin/notifications";
     }
 
     if (
-      normalizedRole.includes('venu_owners') ||
-      normalizedRole === 'owner' ||
-      normalizedRole === 'venue_owner' ||
-      normalizedRole === 'verified_venue_owner' ||
-      normalizedRole === 'bmsp_owner' ||
-      ['coach', 'umpire', 'scorer', 'streamer'].some((r) => normalizedRole.includes(r))
+      normalizedRole.includes("venu_owners") ||
+      normalizedRole === "owner" ||
+      normalizedRole === "venue_owner" ||
+      normalizedRole === "verified_venue_owner" ||
+      normalizedRole === "bmsp_owner" ||
+      ["coach", "umpire", "scorer", "streamer"].some((r) =>
+        normalizedRole.includes(r)
+      )
     ) {
-      return '/api/owner/notifications';
+      return "/api/owner/notifications";
     }
 
-    return '/api/user/notifications';
+    return "/api/user/notifications";
   }, [role, user?.role]);
 
-  const fetchNotifications = useCallback(async () => {
-    if (!user?.id) return;
-    setLoading(true);
-    try {
-      const response = await axiosInstance.get(getBaseUrl());
-      if (response.data.success) {
-        setNotifications(response.data.notifications);
-        setUnreadCount(response.data.notifications.filter(n => !n.isRead).length);
-      }
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [getBaseUrl, user?.id]);
+  const prefix = getBaseUrl();
+  const hasUser = !!user?.id;
+
+  const { data, isLoading, refetch } = useGetNotificationsQuery(prefix, {
+    skip: !hasUser,
+    pollingInterval: 60000,
+  });
+
+  // Listen for socket notifications and update cache optimistically
+  useEffect(() => {
+    if (!socket || !hasUser) return;
+
+    const handleNewNotification = (notification) => {
+      dispatch(
+        baseApi.util.updateQueryData("getNotifications", prefix, (draft) => {
+          if (draft) {
+            if (!draft.notifications) {
+              draft.notifications = [];
+            }
+            // Add notification to top if not already exists
+            const id = notification.id || notification._id;
+            const exists = draft.notifications.some(
+              (n) => (n.id || n._id) === id
+            );
+            if (!exists) {
+              draft.notifications.unshift(notification);
+            }
+          }
+        })
+      );
+    };
+
+    socket.on("new_notification", handleNewNotification);
+    return () => {
+      socket.off("new_notification", handleNewNotification);
+    };
+  }, [socket, prefix, dispatch, hasUser]);
+
+  const [markReadMutation] = useMarkNotificationReadMutation();
+  const [markAllReadMutation] = useMarkAllNotificationsReadMutation();
+  const [clearAllMutation] = useClearAllNotificationsMutation();
+
+  const notifications = data?.notifications || [];
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const markRead = async (id) => {
     try {
-      await axiosInstance.put(`${getBaseUrl()}/${id}/mark-read`);
-      setNotifications(prev => prev.map(n => (n.id || n._id) === id ? { ...n, isRead: true } : n));
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      await markReadMutation({ prefix, id }).unwrap();
     } catch (error) {
       console.error("Error marking notification read:", error);
     }
@@ -57,9 +92,7 @@ const useNotifications = () => {
 
   const markAllRead = async () => {
     try {
-      await axiosInstance.put(`${getBaseUrl()}/mark-all-read`);
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-      setUnreadCount(0);
+      await markAllReadMutation(prefix).unwrap();
     } catch (error) {
       console.error("Error marking all read:", error);
     }
@@ -67,29 +100,20 @@ const useNotifications = () => {
 
   const clearAll = async () => {
     try {
-      await axiosInstance.delete(`${getBaseUrl()}/clear`);
-      setNotifications([]);
-      setUnreadCount(0);
+      await clearAllMutation(prefix).unwrap();
     } catch (error) {
       console.error("Error clearing notifications:", error);
     }
   };
 
-  useEffect(() => {
-    fetchNotifications();
-    // Poll every 60 seconds
-    const interval = setInterval(fetchNotifications, 60000);
-    return () => clearInterval(interval);
-  }, [fetchNotifications]);
-
   return {
     notifications,
-    loading,
+    loading: isLoading,
     unreadCount,
     markRead,
     markAllRead,
     clearAll,
-    refresh: fetchNotifications
+    refresh: refetch,
   };
 };
 

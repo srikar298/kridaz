@@ -13,31 +13,30 @@ export const getRevenueSummary = async (req, res) => {
     // Resolve owner record
     const ownerRecord = await prisma.ownerProfile.findFirst({
       where: {
-        OR: [
-          { id: ownerId || undefined },
-          { userId: userId || undefined }
-        ]
+        OR: [{ id: ownerId || undefined }, { userId: userId || undefined }],
       },
-      include: { turfs: { select: { id: true, name: true } } }
+      include: { turfs: { select: { id: true, name: true } } },
     });
 
     if (!ownerRecord) {
-      return res.status(404).json({ success: false, message: "Owner profile not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Owner profile not found." });
     }
 
-    const turfIds = ownerRecord.turfs.map(t => t.id);
+    const turfIds = ownerRecord.turfs.map((t) => t.id);
 
     // 1. Total Revenue: Sum of ownerRevenue for all COMPLETED bookings
     const completedBookingsAggr = await prisma.booking.aggregate({
       where: { turfId: { in: turfIds }, status: "COMPLETED" },
-      _sum: { ownerRevenue: true }
+      _sum: { ownerRevenue: true },
     });
     const totalRevenue = completedBookingsAggr._sum.ownerRevenue || 0;
 
     // 2. Pending Settlements: Sum of ownerRevenue for CONFIRMED bookings in the future
     const pendingAggr = await prisma.booking.aggregate({
       where: { turfId: { in: turfIds }, status: "CONFIRMED" },
-      _sum: { ownerRevenue: true }
+      _sum: { ownerRevenue: true },
     });
     const pendingSettlements = pendingAggr._sum.ownerRevenue || 0;
 
@@ -46,26 +45,28 @@ export const getRevenueSummary = async (req, res) => {
       where: {
         turfId: { in: turfIds },
         status: "IN_REVIEW_WINDOW",
-        revenueStatus: "IN_PROGRESS"
+        revenueStatus: "IN_PROGRESS",
       },
       select: {
         id: true,
         playStartTime: true,
         reviewWindowEndsAt: true,
         ownerRevenue: true,
-        turf: { select: { name: true } }
+        turf: { select: { name: true } },
       },
-      orderBy: { reviewWindowEndsAt: 'asc' }
+      orderBy: { reviewWindowEndsAt: "asc" },
     });
 
     // 4. Recent relevant wallet transactions (Settlements, Withdrawals, Disputes)
     const recentTransactions = await prisma.walletTransaction.findMany({
       where: {
         userId: ownerRecord.userId,
-        type: { in: ["SETTLEMENT", "WITHDRAWAL", "DISPUTE_FREEZE", "DISPUTE_RELEASE"] }
+        type: {
+          in: ["SETTLEMENT", "WITHDRAWAL", "DISPUTE_FREEZE", "DISPUTE_RELEASE"],
+        },
       },
-      orderBy: { createdAt: 'desc' },
-      take: 20
+      orderBy: { createdAt: "desc" },
+      take: 20,
     });
 
     return res.status(200).json({
@@ -77,16 +78,18 @@ export const getRevenueSummary = async (req, res) => {
           dispute: ownerRecord.disputeBalance || 0,
           withdrawn: ownerRecord.withdrawnBalance || 0,
           totalRevenue,
-          pendingSettlements
+          pendingSettlements,
         },
         inProgressBookings,
-        recentTransactions
-      }
+        recentTransactions,
+      },
     });
-
   } catch (error) {
     logger.error("[REVENUE API] Summary error:", error);
-    return res.status(500).json({ success: false, message: "Server error fetching revenue summary." });
+    return res.status(500).json({
+      success: false,
+      message: "Server error fetching revenue summary.",
+    });
   }
 };
 
@@ -103,30 +106,41 @@ export const getRevenueTransactions = async (req, res) => {
 
     const ownerRecord = await prisma.ownerProfile.findFirst({
       where: {
-        OR: [
-          { id: ownerId || undefined },
-          { userId: userId || undefined }
-        ]
-      }
+        OR: [{ id: ownerId || undefined }, { userId: userId || undefined }],
+      },
     });
 
     if (!ownerRecord) {
-      return res.status(404).json({ success: false, message: "Owner profile not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Owner profile not found." });
     }
 
     const query = {
       userId: ownerRecord.userId,
-      type: { in: ["SETTLEMENT", "REVENUE", "WITHDRAWAL", "DISPUTE_FREEZE", "DISPUTE_RELEASE", "HOST_GAME", "JOIN_GAME"] }
+      type: {
+        in: [
+          "SETTLEMENT",
+          "REVENUE",
+          "WITHDRAWAL",
+          "DISPUTE_FREEZE",
+          "DISPUTE_RELEASE",
+          "HOST_GAME",
+          "JOIN_GAME",
+        ],
+      },
     };
 
     const transactions = await prisma.walletTransaction.findMany({
       where: query,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       skip,
       take: limit,
       include: {
-        booking: { select: { playStartTime: true, turf: { select: { name: true } } } }
-      }
+        booking: {
+          select: { playStartTime: true, turf: { select: { name: true } } },
+        },
+      },
     });
 
     const total = await prisma.walletTransaction.count({ where: query });
@@ -138,13 +152,14 @@ export const getRevenueTransactions = async (req, res) => {
         pagination: {
           total,
           page,
-          pages: Math.ceil(total / limit)
-        }
-      }
+          pages: Math.ceil(total / limit),
+        },
+      },
     });
-
   } catch (error) {
     logger.error("[REVENUE API] Transactions error:", error);
-    return res.status(500).json({ success: false, message: "Server error fetching transactions." });
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error fetching transactions." });
   }
 };

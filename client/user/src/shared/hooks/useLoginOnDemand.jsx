@@ -11,7 +11,7 @@ const useLoginOnDemand = () => {
 
   const gateInteraction = (callback, modalOptions = {}) => {
     if (isLoggedIn) {
-      if (typeof callback === 'function') callback();
+      if (typeof callback === "function") callback();
     } else {
       dispatch(openLoginModal(modalOptions));
     }

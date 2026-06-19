@@ -1,8 +1,8 @@
-import { redisClient as redis } from '../config/redis.js';
-import logger from './logger.js';
-import * as Sentry from '@sentry/node';
+import { redisClient as redis } from "../config/redis.js";
+import logger from "./logger.js";
+import * as Sentry from "@sentry/node";
 
-const DEAD_LETTER_KEY = 'kridaz:dead-letter';
+const DEAD_LETTER_KEY = "kridaz:dead-letter";
 
 /**
  * Saves a failed BullMQ job payload to Redis for later retry.
@@ -13,7 +13,12 @@ const DEAD_LETTER_KEY = 'kridaz:dead-letter';
  * @param {object} payload    - job data
  * @param {object} opts       - original BullMQ job options
  */
-export const saveToDeadLetter = async (queueName, jobName, payload, opts = {}) => {
+export const saveToDeadLetter = async (
+  queueName,
+  jobName,
+  payload,
+  opts = {}
+) => {
   const entry = JSON.stringify({
     queueName,
     jobName,
@@ -24,12 +29,20 @@ export const saveToDeadLetter = async (queueName, jobName, payload, opts = {}) =
 
   try {
     await redis.lpush(DEAD_LETTER_KEY, entry);
-    logger.warn(`[DEAD_LETTER] Saved failed job to dead-letter: ${queueName}/${jobName}`, { payload });
+    logger.warn(
+      `[DEAD_LETTER] Saved failed job to dead-letter: ${queueName}/${jobName}`,
+      { payload }
+    );
   } catch (redisErr) {
     // If even Redis fails, capture in Sentry — this is the last resort
-    logger.error('[DEAD_LETTER] Failed to save to dead-letter list', redisErr);
+    logger.error("[DEAD_LETTER] Failed to save to dead-letter list", redisErr);
     Sentry.captureException(redisErr, {
-      extra: { queueName, jobName, payload, originalError: 'BullMQ enqueue failed' },
+      extra: {
+        queueName,
+        jobName,
+        payload,
+        originalError: "BullMQ enqueue failed",
+      },
     });
   }
 };
@@ -52,16 +65,23 @@ export const drainDeadLetter = async (queues) => {
       const queue = queues[entry.queueName];
 
       if (!queue) {
-        logger.warn(`[DEAD_LETTER] No queue registered for "${entry.queueName}" — skipping`);
+        logger.warn(
+          `[DEAD_LETTER] No queue registered for "${entry.queueName}" — skipping`
+        );
         continue;
       }
 
       try {
         await queue.add(entry.jobName, entry.payload, entry.opts);
         drained++;
-        logger.info(`[DEAD_LETTER] Re-enqueued: ${entry.queueName}/${entry.jobName}`);
+        logger.info(
+          `[DEAD_LETTER] Re-enqueued: ${entry.queueName}/${entry.jobName}`
+        );
       } catch (err) {
-        logger.error(`[DEAD_LETTER] Re-enqueue failed for ${entry.queueName}/${entry.jobName}`, err);
+        logger.error(
+          `[DEAD_LETTER] Re-enqueue failed for ${entry.queueName}/${entry.jobName}`,
+          err
+        );
         Sentry.captureException(err, { extra: entry });
         // Push back so it's not lost — will retry on next startup
         await redis.lpush(DEAD_LETTER_KEY, raw);
@@ -72,6 +92,6 @@ export const drainDeadLetter = async (queues) => {
       logger.info(`[DEAD_LETTER] Drained ${drained} job(s) on startup`);
     }
   } catch (err) {
-    logger.error('[DEAD_LETTER] Error during drain', err);
+    logger.error("[DEAD_LETTER] Error during drain", err);
   }
 };

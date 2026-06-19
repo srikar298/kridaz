@@ -1,1 +1,22 @@
-{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["name","email","phone","password","otp","phoneOtp"],"properties":{"name":{"type":"string"},"email":{"type":"string","format":"email"},"phone":{"type":"string"},"password":{"type":"string","minLength":6},"otp":{"type":"string"},"phoneOtp":{"type":"string"}}}}}}}
+{
+  "title": "Body",
+  "body": {
+    "required": true,
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "required": ["name", "email", "phone", "password", "otp", "phoneOtp"],
+          "properties": {
+            "name": { "type": "string" },
+            "email": { "type": "string", "format": "email" },
+            "phone": { "type": "string" },
+            "password": { "type": "string", "minLength": 6 },
+            "otp": { "type": "string" },
+            "phoneOtp": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

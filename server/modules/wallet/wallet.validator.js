@@ -3,6 +3,7 @@ import { z } from "zod";
 export const createTopupSchema = z.object({
   body: z.object({
     amount: z.number().positive("Amount must be greater than 0"),
+    couponCode: z.string().optional(),
   }),
 });
 
@@ -16,7 +17,10 @@ export const verifyTopupSchema = z.object({
 
 export const requestWithdrawalSchema = z.object({
   body: z.object({
-    amount: z.number().min(500, "Minimum withdrawal is Rs 500").max(100000, "Maximum withdrawal is Rs 1,00,000"),
+    amount: z
+      .number()
+      .min(500, "Minimum withdrawal is Rs 500")
+      .max(100000, "Maximum withdrawal is Rs 1,00,000"),
     bankDetails: z.record(z.any()).optional(),
   }),
 });

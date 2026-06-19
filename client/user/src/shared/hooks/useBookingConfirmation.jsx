@@ -44,7 +44,7 @@ const useBookingConfirmation = (
         totalPrice: pricePerHour * duration,
         selectedTurfDate,
         ...(couponCode && { couponCode }),
-        ...paymentData
+        ...paymentData,
       };
 
       const response = await axiosInstance.post(

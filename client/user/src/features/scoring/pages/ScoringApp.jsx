@@ -1,65 +1,111 @@
 import * as Sentry from "@sentry/react";
-import React, { useState, useMemo, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Settings, History, Users, Circle, Zap, CheckCircle2, AlertCircle, Filter, Shield, User, PlayCircle, Undo2, Trophy, Play, Sparkles, X, Pause, FileText, TrendingUp, MapPin, Timer, Hash, Crosshair, Share2 } from 'lucide-react';
-import toast from 'react-hot-toast';
-import { useSelector } from 'react-redux';
-import useCricketScoring from '../hooks/useCricketScoring';
-import BallByBallHistory from '@features/scoring/components/BallByBallHistory';
-import InningsSetupModal from '@features/scoring/components/InningsSetupModal';
-import WicketModal from '@features/scoring/components/WicketModal';
-import ExtraRunsModal from '@features/scoring/components/ExtraRunsModal';
-import SelectBowlerModal from '@features/scoring/components/SelectBowlerModal';
-import TossModal from '@features/scoring/components/TossModal';
-import { io } from 'socket.io-client';
-import axiosInstance from '@hooks/useAxiosInstance';
-import ScoringPasswordModal from '../components/ScoringPasswordModal';
-import CustomRunsModal from '../components/CustomRunsModal';
-import TickerThemeStoreModal from '@features/scoring/components/TickerThemeStoreModal';
-import VisualWagonWheelModal from '../components/VisualWagonWheelModal';
-import PenaltyModal from '../components/PenaltyModal';
-import EndMatchModal from '../components/EndMatchModal';
-import MatchReportModal from '../components/MatchReportModal';
-import MatchExitModal from '../components/MatchExitModal';
-import cricketLoadingGif from '../../../assets/cricket-loading.gif';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ChevronLeft,
+  Settings,
+  History,
+  Users,
+  Zap,
+  CheckCircle2,
+  AlertCircle,
+  Shield,
+  User,
+  Trophy,
+  Play,
+  Sparkles,
+  X,
+  Pause,
+  FileText,
+  TrendingUp,
+  MapPin,
+  Timer,
+  Hash,
+  Crosshair,
+  Share2,
+} from "lucide-react";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import useCricketScoring from "../hooks/useCricketScoring";
+import BallByBallHistory from "../components/BallByBallHistory";
+import InningsSetupModal from "../components/InningsSetupModal";
+import WicketModal from "../components/WicketModal";
+import ExtraRunsModal from "../components/ExtraRunsModal";
+import SelectBowlerModal from "../components/SelectBowlerModal";
+import TossModal from "../components/TossModal";
+import { io } from "socket.io-client";
+import axiosInstance from "@hooks/useAxiosInstance";
+import ScoringPasswordModal from "../components/ScoringPasswordModal";
+import CustomRunsModal from "../components/CustomRunsModal";
+import TickerThemeStoreModal from "../components/TickerThemeStoreModal";
+import VisualWagonWheelModal from "../components/VisualWagonWheelModal";
+import PenaltyModal from "../components/PenaltyModal";
+import EndMatchModal from "../components/EndMatchModal";
+import MatchReportModal from "../components/MatchReportModal";
+import MatchExitModal from "../components/MatchExitModal";
+import cricketLoadingGif from "../../../assets/cricket-loading.gif";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:6001';
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:6001";
 /**
  * ScoringApp — The primary match scoring console.
  * Fully rebranded for the Scorer Portal with Teal Green (#00C187) and Inter font.
  */
 
-const THEME_COLOR = '#00C187';
+const THEME_COLOR = "#00C187";
 
 /* ─── Helpers ─── */
 const ballColor = (ball) => {
-  if (ball.isWicket) return 'bg-red-500/20 text-red-500 border border-red-500/30';
-  if (ball.isExtra) return 'bg-[#00C187]/20 text-[#00C187] border border-[#00C187]/30';
-  if (ball.runs === 6) return 'bg-[#00C187] text-black shadow-[0_0_15px_rgba(0,193,135,0.4)]';
-  if (ball.runs === 4) return 'bg-[#00C187]/80 text-black';
-  if (ball.runs === 0) return 'bg-white/5 text-neutral-600 border border-white/5';
-  return 'bg-white/10 text-white border border-white/10';
+  if (ball.isWicket)
+    return "bg-red-500/20 text-red-500 border border-red-500/30";
+  if (ball.isExtra)
+    return "bg-[#00C187]/20 text-[#00C187] border border-[#00C187]/30";
+  if (ball.runs === 6)
+    return "bg-[#00C187] text-black shadow-[0_0_15px_rgba(0,193,135,0.4)]";
+  if (ball.runs === 4) return "bg-[#00C187]/80 text-black";
+  if (ball.runs === 0)
+    return "bg-white/5 text-neutral-600 border border-white/5";
+  return "bg-white/10 text-white border border-white/10";
 };
 
 const ballLabel = (ball) => {
-  if (ball.isWicket) return 'W';
-  if (ball.extraType === 'WIDE') return 'Wd';
-  if (ball.extraType === 'NO_BALL') return 'Nb';
-  return String(ball.runs ?? '-');
+  if (ball.isWicket) return "W";
+  if (ball.extraType === "WIDE") return "Wd";
+  if (ball.extraType === "NO_BALL") return "Nb";
+  return String(ball.runs ?? "-");
 };
 
 /* ─── Members Tab ─── */
 function MembersTab({ matchData }) {
-  const [teamTab, setTeamTab] = useState('teamA');
+  const [teamTab, setTeamTab] = useState("teamA");
   const game = matchData?.hostedGameId;
-  const teamA = game?.teamA || matchData?.teamA || (Array.isArray(game?.teams) ? game.teams.find(t => t.teamKey === 'teamA') : game?.teams?.teamA);
-  const teamB = game?.teamB || matchData?.teamB || (Array.isArray(game?.teams) ? game.teams.find(t => t.teamKey === 'teamB') : game?.teams?.teamB);
-  const activeTeam = teamTab === 'teamA' ? teamA : teamB;
+  const teamA =
+    game?.teamA ||
+    matchData?.teamA ||
+    (Array.isArray(game?.teams)
+      ? game.teams.find((t) => t.teamKey === "teamA")
+      : game?.teams?.teamA);
+  const teamB =
+    game?.teamB ||
+    matchData?.teamB ||
+    (Array.isArray(game?.teams)
+      ? game.teams.find((t) => t.teamKey === "teamB")
+      : game?.teams?.teamB);
+  const activeTeam = teamTab === "teamA" ? teamA : teamB;
 
   const getBattingStats = (userId) => {
-    const s = matchData?.playerStats?.find(p => p.userId === userId || p.userId?.toString() === userId?.toString());
-    if (!s || (s.battingBalls === 0 && s.battingRuns === 0 && matchData?.strikerId !== userId && matchData?.nonStrikerId !== userId)) return null;
+    const s = matchData?.playerStats?.find(
+      (p) => p.userId === userId || p.userId?.toString() === userId?.toString()
+    );
+    if (
+      !s ||
+      (s.battingBalls === 0 &&
+        s.battingRuns === 0 &&
+        matchData?.strikerId !== userId &&
+        matchData?.nonStrikerId !== userId)
+    )
+      return null;
     return {
       ...s,
       runs: s.battingRuns ?? 0,
@@ -68,8 +114,11 @@ function MembersTab({ matchData }) {
   };
 
   const getBowlingStats = (userId) => {
-    const s = matchData?.playerStats?.find(p => p.userId === userId || p.userId?.toString() === userId?.toString());
-    if (!s || (s.bowlingBalls === 0 && matchData?.bowlerId !== userId)) return null;
+    const s = matchData?.playerStats?.find(
+      (p) => p.userId === userId || p.userId?.toString() === userId?.toString()
+    );
+    if (!s || (s.bowlingBalls === 0 && matchData?.bowlerId !== userId))
+      return null;
     return {
       ...s,
       runs: s.bowlingRuns ?? 0,
@@ -80,10 +129,22 @@ function MembersTab({ matchData }) {
   return (
     <div className="space-y-4 pb-4 font-inter">
       <div className="flex gap-2 bg-white/5 rounded-[8px] p-1.5 border border-white/5">
-        {[['teamA', teamA?.name || 'TBD', teamA?.logo || teamA?.image], ['teamB', teamB?.name || 'TBD', teamB?.logo || teamB?.image]].map(([key, label, logo]) => (
-          <button key={key} onClick={() => setTeamTab(key)}
-            className={`flex-1 py-2.5 rounded-[8px] text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 ${teamTab === key ? 'bg-[#00C187] text-black shadow-lg' : 'text-neutral-500 hover:text-white'}`}>
-            {logo ? <img src={logo} className="w-4 h-4 rounded-full object-cover" alt={label} /> : null}
+        {[
+          ["teamA", teamA?.name || "TBD", teamA?.logo || teamA?.image],
+          ["teamB", teamB?.name || "TBD", teamB?.logo || teamB?.image],
+        ].map(([key, label, logo]) => (
+          <button
+            key={key}
+            onClick={() => setTeamTab(key)}
+            className={`flex-1 py-2.5 rounded-[8px] text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 ${teamTab === key ? "bg-[#00C187] text-black shadow-lg" : "text-neutral-500 hover:text-white"}`}
+          >
+            {logo ? (
+              <img
+                src={logo}
+                className="w-4 h-4 rounded-full object-cover"
+                alt={label}
+              />
+            ) : null}
             {label}
           </button>
         ))}
@@ -92,26 +153,65 @@ function MembersTab({ matchData }) {
       {activeTeam?.slots?.length > 0 ? (
         <div className="space-y-2.5">
           {activeTeam.slots.map((slot, i) => {
-            const uid = slot.user?._id || slot.user?.id || slot.userId || slot.user;
+            const uid =
+              slot.user?._id || slot.user?.id || slot.userId || slot.user;
             const bat = getBattingStats(uid);
             const bowl = getBowlingStats(uid);
             return (
-              <div key={i} className="flex items-center gap-4 p-4 bg-white/[0.02] rounded-[8px] border border-white/5 hover:bg-white/[0.04] transition-all">
+              <div
+                key={i}
+                className="flex items-center gap-4 p-4 bg-white/[0.02] rounded-[8px] border border-white/5 hover:bg-white/[0.04] transition-all"
+              >
                 <div className="w-11 h-11 rounded-[8px] bg-[#00C187]/10 border border-[#00C187]/20 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
-                  {slot.user?.profilePicture
-                    ? <img src={slot.user.profilePicture} className="w-full h-full object-cover" alt="" />
-                    : <User size={18} style={{ color: THEME_COLOR }} />}
+                  {slot.user?.profilePicture ? (
+                    <img
+                      src={slot.user.profilePicture}
+                      className="w-full h-full object-cover"
+                      alt=""
+                    />
+                  ) : (
+                    <User size={18} style={{ color: THEME_COLOR }} />
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-black uppercase tracking-tight text-white">{slot.user?.name || slot.customPlayer?.name || `Player ${i + 1}`}</p>
-                  <p className="text-[9px] text-neutral-500 font-black uppercase tracking-widest mt-0.5">{slot.role || 'Player'}</p>
+                  <p className="text-[13px] font-black uppercase tracking-tight text-white">
+                    {slot.user?.name ||
+                      slot.customPlayer?.name ||
+                      `Player ${i + 1}`}
+                  </p>
+                  <p className="text-[9px] text-neutral-500 font-black uppercase tracking-widest mt-0.5">
+                    {slot.role || "Player"}
+                  </p>
                 </div>
                 <div className="text-right shrink-0 space-y-1">
-                  {bat && <p className="text-[11px] font-black" style={{ color: THEME_COLOR }}>{bat.runs}({bat.balls}) <span className="text-[8px] text-neutral-600">BAT</span></p>}
-                  {bowl && <p className="text-[11px] text-blue-400 font-black">{bowl.wickets}/{bowl.runs} <span className="text-[8px] text-neutral-600">BWL</span></p>}
-                  {!bat && !bowl && <p className="text-[9px] text-neutral-700 font-black uppercase tracking-widest">Inactive</p>}
+                  {bat && (
+                    <p
+                      className="text-[11px] font-black"
+                      style={{ color: THEME_COLOR }}
+                    >
+                      {bat.runs}({bat.balls}){" "}
+                      <span className="text-[8px] text-neutral-600">BAT</span>
+                    </p>
+                  )}
+                  {bowl && (
+                    <p className="text-[11px] text-blue-400 font-black">
+                      {bowl.wickets}/{bowl.runs}{" "}
+                      <span className="text-[8px] text-neutral-600">BWL</span>
+                    </p>
+                  )}
+                  {!bat && !bowl && (
+                    <p className="text-[9px] text-neutral-700 font-black uppercase tracking-widest">
+                      Inactive
+                    </p>
+                  )}
                 </div>
-                {slot.status === 'JOINED' && <CheckCircle2 size={16} style={{ color: THEME_COLOR }} className="shrink-0" />}
+                {slot.status === "JOINED" && (
+                  <CheckCircle2
+                    size={16}
+                    style={{ color: THEME_COLOR }}
+                    className="shrink-0"
+                  />
+                )}
               </div>
             );
           })}
@@ -119,7 +219,9 @@ function MembersTab({ matchData }) {
       ) : (
         <div className="py-20 text-center bg-white/[0.02] rounded-[8px] border border-dashed border-white/10">
           <Users size={40} className="mx-auto mb-4 text-neutral-800" />
-          <p className="text-[10px] font-black text-neutral-600 uppercase tracking-[0.3em]">Grid is empty</p>
+          <p className="text-[10px] font-black text-neutral-600 uppercase tracking-[0.3em]">
+            Grid is empty
+          </p>
         </div>
       )}
     </div>
@@ -155,11 +257,12 @@ const ScoringApp = () => {
     setPowerplayOvers,
     toggleTimer,
     addPenalty,
+    advanceToNextInnings,
     fetchMatchReport,
-    refresh
+    refresh,
   } = useCricketScoring(matchId);
 
-  const [activeTab, setActiveTab] = useState('scoring');
+  const [activeTab, setActiveTab] = useState("scoring");
   const [showSettings, setShowSettings] = useState(false);
   const [liveEnabled, setLiveEnabled] = useState(false);
 
@@ -167,31 +270,41 @@ const ScoringApp = () => {
   const [localTimerSecs, setLocalTimerSecs] = useState(0);
 
   useEffect(() => {
-    if (matchData?.timerState === 'RUNNING') {
+    if (matchData?.timerState === "RUNNING") {
       const start = new Date(matchData.timerLastStartedAt).getTime();
       const initialDuration = matchData.totalDurationSeconds || 0;
 
-      setLocalTimerSecs(initialDuration + Math.floor((Date.now() - start) / 1000));
+      setLocalTimerSecs(
+        initialDuration + Math.floor((Date.now() - start) / 1000)
+      );
 
       const interval = setInterval(() => {
-        setLocalTimerSecs(initialDuration + Math.floor((Date.now() - start) / 1000));
+        setLocalTimerSecs(
+          initialDuration + Math.floor((Date.now() - start) / 1000)
+        );
       }, 1000);
       return () => clearInterval(interval);
     } else {
       setLocalTimerSecs(matchData?.totalDurationSeconds || 0);
     }
-  }, [matchData?.timerState, matchData?.timerLastStartedAt, matchData?.totalDurationSeconds]);
+  }, [
+    matchData?.timerState,
+    matchData?.timerLastStartedAt,
+    matchData?.totalDurationSeconds,
+  ]);
 
   const formatTimer = (secs) => {
-    if (!secs || isNaN(secs)) return '00:00:00';
+    if (!secs || isNaN(secs)) return "00:00:00";
     const h = Math.floor(secs / 3600);
     const m = Math.floor((secs % 3600) / 60);
     const s = secs % 60;
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
   const [liveUrls, setLiveUrls] = useState(null);
-  const [passwordVerified, setPasswordVerified] = useState(sessionStorage.getItem(`scoringAuth_${matchId}`) === 'true');
+  const [passwordVerified, setPasswordVerified] = useState(
+    sessionStorage.getItem(`scoringAuth_${matchId}`) === "true"
+  );
   const [authAction, setAuthAction] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPenaltyModal, setShowPenaltyModal] = useState(false);
@@ -200,22 +313,27 @@ const ScoringApp = () => {
   const [showExitModal, setShowExitModal] = useState(false);
   const [wagonWheelData, setWagonWheelData] = useState(null);
   const [showMatchActions, setShowMatchActions] = useState(false);
+  const [isUndoing, setIsUndoing] = useState(false);
 
   const [isAiCommentaryEnabled, setIsAiCommentaryEnabled] = useState(false);
-  const [commentaryVoice, setCommentaryVoice] = useState('alloy');
-  const [commentaryLanguage, setCommentaryLanguage] = useState('en');
-  const [commentaryStyle, setCommentaryStyle] = useState('professional');
+  const [commentaryVoice, setCommentaryVoice] = useState("alloy");
+  const [commentaryLanguage, setCommentaryLanguage] = useState("en");
+  const [commentaryStyle, setCommentaryStyle] = useState("professional");
 
   React.useEffect(() => {
     if (matchData?.hostedGameId) {
-      setIsAiCommentaryEnabled(matchData.hostedGameId.isAiCommentaryEnabled || false);
-      setCommentaryVoice(matchData.hostedGameId.commentaryVoice || 'alloy');
-      setCommentaryLanguage(matchData.hostedGameId.commentaryLanguage || 'en');
-      setCommentaryStyle(matchData.hostedGameId.commentaryStyle || 'professional');
+      setIsAiCommentaryEnabled(
+        matchData.hostedGameId.isAiCommentaryEnabled || false
+      );
+      setCommentaryVoice(matchData.hostedGameId.commentaryVoice || "alloy");
+      setCommentaryLanguage(matchData.hostedGameId.commentaryLanguage || "en");
+      setCommentaryStyle(
+        matchData.hostedGameId.commentaryStyle || "professional"
+      );
     }
   }, [matchData?.hostedGameId]);
 
-  const [scoringLock, setScoringLock] = useState('PENDING'); // 'PENDING' | 'GRANTED' | 'DENIED'
+  const [scoringLock, setScoringLock] = useState("PENDING"); // 'PENDING' | 'GRANTED' | 'DENIED'
 
   React.useEffect(() => {
     if (!passwordVerified) return; // Wait until password verified
@@ -230,25 +348,60 @@ const ScoringApp = () => {
       reconnectionDelay: 1000,
     });
 
-    socket.on('connect', () => {
-      socket.emit('scoring:acquire_lock', { matchId });
+    socket.on("connect", () => {
+      socket.emit("scoring:acquire_lock", { matchId });
     });
 
-    socket.on('scoring:lock_granted', () => {
-      setScoringLock('GRANTED');
+    socket.on("scoring:lock_granted", () => {
+      setScoringLock("GRANTED");
     });
 
-    socket.on('scoring:lock_denied', () => {
-      setScoringLock('DENIED');
+    socket.on("scoring:lock_denied", () => {
+      setScoringLock("DENIED");
     });
 
-    socket.on('scoring:lock_released', () => {
+    socket.on("scoring:lock_released", () => {
       // Someone released it, try to acquire it again
-      socket.emit('scoring:acquire_lock', { matchId });
+      socket.emit("scoring:acquire_lock", { matchId });
+    });
+
+    const speakBrowserTTS = (text, lang) => {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        const langMap = {
+          hi: "hi-IN",
+          en: "en-US",
+          pa: "pa-IN",
+          bn: "bn-IN",
+          mr: "mr-IN",
+          ta: "ta-IN",
+          te: "te-IN",
+          gu: "gu-IN",
+        };
+        utterance.lang = langMap[lang] || "en-US";
+        window.speechSynthesis.speak(utterance);
+      }
+    };
+
+    socket.on("COMMENTARY_AUDIO_READY", (data) => {
+      if (data.audioUrl) {
+        const audio = new Audio(`${API_BASE}${data.audioUrl}`);
+        audio.play().catch((e) => {
+          console.warn(
+            "ScoringApp audio play failed, falling back to Browser TTS",
+            e
+          );
+          speakBrowserTTS(data.text, data.language);
+        });
+      } else {
+        speakBrowserTTS(data.text, data.language);
+      }
     });
 
     return () => {
-      socket.emit('scoring:release_lock', { matchId });
+      socket.off("COMMENTARY_AUDIO_READY");
+      socket.emit("scoring:release_lock", { matchId });
       socket.disconnect();
     };
   }, [matchId, passwordVerified]);
@@ -257,31 +410,39 @@ const ScoringApp = () => {
     if (!passwordVerified || !matchId) return;
     const hostedGame = matchData?.hostedGameId;
     if (!hostedGame) return;
-
     if (hostedGame.isLive) {
       if (!liveEnabled) {
         setLiveEnabled(true);
-        const appBase = import.meta['env']?.VITE_APP_URL || window.location.origin;
+        const appBase =
+          import.meta["env"]?.VITE_APP_URL || window.location.origin;
         setLiveUrls({
-          obsOverlay: `${appBase}/live-overlay/${matchId}?token=${hostedGame.overlayToken || ''}`,
+          obsOverlay: `${appBase}/live-overlay/${matchId}?token=${hostedGame.overlayToken || ""}`,
           publicScoreboard: `${appBase}/analytics/${hostedGame.shortId || matchId}`,
         });
       }
     } else {
+      if (liveEnabled || window.autoGoLiveAttempted) return;
+      window.autoGoLiveAttempted = true;
       const autoGoLive = async () => {
         try {
-          const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:6001';
-          const response = await axiosInstance.post(`/api/scoring/${matchId}/go-live`, {}, {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem(`scorer_token_${matchId}`) || ''}`
+          const apiBase =
+            import.meta.env.VITE_API_URL || "http://localhost:6001";
+          const response = await axiosInstance.post(
+            `/api/scoring/${matchId}/go-live`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem(`scorer_token_${matchId}`) || ""}`,
+              },
             }
-          });
+          );
           const data = response.data;
           if (data.success) {
             setLiveEnabled(true);
-            const appBase = import.meta['env']?.VITE_APP_URL || window.location.origin;
+            const appBase =
+              import.meta["env"]?.VITE_APP_URL || window.location.origin;
             setLiveUrls({
-              obsOverlay: `${appBase}/live-overlay/${matchId}?token=${data.overlayToken || data.urls?.overlayToken || ''}`,
+              obsOverlay: `${appBase}/live-overlay/${matchId}?token=${data.overlayToken || data.urls?.overlayToken || ""}`,
               publicScoreboard: `${appBase}/analytics/${hostedGame?.shortId || matchId}`,
             });
             refresh();
@@ -292,24 +453,31 @@ const ScoringApp = () => {
       };
       autoGoLive();
     }
-  }, [matchData?.hostedGameId?.isLive, liveEnabled, matchId, passwordVerified, refresh]);
+  }, [
+    matchData?.hostedGameId?.isLive,
+    liveEnabled,
+    matchId,
+    passwordVerified,
+    refresh,
+  ]);
 
   React.useEffect(() => {
     const handleMessage = (e) => {
       if (e.origin !== window.location.origin) return;
-      if (e.data?.type === 'STREAM_KEYS_READY' && e.data?.matchId === matchId) {
-        toast.success("Stream Keys Ready! Please start broadcasting in OBS.");
+      if (e.data?.type === "STREAM_KEYS_READY" && e.data?.matchId === matchId) {
+        toast.success("Stream is ready! Start broadcasting now.");
         refresh();
       }
     };
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
   }, [matchId, refresh]);
 
   const [showInningsSetup, setShowInningsSetup] = useState(false);
   const [showWicketModal, setShowWicketModal] = useState(false);
   const [showBowlerModal, setShowBowlerModal] = useState(false);
   const [showTossModal, setShowTossModal] = useState(false);
+  const [matchStarting, setMatchStarting] = useState(false);
   const [showThemeStore, setShowThemeStore] = useState(false);
   const [extraModal, setExtraModal] = useState(null);
   const [showEndMatchModal, setShowEndMatchModal] = useState(false);
@@ -319,54 +487,82 @@ const ScoringApp = () => {
     if (isWagonWheelEnabled) {
       setWagonWheelData(runData);
     } else {
-      handleScore({ ...runData, extraType: 'NONE' });
+      handleScore({ ...runData, extraType: "NONE" });
     }
   };
   const score = (() => {
     const innings = matchData?.innings || [];
-    const current = innings[matchData?.currentInningsIndex ?? innings.length - 1];
-    if (!current) return { totalRuns: 0, totalWickets: 0, overs: 0, balls: 0, crr: '0.00' };
+    const current =
+      innings[matchData?.currentInningsIndex ?? innings.length - 1];
+    if (!current)
+      return { totalRuns: 0, totalWickets: 0, overs: 0, balls: 0, crr: "0.00" };
     const totalRuns = current.totalRuns ?? 0;
     const totalWickets = current.totalWickets ?? 0;
     const totalBalls = current.totalBalls ?? 0;
     const overs = Math.floor(totalBalls / 6);
     const balls = totalBalls % 6;
-    const crr = totalBalls > 0 ? ((totalRuns / totalBalls) * 6).toFixed(2) : '0.00';
+    const crr =
+      totalBalls > 0 ? ((totalRuns / totalBalls) * 6).toFixed(2) : "0.00";
     return { totalRuns, totalWickets, overs, balls, crr };
   })();
 
   const getTeamSlots = (teamKey) => {
     const game = matchData?.hostedGameId;
-    const team = game?.[teamKey] || matchData?.[teamKey] || (Array.isArray(game?.teams) ? game.teams.find(t => t.teamKey === teamKey) : game?.teams?.[teamKey]);
+    const team =
+      game?.[teamKey] ||
+      matchData?.[teamKey] ||
+      (Array.isArray(game?.teams)
+        ? game.teams.find((t) => t.teamKey === teamKey)
+        : game?.teams?.[teamKey]);
     Sentry.addBreadcrumb({
-      message: JSON.stringify([`[getTeamSlots] teamKey=${teamKey}`, { game, team, slots: team?.slots }])
+      message: JSON.stringify([
+        `[getTeamSlots] teamKey=${teamKey}`,
+        { game, team, slots: team?.slots },
+      ]),
     });
-    return (team?.slots || []).map(s => ({
-      userId: s.user?._id || s.user?.id || s.userId || s.user || s.customPlayerId || s.id,
-      name: s.user?.name || s.customPlayer?.name || 'Player',
-      role: s.role,
-    })).filter(p => p.userId);
+    return (team?.slots || [])
+      .map((s) => ({
+        userId:
+          s.user?._id ||
+          s.user?.id ||
+          s.userId ||
+          s.user ||
+          s.customPlayerId ||
+          s.id,
+        name: s.user?.name || s.customPlayer?.name || "Player",
+        role: s.role,
+      }))
+      .filter((p) => p.userId);
   };
 
   const getTeamInfo = (teamKey) => {
     const game = matchData?.hostedGameId || matchData;
-    const team = game?.[teamKey] || (Array.isArray(game?.teams) ? game.teams.find(t => t.teamKey === teamKey) : game?.teams?.[teamKey]);
+    const team =
+      game?.[teamKey] ||
+      (Array.isArray(game?.teams)
+        ? game.teams.find((t) => t.teamKey === teamKey)
+        : game?.teams?.[teamKey]);
     return {
-      name: team?.name || (teamKey === 'teamA' ? 'Team A' : 'Team B'),
+      name: team?.name || (teamKey === "teamA" ? "Team A" : "Team B"),
       logo: team?.image || team?.logo || null,
     };
   };
 
-  const currentInnings = matchData?.innings?.[matchData?.currentInningsIndex ?? 0];
-  const battingTeamKey = currentInnings?.battingTeam || 'teamA';
-  const bowlingTeamKey = battingTeamKey === 'teamA' ? 'teamB' : 'teamA';
+  const currentInnings =
+    matchData?.innings?.[matchData?.currentInningsIndex ?? 0];
+  const battingTeamKey = currentInnings?.battingTeam || "teamA";
+  const bowlingTeamKey = battingTeamKey === "teamA" ? "teamB" : "teamA";
   const battingSlots = getTeamSlots(battingTeamKey);
   const bowlingSlots = getTeamSlots(bowlingTeamKey);
   const battingTeamInfo = getTeamInfo(battingTeamKey);
   const bowlingTeamInfo = getTeamInfo(bowlingTeamKey);
 
   const strikerStats = (() => {
-    const s = matchData?.playerStats?.find(p => p.userId === matchData?.strikerId || p.userId?.toString() === matchData?.strikerId?.toString());
+    const s = matchData?.playerStats?.find(
+      (p) =>
+        p.userId === matchData?.strikerId ||
+        p.userId?.toString() === matchData?.strikerId?.toString()
+    );
     if (!s) return { runs: 0, balls: 0 };
     return {
       ...s,
@@ -375,7 +571,11 @@ const ScoringApp = () => {
     };
   })();
   const nonStrikerStats = (() => {
-    const s = matchData?.playerStats?.find(p => p.userId === matchData?.nonStrikerId || p.userId?.toString() === matchData?.nonStrikerId?.toString());
+    const s = matchData?.playerStats?.find(
+      (p) =>
+        p.userId === matchData?.nonStrikerId ||
+        p.userId?.toString() === matchData?.nonStrikerId?.toString()
+    );
     if (!s) return { runs: 0, balls: 0 };
     return {
       ...s,
@@ -384,7 +584,11 @@ const ScoringApp = () => {
     };
   })();
   const bowlerStats = (() => {
-    const s = matchData?.playerStats?.find(p => p.userId === matchData?.bowlerId || p.userId?.toString() === matchData?.bowlerId?.toString());
+    const s = matchData?.playerStats?.find(
+      (p) =>
+        p.userId === matchData?.bowlerId ||
+        p.userId?.toString() === matchData?.bowlerId?.toString()
+    );
     if (!s) return { wickets: 0, runs: 0, overs: 0, balls: 0 };
     return {
       ...s,
@@ -394,35 +598,61 @@ const ScoringApp = () => {
       balls: (s.bowlingBalls || 0) % 6,
     };
   })();
-  const strikerSlot = battingSlots.find(p => p.userId === matchData?.strikerId?.toString?.() || p.userId === matchData?.strikerId);
-  const nonStrikerSlot = battingSlots.find(p => p.userId === matchData?.nonStrikerId?.toString?.() || p.userId === matchData?.nonStrikerId);
-  const bowlerSlot = bowlingSlots.find(p => p.userId === matchData?.bowlerId?.toString?.() || p.userId === matchData?.bowlerId);
-
-  const outBatterIds = new Set((matchData?.playerStats || []).filter(b => b.outStatus && b.outStatus !== 'NOT_OUT').map(b => b.userId?.toString?.() || b.userId));
-  const remainingBatters = battingSlots.filter(p =>
-    p.userId !== matchData?.strikerId?.toString?.() &&
-    p.userId !== matchData?.nonStrikerId?.toString?.() &&
-    !outBatterIds.has(p.userId)
+  const strikerSlot = battingSlots.find(
+    (p) =>
+      p.userId === matchData?.strikerId?.toString?.() ||
+      p.userId === matchData?.strikerId
+  );
+  const nonStrikerSlot = battingSlots.find(
+    (p) =>
+      p.userId === matchData?.nonStrikerId?.toString?.() ||
+      p.userId === matchData?.nonStrikerId
+  );
+  const bowlerSlot = bowlingSlots.find(
+    (p) =>
+      p.userId === matchData?.bowlerId?.toString?.() ||
+      p.userId === matchData?.bowlerId
   );
 
-  const needsInningsSetup = (matchData?.id || matchData?._id) && matchData?.innings?.length > 0 && !matchData?.strikerId;
+  const outBatterIds = new Set(
+    (matchData?.playerStats || [])
+      .filter((b) => b.outStatus && b.outStatus !== "NOT_OUT")
+      .map((b) => b.userId?.toString?.() || b.userId)
+  );
+  const remainingBatters = battingSlots.filter(
+    (p) =>
+      p.userId !== matchData?.strikerId?.toString?.() &&
+      p.userId !== matchData?.nonStrikerId?.toString?.() &&
+      !outBatterIds.has(p.userId)
+  );
+
+  const needsInningsSetup =
+    (matchData?.id || matchData?._id) &&
+    matchData?.innings?.length > 0 &&
+    !matchData?.strikerId;
   const needsMatchStart = !matchData?.id && !matchData?._id;
 
   const isFirstInnings = matchData?.currentInningsIndex === 0;
   const isSecondInnings = matchData?.currentInningsIndex === 1;
-  const oversPerInnings = matchData?.oversPerInnings || matchData?.hostedGameId?.oversPerInnings || 20;
+  const oversPerInnings =
+    matchData?.oversPerInnings ||
+    matchData?.hostedGameId?.oversPerInnings ||
+    20;
   const maxBalls = oversPerInnings * 6;
 
-  const isInningsComplete = currentInnings && (
-    currentInnings.isCompleted ||
-    currentInnings.totalWickets >= 10 ||
-    currentInnings.totalBalls >= maxBalls ||
-    (isSecondInnings && currentInnings.totalRuns > (matchData?.innings?.[0]?.totalRuns || 9999))
-  );
+  const isInningsComplete =
+    currentInnings &&
+    (currentInnings.isCompleted ||
+      currentInnings.totalWickets >= 10 ||
+      currentInnings.totalBalls >= maxBalls ||
+      (isSecondInnings &&
+        currentInnings.totalRuns >
+          (matchData?.innings?.[0]?.totalRuns || 9999)));
 
   const isFirstInningsComplete = isFirstInnings && isInningsComplete;
 
-  const [showInningsCompleteModal, setShowInningsCompleteModal] = useState(false);
+  const [showInningsCompleteModal, setShowInningsCompleteModal] =
+    useState(false);
   const [hasAutoPausedTimer, setHasAutoPausedTimer] = useState(false);
 
   useEffect(() => {
@@ -432,15 +662,22 @@ const ScoringApp = () => {
         toast("Innings Complete! Timer automatically paused.", { icon: "⏸️" });
       }
     }
-  }, [isInningsComplete, isFirstInnings, needsInningsSetup, showInningsCompleteModal]);
-  const hasPassword = !!(matchData?.hostedGameId?.scoringPassword || matchData?.scoringPassword);
+  }, [
+    isInningsComplete,
+    isFirstInnings,
+    needsInningsSetup,
+    showInningsCompleteModal,
+  ]);
+  const hasPassword = !!(
+    matchData?.hostedGameId?.scoringPassword || matchData?.scoringPassword
+  );
   const isLocked = hasPassword && !passwordVerified && !needsMatchStart;
 
   // isLocked is now handled as an overlay in the return statement below
 
   const checkTimerActive = () => {
-    if (matchData?.timerState === 'PAUSED') {
-      toast.error("Match is paused. Start the timer to score.");
+    if (matchData?.timerState === "PAUSED") {
+      toast.error("Match is paused. Resume the timer to continue scoring.");
       return false;
     }
     return true;
@@ -448,19 +685,20 @@ const ScoringApp = () => {
 
   const handleScore = async (payload) => {
     if (isMutating) return { success: false, message: "Action in progress" };
-    if (!checkTimerActive()) return { success: false, message: "Match is paused" };
+    if (!checkTimerActive())
+      return { success: false, message: "Match is paused" };
     if (!matchData?.strikerId || !matchData?.bowlerId) {
-      toast.error("Please setup the next pair and bowler first.");
+      toast.error("Please select the batsmen and bowler first.");
       return { success: false, message: "Missing players" };
     }
     const fullPayload = {
       ...payload,
       batsmanId: matchData.strikerId,
-      bowlerId: matchData.bowlerId
+      bowlerId: matchData.bowlerId,
     };
     const result = await recordBall(fullPayload);
     if (!result.success) {
-      toast.error(result.error || "Failed to update score.");
+      toast.error("Something went wrong. Please try again.");
     }
     if (result.success && result.overComplete) {
       setShowBowlerModal(true);
@@ -470,229 +708,438 @@ const ScoringApp = () => {
 
   const handleScoringClick = (callback) => {
     if (isMutating) {
-      toast.error("Action in progress. Please wait.");
+      toast.error("Please wait, processing your last action.");
       return;
     }
     if (!checkTimerActive()) return;
     callback();
   };
 
-  if (scoringLock === 'PENDING' && passwordVerified) return (
-    <div className="min-h-screen bg-black flex items-center justify-center font-inter">
-      <div className="text-center">
-        <div className="w-10 h-10 border-4 border-[#00C187]/20 border-t-[#00C187] rounded-full animate-spin mx-auto mb-4" />
-        <h2 className="text-[13px] font-black uppercase tracking-widest text-[#00C187]">Acquiring Scoring Lock</h2>
+  if (scoringLock === "PENDING" && passwordVerified)
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center font-inter">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-[#00C187]/20 border-t-[#00C187] rounded-full animate-spin mx-auto mb-4" />
+          <h2 className="text-[13px] font-black uppercase tracking-widest text-[#00C187]">
+            Acquiring Scoring Lock
+          </h2>
+        </div>
       </div>
-    </div>
-  );
+    );
 
-  if (scoringLock === 'DENIED') return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center font-inter z-50">
-      <Shield style={{ color: THEME_COLOR }} className="mb-6 opacity-80" size={56} />
-      <h2 className="text-2xl font-black uppercase tracking-tighter mb-3">Scoring Locked</h2>
-      <p className="text-[13px] text-neutral-400 font-medium mb-8 max-w-sm">
-        Someone else is currently scoring this game. Please wait until they leave to gain access.
-      </p>
-      <div className="flex items-center gap-3 bg-[#00C187]/10 border border-[#00C187]/20 px-6 py-4 rounded-[8px]">
-        <div className="w-4 h-4 border-2 border-[#00C187]/30 border-t-[#00C187] rounded-full animate-spin" />
-        <span className="text-[11px] font-black uppercase tracking-widest text-[#00C187]">Waiting in queue...</span>
+  if (scoringLock === "DENIED")
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center font-inter z-50">
+        <Shield
+          style={{ color: THEME_COLOR }}
+          className="mb-6 opacity-80"
+          size={56}
+        />
+        <h2 className="text-2xl font-black uppercase tracking-tighter mb-3">
+          Scoring Locked
+        </h2>
+        <p className="text-[13px] text-neutral-400 font-medium mb-8 max-w-sm">
+          Someone else is currently scoring this game. Please wait until they
+          leave to gain access.
+        </p>
+        <div className="flex items-center gap-3 bg-[#00C187]/10 border border-[#00C187]/20 px-6 py-4 rounded-[8px]">
+          <div className="w-4 h-4 border-2 border-[#00C187]/30 border-t-[#00C187] rounded-full animate-spin" />
+          <span className="text-[11px] font-black uppercase tracking-widest text-[#00C187]">
+            Waiting in queue...
+          </span>
+        </div>
       </div>
-    </div>
-  );
+    );
 
-  if (loading) return (
-    <div className="min-h-[100dvh] bg-black flex flex-col items-center justify-center font-inter">
-      <img src={cricketLoadingGif} alt="Loading match..." className="w-32 h-32 object-contain" />
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="min-h-[100dvh] bg-black flex flex-col items-center justify-center font-inter">
+        <img
+          src={cricketLoadingGif}
+          alt="Loading match..."
+          className="w-32 h-32 object-contain"
+        />
+      </div>
+    );
 
-  if (error) return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center font-inter">
-      <AlertCircle style={{ color: THEME_COLOR }} className="mb-6" size={56} />
-      <h2 className="text-2xl font-black uppercase tracking-tighter mb-3">Sync Interrupted</h2>
-      <button onClick={() => navigate(-1)} className="px-6 py-3 bg-white/5 rounded-[8px] text-[10px] font-black uppercase tracking-widest text-[#00C187] border border-[#00C187]/20">Establish New Link</button>
-    </div>
-  );
+  if (error)
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center font-inter">
+        <AlertCircle
+          style={{ color: THEME_COLOR }}
+          className="mb-6"
+          size={56}
+        />
+        <h2 className="text-2xl font-black uppercase tracking-tighter mb-3">
+          Sync Interrupted
+        </h2>
+        <GlobalBackButton />
+      </div>
+    );
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'members': return <MembersTab matchData={matchData} />;
-      case 'history': return <HistoryTab matchData={matchData} />;
-      default: return (
-        <div className="font-inter flex-1 flex flex-col mt-0">
-          {matchData?.timerState === 'PAUSED' && (
-            <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-[8px] flex items-center gap-3.5 shadow-lg animate-pulse">
-              <AlertCircle className="text-red-500 shrink-0" size={20} />
-              <div className="text-left">
-                <p className="text-[10px] font-black uppercase tracking-widest text-red-500">Match is Paused</p>
-                <p className="text-xs text-neutral-400 font-medium mt-0.5">Resume the timer in the header to record deliveries and runs.</p>
+      case "members":
+        return <MembersTab matchData={matchData} />;
+      case "history":
+        return <HistoryTab matchData={matchData} />;
+      default:
+        return (
+          <div className="font-inter flex-1 flex flex-col mt-0">
+            {matchData?.timerState === "PAUSED" && (
+              <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-[8px] flex items-center gap-3.5 shadow-lg animate-pulse">
+                <AlertCircle className="text-red-500 shrink-0" size={20} />
+                <div className="text-left">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-red-500">
+                    Match is Paused
+                  </p>
+                  <p className="text-xs text-neutral-400 font-medium mt-0.5">
+                    Resume the timer in the header to record deliveries and
+                    runs.
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
+            {matchData?.slowOverRateConfig?.enabled &&
+              score.overs === oversPerInnings - 1 && (
+                <div className="p-4 mt-4 bg-yellow-500/10 border border-yellow-500/30 rounded-[8px] flex items-center gap-3.5 shadow-lg">
+                  <AlertCircle className="text-yellow-500 shrink-0" size={20} />
+                  <div className="text-left">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-yellow-500">
+                      Slow Over-Rate Penalty Check
+                    </p>
+                    <p className="text-xs text-neutral-400 font-medium mt-0.5">
+                      If the bowling team is behind schedule, 1 extra fielder
+                      must be brought inside the 30-yard circle for this final
+                      over.
+                    </p>
+                  </div>
+                </div>
+              )}
 
-          {needsInningsSetup && !needsMatchStart && !isFirstInningsComplete && (
-            <button
-              onClick={() => setShowInningsSetup(true)}
-              className="w-full py-5 bg-[#00C187]/10 border border-[#00C187]/30 rounded-[8px] text-center text-[#00C187] text-[11px] font-black uppercase tracking-[0.2em] animate-pulse shadow-xl"
-            >
-              ⚡ Setup Next Pair & Bowler
-            </button>
-          )}
+            {needsInningsSetup &&
+              !needsMatchStart &&
+              !isFirstInningsComplete && (
+                <button
+                  onClick={() => setShowInningsSetup(true)}
+                  className="w-full py-5 bg-[#00C187]/10 border border-[#00C187]/30 rounded-[8px] text-center text-[#00C187] text-[11px] font-black uppercase tracking-[0.2em] animate-pulse shadow-xl"
+                >
+                  ⚡ Setup Next Pair & Bowler
+                </button>
+              )}
 
-          {isFirstInningsComplete && (
-            <div className="p-8 bg-white/[0.02] border border-white/5 rounded-[8px] space-y-6 text-center relative overflow-hidden shadow-2xl">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#00C187]/5 blur-3xl pointer-events-none" />
-              <div className="w-16 h-16 bg-[#00C187]/10 border border-[#00C187]/20 rounded-[8px] flex items-center justify-center mx-auto shadow-lg">
-                <Trophy size={28} style={{ color: THEME_COLOR }} />
-              </div>
-              <div>
-                <h3 className="text-2xl font-black uppercase tracking-tighter">Innings Break</h3>
-                <p className="text-[11px] text-neutral-500 font-black uppercase tracking-widest mt-2">
-                  Target: <span style={{ color: THEME_COLOR }}>{(currentInnings?.totalRuns || 0) + 1}</span> runs
-                </p>
-              </div>
-              <button
-                onClick={async () => {
-                  try {
-                    const response = await axiosInstance.post(`/api/scoring/next-innings`, {
-                      scoringId: matchData._id,
-                      battingTeamId: matchData.innings[0].battingTeam === "teamA" ? "teamB" : "teamA"
-                    }, {
-                      headers: {
-                        'Authorization': `Bearer ${localStorage.getItem(`scorer_token_${matchId}`) || ''}`
+            {isFirstInningsComplete && (
+              <div className="p-8 bg-white/[0.02] border border-white/5 rounded-[8px] space-y-6 text-center relative overflow-hidden shadow-2xl">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#00C187]/5 blur-3xl pointer-events-none" />
+                <div className="w-16 h-16 bg-[#00C187]/10 border border-[#00C187]/20 rounded-[8px] flex items-center justify-center mx-auto shadow-lg">
+                  <Trophy size={28} style={{ color: THEME_COLOR }} />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black uppercase tracking-tighter">
+                    Innings Break
+                  </h3>
+                  <p className="text-[11px] text-neutral-500 font-black uppercase tracking-widest mt-2">
+                    Target:{" "}
+                    <span style={{ color: THEME_COLOR }}>
+                      {(currentInnings?.totalRuns || 0) + 1}
+                    </span>{" "}
+                    runs
+                  </p>
+                </div>
+                <button
+                  onClick={async () => {
+                    try {
+                      const response = await axiosInstance.post(
+                        `/api/scoring/next-innings`,
+                        {
+                          scoringId: matchData._id,
+                          battingTeamId:
+                            matchData.innings[0].battingTeam === "teamA"
+                              ? "teamB"
+                              : "teamA",
+                        },
+                        {
+                          headers: {
+                            Authorization: `Bearer ${localStorage.getItem(`scorer_token_${matchId}`) || ""}`,
+                          },
+                        }
+                      );
+                      const data = response.data;
+                      if (data.success) {
+                        toast.success("2nd innings is starting!");
+                        refresh();
+                        setShowInningsSetup(true);
+                      } else {
+                        toast.error(
+                          "Could not start the next innings. Try again."
+                        );
                       }
-                    });
-                    const data = response.data;
-                    if (data.success) {
-                      toast.success('2nd Innings Initiated!');
-                      refresh();
-                      setShowInningsSetup(true);
-                    } else {
-                      toast.error(data.message || 'Transition failed');
+                    } catch (err) {
+                      toast.error(
+                        "Connection issue. Please check your network."
+                      );
                     }
-                  } catch (err) {
-                    toast.error('Connection lost during transition');
-                  }
-                }}
-                className="w-full py-5 rounded-[8px] font-black uppercase text-[11px] tracking-[0.2em] transition-all transform active:scale-95 shadow-xl"
-                style={{ backgroundColor: THEME_COLOR, color: '#000', boxShadow: `0 10px 30px ${THEME_COLOR}33` }}
-              >
-                Start 2nd Innings
-              </button>
-            </div>
-          )}
-
-
-
-          {!needsMatchStart && !needsInningsSetup && !isFirstInningsComplete && (
-            <div className={`-mx-4 flex-1 flex flex-col ${matchData?.timerState === 'PAUSED' ? 'opacity-50' : ''} mt-0`}>
-            <div className="flex justify-between flex-1 min-h-[171px] gap-0">
-              {/* Col 1 */}
-              <div className="flex flex-col gap-0 w-[25%]">
-                {[0, 3].map(run => (
-                  <button key={run}
-                    onClick={() => handleScoringClick(() => {
-                      run === 0 ? handleScore({ runs: run, extraType: 'NONE' }) : processRuns({ runs: run, isBoundary: false, isFour: false, isSix: false });
-                    })}
-                    style={{ backdropFilter: 'blur(6px)' }}
-                    className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center text-white hover:bg-white/10 transition-all transform active:scale-95">
-                    <span style={{ fontFamily: '"Anton", sans-serif', fontSize: '32px', letterSpacing: '1.6px' }}>{run}</span>
-                  </button>
-                ))}
-              </div>
-              
-              {/* Col 2 */}
-              <div className="flex flex-col gap-0 w-[25%]">
-                <button
-                  onClick={() => handleScoringClick(() => {
-                    processRuns({ runs: 1, isBoundary: false, isFour: false, isSix: false });
-                  })}
-                  style={{ backdropFilter: 'blur(6px)' }}
-                  className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center text-white hover:bg-white/10 transition-all transform active:scale-95">
-                  <span style={{ fontFamily: '"Anton", sans-serif', fontSize: '32px', letterSpacing: '1.6px' }}>1</span>
-                </button>
-                <button
-                  onClick={() => handleScoringClick(() => {
-                    processRuns({ runs: 4, isBoundary: true, isFour: true, isSix: false });
-                  })}
-                  style={{ backdropFilter: 'blur(6px)' }}
-                  className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center text-white hover:bg-white/10 transition-all transform active:scale-95">
-                  <span style={{ fontFamily: '"Anton", sans-serif', fontSize: '32px', letterSpacing: '1.6px' }}>4</span>
+                  }}
+                  className="w-full py-5 rounded-[8px] font-black uppercase text-[11px] tracking-[0.2em] transition-all transform active:scale-95 shadow-xl"
+                  style={{
+                    backgroundColor: THEME_COLOR,
+                    color: "#000",
+                    boxShadow: `0 10px 30px ${THEME_COLOR}33`,
+                  }}
+                >
+                  Start 2nd Innings
                 </button>
               </div>
+            )}
 
-              {/* Col 3 */}
-              <div className="flex flex-col gap-0 w-[25%]">
-                <button
-                  onClick={() => handleScoringClick(() => {
-                    processRuns({ runs: 2, isBoundary: false, isFour: false, isSix: false });
-                  })}
-                  style={{ backdropFilter: 'blur(6px)' }}
-                  className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center text-white hover:bg-white/10 transition-all transform active:scale-95">
-                  <span style={{ fontFamily: '"Anton", sans-serif', fontSize: '32px', letterSpacing: '1.6px' }}>2</span>
-                </button>
-                <button
-                  onClick={() => handleScoringClick(() => {
-                    processRuns({ runs: 6, isBoundary: true, isFour: false, isSix: true });
-                  })}
-                  style={{ backdropFilter: 'blur(6px)' }}
-                  className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center text-white hover:bg-white/10 transition-all transform active:scale-95">
-                  <span style={{ fontFamily: '"Anton", sans-serif', fontSize: '32px', letterSpacing: '1.6px' }}>6</span>
-                </button>
-              </div>
+            {!needsMatchStart &&
+              !needsInningsSetup &&
+              !isFirstInningsComplete && (
+                <div
+                  className={`-mx-4 flex-1 flex flex-col ${matchData?.timerState === "PAUSED" ? "opacity-50" : ""} mt-0`}
+                >
+                  <div className="flex justify-between flex-1 min-h-[171px] gap-0">
+                    {/* Col 1 */}
+                    <div className="flex flex-col gap-0 w-[25%]">
+                      {[0, 3].map((run) => (
+                        <button
+                          key={run}
+                          onClick={() =>
+                            handleScoringClick(() => {
+                              run === 0
+                                ? handleScore({ runs: run, extraType: "NONE" })
+                                : processRuns({
+                                    runs: run,
+                                    isBoundary: false,
+                                    isFour: false,
+                                    isSix: false,
+                                  });
+                            })
+                          }
+                          style={{ backdropFilter: "blur(6px)" }}
+                          className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center text-white hover:bg-white/10 transition-all transform active:scale-95"
+                        >
+                          <span
+                            style={{
+                              fontFamily: '"Anton", sans-serif',
+                              fontSize: "32px",
+                              letterSpacing: "1.6px",
+                            }}
+                          >
+                            {run}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
 
-              {/* Col 4 */}
-              <div className="flex flex-col gap-0 w-[25%]">
-                <button
-                  onClick={() => handleScoringClick(async () => {
-                    const result = await undoBall();
-                    if (result.success) toast.success('Reverted last ball');
-                    else toast.error(result.error || 'Undo limit reached');
-                  })}
-                  className="flex-[3] bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95">
-                  <span className="text-white font-inter font-semibold uppercase tracking-widest text-[16px]">UNDO</span>
-                </button>
-                <button onClick={() => handleScoringClick(() => setShowWicketModal(true))}
-                  className="flex-[2] bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95">
-                  <span className="text-[#F40000] font-inter font-semibold uppercase tracking-widest text-[18px]">OUT</span>
-                </button>
-                <button onClick={() => handleScoringClick(() => setShowCustomRunsModal(true))}
-                  className="flex-[2] bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95">
-                  <span className="text-white font-inter font-semibold uppercase tracking-wider text-[13px]">CUSTOM</span>
-                </button>
-              </div>
-            </div>
+                    {/* Col 2 */}
+                    <div className="flex flex-col gap-0 w-[25%]">
+                      <button
+                        onClick={() =>
+                          handleScoringClick(() => {
+                            processRuns({
+                              runs: 1,
+                              isBoundary: false,
+                              isFour: false,
+                              isSix: false,
+                            });
+                          })
+                        }
+                        style={{ backdropFilter: "blur(6px)" }}
+                        className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center text-white hover:bg-white/10 transition-all transform active:scale-95"
+                      >
+                        <span
+                          style={{
+                            fontFamily: '"Anton", sans-serif',
+                            fontSize: "32px",
+                            letterSpacing: "1.6px",
+                          }}
+                        >
+                          1
+                        </span>
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleScoringClick(() => {
+                            processRuns({
+                              runs: 4,
+                              isBoundary: true,
+                              isFour: true,
+                              isSix: false,
+                            });
+                          })
+                        }
+                        style={{ backdropFilter: "blur(6px)" }}
+                        className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center text-white hover:bg-white/10 transition-all transform active:scale-95"
+                      >
+                        <span
+                          style={{
+                            fontFamily: '"Anton", sans-serif',
+                            fontSize: "32px",
+                            letterSpacing: "1.6px",
+                          }}
+                        >
+                          4
+                        </span>
+                      </button>
+                    </div>
 
-            {/* Bottom Row Extras */}
-            <div className="flex h-[46px] gap-0 mt-0">
-              <button onClick={() => handleScoringClick(() => setExtraModal('WIDE'))}
-                className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95">
-                <span className="text-[#00C187] font-inter font-semibold uppercase tracking-widest text-[15px]">WIDE</span>
-              </button>
-              <button onClick={() => handleScoringClick(() => setExtraModal('NO_BALL'))}
-                className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95">
-                <span className="text-[#00C187] font-inter font-semibold uppercase tracking-widest text-[16px]">NB</span>
-              </button>
-              <button onClick={() => handleScoringClick(() => setExtraModal('BYE'))}
-                className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95">
-                <span className="text-white font-inter font-semibold uppercase tracking-widest text-[16px]">BYE</span>
-              </button>
-              <button onClick={() => handleScoringClick(() => setExtraModal('LEG_BYE'))}
-                className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95">
-                <span className="text-white font-inter font-semibold uppercase tracking-wider text-[13px]">LEG BYE</span>
-              </button>
-            </div>
+                    {/* Col 3 */}
+                    <div className="flex flex-col gap-0 w-[25%]">
+                      <button
+                        onClick={() =>
+                          handleScoringClick(() => {
+                            processRuns({
+                              runs: 2,
+                              isBoundary: false,
+                              isFour: false,
+                              isSix: false,
+                            });
+                          })
+                        }
+                        style={{ backdropFilter: "blur(6px)" }}
+                        className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center text-white hover:bg-white/10 transition-all transform active:scale-95"
+                      >
+                        <span
+                          style={{
+                            fontFamily: '"Anton", sans-serif',
+                            fontSize: "32px",
+                            letterSpacing: "1.6px",
+                          }}
+                        >
+                          2
+                        </span>
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleScoringClick(() => {
+                            processRuns({
+                              runs: 6,
+                              isBoundary: true,
+                              isFour: false,
+                              isSix: true,
+                            });
+                          })
+                        }
+                        style={{ backdropFilter: "blur(6px)" }}
+                        className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center text-white hover:bg-white/10 transition-all transform active:scale-95"
+                      >
+                        <span
+                          style={{
+                            fontFamily: '"Anton", sans-serif',
+                            fontSize: "32px",
+                            letterSpacing: "1.6px",
+                          }}
+                        >
+                          6
+                        </span>
+                      </button>
+                    </div>
+
+                    {/* Col 4 */}
+                    <div className="flex flex-col gap-0 w-[25%]">
+                      <button
+                        disabled={isMutating}
+                        onClick={() =>
+                          handleScoringClick(async () => {
+                            setIsUndoing(true);
+                            const result = await undoBall();
+                            setIsUndoing(false);
+                            if (result.success)
+                              toast.success("Last ball undone!");
+                            else
+                              toast.error("Unable to undo. Please try again.");
+                          })
+                        }
+                        className="flex-[3] bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95 disabled:opacity-50"
+                      >
+                        {isUndoing ? (
+                          <div className="w-5 h-5 border-2 border-white/20 border-t-[#00C187] rounded-full animate-spin" />
+                        ) : (
+                          <span className="text-white font-inter font-semibold uppercase tracking-widest text-[16px]">
+                            UNDO
+                          </span>
+                        )}
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleScoringClick(() => setShowWicketModal(true))
+                        }
+                        className="flex-[2] bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95"
+                      >
+                        <span className="text-[#F40000] font-inter font-semibold uppercase tracking-widest text-[18px]">
+                          OUT
+                        </span>
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleScoringClick(() => setShowCustomRunsModal(true))
+                        }
+                        className="flex-[2] bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95"
+                      >
+                        <span className="text-white font-inter font-semibold uppercase tracking-wider text-[13px]">
+                          CUSTOM
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Bottom Row Extras */}
+                  <div className="flex h-[46px] gap-0 mt-0">
+                    <button
+                      onClick={() =>
+                        handleScoringClick(() => setExtraModal("WIDE"))
+                      }
+                      className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95"
+                    >
+                      <span className="text-[#00C187] font-inter font-semibold uppercase tracking-widest text-[15px]">
+                        WIDE
+                      </span>
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleScoringClick(() => setExtraModal("NO_BALL"))
+                      }
+                      className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95"
+                    >
+                      <span className="text-[#00C187] font-inter font-semibold uppercase tracking-widest text-[16px]">
+                        NB
+                      </span>
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleScoringClick(() => setExtraModal("BYE"))
+                      }
+                      className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95"
+                    >
+                      <span className="text-white font-inter font-semibold uppercase tracking-widest text-[16px]">
+                        BYE
+                      </span>
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleScoringClick(() => setExtraModal("LEG_BYE"))
+                      }
+                      className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95"
+                    >
+                      <span className="text-white font-inter font-semibold uppercase tracking-wider text-[13px]">
+                        LEG BYE
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              )}
           </div>
-          )}
-
-        </div>
-      );
+        );
     }
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#121212] flex justify-center text-white selection:bg-[#00C187] selection:text-black overflow-hidden" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+    <div
+      className="min-h-[100dvh] bg-[#121212] flex justify-center text-white selection:bg-[#00C187] selection:text-black overflow-hidden"
+      style={{ fontFamily: "'Open Sans', sans-serif" }}
+    >
       {isLocked && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <ScoringPasswordModal
@@ -705,351 +1152,506 @@ const ScoringApp = () => {
           />
         </div>
       )}
-      <div className={`w-full max-w-[450px] bg-black h-[100dvh] relative flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.5)] border-x border-white/5 overflow-hidden ${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
-      
-      {needsMatchStart ? (() => {
+      <div
+        className={`w-full max-w-[450px] bg-black h-[100dvh] relative flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.5)] border-x border-white/5 overflow-hidden ${isLocked ? "blur-sm pointer-events-none" : ""}`}
+      >
+        {/* Match Starting Loading Overlay — lives in PARENT so it persists across TossModal unmount */}
+        {matchStarting && (
+          <div className="absolute inset-0 z-[200] bg-[#121212] flex flex-col items-center justify-center gap-6">
+            <div className="w-16 h-16 rounded-full border-4 border-[#7bf090]/20 border-t-[#7bf090] animate-spin" />
+            <div className="text-center">
+              <h2
+                className="text-[22px] font-black text-white uppercase tracking-wider mb-2"
+                style={{ fontFamily: "Anton, sans-serif" }}
+              >
+                STARTING MATCH
+              </h2>
+              <p className="text-[12px] text-[#bdcaba] tracking-widest uppercase">
+                Preparing the scoring console...
+              </p>
+            </div>
+          </div>
+        )}
+
+        {needsMatchStart ? (
+          (() => {
             const game = matchData?.hostedGameId || matchData;
-            const tA = game?.teamA || (Array.isArray(game?.teams) ? game?.teams?.find(t => t.teamKey === 'teamA') : game?.teams?.teamA);
-            const tB = game?.teamB || (Array.isArray(game?.teams) ? game?.teams?.find(t => t.teamKey === 'teamB') : game?.teams?.teamB);
-            const tAName = tA?.name || 'TEAM A';
-            const tBName = tB?.name || 'TEAM B';
-            const locationName = game?.venue?.name || game?.customVenue || game?.location || 'Location Not Provided';
+            const tA =
+              game?.teamA ||
+              (Array.isArray(game?.teams)
+                ? game?.teams?.find((t) => t.teamKey === "teamA")
+                : game?.teams?.teamA);
+            const tB =
+              game?.teamB ||
+              (Array.isArray(game?.teams)
+                ? game?.teams?.find((t) => t.teamKey === "teamB")
+                : game?.teams?.teamB);
+            const tAName = tA?.name || "TEAM A";
+            const tBName = tB?.name || "TEAM B";
+            const locationName =
+              game?.venue?.name ||
+              game?.customVenue ||
+              game?.location ||
+              "Location Not Provided";
 
             return (
               <div className="flex-1 flex flex-col p-4 bg-[#121212] relative overflow-y-auto no-scrollbar">
-                 {/* Matchup Card */}
-                 <div className="w-full bg-[#1e1e1e] border border-white/5 rounded-[12px] p-6 flex items-center justify-between shadow-lg mb-4 mt-2">
-                    <div className="flex flex-col items-center gap-3 w-[30%]">
-                      <div className="w-14 h-14 rounded-full bg-[#81FBB8] flex items-center justify-center shadow-[0_0_15px_rgba(129,251,184,0.3)] shrink-0 overflow-hidden">
-                         {(tA?.image || tA?.logo) ? <img src={tA.image || tA.logo} alt={tAName} className="w-full h-full object-cover" /> : <Shield size={24} className="text-[#1a1a1a]" fill="currentColor" />}
-                      </div>
-                      <span className="text-[14px] font-black uppercase tracking-wider text-white truncate w-full text-center" style={{ fontFamily: '"Bebas Neue", Anton, sans-serif' }}>
-                         {tAName}
-                      </span>
-                    </div>
-                    
-                    <div className="w-[40%] flex items-center justify-center">
-                       <span className="text-3xl font-black text-white/10 uppercase" style={{ fontFamily: '"Bebas Neue", Anton, sans-serif' }}>VS</span>
-                    </div>
+                <div className="mt-4 border-t border-white/5 pt-4 flex-1 flex flex-col">
+                  <TossModal
+                    teamA={
+                      matchData?.teamA ||
+                      matchData?.hostedGameId?.teamA ||
+                      (Array.isArray(matchData?.hostedGameId?.teams)
+                        ? matchData.hostedGameId.teams.find(
+                            (t) => t.teamKey === "teamA"
+                          )
+                        : null)
+                    }
+                    teamB={
+                      matchData?.teamB ||
+                      matchData?.hostedGameId?.teamB ||
+                      (Array.isArray(matchData?.hostedGameId?.teams)
+                        ? matchData.hostedGameId.teams.find(
+                            (t) => t.teamKey === "teamB"
+                          )
+                        : null)
+                    }
+                    hasPassword={hasPassword && !passwordVerified}
+                    onCancel={() => window.history.back()}
+                    onConfirm={async ({ winnerTeam, decision, password }) => {
+                      // If a password was provided, verify it first or store it
+                      if (password) {
+                        try {
+                          const authRes = await axiosInstance.post(
+                            `/api/scoring/auth/${matchId}`,
+                            { password }
+                          );
+                          if (authRes.data.success) {
+                            localStorage.setItem(
+                              `scorer_token_${matchId}`,
+                              authRes.data.token
+                            );
+                            setPasswordVerified(true);
+                          } else {
+                            return toast.error(
+                              "Wrong password. Please try again."
+                            );
+                          }
+                        } catch (e) {
+                          return toast.error(
+                            "Could not verify password. Try again."
+                          );
+                        }
+                      }
 
-                    <div className="flex flex-col items-center gap-3 w-[30%]">
-                      <div className="w-14 h-14 rounded-full bg-[#2FD1C6] flex items-center justify-center shadow-[0_0_15px_rgba(47,209,198,0.3)] shrink-0 overflow-hidden">
-                         {(tB?.image || tB?.logo) ? <img src={tB.image || tB.logo} alt={tBName} className="w-full h-full object-cover" /> : <Zap size={24} className="text-[#1a1a1a]" fill="currentColor" />}
-                      </div>
-                      <span className="text-[14px] font-black uppercase tracking-wider text-white truncate w-full text-center" style={{ fontFamily: '"Bebas Neue", Anton, sans-serif' }}>
-                         {tBName}
-                      </span>
-                    </div>
-                 </div>
+                      // Show loading overlay BEFORE any API call
+                      setMatchStarting(true);
 
-                 {/* Format and Overs Grid */}
-                 <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="bg-[#1e1e1e] border border-white/5 rounded-[12px] p-5 shadow-lg flex flex-col justify-between items-start h-[100px]">
-                       <Timer size={18} className="text-[#2FD1C6] mb-auto" />
-                       <div>
-                         <p className="text-[9px] font-black uppercase tracking-widest text-neutral-500 mb-1">FORMAT</p>
-                         <p className="text-xl font-black text-white leading-none uppercase" style={{ fontFamily: '"Bebas Neue", Anton, sans-serif' }}>{game?.matchType || game?.format || 'T20'} MATCH</p>
-                       </div>
-                    </div>
-                    <div className="bg-[#1e1e1e] border border-white/5 rounded-[12px] p-5 shadow-lg flex flex-col justify-between items-start h-[100px]">
-                       <Hash size={18} className="text-[#2FD1C6] mb-auto" />
-                       <div>
-                         <p className="text-[9px] font-black uppercase tracking-widest text-neutral-500 mb-1">OVERS</p>
-                         <p className="text-xl font-black text-white leading-none uppercase" style={{ fontFamily: '"Bebas Neue", Anton, sans-serif' }}>{game?.overs || 20}.0 OVERS</p>
-                       </div>
-                    </div>
-                 </div>
-                 {/* Venue / Location */}
-                 {(game?.turf?.name || game?.venue?.name) ? (
-                   <div className="w-full h-32 rounded-[12px] overflow-hidden relative shadow-lg mb-4 border border-white/5 bg-[#1e1e1e]">
-                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-10" />
-                     <img src={game?.turf?.image || game?.venue?.image || "/3d_stadium.png"} alt="Venue" className="absolute inset-0 w-full h-full object-cover opacity-30 grayscale" />
-                     <div className="absolute bottom-4 left-4 right-4 z-20 flex items-start gap-3">
-                       <MapPin size={20} className="text-[#D4F99A] mt-0.5" />
-                       <div>
-                         <p className="text-[9px] font-black uppercase tracking-widest text-neutral-400 mb-1">VENUE</p>
-                         <p className="text-lg font-black text-white tracking-wide leading-none uppercase truncate" style={{ fontFamily: '"Bebas Neue", Anton, sans-serif' }}>{game?.turf?.name || game?.venue?.name}</p>
-                       </div>
-                     </div>
-                   </div>
-                 ) : (
-                   <div className="w-full bg-[#1e1e1e] border border-white/5 rounded-[12px] p-4 flex items-center justify-center gap-2 shadow-lg mb-4">
-                     <MapPin size={16} className="text-neutral-500" />
-                     <span className="text-sm font-bold text-neutral-400 uppercase tracking-widest">
-                       {game?.customVenue || game?.city || game?.location || 'No location provided'}
-                     </span>
-                   </div>
-                 )}
+                      try {
+                        // Determine batting team
+                        const isTeamAWinner =
+                          winnerTeam ===
+                          (matchData?.teamA?.id ||
+                            matchData?.hostedGameId?.teamA?.id);
+                        let battingTeam = "teamA";
+                        if (
+                          (isTeamAWinner && decision === "BAT") ||
+                          (!isTeamAWinner && decision === "BOWL")
+                        ) {
+                          battingTeam = "teamA";
+                        } else {
+                          battingTeam = "teamB";
+                        }
 
-                 {/* Professionals / Officials */}
-                 {(() => {
-                   const officials = [];
-                   if (game?.umpire) {
-                     officials.push({ role: 'Umpire', name: game.umpire.name, image: game.umpire.profilePicture });
-                   } else if (game?.customUmpire && typeof game.customUmpire === 'object' && game.customUmpire.name) {
-                     officials.push({ role: 'Umpire', name: game.customUmpire.name });
-                   }
-                   
-                   if (game?.scorer) {
-                     officials.push({ role: 'Scorer', name: game.scorer.name, image: game.scorer.profilePicture });
-                   } else if (game?.customScorer && typeof game.customScorer === 'object' && game.customScorer.name) {
-                     officials.push({ role: 'Scorer', name: game.customScorer.name });
-                   }
-                   
-                   if (game?.streamer) {
-                     officials.push({ role: 'Streamer', name: game.streamer.name, image: game.streamer.profilePicture });
-                   } else if (game?.customStreamer && typeof game.customStreamer === 'object' && game.customStreamer.name) {
-                     officials.push({ role: 'Streamer', name: game.customStreamer.name });
-                   }
-                   
-                   if (Array.isArray(game?.customProfessionals)) {
-                     game.customProfessionals.forEach(p => {
-                       if (p && p.name) {
-                         officials.push({ role: p.role || 'Professional', name: p.name });
-                       }
-                     });
-                   }
-
-                   if (officials.length === 0) return null;
-
-                   return (
-                     <div className="w-full bg-[#1e1e1e] border border-white/5 rounded-[12px] p-4 shadow-lg mb-4">
-                       <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-3">MATCH OFFICIALS</p>
-                       <div className="space-y-2">
-                         {officials.map((pro, index) => (
-                           <div key={index} className="flex items-center gap-3 bg-white/[0.02] border border-white/5 rounded-[8px] p-2">
-                             <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center overflow-hidden shrink-0">
-                               {pro.image ? (
-                                 <img src={pro.image} alt={pro.name} className="w-full h-full object-cover" />
-                               ) : (
-                                 <User size={16} className="text-neutral-400" />
-                               )}
-                             </div>
-                             <div>
-                               <p className="text-xs font-black text-white uppercase tracking-wider">{pro.name}</p>
-                               <p className="text-[9px] font-bold text-[#00C187] uppercase tracking-widest leading-none mt-0.5">{pro.role}</p>
-                             </div>
-                           </div>
-                         ))}
-                       </div>
-                     </div>
-                   );
-                 })()}
-                 
-                 <div className="flex gap-3 w-full mt-auto pb-4 pt-4">
-                    <button
-                      onClick={() => window.history.back()}
-                      className="flex-1 h-14 bg-[#1e1e1e] border border-white/5 rounded-[8px] flex items-center justify-center gap-2 text-white text-[13px] font-black uppercase tracking-[0.1em] hover:bg-white/10 transition-all shadow-xl"
-                    >
-                      <ChevronLeft size={16} /> BACK
-                    </button>
-                    <button
-                      onClick={() => setShowTossModal(true)}
-                      className="flex-[1.5] h-14 bg-[#00C187]/10 border border-[#00C187]/30 rounded-[8px] flex items-center justify-center gap-2 text-[#00C187] text-[13px] font-black uppercase tracking-[0.1em] shadow-xl hover:bg-[#00C187]/20 transition-all"
-                    >
-                      START MATCH <Play size={14} />
-                    </button>
-                 </div>
+                        const response = await axiosInstance.post(
+                          `/api/scoring/start`,
+                          {
+                            matchId:
+                              matchData._id ||
+                              matchData.id ||
+                              matchData.hostedGameId?.id,
+                            battingTeam,
+                            tossWinner: winnerTeam,
+                            tossDecision: decision,
+                          },
+                          {
+                            headers: {
+                              Authorization: `Bearer ${localStorage.getItem(`scorer_token_${matchId}`) || ""}`,
+                            },
+                          }
+                        );
+                        const data = response.data;
+                        if (data.success) {
+                          toast.success("Match is live! Let's go 🏏");
+                          await refresh();
+                          // matchStarting will auto-clear when needsMatchStart becomes false
+                          setMatchStarting(false);
+                        } else {
+                          toast.error(
+                            "Could not start match. Please try again."
+                          );
+                          setMatchStarting(false);
+                        }
+                      } catch (e) {
+                        toast.error("Connection issue. Please try again.");
+                        setMatchStarting(false);
+                      }
+                    }}
+                  />
+                </div>
               </div>
             );
-      })() : (
-        <>
-      <div className="flex-1 relative overflow-hidden">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ y: "20%", opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: "-10%", opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="absolute inset-0 overflow-y-auto p-4 pb-0 flex flex-col no-scrollbar"
-          >
-        {activeTab === 'scoring' && (
+          })()
+        ) : (
           <>
-        {/* Score Display */}
-        <div 
-          className="relative -mx-4 -mt-4 h-[439px] flex flex-col justify-end pb-8 bg-cover bg-center rounded-none overflow-hidden shadow-2xl" 
-          style={{ 
-            backgroundImage: `linear-gradient(180deg, rgba(18,18,18,0.2) 0%, rgba(18,18,18,1) 100%), url('/3d_stadium.png')`
-          }}
-        >
-          <div className="absolute top-4 left-4 z-50">
-            <button onClick={() => setShowExitModal(true)} className="p-2 transition-all opacity-80 hover:opacity-100 bg-black/40 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center w-10 h-10">
-              <ChevronLeft size={24} className="text-white" />
-            </button>
-          </div>
-          <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
-            {/* Timer Display */}
-            <div className="flex items-center gap-1.5 bg-black/50 backdrop-blur-md rounded-full border border-white/10 px-2.5 py-1.5 h-10 shadow-lg text-xs font-mono font-bold text-white shrink-0">
-              <span>{formatTimer(localTimerSecs)}</span>
-              <button 
-                onClick={async () => {
-                  await toggleTimer();
-                }}
-                className="w-6 h-6 rounded-full flex items-center justify-center transition-all bg-white/10 hover:bg-white/20 active:scale-95"
-              >
-                {matchData?.timerState === 'RUNNING' ? (
-                  <Pause size={10} fill="currentColor" className="text-[#00C187]" />
-                ) : (
-                  <Play size={10} fill="currentColor" className="text-yellow-500 ml-0.5" />
-                )}
-              </button>
+            <div className="flex-1 relative overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTab}
+                  initial={{ y: "20%", opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: "-10%", opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  className="absolute inset-0 overflow-y-auto p-4 pb-0 flex flex-col no-scrollbar"
+                >
+                  {activeTab === "scoring" && (
+                    <>
+                      {/* Score Display */}
+                      <div
+                        className="relative -mx-4 -mt-4 h-[439px] flex flex-col justify-end pb-8 bg-cover bg-center rounded-none overflow-hidden shadow-2xl"
+                        style={{
+                          backgroundImage: `linear-gradient(180deg, rgba(18,18,18,0.2) 0%, rgba(18,18,18,1) 100%), url('/3d_stadium.png')`,
+                        }}
+                      >
+                        <div className="absolute top-4 left-4 z-50">
+                          <button
+                            onClick={() => setShowExitModal(true)}
+                            className="p-2 transition-all opacity-80 hover:opacity-100 bg-black/40 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center w-10 h-10"
+                          >
+                            <ChevronLeft size={24} className="text-white" />
+                          </button>
+                        </div>
+                        <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+                          {/* Timer Display */}
+                          <div className="flex items-center gap-1.5 bg-black/50 backdrop-blur-md rounded-full border border-white/10 px-2.5 py-1.5 h-10 shadow-lg text-xs font-mono font-bold text-white shrink-0">
+                            <span>{formatTimer(localTimerSecs)}</span>
+                            <button
+                              onClick={async () => {
+                                await toggleTimer();
+                              }}
+                              className="w-6 h-6 rounded-full flex items-center justify-center transition-all bg-white/10 hover:bg-white/20 active:scale-95"
+                            >
+                              {matchData?.timerState === "RUNNING" ? (
+                                <Pause
+                                  size={10}
+                                  fill="currentColor"
+                                  className="text-[#00C187]"
+                                />
+                              ) : (
+                                <Play
+                                  size={10}
+                                  fill="currentColor"
+                                  className="text-yellow-500 ml-0.5"
+                                />
+                              )}
+                            </button>
+                          </div>
+
+                          <button
+                            onClick={() => {
+                              const shareUrl = `${window.location.origin}/analytics/${matchData?.hostedGameId?.shortId || matchId}`;
+                              if (navigator.share) {
+                                navigator
+                                  .share({
+                                    title: "Live Match Scoring",
+                                    text: `Follow the live score of the match: ${matchData?.hostedGameId?.name || "Match"}`,
+                                    url: shareUrl,
+                                  })
+                                  .catch((err) => Sentry.captureException(err));
+                              } else {
+                                navigator.clipboard.writeText(shareUrl);
+                                toast.success("Live score link copied!");
+                              }
+                            }}
+                            className="p-2 transition-all opacity-80 hover:opacity-100 bg-black/40 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center w-10 h-10"
+                          >
+                            <Share2 size={20} className="text-white" />
+                          </button>
+                          <button
+                            onClick={() => setShowSettings(true)}
+                            className="p-2 transition-all opacity-80 hover:opacity-100 bg-black/40 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center w-10 h-10"
+                          >
+                            <Settings size={20} className="text-white" />
+                          </button>
+                        </div>
+                        <div className="px-6 flex justify-between items-end">
+                          {/* Score */}
+                          <div className="flex items-baseline">
+                            <span
+                              className="text-[120px] leading-[0.8] text-white"
+                              style={{
+                                fontFamily: '"Bebas Neue", Anton, sans-serif',
+                              }}
+                            >
+                              {score.totalRuns}
+                            </span>
+                            <span
+                              className="text-[85px] leading-[0.8] text-neutral-400"
+                              style={{
+                                fontFamily: '"Bebas Neue", Anton, sans-serif',
+                              }}
+                            >
+                              /{score.totalWickets}
+                            </span>
+                          </div>
+
+                          {/* CRR and Overs */}
+                          <div className="flex flex-col gap-2 pb-2 text-right">
+                            <div className="flex items-end justify-end gap-3">
+                              <span
+                                className="text-[13px] opacity-70 tracking-wider text-white"
+                                style={{ fontFamily: '"Poppins", sans-serif' }}
+                              >
+                                CRR
+                              </span>
+                              <span
+                                className="text-[21px] leading-none text-white"
+                                style={{
+                                  fontFamily: '"Bebas Neue", Anton, sans-serif',
+                                }}
+                              >
+                                {score.crr}
+                              </span>
+                            </div>
+                            <div className="flex items-end justify-end gap-3">
+                              <span
+                                className="text-[13px] opacity-70 tracking-wider text-white"
+                                style={{ fontFamily: '"Poppins", sans-serif' }}
+                              >
+                                OVERS
+                              </span>
+                              <span
+                                className="text-[21px] leading-none text-white"
+                                style={{
+                                  fontFamily: '"Bebas Neue", Anton, sans-serif',
+                                }}
+                              >
+                                {score.overs}.{score.balls}/
+                                {matchData?.overs || 20}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="px-6 mt-8 space-y-6">
+                          {/* Bowler Row */}
+                          <div className="w-full bg-[#4C4C4C]/50 rounded-[8px] p-3.5 flex items-center justify-between backdrop-blur-md">
+                            <div>
+                              <p
+                                className="text-[9px] tracking-[3px] opacity-60 text-white"
+                                style={{ fontFamily: '"Poppins", sans-serif' }}
+                              >
+                                BALLING
+                              </p>
+                              <p
+                                className="text-[13px] font-medium opacity-90 text-white mt-1 uppercase truncate max-w-[150px]"
+                                style={{ fontFamily: '"Poppins", sans-serif' }}
+                              >
+                                {bowlerSlot?.name?.split(" ")[0] || "NAME"}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2 mt-[5px] -ml-[5px] overflow-x-auto no-scrollbar max-w-[220px] sm:max-w-[260px]">
+                              {(
+                                matchData?.timeline?.filter(
+                                  (b) => b.over === score.overs
+                                ) || []
+                              ).map((ball, i) => (
+                                <div
+                                  key={i}
+                                  className="w-7 h-7 shrink-0 rounded-full bg-[#FFC403] text-black flex items-center justify-center text-[13px]"
+                                  style={{
+                                    fontFamily:
+                                      '"Bebas Neue", Anton, sans-serif',
+                                  }}
+                                >
+                                  {ballLabel(ball)}
+                                </div>
+                              ))}
+                              {Array.from({
+                                length: Math.max(
+                                  0,
+                                  6 -
+                                    (matchData?.timeline?.filter(
+                                      (b) => b.over === score.overs
+                                    )?.length || 0)
+                                ),
+                              }).map((_, i) => (
+                                <div
+                                  key={`empty-${i}`}
+                                  className="w-7 h-7 shrink-0 rounded-full border border-white/30"
+                                />
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Striker / Non Striker */}
+                          <div className="flex justify-between w-full px-1">
+                            <div>
+                              <p
+                                className="text-[9px] tracking-[3px] opacity-60 text-white"
+                                style={{ fontFamily: '"Poppins", sans-serif' }}
+                              >
+                                STRIKER
+                              </p>
+                              <div className="flex items-center gap-3 mt-1.5">
+                                <p
+                                  className="font-medium text-[14px] text-[#A1FF00] uppercase truncate max-w-[120px]"
+                                  style={{
+                                    fontFamily: '"Poppins", sans-serif',
+                                  }}
+                                >
+                                  {strikerSlot?.name?.split(" ")[0] || "Name"}
+                                </p>
+                                <p
+                                  className="text-[11px] tracking-[3px] text-white"
+                                  style={{
+                                    fontFamily: '"Poppins", sans-serif',
+                                  }}
+                                >
+                                  {strikerStats?.runs ?? 0} -{" "}
+                                  {strikerStats?.balls ?? 0}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p
+                                className="text-[9px] tracking-[3px] opacity-60 text-white"
+                                style={{ fontFamily: '"Poppins", sans-serif' }}
+                              >
+                                NON STRIKER
+                              </p>
+                              <div className="flex items-center justify-end gap-3 mt-1.5">
+                                <p
+                                  className="text-[11px] tracking-[3px] text-white"
+                                  style={{
+                                    fontFamily: '"Poppins", sans-serif',
+                                  }}
+                                >
+                                  {nonStrikerStats?.runs ?? 0} -{" "}
+                                  {nonStrikerStats?.balls ?? 0}
+                                </p>
+                                <p
+                                  className="font-medium text-[14px] text-white uppercase truncate max-w-[120px]"
+                                  style={{
+                                    fontFamily: '"Poppins", sans-serif',
+                                  }}
+                                >
+                                  {nonStrikerSlot?.name?.split(" ")[0] ||
+                                    "Name"}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Match Controls Dropdown */}
+                      <div className="bg-[#1a1a1a] border-y border-white/5 rounded-none overflow-hidden shadow-xl -mx-4 !mt-0 mb-0 z-10 relative">
+                        <button
+                          onClick={() => setShowMatchActions(!showMatchActions)}
+                          className="w-full p-3 flex items-center justify-between hover:bg-white/5 transition-all"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Settings
+                              size={14}
+                              style={{ color: THEME_COLOR }}
+                            />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/90">
+                              MATCH CONTROLS
+                            </span>
+                          </div>
+                          <ChevronLeft
+                            size={16}
+                            className={`text-white/50 transition-transform duration-300 ${showMatchActions ? "-rotate-90" : "rotate-180"}`}
+                          />
+                        </button>
+
+                        <div
+                          className={`transition-all duration-300 ease-in-out ${showMatchActions ? "max-h-40 opacity-100 p-4 pt-2" : "max-h-0 opacity-0 px-4 pointer-events-none"}`}
+                        >
+                          <div className="grid grid-cols-4 gap-3">
+                            <button
+                              onClick={() => setShowInningsSetup(true)}
+                              className="h-16 bg-white/5 border border-white/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex flex-col items-center justify-center gap-1.5 text-white transform active:scale-95 shadow-xl"
+                            >
+                              <Users size={16} />{" "}
+                              <span className="mt-0.5">Players</span>
+                            </button>
+                            <button
+                              disabled={isMutating}
+                              onClick={() => {
+                                if (!isMutating && checkTimerActive())
+                                  setShowPenaltyModal(true);
+                              }}
+                              className={`h-16 bg-white/5 border border-white/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex flex-col items-center justify-center gap-1.5 text-white transform active:scale-95 shadow-xl ${isMutating ? "opacity-40 cursor-not-allowed" : ""}`}
+                            >
+                              <Zap size={16} />{" "}
+                              <span className="mt-0.5">Penalty</span>
+                            </button>
+                            <button
+                              onClick={() =>
+                                setIsWagonWheelEnabled(!isWagonWheelEnabled)
+                              }
+                              className={`h-16 border rounded-[8px] text-[9px] font-black uppercase tracking-[0.2em] transition-all flex flex-col items-center justify-center gap-1.5 transform active:scale-95 shadow-xl ${isWagonWheelEnabled ? "bg-[#00C187]/10 border-[#00C187]/30 text-[#00C187]" : "bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white"}`}
+                            >
+                              <Crosshair size={16} />{" "}
+                              <span className="mt-0.5">Wagon</span>
+                            </button>
+                            <button
+                              onClick={() => setShowEndMatchModal(true)}
+                              className="h-16 bg-white/[0.03] border border-white/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.2em] transition-all transform active:scale-95 shadow-xl flex flex-col items-center justify-center gap-1.5"
+                              style={{
+                                color: THEME_COLOR,
+                                borderColor: `${THEME_COLOR}33`,
+                              }}
+                            >
+                              <CheckCircle2 size={16} />{" "}
+                              <span className="mt-0.5">End Match</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {renderContent()}
+                </motion.div>
+              </AnimatePresence>
             </div>
 
-            <button 
-              onClick={() => {
-                const shareUrl = `${window.location.origin}/analytics/${matchData?.hostedGameId?.shortId || matchId}`;
-                if (navigator.share) {
-                  navigator.share({
-                    title: 'Live Match Scoring',
-                    text: `Follow the live score of the match: ${matchData?.hostedGameId?.name || 'Match'}`,
-                    url: shareUrl
-                  }).catch(err => Sentry.captureException(err));
-                } else {
-                  navigator.clipboard.writeText(shareUrl);
-                  toast.success("Live score link copied!");
-                }
-              }}
-              className="p-2 transition-all opacity-80 hover:opacity-100 bg-black/40 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center w-10 h-10"
-            >
-              <Share2 size={20} className="text-white" />
-            </button>
-            <button onClick={() => setShowSettings(true)} className="p-2 transition-all opacity-80 hover:opacity-100 bg-black/40 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center w-10 h-10">
-              <Settings size={20} className="text-white" />
-            </button>
-          </div>
-          <div className="px-6 flex justify-between items-end">
-            {/* Score */}
-            <div className="flex items-baseline">
-              <span className="text-[120px] leading-[0.8] text-white" style={{ fontFamily: '"Bebas Neue", Anton, sans-serif' }}>{score.totalRuns}</span>
-              <span className="text-[85px] leading-[0.8] text-neutral-400" style={{ fontFamily: '"Bebas Neue", Anton, sans-serif' }}>/{score.totalWickets}</span>
-            </div>
-            
-            {/* CRR and Overs */}
-            <div className="flex flex-col gap-2 pb-2 text-right">
-              <div className="flex items-end justify-end gap-3">
-                <span className="text-[13px] opacity-70 tracking-wider text-white" style={{ fontFamily: '"Poppins", sans-serif' }}>CRR</span>
-                <span className="text-[21px] leading-none text-white" style={{ fontFamily: '"Bebas Neue", Anton, sans-serif' }}>{score.crr}</span>
-              </div>
-              <div className="flex items-end justify-end gap-3">
-                <span className="text-[13px] opacity-70 tracking-wider text-white" style={{ fontFamily: '"Poppins", sans-serif' }}>OVERS</span>
-                <span className="text-[21px] leading-none text-white" style={{ fontFamily: '"Bebas Neue", Anton, sans-serif' }}>{score.overs}.{score.balls}/{matchData?.overs || 20}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="px-6 mt-8 space-y-6">
-            {/* Bowler Row */}
-            <div className="w-full bg-[#4C4C4C]/50 rounded-[8px] p-3.5 flex items-center justify-between backdrop-blur-md">
-              <div>
-                <p className="text-[9px] tracking-[3px] opacity-60 text-white" style={{ fontFamily: '"Poppins", sans-serif' }}>BALLING</p>
-                <p className="text-[13px] font-medium opacity-90 text-white mt-1 uppercase truncate max-w-[150px]" style={{ fontFamily: '"Poppins", sans-serif' }}>{bowlerSlot?.name?.split(' ')[0] || 'NAME'}</p>
-              </div>
-              <div className="flex items-center gap-2 mt-[5px] -ml-[5px] overflow-x-auto no-scrollbar max-w-[220px] sm:max-w-[260px]">
-                {(matchData?.timeline?.filter(b => b.over === score.overs) || []).map((ball, i) => (
-                  <div key={i} className="w-7 h-7 shrink-0 rounded-full bg-[#FFC403] text-black flex items-center justify-center text-[13px]" style={{ fontFamily: '"Bebas Neue", Anton, sans-serif' }}>
-                    {ballLabel(ball)}
-                  </div>
+            {/* Navigation Tabs */}
+            <div className="w-full z-[60] mt-auto bg-black shadow-inner backdrop-blur-md">
+              <div className="flex items-center gap-1 bg-[#1C1C1C] p-2 border-t border-white/5">
+                {[
+                  { id: "scoring", icon: Zap, label: "Score" },
+                  { id: "members", icon: Users, label: "Teams" },
+                  { id: "history", icon: History, label: "Ledger" },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex-1 flex items-center justify-center gap-3 py-3.5 rounded-[8px] transition-all border ${activeTab === tab.id ? "bg-white/10 text-[#00C187] border-[#00C187]/20 shadow-lg" : "text-neutral-500 hover:text-white border-transparent"}`}
+                  >
+                    <tab.icon size={16} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">
+                      {tab.label}
+                    </span>
+                  </button>
                 ))}
-                {Array.from({ length: Math.max(0, 6 - (matchData?.timeline?.filter(b => b.over === score.overs)?.length || 0)) }).map((_, i) => (
-                  <div key={`empty-${i}`} className="w-7 h-7 shrink-0 rounded-full border border-white/30" />
-                ))}
               </div>
             </div>
-
-            {/* Striker / Non Striker */}
-            <div className="flex justify-between w-full px-1">
-              <div>
-                <p className="text-[9px] tracking-[3px] opacity-60 text-white" style={{ fontFamily: '"Poppins", sans-serif' }}>STRIKER</p>
-                <div className="flex items-center gap-3 mt-1.5">
-                  <p className="font-medium text-[14px] text-[#A1FF00] uppercase truncate max-w-[120px]" style={{ fontFamily: '"Poppins", sans-serif' }}>{strikerSlot?.name?.split(' ')[0] || 'Name'}</p>
-                  <p className="text-[11px] tracking-[3px] text-white" style={{ fontFamily: '"Poppins", sans-serif' }}>{strikerStats?.runs ?? 0} - {strikerStats?.balls ?? 0}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-[9px] tracking-[3px] opacity-60 text-white" style={{ fontFamily: '"Poppins", sans-serif' }}>NON STRIKER</p>
-                <div className="flex items-center justify-end gap-3 mt-1.5">
-                   <p className="text-[11px] tracking-[3px] text-white" style={{ fontFamily: '"Poppins", sans-serif' }}>{nonStrikerStats?.runs ?? 0} - {nonStrikerStats?.balls ?? 0}</p>
-                   <p className="font-medium text-[14px] text-white uppercase truncate max-w-[120px]" style={{ fontFamily: '"Poppins", sans-serif' }}>{nonStrikerSlot?.name?.split(' ')[0] || 'Name'}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Match Controls Dropdown */}
-        <div className="bg-[#1a1a1a] border-y border-white/5 rounded-none overflow-hidden shadow-xl -mx-4 !mt-0 mb-0 z-10 relative">
-          <button 
-            onClick={() => setShowMatchActions(!showMatchActions)}
-            className="w-full p-3 flex items-center justify-between hover:bg-white/5 transition-all"
-          >
-            <div className="flex items-center gap-2">
-              <Settings size={14} style={{ color: THEME_COLOR }} />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/90">MATCH CONTROLS</span>
-            </div>
-            <ChevronLeft size={16} className={`text-white/50 transition-transform duration-300 ${showMatchActions ? '-rotate-90' : 'rotate-180'}`} />
-          </button>
-          
-          <div className={`transition-all duration-300 ease-in-out ${showMatchActions ? 'max-h-40 opacity-100 p-4 pt-2' : 'max-h-0 opacity-0 px-4 pointer-events-none'}`}>
-            <div className="grid grid-cols-4 gap-3">
-              <button
-                onClick={() => setShowInningsSetup(true)}
-                className="h-16 bg-white/5 border border-white/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex flex-col items-center justify-center gap-1.5 text-white transform active:scale-95 shadow-xl"
-              >
-                <Users size={16} /> <span className="mt-0.5">Players</span>
-              </button>
-              <button
-                disabled={isMutating}
-                onClick={() => { if (!isMutating && checkTimerActive()) setShowPenaltyModal(true); }}
-                className={`h-16 bg-white/5 border border-white/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex flex-col items-center justify-center gap-1.5 text-white transform active:scale-95 shadow-xl ${isMutating ? 'opacity-40 cursor-not-allowed' : ''}`}
-              >
-                <Zap size={16} /> <span className="mt-0.5">Penalty</span>
-              </button>
-              <button
-                onClick={() => setIsWagonWheelEnabled(!isWagonWheelEnabled)}
-                className={`h-16 border rounded-[8px] text-[9px] font-black uppercase tracking-[0.2em] transition-all flex flex-col items-center justify-center gap-1.5 transform active:scale-95 shadow-xl ${isWagonWheelEnabled ? 'bg-[#00C187]/10 border-[#00C187]/30 text-[#00C187]' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
-              >
-                <Crosshair size={16} /> <span className="mt-0.5">Wagon</span>
-              </button>
-              <button
-                onClick={() => setShowEndMatchModal(true)}
-                className="h-16 bg-white/[0.03] border border-white/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.2em] transition-all transform active:scale-95 shadow-xl flex flex-col items-center justify-center gap-1.5"
-                style={{ color: THEME_COLOR, borderColor: `${THEME_COLOR}33` }}
-              >
-                <CheckCircle2 size={16} /> <span className="mt-0.5">End Match</span>
-              </button>
-            </div>
-          </div>
-        </div>
           </>
         )}
-
-        {renderContent()}
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {/* Navigation Tabs */}
-      <div className="w-full z-[60] mt-auto bg-black shadow-inner backdrop-blur-md">
-        <div className="flex items-center gap-1 bg-[#1C1C1C] p-2 border-t border-white/5">
-          {[
-            { id: 'scoring', icon: Zap, label: 'Score' },
-            { id: 'members', icon: Users, label: 'Teams' },
-            { id: 'history', icon: History, label: 'Ledger' }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-3 py-3.5 rounded-[8px] transition-all border ${activeTab === tab.id ? 'bg-white/10 text-[#00C187] border-[#00C187]/20 shadow-lg' : 'text-neutral-500 hover:text-white border-transparent'}`}
-            >
-              <tab.icon size={16} />
-              <span className="text-[10px] font-black uppercase tracking-widest">{tab.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-      </>
-      )}
       </div>
       {/* Settings Modal */}
       {showSettings && (
@@ -1057,8 +1659,13 @@ const ScoringApp = () => {
           <div className="w-full h-[100dvh] max-w-[450px] overflow-y-auto bg-[#000] px-4 py-8 space-y-10 shadow-2xl relative pb-24">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#00C187]/5 blur-3xl pointer-events-none" />
             <div className="flex justify-between items-center">
-              <h3 className="text-[28px] font-semibold font-inter text-white tracking-tight">Interface Config</h3>
-              <button onClick={() => setShowSettings(false)} className="p-3 bg-white/5 rounded-[8px] border border-white/5 hover:text-white transition-all">
+              <h3 className="text-[28px] font-semibold font-inter text-white tracking-tight">
+                Interface Config
+              </h3>
+              <button
+                onClick={() => setShowSettings(false)}
+                className="p-3 bg-white/5 rounded-[8px] border border-white/5 hover:text-white transition-all"
+              >
                 <X size={20} className="text-neutral-500" />
               </button>
             </div>
@@ -1067,13 +1674,17 @@ const ScoringApp = () => {
               {matchData?.hostedGameId && !liveEnabled && (
                 <div className="py-12 text-center">
                   <div className="w-8 h-8 border-2 border-[#00C187] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                  <p className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Establishing Sync...</p>
+                  <p className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">
+                    Establishing Sync...
+                  </p>
                 </div>
               )}
 
               {matchData?.hostedGameId && liveEnabled && (
                 <div className="space-y-6 animate-in slide-in-from-top duration-500">
-                  <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">Broadcast Credentials</p>
+                  <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">
+                    Broadcast Credentials
+                  </p>
                   <div className="space-y-3">
                     <input
                       type="text"
@@ -1084,32 +1695,44 @@ const ScoringApp = () => {
                     />
                     <button
                       onClick={async () => {
-                        const rawVid = document.getElementById('ytVideoId')?.['value'] || '';
+                        const rawVid =
+                          document.getElementById("ytVideoId")?.["value"] || "";
                         const extractYoutubeId = (url) => {
-                          if (!url) return '';
-                          const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+                          if (!url) return "";
+                          const regExp =
+                            /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
                           const match = url.match(regExp);
-                          return (match && match[2].length === 11) ? match[2] : url;
+                          return match && match[2].length === 11
+                            ? match[2]
+                            : url;
                         };
                         const vidId = extractYoutubeId(rawVid);
-                        
+
                         try {
-                          const response = await axiosInstance.post(`/api/scoring/${matchId}/stream-config`, {
-                            youtubeVideoId: vidId
-                          }, {
-                            headers: {
-                              'Authorization': `Bearer ${localStorage.getItem(`scorer_token_${matchId}`) || localStorage.getItem('token') || ''}`
+                          const response = await axiosInstance.post(
+                            `/api/scoring/${matchId}/stream-config`,
+                            {
+                              youtubeVideoId: vidId,
+                            },
+                            {
+                              headers: {
+                                Authorization: `Bearer ${localStorage.getItem(`scorer_token_${matchId}`) || localStorage.getItem("token") || ""}`,
+                              },
                             }
-                          });
+                          );
                           const data = response.data;
                           if (data.success) {
-                            toast.success('Broadcast Linked!');
+                            toast.success("Live broadcast connected!");
                             refresh();
                           } else {
-                            toast.error('Link failure');
+                            toast.error(
+                              "Could not connect broadcast. Try again."
+                            );
                           }
                         } catch (err) {
-                          toast.error('Network failure');
+                          toast.error(
+                            "Network issue. Please check your connection."
+                          );
                         }
                       }}
                       className="w-full py-[14.5px] bg-[#222] border border-white/10 text-[#00C187] text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:bg-[#00C187] hover:text-black transition-all"
@@ -1121,10 +1744,26 @@ const ScoringApp = () => {
                   {liveUrls && (
                     <div className="space-y-4 pt-4 border-t border-white/5">
                       <div className="space-y-1.5">
-                        <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">OBS Overlay (Copy this)</p>
+                        <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">
+                          OBS Overlay (Copy this)
+                        </p>
                         <div className="flex gap-2">
-                          <input readOnly value={liveUrls.obsOverlay} className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-neutral-400 font-bold truncate outline-none" />
-                          <button onClick={() => { navigator.clipboard.writeText(liveUrls.obsOverlay); toast.success('Copied!'); }} className="px-4 py-[14.5px] bg-[#222] text-[#00C187] text-[10px] font-black uppercase rounded-[8px] border border-white/10 hover:bg-[#00C187] hover:text-black transition-all">Copy</button>
+                          <input
+                            readOnly
+                            value={liveUrls.obsOverlay}
+                            className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-neutral-400 font-bold truncate outline-none"
+                          />
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(
+                                liveUrls.obsOverlay
+                              );
+                              toast.success("Copied!");
+                            }}
+                            className="px-4 py-[14.5px] bg-[#222] text-[#00C187] text-[10px] font-black uppercase rounded-[8px] border border-white/10 hover:bg-[#00C187] hover:text-black transition-all"
+                          >
+                            Copy
+                          </button>
                         </div>
                         <button
                           type="button"
@@ -1136,14 +1775,30 @@ const ScoringApp = () => {
                         </button>
                       </div>
                       <div className="space-y-1.5">
-                        <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">Public Match Analytics</p>
+                        <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">
+                          Public Match Analytics
+                        </p>
                         <div className="flex gap-2">
-                          <input readOnly value={liveUrls.publicScoreboard} className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-neutral-400 font-bold truncate outline-none" />
-                          <button onClick={() => { navigator.clipboard.writeText(liveUrls.publicScoreboard); toast.success('Copied!'); }} className="px-4 py-[14.5px] bg-[#222] text-[#00C187] text-[10px] font-black uppercase rounded-[8px] border border-white/10 hover:bg-[#00C187] hover:text-black transition-all">Copy</button>
+                          <input
+                            readOnly
+                            value={liveUrls.publicScoreboard}
+                            className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-neutral-400 font-bold truncate outline-none"
+                          />
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(
+                                liveUrls.publicScoreboard
+                              );
+                              toast.success("Copied!");
+                            }}
+                            className="px-4 py-[14.5px] bg-[#222] text-[#00C187] text-[10px] font-black uppercase rounded-[8px] border border-white/10 hover:bg-[#00C187] hover:text-black transition-all"
+                          >
+                            Copy
+                          </button>
                         </div>
                         <div className="flex gap-2 w-full mt-2">
                           <a
-                            href={`/live-overlay/${matchId}/preview?theme=${matchData?.hostedGameId?.tickerTheme || 'neon_classic'}`}
+                            href={`/live-overlay/${matchId}/preview?theme=${matchData?.hostedGameId?.tickerTheme || "neon_classic"}`}
                             target="_blank"
                             rel="noreferrer"
                             className="w-full py-[14.5px] bg-[#222] text-[#00C187] border border-white/10 rounded-[8px] px-4 text-[10px] font-black uppercase tracking-widest text-center hover:bg-[#00C187]/30 transition-colors"
@@ -1159,35 +1814,39 @@ const ScoringApp = () => {
 
               <div className="space-y-6">
                 <div className="space-y-4">
-                  <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">Match State</p>
+                  <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">
+                    Match State
+                  </p>
                   <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={async () => {
-                        const res = await updateMatchStatus('LIVE');
-                        if (res.success) toast.success('Match Resumed!');
-                        else toast.error('Failed to update status');
+                        const res = await updateMatchStatus("LIVE");
+                        if (res.success) toast.success("Match resumed!");
+                        else toast.error("Could not resume match. Try again.");
                       }}
-                      className={`py-[14.5px] rounded-[8px] text-[10px] font-black uppercase transition-all ${matchData?.status === 'LIVE' ? 'bg-[#222] text-[#00C187] border border-white/10' : 'bg-white/5 text-neutral-400 hover:bg-white/10'}`}
+                      className={`py-[14.5px] rounded-[8px] text-[10px] font-black uppercase transition-all ${matchData?.status === "LIVE" ? "bg-[#222] text-[#00C187] border border-white/10" : "bg-white/5 text-neutral-400 hover:bg-white/10"}`}
                     >
                       Live
                     </button>
                     <button
                       onClick={async () => {
-                        const res = await updateMatchStatus('RAIN_DELAY');
-                        if (res.success) toast.success('Match Paused: Rain Delay');
-                        else toast.error('Failed to update status');
+                        const res = await updateMatchStatus("RAIN_DELAY");
+                        if (res.success)
+                          toast.success("Match paused — Rain delay");
+                        else toast.error("Could not pause match. Try again.");
                       }}
-                      className={`py-[14.5px] rounded-[8px] text-[10px] font-black uppercase transition-all ${matchData?.status === 'RAIN_DELAY' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-white/5 text-neutral-400 hover:bg-white/10'}`}
+                      className={`py-[14.5px] rounded-[8px] text-[10px] font-black uppercase transition-all ${matchData?.status === "RAIN_DELAY" ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-white/5 text-neutral-400 hover:bg-white/10"}`}
                     >
                       Rain Delay
                     </button>
                     <button
                       onClick={async () => {
-                        const res = await updateMatchStatus('BAD_LIGHT');
-                        if (res.success) toast.success('Match Paused: Bad Light');
-                        else toast.error('Failed to update status');
+                        const res = await updateMatchStatus("BAD_LIGHT");
+                        if (res.success)
+                          toast.success("Match paused — Bad light");
+                        else toast.error("Could not pause match. Try again.");
                       }}
-                      className={`py-[14.5px] rounded-[8px] text-[10px] font-black uppercase transition-all ${matchData?.status === 'BAD_LIGHT' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' : 'bg-white/5 text-neutral-400 hover:bg-white/10'}`}
+                      className={`py-[14.5px] rounded-[8px] text-[10px] font-black uppercase transition-all ${matchData?.status === "BAD_LIGHT" ? "bg-orange-500/20 text-orange-400 border border-orange-500/30" : "bg-white/5 text-neutral-400 hover:bg-white/10"}`}
                     >
                       Bad Light
                     </button>
@@ -1197,17 +1856,21 @@ const ScoringApp = () => {
                 <div className="space-y-4 pt-4 border-t border-white/5">
                   <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest flex items-center justify-between">
                     <span>AI Commentator (OpenAI TTS)</span>
-                    <span className={`px-2 py-0.5 rounded text-[8px] ${isAiCommentaryEnabled ? 'bg-[#222] text-[#00C187]' : 'bg-white/5 text-neutral-500'}`}>
-                      {isAiCommentaryEnabled ? 'ACTIVE' : 'OFF'}
+                    <span
+                      className={`px-2 py-0.5 rounded text-[8px] ${isAiCommentaryEnabled ? "bg-[#222] text-[#00C187]" : "bg-white/5 text-neutral-500"}`}
+                    >
+                      {isAiCommentaryEnabled ? "ACTIVE" : "OFF"}
                     </span>
                   </p>
 
                   <div className="flex gap-2">
                     <button
-                      onClick={() => setIsAiCommentaryEnabled(!isAiCommentaryEnabled)}
-                      className={`flex-1 py-[14.5px] rounded-[8px] text-[10px] font-black uppercase tracking-widest transition-all ${isAiCommentaryEnabled ? 'bg-[#222] text-[#00C187] border border-white/10 shadow-[0_0_15px_rgba(0,193,135,0.15)]' : 'bg-white/5 border border-white/10 text-white'}`}
+                      onClick={() =>
+                        setIsAiCommentaryEnabled(!isAiCommentaryEnabled)
+                      }
+                      className={`flex-1 py-[14.5px] rounded-[8px] text-[10px] font-black uppercase tracking-widest transition-all ${isAiCommentaryEnabled ? "bg-[#222] text-[#00C187] border border-white/10 shadow-[0_0_15px_rgba(0,193,135,0.15)]" : "bg-white/5 border border-white/10 text-white"}`}
                     >
-                      {isAiCommentaryEnabled ? 'Disable' : 'Enable Commentary'}
+                      {isAiCommentaryEnabled ? "Disable" : "Enable Commentary"}
                     </button>
                   </div>
 
@@ -1216,7 +1879,9 @@ const ScoringApp = () => {
                       <div className="flex gap-2">
                         <select
                           value={commentaryLanguage}
-                          onChange={(e) => setCommentaryLanguage(e.target.value)}
+                          onChange={(e) =>
+                            setCommentaryLanguage(e.target.value)
+                          }
                           className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
                         >
                           <option value="en">English (Default)</option>
@@ -1238,8 +1903,12 @@ const ScoringApp = () => {
                           <option value="echo">Echo (Male, Warm)</option>
                           <option value="fable">Fable (Male, British)</option>
                           <option value="onyx">Onyx (Male, Deep)</option>
-                          <option value="nova">Nova (Female, Professional)</option>
-                          <option value="shimmer">Shimmer (Female, Bright)</option>
+                          <option value="nova">
+                            Nova (Female, Professional)
+                          </option>
+                          <option value="shimmer">
+                            Shimmer (Female, Bright)
+                          </option>
                         </select>
                       </div>
                       <div className="flex gap-2">
@@ -1248,30 +1917,45 @@ const ScoringApp = () => {
                           onChange={(e) => setCommentaryStyle(e.target.value)}
                           className="w-full bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
                         >
-                          <option value="professional">Professional Broadcast</option>
-                          <option value="natural">Natural Human (Casual)</option>
+                          <option value="professional">
+                            Professional Broadcast
+                          </option>
+                          <option value="natural">
+                            Natural Human (Casual)
+                          </option>
                           <option value="funny">Funny & Witty</option>
-                          <option value="dramatic">High Energy / Dramatic</option>
+                          <option value="dramatic">
+                            High Energy / Dramatic
+                          </option>
                         </select>
                       </div>
                       <button
                         onClick={async () => {
                           try {
-                            const response = await axiosInstance.post(`/api/scoring/${matchId}/commentary-settings`, {
-                              isAiCommentaryEnabled, commentaryVoice, commentaryLanguage, commentaryStyle
-                            }, {
-                              headers: {
-                                'Authorization': `Bearer ${localStorage.getItem(`scorer_token_${matchId}`) || ''}`
+                            const response = await axiosInstance.post(
+                              `/api/scoring/${matchId}/commentary-settings`,
+                              {
+                                isAiCommentaryEnabled,
+                                commentaryVoice,
+                                commentaryLanguage,
+                                commentaryStyle,
+                              },
+                              {
+                                headers: {
+                                  Authorization: `Bearer ${localStorage.getItem(`scorer_token_${matchId}`) || ""}`,
+                                },
                               }
-                            });
+                            );
                             const data = response.data;
                             if (data.success) {
-                              toast.success('Commentary settings saved!');
+                              toast.success("Commentary settings updated!");
                             } else {
-                              toast.error('Failed to save settings');
+                              toast.error(
+                                "Could not save settings. Try again."
+                              );
                             }
                           } catch (err) {
-                            toast.error('Network error saving settings');
+                            toast.error("Connection issue. Please try again.");
                           }
                         }}
                         className="w-full py-[14.5px] bg-[#222] text-[#00C187] text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-white/10 hover:bg-[#00C187] hover:text-black transition-all"
@@ -1283,13 +1967,15 @@ const ScoringApp = () => {
                 </div>
 
                 <div className="space-y-4 pt-4 border-t border-white/5">
-                  <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">DLS / Target Revision</p>
+                  <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">
+                    DLS / Target Revision
+                  </p>
                   <div className="flex gap-2">
                     <input
                       type="number"
                       id="revisedTarget"
                       placeholder="Revised Target"
-                      defaultValue={matchData?.revisedTarget || ''}
+                      defaultValue={matchData?.revisedTarget || ""}
                       className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
                     />
                     <input
@@ -1297,18 +1983,26 @@ const ScoringApp = () => {
                       step="0.1"
                       id="revisedOvers"
                       placeholder="Revised Overs"
-                      defaultValue={matchData?.revisedOvers || ''}
+                      defaultValue={matchData?.revisedOvers || ""}
                       className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
                     />
                   </div>
                   <button
                     onClick={async () => {
-                      const tgt = parseInt(document.getElementById('revisedTarget').value);
-                      const ovr = parseFloat(document.getElementById('revisedOvers').value);
-                      if (isNaN(tgt) || isNaN(ovr)) return toast.error('Enter valid target and overs');
+                      const tgt = parseInt(
+                        document.getElementById("revisedTarget").value
+                      );
+                      const ovr = parseFloat(
+                        document.getElementById("revisedOvers").value
+                      );
+                      if (isNaN(tgt) || isNaN(ovr))
+                        return toast.error(
+                          "Please enter a valid target and overs"
+                        );
                       const res = await reviseTargetAndOvers(tgt, ovr);
-                      if (res.success) toast.success('Target Revised!');
-                      else toast.error('Failed to revise target');
+                      if (res.success)
+                        toast.success("Target revised successfully!");
+                      else toast.error("Could not revise target. Try again.");
                     }}
                     className="w-full py-[14.5px] bg-purple-500/10 text-purple-400 text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-purple-500/20 hover:bg-purple-500 hover:text-white transition-all"
                   >
@@ -1317,20 +2011,22 @@ const ScoringApp = () => {
                 </div>
 
                 <div className="space-y-4 pt-4 border-t border-white/5">
-                  <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">Match Officials</p>
+                  <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">
+                    Match Officials
+                  </p>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       id="umpire1"
                       placeholder="Umpire 1"
-                      defaultValue={matchData?.matchOfficials?.umpire1 || ''}
+                      defaultValue={matchData?.matchOfficials?.umpire1 || ""}
                       className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
                     />
                     <input
                       type="text"
                       id="umpire2"
                       placeholder="Umpire 2"
-                      defaultValue={matchData?.matchOfficials?.umpire2 || ''}
+                      defaultValue={matchData?.matchOfficials?.umpire2 || ""}
                       className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
                     />
                   </div>
@@ -1339,17 +2035,28 @@ const ScoringApp = () => {
                       type="text"
                       id="matchReferee"
                       placeholder="Match Referee"
-                      defaultValue={matchData?.matchOfficials?.matchReferee || ''}
+                      defaultValue={
+                        matchData?.matchOfficials?.matchReferee || ""
+                      }
                       className="w-full bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
                     />
                     <button
                       onClick={async () => {
-                        const umpire1 = document.getElementById('umpire1').value;
-                        const umpire2 = document.getElementById('umpire2').value;
-                        const matchReferee = document.getElementById('matchReferee').value;
-                        const res = await setMatchOfficials({ umpire1, umpire2, matchReferee });
-                        if (res.success) toast.success('Officials Updated!');
-                        else toast.error('Failed to update officials');
+                        const umpire1 =
+                          document.getElementById("umpire1").value;
+                        const umpire2 =
+                          document.getElementById("umpire2").value;
+                        const matchReferee =
+                          document.getElementById("matchReferee").value;
+                        const res = await setMatchOfficials({
+                          umpire1,
+                          umpire2,
+                          matchReferee,
+                        });
+                        if (res.success)
+                          toast.success("Match officials updated!");
+                        else
+                          toast.error("Could not update officials. Try again.");
                       }}
                       className="w-full py-[14.5px] bg-blue-500/10 text-blue-400 text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-blue-500/20 hover:bg-blue-500 hover:text-white transition-all"
                     >
@@ -1359,7 +2066,9 @@ const ScoringApp = () => {
                 </div>
 
                 <div className="space-y-4 pt-4 border-t border-white/5">
-                  <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">Match Rules (Phase 5)</p>
+                  <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">
+                    Match Rules (Phase 5)
+                  </p>
 
                   <div className="grid grid-cols-2 gap-2">
                     <input
@@ -1371,11 +2080,16 @@ const ScoringApp = () => {
                     />
                     <button
                       onClick={async () => {
-                        const overs = parseInt(document.getElementById('powerplayOvers').value);
-                        if (isNaN(overs)) return toast.error('Enter valid overs');
+                        const overs = parseInt(
+                          document.getElementById("powerplayOvers").value
+                        );
+                        if (isNaN(overs))
+                          return toast.error("Please enter valid overs");
                         const res = await setPowerplayOvers(overs);
-                        if (res.success) toast.success('Powerplay Overs Updated!');
-                        else toast.error('Failed to update powerplay');
+                        if (res.success)
+                          toast.success("Powerplay overs updated!");
+                        else
+                          toast.error("Could not update powerplay. Try again.");
                       }}
                       className="w-full py-[14.5px] bg-[#222] text-[#00C187] text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-white/10 hover:bg-[#00C187] hover:text-black transition-all"
                     >
@@ -1386,10 +2100,18 @@ const ScoringApp = () => {
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={async () => {
-                        const isSuccess = window.confirm("Was the Batting Team's review successful? (Click OK for Yes, Cancel for No)");
-                        const res = await useReview('batting', isSuccess);
-                        if (res.success) toast.success(isSuccess ? 'Review Retained' : 'Review Lost');
-                        else toast.error('Failed to use review');
+                        const isSuccess = window.confirm(
+                          "Was the Batting Team's review successful? (Click OK for Yes, Cancel for No)"
+                        );
+                        const res = await useReview("batting", isSuccess);
+                        if (res.success)
+                          toast.success(
+                            isSuccess
+                              ? "Review successful!"
+                              : "Review unsuccessful"
+                          );
+                        else
+                          toast.error("Could not process review. Try again.");
                       }}
                       className="w-full py-[14.5px] bg-yellow-500/10 text-yellow-400 text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-yellow-500/20 hover:bg-yellow-500 hover:text-white transition-all"
                     >
@@ -1398,10 +2120,18 @@ const ScoringApp = () => {
 
                     <button
                       onClick={async () => {
-                        const isSuccess = window.confirm("Was the Fielding Team's review successful? (Click OK for Yes, Cancel for No)");
-                        const res = await useReview('fielding', isSuccess);
-                        if (res.success) toast.success(isSuccess ? 'Review Retained' : 'Review Lost');
-                        else toast.error('Failed to use review');
+                        const isSuccess = window.confirm(
+                          "Was the Fielding Team's review successful? (Click OK for Yes, Cancel for No)"
+                        );
+                        const res = await useReview("fielding", isSuccess);
+                        if (res.success)
+                          toast.success(
+                            isSuccess
+                              ? "Review successful!"
+                              : "Review unsuccessful"
+                          );
+                        else
+                          toast.error("Could not process review. Try again.");
                       }}
                       className="w-full py-[14.5px] bg-yellow-500/10 text-yellow-400 text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-yellow-500/20 hover:bg-yellow-500 hover:text-white transition-all"
                     >
@@ -1410,7 +2140,9 @@ const ScoringApp = () => {
                   </div>
                 </div>
                 <div className="space-y-4 pt-4 border-t border-white/5">
-                  <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">Match Analysis</p>
+                  <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">
+                    Match Analysis
+                  </p>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => {
@@ -1425,7 +2157,10 @@ const ScoringApp = () => {
 
                     <button
                       onClick={() => {
-                        window.open(`/analytics/${matchData?.hostedGameId?.shortId || matchId}`, '_blank');
+                        window.open(
+                          `/analytics/${matchData?.hostedGameId?.shortId || matchId}`,
+                          "_blank"
+                        );
                       }}
                       className="w-full py-[14.5px] bg-[#55DEE8]/10 text-[#55DEE8] text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-[#55DEE8]/20 hover:bg-[#55DEE8] hover:text-black hover:shadow-[0_0_15px_rgba(85,222,232,0.15)] transition-all flex items-center justify-center gap-2"
                     >
@@ -1435,7 +2170,17 @@ const ScoringApp = () => {
                   </div>
                 </div>
               </div>
-              <button onClick={() => setShowSettings(false)} className="w-full py-5 rounded-[8px] font-black uppercase text-[11px] tracking-[0.2em] transition-all transform active:scale-95 shadow-xl" style={{ backgroundColor: THEME_COLOR, color: '#000', boxShadow: `0 10px 30px ${THEME_COLOR}33` }}>Save Parameters</button>
+              <button
+                onClick={() => setShowSettings(false)}
+                className="w-full py-5 rounded-[8px] font-black uppercase text-[11px] tracking-[0.2em] transition-all transform active:scale-95 shadow-xl"
+                style={{
+                  backgroundColor: THEME_COLOR,
+                  color: "#000",
+                  boxShadow: `0 10px 30px ${THEME_COLOR}33`,
+                }}
+              >
+                Save Parameters
+              </button>
             </div>
           </div>
         </div>
@@ -1447,16 +2192,18 @@ const ScoringApp = () => {
           bowlingTeamSlots={bowlingSlots}
           battingTeamInfo={battingTeamInfo}
           bowlingTeamInfo={bowlingTeamInfo}
-          inningsLabel={matchData?.currentInningsIndex === 0 ? '1st Innings' : '2nd Innings'}
+          inningsLabel={
+            matchData?.currentInningsIndex === 0 ? "1st Innings" : "2nd Innings"
+          }
           onConfirm={async (players) => {
             const result = await setPlayers(players);
             if (result.success) {
-              toast.success('Node established! Scoring ready.');
-              if (matchData?.timerState === 'PAUSED') {
+              toast.success("You're all set! Start scoring 🏏");
+              if (matchData?.timerState === "PAUSED") {
                 toggleTimer();
               }
             } else {
-              toast.error(result.error || 'Player sync failed');
+              toast.error("Could not set players. Please try again.");
             }
             setShowInningsSetup(false);
           }}
@@ -1468,10 +2215,16 @@ const ScoringApp = () => {
           fieldingTeamSlots={bowlingSlots}
           battingTeamSlots={remainingBatters}
           activeBatters={[
-            strikerSlot ? { ...strikerSlot, role: 'Striker' } : null,
-            nonStrikerSlot ? { ...nonStrikerSlot, role: 'Non-Striker' } : null
+            strikerSlot ? { ...strikerSlot, role: "Striker" } : null,
+            nonStrikerSlot ? { ...nonStrikerSlot, role: "Non-Striker" } : null,
           ].filter(Boolean)}
-          onConfirm={async ({ wicketType, fielderId, nextBatterId, runs, playerOutId }) => {
+          onConfirm={async ({
+            wicketType,
+            fielderId,
+            nextBatterId,
+            runs,
+            playerOutId,
+          }) => {
             const result = await handleScore({
               runs: runs || 0,
               isWicket: true,
@@ -1479,12 +2232,12 @@ const ScoringApp = () => {
               fielderId,
               nextBatterId,
               playerOutId,
-              extraType: 'NONE',
+              extraType: "NONE",
             });
             if (result.success) {
               toast.success(`Wicket Confirmed`);
             } else {
-              toast.error(result.error || 'Sync failure');
+              toast.error("Something went wrong. Please try again.");
             }
             setShowWicketModal(false);
           }}
@@ -1493,7 +2246,7 @@ const ScoringApp = () => {
       )}
       {showThemeStore && (
         <TickerThemeStoreModal
-          activeTheme={matchData?.hostedGameId?.tickerTheme || 'neon_classic'}
+          activeTheme={matchData?.hostedGameId?.tickerTheme || "neon_classic"}
           matchId={matchId}
           onClose={() => setShowThemeStore(false)}
           onThemeApplied={(newTheme) => {
@@ -1511,7 +2264,7 @@ const ScoringApp = () => {
           onConfirm={async (teamId, runs) => {
             const res = await addPenalty(teamId, runs);
             if (res.success) toast.success(`Added ${runs} penalty runs`);
-            else toast.error(res.message || 'Failed to add penalty');
+            else toast.error("Could not add penalty. Try again.");
             setShowPenaltyModal(false);
           }}
         />
@@ -1550,18 +2303,22 @@ const ScoringApp = () => {
               Innings Over
             </h3>
             <p className="text-sm text-white/60 mb-6 leading-relaxed">
-              The {isFirstInnings ? 'first' : 'current'} innings has ended. The match timer has been paused. Set up the next innings to resume the match.
+              The {isFirstInnings ? "first" : "current"} innings has ended. The
+              match timer has been paused. Set up the next innings to resume the
+              match.
             </p>
             <button
               onClick={async () => {
                 setShowInningsCompleteModal(false);
                 const res = await advanceToNextInnings(bowlingTeamKey);
                 if (res.success) {
-                  toast.success("Ready for 2nd Innings Setup!");
+                  toast.success("2nd innings is ready! Select the openers.");
                   // Force the UI to show the InningsSetupModal for the next innings
                   setShowInningsSetup(true);
                 } else {
-                  toast.error("Failed to advance innings: " + res.message);
+                  toast.error(
+                    "Could not start next innings. Please try again."
+                  );
                 }
               }}
               className="w-full py-4 bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-black font-black text-sm uppercase tracking-wider rounded-[8px] hover:opacity-90 transition-opacity"
@@ -1578,18 +2335,20 @@ const ScoringApp = () => {
           bowlingTeamSlots={bowlingSlots}
           battingTeamInfo={battingTeamInfo}
           bowlingTeamInfo={bowlingTeamInfo}
-          inningsLabel={matchData?.currentInningsIndex === 0 ? '1st Innings' : '2nd Innings'}
+          inningsLabel={
+            matchData?.currentInningsIndex === 0 ? "1st Innings" : "2nd Innings"
+          }
           onConfirm={async (players) => {
             const result = await setPlayers(players);
             if (result.success) {
-              toast.success('Node established! Scoring ready.');
-              if (matchData?.timerState === 'PAUSED' || hasAutoPausedTimer) {
+              toast.success("You're all set! Start scoring 🏏");
+              if (matchData?.timerState === "PAUSED" || hasAutoPausedTimer) {
                 toggleTimer();
                 setHasAutoPausedTimer(false);
                 toast("Match Resumed", { icon: "▶️" });
               }
             } else {
-              toast.error(result.error || 'Player sync failed');
+              toast.error("Could not set players. Please try again.");
             }
             setShowInningsSetup(false);
           }}
@@ -1601,10 +2360,16 @@ const ScoringApp = () => {
           fieldingTeamSlots={bowlingSlots}
           battingTeamSlots={remainingBatters}
           activeBatters={[
-            strikerSlot ? { ...strikerSlot, role: 'Striker' } : null,
-            nonStrikerSlot ? { ...nonStrikerSlot, role: 'Non-Striker' } : null
+            strikerSlot ? { ...strikerSlot, role: "Striker" } : null,
+            nonStrikerSlot ? { ...nonStrikerSlot, role: "Non-Striker" } : null,
           ].filter(Boolean)}
-          onConfirm={async ({ wicketType, fielderId, nextBatterId, runs, playerOutId }) => {
+          onConfirm={async ({
+            wicketType,
+            fielderId,
+            nextBatterId,
+            runs,
+            playerOutId,
+          }) => {
             const result = await handleScore({
               runs: runs || 0,
               isWicket: true,
@@ -1612,12 +2377,12 @@ const ScoringApp = () => {
               fielderId,
               nextBatterId,
               playerOutId,
-              extraType: 'NONE',
+              extraType: "NONE",
             });
             if (result.success) {
               toast.success(`Wicket Confirmed`);
             } else {
-              toast.error(result.error || 'Sync failure');
+              toast.error("Something went wrong. Please try again.");
             }
             setShowWicketModal(false);
           }}
@@ -1634,9 +2399,9 @@ const ScoringApp = () => {
               isBoundary: wagonWheelData.isBoundary,
               isFour: wagonWheelData.isFour,
               isSix: wagonWheelData.isSix,
-              extraType: 'NONE',
+              extraType: "NONE",
               fieldingPosition: data.position,
-              distance: data.distance
+              distance: data.distance,
             });
             setWagonWheelData(null);
           }}
@@ -1647,17 +2412,17 @@ const ScoringApp = () => {
         <ExtraRunsModal
           extraType={extraModal}
           onConfirm={async (runs) => {
-            const isWide = extraModal === 'WIDE';
-            const isNoBall = extraModal === 'NO_BALL';
-            const totalRuns = (isWide || isNoBall) ? runs + 1 : runs;
+            const isWide = extraModal === "WIDE";
+            const isNoBall = extraModal === "NO_BALL";
+            const totalRuns = isWide || isNoBall ? runs + 1 : runs;
             const result = await handleScore({
               runs: totalRuns,
               isExtra: true,
               extraType: extraModal,
               isBoundary: false,
             });
-            if (result.success) toast.success(`${extraModal} Event Recorded`);
-            else toast.error(result.error || 'Sync failure');
+            if (result.success) toast.success("Extra recorded!");
+            else toast.error("Something went wrong. Please try again.");
             setExtraModal(null);
           }}
           onClose={() => setExtraModal(null)}
@@ -1670,92 +2435,40 @@ const ScoringApp = () => {
           onConfirm={async (bowlerId) => {
             const res = await setPlayers({ bowlerId });
             if (res.success) {
-              toast.success('Next bowler selected');
+              toast.success("Next bowler selected");
               setShowBowlerModal(false);
             } else {
-              toast.error(res.error || 'Failed to select bowler');
+              toast.error("Could not select bowler. Please try again.");
             }
           }}
         />
       )}
-      {showTossModal && (
-        <TossModal
-          teamA={matchData?.teamA || matchData?.hostedGameId?.teamA || (Array.isArray(matchData?.hostedGameId?.teams) ? matchData.hostedGameId.teams.find(t => t.teamKey === 'teamA') : null)}
-          teamB={matchData?.teamB || matchData?.hostedGameId?.teamB || (Array.isArray(matchData?.hostedGameId?.teams) ? matchData.hostedGameId.teams.find(t => t.teamKey === 'teamB') : null)}
-          hasPassword={hasPassword && !passwordVerified}
-          onCancel={() => setShowTossModal(false)}
-          onConfirm={async ({ winnerTeam, decision, password }) => {
 
-            // If a password was provided, verify it first or store it
-            if (password) {
-              try {
-                const authRes = await axiosInstance.post(`/api/scoring/auth/${matchId}`, { password });
-                if (authRes.data.success) {
-                  localStorage.setItem(`scorer_token_${matchId}`, authRes.data.token);
-                  setPasswordVerified(true);
-                } else {
-                  return toast.error('Invalid password');
-                }
-              } catch (e) {
-                return toast.error('Error verifying password');
-              }
-            }
-
-            try {
-              // Determine batting team
-              const isTeamAWinner = winnerTeam === (matchData?.teamA?.id || matchData?.hostedGameId?.teamA?.id);
-              let battingTeam = 'teamA';
-              if ((isTeamAWinner && decision === 'BAT') || (!isTeamAWinner && decision === 'BOWL')) {
-                battingTeam = 'teamA';
-              } else {
-                battingTeam = 'teamB';
-              }
-
-              const response = await axiosInstance.post(`/api/scoring/start`, {
-                matchId: matchData._id || matchData.id || matchData.hostedGameId?.id,
-                battingTeam,
-                tossWinner: winnerTeam,
-                tossDecision: decision
-              }, {
-                headers: {
-                  'Authorization': `Bearer ${localStorage.getItem(`scorer_token_${matchId}`) || ''}`
-                }
-              });
-              const data = response.data;
-              if (data.success) {
-                toast.success('Match started successfully!');
-                setShowTossModal(false);
-                await refresh();
-              } else {
-                toast.error('Failed to start match');
-              }
-            } catch (e) {
-              toast.error('Error starting match');
-            }
-          }}
-        />
-      )}
       {showAuthModal && (
         <ScoringPasswordModal
           matchId={matchId}
-          actionLabel={authAction === 'end' ? 'Confirm End Match' : 'Unlock Scoring Console'}
+          actionLabel={
+            authAction === "end"
+              ? "Confirm End Match"
+              : "Unlock Scoring Console"
+          }
           onClose={() => setShowAuthModal(false)}
           onSuccess={(token) => {
             localStorage.setItem(`scorer_token_${matchId}`, token);
             setPasswordVerified(true);
             setShowAuthModal(false);
-            if (authAction === 'start') {
+            if (authAction === "start") {
               setShowTossModal(true);
-            } else if (authAction === 'end') {
+            } else if (authAction === "end") {
               completeMatch();
-              navigate('/');
+              navigate("/");
             }
           }}
         />
       )}
       {showThemeStore && (
         <TickerThemeStoreModal
-          activeTheme={matchData?.hostedGameId?.tickerTheme || 'neon_classic'}
+          activeTheme={matchData?.hostedGameId?.tickerTheme || "neon_classic"}
           matchId={matchId}
           onClose={() => setShowThemeStore(false)}
           onThemeApplied={(newTheme) => {
@@ -1773,7 +2486,7 @@ const ScoringApp = () => {
           onConfirm={async (teamId, runs) => {
             const res = await addPenalty(teamId, runs);
             if (res.success) toast.success(`Added ${runs} penalty runs`);
-            else toast.error(res.message || 'Failed to add penalty');
+            else toast.error("Could not add penalty. Try again.");
             setShowPenaltyModal(false);
           }}
         />
@@ -1790,11 +2503,11 @@ const ScoringApp = () => {
           onClose={() => setShowCustomRunsModal(false)}
           onConfirm={(runs) => {
             setShowCustomRunsModal(false);
-            processRuns({ 
-              runs: Number(runs), 
-              isBoundary: Number(runs) >= 4, 
-              isFour: Number(runs) === 4, 
-              isSix: Number(runs) === 6 
+            processRuns({
+              runs: Number(runs),
+              isBoundary: Number(runs) >= 4,
+              isFour: Number(runs) === 4,
+              isSix: Number(runs) === 6,
             });
           }}
         />
@@ -1809,7 +2522,7 @@ const ScoringApp = () => {
             }
             await completeMatch();
             setShowEndMatchModal(false);
-            navigate('/');
+            navigate("/");
           }}
           onClose={() => setShowEndMatchModal(false)}
         />

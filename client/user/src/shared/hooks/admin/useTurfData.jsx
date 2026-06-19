@@ -9,7 +9,6 @@ const useTurfData = () => {
 
   const { id: ownerId } = useParams();
 
-
   const fetchTurfData = async () => {
     setLoading(true);
     try {
@@ -19,10 +18,10 @@ const useTurfData = () => {
       const result = await response.data;
       setTurfData(result.turfs);
       setOwner(result.owner);
-     } catch (err) {
+    } catch (err) {
       console.log(err);
-    }finally{
-        setLoading(false);
+    } finally {
+      setLoading(false);
     }
   };
 

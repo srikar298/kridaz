@@ -21,7 +21,7 @@ const seedOtp = async (email, phone) => {
       phone,
       emailOtp: "123456",
       phoneOtp: "123456",
-      expiresAt: new Date(Date.now() + 600000)
+      expiresAt: new Date(Date.now() + 600000),
     },
   });
 };
@@ -29,36 +29,52 @@ const seedOtp = async (email, phone) => {
 describe("Reels Module API", () => {
   beforeAll(async () => {
     // Clean up
-    await prisma.reelInteraction.deleteMany({ where: { user: { email: userEmail } } }).catch(() => {});
-    await prisma.reelComment.deleteMany({ where: { user: { email: userEmail } } }).catch(() => {});
-    await prisma.reel.deleteMany({ where: { creator: { email: userEmail } } }).catch(() => {});
-    await prisma.refreshToken.deleteMany({ where: { user: { email: userEmail } } }).catch(() => {});
-    await prisma.user.deleteMany({ where: { email: userEmail } }).catch(() => {});
-    await prisma.oTP.deleteMany({ where: { email: userEmail } }).catch(() => {});
+    await prisma.reelInteraction
+      .deleteMany({ where: { user: { email: userEmail } } })
+      .catch(() => {});
+    await prisma.reelComment
+      .deleteMany({ where: { user: { email: userEmail } } })
+      .catch(() => {});
+    await prisma.reel
+      .deleteMany({ where: { creator: { email: userEmail } } })
+      .catch(() => {});
+    await prisma.refreshToken
+      .deleteMany({ where: { user: { email: userEmail } } })
+      .catch(() => {});
+    await prisma.user
+      .deleteMany({ where: { email: userEmail } })
+      .catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: userEmail } })
+      .catch(() => {});
 
     await seedOtp(userEmail, userPhone);
 
     // Register user
-    const otpRes_regRes = await request(app).post('/api/user/auth/verify-otp').send({ email: userEmail, phone: userPhone, otp: "123456" });
-    const regRes = await request(app)
-      .post("/api/user/auth/register")
-      .send({
-        name: "Reels Tester",
-        email: userEmail,
-        username: userName,
-        phone: userPhone,
-        gender: "Male",
-        location: "Test City",
-        password: "Reels@Pass123",
-        confirmPassword: "Reels@Pass123",
-        otp: "123456",
-        phoneOtp: "123456", registrationToken: otpRes_regRes.body.registrationToken});
+    const otpRes_regRes = await request(app)
+      .post("/api/user/auth/verify-otp")
+      .send({ email: userEmail, phone: userPhone, otp: "123456" });
+    const regRes = await request(app).post("/api/user/auth/register").send({
+      name: "Reels Tester",
+      email: userEmail,
+      username: userName,
+      phone: userPhone,
+      gender: "Male",
+      location: "Test City",
+      password: "Reels@Pass123",
+      confirmPassword: "Reels@Pass123",
+      otp: "123456",
+      phoneOtp: "123456",
+      registrationToken: otpRes_regRes.body.registrationToken,
+    });
 
     if (regRes.statusCode === 201) {
       userToken = regRes.body.token;
 
       // Seed a dummy Reel for testing interactions
-      const creator = await prisma.user.findFirst({ where: { email: userEmail } });
+      const creator = await prisma.user.findFirst({
+        where: { email: userEmail },
+      });
       if (creator) {
         const reel = await prisma.reel.create({
           data: {
@@ -79,13 +95,23 @@ describe("Reels Module API", () => {
   afterAll(async () => {
     const user = await prisma.user.findFirst({ where: { email: userEmail } });
     if (user) {
-      await prisma.reelInteraction.deleteMany({ where: { userId: user.id } }).catch(() => {});
-      await prisma.reelComment.deleteMany({ where: { userId: user.id } }).catch(() => {});
-      await prisma.reel.deleteMany({ where: { creatorId: user.id } }).catch(() => {});
-      await prisma.refreshToken.deleteMany({ where: { userId: user.id } }).catch(() => {});
+      await prisma.reelInteraction
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
+      await prisma.reelComment
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
+      await prisma.reel
+        .deleteMany({ where: { creatorId: user.id } })
+        .catch(() => {});
+      await prisma.refreshToken
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
       await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
     }
-    await prisma.oTP.deleteMany({ where: { email: userEmail } }).catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: userEmail } })
+      .catch(() => {});
     await prisma.$disconnect();
   });
 
@@ -119,7 +145,8 @@ describe("Reels Module API", () => {
     });
 
     it("should register a like interaction successfully with auth token", async () => {
-      if (!userToken || !seededReelId) return logger.warn("Skipped: missing dependencies");
+      if (!userToken || !seededReelId)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
         .post(`/api/reels/${seededReelId}/interact`)
@@ -144,7 +171,8 @@ describe("Reels Module API", () => {
     });
 
     it("should add a comment successfully with auth token", async () => {
-      if (!userToken || !seededReelId) return logger.warn("Skipped: missing dependencies");
+      if (!userToken || !seededReelId)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
         .post(`/api/reels/${seededReelId}/comment`)
@@ -172,7 +200,8 @@ describe("Reels Module API", () => {
 
   describe("DELETE /api/reels/:reelId", () => {
     it("should delete the reel successfully", async () => {
-      if (!userToken || !seededReelId) return logger.warn("Skipped: missing dependencies");
+      if (!userToken || !seededReelId)
+        return logger.warn("Skipped: missing dependencies");
 
       const res = await request(app)
         .delete(`/api/reels/${seededReelId}`)

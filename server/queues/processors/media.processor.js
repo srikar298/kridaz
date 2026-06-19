@@ -14,15 +14,16 @@
  *  7. Emit MEDIA_PROCESSING_COMPLETE socket event to creator
  */
 
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config(); // MUST run before any env-dependent imports
 
-import { prisma } from '../../config/prisma.js';
-import { processMediaVideo } from '../../utils/reelWorker.js';
-import { getEmitter } from '../../config/socketEmitter.js';
-import * as Sentry from '@sentry/node';
-import { initSentry } from '../../config/sentry.js';
-import logger from '../../utils/logger.js';
+import { prisma } from "../../config/prisma.js";
+import { processMediaVideo } from "../../utils/reelWorker.js";
+import { getEmitter } from "../../config/socketEmitter.js";
+import * as Sentry from "@sentry/node";
+import { initSentry } from "../../config/sentry.js";
+import logger from "../../utils/logger.js";
+import { invalidateCache } from "../../utils/cache.js";
 
 // Initialize Sentry for error tracking
 initSentry();
@@ -31,9 +32,9 @@ initSentry();
  * Maps media type string → Prisma model name
  */
 const MODEL_MAP = {
-  reel: 'reel',
-  story: 'story',
-  community: 'post',
+  reel: "reel",
+  story: "story",
+  community: "post",
 };
 
 /**
@@ -45,7 +46,9 @@ export default async function mediaProcessor(job) {
   const prismaModel = MODEL_MAP[mediaType];
 
   if (!prismaModel) {
-    throw new Error(`Invalid media type: "${mediaType}". Expected one of: ${Object.keys(MODEL_MAP).join(', ')}`);
+    throw new Error(
+      `Invalid media type: "${mediaType}". Expected one of: ${Object.keys(MODEL_MAP).join(", ")}`
+    );
   }
 
   const Model = prisma[prismaModel];
@@ -53,7 +56,9 @@ export default async function mediaProcessor(job) {
   // ── 1. Fetch media record ──────────────────────────────────────────────────
   const media = await Model.findUnique({ where: { id: mediaId } });
   if (!media) {
-    throw new Error(`[PROCESSOR] ${mediaType} "${mediaId}" not found in database.`);
+    throw new Error(
+      `[PROCESSOR] ${mediaType} "${mediaId}" not found in database.`
+    );
   }
 
   // Snapshot raw URL NOW before we null it — needed for R2 cleanup after transcoding
@@ -62,7 +67,7 @@ export default async function mediaProcessor(job) {
   // ── 2. Mark as processing ─────────────────────────────────────────────────
   await Model.update({
     where: { id: mediaId },
-    data: { status: 'processing' },
+    data: { status: "processing" },
   });
 
   try {
@@ -71,7 +76,7 @@ export default async function mediaProcessor(job) {
 
     // ── 4. Update DB: mark ready + clear raw URL ───────────────────────────
     const updateData = {
-      status: 'ready',
+      status: "ready",
       hlsUrl: result.hlsUrl,
       thumbnailUrl: result.thumbnailUrl,
       duration: result.duration,
@@ -79,25 +84,38 @@ export default async function mediaProcessor(job) {
     };
 
     // Null out raw source fields per model schema
-    if (mediaType === 'reel') {
+    if (mediaType === "reel") {
       updateData.rawVideoUrl = null;
-    } else if (mediaType === 'story') {
+    } else if (mediaType === "story") {
       updateData.rawMediaUrl = null;
       updateData.mediaUrl = result.hlsUrl;
-    } else if (mediaType === 'community') {
+    } else if (mediaType === "community") {
       updateData.mediaUrls = [result.hlsUrl];
     }
 
     await Model.update({ where: { id: mediaId }, data: updateData });
+
+    // Invalidate caches based on media type
+    try {
+      if (mediaType === "reel") await invalidateCache("reels:feed*");
+      else if (mediaType === "story") await invalidateCache("story:feed*");
+      else if (mediaType === "community")
+        await invalidateCache("community:feed*");
+      logger.info(
+        `[PROCESSOR] Invalidated cache for new ${mediaType}: ${mediaId}`
+      );
+    } catch (err) {
+      logger.warn(`[PROCESSOR] Failed to invalidate cache: ${err.message}`);
+    }
 
     // ── 5. Delete raw temp file from R2 ────────────────────────────────────
     // Done AFTER the DB update so that on failure, rawVideoUrl is still set
     // and the next retry can still find the source.
     if (rawSourceUrl) {
       try {
-        const { deleteFromR2 } = await import('../../utils/r2.js');
+        const { deleteFromR2 } = await import("../../utils/r2.js");
         // Extract the key portion from the full CDN URL
-        const cdnBase = process.env.REELS_CDN_URL?.replace(/\/$/, '');
+        const cdnBase = process.env.REELS_CDN_URL?.replace(/\/$/, "");
         let rawKey = null;
 
         if (cdnBase && rawSourceUrl.startsWith(cdnBase)) {
@@ -106,7 +124,7 @@ export default async function mediaProcessor(job) {
         } else {
           // Fallback: grab everything after the bucket domain
           const url = new URL(rawSourceUrl);
-          rawKey = url.pathname.replace(/^\//, '');
+          rawKey = url.pathname.replace(/^\//, "");
         }
 
         if (rawKey) {
@@ -116,7 +134,9 @@ export default async function mediaProcessor(job) {
         }
       } catch (cleanupErr) {
         // Non-fatal: log and continue — the main job succeeded
-        logger.warn(`[PROCESSOR] R2 raw file cleanup failed (non-fatal): ${cleanupErr.message}`);
+        logger.warn(
+          `[PROCESSOR] R2 raw file cleanup failed (non-fatal): ${cleanupErr.message}`
+        );
       }
     }
 
@@ -126,21 +146,25 @@ export default async function mediaProcessor(job) {
       // Room name MUST match socket.js: socket.join(userId) — NO prefix
       const userId = media.userId || media.creatorId || media.authorId;
       if (userId) {
-        emitter.to(`${userId}`).emit('MEDIA_PROCESSING_COMPLETE', {
+        emitter.to(`${userId}`).emit("MEDIA_PROCESSING_COMPLETE", {
           mediaId,
           mediaType,
           hlsUrl: result.hlsUrl,
           thumbnailUrl: result.thumbnailUrl,
         });
-        logger.info(`[PROCESSOR] MEDIA_PROCESSING_COMPLETE emitted to room: ${userId}`);
+        logger.info(
+          `[PROCESSOR] MEDIA_PROCESSING_COMPLETE emitted to room: ${userId}`
+        );
       }
     }
 
     logger.info(`[PROCESSOR] Successfully processed ${mediaType}: ${mediaId}`);
     return result;
-
   } catch (error) {
-    logger.error(`[PROCESSOR] Error processing ${mediaType} "${mediaId}":`, error);
+    logger.error(
+      `[PROCESSOR] Error processing ${mediaType} "${mediaId}":`,
+      error
+    );
 
     Sentry.captureException(error, {
       extra: { mediaId, mediaType, jobId: job.id, attempt: job.attemptsMade },
@@ -150,10 +174,13 @@ export default async function mediaProcessor(job) {
     try {
       await Model.update({
         where: { id: mediaId },
-        data: { status: 'failed' },
+        data: { status: "failed" },
       });
     } catch (dbErr) {
-      logger.error(`[PROCESSOR] Failed to update status to "failed" for ${mediaId}:`, dbErr);
+      logger.error(
+        `[PROCESSOR] Failed to update status to "failed" for ${mediaId}:`,
+        dbErr
+      );
     }
 
     throw error; // BullMQ needs the re-throw to retry / mark failed

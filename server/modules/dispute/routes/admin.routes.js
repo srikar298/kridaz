@@ -1,8 +1,16 @@
 import { Router } from "express";
-import { getAllDisputes, getDisputeById, resolveDispute, replyToDispute } from "../dispute.controller.js";
+import {
+  getAllDisputes,
+  getDisputeById,
+  resolveDispute,
+  replyToDispute,
+} from "../dispute.controller.js";
 import verifyAdmin from "../../../middleware/jwt/admin.middleware.js";
 import { validate } from "../../../middleware/validate.middleware.js";
-import { resolveDisputeSchema, replyToDisputeSchema } from "../dispute.validator.js";
+import {
+  resolveDisputeSchema,
+  replyToDisputeSchema,
+} from "../dispute.validator.js";
 
 const router = Router();
 
@@ -53,7 +61,12 @@ router.get("/:disputeId", verifyAdmin, getDisputeById);
  *       200:
  *         description: Reply added
  */
-router.post("/:disputeId/reply", verifyAdmin, validate(replyToDisputeSchema), replyToDispute);
+router.post(
+  "/:disputeId/reply",
+  verifyAdmin,
+  validate(replyToDisputeSchema),
+  replyToDispute
+);
 
 /**
  * @swagger
@@ -67,6 +80,11 @@ router.post("/:disputeId/reply", verifyAdmin, validate(replyToDisputeSchema), re
  *       200:
  *         description: Dispute resolved
  */
-router.post("/:disputeId/resolve", verifyAdmin, validate(resolveDisputeSchema), resolveDispute);
+router.post(
+  "/:disputeId/resolve",
+  verifyAdmin,
+  validate(resolveDisputeSchema),
+  resolveDispute
+);
 
 export default router;

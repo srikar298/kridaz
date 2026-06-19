@@ -2,32 +2,45 @@ import request from "supertest";
 import app from "../app.js";
 import { prisma } from "../config/prisma.js";
 import dotenv from "dotenv";
-import { redisClient, bullmqConnection, pubClient, subClient } from "../config/redis.js";
+import {
+  redisClient,
+  bullmqConnection,
+  pubClient,
+  subClient,
+} from "../config/redis.js";
 import logger from "../utils/logger.js";
 
 dotenv.config();
 
 const ts = Date.now();
-const testEmail    = `testuser_${ts}@kridaz.test`;
-const testPhone    = `98765${String(ts).slice(-5)}`;
+const testEmail = `testuser_${ts}@kridaz.test`;
+const testPhone = `98765${String(ts).slice(-5)}`;
 const testUsername = `testuser_${ts}`;
 let authToken = "";
 
 describe("Auth Module API", () => {
   // ── Setup ────────────────────────────────────────────────────────────────
   beforeAll(async () => {
-    await prisma.walletTransaction.deleteMany({ where: { user: { email: testEmail } } }).catch(() => {});
-    await prisma.refreshToken.deleteMany({ where: { user: { email: testEmail } } }).catch(() => {});
-    await prisma.booking.deleteMany({ where: { user: { email: testEmail } } }).catch(() => {});
-    await prisma.user.deleteMany({ where: { email: testEmail } }).catch(() => {});
+    await prisma.walletTransaction
+      .deleteMany({ where: { user: { email: testEmail } } })
+      .catch(() => {});
+    await prisma.refreshToken
+      .deleteMany({ where: { user: { email: testEmail } } })
+      .catch(() => {});
+    await prisma.booking
+      .deleteMany({ where: { user: { email: testEmail } } })
+      .catch(() => {});
+    await prisma.user
+      .deleteMany({ where: { email: testEmail } })
+      .catch(() => {});
     await prisma.oTP.deleteMany({ where: { email: testEmail } });
 
     // Pre-seed OTP so registration can succeed without a real SMS/email send
     await prisma.oTP.create({
       data: {
-        email:     testEmail,
-        phone:     testPhone,
-        emailOtp:  "123456",
+        email: testEmail,
+        phone: testPhone,
+        emailOtp: "123456",
         phoneOtp: "123456",
         expiresAt: new Date(Date.now() + 600000), // 10 minutes from now
       },
@@ -37,9 +50,15 @@ describe("Auth Module API", () => {
   afterAll(async () => {
     const user = await prisma.user.findUnique({ where: { email: testEmail } });
     if (user) {
-      await prisma.walletTransaction.deleteMany({ where: { userId: user.id } }).catch(() => {});
-      await prisma.refreshToken.deleteMany({ where: { userId: user.id } }).catch(() => {});
-      await prisma.booking.deleteMany({ where: { userId: user.id } }).catch(() => {});
+      await prisma.walletTransaction
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
+      await prisma.refreshToken
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
+      await prisma.booking
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
       await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
     }
     await prisma.oTP.deleteMany({ where: { email: testEmail } });
@@ -54,13 +73,11 @@ describe("Auth Module API", () => {
   describe("POST /api/user/auth/register", () => {
     it("should register a new user successfully", async () => {
       // 1. Verify OTP first to get registration token
-      const otpRes = await request(app)
-        .post("/api/user/auth/verify-otp")
-        .send({
-          email: testEmail,
-          phone: testPhone,
-          otp: "123456"
-        });
+      const otpRes = await request(app).post("/api/user/auth/verify-otp").send({
+        email: testEmail,
+        phone: testPhone,
+        otp: "123456",
+      });
 
       expect(otpRes.statusCode).toBe(200);
       expect(otpRes.body.success).toBe(true);
@@ -69,21 +86,19 @@ describe("Auth Module API", () => {
       const registrationToken = otpRes.body.registrationToken;
 
       // 2. Perform registration using registrationToken
-      const res = await request(app)
-        .post("/api/user/auth/register")
-        .send({
-          name:            "Test Player",
-          email:           testEmail,
-          username:        testUsername,
-          phone:           testPhone,
-          gender:          "Male",
-          location:        "Test City",
-          password:        "Password@123",
-          confirmPassword: "Password@123",
-          otp:             "123456",
-          phoneOtp: "123456",
-          registrationToken: registrationToken,
-        });
+      const res = await request(app).post("/api/user/auth/register").send({
+        name: "Test Player",
+        email: testEmail,
+        username: testUsername,
+        phone: testPhone,
+        gender: "Male",
+        location: "Test City",
+        password: "Password@123",
+        confirmPassword: "Password@123",
+        otp: "123456",
+        phoneOtp: "123456",
+        registrationToken: registrationToken,
+      });
 
       if (res.statusCode !== 201) logger.info("[register]", res.body);
       expect(res.statusCode).toBe(201);
@@ -93,36 +108,38 @@ describe("Auth Module API", () => {
 
     it("should reject duplicate registration with same email", async () => {
       // Re-seed OTP so the request isn't blocked by missing OTP
-      await prisma.oTP.create({
-        data: {
-          email: testEmail, phone: testPhone,
-          emailOtp: "123456", phoneOtp: "123456",
-          expiresAt: new Date(Date.now() + 600000),
-        },
-      }).catch(() => {});
+      await prisma.oTP
+        .create({
+          data: {
+            email: testEmail,
+            phone: testPhone,
+            emailOtp: "123456",
+            phoneOtp: "123456",
+            expiresAt: new Date(Date.now() + 600000),
+          },
+        })
+        .catch(() => {});
 
-      const otpRes = await request(app)
-        .post("/api/user/auth/verify-otp")
-        .send({
-          email: testEmail,
-          phone: testPhone,
-          otp: "123456"
-        });
+      const otpRes = await request(app).post("/api/user/auth/verify-otp").send({
+        email: testEmail,
+        phone: testPhone,
+        otp: "123456",
+      });
 
       const registrationToken = otpRes.body.registrationToken || "fake-token";
 
       const res = await request(app)
         .post("/api/user/auth/register")
         .send({
-          name:            "Duplicate",
-          email:           testEmail,
-          username:        `dup_${ts}`,
-          phone:           testPhone,
-          gender:          "Male",
-          location:        "Test City",
-          password:        "Password@123",
+          name: "Duplicate",
+          email: testEmail,
+          username: `dup_${ts}`,
+          phone: testPhone,
+          gender: "Male",
+          location: "Test City",
+          password: "Password@123",
           confirmPassword: "Password@123",
-          otp:             "123456",
+          otp: "123456",
           phoneOtp: "123456",
           registrationToken: registrationToken,
         });
@@ -146,21 +163,21 @@ describe("Auth Module API", () => {
       await prisma.oTP.deleteMany({ where: { email: testEmail } });
       await prisma.oTP.create({
         data: {
-          email: testEmail, phone: testPhone,
-          emailOtp: "123456", phoneOtp: "123456",
+          email: testEmail,
+          phone: testPhone,
+          emailOtp: "123456",
+          phoneOtp: "123456",
           expiresAt: new Date(Date.now() + 600000),
         },
       });
     });
 
     it("should login with valid credentials and OTP", async () => {
-      const res = await request(app)
-        .post("/api/user/auth/login")
-        .send({
-          email:    testEmail,
-          password: "Password@123",
-          otp:      "123456",
-        });
+      const res = await request(app).post("/api/user/auth/login").send({
+        email: testEmail,
+        password: "Password@123",
+        otp: "123456",
+      });
 
       if (res.statusCode !== 200) logger.info("[login]", res.body);
       expect(res.statusCode).toBe(200);
@@ -171,37 +188,31 @@ describe("Auth Module API", () => {
     });
 
     it("should reject login with wrong password", async () => {
-      const res = await request(app)
-        .post("/api/user/auth/login")
-        .send({
-          email:    testEmail,
-          password: "WrongPassword!",
-          otp:      "123456",
-        });
+      const res = await request(app).post("/api/user/auth/login").send({
+        email: testEmail,
+        password: "WrongPassword!",
+        otp: "123456",
+      });
 
       expect(res.statusCode).not.toBe(200);
     });
 
     it("should reject login with wrong OTP", async () => {
-      const res = await request(app)
-        .post("/api/user/auth/login")
-        .send({
-          email:    testEmail,
-          password: "Password@123",
-          otp:      "000000",
-        });
+      const res = await request(app).post("/api/user/auth/login").send({
+        email: testEmail,
+        password: "Password@123",
+        otp: "000000",
+      });
 
       expect(res.statusCode).not.toBe(200);
     });
 
     it("should reject login with non-existent email", async () => {
-      const res = await request(app)
-        .post("/api/user/auth/login")
-        .send({
-          email:    "ghost_nobody@kridaz.test",
-          password: "Password@123",
-          otp:      "123456",
-        });
+      const res = await request(app).post("/api/user/auth/login").send({
+        email: "ghost_nobody@kridaz.test",
+        password: "Password@123",
+        otp: "123456",
+      });
 
       expect(res.statusCode).not.toBe(200);
     });
@@ -210,12 +221,10 @@ describe("Auth Module API", () => {
   // ── 2b. Login Step 1 (Unified OTP Send) ──
   describe("POST /api/user/auth/login-step1", () => {
     it("should login directly and return token for valid credentials", async () => {
-      const res = await request(app)
-        .post("/api/user/auth/login-step1")
-        .send({
-          email: testEmail,
-          password: "Password@123"
-        });
+      const res = await request(app).post("/api/user/auth/login-step1").send({
+        email: testEmail,
+        password: "Password@123",
+      });
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
@@ -223,12 +232,10 @@ describe("Auth Module API", () => {
     });
 
     it("should reject login-step1 with wrong password", async () => {
-      const res = await request(app)
-        .post("/api/user/auth/login-step1")
-        .send({
-          email: testEmail,
-          password: "WrongPassword"
-        });
+      const res = await request(app).post("/api/user/auth/login-step1").send({
+        email: testEmail,
+        password: "WrongPassword",
+      });
 
       expect(res.statusCode).toBe(400);
       expect(res.body.success).toBe(false);
@@ -238,24 +245,25 @@ describe("Auth Module API", () => {
   // ── 3. Username check ─────────────────────────────────────────────────────
   describe("GET /api/user/auth/check-username", () => {
     it("should return taken=true for an existing username", async () => {
-      const res = await request(app)
-        .get(`/api/user/auth/check-username?username=${testUsername}`);
+      const res = await request(app).get(
+        `/api/user/auth/check-username?username=${testUsername}`
+      );
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty("available");
     });
 
     it("should return available=true for a fresh username", async () => {
-      const res = await request(app)
-        .get(`/api/user/auth/check-username?username=freeuser_${ts}`);
+      const res = await request(app).get(
+        `/api/user/auth/check-username?username=freeuser_${ts}`
+      );
 
       expect(res.statusCode).toBe(200);
       expect(res.body.available).toBe(true);
     });
 
     it("should return 400 when username param is missing", async () => {
-      const res = await request(app)
-        .get("/api/user/auth/check-username");
+      const res = await request(app).get("/api/user/auth/check-username");
 
       expect(res.statusCode).toBe(400);
     });

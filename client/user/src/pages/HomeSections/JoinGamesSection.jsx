@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MapPin, ChevronRight, Info, Share2, Users } from "lucide-react";
@@ -36,7 +35,7 @@ export default function JoinGamesSection({
               style={{ background: GRAD }}
             ></div>
             <h2
-              className="text-3xl md:text-5xl lg:text-6xl font-black text-white uppercase tracking-tighter leading-none"
+              className="text-[14px] font-black text-white tracking-tighter leading-none"
               style={{ fontFamily: "'Open Sans', sans-serif" }}
             >
               JOIN{" "}
@@ -62,12 +61,8 @@ export default function JoinGamesSection({
             to="/join-games"
             className="group flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 rounded-[6px] hover:bg-[#BFF367] hover:text-black hover:border-[#BFF367] transition-all duration-500"
           >
-            <span className="text-[11px] font-black uppercase tracking-widest">
-              View More Games
-            </span>
-            <div className="w-6 h-6 rounded-full bg-white/5 group-hover:bg-black/10 flex items-center justify-center transition-colors">
-              <ChevronRight size={14} />
-            </div>
+            View More <span className="hidden md:inline">Games</span>{" "}
+            <ChevronRight size={16} />
           </Link>
         </div>
 
@@ -113,8 +108,8 @@ export default function JoinGamesSection({
                 {loadingCities
                   ? "Loading Cities..."
                   : !selectedHomeState
-                  ? "Select state first"
-                  : "Select City"}
+                    ? "Select state first"
+                    : "Select City"}
               </option>
               {cities.map((c) => (
                 <option key={c} value={c}>
@@ -130,30 +125,35 @@ export default function JoinGamesSection({
           className="flex gap-2 mb-8 overflow-x-auto pb-2"
           style={{ scrollbarWidth: "none" }}
         >
-          {["ALL SPORTS", "BADMINTON", "CRICKET", "FOOTBALL", "TENNIS", "PICKLEBALL"].map(
-            (tab) => (
-              <button
-                key={tab}
-                onClick={() => setSelectedGameSport(tab)}
-                className="px-6 py-2 rounded-full font-bold text-xs shrink-0 transition-colors border"
-                style={
-                  selectedGameSport === tab
-                    ? {
-                        background: GRAD,
-                        color: "#000",
-                        borderColor: "transparent",
-                      }
-                    : {
-                        backgroundColor: "transparent",
-                        color: "#888",
-                        borderColor: BDR,
-                      }
-                }
-              >
-                {tab}
-              </button>
-            )
-          )}
+          {[
+            "ALL SPORTS",
+            "BADMINTON",
+            "CRICKET",
+            "FOOTBALL",
+            "TENNIS",
+            "PICKLEBALL",
+          ].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setSelectedGameSport(tab)}
+              className="px-6 py-2 rounded-full font-bold text-xs shrink-0 transition-colors border"
+              style={
+                selectedGameSport === tab
+                  ? {
+                      background: GRAD,
+                      color: "#000",
+                      borderColor: "transparent",
+                    }
+                  : {
+                      backgroundColor: "transparent",
+                      color: "#888",
+                      borderColor: BDR,
+                    }
+              }
+            >
+              {tab}
+            </button>
+          ))}
         </div>
 
         {/* Game Cards */}
@@ -185,8 +185,7 @@ export default function JoinGamesSection({
                 ? g.quickSlots.length
                 : (g.teams?.teamA?.slots?.length || 0) +
                   (g.teams?.teamB?.slots?.length || 0);
-              const hostInitial =
-                g.host?.name?.[0]?.toUpperCase() || "?";
+              const hostInitial = g.host?.name?.[0]?.toUpperCase() || "?";
               const bgImg =
                 g.ground?.images?.[0] ||
                 "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=600&q=80";
@@ -209,7 +208,8 @@ export default function JoinGamesSection({
                     className="relative rounded-[8px] overflow-hidden border border-white/10 flex flex-col"
                     style={{
                       height: 340,
-                      background: "linear-gradient(160deg,#0d0d0d 0%,#111 100%)",
+                      background:
+                        "linear-gradient(160deg,#0d0d0d 0%,#111 100%)",
                     }}
                   >
                     <div className="absolute inset-0">
@@ -258,9 +258,7 @@ export default function JoinGamesSection({
                             >
                               <Info size={9} className="text-[#BFF367]/70" />
                               <span className="text-[9px] font-black text-white/60 uppercase tracking-widest">
-                                ID:{" "}
-                                {g.shortId ||
-                                  g._id.slice(-6).toUpperCase()}
+                                ID: {g.shortId || g._id.slice(-6).toUpperCase()}
                               </span>
                             </button>
                             <button
@@ -280,12 +278,10 @@ export default function JoinGamesSection({
                                   navigator.canShare &&
                                   navigator.canShare(shareData)
                                 ) {
-                                  navigator
-                                    .share(shareData)
-                                    .catch(() => {
-                                      navigator.clipboard.writeText(shareUrl);
-                                      toast.success("Link copied to clipboard!");
-                                    });
+                                  navigator.share(shareData).catch(() => {
+                                    navigator.clipboard.writeText(shareUrl);
+                                    toast.success("Link copied to clipboard!");
+                                  });
                                 } else {
                                   navigator.clipboard.writeText(shareUrl);
                                   toast.success("Link copied to clipboard!");
@@ -294,10 +290,7 @@ export default function JoinGamesSection({
                               className="p-1.5 bg-black/50 border border-white/15 hover:border-[#BFF367]/40 rounded-[8px] flex items-center justify-center transition-all"
                               title="Share Match"
                             >
-                              <Share2
-                                size={10}
-                                className="text-[#BFF367]/70"
-                              />
+                              <Share2 size={10} className="text-[#BFF367]/70" />
                             </button>
                           </div>
                         </div>
@@ -427,4 +420,3 @@ export default function JoinGamesSection({
     </section>
   );
 }
-

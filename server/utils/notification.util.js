@@ -19,7 +19,7 @@ export const createNotification = async ({
   message,
   type,
   actionUrl,
-  metadata = {}
+  metadata = {},
 }) => {
   try {
     const data = {
@@ -29,17 +29,17 @@ export const createNotification = async ({
       link: actionUrl,
       metadata,
       recipientModel,
-      isRead: false
+      isRead: false,
     };
 
-    if (recipientModel === 'User' || recipientModel === 'Admin') {
+    if (recipientModel === "User" || recipientModel === "Admin") {
       data.userId = recipientId;
-    } else if (recipientModel === 'Owner') {
+    } else if (recipientModel === "Owner") {
       data.ownerId = recipientId;
     }
 
     const notification = await prisma.notification.create({
-      data
+      data,
     });
     return notification;
   } catch (error) {
@@ -47,4 +47,3 @@ export const createNotification = async ({
     return null;
   }
 };
-

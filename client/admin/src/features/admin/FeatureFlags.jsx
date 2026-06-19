@@ -28,13 +28,14 @@ export const FeatureFlags = () => {
 
   const handleToggle = async (key, currentStatus) => {
     try {
-      const res = await axiosInstance.put(
-        `/api/admin/features/${key}`,
-        { enabled: !currentStatus }
-      );
-      
+      const res = await axiosInstance.put(`/api/admin/features/${key}`, {
+        enabled: !currentStatus,
+      });
+
       if (res.data.success) {
-        toast.success(`Feature ${!currentStatus ? 'enabled' : 'disabled'} successfully`);
+        toast.success(
+          `Feature ${!currentStatus ? "enabled" : "disabled"} successfully`
+        );
         setFlags((prevFlags) =>
           prevFlags.map((flag) =>
             flag.key === key ? { ...flag, enabled: !currentStatus } : flag
@@ -107,15 +108,17 @@ export const FeatureFlags = () => {
               </div>
 
               <div className="mt-6 flex items-center justify-between border-t border-white/5 pt-4">
-                <span className={`text-sm font-medium ${flag.enabled ? 'text-lime-500' : 'text-gray-500'}`}>
-                  {flag.enabled ? 'Active' : 'Inactive'}
+                <span
+                  className={`text-sm font-medium ${flag.enabled ? "text-lime-500" : "text-gray-500"}`}
+                >
+                  {flag.enabled ? "Active" : "Inactive"}
                 </span>
                 <button
                   onClick={() => handleToggle(flag.key, flag.enabled)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${ flag.enabled ? 'bg-lime-500' : 'bg-gray-600' }`}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${flag.enabled ? "bg-lime-500" : "bg-gray-600"}`}
                 >
                   <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${ flag.enabled ? 'translate-x-6' : 'translate-x-1' }`}
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${flag.enabled ? "translate-x-6" : "translate-x-1"}`}
                   />
                 </button>
               </div>
@@ -124,9 +127,12 @@ export const FeatureFlags = () => {
         ) : (
           <div className="col-span-full rounded-[8px] border border-white/10 bg-[#1A1A1A] p-12 text-center">
             <Activity className="mx-auto h-12 w-12 text-gray-600" />
-            <h3 className="mt-4 text-lg font-bold text-white">No Feature Flags Found</h3>
+            <h3 className="mt-4 text-lg font-bold text-white">
+              No Feature Flags Found
+            </h3>
             <p className="mt-2 text-sm text-gray-400">
-              Feature flags will appear here once they are seeded in the database.
+              Feature flags will appear here once they are seeded in the
+              database.
             </p>
           </div>
         )}

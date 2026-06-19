@@ -6,7 +6,6 @@ connection.on("error", (err) => {
   logger.error("[Notification Queue] Redis connection error:", err);
 });
 
-
 // Create the Queue
 export const notificationQueue = new Queue("notifications", {
   connection,
@@ -17,7 +16,7 @@ export const notificationQueue = new Queue("notifications", {
       delay: 2000,
     },
     removeOnComplete: true, // Keep it clean
-    removeOnFail: false,   // Keep for debugging failed jobs
+    removeOnFail: false, // Keep for debugging failed jobs
   },
 });
 

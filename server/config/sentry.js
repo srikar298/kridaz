@@ -38,7 +38,9 @@ export const initSentry = () => {
         "PrismaClientKnownRequestError", // Handle specific codes in logic
       ],
     });
-    logger.info(`[SENTRY] Initialized (release=${release}, env=${process.env.NODE_ENV || "development"}).`);
+    logger.info(
+      `[SENTRY] Initialized (release=${release}, env=${process.env.NODE_ENV || "development"}).`
+    );
   } else {
     if (process.env.NODE_ENV === "production") {
       logger.warn("[SENTRY] DSN not found. Sentry is disabled in production.");

@@ -4,7 +4,7 @@ import adminSupportRouter from "./routes/admin.routes.js";
 /**
  * Support Domain Router
  * Mounts sub-routers for the Support/Tickets module.
- * 
+ *
  * Routes:
  * /api/support/...
  */

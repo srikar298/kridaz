@@ -7,15 +7,15 @@ import { prisma } from "../../config/prisma.js";
 export const getStates = async (req, res) => {
   try {
     const states = await prisma.turf.findMany({
-      where: { 
-        status: "approved", 
-        isActive: true
+      where: {
+        status: "approved",
+        isActive: true,
       },
       select: { state: true },
-      distinct: ['state'],
-      orderBy: { state: 'asc' }
+      distinct: ["state"],
+      orderBy: { state: "asc" },
     });
-    return res.status(200).json({ states: states.map(s => s.state) });
+    return res.status(200).json({ states: states.map((s) => s.state) });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -30,14 +30,14 @@ export const getCities = async (req, res) => {
   try {
     const where = { status: "approved", isActive: true };
     if (state) where.state = state;
-    
+
     const cities = await prisma.turf.findMany({
       where,
       select: { city: true },
-      distinct: ['city'],
-      orderBy: { city: 'asc' }
+      distinct: ["city"],
+      orderBy: { city: "asc" },
     });
-    return res.status(200).json({ cities: cities.map(c => c.city) });
+    return res.status(200).json({ cities: cities.map((c) => c.city) });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

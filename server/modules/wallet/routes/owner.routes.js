@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   getWalletData,
   requestWithdrawal,
-  getOwnerWithdrawals
+  getOwnerWithdrawals,
 } from "../wallet.controller.js";
 import verifyOwnerToken from "../../../middleware/jwt/owner.middleware.js";
 import { validate } from "../../../middleware/validate.middleware.js";
@@ -39,7 +39,14 @@ router.get("/data", verifyOwnerToken, getWalletData);
  *     security:
  *       - BearerAuth: []
  */
-router.post("/withdraw", paymentLimiter, verifyOwnerToken, idempotency, validate(requestWithdrawalSchema), requestWithdrawal);
+router.post(
+  "/withdraw",
+  paymentLimiter,
+  verifyOwnerToken,
+  idempotency,
+  validate(requestWithdrawalSchema),
+  requestWithdrawal
+);
 
 /**
  * @swagger

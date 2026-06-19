@@ -1,12 +1,12 @@
-import { prisma } from '../../config/prisma.js';
-import { getPresignedUploadUrl } from '../../utils/r2.js';
-import { generatePlaceholder } from '../../utils/imageWorker.js';
-import { mediaQueue } from '../../queues/media.queue.js';
-import SocialService from '../../services/social.service.js';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
+import { prisma } from "../../config/prisma.js";
+import { getPresignedUploadUrl } from "../../utils/r2.js";
+import { generatePlaceholder } from "../../utils/imageWorker.js";
+import { mediaQueue } from "../../queues/media.queue.js";
+import SocialService from "../../services/social.service.js";
+import path from "path";
+import { v4 as uuidv4 } from "uuid";
 import logger from "../../utils/logger.js";
-import { findNearby } from '../../utils/geo.util.js';
+import { findNearby } from "../../utils/geo.util.js";
 
 const resolveUserId = async (id) => {
   if (!id) return null;
@@ -14,7 +14,7 @@ const resolveUserId = async (id) => {
   try {
     const owner = await prisma.ownerProfile.findUnique({
       where: { id: idStr },
-      select: { userId: true }
+      select: { userId: true },
     });
     if (owner && owner.userId) return owner.userId;
     return idStr;
@@ -30,9 +30,13 @@ export const getUploadUrl = async (req, res) => {
   try {
     const { contentType, fileName } = req.query;
     const storyId = uuidv4();
-    const extension = fileName ? path.extname(fileName) : (contentType.includes('video') ? '.mp4' : '.webp');
+    const extension = fileName
+      ? path.extname(fileName)
+      : contentType.includes("video")
+        ? ".mp4"
+        : ".webp";
     const key = `temp/stories/${storyId}${extension}`;
-    
+
     const uploadUrl = await getPresignedUploadUrl(key, contentType);
 
     res.json({ success: true, storyId, uploadUrl, key });
@@ -46,7 +50,8 @@ export const getUploadUrl = async (req, res) => {
  */
 export const confirmStory = async (req, res) => {
   try {
-    const { storyId, key, mediaType, content, durationDays, mediaItems } = req.body;
+    const { storyId, key, mediaType, content, durationDays, mediaItems } =
+      req.body;
     const userId = await resolveUserId(req.user.id);
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + parseInt(durationDays || 1));
@@ -59,7 +64,7 @@ export const confirmStory = async (req, res) => {
         const itemMediaUrl = `${process.env.REELS_CDN_URL}/${item.key}`;
         let placeholder = null;
 
-        if (item.mediaType === 'image') {
+        if (item.mediaType === "image") {
           placeholder = await generatePlaceholder(itemMediaUrl);
         }
 
@@ -68,37 +73,42 @@ export const confirmStory = async (req, res) => {
             id: itemStoryId,
             userId,
             mediaType: item.mediaType,
-            mediaUrl: item.mediaType === 'image' ? itemMediaUrl : null,
+            mediaUrl: item.mediaType === "image" ? itemMediaUrl : null,
             rawMediaUrl: itemMediaUrl,
             placeholder,
             content,
             expiresAt,
-            status: item.mediaType === 'video' ? 'pending' : 'ready',
-            durationDays: parseInt(durationDays || 1)
+            status: item.mediaType === "video" ? "pending" : "ready",
+            durationDays: parseInt(durationDays || 1),
           },
           include: {
             user: {
-              select: { id: true, name: true, username: true, profilePicture: true }
-            }
-          }
+              select: {
+                id: true,
+                name: true,
+                username: true,
+                profilePicture: true,
+              },
+            },
+          },
         });
 
         const populatedStory = { ...story, userId: story.user };
         delete populatedStory.user;
 
-        if (item.mediaType === 'video') {
-          await mediaQueue.add('TRANSCODE_VIDEO', { 
+        if (item.mediaType === "video") {
+          await mediaQueue.add("TRANSCODE_VIDEO", {
             mediaId: story.id,
-            mediaType: 'story'
+            mediaType: "story",
           });
         }
         createdStories.push(populatedStory);
       }
 
-      return res.status(201).json({ 
-        success: true, 
-        stories: createdStories, 
-        story: createdStories[0] 
+      return res.status(201).json({
+        success: true,
+        stories: createdStories,
+        story: createdStories[0],
       });
     }
 
@@ -106,7 +116,7 @@ export const confirmStory = async (req, res) => {
     let placeholder = null;
     const mediaUrl = `${process.env.REELS_CDN_URL}/${key}`;
 
-    if (mediaType === 'image') {
+    if (mediaType === "image") {
       placeholder = await generatePlaceholder(mediaUrl);
     }
 
@@ -115,98 +125,51 @@ export const confirmStory = async (req, res) => {
         id: storyId,
         userId,
         mediaType,
-        mediaUrl: mediaType === 'image' ? mediaUrl : null,
+        mediaUrl: mediaType === "image" ? mediaUrl : null,
         rawMediaUrl: mediaUrl,
         placeholder,
         content,
         expiresAt,
-        status: mediaType === 'video' ? 'pending' : 'ready',
-        durationDays: parseInt(durationDays || 1)
+        status: mediaType === "video" ? "pending" : "ready",
+        durationDays: parseInt(durationDays || 1),
       },
       include: {
         user: {
-          select: { id: true, name: true, username: true, profilePicture: true }
-        }
-      }
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            profilePicture: true,
+          },
+        },
+      },
     });
 
     const populatedStory = { ...story, userId: story.user };
     delete populatedStory.user;
 
-    if (mediaType === 'video') {
-      await mediaQueue.add('TRANSCODE_VIDEO', { 
+    if (mediaType === "video") {
+      await mediaQueue.add("TRANSCODE_VIDEO", {
         mediaId: story.id,
-        mediaType: 'story'
+        mediaType: "story",
       });
     }
 
     res.status(201).json({ success: true, story: populatedStory });
   } catch (error) {
-    logger.error('CONFIRM STORY ERROR:', { message: error.message, stack: error.stack });
+    logger.error("CONFIRM STORY ERROR:", {
+      message: error.message,
+      stack: error.stack,
+    });
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
-
 export const createStory = async (req, res) => {
-  try {
-    const { mediaType, durationDays, content } = req.body;
-    const rawId = req.user.id;
-    const userId = await resolveUserId(rawId);
-
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + parseInt(durationDays || 1));
-
-    let createdStories = [];
-
-    if (req.files && req.files.length > 0) {
-      for (const file of req.files) {
-        const mediaUrl = await uploadToCloudinary(file.buffer, 'kridaz/stories');
-        const newStory = await prisma.story.create({
-          data: {
-            userId,
-            mediaUrl,
-            mediaType: mediaType || 'image',
-            content,
-            durationDays: parseInt(durationDays || 1),
-            expiresAt
-          }
-        });
-        createdStories.push(newStory);
-      }
-    } else if (req.file) {
-      const mediaUrl = await uploadToCloudinary(req.file.buffer, 'kridaz/stories');
-      const newStory = await prisma.story.create({
-        data: {
-          userId,
-          mediaUrl,
-          mediaType: mediaType || 'image',
-          content,
-          durationDays: parseInt(durationDays || 1),
-          expiresAt
-        }
-      });
-      createdStories.push(newStory);
-    } else {
-      const newStory = await prisma.story.create({
-        data: {
-          userId,
-          mediaUrl: '',
-          mediaType: 'text',
-          content,
-          durationDays: parseInt(durationDays || 1),
-          expiresAt
-        }
-      });
-      createdStories.push(newStory);
-    }
-
-    res.status(201).json({ success: true, stories: createdStories, story: createdStories[0] });
-  } catch (error) {
-    logger.error('Error creating story:', error);
-    res.status(500).json({ success: false, message: error.message });
-  }
+  res.status(400).json({
+    success: false,
+    message: "Deprecated: Please use direct R2 upload flow (/upload-url)",
+  });
 };
 
 export const getStories = async (req, res) => {
@@ -214,49 +177,78 @@ export const getStories = async (req, res) => {
     const { all, lat, lng } = req.query;
     const rawId = req.user?.id || req.admin?.id;
     const userId = rawId ? await resolveUserId(rawId) : null;
-    
-    let userIds = userId ? [userId] : []; 
-    
-    if (all !== 'true' && userId) {
+
+    let userIds = userId ? [userId] : [];
+
+    if (all !== "true" && userId) {
       const networkIds = await SocialService.getNetworkIds(userId);
-      
+
       // We must resolve any OwnerProfile IDs in networkIds to User IDs, because Stories are always saved with User.id
-      const resolvedNetworkUserIds = await Promise.all(networkIds.map(id => resolveUserId(id)));
-      
+      const resolvedNetworkUserIds = await Promise.all(
+        networkIds.map((id) => resolveUserId(id))
+      );
+
       userIds = [...new Set([...userIds, ...resolvedNetworkUserIds])];
-      console.log('Story Feed Query Debug:', { userId, networkIds, resolvedNetworkUserIds, userIds });
-    } else if (all !== 'true' && !userId && lat && lng) {
+      console.log("Story Feed Query Debug:", {
+        userId,
+        networkIds,
+        resolvedNetworkUserIds,
+        userIds,
+      });
+    } else if (all !== "true" && !userId && lat && lng) {
       // Nearby Users fallback (if lat/lng is passed for guests)
-      const nearbyUsers = await findNearby('User', parseFloat(lat), parseFloat(lng), 1000000, { take: 50 });
+      const nearbyUsers = await findNearby(
+        "User",
+        parseFloat(lat),
+        parseFloat(lng),
+        1000000,
+        { take: 50 }
+      );
       if (nearbyUsers.length > 0) {
-        userIds = nearbyUsers.map(u => u.id);
+        userIds = nearbyUsers.map((u) => u.id);
       }
     }
 
     const baseWhere = { expiresAt: { gt: new Date() } };
-    if (all !== 'true' && userIds.length > 0) {
+    if (all !== "true" && userIds.length > 0) {
       baseWhere.userId = { in: userIds };
     }
 
     const where = {
       ...baseWhere,
-      ...(userId ? {
-        OR: [
-          { status: 'ready' },
-          { userId: userId, status: { in: ['pending', 'processing'] } }
-        ]
-      } : { status: 'ready' })
+      ...(userId
+        ? {
+            OR: [
+              { status: "ready" },
+              { userId: userId, status: { in: ["pending", "processing"] } },
+            ],
+          }
+        : { status: "ready" }),
     };
 
     // Fetch stories with user and viewer relations using Prisma
     let stories = await prisma.story.findMany({
       where,
       include: {
-        user: { select: { id: true, name: true, username: true, profilePicture: true } },
-        viewers: { select: { id: true, name: true, username: true, profilePicture: true } }
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            profilePicture: true,
+          },
+        },
+        viewers: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            profilePicture: true,
+          },
+        },
       },
-      orderBy: { createdAt: 'desc' },
-      take: 50 // safety cap per feed load
+      orderBy: { createdAt: "desc" },
+      take: 50, // safety cap per feed load
     });
 
     // Group stories by user and map to legacy format
@@ -265,19 +257,19 @@ export const getStories = async (req, res) => {
       if (!storyUser) return acc;
 
       const storyUserId = storyUser.id;
-      
+
       // Map back to legacy fields for frontend compatibility
       const legacyStory = {
         ...story,
         userId: storyUser,
-        viewers: story.viewers
+        viewers: story.viewers,
       };
 
       if (!acc[storyUserId]) {
         acc[storyUserId] = {
           author: storyUser,
           user: storyUser,
-          stories: []
+          stories: [],
         };
       }
       acc[storyUserId].stories.push(legacyStory);
@@ -308,20 +300,24 @@ export const deleteStory = async (req, res) => {
 
     const story = await prisma.story.findUnique({ where: { id } });
     if (!story) {
-      return res.status(404).json({ success: false, message: 'Story not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Story not found" });
     }
 
     // Only owner or admin can delete
-    if (story.userId !== userId && userRole?.toUpperCase() !== 'ADMIN') {
-      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    if (story.userId !== userId && userRole?.toUpperCase() !== "ADMIN") {
+      return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
     // Call R2 cleanup helper!
-    const { deleteStoryFilesFromR2 } = await import('../../utils/r2.js');
+    const { deleteStoryFilesFromR2 } = await import("../../utils/r2.js");
     await deleteStoryFilesFromR2(story);
 
     await prisma.story.delete({ where: { id } });
-    res.status(200).json({ success: true, message: 'Story deleted successfully' });
+    res
+      .status(200)
+      .json({ success: true, message: "Story deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -336,12 +332,14 @@ export const updateStory = async (req, res) => {
 
     const story = await prisma.story.findUnique({ where: { id } });
     if (!story) {
-      return res.status(404).json({ success: false, message: 'Story not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Story not found" });
     }
 
     // Only owner or admin can edit
-    if (story.userId !== userId && userRole?.toUpperCase() !== 'ADMIN') {
-      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    if (story.userId !== userId && userRole?.toUpperCase() !== "ADMIN") {
+      return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
     let updateData = { content };
@@ -353,12 +351,15 @@ export const updateStory = async (req, res) => {
     }
 
     if (req.file) {
-      updateData.mediaUrl = await uploadToCloudinary(req.file.buffer, 'kridaz/stories');
+      return res.status(400).json({
+        success: false,
+        message: "Media updates must use the R2 upload flow.",
+      });
     }
 
     const updatedStory = await prisma.story.update({
       where: { id },
-      data: updateData
+      data: updateData,
     });
     res.status(200).json({ success: true, story: updatedStory });
   } catch (error) {
@@ -375,9 +376,9 @@ export const viewStory = async (req, res) => {
       where: { id },
       data: {
         viewers: {
-          connect: { id: userId }
-        }
-      }
+          connect: { id: userId },
+        },
+      },
     });
 
     res.status(200).json({ success: true });
@@ -390,16 +391,28 @@ export const getAllStoriesAdmin = async (req, res) => {
   try {
     let stories = await prisma.story.findMany({
       include: {
-        user: { select: { id: true, name: true, username: true, email: true, profilePicture: true } }
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            email: true,
+            profilePicture: true,
+          },
+        },
       },
-      orderBy: { createdAt: 'desc' },
-      take: 100 // admin safety cap
+      orderBy: { createdAt: "desc" },
+      take: 100, // admin safety cap
     });
 
-    const formattedStories = stories.map(story => {
+    const formattedStories = stories.map((story) => {
       const storyObj = { ...story, userId: story.user };
       delete storyObj.user;
-      storyObj.userId = storyObj.userId || { id: story.userId, name: 'Unknown', username: 'Unknown' };
+      storyObj.userId = storyObj.userId || {
+        id: story.userId,
+        name: "Unknown",
+        username: "Unknown",
+      };
       return storyObj;
     });
 

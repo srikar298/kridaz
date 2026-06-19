@@ -17,8 +17,8 @@ const useOwnerRequests = () => {
     let filteredRejected = [...rejectedArr];
 
     if (role !== "all") {
-      filteredPending = filteredPending.filter(req => req.role === role);
-      filteredRejected = filteredRejected.filter(req => req.role === role);
+      filteredPending = filteredPending.filter((req) => req.role === role);
+      filteredRejected = filteredRejected.filter((req) => req.role === role);
     }
 
     if (term !== "") {
@@ -27,14 +27,20 @@ const useOwnerRequests = () => {
         (request) =>
           request.name.toLowerCase().includes(lowerTerm) ||
           request.email.toLowerCase().includes(lowerTerm) ||
-          (request.businessDetails?.businessName && request.businessDetails.businessName.toLowerCase().includes(lowerTerm))
+          (request.businessDetails?.businessName &&
+            request.businessDetails.businessName
+              .toLowerCase()
+              .includes(lowerTerm))
       );
 
       filteredRejected = filteredRejected.filter(
         (request) =>
           request.name.toLowerCase().includes(lowerTerm) ||
           request.email.toLowerCase().includes(lowerTerm) ||
-          (request.businessDetails?.businessName && request.businessDetails.businessName.toLowerCase().includes(lowerTerm))
+          (request.businessDetails?.businessName &&
+            request.businessDetails.businessName
+              .toLowerCase()
+              .includes(lowerTerm))
       );
     }
 
@@ -55,17 +61,21 @@ const useOwnerRequests = () => {
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get("/api/admin/venue-owner-requests/all");
+      const response = await axiosInstance.get(
+        "/api/admin/venue-owner-requests/all"
+      );
       const { pendingRequests, rejectedRequests: rejected } = response.data;
-      
+
       setAllRequests(pendingRequests);
       setAllRejectedRequests(rejected);
-      
+
       // Apply existing filters to fresh data
       filterData(searchTerm, roleFilter, pendingRequests, rejected);
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || "Failed to fetch verification requests");
+      toast.error(
+        err.response?.data?.message || "Failed to fetch verification requests"
+      );
     } finally {
       setLoading(false);
     }
@@ -74,7 +84,10 @@ const useOwnerRequests = () => {
   const handleAccept = async (id, adminData) => {
     setRequestId(id);
     try {
-      const response = await axiosInstance.put(`/api/admin/venue-owner-requests/${id}/accept`, adminData);
+      const response = await axiosInstance.put(
+        `/api/admin/venue-owner-requests/${id}/accept`,
+        adminData
+      );
       toast.success(response.data.message);
       fetchRequests(); // Refresh to get updated stats and lists
     } catch (err) {
@@ -88,7 +101,9 @@ const useOwnerRequests = () => {
   const handleReject = async (id) => {
     setRequestId(id);
     try {
-      const response = await axiosInstance.delete(`/api/admin/venue-owner-requests/${id}`);
+      const response = await axiosInstance.delete(
+        `/api/admin/venue-owner-requests/${id}`
+      );
       toast.success(response.data.message);
       fetchRequests();
     } catch (err) {
@@ -102,7 +117,9 @@ const useOwnerRequests = () => {
   const handleReconsider = async (id) => {
     setRequestId(id);
     try {
-      const response = await axiosInstance.put(`/api/admin/venue-owner-requests/reconsider/${id}`);
+      const response = await axiosInstance.put(
+        `/api/admin/venue-owner-requests/reconsider/${id}`
+      );
       toast.success(response.data.message);
       fetchRequests();
     } catch (error) {
@@ -129,7 +146,7 @@ const useOwnerRequests = () => {
     handleSearch,
     roleFilter,
     handleRoleFilter,
-    refresh: fetchRequests
+    refresh: fetchRequests,
   };
 };
 

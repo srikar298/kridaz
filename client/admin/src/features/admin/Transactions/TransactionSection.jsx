@@ -18,14 +18,17 @@ const TransactionSection = () => {
   } = useTransactionManagement(transactions);
 
   if (loading) return <TransactionSkeleton />;
-  if (error) return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-10">
-      <div className="bg-red-500/10 border border-red-500/20 rounded-[8px] p-8 text-center">
-        <p className="font-bold text-xl text-red-500 uppercase tracking-widest">System Error Detected</p>
-        <p className="text-sm text-red-400 mt-2">{error}</p>
+  if (error)
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-10">
+        <div className="bg-red-500/10 border border-red-500/20 rounded-[8px] p-8 text-center">
+          <p className="font-bold text-xl text-red-500 uppercase tracking-widest">
+            System Error Detected
+          </p>
+          <p className="text-sm text-red-400 mt-2">{error}</p>
+        </div>
       </div>
-    </div>
-  );
+    );
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white p-6 lg:p-10">
@@ -36,7 +39,9 @@ const TransactionSection = () => {
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight uppercase">
             Financial <span className="text-[#55DEE8]">Ledger</span>
           </h1>
-          <p className="text-gray-400 text-sm mt-2">Platform Transaction & Revenue Flow</p>
+          <p className="text-gray-400 text-sm mt-2">
+            Platform Transaction & Revenue Flow
+          </p>
         </div>
 
         {/* Compact single-row filter bar */}

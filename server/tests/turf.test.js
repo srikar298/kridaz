@@ -8,10 +8,10 @@ import logger from "../utils/logger.js";
 
 dotenv.config();
 
-const ts         = Date.now();
+const ts = Date.now();
 const ownerEmail = `owner_${ts}@kridaz.test`;
 const ownerPhone = `91111${String(ts).slice(-5)}`;
-let ownerToken   = "";
+let ownerToken = "";
 let createdTurfId = "";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -22,12 +22,12 @@ let createdTurfId = "";
 const seedOtp = async (email, phone) => {
   await prisma.oTP.deleteMany({ where: { email } });
   await prisma.oTP.create({
-    data: { 
-      email, 
-      phone, 
-      emailOtp: "123456", 
+    data: {
+      email,
+      phone,
+      emailOtp: "123456",
       phoneOtp: "123456",
-      expiresAt: new Date(Date.now() + 600000)
+      expiresAt: new Date(Date.now() + 600000),
     },
   });
 };
@@ -51,11 +51,21 @@ const getTestImageBuffer = () => {
 describe("Turf / Venue Module API", () => {
   // ── Setup — create owner account ─────────────────────────────────────────
   beforeAll(async () => {
-    await prisma.walletTransaction.deleteMany({ where: { user: { email: ownerEmail } } }).catch(() => {});
-    await prisma.refreshToken.deleteMany({ where: { user: { email: ownerEmail } } }).catch(() => {});
-    await prisma.booking.deleteMany({ where: { user: { email: ownerEmail } } }).catch(() => {});
-    await prisma.ownerProfile.deleteMany({ where: { user: { email: ownerEmail } } }).catch(() => {});
-    await prisma.user.deleteMany({ where: { email: ownerEmail } }).catch(() => {});
+    await prisma.walletTransaction
+      .deleteMany({ where: { user: { email: ownerEmail } } })
+      .catch(() => {});
+    await prisma.refreshToken
+      .deleteMany({ where: { user: { email: ownerEmail } } })
+      .catch(() => {});
+    await prisma.booking
+      .deleteMany({ where: { user: { email: ownerEmail } } })
+      .catch(() => {});
+    await prisma.ownerProfile
+      .deleteMany({ where: { user: { email: ownerEmail } } })
+      .catch(() => {});
+    await prisma.user
+      .deleteMany({ where: { email: ownerEmail } })
+      .catch(() => {});
     await prisma.oTP.deleteMany({ where: { email: ownerEmail } });
 
     await seedOtp(ownerEmail, ownerPhone);
@@ -64,13 +74,13 @@ describe("Turf / Venue Module API", () => {
     const registerRes = await request(app)
       .post("/api/owner/auth/register")
       .send({
-        name:            "Test Owner",
-        businessName:    "Test Sports Club",
-        email:           ownerEmail,
-        phone:           ownerPhone,
-        password:        "Owner@Pass123",
+        name: "Test Owner",
+        businessName: "Test Sports Club",
+        email: ownerEmail,
+        phone: ownerPhone,
+        password: "Owner@Pass123",
         confirmPassword: "Owner@Pass123",
-        otp:             "123456",
+        otp: "123456",
         phoneOtp: "123456",
       });
 
@@ -81,13 +91,11 @@ describe("Turf / Venue Module API", () => {
     // Login to get token
     await seedOtp(ownerEmail, ownerPhone);
 
-    const loginRes = await request(app)
-      .post("/api/owner/auth/login")
-      .send({
-        email:    ownerEmail,
-        password: "Owner@Pass123",
-        otp:      "123456",
-      });
+    const loginRes = await request(app).post("/api/owner/auth/login").send({
+      email: ownerEmail,
+      password: "Owner@Pass123",
+      otp: "123456",
+    });
 
     if (loginRes.statusCode === 200) {
       ownerToken = loginRes.body.token;
@@ -98,17 +106,29 @@ describe("Turf / Venue Module API", () => {
 
   afterAll(async () => {
     if (createdTurfId) {
-      await prisma.turf.deleteMany({ where: { id: createdTurfId } }).catch(() => {});
+      await prisma.turf
+        .deleteMany({ where: { id: createdTurfId } })
+        .catch(() => {});
     }
     const user = await prisma.user.findUnique({ where: { email: ownerEmail } });
     if (user) {
-      await prisma.walletTransaction.deleteMany({ where: { userId: user.id } }).catch(() => {});
-      await prisma.refreshToken.deleteMany({ where: { userId: user.id } }).catch(() => {});
-      await prisma.booking.deleteMany({ where: { userId: user.id } }).catch(() => {});
-      await prisma.ownerProfile.deleteMany({ where: { userId: user.id } }).catch(() => {});
+      await prisma.walletTransaction
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
+      await prisma.refreshToken
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
+      await prisma.booking
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
+      await prisma.ownerProfile
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
       await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
     }
-    await prisma.oTP.deleteMany({ where: { email: ownerEmail } }).catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: ownerEmail } })
+      .catch(() => {});
     await prisma.$disconnect();
   });
 
@@ -128,7 +148,9 @@ describe("Turf / Venue Module API", () => {
     });
 
     it("should perform search by sport type", async () => {
-      const res = await request(app).get("/api/user/turf/all?searchTerm=Cricket");
+      const res = await request(app).get(
+        "/api/user/turf/all?searchTerm=Cricket"
+      );
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty("turfs");
     });
@@ -175,7 +197,10 @@ describe("Turf / Venue Module API", () => {
         .field("openTime", "06:00 AM")
         .field("closeTime", "10:00 PM")
         .field("policies", policies)
-        .attach("images", getTestImageBuffer(), { filename: "test.jpg", contentType: "image/jpeg" });
+        .attach("images", getTestImageBuffer(), {
+          filename: "test.jpg",
+          contentType: "image/jpeg",
+        });
 
       if (res.statusCode === 201) {
         createdTurfId = res.body.turf?.id;

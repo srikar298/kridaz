@@ -1,15 +1,17 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const startScoringSchema = z.object({
-  body: z.object({
-    gameId: z.string().min(1).optional(),
-    matchId: z.string().min(1).optional(),
-    battingTeamId: z.string().min(1).optional(),
-    battingTeam: z.string().min(1).optional(),
-  }).refine((data) => data.gameId || data.matchId, {
-    message: "Either gameId or matchId is required",
-    path: ["gameId"],
-  }),
+  body: z
+    .object({
+      gameId: z.string().min(1).optional(),
+      matchId: z.string().min(1).optional(),
+      battingTeamId: z.string().min(1).optional(),
+      battingTeam: z.string().min(1).optional(),
+    })
+    .refine((data) => data.gameId || data.matchId, {
+      message: "Either gameId or matchId is required",
+      path: ["gameId"],
+    }),
 });
 
 export const updateScoreSchema = z.object({
@@ -26,7 +28,9 @@ export const updateScoreSchema = z.object({
       // pathological-but-legal cases like a no-ball + 4 overthrows + 4 byes.
       extraRuns: z.number().int().min(0).max(10).optional(),
       isExtra: z.boolean().optional(),
-      extraType: z.enum(["NONE", "WIDE", "NO_BALL", "BYE", "LEG_BYE", "PENALTY"]).optional(),
+      extraType: z
+        .enum(["NONE", "WIDE", "NO_BALL", "BYE", "LEG_BYE", "PENALTY"])
+        .optional(),
       isWicket: z.boolean().optional(),
       wicketType: z.string().optional(),
       batsmanId: z.string().min(1, "Batsman ID is required"),
@@ -63,11 +67,19 @@ export const setupScoringGameSchema = z.object({
     customProfessionals: z.array(z.any()).optional(),
     tossWinner: z.string().optional(),
     tossDecision: z.string().optional(),
-    scoringPassword: z.string().min(4, "Password must be at least 4 characters").optional().nullable().or(z.literal('')),
-    youtubeLiveUrl: z.string().url().optional().nullable().or(z.literal('')),
+    powerPlayOvers: z.number().int().optional(),
+    powerPlayMapping: z.array(z.number()).optional(),
+    scoringPassword: z
+      .string()
+      .min(4, "Password must be at least 4 characters")
+      .optional()
+      .nullable()
+      .or(z.literal("")),
+    youtubeLiveUrl: z.string().url().optional().nullable().or(z.literal("")),
     customDays: z.number().int().min(1).max(10).optional(),
     customOversPerDay: z.number().int().min(1).max(100).optional(),
-  })
+    slowOverRateConfig: z.any().optional(),
+  }),
 });
 
 export const undoLastBallSchema = z.object({
@@ -102,18 +114,20 @@ export const setPlayersSchema = z.object({
 export const updateHouseRulesSchema = z.object({
   body: z.object({
     scoringId: z.string().min(1, "Scoring ID is required"),
-    houseRules: z.object({
-      enforceConsecutiveOverBlock: z.boolean().nullable().optional(),
-      enforceFreeHit: z.boolean().nullable().optional(),
-      penaltyEnabled: z.boolean().nullable().optional(),
-      wideIsLegalBall: z.boolean().nullable().optional(),
-      noBallIsLegalBall: z.boolean().nullable().optional(),
-      ballsPerOver: z.number().int().min(1).max(12).nullable().optional(),
-      playersPerTeam: z.number().int().min(2).max(30).nullable().optional(),
-      lastManStands: z.boolean().nullable().optional(),
-      maxRunsPerBall: z.number().int().min(1).max(12).nullable().optional(),
-    }).refine((obj) => Object.keys(obj).length > 0, {
-      message: "At least one rule must be supplied",
-    }),
+    houseRules: z
+      .object({
+        enforceConsecutiveOverBlock: z.boolean().nullable().optional(),
+        enforceFreeHit: z.boolean().nullable().optional(),
+        penaltyEnabled: z.boolean().nullable().optional(),
+        wideIsLegalBall: z.boolean().nullable().optional(),
+        noBallIsLegalBall: z.boolean().nullable().optional(),
+        ballsPerOver: z.number().int().min(1).max(12).nullable().optional(),
+        playersPerTeam: z.number().int().min(2).max(30).nullable().optional(),
+        lastManStands: z.boolean().nullable().optional(),
+        maxRunsPerBall: z.number().int().min(1).max(12).nullable().optional(),
+      })
+      .refine((obj) => Object.keys(obj).length > 0, {
+        message: "At least one rule must be supplied",
+      }),
   }),
 });

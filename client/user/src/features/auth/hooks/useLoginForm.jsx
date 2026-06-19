@@ -5,26 +5,37 @@ import { useState, useEffect } from "react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import {login} from "@redux/slices/authSlice";
+import { login, logout } from "@redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import { Capacitor } from "@capacitor/core";
 
 const loginSchema = z.object({
-  email: z.string().min(1, "Enter your email or phone number").refine((value) => {
-    const isEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
-    const isPhone = /^[0-9]{10}$/.test(value);
-    return isEmail || isPhone;
-  }, { message: "Enter a valid email or 10-digit phone number" }),
-  password: z.string().min(1, "Enter your password").min(6, "Password must be at least 6 characters long"),
+  email: z
+    .string()
+    .min(1, "Enter your email or phone number")
+    .refine(
+      (value) => {
+        const isEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+          value
+        );
+        const isPhone = /^[0-9]{10}$/.test(value);
+        return isEmail || isPhone;
+      },
+      { message: "Enter a valid email or 10-digit phone number" }
+    ),
+  password: z
+    .string()
+    .min(1, "Enter your password")
+    .min(6, "Password must be at least 6 characters long"),
 });
 
-const useLoginForm = () => {
+const useLoginForm = (countryCode = "+91") => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showOtpInput, setShowOtpInput] = useState(false);
-  const [sentOtp, setSentOtp] = useState("");
   const [accountNotFound, setAccountNotFound] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
+  const [isPhoneAuth, setIsPhoneAuth] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -33,6 +44,7 @@ const useLoginForm = () => {
     handleSubmit,
     getValues,
     trigger,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(loginSchema),
@@ -50,13 +62,24 @@ const useLoginForm = () => {
 
   const handleRoleRedirect = (role) => {
     const normalizedRole = role?.toLowerCase();
-    const professionalRoles = ["coach", "umpire", "streamer", "scorer", "cheerleader", "commentator"];
-    
+    const professionalRoles = [
+      "coach",
+      "umpire",
+      "streamer",
+      "scorer",
+      "cheerleader",
+      "commentator",
+    ];
+
     if (normalizedRole === "admin" || normalizedRole === "bmsp_admin") {
       dispatch(logout());
       toast.error("Administrators must log in via the Platform Admin Console.");
       navigate("/login");
-    } else if (normalizedRole === "owner" || normalizedRole === "venue_owner" || normalizedRole === "venu_owners") {
+    } else if (
+      normalizedRole === "owner" ||
+      normalizedRole === "venue_owner" ||
+      normalizedRole === "venu_owners"
+    ) {
       navigate("/venue-owner");
     } else if (professionalRoles.includes(normalizedRole)) {
       navigate(`/professional/${normalizedRole}`);
@@ -65,53 +88,110 @@ const useLoginForm = () => {
     }
   };
 
-  const handleLoginStep1 = async () => {
+  const handleLoginStep1 = async (forceSms = false) => {
     const isValid = await trigger(["email", "password"]);
     if (!isValid) return;
 
     setLoading(true);
     setAccountNotFound(false); // Reset on new attempt
     try {
-      const { email, password } = getValues();
-      const response = await axiosInstance.post("/api/user/auth/login-step1", { email, password });
+      let { email, password } = getValues();
+
+      const isPhoneInput = /^[0-9]{10}$/.test(email);
+      if (isPhoneInput) {
+        email = countryCode + email;
+      }
+
+      const response = await axiosInstance.post("/api/user/auth/login-step1", {
+        email,
+        password,
+      });
       const result = response.data;
 
       if (result.token) {
-        dispatch(login({ token: result.token, role: result.role, user: result.user }));
-        axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${result.token}`;
+        dispatch(
+          login({ token: result.token, role: result.role, user: result.user })
+        );
+        axiosInstance.defaults.headers.common["Authorization"] =
+          `Bearer ${result.token}`;
         toast.success("Logged in successfully!");
         handleRoleRedirect(result.role);
         return;
       }
 
       if (result.requiresOtp) {
-        setShowOtpInput(true);
-        setLoading(false);
-        if (result.otp) {
-          setSentOtp(result.otp);
-          if (Capacitor.isNativePlatform()) {
-            toast((t) => (
-              <div className="flex flex-col gap-1 p-1">
-                <div className="font-bold text-sm text-black flex items-center gap-1">
-                  🔔 Kridaz Notification
-                </div>
-                <div className="text-xs text-gray-600">
-                  Your verification code is: <strong className="text-black text-sm">{result.otp}</strong>
-                </div>
-              </div>
-            ), { position: 'top-center', duration: 8000 });
+        const isPhoneCheck = /^[0-9]+$/.test(email) || email.startsWith("+");
+        setIsPhoneAuth(isPhoneCheck);
+        if (isPhoneCheck) {
+          if (forceSms) {
+            const payload = {
+              phone: email.startsWith("+") ? email.replace("+", "") : email,
+              deliveryMethod: "sms",
+            };
+            const otpRes = await axiosInstance.post(
+              "/api/user/auth/send-otp",
+              payload
+            );
+            toast.success(otpRes.data.message || "OTP sent via SMS");
+            setShowOtpInput(true);
+            setTimeLeft(60);
+          } else {
+            const payload = {
+              phone: email.startsWith("+") ? email.replace("+", "") : email,
+            };
+            const otpRes = await axiosInstance.post(
+              "/api/user/auth/send-otp",
+              payload
+            );
+            toast.success(otpRes.data.message || "OTP sent via WhatsApp");
+            if (Capacitor.isNativePlatform()) {
+              toast(
+                (t) => (
+                  <div className="flex flex-col gap-1 p-1">
+                    <div className="font-bold text-sm text-black flex items-center gap-1">
+                      🔔 Kridaz Notification
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      OTP sent to your device. Please enter it below.
+                    </div>
+                  </div>
+                ),
+                { position: "top-center", duration: 8000 }
+              );
+            }
+            setShowOtpInput(true);
+            setTimeLeft(60);
           }
+        } else {
+          // Email OTP
+          if (Capacitor.isNativePlatform()) {
+            toast(
+              (t) => (
+                <div className="flex flex-col gap-1 p-1">
+                  <div className="font-bold text-sm text-black flex items-center gap-1">
+                    🔔 Kridaz Notification
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    OTP sent to your email. Please enter it below.
+                  </div>
+                </div>
+              ),
+              { position: "top-center", duration: 8000 }
+            );
+          }
+          toast.success("OTP sent to your email");
+          setShowOtpInput(true);
+          setTimeLeft(60);
         }
-        toast.success("OTP sent to your email and WhatsApp");
-        setTimeLeft(60);
         return;
       }
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Login failed";
-      
+
       if (errorMessage.toLowerCase().includes("account not found")) {
         setAccountNotFound(true);
-        toast.error("Account not found. Please sign up!");
+        toast.error("Account not found. Redirecting to sign up...");
+        navigate("/signup");
       } else {
         toast.error(errorMessage);
       }
@@ -123,14 +203,31 @@ const useLoginForm = () => {
   const handleVerifyOtp = async (data) => {
     setLoading(true);
     try {
-      const { email } = getValues();
-      const response = await axiosInstance.post("/api/user/auth/login", { email, otp: data.otp, password: data.password });
+      let { email } = getValues();
+      const isPhoneInput = /^[0-9]{10}$/.test(email);
+      if (isPhoneInput) {
+        email = countryCode + email;
+      }
+
+      const payload = {
+        email,
+        otp: data.otp,
+        password: data.password,
+      };
+
+      const response = await axiosInstance.post(
+        "/api/user/auth/login",
+        payload
+      );
       const result = response.data;
-      
-      dispatch(login({ token: result.token, role: result.role, user: result.user }));
-      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${result.token}`;
+
+      dispatch(
+        login({ token: result.token, role: result.role, user: result.user })
+      );
+      axiosInstance.defaults.headers.common["Authorization"] =
+        `Bearer ${result.token}`;
       toast.success(result.message);
-      
+
       handleRoleRedirect(result.role);
     } catch (error) {
       toast.error(error.response?.data?.message || "Verification failed");
@@ -151,6 +248,7 @@ const useLoginForm = () => {
     try {
       const payload = {
         role: "user",
+        mode: "signin",
       };
 
       if (googleResponse.credential) {
@@ -159,16 +257,32 @@ const useLoginForm = () => {
         payload.accessToken = googleResponse.access_token;
       }
 
-      const response = await axiosInstance.post("/api/user/auth/google-auth", payload);
+      const response = await axiosInstance.post(
+        "/api/user/auth/google-auth",
+        payload
+      );
       const result = response.data;
-      
-      dispatch(login({ token: result.token, role: result.role, user: result.user }));
-      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${result.token}`;
+
+      dispatch(
+        login({ token: result.token, role: result.role, user: result.user })
+      );
+      axiosInstance.defaults.headers.common["Authorization"] =
+        `Bearer ${result.token}`;
       toast.success("Logged in with Google!");
-      
+
       handleRoleRedirect(result.role);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Google login failed");
+      const errorMessage =
+        error.response?.data?.message || "Google login failed";
+      if (
+        errorMessage.toLowerCase().includes("account not found") ||
+        errorMessage.toLowerCase().includes("sign up first")
+      ) {
+        toast.error("Account not found. Redirecting to sign up...");
+        navigate("/signup");
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setGoogleLoading(false);
     }
@@ -186,15 +300,15 @@ const useLoginForm = () => {
     loading,
     googleLoading,
     showOtpInput,
-    sentOtp,
     handleGoogleSuccess,
     handleGoogleError,
     accountNotFound,
     setAccountNotFound,
     timeLeft,
-    handleSendOtp: handleLoginStep1
+    handleSendOtp: handleLoginStep1,
+    isPhoneAuth,
+    watch,
   };
 };
 
 export default useLoginForm;
-

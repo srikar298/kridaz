@@ -23,7 +23,7 @@ const seedOtp = async (email, phone) => {
       phone,
       emailOtp: "123456",
       phoneOtp: "123456",
-      expiresAt: new Date(Date.now() + 600000)
+      expiresAt: new Date(Date.now() + 600000),
     },
   });
 };
@@ -31,9 +31,15 @@ const seedOtp = async (email, phone) => {
 describe("Blog Module API Integration", () => {
   beforeAll(async () => {
     // 1. Clean up potential old tests
-    await prisma.refreshToken.deleteMany({ where: { user: { email: testEmail } } }).catch(() => {});
-    await prisma.user.deleteMany({ where: { email: testEmail } }).catch(() => {});
-    await prisma.oTP.deleteMany({ where: { email: testEmail } }).catch(() => {});
+    await prisma.refreshToken
+      .deleteMany({ where: { user: { email: testEmail } } })
+      .catch(() => {});
+    await prisma.user
+      .deleteMany({ where: { email: testEmail } })
+      .catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: testEmail } })
+      .catch(() => {});
 
     // Seed OTP
     await seedOtp(testEmail, testPhone);
@@ -45,8 +51,8 @@ describe("Blog Module API Integration", () => {
         email: testEmail,
         username: testUsername,
         phone: testPhone,
-        password: "Blog@Pass123"
-      }
+        password: "Blog@Pass123",
+      },
     });
 
     const registeredUserId = user.id;
@@ -66,26 +72,30 @@ describe("Blog Module API Integration", () => {
     // Cleanup
     const user = await prisma.user.findFirst({ where: { email: testEmail } });
     if (user) {
-      await prisma.refreshToken.deleteMany({ where: { userId: user.id } }).catch(() => {});
+      await prisma.refreshToken
+        .deleteMany({ where: { userId: user.id } })
+        .catch(() => {});
       await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
     }
     if (createdBlogId) {
-      await prisma.blog.delete({ where: { id: createdBlogId } }).catch(() => {});
+      await prisma.blog
+        .delete({ where: { id: createdBlogId } })
+        .catch(() => {});
     }
-    await prisma.oTP.deleteMany({ where: { email: testEmail } }).catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: testEmail } })
+      .catch(() => {});
     await prisma.$disconnect();
   });
 
   // ── Admin Blog Management (CRUD) ──────────────────────────────────────────
   describe("POST /api/admin/blogs/admin — Create Blog", () => {
     it("should reject blog creation without token", async () => {
-      const res = await request(app)
-        .post("/api/admin/blogs/admin")
-        .send({
-          title: "Intruding Blog",
-          content: "Should be blocked.",
-          imageUrl: "http://example.com/bad.jpg"
-        });
+      const res = await request(app).post("/api/admin/blogs/admin").send({
+        title: "Intruding Blog",
+        content: "Should be blocked.",
+        imageUrl: "http://example.com/bad.jpg",
+      });
 
       expect(res.statusCode).toBe(401);
     });
@@ -99,7 +109,7 @@ describe("Blog Module API Integration", () => {
         .send({
           title: "Intruding Blog",
           content: "Should be blocked.",
-          imageUrl: "http://example.com/bad.jpg"
+          imageUrl: "http://example.com/bad.jpg",
         });
 
       expect(res.statusCode).toBe(403);
@@ -115,7 +125,7 @@ describe("Blog Module API Integration", () => {
           summary: "Summary info of championship series",
           imageUrl: "http://example.com/kridaz-series.jpg",
           tags: "cricket, championship, sports",
-          status: "published"
+          status: "published",
         });
 
       if (res.statusCode !== 201) logger.info("[create blog error]", res.body);
@@ -123,7 +133,7 @@ describe("Blog Module API Integration", () => {
       expect(res.body.success).toBe(true);
       expect(res.body.blog).toHaveProperty("id");
       expect(res.body.blog.title).toContain("Kridaz Championship Series");
-      
+
       createdBlogId = res.body.blog.id;
     });
   });
@@ -136,15 +146,17 @@ describe("Blog Module API Integration", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
       expect(Array.isArray(res.body.blogs)).toBe(true);
-      
-      const match = res.body.blogs.find(b => b.id === createdBlogId);
+
+      const match = res.body.blogs.find((b) => b.id === createdBlogId);
       expect(match).toBeDefined();
     });
 
     it("should fetch single blog details", async () => {
       if (!createdBlogId) return logger.warn("Skipped: missing createdBlogId");
 
-      const res = await request(app).get(`/api/features/blogs/${createdBlogId}`);
+      const res = await request(app).get(
+        `/api/features/blogs/${createdBlogId}`
+      );
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.blog).toHaveProperty("id");
@@ -156,8 +168,9 @@ describe("Blog Module API Integration", () => {
     it("should like a blog successfully", async () => {
       if (!createdBlogId) return logger.warn("Skipped: missing createdBlogId");
 
-      const res = await request(app)
-        .post(`/api/user/blogs/${createdBlogId}/like`);
+      const res = await request(app).post(
+        `/api/user/blogs/${createdBlogId}/like`
+      );
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
@@ -175,7 +188,7 @@ describe("Blog Module API Integration", () => {
         .set("Authorization", `Bearer ${adminToken}`)
         .send({
           title: `Updated Title Series ${ts}`,
-          content: "Updated content for tournament announcement."
+          content: "Updated content for tournament announcement.",
         });
 
       expect(res.statusCode).toBe(200);
@@ -197,9 +210,11 @@ describe("Blog Module API Integration", () => {
       expect(res.body.success).toBe(true);
 
       // Verify deletion
-      const checkRes = await request(app).get(`/api/features/blogs/${createdBlogId}`);
+      const checkRes = await request(app).get(
+        `/api/features/blogs/${createdBlogId}`
+      );
       expect(checkRes.statusCode).toBe(404);
-      
+
       createdBlogId = ""; // already deleted
     });
   });

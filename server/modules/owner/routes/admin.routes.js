@@ -1,5 +1,12 @@
 import express from "express";
-import { getAllOwners, getTurfByOwnerId, verifyKYC, deleteOwner, batchDeleteOwners, batchUpdateOwnerStatus } from "../../admin/admin.controller.js";
+import {
+  getAllOwners,
+  getTurfByOwnerId,
+  verifyKYC,
+  deleteOwner,
+  batchDeleteOwners,
+  batchUpdateOwnerStatus,
+} from "../../admin/admin.controller.js";
 
 const router = express.Router();
 

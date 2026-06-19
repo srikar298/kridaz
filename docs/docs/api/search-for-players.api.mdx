@@ -24,46 +24,28 @@ import Translate from "@docusaurus/Translate";
   as={"h1"}
   className={"openapi__heading"}
   children={"Search for players"}
->
-</Heading>
+></Heading>
 
 <MethodEndpoint
   method={"get"}
   path={"/user/players/search"}
   context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+></MethodEndpoint>
 
 Search players by name or location.
 
-<Heading
-  id={"request"}
-  as={"h2"}
-  className={"openapi-tabs__heading"}
->
+<Heading id={"request"} as={"h2"} className={"openapi-tabs__heading"}>
   <Translate id="theme.openapi.request.title">Request</Translate>
 </Heading>
 
 <ParamsDetails
   {...require("./search-for-players.ParamsDetails.json")}
->
-  
-</ParamsDetails>
+></ParamsDetails>
 
 <RequestSchema
   {...require("./search-for-players.RequestSchema.json")}
->
-  
-</RequestSchema>
+></RequestSchema>
 
 <StatusCodes
   {...require("./search-for-players.StatusCodes.json")}
->
-  
-</StatusCodes>
-
-
-      
+></StatusCodes>

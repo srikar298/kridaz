@@ -9,4 +9,3 @@ export { default as ProfessionalCustomers } from "./components/professional/Prof
 export { default as Community } from "./pages/Community";
 export { default as FindPlayers } from "./pages/FindPlayers";
 export { default as FindProfessionals } from "./pages/FindProfessionals";
-export { default as ProfessionalDetails } from "./pages/ProfessionalDetails";

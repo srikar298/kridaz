@@ -3,17 +3,34 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Bell, Check, CheckCheck, Trash2, Users, MessageCircle, Calendar,
-  Heart, Trophy, Loader2, ShieldCheck, Zap, X, ChevronRight,
-  Bookmark, CreditCard, AlertTriangle, Star, ArrowLeft
+  Bell,
+  CheckCheck,
+  Trash2,
+  Users,
+  MessageCircle,
+  Calendar,
+  Heart,
+  Trophy,
+  Loader2,
+  ShieldCheck,
+  Zap,
+  X,
+  ChevronRight,
+  CreditCard,
+  AlertTriangle,
+  Star,
+  ArrowLeft,
 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useSocket } from "@context/SocketContext";
 import { formatDistanceToNow } from "date-fns";
-
-const PRI = "#84CC16";
+import useNotifications from "@hooks/shared/useNotifications";
+const PRI = "#B3DC26";
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
-const SUBHEADING_STYLE = { fontFamily: "'Inter 28pt Light', sans-serif", fontWeight: 300 };
+const SUBHEADING_STYLE = {
+  fontFamily: "'Inter 28pt Light', sans-serif",
+  fontWeight: 300,
+};
 
 /**
  * Notification type → visual configuration map.
@@ -22,8 +39,8 @@ const SUBHEADING_STYLE = { fontFamily: "'Inter 28pt Light', sans-serif", fontWei
 const NOTIF_CONFIG = {
   FOLLOW: {
     icon: Users,
-    color: "#84CC16",
-    bgColor: "rgba(132,204,22,0.08)",
+    color: "#B3DC26",
+    bgColor: "rgba(191,243,103,0.08)",
     getRoute: (notif) => `/profile/${notif.metadata?.senderId || ""}`,
   },
   MESSAGE: {
@@ -34,9 +51,10 @@ const NOTIF_CONFIG = {
   },
   BOOKING: {
     icon: Calendar,
-    color: "#BFF367",
+    color: "#B3DC26",
     bgColor: "rgba(85,222,232,0.08)",
-    getRoute: (notif) => notif.link || `/booking-pass/${notif.metadata?.bookingId || ""}`,
+    getRoute: (notif) =>
+      notif.link || `/booking-pass/${notif.metadata?.bookingId || ""}`,
   },
   LIKE: {
     icon: Heart,
@@ -58,7 +76,7 @@ const NOTIF_CONFIG = {
   },
   REVIEW: {
     icon: Star,
-    color: "#BFF367",
+    color: "#B3DC26",
     bgColor: "rgba(251,191,36,0.08)",
     getRoute: (notif) => notif.link || "/profile",
   },
@@ -76,25 +94,25 @@ const NOTIF_CONFIG = {
   },
   GAME_JOIN_REQUEST: {
     icon: Zap,
-    color: "#BFF367",
+    color: "#B3DC26",
     bgColor: "rgba(191,243,103,0.08)",
     getRoute: (notif) => notif.link || "/booking-history?subTab=games",
   },
   TEAM_INVITE: {
     icon: Users,
-    color: "#BFF367",
+    color: "#B3DC26",
     bgColor: "rgba(85,222,232,0.08)",
     getRoute: (notif) => notif.link || "/profile?tab=connections",
   },
   TEAM_JOIN_REQUEST: {
     icon: Users,
-    color: "#BFF367",
+    color: "#B3DC26",
     bgColor: "rgba(85,222,232,0.08)",
     getRoute: (notif) => notif.link || "/profile?tab=connections",
   },
   TEAM_JOIN_ACCEPTED: {
     icon: ShieldCheck,
-    color: "#BFF367",
+    color: "#B3DC26",
     bgColor: "rgba(191,243,103,0.08)",
     getRoute: (notif) => notif.link || "/profile?tab=connections",
   },
@@ -112,7 +130,7 @@ const NOTIF_CONFIG = {
   },
   OPPONENT_ACCEPTED: {
     icon: Trophy,
-    color: "#BFF367",
+    color: "#B3DC26",
     bgColor: "rgba(191,243,103,0.08)",
     getRoute: (notif) => notif.link || "/profile?tab=connections",
   },
@@ -126,21 +144,9 @@ const NOTIF_CONFIG = {
 
 const DEFAULT_CONFIG = {
   icon: Bell,
-  color: "#84CC16",
-  bgColor: "rgba(132,204,22,0.08)",
+  color: "#B3DC26",
+  bgColor: "rgba(191,243,103,0.08)",
   getRoute: (notif) => notif.link || "/",
-};
-
-/**
- * Resolves the correct API base URL based on user role.
- */
-const getBaseUrl = (user) => {
-  if (!user) return "/api/user/notifications";
-  const role = user.role?.toLowerCase() || "";
-  if (role === "admin" || role.includes("bmsp_admin")) return "/api/admin/notifications";
-  if (["venu_owners", "owner", "verified_venue_owner", "bmsp_owner", "coach", "umpire", "scorer", "streamer"]
-    .some((r) => role.includes(r))) return "/api/owner/notifications";
-  return "/api/user/notifications";
 };
 
 /**
@@ -148,86 +154,22 @@ const getBaseUrl = (user) => {
  *
  * Architecture:
  *  - UI Layer: Pure rendering of notification cards, filters, and empty states.
- *  - Behavior Layer: Manages fetch, mark-read, clear, real-time socket listeners.
- *  - Service Layer: Axios calls to notification API endpoints.
+ *  - Behavior Layer: Manages filter and route resolution.
+ *  - Service Layer: RTK Query hook useNotifications.
  */
 const NotificationsPage = () => {
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
-  const { socket } = useSocket();
-
-  // ── State ────────────────────────────────────────────────────────────────
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("all"); // all | unread
 
-  // ── Service Layer: API calls ─────────────────────────────────────────────
-  const baseUrl = getBaseUrl(user);
+  const {
+    notifications,
+    loading,
+    unreadCount,
+    markRead,
+    markAllRead,
+    clearAll,
+  } = useNotifications();
 
-  const fetchNotifications = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get(baseUrl);
-      if (response.data.success) {
-        setNotifications(response.data.notifications || []);
-      }
-    } catch (error) {
-      console.error("[NotificationsPage] Fetch error:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [baseUrl]);
-
-  const markAsRead = async (id) => {
-    try {
-      await axiosInstance.put(`${baseUrl}/${id}/mark-read`);
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id || n._id === id ? { ...n, isRead: true } : n))
-      );
-    } catch (error) {
-      console.error("[NotificationsPage] Mark read error:", error);
-    }
-  };
-
-  const markAllAsRead = async () => {
-    try {
-      await axiosInstance.put(`${baseUrl}/mark-all-read`);
-      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-    } catch (error) {
-      console.error("[NotificationsPage] Mark all read error:", error);
-    }
-  };
-
-  const clearAll = async () => {
-    try {
-      await axiosInstance.delete(`${baseUrl}/clear`);
-      setNotifications([]);
-    } catch (error) {
-      console.error("[NotificationsPage] Clear all error:", error);
-    }
-  };
-
-  // ── Behavior Layer: Effects ──────────────────────────────────────────────
-  useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
-
-  // Real-time: listen for new notifications via socket
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleNewNotification = (notification) => {
-      setNotifications((prev) => [notification, ...prev]);
-    };
-
-    socket.on("new_notification", handleNewNotification);
-    return () => {
-      socket.off("new_notification", handleNewNotification);
-    };
-  }, [socket]);
-
-  // ── Derived data ─────────────────────────────────────────────────────────
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
   const filtered =
     activeFilter === "unread"
       ? notifications.filter((n) => !n.isRead)
@@ -236,7 +178,7 @@ const NotificationsPage = () => {
   // ── Handlers ─────────────────────────────────────────────────────────────
   const handleNotificationClick = (notif) => {
     const id = notif.id || notif._id;
-    if (!notif.isRead) markAsRead(id);
+    if (!notif.isRead) markRead(id);
 
     const type = notif.type?.toUpperCase() || "SYSTEM";
     const config = NOTIF_CONFIG[type] || DEFAULT_CONFIG;
@@ -251,25 +193,21 @@ const NotificationsPage = () => {
 
   // ── UI Layer: Render ─────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#050505] pt-6 pb-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-
+    <div className="min-h-screen bg-black pt-2 md:pt-24 pb-20 px-0 sm:px-4 font-inter">
+      <div className="max-w-4xl mx-auto space-y-4">
         {/* ── Header ──────────────────────────────────────────────── */}
-        <div className="flex items-center gap-4 mb-8">
-          <button
-            onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-[8px] bg-white/5 border border-white/5 flex items-center justify-center text-white/50 hover:text-white hover:border-white/10 transition-all"
-          >
-            <ArrowLeft size={18} />
-          </button>
+        <div className="flex items-center gap-4 mb-4">
           <div className="flex-1">
             <h1
-              className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider"
+              className="text-[20px] font-black uppercase tracking-tight font-open-sans text-white"
               style={HEADING_STYLE}
             >
               Notifications
             </h1>
-            <p className="text-[11px] font-semibold text-white/30 mt-0.5 tracking-widest uppercase" style={SUBHEADING_STYLE}>
+            <p
+              className="text-[11px] font-semibold text-white/30 mt-0.5 tracking-widest uppercase"
+              style={SUBHEADING_STYLE}
+            >
               {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
             </p>
           </div>
@@ -278,8 +216,8 @@ const NotificationsPage = () => {
           <div className="flex items-center gap-2">
             {unreadCount > 0 && (
               <button
-                onClick={markAllAsRead}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-[6px] bg-[#84CC16]/10 border border-[#84CC16]/20 text-[#84CC16] text-[10px] font-black uppercase tracking-widest hover:bg-[#84CC16]/20 transition-all"
+                onClick={markAllRead}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-[16px] bg-[#B3DC26]/10 border border-[#B3DC26]/20 text-[#B3DC26] text-[10px] font-black uppercase tracking-widest hover:bg-[#B3DC26]/20 transition-all"
               >
                 <CheckCheck size={14} />
                 <span className="hidden sm:inline">Read All</span>
@@ -288,7 +226,7 @@ const NotificationsPage = () => {
             {notifications.length > 0 && (
               <button
                 onClick={clearAll}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-[6px] bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-[16px] bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all"
               >
                 <Trash2 size={14} />
                 <span className="hidden sm:inline">Clear</span>
@@ -298,12 +236,12 @@ const NotificationsPage = () => {
         </div>
 
         {/* ── Filters ─────────────────────────────────────────────── */}
-        <div className="flex items-center gap-2 mb-6">
+        <div className="flex items-center gap-2 mb-4">
           {["all", "unread"].map((filter) => (
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border ${ activeFilter === filter ? "bg-[#84CC16]/10 border-[#84CC16]/30 text-[#84CC16]" : "bg-white/[0.02] border-white/5 text-white/40 hover:text-white/60 hover:border-white/10" }`}
+              className={`px-4 py-2 rounded-[16px] text-[10px] font-black uppercase tracking-widest transition-all border ${activeFilter === filter ? "bg-[#B3DC26]/10 border-[#B3DC26]/30 text-[#B3DC26]" : "bg-white/[0.02] border-white/5 text-white/40 hover:text-white/60 hover:border-white/10"}`}
             >
               {filter === "all" ? "All" : `Unread (${unreadCount})`}
             </button>
@@ -313,21 +251,26 @@ const NotificationsPage = () => {
         {/* ── Notification List ────────────────────────────────────── */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 gap-4">
-            <Loader2 size={36} className="text-[#84CC16] animate-spin" />
+            <Loader2 size={36} className="text-[#B3DC26] animate-spin" />
             <p className="text-[10px] font-black text-white/20 uppercase tracking-widest">
               Loading notifications…
             </p>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-32 gap-5">
-            <div className="w-24 h-24 rounded-[8px] bg-white/[0.02] border border-dashed border-white/10 flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center py-20 gap-4">
+            <div className="w-20 h-20 rounded-[16px] bg-white/[0.02] border border-dashed border-white/10 flex items-center justify-center">
               <Bell size={40} className="text-white/10" />
             </div>
             <div className="text-center">
               <p className="text-[13px] font-black text-white/30 uppercase tracking-widest">
-                {activeFilter === "unread" ? "No unread notifications" : "No notifications yet"}
+                {activeFilter === "unread"
+                  ? "No unread notifications"
+                  : "No notifications yet"}
               </p>
-              <p className="text-[11px] text-white/15 mt-1 font-medium" style={SUBHEADING_STYLE}>
+              <p
+                className="text-[11px] text-white/15 mt-1 font-medium"
+                style={SUBHEADING_STYLE}
+              >
                 {activeFilter === "unread"
                   ? "You're all caught up!"
                   : "When you get notifications, they'll show up here"}
@@ -351,18 +294,20 @@ const NotificationsPage = () => {
                     exit={{ opacity: 0, x: -40 }}
                     transition={{ duration: 0.2, delay: index * 0.03 }}
                     onClick={() => handleNotificationClick(notif)}
-                    className={`group relative flex items-start gap-4 p-4 sm:p-5 rounded-[8px] border cursor-pointer transition-all duration-300 ${ notif.isRead ? "bg-white/[0.01] border-white/[0.03] hover:bg-white/[0.03]" : "bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.05]" }`}
+                    className={`group relative flex items-start gap-4 p-3 sm:p-4 rounded-[16px] border cursor-pointer transition-all duration-300 ${notif.isRead ? "bg-[#000000] border-white/5 hover:bg-[#1B1B1B]/50" : "bg-[#121212] border-white/10 hover:border-white/20"}`}
                   >
                     {/* Unread indicator */}
                     {!notif.isRead && (
-                      <div className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-[#84CC16] shadow-[0_0_8px_rgba(132,204,22,0.5)]" />
+                      <div className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-[#B3DC26] shadow-[0_0_8px_rgba(179,220,38,0.5)]" />
                     )}
 
                     {/* Icon */}
                     <div
-                      className="w-11 h-11 rounded-[8px] flex items-center justify-center shrink-0 border border-white/5 transition-transform group-hover:scale-105"
+                      className="w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0 border border-white/5 transition-transform group-hover:scale-105"
                       style={{
-                        backgroundColor: notif.isRead ? "rgba(255,255,255,0.03)" : config.bgColor,
+                        backgroundColor: notif.isRead
+                          ? "rgba(255,255,255,0.03)"
+                          : config.bgColor,
                       }}
                     >
                       <IconComponent
@@ -375,14 +320,14 @@ const NotificationsPage = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-3">
                         <h4
-                          className={`text-[13px] font-bold leading-tight transition-colors ${ notif.isRead ? "text-white/40" : "text-white group-hover:text-[#84CC16]" }`}
+                          className={`text-[13px] font-bold leading-tight transition-colors ${notif.isRead ? "text-white/40" : "text-white group-hover:text-[#B3DC26]"}`}
                           style={SUBHEADING_STYLE}
                         >
                           {notif.title}
                         </h4>
                       </div>
                       <p
-                        className={`text-[12px] mt-1 leading-relaxed ${ notif.isRead ? "text-white/25" : "text-white/50" }`}
+                        className={`text-[12px] mt-1 leading-relaxed ${notif.isRead ? "text-white/25" : "text-white/50"}`}
                         style={SUBHEADING_STYLE}
                       >
                         {notif.message}
@@ -390,7 +335,9 @@ const NotificationsPage = () => {
                       <div className="flex items-center gap-3 mt-2">
                         <span className="text-[10px] font-bold text-white/20 uppercase tracking-wider">
                           {notif.createdAt
-                            ? formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true }).replace("about ", "")
+                            ? formatDistanceToNow(new Date(notif.createdAt), {
+                                addSuffix: true,
+                              }).replace("about ", "")
                             : "Just now"}
                         </span>
                         {notif.type && (
@@ -398,8 +345,12 @@ const NotificationsPage = () => {
                             className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border"
                             style={{
                               color: notif.isRead ? "#444" : config.color,
-                              borderColor: notif.isRead ? "rgba(255,255,255,0.05)" : config.color + "30",
-                              backgroundColor: notif.isRead ? "transparent" : config.bgColor,
+                              borderColor: notif.isRead
+                                ? "rgba(255,255,255,0.05)"
+                                : config.color + "30",
+                              backgroundColor: notif.isRead
+                                ? "transparent"
+                                : config.bgColor,
                             }}
                           >
                             {notif.type}

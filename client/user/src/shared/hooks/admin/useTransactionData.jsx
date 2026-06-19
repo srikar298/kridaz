@@ -12,7 +12,7 @@ const useTransactionData = () => {
         setLoading(true);
         const response = await axiosInstance.get("/api/admin/transactions/all");
         const result = response.data;
-         setTransactions(result.transactions);
+        setTransactions(result.transactions);
         setLoading(false);
       } catch (err) {
         setError(err.message);

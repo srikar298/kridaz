@@ -1,1 +1,54 @@
-{"responses":{"200":{"description":"List of bookings","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"id":{"type":"string","format":"uuid"},"userId":{"type":"string","format":"uuid"},"turfId":{"type":"string","format":"uuid"},"timeSlotId":{"type":"string","format":"uuid","nullable":true},"totalPrice":{"type":"number"},"paidAmount":{"type":"number"},"status":{"type":"string","enum":["PENDING","CONFIRMED","PLAYING","COMPLETED","CANCELLED","DISPUTED"]},"paymentStatus":{"type":"string","nullable":true},"paymentMethod":{"type":"string","nullable":true},"playStartTime":{"type":"string","format":"date-time","nullable":true},"playEndTime":{"type":"string","format":"date-time","nullable":true},"createdAt":{"type":"string","format":"date-time"}},"title":"Booking"}}}}}}}
+{
+  "responses": {
+    "200": {
+      "description": "List of bookings",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string", "format": "uuid" },
+                "userId": { "type": "string", "format": "uuid" },
+                "turfId": { "type": "string", "format": "uuid" },
+                "timeSlotId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "nullable": true
+                },
+                "totalPrice": { "type": "number" },
+                "paidAmount": { "type": "number" },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "PENDING",
+                    "CONFIRMED",
+                    "PLAYING",
+                    "COMPLETED",
+                    "CANCELLED",
+                    "DISPUTED"
+                  ]
+                },
+                "paymentStatus": { "type": "string", "nullable": true },
+                "paymentMethod": { "type": "string", "nullable": true },
+                "playStartTime": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true
+                },
+                "playEndTime": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true
+                },
+                "createdAt": { "type": "string", "format": "date-time" }
+              },
+              "title": "Booking"
+            }
+          }
+        }
+      }
+    }
+  }
+}

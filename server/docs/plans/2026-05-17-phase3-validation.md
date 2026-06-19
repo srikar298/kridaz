@@ -13,6 +13,7 @@
 ### Task 1: Fix Database Schema Incompatibility in Chat Pinning and Read Tracking
 
 **Files:**
+
 - Modify: `server/modules/chat/chat.controller.js`
 - Modify: `server/modules/chat/message.controller.js`
 - Test: `server/tests/chat.test.js`
@@ -37,6 +38,7 @@ Expected: FAIL with "PrismaClientValidationError" or database parsing error beca
 We will replace the incompatible `togglePinChat` and `markMessagesRead` codes.
 
 For `togglePinChat` in `server/modules/chat/chat.controller.js`:
+
 ```javascript
 <<<<
     const updatedParticipant = await prisma.chatParticipant.update({
@@ -51,6 +53,7 @@ For `togglePinChat` in `server/modules/chat/chat.controller.js`:
 
 For `markMessagesRead` in `server/modules/chat/message.controller.js`:
 Instead of `updateMany` with relation writes, we loop or use an update query for each unread message to link the participant:
+
 ```javascript
 <<<<
     await prisma.message.updateMany({
@@ -92,6 +95,7 @@ Run: `pnpm test tests/chat.test.js --forceExit`
 Expected: PASS
 
 **Step 5: Commit**
+
 ```bash
 git add server/modules/chat/chat.controller.js server/modules/chat/message.controller.js
 git commit -m "fix(chat): fix database model incompatibilities in togglePin and markMessagesRead"
@@ -102,10 +106,12 @@ git commit -m "fix(chat): fix database model incompatibilities in togglePin and 
 ### Task 2: Build Chat & Real-Time Messaging Integration Suite
 
 **Files:**
+
 - Create: `server/tests/chat.test.js`
 
 **Step 1: Write the failing test**
 Create a full integration test covering:
+
 - Creating 1-on-1 chat between two test users.
 - Creating a group chat with custom participants.
 - Sending, clearing, and pinning messages.
@@ -123,6 +129,7 @@ Run: `pnpm test tests/chat.test.js --forceExit`
 Expected: PASS with 100% assertions satisfied.
 
 **Step 5: Commit**
+
 ```bash
 git add server/tests/chat.test.js
 git commit -m "test(chat): add full integration test suite for chat messaging"
@@ -133,10 +140,12 @@ git commit -m "test(chat): add full integration test suite for chat messaging"
 ### Task 3: Build Cricket Match Scoring Integration Suite
 
 **Files:**
+
 - Create: `server/tests/scoring.test.js`
 
 **Step 1: Write the failing test**
 Create an integration test in `server/tests/scoring.test.js` that covers:
+
 - Seeding a CricketMatch and HostedGame with participants.
 - Invoking `POST /api/scoring/start` to begin scoring.
 - Recording toss results via `POST /api/scoring/toss`.
@@ -157,6 +166,7 @@ Run: `pnpm test tests/scoring.test.js --forceExit`
 Expected: PASS
 
 **Step 5: Commit**
+
 ```bash
 git add server/tests/scoring.test.js
 git commit -m "test(scoring): add comprehensive cricket match live scoring integration tests"
@@ -167,10 +177,12 @@ git commit -m "test(scoring): add comprehensive cricket match live scoring integ
 ### Task 4: Build Support Dispute Resolution Integration Suite
 
 **Files:**
+
 - Create: `server/tests/dispute.test.js`
 
 **Step 1: Write the failing test**
 Create an integration test in `server/tests/dispute.test.js` covering:
+
 - Creating a booking with state `IN_REVIEW_WINDOW`.
 - Invoking `POST /api/dispute/raise` to log a dispute, verifying:
   - Booking transitions to `DISPUTED`.
@@ -193,6 +205,7 @@ Run: `pnpm test tests/dispute.test.js --forceExit`
 Expected: PASS
 
 **Step 5: Commit**
+
 ```bash
 git add server/tests/dispute.test.js
 git commit -m "test(dispute): add full integration test suite for disputes and transactions"

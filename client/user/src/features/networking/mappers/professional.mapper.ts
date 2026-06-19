@@ -33,17 +33,17 @@ export interface ProfessionalMapped {
 export class ProfessionalMapper {
   static toDomain(raw: ProfessionalRaw): ProfessionalMapped {
     return {
-      id: raw._id || '',
-      name: raw.name || 'Unknown Professional',
+      id: raw._id || "",
+      name: raw.name || "Unknown Professional",
       email: raw.email || null,
       phone: raw.phone || null,
       profilePicture: raw.profilePicture || null,
-      role: (raw.role || 'professional').toLowerCase(),
+      role: (raw.role || "professional").toLowerCase(),
       price: raw.price || 0,
       rating: raw.rating || 0,
       numReviews: raw.numReviews || 0,
-      specialization: raw.businessDetails?.specialization || 'General',
-      experience: raw.businessDetails?.experience || 'Beginner',
+      specialization: raw.businessDetails?.specialization || "General",
+      experience: raw.businessDetails?.experience || "Beginner",
     };
   }
 

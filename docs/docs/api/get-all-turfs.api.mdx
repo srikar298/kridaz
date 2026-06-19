@@ -24,46 +24,26 @@ import Translate from "@docusaurus/Translate";
   as={"h1"}
   className={"openapi__heading"}
   children={"Get all turfs"}
->
-</Heading>
+></Heading>
 
 <MethodEndpoint
   method={"get"}
   path={"/user/turf/all"}
   context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+></MethodEndpoint>
 
 Returns a list of turfs filtered by city, sport, and other parameters.
 
-<Heading
-  id={"request"}
-  as={"h2"}
-  className={"openapi-tabs__heading"}
->
+<Heading id={"request"} as={"h2"} className={"openapi-tabs__heading"}>
   <Translate id="theme.openapi.request.title">Request</Translate>
 </Heading>
 
 <ParamsDetails
   {...require("./get-all-turfs.ParamsDetails.json")}
->
-  
-</ParamsDetails>
+></ParamsDetails>
 
 <RequestSchema
   {...require("./get-all-turfs.RequestSchema.json")}
->
-  
-</RequestSchema>
+></RequestSchema>
 
-<StatusCodes
-  {...require("./get-all-turfs.StatusCodes.json")}
->
-  
-</StatusCodes>
-
-
-      
+<StatusCodes {...require("./get-all-turfs.StatusCodes.json")}></StatusCodes>

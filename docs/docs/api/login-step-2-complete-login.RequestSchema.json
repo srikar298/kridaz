@@ -1,1 +1,27 @@
-{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["email","password"],"properties":{"email":{"type":"string","format":"email","example":"user@example.com"},"password":{"type":"string","example":"password123"},"otp":{"type":"string","example":"123456","description":"Optional if 2FA is enabled"}}}}}}}
+{
+  "title": "Body",
+  "body": {
+    "required": true,
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "required": ["email", "password"],
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email",
+              "example": "user@example.com"
+            },
+            "password": { "type": "string", "example": "password123" },
+            "otp": {
+              "type": "string",
+              "example": "123456",
+              "description": "Optional if 2FA is enabled"
+            }
+          }
+        }
+      }
+    }
+  }
+}

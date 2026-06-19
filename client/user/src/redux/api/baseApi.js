@@ -47,7 +47,10 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
-    const isRefreshRequest = typeof args === "object" && args !== null && args.url?.includes("/api/user/auth/refresh");
+    const isRefreshRequest =
+      typeof args === "object" &&
+      args !== null &&
+      args.url?.includes("/api/user/auth/refresh");
 
     if (isRefreshRequest) {
       return result;
@@ -69,7 +72,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
       if (refreshResult.data && refreshResult.data.token) {
         api.dispatch(restoreAuth({ token: refreshResult.data.token }));
         processQueue(null, refreshResult.data.token);
-        
+
         // Retry the original query
         result = await baseQuery(args, api, extraOptions);
       } else {
@@ -90,6 +93,18 @@ export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
   endpoints: () => ({}),
-  tagTypes: ["Chat", "Message", "User", "Team", "Games", "Reel", "Community", "Booking", "Turf", "Stories", "Scoring"],
+  tagTypes: [
+    "Chat",
+    "Message",
+    "User",
+    "Team",
+    "Games",
+    "Reel",
+    "Community",
+    "Booking",
+    "Turf",
+    "Stories",
+    "Scoring",
+    "Tournament",
+  ],
 });
-

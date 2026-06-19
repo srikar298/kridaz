@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { ChevronRight, Eye, ThumbsUp, Share2 } from 'lucide-react';
-import axiosInstance from '@hooks/useAxiosInstance';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { ChevronRight, Eye, ThumbsUp, Share2 } from "lucide-react";
+import axiosInstance from "@hooks/useAxiosInstance";
+import axios from "axios";
 
 const PRI = "#BFF367";
 
@@ -16,7 +16,11 @@ const BlogSection = () => {
     try {
       const res = await axiosInstance.post(`/api/user/blogs/${id}/like`);
       if (res.data.success) {
-        setBlogs(prev => prev.map(b => (b.id || b._id) === id ? { ...b, likes: res.data.blog.likes } : b));
+        setBlogs((prev) =>
+          prev.map((b) =>
+            (b.id || b._id) === id ? { ...b, likes: res.data.blog.likes } : b
+          )
+        );
       }
     } catch (err) {
       console.error("Error liking blog:", err);
@@ -27,7 +31,9 @@ const BlogSection = () => {
     const controller = new AbortController();
     const fetchBlogs = async () => {
       try {
-        const response = await axiosInstance.get(`/api/user/blogs`, { signal: controller.signal });
+        const response = await axiosInstance.get(`/api/user/blogs`, {
+          signal: controller.signal,
+        });
         setBlogs(response.data.blogs || []);
       } catch (error) {
         if (!axios.isCancel(error)) {
@@ -47,7 +53,10 @@ const BlogSection = () => {
         <div className="h-12 w-64 bg-white/5 animate-pulse rounded-lg mb-8" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="aspect-[3/4] bg-white/5 animate-pulse rounded-[8px]" />
+            <div
+              key={i}
+              className="aspect-[3/4] bg-white/5 animate-pulse rounded-[8px]"
+            />
           ))}
         </div>
       </section>
@@ -67,25 +76,32 @@ const BlogSection = () => {
             INSIGHTS, STORIES, AND DEEP DIVES FROM THE SPORTS WORLD
           </p>
         </div>
-        <Link to="/blogs" className="group flex items-center gap-2 text-white font-bold text-sm tracking-widest uppercase hover:text-primary transition-colors">
-          VIEW ALL <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+        <Link
+          to="/blogs"
+          className="group flex items-center gap-2 text-white font-bold text-sm tracking-widest uppercase hover:text-primary transition-colors"
+        >
+          VIEW ALL{" "}
+          <ChevronRight
+            size={18}
+            className="group-hover:translate-x-1 transition-transform"
+          />
         </Link>
       </div>
 
       {/* Mobile: horizontal scroll | Desktop: grid */}
       <div className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth no-scrollbar md:grid md:grid-cols-2 md:overflow-visible md:pb-0 lg:grid-cols-5">
         {blogs.slice(0, 5).map((blog, idx) => (
-          <Link 
-            key={blog.id || blog._id} 
+          <Link
+            key={blog.id || blog._id}
             to={`/blogs/${blog.id || blog._id}`}
             className="group relative rounded-[8px] overflow-hidden border border-white/5 bg-zinc-900 flex flex-col snap-start shrink-0 w-[75vw] aspect-[3/4] md:w-auto md:shrink md:aspect-[3/4]"
           >
             {/* Background Image */}
             <div className="absolute inset-0 z-0">
-              <img 
-                src={blog.imageUrl || blog.featuredImage} 
-                alt={blog.title} 
-                className="w-full h-full object-cover opacity-50 group-hover:opacity-70 group-hover:scale-110 transition-all duration-700" 
+              <img
+                src={blog.imageUrl || blog.featuredImage}
+                alt={blog.title}
+                className="w-full h-full object-cover opacity-50 group-hover:opacity-70 group-hover:scale-110 transition-all duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
             </div>
@@ -94,13 +110,20 @@ const BlogSection = () => {
             <div className="relative z-10 flex flex-col h-full p-6">
               {/* Number Overlay */}
               <div className="font-display text-6xl text-white/10 leading-none select-none">
-                {String(idx + 1).padStart(2, '0')}
+                {String(idx + 1).padStart(2, "0")}
               </div>
 
               {/* Top Meta */}
               <div className="mt-auto mb-4 flex flex-col items-end text-right">
-                <span className="text-[10px] font-bold text-white/60 tracking-wider mb-1">{blog.date}</span>
-                <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: PRI }}>{blog.readTime}</span>
+                <span className="text-[10px] font-bold text-white/60 tracking-wider mb-1">
+                  {blog.date}
+                </span>
+                <span
+                  className="text-[10px] font-bold uppercase tracking-widest"
+                  style={{ color: PRI }}
+                >
+                  {blog.readTime}
+                </span>
               </div>
 
               {/* Title */}
@@ -115,11 +138,15 @@ const BlogSection = () => {
                     <Eye size={14} style={{ color: PRI }} />
                     {blog.views}
                   </div>
-                  <button 
+                  <button
                     onClick={(e) => handleLike(e, blog.id || blog._id)}
                     className="flex items-center gap-1.5 text-xs font-mono text-white/40 hover:text-white transition-colors group/btn"
                   >
-                    <ThumbsUp size={14} style={{ color: PRI }} className="group-hover/btn:scale-110 transition-transform" />
+                    <ThumbsUp
+                      size={14}
+                      style={{ color: PRI }}
+                      className="group-hover/btn:scale-110 transition-transform"
+                    />
                     {blog.likes}
                   </button>
                 </div>

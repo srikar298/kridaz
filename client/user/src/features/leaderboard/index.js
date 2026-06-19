@@ -1,1 +1,1 @@
-export { default as Leaderboard } from './pages/Leaderboard';
+export { default as Leaderboard } from "./pages/Leaderboard";

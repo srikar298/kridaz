@@ -1,6 +1,6 @@
-﻿import express from "express";
-import { 
-  registerUser, 
+import express from "express";
+import {
+  registerUser,
   login,
   sendOtp,
   verifyOtp,
@@ -12,6 +12,7 @@ import {
   refreshToken,
   updateProfile,
   updateProfilePicture,
+  updateBannerPicture,
   checkUsername,
   generateRecoveryTokens,
   loginWithRecoveryToken,
@@ -19,13 +20,18 @@ import {
   sendPhoneVerificationOtp,
   verifyPhoneOtp,
   forgotPasswordOtp,
-  resetPassword
+  resetPassword,
+  sendEmailVerificationLink,
+  verifyEmailToken,
+  verifyEmailGoogle,
+  updateProfileEmailWithGoogle,
+  updateProfileEmailWithOtp,
 } from "../auth.controller.js";
-import { 
-  userRegisterSchema, 
+import {
+  userRegisterSchema,
   userLoginSchema,
   sendOtpSchema,
-  loginStep1Schema
+  loginStep1Schema,
 } from "../auth.validator.js";
 import { validate } from "../../../middleware/validate.middleware.js";
 import userAuth from "../../../middleware/jwt/user.middleware.js";
@@ -55,6 +61,9 @@ const router = express.Router();
  */
 router.post("/send-otp", otpLimiter, validate(sendOtpSchema), sendOtp);
 router.post("/verify-otp", otpLimiter, verifyOtp);
+router.post("/send-email-verification", authLimiter, sendEmailVerificationLink);
+router.post("/verify-email", verifyEmailToken);
+router.post("/verify-email-google", authLimiter, verifyEmailGoogle);
 
 /**
  * @swagger
@@ -63,7 +72,12 @@ router.post("/verify-otp", otpLimiter, verifyOtp);
  *     summary: Register a new user
  *     tags: [Auth]
  */
-router.post("/register", authLimiter, validate(userRegisterSchema), registerUser);
+router.post(
+  "/register",
+  authLimiter,
+  validate(userRegisterSchema),
+  registerUser
+);
 
 /**
  * @swagger
@@ -72,7 +86,7 @@ router.post("/register", authLimiter, validate(userRegisterSchema), registerUser
  *     summary: Login Step 1 - Password verification
  *     tags: [Auth]
  */
-router.post("/login-step1", otpLimiter, validate(loginStep1Schema), loginStep1);
+router.post("/login-step1", validate(loginStep1Schema), loginStep1);
 
 /**
  * @swagger
@@ -164,9 +178,26 @@ router.post("/logout-all", userAuth, logoutAll);
  *       - BearerAuth: []
  */
 router.put("/updateProfile", userAuth, updateProfile);
-router.post("/profile-picture", userAuth, upload.single("profilePicture"), updateProfilePicture);
+router.post(
+  "/profile-picture",
+  userAuth,
+  upload.single("profilePicture"),
+  updateProfilePicture
+);
+router.post(
+  "/banner-picture",
+  userAuth,
+  upload.single("bannerPicture"),
+  updateBannerPicture
+);
 router.post("/send-phone-verification-otp", userAuth, sendPhoneVerificationOtp);
 router.post("/verify-phone-otp", userAuth, verifyPhoneOtp);
+router.post(
+  "/profile/verify-email-google",
+  userAuth,
+  updateProfileEmailWithGoogle
+);
+router.post("/profile/verify-email-otp", userAuth, updateProfileEmailWithOtp);
 
 /**
  * @swagger
@@ -188,10 +219,16 @@ router.post("/recovery/generate", userAuth, generateRecoveryTokens);
  *     security:
  *       - BearerAuth: []
  */
-router.post("/upgrade-request", userAuth, upload.array("documents", 10), upgradeRequest);
+router.post(
+  "/upgrade-request",
+  userAuth,
+  upload.array("documents", 10),
+  upgradeRequest
+);
 
 // â”€â”€ Password Reset Routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post("/forgot-password-otp", forgotPasswordOtp);
 router.post("/reset-password", resetPassword);
 
+// Triggering restart for banner upload fix
 export default router;

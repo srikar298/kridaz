@@ -1,7 +1,16 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
-import { ArrowLeft, Eye, ThumbsUp, Clock, User, Tag, Calendar, ChevronRight } from "lucide-react";
+import {
+  ArrowLeft,
+  Eye,
+  ThumbsUp,
+  Clock,
+  User,
+  Tag,
+  Calendar,
+  ChevronRight,
+} from "lucide-react";
 
 const PRI = "#BFF367";
 const BDR = "#2A2A2A";
@@ -14,9 +23,11 @@ export default function BlogDetail() {
 
   const handleLike = async () => {
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/blogs/${id}/like`);
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/user/blogs/${id}/like`
+      );
       if (res.data.success) {
-        setBlog(prev => ({ ...prev, likes: res.data.blog.likes }));
+        setBlog((prev) => ({ ...prev, likes: res.data.blog.likes }));
       }
     } catch (err) {
       console.error("Error liking blog:", err);
@@ -26,7 +37,9 @@ export default function BlogDetail() {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/user/blogs/${id}`);
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/user/blogs/${id}`
+        );
         setBlog(res.data.blog);
       } catch (err) {
         setNotFound(true);
@@ -53,9 +66,17 @@ export default function BlogDetail() {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center text-center px-6">
         <p className="text-7xl font-black text-white/5 mb-4">404</p>
-        <h1 className="text-2xl font-bold uppercase tracking-tight mb-2 text-white">Article Not Found</h1>
-        <p className="text-gray-500 text-sm mb-8">This article may have been moved or removed.</p>
-        <Link to="/" className="inline-flex items-center gap-2 px-6 py-3 rounded-[8px] text-black font-bold text-sm uppercase tracking-widest" style={{ backgroundColor: PRI }}>
+        <h1 className="text-2xl font-bold uppercase tracking-tight mb-2 text-white">
+          Article Not Found
+        </h1>
+        <p className="text-gray-500 text-sm mb-8">
+          This article may have been moved or removed.
+        </p>
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-[8px] text-black font-bold text-sm uppercase tracking-widest"
+          style={{ backgroundColor: PRI }}
+        >
           <ArrowLeft size={14} /> Go Back Home
         </Link>
       </div>
@@ -64,7 +85,6 @@ export default function BlogDetail() {
 
   return (
     <div className="min-h-screen bg-black text-white pb-24">
-
       {/* ΓöÇΓöÇ HERO ΓöÇΓöÇ */}
       <div className="relative h-[60vh] min-h-[400px] overflow-hidden">
         <img
@@ -89,7 +109,9 @@ export default function BlogDetail() {
         <div className="absolute bottom-0 left-0 right-0 max-w-4xl mx-auto px-6 pb-12">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4">
-            <Link to="/" className="hover:text-white transition-colors">Home</Link>
+            <Link to="/" className="hover:text-white transition-colors">
+              Home
+            </Link>
             <ChevronRight size={10} />
             <span>Blog</span>
             <ChevronRight size={10} />
@@ -116,7 +138,10 @@ export default function BlogDetail() {
       </div>
 
       {/* ΓöÇΓöÇ META BAR ΓöÇΓöÇ */}
-      <div className="border-b" style={{ borderColor: BDR, backgroundColor: "#050505" }}>
+      <div
+        className="border-b"
+        style={{ borderColor: BDR, backgroundColor: "#050505" }}
+      >
         <div className="max-w-4xl mx-auto px-6 py-5 flex flex-wrap items-center gap-6">
           <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
             <User size={13} style={{ color: PRI }} />
@@ -135,11 +160,15 @@ export default function BlogDetail() {
               <Eye size={13} style={{ color: PRI }} />
               {blog.views} views
             </div>
-            <button 
+            <button
               onClick={handleLike}
               className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-white transition-all group"
             >
-              <ThumbsUp size={13} className="group-hover:scale-110 transition-transform" style={{ color: PRI }} />
+              <ThumbsUp
+                size={13}
+                className="group-hover:scale-110 transition-transform"
+                style={{ color: PRI }}
+              />
               {blog.likes} likes
             </button>
           </div>
@@ -163,7 +192,9 @@ export default function BlogDetail() {
           <h3 className="text-2xl font-black uppercase tracking-tight mb-3">
             Ready to play?
           </h3>
-          <p className="text-gray-500 text-sm mb-6">Book a premium sports venue in your city ΓÇö instantly.</p>
+          <p className="text-gray-500 text-sm mb-6">
+            Book a premium sports venue in your city ΓÇö instantly.
+          </p>
           <Link
             to="/venues"
             className="inline-flex items-center gap-2 px-8 py-4 rounded-[8px] font-bold text-sm uppercase tracking-widest text-black hover:brightness-110 transition-all"

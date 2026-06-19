@@ -1,23 +1,74 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 const themes = [
-  { dir: 'NeonClassic', name: 'NeonClassic', style: { bg: 'rgba(15, 23, 42, 0.9)', border: '2px solid #a3e635', text: '#a3e635', textMuted: '#94a3b8', font: "'Orbitron', sans-serif" } },
-  { dir: 'PremiumGlass', name: 'PremiumGlass', style: { bg: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', text: '#ffffff', textMuted: 'rgba(255,255,255,0.6)', font: "'Montserrat', sans-serif" } },
-  { dir: 'RetroArcade', name: 'RetroArcade', style: { bg: '#000000', border: '4px solid #ff00ff', text: '#ff00ff', textMuted: '#00ffff', font: "'Press Start 2P', monospace" } },
-  { dir: 'SportsNetwork', name: 'SportsNetwork', style: { bg: '#ffffff', border: '4px solid #dc2626', text: '#1e3a8a', textMuted: '#64748b', font: "'Roboto Condensed', sans-serif" } },
-  { dir: 'CyberPulse', name: 'CyberPulse', style: { bg: '#050505', border: '2px solid #00f3ff', text: '#00f3ff', textMuted: '#94a3b8', font: "'Rajdhani', sans-serif" } }
+  {
+    dir: "NeonClassic",
+    name: "NeonClassic",
+    style: {
+      bg: "rgba(15, 23, 42, 0.9)",
+      border: "2px solid #a3e635",
+      text: "#a3e635",
+      textMuted: "#94a3b8",
+      font: "'Orbitron', sans-serif",
+    },
+  },
+  {
+    dir: "PremiumGlass",
+    name: "PremiumGlass",
+    style: {
+      bg: "rgba(255,255,255,0.1)",
+      border: "1px solid rgba(255,255,255,0.2)",
+      backdropFilter: "blur(10px)",
+      text: "#ffffff",
+      textMuted: "rgba(255,255,255,0.6)",
+      font: "'Montserrat', sans-serif",
+    },
+  },
+  {
+    dir: "RetroArcade",
+    name: "RetroArcade",
+    style: {
+      bg: "#000000",
+      border: "4px solid #ff00ff",
+      text: "#ff00ff",
+      textMuted: "#00ffff",
+      font: "'Press Start 2P', monospace",
+    },
+  },
+  {
+    dir: "SportsNetwork",
+    name: "SportsNetwork",
+    style: {
+      bg: "#ffffff",
+      border: "4px solid #dc2626",
+      text: "#1e3a8a",
+      textMuted: "#64748b",
+      font: "'Roboto Condensed', sans-serif",
+    },
+  },
+  {
+    dir: "CyberPulse",
+    name: "CyberPulse",
+    style: {
+      bg: "#050505",
+      border: "2px solid #00f3ff",
+      text: "#00f3ff",
+      textMuted: "#94a3b8",
+      font: "'Rajdhani', sans-serif",
+    },
+  },
 ];
 
 const SFX_URLS = {
-  six: 'https://cdn.pixabay.com/audio/2022/03/15/audio_e0ea43ccaf.mp3', // Big Cheer
-  four: 'https://cdn.pixabay.com/audio/2022/05/16/audio_f5f6bd55cd.mp3', // Applause
-  wicket: 'https://cdn.pixabay.com/audio/2022/10/30/audio_55a2ee0920.mp3', // Gasp/Shock
+  six: "https://cdn.pixabay.com/audio/2022/03/15/audio_e0ea43ccaf.mp3", // Big Cheer
+  four: "https://cdn.pixabay.com/audio/2022/05/16/audio_f5f6bd55cd.mp3", // Applause
+  wicket: "https://cdn.pixabay.com/audio/2022/10/30/audio_55a2ee0920.mp3", // Gasp/Shock
 };
 
-themes.forEach(t => {
+themes.forEach((t) => {
   const dirPath = path.join(__dirname, t.dir);
-  
+
   // Create Cards.jsx
   const cardsContent = `import React from 'react';
 
@@ -74,7 +125,7 @@ const ${t.name}Cards = ({ activeCard }) => {
     <div style={{
       background: '${t.style.bg}',
       border: '${t.style.border}',
-      backdropFilter: '${t.style.backdropFilter || 'none'}',
+      backdropFilter: '${t.style.backdropFilter || "none"}',
       borderRadius: '16px',
       overflow: 'hidden',
       fontFamily: ${t.style.font},
@@ -88,7 +139,7 @@ const ${t.name}Cards = ({ activeCard }) => {
 
 export default ${t.name}Cards;
 `;
-  fs.writeFileSync(path.join(dirPath, 'Cards.jsx'), cardsContent);
+  fs.writeFileSync(path.join(dirPath, "Cards.jsx"), cardsContent);
 
   // Create Animation.jsx
   const animationContent = `import React, { useEffect, useRef } from 'react';
@@ -132,7 +183,7 @@ const ${t.name}Animation = ({ badge }) => {
           position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%, -50%)',
           background: '${t.style.bg}',
           border: '${t.style.border}',
-          backdropFilter: '${t.style.backdropFilter || 'none'}',
+          backdropFilter: '${t.style.backdropFilter || "none"}',
           padding: '40px 80px', borderRadius: '20px', textAlign: 'center', zIndex: 9999,
           fontFamily: ${t.style.font},
           boxShadow: '0 0 50px rgba(0,0,0,0.5)',
@@ -141,7 +192,7 @@ const ${t.name}Animation = ({ badge }) => {
       >
         <motion.h1
           initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }}
-          style={{ fontSize: '120px', margin: 0, lineHeight: 1, color: '${t.style.text}', textTransform: 'uppercase', fontWeight: 900, WebkitTextStroke: '${t.name === 'RetroArcade' ? '0px' : '2px #000'}' }}
+          style={{ fontSize: '120px', margin: 0, lineHeight: 1, color: '${t.style.text}', textTransform: 'uppercase', fontWeight: 900, WebkitTextStroke: '${t.name === "RetroArcade" ? "0px" : "2px #000"}' }}
         >
           {text}
         </motion.h1>
@@ -160,17 +211,20 @@ const ${t.name}Animation = ({ badge }) => {
 
 export default ${t.name}Animation;
 `;
-  fs.writeFileSync(path.join(dirPath, 'Animation.jsx'), animationContent);
+  fs.writeFileSync(path.join(dirPath, "Animation.jsx"), animationContent);
 
   // Create index.js
   const indexContent = `export { default as Ticker } from './Ticker';
 export { default as Cards } from './Cards';
 export { default as Animation } from './Animation';
 `;
-  fs.writeFileSync(path.join(dirPath, 'index.js'), indexContent);
+  fs.writeFileSync(path.join(dirPath, "index.js"), indexContent);
 
   // Update Ticker imports in Ticker.jsx
-  let tickerContent = fs.readFileSync(path.join(dirPath, 'Ticker.jsx'), 'utf-8');
+  let tickerContent = fs.readFileSync(
+    path.join(dirPath, "Ticker.jsx"),
+    "utf-8"
+  );
   // Just ensure it exports default correctly, which it already does.
 });
 
@@ -181,6 +235,6 @@ export * as RetroArcadePack from './RetroArcade';
 export * as SportsNetworkPack from './SportsNetwork';
 export * as CyberPulsePack from './CyberPulse';
 `;
-fs.writeFileSync(path.join(__dirname, 'index.js'), mainIndexContent);
+fs.writeFileSync(path.join(__dirname, "index.js"), mainIndexContent);
 
 console.log("Theme Packs created successfully.");

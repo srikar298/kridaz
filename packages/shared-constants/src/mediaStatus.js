@@ -13,10 +13,10 @@
  * @type {Readonly<Record<string, string>>}
  */
 export const MEDIA_STATUS = Object.freeze({
-  PENDING: 'pending',
-  PROCESSING: 'processing',
-  READY: 'ready',
-  FAILED: 'failed',
+  PENDING: "pending",
+  PROCESSING: "processing",
+  READY: "ready",
+  FAILED: "failed",
 });
 
 /**
@@ -24,11 +24,11 @@ export const MEDIA_STATUS = Object.freeze({
  * @type {Readonly<Record<string, string>>}
  */
 export const REEL_STATUS = Object.freeze({
-  PENDING: 'pending',
-  PROCESSING: 'processing',
-  READY: 'ready',
-  FAILED: 'failed',
-  DELETED: 'deleted',
+  PENDING: "pending",
+  PROCESSING: "processing",
+  READY: "ready",
+  FAILED: "failed",
+  DELETED: "deleted",
 });
 
 /**
@@ -36,8 +36,8 @@ export const REEL_STATUS = Object.freeze({
  * @type {Readonly<Record<string, string>>}
  */
 export const MEDIA_TYPE = Object.freeze({
-  REEL: 'reel',
-  STORY: 'story',
-  COMMUNITY_POST: 'community_post',
-  PROFILE_PICTURE: 'profile_picture',
+  REEL: "reel",
+  STORY: "story",
+  COMMUNITY_POST: "community_post",
+  PROFILE_PICTURE: "profile_picture",
 });

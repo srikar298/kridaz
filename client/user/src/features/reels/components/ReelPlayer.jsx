@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
-import { useTrackHeartbeatMutation } from '@redux/api/reelsApi';
-import Hls from 'hls.js';
+import React, { useEffect, useRef, useState } from "react";
+import { Play, Volume2, VolumeX } from "lucide-react";
+import { useTrackHeartbeatMutation } from "@redux/api/reelsApi";
+import Hls from "hls.js";
 
 const ReelPlayer = ({ reelId, hlsUrl, isVisible, poster }) => {
   const videoRef = useRef(null);
@@ -11,13 +11,13 @@ const ReelPlayer = ({ reelId, hlsUrl, isVisible, poster }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [trackHeartbeat] = useTrackHeartbeatMutation();
   const watchTimeRef = useRef(0);
-  
+
   // CORS Proxy for local development
   const finalHlsUrl = React.useMemo(() => {
     if (!hlsUrl) return hlsUrl;
     const cdnUrl = import.meta.env.VITE_REELS_CDN_URL;
     if (import.meta.env.DEV && cdnUrl && hlsUrl.startsWith(cdnUrl)) {
-      return hlsUrl.replace(cdnUrl, '/r2-reels');
+      return hlsUrl.replace(cdnUrl, "/r2-reels");
     }
     return hlsUrl;
   }, [hlsUrl]);
@@ -31,10 +31,10 @@ const ReelPlayer = ({ reelId, hlsUrl, isVisible, poster }) => {
           watchTimeRef.current += 1;
           // Send heartbeat every 5 seconds
           if (watchTimeRef.current % 5 === 0) {
-            trackHeartbeat({ 
-              reelId, 
-              watchTime: 5, 
-              completed: videoRef.current.ended 
+            trackHeartbeat({
+              reelId,
+              watchTime: 5,
+              completed: videoRef.current.ended,
             });
           }
         }
@@ -44,10 +44,10 @@ const ReelPlayer = ({ reelId, hlsUrl, isVisible, poster }) => {
       if (interval) clearInterval(interval);
       // Send final heartbeat on unmount/deactivate
       if (watchTimeRef.current % 5 !== 0 && watchTimeRef.current > 0) {
-        trackHeartbeat({ 
-          reelId, 
-          watchTime: watchTimeRef.current % 5, 
-          completed: videoRef.current?.ended 
+        trackHeartbeat({
+          reelId,
+          watchTime: watchTimeRef.current % 5,
+          completed: videoRef.current?.ended,
         });
       }
       watchTimeRef.current = 0;
@@ -61,11 +61,11 @@ const ReelPlayer = ({ reelId, hlsUrl, isVisible, poster }) => {
 
     // Check for HLS support
     const src = finalHlsUrl || hlsUrl;
-    if (src && (src.endsWith('.m3u8') || src.includes('.m3u8'))) {
+    if (src && (src.endsWith(".m3u8") || src.includes(".m3u8"))) {
       if (Hls.isSupported()) {
         const hls = new Hls({
           capLevelToPlayerSize: true,
-          autoStartLoad: false // Don't download video segments until visible
+          autoStartLoad: false, // Don't download video segments until visible
         });
         hlsRef.current = hls;
         hls.loadSource(src);
@@ -77,7 +77,7 @@ const ReelPlayer = ({ reelId, hlsUrl, isVisible, poster }) => {
             video.play().catch(() => setIsPlaying(false));
           }
         });
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
         video.src = src;
       }
     } else if (src) {
@@ -101,7 +101,7 @@ const ReelPlayer = ({ reelId, hlsUrl, isVisible, poster }) => {
       if (hlsRef.current) {
         hlsRef.current.startLoad(); // Start loading segments for HLS
       }
-      
+
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise
@@ -111,7 +111,7 @@ const ReelPlayer = ({ reelId, hlsUrl, isVisible, poster }) => {
     } else {
       video.pause();
       setIsPlaying(false);
-      // We don't call stopLoad() here because it would cancel the initial 
+      // We don't call stopLoad() here because it would cancel the initial
       // manifest request for off-screen reels, causing them to break.
     }
   }, [isVisible]);
@@ -133,7 +133,10 @@ const ReelPlayer = ({ reelId, hlsUrl, isVisible, poster }) => {
   };
 
   return (
-    <div className="relative w-full h-full bg-black flex items-center justify-center" onClick={togglePlay}>
+    <div
+      className="relative w-full h-full bg-black flex items-center justify-center"
+      onClick={togglePlay}
+    >
       <video
         ref={videoRef}
         poster={poster}
@@ -155,7 +158,7 @@ const ReelPlayer = ({ reelId, hlsUrl, isVisible, poster }) => {
       )}
 
       {/* Mute/Unmute Button */}
-      <button 
+      <button
         onClick={toggleMute}
         className="absolute bottom-10 right-4 p-2 bg-black/40 rounded-[8px] text-white backdrop-blur-sm z-10"
       >

@@ -8,6 +8,7 @@ import fs from "fs";
 import path from "path";
 import jwt from "jsonwebtoken";
 import { getAccessSecret } from "../utils/jwtSecrets.js";
+import { activeSocketConnections } from "../utils/metrics.js";
 let io;
 
 const socketConfig = (server) => {
@@ -16,7 +17,11 @@ const socketConfig = (server) => {
     cors: {
       origin: process.env.CLIENT_URLS
         ? process.env.CLIENT_URLS.split(",").map((url) => url.trim())
-        : ["https://kridaz.com", "https://owner.kridaz.com", "https://kridaz.vercel.app"],
+        : [
+            "https://kridaz.com",
+            "https://owner.kridaz.com",
+            "https://kridaz.vercel.app",
+          ],
     },
   });
 
@@ -24,18 +29,43 @@ const socketConfig = (server) => {
 
   io.use((socket, next) => {
     const token = socket.handshake.auth?.token;
+
+    // Allow anonymous connections for public live scoring
     if (!token) {
-      return next(new Error("AUTH"));
+      return next();
     }
+
     try {
-      const decoded = jwt.verify(token, getAccessSecret());
-      if (!decoded) {
-        return next(new Error("AUTH"));
+      let decoded = null;
+
+      // Try standard access token first
+      try {
+        decoded = jwt.verify(token, getAccessSecret());
+      } catch (err) {
+        // Try overlay token
+        if (!decoded && process.env.OVERLAY_TOKEN_SECRET) {
+          try {
+            decoded = jwt.verify(token, process.env.OVERLAY_TOKEN_SECRET);
+          } catch (e) {}
+        }
+        // Try scoring token
+        if (!decoded && process.env.JWT_SCORING_SECRET) {
+          try {
+            decoded = jwt.verify(token, process.env.JWT_SCORING_SECRET);
+          } catch (e) {}
+        }
+
+        // If all verifications fail, throw
+        if (!decoded) {
+          throw new Error("Invalid token signatures");
+        }
       }
+
       socket.user = decoded;
-      socket.userId = decoded.id || decoded.user?.id;
+      socket.userId = decoded.id || decoded.user?.id || null;
       next();
     } catch (err) {
+      // Return AUTH error so client knows token is invalid
       return next(new Error("AUTH"));
     }
   });
@@ -43,19 +73,21 @@ const socketConfig = (server) => {
   const schedulePresenceBroadcast = async () => {
     try {
       // Use distributed lock to prevent N broadcasts from N instances
-      const lockKey = 'kridaz:presence:broadcast:lock';
+      const lockKey = "kridaz:presence:broadcast:lock";
       // Attempt to set lock with a 1000ms expiration, only if it does not exist (NX)
-      const acquired = await redis.set(lockKey, 'locked', 'PX', 1000, 'NX');
+      const acquired = await redis.set(lockKey, "locked", "PX", 1000, "NX");
 
       if (acquired) {
-        const count = await redis.scard('kridaz:online:users');
+        const count = await redis.scard("kridaz:online:users");
         io.emit(SOCKET.ONLINE_USERS_COUNT, { count });
       }
-    } catch (e) { /* silent */ }
+    } catch (e) {
+      /* silent */
+    }
   };
 
   io.on("connection", (socket) => {
-    // TODO (Prometheus P4-2): Increment socket_connections_total gauge here
+    activeSocketConnections.inc();
 
     socket.on("setup", async (userData) => {
       const userId = userData?.id;
@@ -65,17 +97,19 @@ const socketConfig = (server) => {
       socket.join(userId);
 
       // Update lastSeen in Postgres
-      prisma.user.update({
-        where: { id: userId },
-        data: { lastSeen: new Date() }
-      }).catch(() => { });
+      prisma.user
+        .update({
+          where: { id: userId },
+          data: { lastSeen: new Date() },
+        })
+        .catch(() => {});
 
-      await redis.sadd('kridaz:online:users', userId.toString());
-      await redis.expire('kridaz:online:users', 86400);
+      await redis.sadd("kridaz:online:users", userId.toString());
+      await redis.expire("kridaz:online:users", 86400);
       schedulePresenceBroadcast();
 
-      const onlineUserIds = await redis.smembers('kridaz:online:users');
-      io.emit('online users', onlineUserIds);
+      const onlineUserIds = await redis.smembers("kridaz:online:users");
+      io.emit("online users", onlineUserIds);
 
       socket.emit("connected");
     });
@@ -88,10 +122,13 @@ const socketConfig = (server) => {
       logger.info(`[Socket] Socket ${socket.id} joined match room: ${matchId}`);
       try {
         if (!matchId.includes("-")) {
-          const game = await prisma.hostedGame.findUnique({ where: { shortId: matchId }, select: { id: true } });
+          const game = await prisma.hostedGame.findUnique({
+            where: { shortId: matchId },
+            select: { id: true },
+          });
           if (game) socket.join(game.id);
         }
-      } catch (e) { }
+      } catch (e) {}
     });
 
     // Counterpart so viewers stop receiving score updates when they navigate
@@ -103,26 +140,38 @@ const socketConfig = (server) => {
       logger.info(`[Socket] Socket ${socket.id} left match room: ${matchId}`);
       try {
         if (!matchId.includes("-")) {
-          const game = await prisma.hostedGame.findUnique({ where: { shortId: matchId }, select: { id: true } });
+          const game = await prisma.hostedGame.findUnique({
+            where: { shortId: matchId },
+            select: { id: true },
+          });
           if (game) socket.leave(game.id);
         }
-      } catch (e) { /* best-effort cleanup */ }
+      } catch (e) {
+        /* best-effort cleanup */
+      }
     });
 
     socket.on(SOCKET.OVERLAY_JOIN, async ({ matchId, token }) => {
       if (!matchId) return;
       socket.join(matchId);
-      logger.info(`[Socket] Socket ${socket.id} joined overlay match room: ${matchId} (token: ${token})`);
+      logger.info(
+        `[Socket] Socket ${socket.id} joined overlay match room: ${matchId} (token: ${token})`
+      );
       try {
         if (!matchId.includes("-")) {
-          const game = await prisma.hostedGame.findUnique({ where: { shortId: matchId }, select: { id: true } });
+          const game = await prisma.hostedGame.findUnique({
+            where: { shortId: matchId },
+            select: { id: true },
+          });
           if (game) socket.join(game.id);
         }
-      } catch (e) { }
+      } catch (e) {}
     });
 
     socket.on("typing", (room) => socket.in(room).emit("typing", room));
-    socket.on("stop typing", (room) => socket.in(room).emit("stop typing", room));
+    socket.on("stop typing", (room) =>
+      socket.in(room).emit("stop typing", room)
+    );
 
     socket.on("new message", (newMessageReceived) => {
       const chat = newMessageReceived.chat;
@@ -150,15 +199,19 @@ const socketConfig = (server) => {
       socket.in(chatId).emit("message deleted", { chatId, messageIds });
     });
 
-    // COMMENTARY_AUDIO_PLAYED removed to prevent premature audio deletion 
+    // COMMENTARY_AUDIO_PLAYED removed to prevent premature audio deletion
     // files are automatically cleaned up after 30s in commentary.service.js
 
     socket.on("location:update", async (data) => {
-      const { lat, lng, radiusKm, accuracy } = data || {};
+      const { lat: rawLat, lng: rawLng, radiusKm, accuracy } = data || {};
+      // Fuzz the location: round to 3 decimal places for privacy (~100m radius)
+      const lat = parseFloat(parseFloat(rawLat).toFixed(3));
+      const lng = parseFloat(parseFloat(rawLng).toFixed(3));
       if (!socket.userId || isNaN(lat) || isNaN(lng)) return;
 
       const now = Date.now();
-      if (socket.lastLocationUpdate && now - socket.lastLocationUpdate < 2000) return;
+      if (socket.lastLocationUpdate && now - socket.lastLocationUpdate < 2000)
+        return;
       socket.lastLocationUpdate = now;
 
       // Server-side privacy gate: respect User.locationSharingEnabled.
@@ -167,7 +220,7 @@ const socketConfig = (server) => {
         try {
           const u = await prisma.user.findUnique({
             where: { id: socket.userId },
-            select: { locationSharingEnabled: true }
+            select: { locationSharingEnabled: true },
           });
           socket.shareLocation = u?.locationSharingEnabled !== false;
         } catch {
@@ -183,11 +236,15 @@ const socketConfig = (server) => {
         await redis.set(
           `kridaz:location:${socket.userId}`,
           JSON.stringify({ lat, lng, updatedAt: now }),
-          "EX", 300
+          "EX",
+          300
         );
 
         // Throttle DB writes to once every 2 minutes; Redis is the source of truth for live.
-        if (!socket.lastDbLocationWrite || now - socket.lastDbLocationWrite > 120000) {
+        if (
+          !socket.lastDbLocationWrite ||
+          now - socket.lastDbLocationWrite > 120000
+        ) {
           await prisma.$executeRaw`
               UPDATE "User"
               SET latitude = ${lat},
@@ -203,7 +260,12 @@ const socketConfig = (server) => {
           socket.lastDbLocationWrite = now;
         }
 
-        await redis.geoadd("kridaz:geo:online", lng, lat, socket.userId.toString());
+        await redis.geoadd(
+          "kridaz:geo:online",
+          lng,
+          lat,
+          socket.userId.toString()
+        );
 
         // Honor radius from payload (clamped to [1, 100] km). Default 25 km for a sane city-scale fanout.
         const requestedRadius = Number(radiusKm);
@@ -212,13 +274,21 @@ const socketConfig = (server) => {
           100
         );
         const nearbyUserIds = await redis.georadius(
-          "kridaz:geo:online", lng, lat, broadcastRadiusKm, "km"
+          "kridaz:geo:online",
+          lng,
+          lat,
+          broadcastRadiusKm,
+          "km"
         );
 
         if (nearbyUserIds) {
           nearbyUserIds.forEach((uid) => {
             if (uid !== socket.userId.toString()) {
-              io.to(uid).emit("nearby:location:update", { userId: socket.userId, lat, lng });
+              io.to(uid).emit("nearby:location:update", {
+                userId: socket.userId,
+                lat,
+                lng,
+              });
             }
           });
         }
@@ -248,7 +318,7 @@ const socketConfig = (server) => {
 
       if (!currentLock || currentLock === socket.id || isStale) {
         // Grant lock
-        await redis.set(lockKey, socket.id, 'EX', 10800); // 3 hours
+        await redis.set(lockKey, socket.id, "EX", 10800); // 3 hours
         socket.scoringMatchId = matchId;
         socket.emit("scoring:lock_granted", { matchId });
       } else {
@@ -266,34 +336,45 @@ const socketConfig = (server) => {
         await redis.del(lockKey);
         socket.scoringMatchId = null;
         socket.leave(`scoring_wait_${matchId}`);
-        io.to(`scoring_wait_${matchId}`).emit("scoring:lock_released", { matchId });
+        io.to(`scoring_wait_${matchId}`).emit("scoring:lock_released", {
+          matchId,
+        });
       }
     });
 
     socket.on("disconnect", async () => {
-      // TODO (Prometheus P4-2): Decrement socket_connections_total gauge here
+      activeSocketConnections.dec();
 
       if (socket.scoringMatchId) {
         const lockKey = `kridaz:scoring_lock:${socket.scoringMatchId}`;
         const currentLock = await redis.get(lockKey);
         if (currentLock === socket.id) {
           await redis.del(lockKey);
-          io.to(`scoring_wait_${socket.scoringMatchId}`).emit("scoring:lock_released", { matchId: socket.scoringMatchId });
+          io.to(`scoring_wait_${socket.scoringMatchId}`).emit(
+            "scoring:lock_released",
+            { matchId: socket.scoringMatchId }
+          );
         }
       }
 
       if (socket.userId) {
         const lastSeen = new Date();
-        prisma.user.update({
-          where: { id: socket.userId },
-          data: { lastSeen }
-        }).catch(() => { });
+        prisma.user
+          .update({
+            where: { id: socket.userId },
+            data: { lastSeen },
+          })
+          .catch(() => {});
 
-        await redis.srem('kridaz:online:users', socket.userId.toString());
+        await redis.srem("kridaz:online:users", socket.userId.toString());
+        await redis
+          .zrem("kridaz:geo:online", socket.userId.toString())
+          .catch(() => {});
+        await redis.del(`kridaz:location:${socket.userId}`).catch(() => {});
         schedulePresenceBroadcast();
 
-        const onlineUserIds = await redis.smembers('kridaz:online:users');
-        io.emit('online users', onlineUserIds);
+        const onlineUserIds = await redis.smembers("kridaz:online:users");
+        io.emit("online users", onlineUserIds);
 
         await redis.del(`kridaz:location:${socket.userId}`);
         await redis.zrem("kridaz:geo:online", socket.userId.toString());

@@ -8,11 +8,15 @@ export default function useDispute() {
   const raiseDispute = async (formData) => {
     setSubmitting(true);
     try {
-      const response = await axiosInstance.post("/api/user/dispute/raise", formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      const response = await axiosInstance.post(
+        "/api/user/dispute/raise",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-      });
+      );
       if (response.data?.success) {
         toast.success("Dispute raised successfully. Our team will review it.");
         return true;

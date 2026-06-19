@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">Kridaz</string>
-    <string name="title_activity_main">Kridaz</string>
-    <string name="package_name">com.kridaz.app</string>
-    <string name="custom_url_scheme">com.kridaz.app</string>
-    <string name="server_client_id">615790581143-k4g37kb3krcfnh1p64aodd2qa3le5q96.apps.googleusercontent.com</string>
-</resources>

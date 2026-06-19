@@ -5,7 +5,7 @@ import adminBlogRouter from "./routes/admin.routes.js";
 /**
  * Blog Domain Router
  * Mounts actor-specific sub-routers for the Blog module.
- * 
+ *
  * Routes:
  * /api/blog/...
  */

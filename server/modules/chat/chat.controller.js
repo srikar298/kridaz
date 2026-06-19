@@ -5,19 +5,22 @@ import { getIO } from "../../config/socket.js";
 import logger from "../../utils/logger.js";
 import { SOCKET } from "@kridaz/shared-constants/socketEvents";
 
-
 // Helper: resolve the correct user IDs and model for the current request
 function resolveCurrentUser(req) {
-  const isOwner = req.user?.role?.includes("venue") || req.user?.role === "owner" || req.owner?.role?.includes("venue") || req.owner?.role === "owner";
+  const isOwner =
+    req.user?.role?.includes("venue") ||
+    req.user?.role === "owner" ||
+    req.owner?.role?.includes("venue") ||
+    req.owner?.role === "owner";
 
   const currentUserId = isOwner
-    ? (req.user?.ownerId || req.owner?.ownerId || req.user?.id || req.owner?.id)
-    : (req.user?.id || req.user?.userId);
+    ? req.user?.ownerId || req.owner?.ownerId || req.user?.id || req.owner?.id
+    : req.user?.id || req.user?.userId;
 
   const currentUserModel = isOwner ? "Owner" : "User";
-  
+
   // For Prisma, we need to know if the ID refers to userId or ownerId
-  const participantData = isOwner 
+  const participantData = isOwner
     ? { ownerId: currentUserId, userId: null, onModel: "Owner" }
     : { userId: currentUserId, ownerId: null, onModel: "User" };
 
@@ -31,8 +34,8 @@ async function checkIsAdmin(chatId, participantData) {
       chatId,
       userId: participantData.userId,
       ownerId: participantData.ownerId,
-      isAdmin: true
-    }
+      isAdmin: true,
+    },
   });
   return !!participant;
 }
@@ -42,10 +45,10 @@ const inFlightChatCreations = new Map();
 
 const getCreationKey = (userIdA, ownerIdA, userIdB, ownerIdB) => {
   const ids = [
-    `${userIdA || ''}-${ownerIdA || ''}`,
-    `${userIdB || ''}-${ownerIdB || ''}`
+    `${userIdA || ""}-${ownerIdA || ""}`,
+    `${userIdB || ""}-${ownerIdB || ""}`,
   ].sort();
-  return ids.join(':::');
+  return ids.join(":::");
 };
 
 /**
@@ -57,9 +60,10 @@ export const accessChat = async (req, res) => {
 
   if (!userId) return res.sendStatus(400);
 
-  const targetParticipant = onModel === "Owner"
-    ? { ownerId: userId, userId: null, onModel: "Owner" }
-    : { userId: userId, ownerId: null, onModel: "User" };
+  const targetParticipant =
+    onModel === "Owner"
+      ? { ownerId: userId, userId: null, onModel: "Owner" }
+      : { userId: userId, ownerId: null, onModel: "User" };
 
   const key = getCreationKey(
     currentParticipant.userId,
@@ -85,31 +89,67 @@ export const accessChat = async (req, res) => {
       where: {
         isGroupChat: false,
         AND: [
-          { participants: { some: { userId: currentParticipant.userId, ownerId: currentParticipant.ownerId } } },
-          { participants: { some: { userId: targetParticipant.userId, ownerId: targetParticipant.ownerId } } }
-        ]
+          {
+            participants: {
+              some: {
+                userId: currentParticipant.userId,
+                ownerId: currentParticipant.ownerId,
+              },
+            },
+          },
+          {
+            participants: {
+              some: {
+                userId: targetParticipant.userId,
+                ownerId: targetParticipant.ownerId,
+              },
+            },
+          },
+        ],
       },
       include: {
         participants: {
           include: {
-            user: { select: { id: true, name: true, profilePicture: true, email: true } },
-            owner: { select: { id: true, businessName: true, user: { select: { profilePicture: true, name: true } } } }
-          }
+            user: {
+              select: {
+                id: true,
+                name: true,
+                profilePicture: true,
+                email: true,
+              },
+            },
+            owner: {
+              select: {
+                id: true,
+                businessName: true,
+                user: { select: { profilePicture: true, name: true } },
+              },
+            },
+          },
         },
         latestMessage: {
           include: {
             senderUser: { select: { name: true, profilePicture: true } },
-            senderOwner: { select: { businessName: true } }
-          }
-        }
-      }
+            senderOwner: { select: { businessName: true } },
+          },
+        },
+      },
     });
 
     // Filter for exact match (only these two participants)
-    const chat = existingChats.find(c => 
-      c.participants.length === 2 &&
-      c.participants.some(p => (p.userId === currentParticipant.userId && p.ownerId === currentParticipant.ownerId)) &&
-      c.participants.some(p => (p.userId === targetParticipant.userId && p.ownerId === targetParticipant.ownerId))
+    const chat = existingChats.find(
+      (c) =>
+        c.participants.length === 2 &&
+        c.participants.some(
+          (p) =>
+            p.userId === currentParticipant.userId &&
+            p.ownerId === currentParticipant.ownerId
+        ) &&
+        c.participants.some(
+          (p) =>
+            p.userId === targetParticipant.userId &&
+            p.ownerId === targetParticipant.ownerId
+        )
     );
 
     if (chat) {
@@ -122,27 +162,40 @@ export const accessChat = async (req, res) => {
         isGroupChat: false,
         participants: {
           create: [
-            { 
-              userId: currentParticipant.userId, 
-              ownerId: currentParticipant.ownerId, 
-              onModel: currentParticipant.onModel 
+            {
+              userId: currentParticipant.userId,
+              ownerId: currentParticipant.ownerId,
+              onModel: currentParticipant.onModel,
             },
-            { 
-              userId: targetParticipant.userId, 
-              ownerId: targetParticipant.ownerId, 
-              onModel: targetParticipant.onModel 
-            }
-          ]
-        }
+            {
+              userId: targetParticipant.userId,
+              ownerId: targetParticipant.ownerId,
+              onModel: targetParticipant.onModel,
+            },
+          ],
+        },
       },
       include: {
         participants: {
           include: {
-            user: { select: { id: true, name: true, profilePicture: true, email: true } },
-            owner: { select: { id: true, businessName: true, user: { select: { profilePicture: true, name: true } } } }
-          }
-        }
-      }
+            user: {
+              select: {
+                id: true,
+                name: true,
+                profilePicture: true,
+                email: true,
+              },
+            },
+            owner: {
+              select: {
+                id: true,
+                businessName: true,
+                user: { select: { profilePicture: true, name: true } },
+              },
+            },
+          },
+        },
+      },
     });
 
     return newChat;
@@ -176,43 +229,58 @@ export const fetchChats = async (req, res) => {
         participants: {
           some: {
             userId: participantData.userId,
-            ownerId: participantData.ownerId
-          }
-        }
+            ownerId: participantData.ownerId,
+          },
+        },
       },
       include: {
         participants: {
           include: {
-            user: { select: { id: true, name: true, profilePicture: true, email: true } },
-            owner: { 
-              include: { user: { select: { name: true, profilePicture: true } } }
-            }
-          }
+            user: {
+              select: {
+                id: true,
+                name: true,
+                profilePicture: true,
+                email: true,
+              },
+            },
+            owner: {
+              include: {
+                user: { select: { name: true, profilePicture: true } },
+              },
+            },
+          },
         },
         latestMessage: {
           include: {
             senderUser: { select: { name: true, profilePicture: true } },
-            senderOwner: { 
-              include: { user: { select: { name: true, profilePicture: true } } }
-            }
-          }
+            senderOwner: {
+              include: {
+                user: { select: { name: true, profilePicture: true } },
+              },
+            },
+          },
         },
-        parentCommunity: true
+        parentCommunity: true,
       },
-      orderBy: { updatedAt: "desc" }
+      orderBy: { updatedAt: "desc" },
     });
 
     // Separate active chats and invitations based on isPending
-    const invitations = chats.filter(chat => {
-      const self = chat.participants.find(p => 
-        p.userId === participantData.userId && p.ownerId === participantData.ownerId
+    const invitations = chats.filter((chat) => {
+      const self = chat.participants.find(
+        (p) =>
+          p.userId === participantData.userId &&
+          p.ownerId === participantData.ownerId
       );
       return self && self.isPending;
     });
 
-    const activeChats = chats.filter(chat => {
-      const self = chat.participants.find(p => 
-        p.userId === participantData.userId && p.ownerId === participantData.ownerId
+    const activeChats = chats.filter((chat) => {
+      const self = chat.participants.find(
+        (p) =>
+          p.userId === participantData.userId &&
+          p.ownerId === participantData.ownerId
       );
       return self && !self.isPending;
     });
@@ -220,29 +288,44 @@ export const fetchChats = async (req, res) => {
     // For communities, we might also want to show sub-groups even if not joined yet
     // This part of legacy logic was complex, keeping it similar but optimized
     const communityIds = activeChats
-      .filter(c => c.isCommunity)
-      .map(c => c.id);
-    
+      .filter((c) => c.isCommunity)
+      .map((c) => c.id);
+
     if (communityIds.length > 0) {
       const subGroups = await prisma.chat.findMany({
         where: {
           parentCommunityId: { in: communityIds },
-          id: { notIn: activeChats.map(c => c.id) }
+          id: { notIn: activeChats.map((c) => c.id) },
         },
         include: {
           participants: {
             include: {
-              user: { select: { id: true, name: true, profilePicture: true, email: true } },
-              owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-            }
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  profilePicture: true,
+                  email: true,
+                },
+              },
+              owner: {
+                include: {
+                  user: { select: { name: true, profilePicture: true } },
+                },
+              },
+            },
           },
           latestMessage: {
             include: {
               senderUser: { select: { name: true, profilePicture: true } },
-              senderOwner: { include: { user: { select: { name: true, profilePicture: true } } } }
-            }
-          }
-        }
+              senderOwner: {
+                include: {
+                  user: { select: { name: true, profilePicture: true } },
+                },
+              },
+            },
+          },
+        },
       });
       activeChats.push(...subGroups);
     }
@@ -261,7 +344,8 @@ export const fetchChats = async (req, res) => {
  * Create a new Group Chat or Community
  */
 export const createGroupChat = async (req, res) => {
-  const { name, users, isCommunity, description, groupImage, parentCommunity } = req.body;
+  const { name, users, isCommunity, description, groupImage, parentCommunity } =
+    req.body;
   const { participantData: self } = resolveCurrentUser(req);
 
   if (!name || !users) {
@@ -290,37 +374,52 @@ export const createGroupChat = async (req, res) => {
         participants: {
           create: [
             // Add creator as active admin
-            { 
-              userId: self.userId, 
-              ownerId: self.ownerId, 
-              onModel: self.onModel, 
-              isAdmin: true, 
-              isPending: false 
+            {
+              userId: self.userId,
+              ownerId: self.ownerId,
+              onModel: self.onModel,
+              isAdmin: true,
+              isPending: false,
             },
             // Add other users as pending
             ...usersList
-              .filter(u => !!u)
-              .map(u => {
-                const uid = typeof u === "object" ? (u.user?.id || u.user || u.id || u._id || u) : u;
-                const model = (typeof u === "object" && u.onModel) ? u.onModel : "User";
+              .filter((u) => !!u)
+              .map((u) => {
+                const uid =
+                  typeof u === "object"
+                    ? u.user?.id || u.user || u.id || u._id || u
+                    : u;
+                const model =
+                  typeof u === "object" && u.onModel ? u.onModel : "User";
                 return {
                   userId: model === "User" ? uid : null,
                   ownerId: model === "Owner" ? uid : null,
                   onModel: model,
-                  isPending: true
+                  isPending: true,
                 };
-              })
-          ]
-        }
+              }),
+          ],
+        },
       },
       include: {
         participants: {
           include: {
-            user: { select: { id: true, name: true, profilePicture: true, email: true } },
-            owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-          }
-        }
-      }
+            user: {
+              select: {
+                id: true,
+                name: true,
+                profilePicture: true,
+                email: true,
+              },
+            },
+            owner: {
+              include: {
+                user: { select: { name: true, profilePicture: true } },
+              },
+            },
+          },
+        },
+      },
     });
 
     if (isCommunity) {
@@ -337,23 +436,23 @@ export const createGroupChat = async (req, res) => {
           createdByModel: self.onModel,
           participants: {
             create: [
-              { 
-                userId: self.userId, 
-                ownerId: self.ownerId, 
-                onModel: self.onModel, 
-                isAdmin: true, 
-                isPending: false 
-              }
-            ]
-          }
-        }
+              {
+                userId: self.userId,
+                ownerId: self.ownerId,
+                onModel: self.onModel,
+                isAdmin: true,
+                isPending: false,
+              },
+            ],
+          },
+        },
       });
     }
 
     // Real-time update for all participants
     const io = getIO();
     if (io) {
-      newChat.participants.forEach(p => {
+      newChat.participants.forEach((p) => {
         const uid = p.userId || p.ownerId;
         if (uid) {
           io.to(uid.toString()).emit(SOCKET.CHAT_UPDATED, newChat);
@@ -378,9 +477,9 @@ export const joinChat = async (req, res) => {
   try {
     const chat = await prisma.chat.findUnique({
       where: { id: chatId },
-      include: { participants: true }
+      include: { participants: true },
     });
-    
+
     if (!chat) return res.status(404).json({ message: "Chat not found" });
 
     // Join logic: either update existing pending participant or create new one
@@ -388,8 +487,8 @@ export const joinChat = async (req, res) => {
       where: {
         chatId,
         userId: self.userId,
-        ownerId: self.ownerId
-      }
+        ownerId: self.ownerId,
+      },
     });
 
     if (participant) {
@@ -397,9 +496,13 @@ export const joinChat = async (req, res) => {
         where: { id: participant.id },
         data: { isPending: false },
         include: {
-          user: { select: { id: true, name: true, profilePicture: true, email: true } },
-          owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-        }
+          user: {
+            select: { id: true, name: true, profilePicture: true, email: true },
+          },
+          owner: {
+            include: { user: { select: { name: true, profilePicture: true } } },
+          },
+        },
       });
     } else {
       participant = await prisma.chatParticipant.create({
@@ -408,16 +511,22 @@ export const joinChat = async (req, res) => {
           userId: self.userId,
           ownerId: self.ownerId,
           onModel: self.onModel,
-          isPending: false
+          isPending: false,
         },
         include: {
-          user: { select: { id: true, name: true, profilePicture: true, email: true } },
-          owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-        }
+          user: {
+            select: { id: true, name: true, profilePicture: true, email: true },
+          },
+          owner: {
+            include: { user: { select: { name: true, profilePicture: true } } },
+          },
+        },
       });
     }
 
-    res.status(200).json({ ...chat, participants: [...chat.participants, participant] });
+    res
+      .status(200)
+      .json({ ...chat, participants: [...chat.participants, participant] });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -435,10 +544,11 @@ export const respondToInvite = async (req, res) => {
       where: {
         chatId,
         userId: self.userId,
-        ownerId: self.ownerId
-      }
+        ownerId: self.ownerId,
+      },
     });
-    if (!participant) return res.status(404).json({ message: "Invite not found" });
+    if (!participant)
+      return res.status(404).json({ message: "Invite not found" });
 
     if (status === "accepted") {
       const updatedParticipant = await prisma.chatParticipant.update({
@@ -449,22 +559,36 @@ export const respondToInvite = async (req, res) => {
             include: {
               participants: {
                 include: {
-                  user: { select: { id: true, name: true, profilePicture: true, email: true } },
-                  owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-                }
-              }
-            }
-          }
-        }
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      profilePicture: true,
+                      email: true,
+                    },
+                  },
+                  owner: {
+                    include: {
+                      user: { select: { name: true, profilePicture: true } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       });
 
       // Real-time updates for all participants
       const io = getIO();
       if (io) {
-        updatedParticipant.chat.participants.forEach(p => {
+        updatedParticipant.chat.participants.forEach((p) => {
           const uid = p.userId || p.ownerId;
           if (uid) {
-            io.to(uid.toString()).emit(SOCKET.CHAT_UPDATED, updatedParticipant.chat);
+            io.to(uid.toString()).emit(
+              SOCKET.CHAT_UPDATED,
+              updatedParticipant.chat
+            );
           }
         });
       }
@@ -479,22 +603,36 @@ export const respondToInvite = async (req, res) => {
             include: {
               participants: {
                 include: {
-                  user: { select: { id: true, name: true, profilePicture: true, email: true } },
-                  owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-                }
-              }
-            }
-          }
-        }
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      profilePicture: true,
+                      email: true,
+                    },
+                  },
+                  owner: {
+                    include: {
+                      user: { select: { name: true, profilePicture: true } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       });
 
       // Real-time updates for all remaining participants
       const io = getIO();
       if (io) {
-        deletedParticipant.chat.participants.forEach(p => {
+        deletedParticipant.chat.participants.forEach((p) => {
           const uid = p.userId || p.ownerId;
           if (uid) {
-            io.to(uid.toString()).emit(SOCKET.CHAT_UPDATED, deletedParticipant.chat);
+            io.to(uid.toString()).emit(
+              SOCKET.CHAT_UPDATED,
+              deletedParticipant.chat
+            );
           }
         });
       }
@@ -505,8 +643,6 @@ export const respondToInvite = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
-
 
 /**
  * Update group info (name, description, etc)
@@ -521,7 +657,9 @@ export const updateGroup = async (req, res) => {
 
     // Verify admin
     if (!(await checkIsAdmin(chatId, self))) {
-      return res.status(403).json({ message: "Only admins can update group info" });
+      return res
+        .status(403)
+        .json({ message: "Only admins can update group info" });
     }
 
     const updateData = {};
@@ -546,18 +684,29 @@ export const updateGroup = async (req, res) => {
       include: {
         participants: {
           include: {
-            user: { select: { id: true, name: true, profilePicture: true, email: true } },
-            owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-          }
-        }
-      }
+            user: {
+              select: {
+                id: true,
+                name: true,
+                profilePicture: true,
+                email: true,
+              },
+            },
+            owner: {
+              include: {
+                user: { select: { name: true, profilePicture: true } },
+              },
+            },
+          },
+        },
+      },
     });
 
     // Real-time update for all participants
     const io = getIO();
     if (io) {
-      updatedChat.participants.forEach(p => {
-        const uid = (p.userId || p.ownerId);
+      updatedChat.participants.forEach((p) => {
+        const uid = p.userId || p.ownerId;
         io.to(uid).emit(SOCKET.CHAT_UPDATED, updatedChat);
       });
     }
@@ -582,8 +731,8 @@ export const addToGroup = async (req, res) => {
       where: {
         chatId,
         userId: targetUserId,
-        ownerId: targetOwnerId
-      }
+        ownerId: targetOwnerId,
+      },
     });
 
     if (addedParticipant) {
@@ -595,13 +744,24 @@ export const addToGroup = async (req, res) => {
             include: {
               participants: {
                 include: {
-                  user: { select: { id: true, name: true, profilePicture: true, email: true } },
-                  owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-                }
-              }
-            }
-          }
-        }
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      profilePicture: true,
+                      email: true,
+                    },
+                  },
+                  owner: {
+                    include: {
+                      user: { select: { name: true, profilePicture: true } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       });
     } else {
       addedParticipant = await prisma.chatParticipant.create({
@@ -610,20 +770,31 @@ export const addToGroup = async (req, res) => {
           userId: targetUserId,
           ownerId: targetOwnerId,
           onModel,
-          isPending: true
+          isPending: true,
         },
         include: {
           chat: {
             include: {
               participants: {
                 include: {
-                  user: { select: { id: true, name: true, profilePicture: true, email: true } },
-                  owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-                }
-              }
-            }
-          }
-        }
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      profilePicture: true,
+                      email: true,
+                    },
+                  },
+                  owner: {
+                    include: {
+                      user: { select: { name: true, profilePicture: true } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       });
     }
 
@@ -642,7 +813,7 @@ export const removeFromGroup = async (req, res) => {
   try {
     const chat = await prisma.chat.findUnique({
       where: { id: chatId },
-      include: { participants: true }
+      include: { participants: true },
     });
 
     if (!chat) return res.status(404).json({ message: "Chat not found" });
@@ -651,13 +822,13 @@ export const removeFromGroup = async (req, res) => {
       where: {
         chatId,
         userId: onModel === "User" ? userId : null,
-        ownerId: onModel === "Owner" ? userId : null
-      }
+        ownerId: onModel === "Owner" ? userId : null,
+      },
     });
 
     if (targetParticipant) {
       await prisma.chatParticipant.delete({
-        where: { id: targetParticipant.id }
+        where: { id: targetParticipant.id },
       });
     }
 
@@ -667,17 +838,22 @@ export const removeFromGroup = async (req, res) => {
         where: {
           chat: { parentCommunityId: chatId },
           userId: onModel === "User" ? userId : null,
-          ownerId: onModel === "Owner" ? userId : null
-        }
+          ownerId: onModel === "Owner" ? userId : null,
+        },
       });
     }
 
     // Real-time update for all participants
     const io = getIO();
     if (io) {
-      chat.participants.forEach(p => {
-        const uid = (p.userId || p.ownerId);
-        io.to(uid).emit(SOCKET.CHAT_UPDATED, { ...chat, participants: chat.participants.filter(pt => (pt.userId || pt.ownerId) !== userId) });
+      chat.participants.forEach((p) => {
+        const uid = p.userId || p.ownerId;
+        io.to(uid).emit(SOCKET.CHAT_UPDATED, {
+          ...chat,
+          participants: chat.participants.filter(
+            (pt) => (pt.userId || pt.ownerId) !== userId
+          ),
+        });
       });
       io.to(userId).emit(SOCKET.CHAT_DELETED, chatId);
     }
@@ -698,57 +874,65 @@ export const deleteChat = async (req, res) => {
   try {
     const chat = await prisma.chat.findUnique({
       where: { id: chatId },
-      include: { participants: true }
+      include: { participants: true },
     });
     if (!chat) return res.status(404).json({ message: "Chat not found" });
 
     const isAdmin = await checkIsAdmin(chatId, self);
-    const isCreator = 
+    const isCreator =
       (self.userId && chat.createdByUserId === self.userId) ||
       (self.ownerId && chat.createdByOwnerId === self.ownerId);
 
     // Restrict deletion
     if (chat.isGroupChat) {
       if (chat.isCommunity && !isCreator) {
-        return res.status(403).json({ message: "Only the creator can delete this community" });
+        return res
+          .status(403)
+          .json({ message: "Only the creator can delete this community" });
       }
       if (!chat.isCommunity && !isAdmin) {
-        return res.status(403).json({ message: "Only admins can delete this group" });
+        return res
+          .status(403)
+          .json({ message: "Only admins can delete this group" });
       }
     } else {
       // 1-on-1 chat
-      const isParticipant = chat.participants.some(p => (p.userId === self.userId && p.ownerId === self.ownerId));
+      const isParticipant = chat.participants.some(
+        (p) => p.userId === self.userId && p.ownerId === self.ownerId
+      );
       if (!isParticipant) {
-        return res.status(403).json({ message: "You are not a participant of this chat" });
+        return res
+          .status(403)
+          .json({ message: "You are not a participant of this chat" });
       }
     }
 
-    const participantIds = chat.participants.map(p => (p.userId || p.ownerId));
+    const participantIds = chat.participants.map((p) => p.userId || p.ownerId);
     const io = getIO();
 
     // Cascading Delete for Communities
     const childGroups = chat.isCommunity
-      ? await prisma.chat.findMany({ 
+      ? await prisma.chat.findMany({
           where: { parentCommunityId: chatId },
-          include: { participants: true }
+          include: { participants: true },
         })
       : [];
 
-    const childGroupIds = childGroups.map(c => c.id);
+    const childGroupIds = childGroups.map((c) => c.id);
     const allChatIds = [chatId, ...childGroupIds];
 
     // 1. Set latestMessageId to null to prevent foreign key violations when deleting messages
     await prisma.chat.updateMany({
       where: { id: { in: allChatIds } },
-      data: { latestMessageId: null }
+      data: { latestMessageId: null },
     });
 
     // 2. Clear implicit many-to-many join tables to prevent foreign key constraint violations
     try {
       await prisma.$executeRawUnsafe(`
         DELETE FROM "_MessageDeletedBy" 
-        WHERE "A" IN (SELECT id FROM "Message" WHERE "chatId" IN (${allChatIds.map(id => `'${id}'`).join(',')}))
-           OR "B" IN (SELECT id FROM "ChatParticipant" WHERE "chatId" IN (${allChatIds.map(id => `'${id}'`).join(',')}))
+        WHERE "A" IN (SELECT id FROM "Message" WHERE "chatId" IN (${allChatIds.map((id) => `'${id}'`).join(",")}))
+           OR "B" IN (SELECT id FROM "ChatParticipant" WHERE "chatId" IN (${allChatIds.map((id) => `'${id}'`).join(",")}))
       `);
     } catch (e) {
       logger.error("Error clearing _MessageDeletedBy:", e);
@@ -757,8 +941,8 @@ export const deleteChat = async (req, res) => {
     try {
       await prisma.$executeRawUnsafe(`
         DELETE FROM "_MessageReadBy" 
-        WHERE "A" IN (SELECT id FROM "Message" WHERE "chatId" IN (${allChatIds.map(id => `'${id}'`).join(',')}))
-           OR "B" IN (SELECT id FROM "ChatParticipant" WHERE "chatId" IN (${allChatIds.map(id => `'${id}'`).join(',')}))
+        WHERE "A" IN (SELECT id FROM "Message" WHERE "chatId" IN (${allChatIds.map((id) => `'${id}'`).join(",")}))
+           OR "B" IN (SELECT id FROM "ChatParticipant" WHERE "chatId" IN (${allChatIds.map((id) => `'${id}'`).join(",")}))
       `);
     } catch (e) {
       logger.error("Error clearing _MessageReadBy:", e);
@@ -766,25 +950,25 @@ export const deleteChat = async (req, res) => {
 
     // 3. Delete all chat participants to avoid foreign key violations
     await prisma.chatParticipant.deleteMany({
-      where: { chatId: { in: allChatIds } }
+      where: { chatId: { in: allChatIds } },
     });
 
     // 4. Delete all messages associated with the chats
     await prisma.message.deleteMany({
-      where: { chatId: { in: allChatIds } }
+      where: { chatId: { in: allChatIds } },
     });
 
     // 5. Delete the child groups if community
     if (chat.isCommunity && childGroupIds.length > 0) {
       await prisma.chat.deleteMany({
-        where: { id: { in: childGroupIds } }
+        where: { id: { in: childGroupIds } },
       });
     }
 
     // 6. Emit socket events for child groups deletion
     if (io && chat.isCommunity) {
       for (const child of childGroups) {
-        child.participants.forEach(p => {
+        child.participants.forEach((p) => {
           io.to(p.userId || p.ownerId).emit(SOCKET.CHAT_DELETED, child.id);
         });
       }
@@ -794,7 +978,7 @@ export const deleteChat = async (req, res) => {
     await prisma.chat.delete({ where: { id: chatId } });
 
     if (io) {
-      participantIds.forEach(uid => {
+      participantIds.forEach((uid) => {
         io.to(uid).emit(SOCKET.CHAT_DELETED, chatId);
       });
     }
@@ -814,19 +998,23 @@ export const addGroupsToCommunity = async (req, res) => {
   const { participantData: self } = resolveCurrentUser(req);
 
   try {
-    const community = await prisma.chat.findUnique({ where: { id: communityId } });
+    const community = await prisma.chat.findUnique({
+      where: { id: communityId },
+    });
     if (!community || !community.isCommunity) {
       return res.status(404).json({ message: "Community not found" });
     }
 
     if (!(await checkIsAdmin(communityId, self))) {
-      return res.status(403).json({ message: "Only admins can add groups to this community" });
+      return res
+        .status(403)
+        .json({ message: "Only admins can add groups to this community" });
     }
 
     // Update all selected groups to have this parentCommunity
     await prisma.chat.updateMany({
       where: { id: { in: groupIds } },
-      data: { parentCommunityId: communityId }
+      data: { parentCommunityId: communityId },
     });
 
     res.status(200).json({ message: "Groups added successfully" });
@@ -844,15 +1032,17 @@ export const makeGroupAdmin = async (req, res) => {
 
   try {
     if (!(await checkIsAdmin(chatId, self))) {
-      return res.status(403).json({ message: "Only admins can promote others to admin" });
+      return res
+        .status(403)
+        .json({ message: "Only admins can promote others to admin" });
     }
 
     let targetParticipant = await prisma.chatParticipant.findFirst({
       where: {
         chatId,
         userId: onModel === "User" ? userId : null,
-        ownerId: onModel === "Owner" ? userId : null
-      }
+        ownerId: onModel === "Owner" ? userId : null,
+      },
     });
 
     let updatedParticipant;
@@ -864,20 +1054,31 @@ export const makeGroupAdmin = async (req, res) => {
           ownerId: onModel === "Owner" ? userId : null,
           onModel,
           isAdmin: true,
-          isPending: false
+          isPending: false,
         },
         include: {
           chat: {
             include: {
               participants: {
                 include: {
-                  user: { select: { id: true, name: true, profilePicture: true, email: true } },
-                  owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-                }
-              }
-            }
-          }
-        }
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      profilePicture: true,
+                      email: true,
+                    },
+                  },
+                  owner: {
+                    include: {
+                      user: { select: { name: true, profilePicture: true } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       });
     } else {
       updatedParticipant = await prisma.chatParticipant.update({
@@ -888,13 +1089,24 @@ export const makeGroupAdmin = async (req, res) => {
             include: {
               participants: {
                 include: {
-                  user: { select: { id: true, name: true, profilePicture: true, email: true } },
-                  owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-                }
-              }
-            }
-          }
-        }
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      profilePicture: true,
+                      email: true,
+                    },
+                  },
+                  owner: {
+                    include: {
+                      user: { select: { name: true, profilePicture: true } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       });
     }
 
@@ -913,17 +1125,20 @@ export const dismissGroupAdmin = async (req, res) => {
 
   try {
     if (!(await checkIsAdmin(chatId, self))) {
-      return res.status(403).json({ message: "Only admins can dismiss others from admin" });
+      return res
+        .status(403)
+        .json({ message: "Only admins can dismiss others from admin" });
     }
 
     const targetParticipant = await prisma.chatParticipant.findFirst({
       where: {
         chatId,
         userId: onModel === "User" ? userId : null,
-        ownerId: onModel === "Owner" ? userId : null
-      }
+        ownerId: onModel === "Owner" ? userId : null,
+      },
     });
-    if (!targetParticipant) return res.status(404).json({ message: "Participant not found" });
+    if (!targetParticipant)
+      return res.status(404).json({ message: "Participant not found" });
 
     const updatedParticipant = await prisma.chatParticipant.update({
       where: { id: targetParticipant.id },
@@ -933,13 +1148,24 @@ export const dismissGroupAdmin = async (req, res) => {
           include: {
             participants: {
               include: {
-                user: { select: { id: true, name: true, profilePicture: true, email: true } },
-                owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-              }
-            }
-          }
-        }
-      }
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    profilePicture: true,
+                    email: true,
+                  },
+                },
+                owner: {
+                  include: {
+                    user: { select: { name: true, profilePicture: true } },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     res.status(200).json(updatedParticipant.chat);
@@ -950,7 +1176,7 @@ export const dismissGroupAdmin = async (req, res) => {
 
 /**
  * Toggle Pin Chat (This logic might need a separate Join Table or JSON field if per-user)
- * For now, using the Chat model's pinnedBy array if we kept it, 
+ * For now, using the Chat model's pinnedBy array if we kept it,
  * but Prisma handles scalar arrays differently.
  * In schema.prisma, I didn't see pinnedBy. I should probably use a field in ChatParticipant.
  */
@@ -963,11 +1189,12 @@ export const togglePinChat = async (req, res) => {
       where: {
         chatId,
         userId: self.userId,
-        ownerId: self.ownerId
-      }
+        ownerId: self.ownerId,
+      },
     });
 
-    if (!participant) return res.status(404).json({ message: "Participant not found" });
+    if (!participant)
+      return res.status(404).json({ message: "Participant not found" });
 
     const updatedParticipant = await prisma.chatParticipant.update({
       where: { id: participant.id },
@@ -977,13 +1204,24 @@ export const togglePinChat = async (req, res) => {
           include: {
             participants: {
               include: {
-                user: { select: { id: true, name: true, profilePicture: true, email: true } },
-                owner: { include: { user: { select: { name: true, profilePicture: true } } } }
-              }
-            }
-          }
-        }
-      }
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    profilePicture: true,
+                    email: true,
+                  },
+                },
+                owner: {
+                  include: {
+                    user: { select: { name: true, profilePicture: true } },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     res.status(200).json(updatedParticipant.chat);

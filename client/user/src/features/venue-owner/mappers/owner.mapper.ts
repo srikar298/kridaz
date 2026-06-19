@@ -38,14 +38,37 @@ export class OwnerMapper {
       userId: raw.userId || raw.user?.id || "",
       businessName: raw.businessName || raw.companyName || "Unnamed Business",
       verified: Boolean(raw.verified),
-      walletBalance: typeof raw.walletBalance === "number" ? raw.walletBalance : parseFloat(raw.walletBalance || raw.balance || 0),
-      reservedBalance: typeof raw.reservedBalance === "number" ? raw.reservedBalance : parseFloat(raw.reservedBalance || 0),
-      pendingBalance: typeof raw.pendingBalance === "number" ? raw.pendingBalance : parseFloat(raw.pendingBalance || 0),
-      inProgressBalance: typeof raw.inProgressBalance === "number" ? raw.inProgressBalance : parseFloat(raw.inProgressBalance || 0),
-      disputeBalance: typeof raw.disputeBalance === "number" ? raw.disputeBalance : parseFloat(raw.disputeBalance || 0),
-      withdrawnBalance: typeof raw.withdrawnBalance === "number" ? raw.withdrawnBalance : parseFloat(raw.withdrawnBalance || 0),
+      walletBalance:
+        typeof raw.walletBalance === "number"
+          ? raw.walletBalance
+          : parseFloat(raw.walletBalance || raw.balance || 0),
+      reservedBalance:
+        typeof raw.reservedBalance === "number"
+          ? raw.reservedBalance
+          : parseFloat(raw.reservedBalance || 0),
+      pendingBalance:
+        typeof raw.pendingBalance === "number"
+          ? raw.pendingBalance
+          : parseFloat(raw.pendingBalance || 0),
+      inProgressBalance:
+        typeof raw.inProgressBalance === "number"
+          ? raw.inProgressBalance
+          : parseFloat(raw.inProgressBalance || 0),
+      disputeBalance:
+        typeof raw.disputeBalance === "number"
+          ? raw.disputeBalance
+          : parseFloat(raw.disputeBalance || 0),
+      withdrawnBalance:
+        typeof raw.withdrawnBalance === "number"
+          ? raw.withdrawnBalance
+          : parseFloat(raw.withdrawnBalance || 0),
       rating: raw.rating !== undefined ? Number(raw.rating) : 0,
-      numReviews: raw.numReviews !== undefined ? Number(raw.numReviews) : (raw.reviewsCount !== undefined ? Number(raw.reviewsCount) : 0),
+      numReviews:
+        raw.numReviews !== undefined
+          ? Number(raw.numReviews)
+          : raw.reviewsCount !== undefined
+            ? Number(raw.reviewsCount)
+            : 0,
       bio: raw.bio || undefined,
       coachingLevel: raw.coachingLevel || undefined,
       experience: raw.experience || undefined,
@@ -62,6 +85,6 @@ export class OwnerMapper {
     if (!Array.isArray(rawArray)) {
       return [];
     }
-    return rawArray.map(raw => this.toOwnerProfile(raw));
+    return rawArray.map((raw) => this.toOwnerProfile(raw));
   }
 }

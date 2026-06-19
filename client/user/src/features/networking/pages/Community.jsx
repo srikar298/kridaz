@@ -17,6 +17,61 @@ const Community = ({ children, onSearchActive }) => {
   const { gateInteraction } = useLoginOnDemand();
   const navigate = useNavigate();
   const isAdmin = role === "admin" || role === "BMSP_ADMIN";
+  const location = useLocation();
+
+  // Auto-scroll to top when returning from content creation
+  useEffect(() => {
+    if (location.state?.scrollToTop) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      // Clear the state so it doesn't re-trigger on re-renders
+      navigate(location.pathname + location.search, {
+        replace: true,
+        state: {},
+      });
+    }
+  }, [location.state]);
+
+  const userLocation = useSelector((state) => state.ui?.userLocation);
+  const locationStatus = useSelector((state) => state.ui?.locationStatus);
+
+  const geoLoading = locationStatus === "detecting";
+  const geoLabel = userLocation
+    ? userLocation.city && userLocation.state
+      ? `${userLocation.city}, ${userLocation.state}`
+      : userLocation.city || userLocation.state || "Unknown"
+    : null;
+
+  const detectLocation = () => {
+    dispatch(setLocationStatus("detecting"));
+    if (!navigator.geolocation) {
+      dispatch(setLocationStatus("denied"));
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        let city = "";
+        let state = "";
+        try {
+          const res = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+          );
+          const data = await res.json();
+          city = data.city || data.locality || "";
+          state = data.principalSubdivision || "";
+        } catch (error) {
+          console.warn("Reverse geocoding failed:", error);
+        }
+        dispatch(setUserLocation({ lat, lng, city, state }));
+        dispatch(setLocationStatus("granted"));
+      },
+      () => {
+        dispatch(setLocationStatus("denied"));
+      },
+      { timeout: 8000 }
+    );
+  };
 
   // Filter / panel state
   const [searchParams, setSearchParams] = useSearchParams();
@@ -92,7 +147,9 @@ const Community = ({ children, onSearchActive }) => {
       }
       setIsSearching(true);
       try {
-        const res = await axiosInstance.get("/api/user/players", { params: { search: searchQuery } });
+        const res = await axiosInstance.get("/api/user/players", {
+          params: { search: searchQuery },
+        });
         if (res.data?.success) {
           setSearchResults(res.data.players || []);
         }
@@ -106,7 +163,9 @@ const Community = ({ children, onSearchActive }) => {
   }, [searchQuery, showGlobalSearch]);
 
   return (
-    <div className={`min-h-screen bg-[#050505] text-white pt-0 pb-12 ${activeFilter === "Reels" ? "px-0 md:px-3" : "px-1 md:px-3"} font-sans relative`}>
+    <div
+      className={`min-h-screen bg-[#050505] text-white pt-0 pb-12 px-0 md:px-0 font-sans relative`}
+    >
       {/* Global Search Modal */}
       <AnimatePresence>
         {showGlobalSearch && (
@@ -135,7 +194,10 @@ const Community = ({ children, onSearchActive }) => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <button onClick={() => setShowGlobalSearch(false)} className="text-white/50 hover:text-white transition-colors bg-white/5 p-1.5 rounded-lg">
+                <button
+                  onClick={() => setShowGlobalSearch(false)}
+                  className="text-white/50 hover:text-white transition-colors bg-white/5 p-1.5 rounded-lg"
+                >
                   <X size={16} />
                 </button>
               </div>
@@ -143,7 +205,10 @@ const Community = ({ children, onSearchActive }) => {
               <div className="max-h-[50vh] overflow-y-auto no-scrollbar">
                 {isSearching ? (
                   <div className="flex justify-center p-12">
-                    <Loader2 size={32} className="text-[#BFF367] animate-spin" />
+                    <Loader2
+                      size={32}
+                      className="text-[#BFF367] animate-spin"
+                    />
                   </div>
                 ) : searchResults.length > 0 ? (
                   <div className="p-2 space-y-1">
@@ -158,15 +223,22 @@ const Community = ({ children, onSearchActive }) => {
                       >
                         <div className="w-[46px] h-[46px] rounded-full bg-[#111] border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
                           <img
-                            src={player.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${player.name}`}
+                            src={
+                              player.profilePicture ||
+                              `https://api.dicebear.com/7.x/avataaars/svg?seed=${player.name}`
+                            }
                             className="w-full h-full object-cover"
                             alt=""
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-[14px] font-bold text-white group-hover:text-[#BFF367] transition-colors truncate">{player.name}</div>
+                          <div className="text-[14px] font-bold text-white group-hover:text-[#BFF367] transition-colors truncate">
+                            {player.name}
+                          </div>
                           <div className="text-[12px] font-medium text-white/40 truncate">
-                            @{player.username || player.name.toLowerCase().replace(/\s+/g, "")}
+                            @
+                            {player.username ||
+                              player.name.toLowerCase().replace(/\s+/g, "")}
                           </div>
                         </div>
                         <div className="px-3 py-1.5 rounded-full border border-white/10 text-[10px] font-bold text-white/50 group-hover:border-[#BFF367] group-hover:text-[#BFF367] transition-all">
@@ -176,9 +248,13 @@ const Community = ({ children, onSearchActive }) => {
                     ))}
                   </div>
                 ) : searchQuery ? (
-                  <div className="p-12 text-center text-white/30 font-bold text-[13px] uppercase tracking-widest">No players found</div>
+                  <div className="p-12 text-center text-white/30 font-bold text-[13px] uppercase tracking-widest">
+                    No players found
+                  </div>
                 ) : (
-                  <div className="p-12 text-center text-white/30 font-bold text-[13px] uppercase tracking-widest">Type to start searching</div>
+                  <div className="p-12 text-center text-white/30 font-bold text-[13px] uppercase tracking-widest">
+                    Type to start searching
+                  </div>
                 )}
               </div>
             </motion.div>
@@ -188,12 +264,24 @@ const Community = ({ children, onSearchActive }) => {
 
       <div className="max-w-[1500px] mx-auto w-full">
         <div className="grid grid-cols-1 gap-6">
-          <div className={`max-w-3xl mx-auto w-full transition-all duration-300 ${activeFilter === "Reels" ? "h-[100dvh] sticky top-0 max-w-none" : "space-y-2"}`}>
+          <div
+            className={`max-w-3xl md:max-w-none mx-auto md:mx-0 w-full transition-all duration-300 flex flex-col ${activeFilter === "Reels" ? "h-[100dvh] sticky top-0 max-w-none" : "gap-1"}`}
+          >
             {activeFilter === "Reels" ? (
-              <ReelsView gateInteraction={gateInteraction} onBack={() => handleSetActiveFilter("All")} />
+              <ReelsView
+                gateInteraction={gateInteraction}
+                onBack={() => handleSetActiveFilter("All")}
+              />
             ) : (
               <>
-                <StoriesSection user={user} isLoggedIn={isLoggedIn} isAdmin={isAdmin} gateInteraction={gateInteraction} />
+                <div className="mb-1">
+                  <StoriesSection
+                    user={user}
+                    isLoggedIn={isLoggedIn}
+                    isAdmin={isAdmin}
+                    gateInteraction={gateInteraction}
+                  />
+                </div>
 
                 <CommunityFeed
                   user={user}
@@ -218,6 +306,3 @@ const Community = ({ children, onSearchActive }) => {
 };
 
 export default Community;
-
-
-

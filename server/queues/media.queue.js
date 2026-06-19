@@ -1,7 +1,7 @@
-import { Queue, Worker } from 'bullmq';
-import { bullmqConnection as connection } from '../config/redis.js';
-import mediaProcessor from './processors/media.processor.js';
-import logger from '../utils/logger.js';
+import { Queue, Worker } from "bullmq";
+import { bullmqConnection as connection } from "../config/redis.js";
+import mediaProcessor from "./processors/media.processor.js";
+import logger from "../utils/logger.js";
 
 /**
  * Media Processing Queue
@@ -15,21 +15,24 @@ import logger from '../utils/logger.js';
  * Prisma client, env vars, and all ESM imports without any path-scheme issues.
  */
 
-export const mediaQueue = new Queue('media_processing', {
+export const mediaQueue = new Queue("media_processing", {
   connection,
   defaultJobOptions: {
     attempts: 3,
-    backoff: { type: 'exponential', delay: 5000 },
-    removeOnComplete: { count: 50 },  // Keep last 50 completed for debugging
+    backoff: { type: "exponential", delay: 5000 },
+    removeOnComplete: { count: 50 }, // Keep last 50 completed for debugging
     removeOnFail: false,
   },
 });
 
 // ── Inline Worker (same process — ESM & Windows safe) ─────────────────────────
 export const mediaWorker = new Worker(
-  'media_processing',
+  "media_processing",
   async (job) => {
-    logger.info(`[MEDIA_WORKER] Processing job ${job.id}: ${job.name}`, job.data);
+    logger.info(
+      `[MEDIA_WORKER] Processing job ${job.id}: ${job.name}`,
+      job.data
+    );
     return mediaProcessor(job);
   },
   {
@@ -39,14 +42,16 @@ export const mediaWorker = new Worker(
 );
 
 // ── Worker Lifecycle Logging ───────────────────────────────────────────────────
-mediaWorker.on('completed', (job) => {
+mediaWorker.on("completed", (job) => {
   logger.info(`[MEDIA_WORKER] Job ${job.id} completed successfully.`);
 });
 
-mediaWorker.on('failed', (job, err) => {
-  logger.error(`[MEDIA_WORKER] Job ${job?.id} failed (attempt ${job?.attemptsMade}/${job?.opts?.attempts}): ${err.message}`);
+mediaWorker.on("failed", (job, err) => {
+  logger.error(
+    `[MEDIA_WORKER] Job ${job?.id} failed (attempt ${job?.attemptsMade}/${job?.opts?.attempts}): ${err.message}`
+  );
 });
 
-mediaWorker.on('error', (err) => {
-  logger.error('[MEDIA_WORKER] Worker error:', err);
+mediaWorker.on("error", (err) => {
+  logger.error("[MEDIA_WORKER] Worker error:", err);
 });

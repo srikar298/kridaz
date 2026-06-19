@@ -1,7 +1,7 @@
 /**
  * Helmet Security Configuration for Kridaz
  * Provides a strict Content Security Policy while allowing essential 3rd party integrations.
- * 
+ *
  * Note: CSP is disabled in development to prevent blocking local debugging/HMR.
  */
 const helmetConfig = {
@@ -39,19 +39,16 @@ const helmetConfig = {
         "https://checkout.razorpay.com",
         "https://accounts.google.com",
       ],
-      fontSrc: [
-        "'self'",
-        "https://fonts.gstatic.com"
-      ],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],
       upgradeInsecureRequests: [],
     },
   },
   // Disable CSP in development to avoid blocking local workflows
-  ...(process.env.NODE_ENV === 'development' && {
-    contentSecurityPolicy: false
-  })
+  ...(process.env.NODE_ENV === "development" && {
+    contentSecurityPolicy: false,
+  }),
 };
 
 export default helmetConfig;

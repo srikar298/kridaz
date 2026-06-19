@@ -1,0 +1,807 @@
+[
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\public\\firebase-messaging-sw.js",
+    "messages": [
+      {
+        "ruleId": "no-undef",
+        "line": 1,
+        "message": "'importScripts' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "line": 2,
+        "message": "'importScripts' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "line": 5,
+        "message": "'firebase' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "line": 15,
+        "message": "'firebase' is not defined."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\auth\\hooks\\useLoginForm.jsx",
+    "messages": [
+      {
+        "ruleId": "no-undef",
+        "line": 57,
+        "message": "'logout' is not defined."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\auth\\pages\\ForgotPassword.jsx",
+    "messages": [
+      {
+        "ruleId": "no-undef",
+        "line": 20,
+        "message": "'isLoggedIn' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "line": 25,
+        "message": "'isLoggedIn' is not defined."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\auth\\pages\\Login.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 134,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\auth\\pages\\SignUp.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 424,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\business\\pages\\BusinessRegistration.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 440,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\business\\pages\\VenueOwnerLanding.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 396,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 396,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 415,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 415,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 434,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 434,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 453,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 453,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 453,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 472,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 472,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 472,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 491,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 491,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\chat\\components\\ChatSidebar.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 324,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\chat\\components\\ChatWindow.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 639,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 639,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\chat\\pages\\Messages.jsx",
+    "messages": [
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 2,
+        "message": "'@features/chat/components/ChatSidebar' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      },
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 3,
+        "message": "'@features/chat/components/ChatWindow' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      },
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 4,
+        "message": "'@features/chat/components/CreateGroupModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      },
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 5,
+        "message": "'@features/chat/components/CreateCommunityModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\games\\pages\\HostGame.jsx",
+    "messages": [
+      {
+        "ruleId": "no-irregular-whitespace",
+        "line": 68,
+        "message": "Irregular whitespace not allowed."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\legal\\pages\\ContactUs.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 59,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 94,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\legal\\pages\\DataDeletionInstructions.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 15,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 15,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 16,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 16,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 24,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\legal\\pages\\TermsOfService.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 28,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\networking\\components\\CommunityFeed.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 434,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 434,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 493,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 493,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\networking\\components\\ReelsView.jsx",
+    "messages": [
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 5,
+        "message": "'@features/reels/components/ReelItem' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\networking\\components\\professional\\ProfessionalBookings.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 142,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 142,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\networking\\components\\professional\\ProfessionalReviews.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 141,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 141,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 149,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 149,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\networking\\pages\\CreatePostPage.jsx",
+    "messages": [
+      {
+        "ruleId": "no-undef",
+        "line": 43,
+        "message": "'setImage' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "line": 44,
+        "message": "'setImagePreview' is not defined."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\networking\\pages\\FindPlayers.jsx",
+    "messages": [
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 25,
+        "message": "'@features/networking/components/StoryViewer' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      },
+      {
+        "ruleId": "no-empty",
+        "line": 301,
+        "message": "Empty block statement."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\networking\\pages\\FindProfessionals.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 457,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 543,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\professional\\pages\\PayoutsTab.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 485,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\profile\\pages\\Profile.jsx",
+    "messages": [
+      {
+        "ruleId": "no-unsafe-optional-chaining",
+        "line": 922,
+        "message": "Unsafe usage of optional chaining. If it short-circuits with 'undefined' the evaluation will throw TypeError."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 958,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 958,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\reels\\pages\\ReelsFeed.jsx",
+    "messages": [
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 3,
+        "message": "'@features/reels/components/ReelItem' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\components\\StartScoringModal.jsx",
+    "messages": [
+      {
+        "ruleId": "no-empty",
+        "line": 247,
+        "message": "Empty block statement."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 2841,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 2868,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\components\\TossModal.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 144,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\pages\\LiveOverlay.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 447,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 447,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\pages\\MatchAnalytics.jsx",
+    "messages": [
+      {
+        "ruleId": "no-empty",
+        "line": 448,
+        "message": "Empty block statement."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\pages\\ScoringApp.jsx",
+    "messages": [
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 9,
+        "message": "'@features/scoring/components/BallByBallHistory' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      },
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 10,
+        "message": "'@features/scoring/components/InningsSetupModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      },
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 11,
+        "message": "'@features/scoring/components/WicketModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      },
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 12,
+        "message": "'@features/scoring/components/ExtraRunsModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      },
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 13,
+        "message": "'@features/scoring/components/SelectBowlerModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      },
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 14,
+        "message": "'@features/scoring/components/TossModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      },
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 19,
+        "message": "'@features/scoring/components/TickerThemeStoreModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      },
+      {
+        "ruleId": "no-undef",
+        "line": 1542,
+        "message": "'advanceToNextInnings' is not defined."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\teams\\components\\TeamDetails.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 300,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 300,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\teams\\components\\TeamSidebar.jsx",
+    "messages": [
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 7,
+        "message": "'@features/scoring/components/StartScoringModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\teams\\pages\\TeamPass.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 164,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 164,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/jsx-no-undef",
+        "line": 231,
+        "message": "'Loader2' is not defined."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\teams\\pages\\TeamProfile.jsx",
+    "messages": [
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 19,
+        "message": "'@features/scoring/components/StartScoringModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      },
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 20,
+        "message": "'@features/scoring/components/ScoringMatchCard' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\teams\\pages\\Teams.jsx",
+    "messages": [
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 2,
+        "message": "'@features/teams/components/TeamSidebar' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      },
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 3,
+        "message": "'@features/teams/components/TeamDetails' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      },
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 4,
+        "message": "'@features/teams/components/CreateTeamModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      },
+      {
+        "ruleId": "no-restricted-imports",
+        "line": 5,
+        "message": "'@features/teams/components/InviteMemberModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\turf\\components\\BookingPass.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 128,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 128,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 128,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 351,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\venue-owner\\TurfManagement\\AddTurf.jsx",
+    "messages": [
+      {
+        "ruleId": "no-empty",
+        "line": 130,
+        "message": "Empty block statement."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\venue-owner\\TurfManagement\\EditTurf.jsx",
+    "messages": [
+      {
+        "ruleId": "no-empty",
+        "line": 128,
+        "message": "Empty block statement."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\venue-owner\\TurfManagement\\TurfDetails.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 167,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 423,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\venue-owner\\TurfManagement\\script.js",
+    "messages": [
+      {
+        "ruleId": null,
+        "line": 50,
+        "message": "Parsing error: Expecting Unicode escape sequence \\uXXXX"
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\pages\\HomeSections\\DashboardHero.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 108,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\pages\\HomeSections\\ProfessionalsSection.jsx",
+    "messages": [
+      {
+        "ruleId": "react/jsx-no-undef",
+        "line": 76,
+        "message": "'ChevronRight' is not defined."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\pages\\NewPost\\NewPostLanding.jsx",
+    "messages": [
+      {
+        "ruleId": "no-empty",
+        "line": 76,
+        "message": "Empty block statement."
+      },
+      {
+        "ruleId": "no-empty",
+        "line": 84,
+        "message": "Empty block statement."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\redux\\api\\communityApi.js",
+    "messages": [
+      {
+        "ruleId": "no-empty",
+        "line": 167,
+        "message": "Empty block statement."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\shared\\components\\Marketing\\VideoSection.jsx",
+    "messages": [
+      {
+        "ruleId": "no-useless-escape",
+        "line": 39,
+        "message": "Unnecessary escape character: \\&."
+      },
+      {
+        "ruleId": "no-useless-escape",
+        "line": 39,
+        "message": "Unnecessary escape character: \\&."
+      },
+      {
+        "ruleId": "no-useless-escape",
+        "line": 39,
+        "message": "Unnecessary escape character: \\?."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\shared\\components\\SlotPickerPopup.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 220,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 220,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 271,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 285,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 285,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\shared\\components\\common\\NotFound.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 11,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 11,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\shared\\components\\layout\\DesktopRightSidebar.jsx",
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 737,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  }
+]

@@ -20,12 +20,26 @@ export class TurfMapper {
       id: raw.id || raw._id || "",
       name: raw.name || "Unnamed Turf",
       location: raw.location || raw.address || "",
-      price: typeof raw.price === "number" ? raw.price : parseFloat(raw.price || raw.pricePerHour || 0),
+      price:
+        typeof raw.price === "number"
+          ? raw.price
+          : parseFloat(raw.price || raw.pricePerHour || 0),
       rating: raw.rating !== undefined ? Number(raw.rating) : undefined,
-      reviewsCount: raw.reviewsCount !== undefined ? Number(raw.reviewsCount) : undefined,
-      images: Array.isArray(raw.images) ? raw.images : raw.image ? [raw.image] : [],
-      sports: Array.isArray(raw.sports) ? raw.sports : Array.isArray(raw.sportTypes) ? raw.sportTypes : [],
-      status: ["APPROVED", "PENDING", "REJECTED"].includes(raw.status) ? raw.status : "PENDING",
+      reviewsCount:
+        raw.reviewsCount !== undefined ? Number(raw.reviewsCount) : undefined,
+      images: Array.isArray(raw.images)
+        ? raw.images
+        : raw.image
+          ? [raw.image]
+          : [],
+      sports: Array.isArray(raw.sports)
+        ? raw.sports
+        : Array.isArray(raw.sportTypes)
+          ? raw.sportTypes
+          : [],
+      status: ["APPROVED", "PENDING", "REJECTED"].includes(raw.status)
+        ? raw.status
+        : "PENDING",
       createdAt: raw.createdAt || undefined,
       updatedAt: raw.updatedAt || undefined,
     };
@@ -38,6 +52,6 @@ export class TurfMapper {
     if (!Array.isArray(rawArray)) {
       return [];
     }
-    return rawArray.map(raw => this.toClientModel(raw));
+    return rawArray.map((raw) => this.toClientModel(raw));
   }
 }

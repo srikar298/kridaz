@@ -24,46 +24,26 @@ import Translate from "@docusaurus/Translate";
   as={"h1"}
   className={"openapi__heading"}
   children={"Delete a reel"}
->
-</Heading>
+></Heading>
 
 <MethodEndpoint
   method={"delete"}
   path={"/reels/{reelId}"}
   context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+></MethodEndpoint>
 
 Deletes a specific reel. Only allowed for the creator or admins.
 
-<Heading
-  id={"request"}
-  as={"h2"}
-  className={"openapi-tabs__heading"}
->
+<Heading id={"request"} as={"h2"} className={"openapi-tabs__heading"}>
   <Translate id="theme.openapi.request.title">Request</Translate>
 </Heading>
 
 <ParamsDetails
   {...require("./delete-a-reel.ParamsDetails.json")}
->
-  
-</ParamsDetails>
+></ParamsDetails>
 
 <RequestSchema
   {...require("./delete-a-reel.RequestSchema.json")}
->
-  
-</RequestSchema>
+></RequestSchema>
 
-<StatusCodes
-  {...require("./delete-a-reel.StatusCodes.json")}
->
-  
-</StatusCodes>
-
-
-      
+<StatusCodes {...require("./delete-a-reel.StatusCodes.json")}></StatusCodes>

@@ -25,11 +25,18 @@ export class ScoringMapper {
       oversB: raw.oversB !== undefined ? Number(raw.oversB) : 0.0,
       wicketsA: raw.wicketsA !== undefined ? Number(raw.wicketsA) : 0,
       wicketsB: raw.wicketsB !== undefined ? Number(raw.wicketsB) : 0,
-      status: ["SCHEDULED", "LIVE", "COMPLETED", "ABANDONED", "DELAYED"].includes(raw.status)
+      status: [
+        "SCHEDULED",
+        "LIVE",
+        "COMPLETED",
+        "ABANDONED",
+        "DELAYED",
+      ].includes(raw.status)
         ? raw.status
         : "SCHEDULED",
       sportType: raw.sportType || raw.sport || "CRICKET",
-      currentInnings: raw.currentInnings !== undefined ? Number(raw.currentInnings) : 1,
+      currentInnings:
+        raw.currentInnings !== undefined ? Number(raw.currentInnings) : 1,
     };
   }
 
@@ -47,11 +54,20 @@ export class ScoringMapper {
       bowlerId: raw.bowlerId || raw.bowler || "",
       runs: raw.runs !== undefined ? Number(raw.runs) : 0,
       extraRuns: raw.extraRuns !== undefined ? Number(raw.extraRuns) : 0,
-      extraType: ["NONE", "WIDE", "NO_BALL", "BYE", "LEG_BYE"].includes(raw.extraType)
+      extraType: ["NONE", "WIDE", "NO_BALL", "BYE", "LEG_BYE"].includes(
+        raw.extraType
+      )
         ? raw.extraType
         : "NONE",
       isWicket: Boolean(raw.isWicket),
-      wicketType: ["BOWLED", "CAUGHT", "RUN_OUT", "LBW", "STUMPED", "NONE"].includes(raw.wicketType)
+      wicketType: [
+        "BOWLED",
+        "CAUGHT",
+        "RUN_OUT",
+        "LBW",
+        "STUMPED",
+        "NONE",
+      ].includes(raw.wicketType)
         ? raw.wicketType
         : undefined,
     };
@@ -64,6 +80,6 @@ export class ScoringMapper {
     if (!Array.isArray(rawArray)) {
       return [];
     }
-    return rawArray.map(raw => this.toMatchScore(raw));
+    return rawArray.map((raw) => this.toMatchScore(raw));
   }
 }

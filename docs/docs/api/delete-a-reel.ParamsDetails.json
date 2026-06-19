@@ -1,1 +1,10 @@
-{"parameters":[{"in":"path","name":"reelId","required":true,"schema":{"type":"string","format":"uuid"}}]}
+{
+  "parameters": [
+    {
+      "in": "path",
+      "name": "reelId",
+      "required": true,
+      "schema": { "type": "string", "format": "uuid" }
+    }
+  ]
+}

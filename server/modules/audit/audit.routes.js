@@ -4,7 +4,7 @@ import adminAuditRouter from "./routes/admin.routes.js";
 /**
  * Audit Domain Router
  * Mounts sub-routers for the Audit/Logs module.
- * 
+ *
  * Routes:
  * /api/audit/...
  */

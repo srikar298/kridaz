@@ -24,44 +24,26 @@ import Translate from "@docusaurus/Translate";
   as={"h1"}
   className={"openapi__heading"}
   children={"Update user location"}
->
-</Heading>
+></Heading>
 
 <MethodEndpoint
   method={"post"}
   path={"/user/players/location"}
   context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+></MethodEndpoint>
 
 Updates the user's GPS coordinates for discovery.
 
-<Heading
-  id={"request"}
-  as={"h2"}
-  className={"openapi-tabs__heading"}
->
+<Heading id={"request"} as={"h2"} className={"openapi-tabs__heading"}>
   <Translate id="theme.openapi.request.title">Request</Translate>
 </Heading>
 
-<ParamsDetails>
-  
-</ParamsDetails>
+<ParamsDetails></ParamsDetails>
 
 <RequestSchema
   {...require("./update-user-location.RequestSchema.json")}
->
-  
-</RequestSchema>
+></RequestSchema>
 
 <StatusCodes
   {...require("./update-user-location.StatusCodes.json")}
->
-  
-</StatusCodes>
-
-
-      
+></StatusCodes>

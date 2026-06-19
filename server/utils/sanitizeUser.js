@@ -16,7 +16,8 @@
  */
 export const sanitizeUser = (u) => {
   if (!u) return null;
-  const { password, fcmToken, googleId, refreshTokens, tokenVersion, ...safe } = u;
+  const { password, fcmToken, googleId, refreshTokens, tokenVersion, ...safe } =
+    u;
   return safe;
 };
 

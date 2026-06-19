@@ -22,16 +22,16 @@ export const generateHourlySlots = (openTime, closeTime) => {
   while (isBefore(current, end)) {
     const slotStart = current;
     const slotEnd = addHours(current, 1);
-    
+
     // Don't add if the slot end exceeds the closing time
     if (isBefore(slotEnd, end) || isEqual(slotEnd, end)) {
       slots.push({
         startTime: slotStart,
         endTime: slotEnd,
-        label: `${format(slotStart, "hh:mm a")} - ${format(slotEnd, "hh:mm a")}`
+        label: `${format(slotStart, "hh:mm a")} - ${format(slotEnd, "hh:mm a")}`,
       });
     }
-    
+
     current = slotEnd;
   }
 
@@ -43,11 +43,11 @@ export const generateHourlySlots = (openTime, closeTime) => {
  */
 export const isSlotBooked = (slot, bookedTimes) => {
   if (!bookedTimes || !Array.isArray(bookedTimes)) return false;
-  
-  return bookedTimes.some(booked => {
+
+  return bookedTimes.some((booked) => {
     const bookedStart = new Date(booked.startTime);
     const bookedEnd = new Date(booked.endTime);
-    
+
     // Simple overlap check
     return (
       (slot.startTime >= bookedStart && slot.startTime < bookedEnd) ||

@@ -19,25 +19,37 @@ export const updateGeoPoint = async (table, id, lat, lng) => {
  * Find entities within a certain radius using the Haversine formula in SQL.
  * Optimized with a bounding box to utilize standard B-Tree indexes on lat/lng.
  */
-export const findNearby = async (table, lat, lng, radiusInMeters = 5000, options = {}) => {
+const ALLOWED_TABLES = new Set(["Turf", "User", "Team"]);
+
+export const findNearby = async (
+  table,
+  lat,
+  lng,
+  radiusInMeters = 5000,
+  options = {}
+) => {
   try {
     const tableName = table.charAt(0).toUpperCase() + table.slice(1);
+    if (!ALLOWED_TABLES.has(tableName)) {
+      throw new Error(`Invalid table name for geo query: ${tableName}`);
+    }
     const { where = {}, take = 50, include = {}, select } = options;
 
     // 1. Calculate bounding box (rough square) to use indexes
     // 1 degree of latitude is ~111km
     // 1 degree of longitude is ~111km * cos(latitude)
     const latDelta = radiusInMeters / 111320;
-    const lngDelta = radiusInMeters / (111320 * Math.cos(lat * (Math.PI / 180)));
+    const lngDelta =
+      radiusInMeters / (111320 * Math.cos(lat * (Math.PI / 180)));
 
     const minLat = lat - latDelta;
     const maxLat = lat + latDelta;
     const minLng = lng - lngDelta;
     const maxLng = lng + lngDelta;
 
-  // 2. Haversine formula in SQL to get precise distance
-  // 6371000 is Earth's radius in meters
-  const nearbyIdsSql = `
+    // 2. Haversine formula in SQL to get precise distance
+    // 6371000 is Earth's radius in meters
+    const nearbyIdsSql = `
     SELECT "id",
       (6371000 * acos(
         LEAST(GREATEST(
@@ -65,30 +77,32 @@ export const findNearby = async (table, lat, lng, radiusInMeters = 5000, options
   `;
 
     const results = await prisma.$queryRawUnsafe(
-      nearbyIdsSql, 
-      minLat, maxLat, minLng, maxLng, // Bounding box
-      lat, lng, radiusInMeters,      // Precise center and radius
+      nearbyIdsSql,
+      minLat,
+      maxLat,
+      minLng,
+      maxLng, // Bounding box
+      lat,
+      lng,
+      radiusInMeters, // Precise center and radius
       take
     );
-    
+
     if (results.length === 0) return [];
 
     const idToDistance = {};
     const ids = [];
-    results.forEach(r => {
+    results.forEach((r) => {
       ids.push(r.id);
       idToDistance[r.id] = r.distance;
     });
-    
+
     // Fetch full records with Prisma
     const queryOptions = {
       where: {
-        AND: [
-          { id: { in: ids } },
-          where
-        ]
+        AND: [{ id: { in: ids } }, where],
       },
-      take
+      take,
     };
     if (select) {
       queryOptions.select = select;
@@ -99,9 +113,9 @@ export const findNearby = async (table, lat, lng, radiusInMeters = 5000, options
 
     // Restore order and attach distance
     records.sort((a, b) => idToDistance[a.id] - idToDistance[b.id]);
-    return records.map(r => ({
+    return records.map((r) => ({
       ...r,
-      distance: idToDistance[r.id]
+      distance: idToDistance[r.id],
     }));
   } catch (error) {
     logger.error(`[GeoUtil] Error finding nearby ${table}`, error);

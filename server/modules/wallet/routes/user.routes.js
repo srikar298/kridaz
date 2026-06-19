@@ -5,13 +5,11 @@ import {
   getWalletData,
   checkPaymentStatus,
   cancelReservation,
+  validateCoupon,
 } from "../wallet.controller.js";
 import verifyToken from "../../../middleware/jwt/user.middleware.js";
 import { validate } from "../../../middleware/validate.middleware.js";
-import {
-  createTopupSchema,
-  verifyTopupSchema,
-} from "../wallet.validator.js";
+import { createTopupSchema, verifyTopupSchema } from "../wallet.validator.js";
 import { paymentLimiter } from "../../../middleware/rateLimiter.middleware.js";
 import { idempotency } from "../../../middleware/idempotency.middleware.js";
 
@@ -36,6 +34,11 @@ router.use(verifyToken);
  *       - BearerAuth: []
  */
 router.get("/data", getWalletData);
+
+/**
+ *       - BearerAuth: []
+ */
+router.post("/topup/validate-coupon", validateCoupon);
 
 /**
  * @swagger

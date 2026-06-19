@@ -27,14 +27,14 @@ export class CalculatorsService {
     const R = 6371; // Earth's radius in km
     const dLat = ((p2 - p1) * Math.PI) / 180;
     const dLng = ((g2 - g1) * Math.PI) / 180;
-    
+
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos((p1 * Math.PI) / 180) *
         Math.cos((p2 * Math.PI) / 180) *
         Math.sin(dLng / 2) *
         Math.sin(dLng / 2);
-    
+
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   }
@@ -53,7 +53,14 @@ export class CalculatorsService {
    * @param {Date|string} startTime2 - Start time of booking 2
    * @returns {Promise<boolean>}
    */
-  static async checkTravelFeasibility(lat1, lng1, endTime1, lat2, lng2, startTime2) {
+  static async checkTravelFeasibility(
+    lat1,
+    lng1,
+    endTime1,
+    lat2,
+    lng2,
+    startTime2
+  ) {
     try {
       const end1 = new Date(endTime1);
       const start2 = new Date(startTime2);
@@ -74,10 +81,12 @@ export class CalculatorsService {
       });
 
       const travelSpeedKmh = speedConfig ? parseFloat(speedConfig.value) : 30;
-      const travelBufferHours = bufferConfig ? parseFloat(bufferConfig.value) : 1;
+      const travelBufferHours = bufferConfig
+        ? parseFloat(bufferConfig.value)
+        : 1;
 
       const distanceKm = this.calculateDistance(lat1, lng1, lat2, lng2);
-      
+
       // travel_time = (distance / speed) * 60 minutes
       const travelTimeMinutes = (distanceKm / travelSpeedKmh) * 60;
       const bufferTimeMinutes = travelBufferHours * 60;
@@ -94,7 +103,10 @@ export class CalculatorsService {
 
       return isFeasible;
     } catch (error) {
-      logger.error("[TravelFeasibility] Error calculating travel feasibility:", error);
+      logger.error(
+        "[TravelFeasibility] Error calculating travel feasibility:",
+        error
+      );
       return false;
     }
   }
@@ -108,7 +120,12 @@ export class CalculatorsService {
    * @param {string} [role] - Role name (e.g. 'UMPIRE', 'COACH', etc.)
    * @returns {Promise<Array>} List of matching OwnerProfile objects (including user relation)
    */
-  static async searchProfessionalsInRadius(latitude, longitude, radius, role = null) {
+  static async searchProfessionalsInRadius(
+    latitude,
+    longitude,
+    radius,
+    role = null
+  ) {
     const latVal = parseFloat(latitude);
     const lngVal = parseFloat(longitude);
     const radVal = parseFloat(radius);
@@ -154,7 +171,10 @@ export class CalculatorsService {
 
       return results;
     } catch (error) {
-      logger.error("[GeoRadiusSearch] Error executing database radius query:", error);
+      logger.error(
+        "[GeoRadiusSearch] Error executing database radius query:",
+        error
+      );
       throw error;
     }
   }

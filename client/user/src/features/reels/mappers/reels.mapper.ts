@@ -21,10 +21,29 @@ export class ReelsMapper {
       title: raw.title || raw.caption || "Untitled Reel",
       description: raw.description || raw.caption || undefined,
       userId: raw.userId || raw.creatorId || "",
-      likesCount: raw.likesCount !== undefined ? Number(raw.likesCount) : (raw.likes !== undefined ? Number(raw.likes) : 0),
-      commentsCount: raw.commentsCount !== undefined ? Number(raw.commentsCount) : (raw.comments !== undefined ? Number(raw.comments) : 0),
-      viewsCount: raw.viewsCount !== undefined ? Number(raw.viewsCount) : (raw.views !== undefined ? Number(raw.views) : 0),
-      tags: Array.isArray(raw.tags) ? raw.tags : (Array.isArray(raw.hashtags) ? raw.hashtags : []),
+      likesCount:
+        raw.likesCount !== undefined
+          ? Number(raw.likesCount)
+          : raw.likes !== undefined
+            ? Number(raw.likes)
+            : 0,
+      commentsCount:
+        raw.commentsCount !== undefined
+          ? Number(raw.commentsCount)
+          : raw.comments !== undefined
+            ? Number(raw.comments)
+            : 0,
+      viewsCount:
+        raw.viewsCount !== undefined
+          ? Number(raw.viewsCount)
+          : raw.views !== undefined
+            ? Number(raw.views)
+            : 0,
+      tags: Array.isArray(raw.tags)
+        ? raw.tags
+        : Array.isArray(raw.hashtags)
+          ? raw.hashtags
+          : [],
       createdAt: raw.createdAt || undefined,
     };
   }
@@ -36,6 +55,6 @@ export class ReelsMapper {
     if (!Array.isArray(rawArray)) {
       return [];
     }
-    return rawArray.map(raw => this.toReel(raw));
+    return rawArray.map((raw) => this.toReel(raw));
   }
 }

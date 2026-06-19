@@ -1,0 +1,107 @@
+[
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\chat\\pages\\Messages.jsx",
+    "line": 2,
+    "message": "'@features/chat/components/ChatSidebar' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\chat\\pages\\Messages.jsx",
+    "line": 3,
+    "message": "'@features/chat/components/ChatWindow' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\chat\\pages\\Messages.jsx",
+    "line": 4,
+    "message": "'@features/chat/components/CreateGroupModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\chat\\pages\\Messages.jsx",
+    "line": 5,
+    "message": "'@features/chat/components/CreateCommunityModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\networking\\components\\ReelsView.jsx",
+    "line": 5,
+    "message": "'@features/reels/components/ReelItem' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\networking\\pages\\FindPlayers.jsx",
+    "line": 25,
+    "message": "'@features/networking/components/StoryViewer' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\reels\\pages\\ReelsFeed.jsx",
+    "line": 3,
+    "message": "'@features/reels/components/ReelItem' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\pages\\ScoringApp.jsx",
+    "line": 9,
+    "message": "'@features/scoring/components/BallByBallHistory' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\pages\\ScoringApp.jsx",
+    "line": 10,
+    "message": "'@features/scoring/components/InningsSetupModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\pages\\ScoringApp.jsx",
+    "line": 11,
+    "message": "'@features/scoring/components/WicketModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\pages\\ScoringApp.jsx",
+    "line": 12,
+    "message": "'@features/scoring/components/ExtraRunsModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\pages\\ScoringApp.jsx",
+    "line": 13,
+    "message": "'@features/scoring/components/SelectBowlerModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\pages\\ScoringApp.jsx",
+    "line": 14,
+    "message": "'@features/scoring/components/TossModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\scoring\\pages\\ScoringApp.jsx",
+    "line": 19,
+    "message": "'@features/scoring/components/TickerThemeStoreModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\teams\\components\\TeamSidebar.jsx",
+    "line": 7,
+    "message": "'@features/scoring/components/StartScoringModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\teams\\pages\\TeamProfile.jsx",
+    "line": 19,
+    "message": "'@features/scoring/components/StartScoringModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\teams\\pages\\TeamProfile.jsx",
+    "line": 20,
+    "message": "'@features/scoring/components/ScoringMatchCard' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\teams\\pages\\Teams.jsx",
+    "line": 2,
+    "message": "'@features/teams/components/TeamSidebar' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\teams\\pages\\Teams.jsx",
+    "line": 3,
+    "message": "'@features/teams/components/TeamDetails' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\teams\\pages\\Teams.jsx",
+    "line": 4,
+    "message": "'@features/teams/components/CreateTeamModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  },
+  {
+    "file": "C:\\Users\\saavi\\OneDrive\\Desktop\\kridaz\\kridaz\\client\\user\\src\\features\\teams\\pages\\Teams.jsx",
+    "line": 5,
+    "message": "'@features/teams/components/InviteMemberModal' import is restricted from being used by a pattern. Deep cross-feature imports are not allowed. Only import from the feature's root index or use shared components."
+  }
+]

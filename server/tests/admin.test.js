@@ -12,9 +12,13 @@ let adminToken = "";
 describe("Admin Module API Integration Tests", () => {
   beforeAll(async () => {
     // Clean up
-    const existingAdmin = await prisma.user.findFirst({ where: { email: emailAdmin } });
+    const existingAdmin = await prisma.user.findFirst({
+      where: { email: emailAdmin },
+    });
     if (existingAdmin) {
-      await prisma.user.delete({ where: { id: existingAdmin.id } }).catch(() => {});
+      await prisma.user
+        .delete({ where: { id: existingAdmin.id } })
+        .catch(() => {});
     }
 
     // Register ADMIN directly via prisma (assuming no open register endpoint for admin)
@@ -25,8 +29,8 @@ describe("Admin Module API Integration Tests", () => {
         username: `admin_test_${ts}`,
         phone: `77777${String(ts).slice(-5)}`,
         password: "Admin@Pass123", // Assuming no hashing for simple test or bypass in auth mock
-        role: "ADMIN"
-      }
+        role: "ADMIN",
+      },
     });
 
     // We can use a direct login or mock token for Admin tests
@@ -37,7 +41,7 @@ describe("Admin Module API Integration Tests", () => {
         phone: `77777${String(ts).slice(-5)}`,
         emailOtp: "123456",
         phoneOtp: "123456",
-        expiresAt: new Date(Date.now() + 600000)
+        expiresAt: new Date(Date.now() + 600000),
       },
     });
 

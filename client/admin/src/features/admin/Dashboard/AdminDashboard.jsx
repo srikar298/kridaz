@@ -1,16 +1,31 @@
 import React from "react";
-import { 
-  Users, Landmark, CreditCard, Activity, ShieldCheck, Zap, 
-  AlertCircle, RefreshCw, MessageSquare, ShieldAlert, Share2, 
-  Trophy, BookOpen, Wallet, ChevronRight, ArrowUpRight, Clock,
-  MapPin
+import {
+  Users,
+  Landmark,
+  CreditCard,
+  Activity,
+  ShieldCheck,
+  AlertCircle,
+  RefreshCw,
+  MessageSquare,
+  ShieldAlert,
+  Share2,
+  Trophy,
+  BookOpen,
+  ChevronRight,
+  Clock,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import CountUp from "react-countup";
-import { 
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, 
-  ResponsiveContainer, PieChart, Pie, Cell 
-} from 'recharts';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import useDashboardData from "@hooks/admin/useDashboardData";
 import DashboardSkeleton from "./AdminDashboardSkeleton";
 
@@ -24,8 +39,10 @@ export default function AdminDashboard() {
     return (
       <div className="flex flex-col justify-center items-center min-h-[60vh] text-white">
         <AlertCircle className="w-16 h-16 text-red-500 mb-4" />
-        <p className="font-bold text-xl uppercase tracking-wider text-red-500">Telemetry Link Failure</p>
-        <button 
+        <p className="font-bold text-xl uppercase tracking-wider text-red-500">
+          Telemetry Link Failure
+        </p>
+        <button
           onClick={() => window.location.reload()}
           className="mt-8 px-10 py-4 bg-white/5 border border-red-500/50 text-red-500 font-bold uppercase rounded-[8px] hover:bg-red-500/10 transition-all flex items-center gap-3"
         >
@@ -49,7 +66,7 @@ export default function AdminDashboard() {
     publishedBlogs = 0,
     totalUserWalletBalance = 0,
     recentAuditLogs = [],
-    bookingHistory = []
+    bookingHistory = [],
   } = dashboardData || {};
 
   // Extremely defensive formatting to prevent any UI crashes due to malformed or null API payloads
@@ -65,14 +82,20 @@ export default function AdminDashboard() {
   const safePublishedBlogs = Number(publishedBlogs) || 0;
   const safeTotalUserWalletBalance = Number(totalUserWalletBalance) || 0;
 
-  const safeBookingHistory = Array.isArray(bookingHistory) ? bookingHistory : [];
-  const safeRecentAuditLogs = Array.isArray(recentAuditLogs) ? recentAuditLogs : [];
+  const safeBookingHistory = Array.isArray(bookingHistory)
+    ? bookingHistory
+    : [];
+  const safeRecentAuditLogs = Array.isArray(recentAuditLogs)
+    ? recentAuditLogs
+    : [];
 
-  const chartData = safeBookingHistory.map(item => {
+  const chartData = safeBookingHistory.map((item) => {
     const d = item?.date ? new Date(item.date) : null;
     const isValid = d && !isNaN(d.getTime());
     return {
-      name: isValid ? d.toLocaleDateString(undefined, { weekday: 'short' }) : "N/A",
+      name: isValid
+        ? d.toLocaleDateString(undefined, { weekday: "short" })
+        : "N/A",
       amount: Number(item?.amount) || 0,
     };
   });
@@ -82,42 +105,52 @@ export default function AdminDashboard() {
   return (
     <div className="p-4 lg:p-10 space-y-8 lg:space-y-12 animate-fade-in pt-2 pb-24 lg:pb-12 bg-[#000000] relative">
       <div className="absolute top-0 right-0 w-96 h-96 bg-[#CCFF00]/5 blur-[120px] pointer-events-none" />
-      
+
       {/* High-Level Command Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 lg:gap-5 relative z-10">
-        <StatsCard 
-          title="Total Users" 
-          value={safeTotalUsers} 
-          icon={Users} 
+        <StatsCard
+          title="Total Users"
+          value={safeTotalUsers}
+          icon={Users}
           onClick={() => navigate("/admin/users")}
         />
-        <StatsCard 
-          title="Active Venues" 
-          value={safeTotalTurfs} 
-          icon={Landmark} 
+        <StatsCard
+          title="Active Venues"
+          value={safeTotalTurfs}
+          icon={Landmark}
           onClick={() => navigate("/admin/turfs")}
         />
-        <StatsCard 
-          title="Pending Approvals" 
-          value={safePendingTurfs} 
-          icon={Clock} 
-          trend={safePendingTurfs > 0 ? "Action Required" : "Cleared"} 
+        <StatsCard
+          title="Pending Approvals"
+          value={safePendingTurfs}
+          icon={Clock}
+          trend={safePendingTurfs > 0 ? "Action Required" : "Cleared"}
           trendNegative={safePendingTurfs > 0}
           onClick={() => navigate("/admin/turfs")}
         />
-        <StatsCard title="Marketplace Volume" value={safeTotalBookings} icon={Activity} />
-        <StatsCard 
-          title="Total Payouts" 
-          value={safeTotalPayouts} 
-          prefix="Rs " 
-          icon={CreditCard} 
+        <StatsCard
+          title="Marketplace Volume"
+          value={safeTotalBookings}
+          icon={Activity}
+        />
+        <StatsCard
+          title="Total Payouts"
+          value={safeTotalPayouts}
+          prefix="Rs "
+          icon={CreditCard}
           onClick={() => navigate("/admin/withdrawals")}
         />
-        <StatsCard 
-          title="Support Load" 
-          value={safeOpenTickets} 
-          icon={MessageSquare} 
-          trend={safeOpenTickets > 10 ? "High" : safeOpenTickets > 0 ? "Active" : "Clear"} 
+        <StatsCard
+          title="Support Load"
+          value={safeOpenTickets}
+          icon={MessageSquare}
+          trend={
+            safeOpenTickets > 10
+              ? "High"
+              : safeOpenTickets > 0
+                ? "Active"
+                : "Clear"
+          }
           trendNegative={safeOpenTickets > 10}
           onClick={() => navigate("/admin/support")}
         />
@@ -125,15 +158,16 @@ export default function AdminDashboard() {
 
       {/* Analytics Command Center */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 relative z-10">
-        
         {/* Main Throughput Chart */}
         <div className="lg:col-span-8">
-          <ChartCard 
-            title="Marketplace Throughput" 
+          <ChartCard
+            title="Marketplace Throughput"
             subtitle="30-Day Financial Performance Telemetry"
             action={
               <div className="flex items-center gap-2 bg-[#2D2D2D] p-1 rounded-[6px]">
-                <span className="px-3 py-1 bg-[#CCFF00] text-black text-[10px] font-bold uppercase rounded-[4px]">Live</span>
+                <span className="px-3 py-1 bg-[#CCFF00] text-black text-[10px] font-bold uppercase rounded-[4px]">
+                  Live
+                </span>
               </div>
             }
           >
@@ -142,18 +176,47 @@ export default function AdminDashboard() {
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#CCFF00" stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor="#CCFF00" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#CCFF00" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#CCFF00" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 10}} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 10}} />
-                  <Tooltip 
-                    contentStyle={{backgroundColor: '#0A0A0A', border: '1px solid #2D2D2D', borderRadius: '12px'}}
-                    itemStyle={{color: '#CCFF00', fontWeight: 'bold', textTransform: 'uppercase'}}
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="#ffffff05"
                   />
-                  <Area type="monotone" dataKey="amount" stroke="#CCFF00" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#9CA3AF", fontSize: 10 }}
+                    dy={10}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#9CA3AF", fontSize: 10 }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#0A0A0A",
+                      border: "1px solid #2D2D2D",
+                      borderRadius: "12px",
+                    }}
+                    itemStyle={{
+                      color: "#CCFF00",
+                      fontWeight: "bold",
+                      textTransform: "uppercase",
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="amount"
+                    stroke="#CCFF00"
+                    strokeWidth={3}
+                    fillOpacity={1}
+                    fill="url(#colorValue)"
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -162,18 +225,43 @@ export default function AdminDashboard() {
 
         {/* Governance & Moderation Sidebar */}
         <div className="lg:col-span-4 space-y-6">
-          <ChartCard title="Moderation Queue" subtitle="Pending Content Approvals">
+          <ChartCard
+            title="Moderation Queue"
+            subtitle="Pending Content Approvals"
+          >
             <div className="space-y-4 mt-2">
-              <ModerationItem icon={BookOpen} label="Blogs" count={safePublishedBlogs} onClick={() => navigate("/admin/blogs")} />
-              <ModerationItem icon={Share2} label="Community Posts" count={safeTotalCommunityPosts} onClick={() => navigate("/admin/community")} />
-              <ModerationItem icon={Trophy} label="Hosted Games" count={safeTotalHostedGames} onClick={() => navigate("/admin/games")} />
-              <ModerationItem icon={ShieldAlert} label="Active Disputes" count={safePendingDisputes} color="text-red-500" onClick={() => navigate("/admin/disputes")} />
+              <ModerationItem
+                icon={BookOpen}
+                label="Blogs"
+                count={safePublishedBlogs}
+                onClick={() => navigate("/admin/blogs")}
+              />
+              <ModerationItem
+                icon={Share2}
+                label="Community Posts"
+                count={safeTotalCommunityPosts}
+                onClick={() => navigate("/admin/community")}
+              />
+              <ModerationItem
+                icon={Trophy}
+                label="Hosted Games"
+                count={safeTotalHostedGames}
+                onClick={() => navigate("/admin/games")}
+              />
+              <ModerationItem
+                icon={ShieldAlert}
+                label="Active Disputes"
+                count={safePendingDisputes}
+                color="text-red-500"
+                onClick={() => navigate("/admin/disputes")}
+              />
             </div>
-            <button 
+            <button
               onClick={() => navigate("/admin/marketing")}
               className="w-full mt-6 py-3 bg-white/5 border border-white/10 hover:border-[#CCFF00]/50 hover:bg-[#CCFF00]/5 text-white hover:text-[#CCFF00] rounded-[8px] transition-all font-bold uppercase text-[10px] tracking-widest group"
             >
-              Open CMS Hub <ChevronRight className="w-3 h-3 inline ml-2 group-hover:translate-x-1 transition-transform" />
+              Open CMS Hub{" "}
+              <ChevronRight className="w-3 h-3 inline ml-2 group-hover:translate-x-1 transition-transform" />
             </button>
           </ChartCard>
 
@@ -189,18 +277,29 @@ export default function AdminDashboard() {
                 const d = log?.createdAt ? new Date(log.createdAt) : null;
                 const isValidDate = d && !isNaN(d.getTime());
                 return (
-                  <div 
-                    key={i} 
+                  <div
+                    key={i}
                     onClick={() => navigate("/admin/audit")}
                     className="border-l border-[#2D2D2D] pl-4 py-1 relative cursor-pointer hover:bg-white/[0.02] transition-colors"
                   >
                     <div className="absolute top-0 left-[-4.5px] w-2 h-2 rounded-full bg-[#CCFF00]/50" />
-                    <p className="text-[10px] font-bold text-[#CCFF00] uppercase tracking-tight">{log?.action || "SYSTEM"}</p>
-                    <p className="text-[11px] text-white/80 mt-0.5">{log?.details?.email || log?.module || ""}</p>
+                    <p className="text-[10px] font-bold text-[#CCFF00] uppercase tracking-tight">
+                      {log?.action || "SYSTEM"}
+                    </p>
+                    <p className="text-[11px] text-white/80 mt-0.5">
+                      {log?.details?.email || log?.module || ""}
+                    </p>
                     <div className="flex justify-between items-center mt-1">
-                      <span className="text-[9px] text-gray-500 font-medium">By {log?.admin?.name || "System"}</span>
+                      <span className="text-[9px] text-gray-500 font-medium">
+                        By {log?.admin?.name || "System"}
+                      </span>
                       <span className="text-[9px] text-gray-500">
-                        {isValidDate ? d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "N/A"}
+                        {isValidDate
+                          ? d.toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : "N/A"}
                       </span>
                     </div>
                   </div>
@@ -210,31 +309,52 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }
 
-const StatsCard = ({ title, value, prefix = "", suffix = "", icon: Icon, trend = null, trendNegative = false, onClick = null }) => (
-  <div 
+const StatsCard = ({
+  title,
+  value,
+  prefix = "",
+  suffix = "",
+  icon: Icon,
+  trend = null,
+  trendNegative = false,
+  onClick = null,
+}) => (
+  <div
     onClick={onClick}
-    className={`bg-[#000000] border border-[#2D2D2D] rounded-[8px] p-5 flex flex-col relative overflow-hidden group hover:border-[#CCFF00]/30 transition-all duration-500 min-h-[140px] shadow-2xl ${onClick ? 'cursor-pointer' : ''}`}
+    className={`bg-[#000000] border border-[#2D2D2D] rounded-[8px] p-5 flex flex-col relative overflow-hidden group hover:border-[#CCFF00]/30 transition-all duration-500 min-h-[140px] shadow-2xl ${onClick ? "cursor-pointer" : ""}`}
   >
     <Icon className="absolute -right-4 -bottom-4 w-20 h-20 text-white/[0.02] group-hover:text-white/[0.04] transition-colors" />
     <div className="flex items-center justify-between mb-5 relative z-10">
       <div className="w-10 h-10 bg-[#CCFF00]/10 rounded-[6px] text-[#CCFF00] flex items-center justify-center border border-[#CCFF00]/20 shadow-sm">
         <Icon size={20} />
       </div>
-      <div className={`px-2 py-0.5 rounded-[6px] text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 ${ trend === 'Stable' || trend === 'Optimal' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : trendNegative ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20' }`}>
+      <div
+        className={`px-2 py-0.5 rounded-[6px] text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 ${trend === "Stable" || trend === "Optimal" ? "bg-blue-500/10 text-blue-400 border border-blue-500/20" : trendNegative ? "bg-red-500/10 text-red-400 border border-red-500/20" : "bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20"}`}
+      >
         {trend}
       </div>
     </div>
     <div className="space-y-2 relative z-10">
-      <h3 className="text-[10px] font-bold text-[#878C9F] uppercase tracking-[1px]">{title}</h3>
+      <h3 className="text-[10px] font-bold text-[#878C9F] uppercase tracking-[1px]">
+        {title}
+      </h3>
       <div className="text-2xl font-bold text-white tracking-tighter flex items-baseline gap-1">
-        {prefix && <span className="text-sm text-white/40 font-normal">{prefix}</span>}
-        <CountUp end={value} duration={2.5} separator="," decimals={value % 1 === 0 ? 0 : 1} />
-        {suffix && <span className="text-sm text-white/40 font-normal">{suffix}</span>}
+        {prefix && (
+          <span className="text-sm text-white/40 font-normal">{prefix}</span>
+        )}
+        <CountUp
+          end={value}
+          duration={2.5}
+          separator=","
+          decimals={value % 1 === 0 ? 0 : 1}
+        />
+        {suffix && (
+          <span className="text-sm text-white/40 font-normal">{suffix}</span>
+        )}
       </div>
     </div>
   </div>
@@ -245,8 +365,12 @@ const ChartCard = ({ title, subtitle, children, action = null }) => (
     <div className="absolute top-0 right-0 w-32 h-32 bg-[#CCFF00]/5 blur-[60px] group-hover:bg-[#CCFF00]/10 transition-colors pointer-events-none"></div>
     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6 relative z-10 shrink-0">
       <div>
-        <h2 className="text-[14px] font-bold text-white uppercase tracking-wider leading-none mb-2">{title}</h2>
-        <p className="text-[10px] text-[#999999] uppercase tracking-widest">{subtitle}</p>
+        <h2 className="text-[14px] font-bold text-white uppercase tracking-wider leading-none mb-2">
+          {title}
+        </h2>
+        <p className="text-[10px] text-[#999999] uppercase tracking-widest">
+          {subtitle}
+        </p>
       </div>
       {action && <div className="z-20">{action}</div>}
     </div>
@@ -254,19 +378,25 @@ const ChartCard = ({ title, subtitle, children, action = null }) => (
   </div>
 );
 
-const ModerationItem = ({ icon: Icon, label, count, color = "text-white", onClick }) => (
-  <div 
+const ModerationItem = ({
+  icon: Icon,
+  label,
+  count,
+  color = "text-white",
+  onClick,
+}) => (
+  <div
     onClick={onClick}
-    className={`flex items-center justify-between p-3 bg-white/[0.02] border border-white/5 rounded-[8px] hover:border-[#CCFF00]/30 transition-all ${onClick ? 'cursor-pointer hover:bg-[#CCFF00]/5' : ''}`}
+    className={`flex items-center justify-between p-3 bg-white/[0.02] border border-white/5 rounded-[8px] hover:border-[#CCFF00]/30 transition-all ${onClick ? "cursor-pointer hover:bg-[#CCFF00]/5" : ""}`}
   >
     <div className="flex items-center gap-3">
       <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
         <Icon className="w-4 h-4 text-[#CCFF00]" />
       </div>
-      <span className="text-[11px] font-bold text-gray-400 uppercase tracking-tight">{label}</span>
+      <span className="text-[11px] font-bold text-gray-400 uppercase tracking-tight">
+        {label}
+      </span>
     </div>
     <span className={`text-sm font-black ${color}`}>{count}</span>
   </div>
 );
-
-

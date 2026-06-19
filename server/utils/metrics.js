@@ -138,7 +138,10 @@ if (process.env.NODE_ENV !== "test") {
         queueDepth.set({ queue_name: name, status: "delayed" }, counts.delayed);
         queueDepth.set({ queue_name: name, status: "failed" }, counts.failed);
       } catch (error) {
-        logger.error(`[METRICS] Error fetching counts for queue ${name}:`, error);
+        logger.error(
+          `[METRICS] Error fetching counts for queue ${name}:`,
+          error
+        );
       }
     }
   }, 30000);

@@ -1,7 +1,7 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, Shield, MapPin, ExternalLink } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, Users, Shield, ExternalLink } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const TeamMembersModal = ({ isOpen, onClose, team }) => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const TeamMembersModal = ({ isOpen, onClose, team }) => {
             onClick={onClose}
             className="absolute inset-0 bg-black/80 backdrop-blur-sm"
           />
-          
+
           <motion.div
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -31,17 +31,23 @@ const TeamMembersModal = ({ isOpen, onClose, team }) => {
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-[8px] bg-[#1a1a1a] border border-white/10 flex items-center justify-center overflow-hidden">
                   {team.logo ? (
-                    <img src={team.logo} alt="" className="w-full h-full object-cover" />
+                    <img
+                      src={team.logo}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     <Users className="text-[#BFF367]" size={20} />
                   )}
                 </div>
                 <div>
                   <h3 className="font-bold text-lg text-white">{team.name}</h3>
-                  <p className="text-[10px] text-[#BFF367] font-black uppercase tracking-widest">{team.memberCount} Squad Members</p>
+                  <p className="text-[10px] text-[#BFF367] font-black uppercase tracking-widest">
+                    {team.memberCount} Squad Members
+                  </p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={onClose}
                 className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all"
               >
@@ -53,39 +59,49 @@ const TeamMembersModal = ({ isOpen, onClose, team }) => {
             <div className="p-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
               <div className="space-y-3">
                 {team.members?.map((member, idx) => (
-                  <div 
+                  <div
                     key={member.user?._id || idx}
                     className="flex items-center justify-between p-3 rounded-[8px] bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all group"
                   >
                     <div className="flex items-center gap-3">
-                      <div 
+                      <div
                         onClick={() => {
-                          if (member.user?._id) navigate(`/profile/${member.user._id}`);
+                          if (member.user?._id)
+                            navigate(`/profile/${member.user._id}`);
                         }}
                         className="w-10 h-10 rounded-full border border-white/10 overflow-hidden cursor-pointer hover:border-[#BFF367] transition-all"
                       >
                         {member.user?.profilePicture ? (
-                           <img src={member.user.profilePicture} alt="" className="w-full h-full object-cover" />
+                          <img
+                            src={member.user.profilePicture}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
                           <div className="w-full h-full bg-white/5 flex items-center justify-center text-xs text-white/40 uppercase">
-                            {member.user?.name?.[0] || 'P'}
+                            {member.user?.name?.[0] || "P"}
                           </div>
                         )}
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <p className="text-sm font-bold text-white group-hover:text-[#BFF367] transition-colors">{member.user?.name}</p>
-                          {member.role === 'OWNER' && (
+                          <p className="text-sm font-bold text-white group-hover:text-[#BFF367] transition-colors">
+                            {member.user?.name}
+                          </p>
+                          {member.role === "OWNER" && (
                             <Shield size={10} className="text-[#BFF367]" />
                           )}
                         </div>
-                        <p className="text-[10px] text-white/20 font-medium uppercase tracking-wider">@{member.user?.username || 'player'}</p>
+                        <p className="text-[10px] text-white/20 font-medium uppercase tracking-wider">
+                          @{member.user?.username || "player"}
+                        </p>
                       </div>
                     </div>
-                    
-                    <button 
+
+                    <button
                       onClick={() => {
-                        if (member.user?._id) navigate(`/profile/${member.user._id}`);
+                        if (member.user?._id)
+                          navigate(`/profile/${member.user._id}`);
                       }}
                       className="p-2 rounded-[8px] bg-white/5 text-white/40 opacity-0 group-hover:opacity-100 transition-all hover:bg-[#BFF367] hover:text-black"
                     >
@@ -98,7 +114,7 @@ const TeamMembersModal = ({ isOpen, onClose, team }) => {
 
             {/* Footer */}
             <div className="p-6 border-t border-white/5 bg-white/[0.01]">
-              <button 
+              <button
                 onClick={() => navigate(`/team/${team._id}`)}
                 className="w-full py-4 bg-gradient-to-r from-[#BFF367] to-[#BFF367] hover:brightness-[1.04] text-black font-black text-xs uppercase tracking-[0.2em] rounded-[8px] shadow-lg shadow-[#BFF367]/10 hover:shadow-[#BFF367]/15 transition-all hover:scale-[1.02] active:scale-[0.98] duration-300"
               >

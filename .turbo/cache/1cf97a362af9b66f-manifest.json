@@ -1,1 +1,104 @@
-{"files":{"client/user/dist/assets/index-K-aZAxQV.js":{"size":2601968,"mtime_nanos":1778476099092482900,"mode":420,"is_dir":false},"client/user/dist/banner-1.png":{"size":5363815,"mtime_nanos":1778475896348300000,"mode":420,"is_dir":false},"client/user/dist/favicon.png":{"size":935,"mtime_nanos":1778475896356351800,"mode":420,"is_dir":false},"client/user/dist/sports_app_mockup_1777351423147.png":{"size":1477236,"mtime_nanos":1778475896371064400,"mode":420,"is_dir":false},"client/user/dist/assets":{"size":0,"mtime_nanos":0,"mode":0,"is_dir":true},"client/user/dist/auth-bg.png":{"size":903280,"mtime_nanos":1778475896331425400,"mode":420,"is_dir":false},"client/user/dist/banner-2.jpeg":{"size":371533,"mtime_nanos":1778475896352343000,"mode":420,"is_dir":false},"client/user/dist/hero image.png":{"size":1272448,"mtime_nanos":1778475896360373900,"mode":420,"is_dir":false},"client/user/dist/index.html":{"size":636,"mtime_nanos":1778476099091681200,"mode":420,"is_dir":false},"client/user/dist/banner-3.jpeg":{"size":471638,"mtime_nanos":1778475896355352000,"mode":420,"is_dir":false},"client/user/dist/logo.png":{"size":94777,"mtime_nanos":1778475896361382300,"mode":420,"is_dir":false},"client/user/dist/assets/index-DIOPqj-N.css":{"size":229008,"mtime_nanos":1778476099090163900,"mode":420,"is_dir":false},"client/user/.turbo/turbo-build.log":{"size":1200,"mtime_nanos":1778476099282219700,"mode":420,"is_dir":false},"client/user/dist":{"size":0,"mtime_nanos":0,"mode":0,"is_dir":true}},"order":["client/user/.turbo/turbo-build.log","client/user/dist","client/user/dist/assets","client/user/dist/assets/index-DIOPqj-N.css","client/user/dist/assets/index-K-aZAxQV.js","client/user/dist/auth-bg.png","client/user/dist/banner-1.png","client/user/dist/banner-2.jpeg","client/user/dist/banner-3.jpeg","client/user/dist/favicon.png","client/user/dist/hero image.png","client/user/dist/index.html","client/user/dist/logo.png","client/user/dist/sports_app_mockup_1777351423147.png"]}
+{
+  "files": {
+    "client/user/dist/assets/index-K-aZAxQV.js": {
+      "size": 2601968,
+      "mtime_nanos": 1778476099092482900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "client/user/dist/banner-1.png": {
+      "size": 5363815,
+      "mtime_nanos": 1778475896348300000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "client/user/dist/favicon.png": {
+      "size": 935,
+      "mtime_nanos": 1778475896356351800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "client/user/dist/sports_app_mockup_1777351423147.png": {
+      "size": 1477236,
+      "mtime_nanos": 1778475896371064400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "client/user/dist/assets": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "client/user/dist/auth-bg.png": {
+      "size": 903280,
+      "mtime_nanos": 1778475896331425400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "client/user/dist/banner-2.jpeg": {
+      "size": 371533,
+      "mtime_nanos": 1778475896352343000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "client/user/dist/hero image.png": {
+      "size": 1272448,
+      "mtime_nanos": 1778475896360373900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "client/user/dist/index.html": {
+      "size": 636,
+      "mtime_nanos": 1778476099091681200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "client/user/dist/banner-3.jpeg": {
+      "size": 471638,
+      "mtime_nanos": 1778475896355352000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "client/user/dist/logo.png": {
+      "size": 94777,
+      "mtime_nanos": 1778475896361382300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "client/user/dist/assets/index-DIOPqj-N.css": {
+      "size": 229008,
+      "mtime_nanos": 1778476099090163900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "client/user/.turbo/turbo-build.log": {
+      "size": 1200,
+      "mtime_nanos": 1778476099282219700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "client/user/dist": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    }
+  },
+  "order": [
+    "client/user/.turbo/turbo-build.log",
+    "client/user/dist",
+    "client/user/dist/assets",
+    "client/user/dist/assets/index-DIOPqj-N.css",
+    "client/user/dist/assets/index-K-aZAxQV.js",
+    "client/user/dist/auth-bg.png",
+    "client/user/dist/banner-1.png",
+    "client/user/dist/banner-2.jpeg",
+    "client/user/dist/banner-3.jpeg",
+    "client/user/dist/favicon.png",
+    "client/user/dist/hero image.png",
+    "client/user/dist/index.html",
+    "client/user/dist/logo.png",
+    "client/user/dist/sports_app_mockup_1777351423147.png"
+  ]
+}

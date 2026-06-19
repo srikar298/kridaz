@@ -16,12 +16,12 @@
  * Object keys are sorted so the snapshot is stable regardless of property order.
  */
 export function keyShape(value) {
-  if (value === null) return 'null';
+  if (value === null) return "null";
   if (Array.isArray(value)) {
     if (value.length === 0) return [];
     return [mergeShapes(value.map(keyShape))];
   }
-  if (typeof value === 'object') {
+  if (typeof value === "object") {
     const out = {};
     for (const key of Object.keys(value).sort()) {
       out[key] = keyShape(value[key]);
@@ -44,11 +44,13 @@ function mergeShapes(shapes) {
 
   // All same primitive? Done.
   const first = shapes[0];
-  const allEqual = shapes.every((s) => JSON.stringify(s) === JSON.stringify(first));
+  const allEqual = shapes.every(
+    (s) => JSON.stringify(s) === JSON.stringify(first)
+  );
   if (allEqual) return first;
 
   // Mixed objects — union their keys.
-  if (shapes.every((s) => s && typeof s === 'object' && !Array.isArray(s))) {
+  if (shapes.every((s) => s && typeof s === "object" && !Array.isArray(s))) {
     const out = {};
     const keys = new Set();
     for (const s of shapes) for (const k of Object.keys(s)) keys.add(k);
@@ -60,5 +62,5 @@ function mergeShapes(shapes) {
   }
 
   // Mixed primitives / mixed object-and-primitive — surface the polymorphism.
-  return [...new Set(shapes.map((s) => JSON.stringify(s)))].join('|');
+  return [...new Set(shapes.map((s) => JSON.stringify(s)))].join("|");
 }

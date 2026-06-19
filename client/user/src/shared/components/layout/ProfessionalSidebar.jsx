@@ -1,29 +1,25 @@
 import React from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { 
-  X, 
-  LayoutDashboard, 
-  Users, 
-  Calendar, 
-  Video, 
-  HelpCircle, 
-  Home,
-  Target,
+import {
+  X,
+  LayoutDashboard,
   Activity,
   Clock,
   User,
   IndianRupee,
-  Landmark,
-  Trophy,
-  Play,
-  Star
+  Star,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@redux/slices/authSlice.js";
 import { getDynamicProfileRoute } from "@utils/routeUtils";
 import { useNavigate } from "react-router-dom";
 
-const ProfessionalSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
+const ProfessionalSidebar = ({
+  isOpen,
+  toggleSidebar,
+  isMinimized,
+  className,
+}) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -41,8 +37,16 @@ const ProfessionalSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) 
     { to: `/professional/${role}`, label: "Overview", icon: LayoutDashboard },
     { to: `/professional/${role}/profile`, label: "Edit Profile", icon: User },
     { to: `/professional/${role}/bookings`, label: "Bookings", icon: Activity },
-    { to: `/professional/${role}/payouts`, label: "Payouts & Earnings", icon: IndianRupee },
-    { to: `/professional/${role}/reviews`, label: "Reviews & Feedback", icon: Star },
+    {
+      to: `/professional/${role}/payouts`,
+      label: "Payouts & Earnings",
+      icon: IndianRupee,
+    },
+    {
+      to: `/professional/${role}/reviews`,
+      label: "Reviews & Feedback",
+      icon: Star,
+    },
   ];
 
   const bottomNavItems = [];
@@ -50,14 +54,16 @@ const ProfessionalSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) 
   const renderNavItem = (item) => {
     const isLogout = item.action === "logout";
     // Check active status properly accounting for potential trailing slashes or exact matches
-    const isActive = !isLogout && (location.pathname === item.to || location.pathname === item.to + "/");
+    const isActive =
+      !isLogout &&
+      (location.pathname === item.to || location.pathname === item.to + "/");
     const Icon = item.icon;
 
     return (
       <Link
         key={item.to || item.label}
         to={item.to || "#"}
-        className={`flex items-center px-4 py-3 group relative transition-all duration-300 font-inter ${ isLogout ? "text-white/40 hover:text-red-500" : isActive ? "text-black" : "text-[#878C9F] hover:text-white" }`}
+        className={`flex items-center px-4 py-3 group relative transition-all duration-300 font-inter ${isLogout ? "text-white/40 hover:text-red-500" : isActive ? "text-black" : "text-[#878C9F] hover:text-white"}`}
         onClick={(e) => {
           if (isLogout) {
             e.preventDefault();
@@ -73,7 +79,7 @@ const ProfessionalSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) 
         {isActive && !isLogout && (
           <div className="absolute inset-x-2 inset-y-1 bg-[#BFF367] rounded-[6px] -z-10 shadow-[var(--shadow-2)] transition-all duration-300" />
         )}
-        
+
         {/* Hover Background */}
         {!isActive && !isLogout && (
           <div className="absolute inset-x-2 inset-y-1 bg-[#2D2D2D]/30 border border-[#2D2D2D] rounded-[6px] -z-10 opacity-0 group-hover:opacity-100 transition-all duration-300" />
@@ -82,15 +88,17 @@ const ProfessionalSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) 
         {isLogout && (
           <div className="absolute inset-x-2 inset-y-1 bg-white/5 rounded-[6px] -z-10 opacity-0 group-hover:opacity-100 group-hover:bg-red-500/10 transition-all duration-300" />
         )}
-        
+
         <div className="flex-shrink-0 flex items-center justify-center w-6">
-          <Icon 
-            size={18} 
-            className={`transition-colors duration-300 ${ isLogout ? "text-white/20 group-hover:text-red-500" : isActive ? "text-black" : "text-[#878C9F] group-hover:text-[#BFF367]" }`} 
+          <Icon
+            size={18}
+            className={`transition-colors duration-300 ${isLogout ? "text-white/20 group-hover:text-red-500" : isActive ? "text-black" : "text-[#878C9F] group-hover:text-[#BFF367]"}`}
           />
         </div>
 
-        <span className={`font-semibold text-[13px] tracking-wide ml-4 whitespace-nowrap overflow-hidden transition-all duration-300 ${isMinimized ? "opacity-0 w-0" : "opacity-100 w-auto"}`}>
+        <span
+          className={`font-semibold text-[13px] tracking-wide ml-4 whitespace-nowrap overflow-hidden transition-all duration-300 ${isMinimized ? "opacity-0 w-0" : "opacity-100 w-auto"}`}
+        >
           {item.label}
         </span>
       </Link>
@@ -101,7 +109,7 @@ const ProfessionalSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) 
     <>
       {/* Mobile Overlay */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/80 backdrop-blur-md z-40 lg:hidden animate-in fade-in duration-300"
           onClick={toggleSidebar}
         />
@@ -112,7 +120,10 @@ const ProfessionalSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) 
       >
         <div className="flex flex-col p-4 border-b border-[#2D2D2D] bg-[#000000] gap-4 lg:hidden">
           <div className="flex items-center justify-end">
-            <button onClick={toggleSidebar} className="text-white hover:text-[#BFF367] transition-colors">
+            <button
+              onClick={toggleSidebar}
+              className="text-white hover:text-[#BFF367] transition-colors"
+            >
               <X size={20} />
             </button>
           </div>
@@ -131,6 +142,5 @@ const ProfessionalSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) 
     </>
   );
 };
-
 
 export default ProfessionalSidebar;

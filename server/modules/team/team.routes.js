@@ -6,13 +6,13 @@ import adminTeamRouter from "./routes/admin.routes.js";
 /**
  * Team Domain Router
  * Mounts actor-specific sub-routers for the Team module.
- * 
+ *
  * Routes:
  * /api/team/user/...
  * /api/team/owner/...
  * /api/team/admin/...
- * 
- * NOTE: For backward compatibility, the base /api/team/... routes 
+ *
+ * NOTE: For backward compatibility, the base /api/team/... routes
  * are handled by mounting the user router at the root of this module.
  */
 

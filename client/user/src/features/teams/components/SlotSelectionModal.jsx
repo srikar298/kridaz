@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
-import { X, UserPlus, Users, Sparkles, User, Mail, ChevronRight } from 'lucide-react';
-import { useGetMyTeamsQuery } from '@redux/api/teamApi';
+import React, { useState } from "react";
+import {
+  X,
+  UserPlus,
+  Users,
+  Sparkles,
+  User,
+  Mail,
+  ChevronRight,
+} from "lucide-react";
+import { useGetMyTeamsQuery } from "@redux/api/teamApi";
 
 const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
-  const [activeTab, setActiveTab] = useState('squad'); // 'squad' or 'guest'
-  const [guestName, setGuestName] = useState('');
-  const [guestEmail, setGuestEmail] = useState('');
-  
+  const [activeTab, setActiveTab] = useState("squad"); // 'squad' or 'guest'
+  const [guestName, setGuestName] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
+
   const { data: teamsData, isLoading } = useGetMyTeamsQuery();
   const myTeams = teamsData?.teams || [];
 
@@ -15,16 +23,16 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
   const handleGuestSubmit = (e) => {
     e.preventDefault();
     if (!guestName.trim()) return;
-    
+
     onSelect({
       isCustom: true,
       name: guestName.trim(),
-      email: guestEmail.trim() || undefined
+      email: guestEmail.trim() || undefined,
     });
-    
+
     // Clear inputs
-    setGuestName('');
-    setGuestEmail('');
+    setGuestName("");
+    setGuestEmail("");
   };
 
   const handleSquadMemberSelect = (member) => {
@@ -33,13 +41,13 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
         isCustom: false,
         _id: member.user._id,
         name: member.user.name,
-        email: member.user.email
+        email: member.user.email,
       });
     } else {
       onSelect({
         isCustom: true,
         name: member.name,
-        email: member.email
+        email: member.email,
       });
     }
   };
@@ -48,8 +56,8 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
   const allUniqueMembers = [];
   const addedUserIds = new Set();
 
-  myTeams.forEach(team => {
-    team.members?.forEach(member => {
+  myTeams.forEach((team) => {
+    team.members?.forEach((member) => {
       const uniqueKey = member.user?._id || member.email || member.name;
       if (!addedUserIds.has(uniqueKey)) {
         addedUserIds.add(uniqueKey);
@@ -63,7 +71,7 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
       <div className="relative w-full max-w-lg overflow-hidden rounded-[8px] border border-white/10 bg-slate-900 shadow-2xl">
         {/* Glow decoration */}
         <div className="absolute -top-[30%] -right-[30%] w-[60%] h-[60%] rounded-full bg-violet-600/10 blur-[80px] pointer-events-none" />
-        
+
         {/* Header */}
         <div className="relative flex justify-between items-center px-6 py-5 border-b border-white/5 bg-slate-900/40">
           <div>
@@ -71,10 +79,12 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
               <Sparkles className="h-4.5 w-4.5 text-violet-400" />
               Assign Roster Slot
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">Select a club member or add a guest player</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Select a club member or add a guest player
+            </p>
           </div>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="p-1.5 rounded-lg bg-slate-800/80 text-slate-400 hover:text-slate-200 hover:bg-slate-700/80 transition-all"
           >
             <X className="h-5 w-5" />
@@ -85,16 +95,16 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
         <div className="relative flex border-b border-white/5 bg-slate-950/30 p-1.5 m-4 rounded-[8px]">
           <button
             type="button"
-            onClick={() => setActiveTab('squad')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all ${ activeTab === 'squad' ? 'bg-violet-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200' }`}
+            onClick={() => setActiveTab("squad")}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all ${activeTab === "squad" ? "bg-violet-600 text-white shadow-md" : "text-slate-400 hover:text-slate-200"}`}
           >
             <Users className="h-4 w-4" />
             Club Squad Members
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('guest')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all ${ activeTab === 'guest' ? 'bg-violet-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200' }`}
+            onClick={() => setActiveTab("guest")}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all ${activeTab === "guest" ? "bg-violet-600 text-white shadow-md" : "text-slate-400 hover:text-slate-200"}`}
           >
             <UserPlus className="h-4 w-4" />
             Guest Player
@@ -103,7 +113,7 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
 
         {/* Content */}
         <div className="relative p-6 max-h-[350px] overflow-y-auto custom-scrollbar">
-          {activeTab === 'squad' && (
+          {activeTab === "squad" && (
             <div className="space-y-2">
               {isLoading ? (
                 <div className="py-12 text-center text-xs text-slate-500 animate-pulse">
@@ -111,7 +121,8 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
                 </div>
               ) : allUniqueMembers.length === 0 ? (
                 <div className="py-12 text-center text-xs text-slate-500">
-                  No squad members found. Switch to Guest Player to add slot details manually!
+                  No squad members found. Switch to Guest Player to add slot
+                  details manually!
                 </div>
               ) : (
                 allUniqueMembers.map((member, idx) => (
@@ -123,14 +134,17 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
                   >
                     <div className="flex items-center gap-3">
                       <div className="h-9 w-9 rounded-full bg-violet-600/10 border border-violet-500/20 flex items-center justify-center text-violet-400 text-sm font-bold group-hover:scale-105 transition-transform">
-                        {member.user?.name ? member.user.name.charAt(0).toUpperCase() : member.name.charAt(0).toUpperCase()}
+                        {member.user?.name
+                          ? member.user.name.charAt(0).toUpperCase()
+                          : member.name.charAt(0).toUpperCase()}
                       </div>
                       <div>
                         <span className="font-bold text-slate-200 block text-xs group-hover:text-violet-400 transition-colors">
                           {member.user?.name || member.name}
                         </span>
                         <span className="text-[10px] text-slate-400 block mt-0.5">
-                          {member.role || 'Member'} • {member.user?.email || member.email || 'No email'}
+                          {member.role || "Member"} •{" "}
+                          {member.user?.email || member.email || "No email"}
                         </span>
                       </div>
                     </div>
@@ -141,12 +155,17 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
             </div>
           )}
 
-          {activeTab === 'guest' && (
+          {activeTab === "guest" && (
             <form onSubmit={handleGuestSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-300 ml-1">Player Full Name</label>
+                <label className="text-xs font-semibold text-slate-300 ml-1">
+                  Player Full Name
+                </label>
                 <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                  <User
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"
+                    size={16}
+                  />
                   <input
                     type="text"
                     required
@@ -159,9 +178,14 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-300 ml-1">Email Address (Optional)</label>
+                <label className="text-xs font-semibold text-slate-300 ml-1">
+                  Email Address (Optional)
+                </label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                  <Mail
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"
+                    size={16}
+                  />
                   <input
                     type="email"
                     value={guestEmail}

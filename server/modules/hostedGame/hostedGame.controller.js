@@ -1,3 +1,11 @@
+import {
+  BadRequestError,
+  NotFoundError,
+  ForbiddenError,
+  ConflictError,
+  UnauthorizedError,
+  InternalError,
+} from "@kridaz/common";
 import { prisma } from "../../config/prisma.js";
 import { randomUUID } from "crypto";
 import NotificationService from "../../services/notification.service.js";
@@ -11,16 +19,28 @@ import { liveStateService } from "../../services/liveState.service.js";
 import SocialService from "../../services/social.service.js";
 const fullGameInclude = {
   host: { select: { id: true, name: true, profilePicture: true } },
-  turf: { select: { id: true, name: true, city: true, state: true, images: true } },
+  turf: {
+    select: { id: true, name: true, city: true, state: true, images: true },
+  },
   umpire: { select: { id: true, name: true, profilePicture: true } },
   scorer: { select: { id: true, name: true, profilePicture: true } },
   streamer: { select: { id: true, name: true, profilePicture: true } },
-  slots: { include: { user: { select: { id: true, name: true, profilePicture: true } }, customPlayer: { select: { name: true, email: true } } } },
+  slots: {
+    include: {
+      user: { select: { id: true, name: true, profilePicture: true } },
+      customPlayer: { select: { name: true, email: true } },
+    },
+  },
   teams: {
     include: {
-      slots: { include: { user: { select: { id: true, name: true, profilePicture: true } }, customPlayer: { select: { name: true, email: true } } } }
-    }
-  }
+      slots: {
+        include: {
+          user: { select: { id: true, name: true, profilePicture: true } },
+          customPlayer: { select: { name: true, email: true } },
+        },
+      },
+    },
+  },
 };
 
 const formatGameForClient = (game) => {
@@ -36,8 +56,8 @@ const formatGameForClient = (game) => {
   }
 
   if (Array.isArray(formatted.teams)) {
-    const teamA = formatted.teams.find(t => t.teamKey === 'teamA');
-    const teamB = formatted.teams.find(t => t.teamKey === 'teamB');
+    const teamA = formatted.teams.find((t) => t.teamKey === "teamA");
+    const teamB = formatted.teams.find((t) => t.teamKey === "teamB");
     formatted.teams = { teamA, teamB };
   }
 
@@ -56,7 +76,12 @@ const formatGameForClient = (game) => {
  */
 const decorateViewerFlags = (game, viewerId) => {
   if (!viewerId) {
-    return { isHost: false, youJoined: false, yourSlotId: null, yourSlotStatus: null };
+    return {
+      isHost: false,
+      youJoined: false,
+      yourSlotId: null,
+      yourSlotStatus: null,
+    };
   }
 
   // Slot ownership can come through two shapes depending on the include
@@ -68,7 +93,7 @@ const decorateViewerFlags = (game, viewerId) => {
   const quickSlots = Array.isArray(game.slots) ? game.slots : [];
   const teamRows = Array.isArray(game.teams)
     ? game.teams
-    : game.teams && typeof game.teams === 'object'
+    : game.teams && typeof game.teams === "object"
       ? Object.values(game.teams).filter(Boolean)
       : [];
 
@@ -77,7 +102,10 @@ const decorateViewerFlags = (game, viewerId) => {
     for (const team of teamRows) {
       const teamSlots = Array.isArray(team?.slots) ? team.slots : [];
       const hit = teamSlots.find(matches);
-      if (hit) { found = hit; break; }
+      if (hit) {
+        found = hit;
+        break;
+      }
     }
   }
 
@@ -93,16 +121,16 @@ const populateRequestUsers = async (games) => {
   if (!games || !games.length) return games;
 
   const userIds = new Set();
-  games.forEach(game => {
-    if (game.umpireRequest && typeof game.umpireRequest === 'object') {
+  games.forEach((game) => {
+    if (game.umpireRequest && typeof game.umpireRequest === "object") {
       const uReq = game.umpireRequest;
       if (uReq.userId) userIds.add(uReq.userId);
     }
-    if (game.scorerRequest && typeof game.scorerRequest === 'object') {
+    if (game.scorerRequest && typeof game.scorerRequest === "object") {
       const sReq = game.scorerRequest;
       if (sReq.userId) userIds.add(sReq.userId);
     }
-    if (game.streamerRequest && typeof game.streamerRequest === 'object') {
+    if (game.streamerRequest && typeof game.streamerRequest === "object") {
       const stReq = game.streamerRequest;
       if (stReq.userId) userIds.add(stReq.userId);
     }
@@ -112,25 +140,25 @@ const populateRequestUsers = async (games) => {
 
   const users = await prisma.user.findMany({
     where: { id: { in: Array.from(userIds) } },
-    select: { id: true, name: true, profilePicture: true }
+    select: { id: true, name: true, profilePicture: true },
   });
 
-  const userMap = new Map(users.map(u => [u.id, u]));
+  const userMap = new Map(users.map((u) => [u.id, u]));
 
-  games.forEach(game => {
-    if (game.umpireRequest && typeof game.umpireRequest === 'object') {
+  games.forEach((game) => {
+    if (game.umpireRequest && typeof game.umpireRequest === "object") {
       const uReq = game.umpireRequest;
       if (uReq.userId) {
         uReq.user = userMap.get(uReq.userId) || null;
       }
     }
-    if (game.scorerRequest && typeof game.scorerRequest === 'object') {
+    if (game.scorerRequest && typeof game.scorerRequest === "object") {
       const sReq = game.scorerRequest;
       if (sReq.userId) {
         sReq.user = userMap.get(sReq.userId) || null;
       }
     }
-    if (game.streamerRequest && typeof game.streamerRequest === 'object') {
+    if (game.streamerRequest && typeof game.streamerRequest === "object") {
       const stReq = game.streamerRequest;
       if (stReq.userId) {
         stReq.user = userMap.get(stReq.userId) || null;
@@ -143,13 +171,13 @@ const populateRequestUsers = async (games) => {
 
 // Helper to check usable balance
 const getUsableBalance = async (userId) => {
-  return await WalletService.getUsableBalance(userId, 'user');
+  return await WalletService.getUsableBalance(userId, "user");
 };
 
 // Helper: strip base64 images before saving to keep document size low
 const sanitizeImage = (img) => {
   if (!img) return null;
-  if (img.startsWith('data:')) {
+  if (img.startsWith("data:")) {
     // base64 â€” truncate if > 200KB to avoid extreme database payloads
     return img.length > 200000 ? img.substring(0, 200000) : img;
   }
@@ -164,22 +192,32 @@ export const getGroundsForHosting = async (req, res) => {
       where: {
         status: "approved",
         isActive: true,
-        ...(city ? { city: { contains: city, mode: 'insensitive' } } : {}),
-        ...(state ? { state: { contains: state, mode: 'insensitive' } } : {}),
-        ...(sportType ? { 
-          OR: [
-            { sportTypes: { has: sportType } },
-            { sportTypes: { has: sportType.charAt(0).toUpperCase() + sportType.toLowerCase().slice(1) } },
-            { sportTypes: { has: sportType.toLowerCase() } }
-          ]
-        } : {}),
-        ...(searchTerm ? {
-          OR: [
-            { name: { contains: searchTerm, mode: 'insensitive' } },
-            { city: { contains: searchTerm, mode: 'insensitive' } },
-            { state: { contains: searchTerm, mode: 'insensitive' } }
-          ]
-        } : {})
+        ...(city ? { city: { contains: city, mode: "insensitive" } } : {}),
+        ...(state ? { state: { contains: state, mode: "insensitive" } } : {}),
+        ...(sportType
+          ? {
+              OR: [
+                { sportTypes: { has: sportType } },
+                {
+                  sportTypes: {
+                    has:
+                      sportType.charAt(0).toUpperCase() +
+                      sportType.toLowerCase().slice(1),
+                  },
+                },
+                { sportTypes: { has: sportType.toLowerCase() } },
+              ],
+            }
+          : {}),
+        ...(searchTerm
+          ? {
+              OR: [
+                { name: { contains: searchTerm, mode: "insensitive" } },
+                { city: { contains: searchTerm, mode: "insensitive" } },
+                { state: { contains: searchTerm, mode: "insensitive" } },
+              ],
+            }
+          : {}),
       },
       select: {
         id: true,
@@ -188,8 +226,8 @@ export const getGroundsForHosting = async (req, res) => {
         state: true,
         images: true,
         pricePerHour: true,
-        sportTypes: true
-      }
+        sportTypes: true,
+      },
     });
 
     return res.status(200).json({ grounds });
@@ -206,16 +244,18 @@ export const getUmpiresForHosting = async (req, res) => {
       where: {
         user: {
           role: "UMPIRE",
-          ...(city ? { city: { contains: city, mode: 'insensitive' } } : {}),
-          ...(state ? { state: { contains: state, mode: 'insensitive' } } : {}),
-          ...(searchTerm ? {
-            OR: [
-              { name: { contains: searchTerm, mode: 'insensitive' } },
-              { phone: { contains: searchTerm, mode: 'insensitive' } },
-              { email: { contains: searchTerm, mode: 'insensitive' } }
-            ]
-          } : {})
-        }
+          ...(city ? { city: { contains: city, mode: "insensitive" } } : {}),
+          ...(state ? { state: { contains: state, mode: "insensitive" } } : {}),
+          ...(searchTerm
+            ? {
+                OR: [
+                  { name: { contains: searchTerm, mode: "insensitive" } },
+                  { phone: { contains: searchTerm, mode: "insensitive" } },
+                  { email: { contains: searchTerm, mode: "insensitive" } },
+                ],
+              }
+            : {}),
+        },
       },
       select: {
         id: true,
@@ -228,13 +268,13 @@ export const getUmpiresForHosting = async (req, res) => {
             profilePicture: true,
             city: true,
             state: true,
-            sportTypes: true
-          }
-        }
-      }
+            sportTypes: true,
+          },
+        },
+      },
     });
 
-    const formattedUmpires = umpires.map(u => ({
+    const formattedUmpires = umpires.map((u) => ({
       id: u.id,
       price: u.price,
       gameTypes: u.user.sportTypes || [],
@@ -243,7 +283,7 @@ export const getUmpiresForHosting = async (req, res) => {
       phone: u.user.phone,
       profilePicture: u.user.profilePicture,
       city: u.user.city,
-      state: u.user.state
+      state: u.user.state,
     }));
 
     return res.status(200).json({ umpires: formattedUmpires });
@@ -261,16 +301,18 @@ export const getStreamersForHosting = async (req, res) => {
       where: {
         user: {
           role: "STREAMER",
-          ...(city ? { city: { contains: city, mode: 'insensitive' } } : {}),
-          ...(state ? { state: { contains: state, mode: 'insensitive' } } : {}),
-          ...(searchTerm ? {
-            OR: [
-              { name: { contains: searchTerm, mode: 'insensitive' } },
-              { phone: { contains: searchTerm, mode: 'insensitive' } },
-              { email: { contains: searchTerm, mode: 'insensitive' } }
-            ]
-          } : {})
-        }
+          ...(city ? { city: { contains: city, mode: "insensitive" } } : {}),
+          ...(state ? { state: { contains: state, mode: "insensitive" } } : {}),
+          ...(searchTerm
+            ? {
+                OR: [
+                  { name: { contains: searchTerm, mode: "insensitive" } },
+                  { phone: { contains: searchTerm, mode: "insensitive" } },
+                  { email: { contains: searchTerm, mode: "insensitive" } },
+                ],
+              }
+            : {}),
+        },
       },
       select: {
         id: true,
@@ -283,13 +325,13 @@ export const getStreamersForHosting = async (req, res) => {
             profilePicture: true,
             city: true,
             state: true,
-            sportTypes: true
-          }
-        }
-      }
+            sportTypes: true,
+          },
+        },
+      },
     });
 
-    const formattedStreamers = streamers.map(s => ({
+    const formattedStreamers = streamers.map((s) => ({
       id: s.id,
       price: s.price,
       gameTypes: s.user.sportTypes || [],
@@ -298,7 +340,7 @@ export const getStreamersForHosting = async (req, res) => {
       phone: s.user.phone,
       profilePicture: s.user.profilePicture,
       city: s.user.city,
-      state: s.user.state
+      state: s.user.state,
     }));
 
     return res.status(200).json({ streamers: formattedStreamers });
@@ -320,16 +362,18 @@ export const getScorersForHosting = async (req, res) => {
       where: {
         user: {
           role: "SCORER",
-          ...(city ? { city: { contains: city, mode: 'insensitive' } } : {}),
-          ...(state ? { state: { contains: state, mode: 'insensitive' } } : {}),
-          ...(searchTerm ? {
-            OR: [
-              { name:  { contains: searchTerm, mode: 'insensitive' } },
-              { phone: { contains: searchTerm, mode: 'insensitive' } },
-              { email: { contains: searchTerm, mode: 'insensitive' } }
-            ]
-          } : {})
-        }
+          ...(city ? { city: { contains: city, mode: "insensitive" } } : {}),
+          ...(state ? { state: { contains: state, mode: "insensitive" } } : {}),
+          ...(searchTerm
+            ? {
+                OR: [
+                  { name: { contains: searchTerm, mode: "insensitive" } },
+                  { phone: { contains: searchTerm, mode: "insensitive" } },
+                  { email: { contains: searchTerm, mode: "insensitive" } },
+                ],
+              }
+            : {}),
+        },
       },
       select: {
         id: true,
@@ -342,13 +386,13 @@ export const getScorersForHosting = async (req, res) => {
             profilePicture: true,
             city: true,
             state: true,
-            sportTypes: true
-          }
-        }
-      }
+            sportTypes: true,
+          },
+        },
+      },
     });
 
-    const formattedScorers = scorers.map(s => ({
+    const formattedScorers = scorers.map((s) => ({
       id: s.id,
       price: s.price,
       gameTypes: s.user.sportTypes || [],
@@ -357,7 +401,7 @@ export const getScorersForHosting = async (req, res) => {
       phone: s.user.phone,
       profilePicture: s.user.profilePicture,
       city: s.user.city,
-      state: s.user.state
+      state: s.user.state,
     }));
 
     return res.status(200).json({ scorers: formattedScorers });
@@ -374,23 +418,46 @@ export const createHostedGame = async (req, res) => {
       logger.info("Creating hosted game for host:", hostId);
 
       const {
-        gameType, date, time, groundId, umpireId, streamerId, ground, umpire, streamer,
-        perPlayerCharge, teamA, teamB, city, state, groundPrice,
+        gameType,
+        date,
+        time,
+        groundId,
+        umpireId,
+        streamerId,
+        ground,
+        umpire,
+        streamer,
+        perPlayerCharge,
+        teamA,
+        teamB,
+        city,
+        state,
+        groundPrice,
         // Quick Game specific fields
         gameMode = "PROFESSIONAL",
         playerCount,
-        quickSlotsData = [],   // [{ role, userId, customPlayer }] from frontend
-        customUmpireData,      // { name, email, phone }
+        quickSlotsData = [], // [{ role, userId, customPlayer }] from frontend
+        customUmpireData, // { name, email, phone }
       } = req.body;
 
-      logger.info("Game Data:", { gameType, date, time, groundId, umpireId, city, groundPrice });
+      logger.info("Game Data:", {
+        gameType,
+        date,
+        time,
+        groundId,
+        umpireId,
+        city,
+        groundPrice,
+      });
 
       const finalGroundId = groundId || ground?.id;
       const finalUmpireId = umpireId || umpire?.id;
       const finalStreamerId = streamerId || streamer?.id;
 
       if (!hostId) {
-        throw new Error("Host ID missing. Please login again.");
+        throw new BadRequestError("Host ID missing. Please login again.", {
+          code: "BAD_REQUEST",
+        });
       }
 
       // 1. Calculate Total Costs
@@ -400,31 +467,44 @@ export const createHostedGame = async (req, res) => {
 
       if (finalGroundId) {
         const g = await tx.turf.findUnique({ where: { id: finalGroundId } });
-        groundCost = groundPrice !== undefined ? Number(groundPrice) : Number(g?.pricePerHour || 0);
+        groundCost =
+          groundPrice !== undefined
+            ? Number(groundPrice)
+            : Number(g?.pricePerHour || 0);
       }
 
       if (finalUmpireId) {
-        const u = await tx.ownerProfile.findUnique({ where: { id: finalUmpireId } });
+        const u = await tx.ownerProfile.findUnique({
+          where: { id: finalUmpireId },
+        });
         umpireCost = Number(u?.price || 0);
       }
 
       if (finalStreamerId) {
-        const s = await tx.ownerProfile.findUnique({ where: { id: finalStreamerId } });
+        const s = await tx.ownerProfile.findUnique({
+          where: { id: finalStreamerId },
+        });
         streamerCost = Number(s?.price || 0);
       }
 
       const totalCost = groundCost + umpireCost + streamerCost;
 
       // 2. Check Balance
-      const usableBalance = await WalletService.getUsableBalance(hostId, 'user', tx);
+      const usableBalance = await WalletService.getUsableBalance(
+        hostId,
+        "user",
+        tx
+      );
       if (usableBalance < totalCost) {
-        const error = new Error(`Insufficient coins. Total cost is ${totalCost}, you have ${usableBalance}. Please top up minimum â‚¹500.`);
+        const error = new Error(
+          `Insufficient coins. Total cost is ${totalCost}, you have ${usableBalance}. Please top up minimum â‚¹500.`
+        );
         error.status = 400;
         throw error;
       }
 
       // 3. Reserve Coins
-      await WalletService.reserve(hostId, 'user', totalCost, tx);
+      await WalletService.reserve(hostId, "user", totalCost, tx);
 
       // 4. Create Transaction Record
       await tx.walletTransaction.create({
@@ -433,8 +513,8 @@ export const createHostedGame = async (req, res) => {
           amount: totalCost,
           type: "HOST_GAME",
           status: "RESERVED",
-          description: `Reserved for hosting ${gameType} game at ${date}`
-        }
+          description: `Reserved for hosting ${gameType} game at ${date}`,
+        },
       });
 
       // 5. Create Game
@@ -459,13 +539,15 @@ export const createHostedGame = async (req, res) => {
           state,
           shortId: generateShortId(),
           status: "ACTIVE",
-          customUmpire: customUmpireData?.email ? {
-            ...customUmpireData,
-            inviteToken: randomUUID(),
-            inviteStatus: "PENDING",
-            invitedAt: new Date().toISOString()
-          } : undefined
-        }
+          customUmpire: customUmpireData?.email
+            ? {
+                ...customUmpireData,
+                inviteToken: randomUUID(),
+                inviteStatus: "PENDING",
+                invitedAt: new Date().toISOString(),
+              }
+            : undefined,
+        },
       });
 
       // 5.5 Create Actual Turf Booking if finalGroundId exists
@@ -490,7 +572,7 @@ export const createHostedGame = async (req, res) => {
             turfId: finalGroundId,
             startTime: adjustedStartTime,
             endTime: adjustedEndTime,
-          }
+          },
         });
 
         await tx.booking.create({
@@ -506,7 +588,7 @@ export const createHostedGame = async (req, res) => {
             paymentMethod: "WALLET",
             status: "CONFIRMED",
             bookingSource: "HOSTED_GAME",
-          }
+          },
         });
       }
 
@@ -523,8 +605,8 @@ export const createHostedGame = async (req, res) => {
               name: "Casual Pool",
               teamKey: "teamA",
               image: sanitizeImage(teamA.image),
-              linkedTeamId: null
-            }
+              linkedTeamId: null,
+            },
           });
         }
 
@@ -536,7 +618,8 @@ export const createHostedGame = async (req, res) => {
 
           if (provided?.userId) {
             userId = provided.userId;
-            slotStatus = userId.toString() === hostId.toString() ? "JOINED" : "HELD";
+            slotStatus =
+              userId.toString() === hostId.toString() ? "JOINED" : "HELD";
           } else if (provided?.customPlayer) {
             const token = randomUUID();
             const cp = provided.customPlayer;
@@ -548,8 +631,8 @@ export const createHostedGame = async (req, res) => {
                 phone: cp.phone || "",
                 mustPay: cp.mustPay || false,
                 inviteToken: token,
-                inviteStatus: "PENDING"
-              }
+                inviteStatus: "PENDING",
+              },
             });
             customPlayerId = invite.id;
             slotStatus = "HELD";
@@ -562,15 +645,15 @@ export const createHostedGame = async (req, res) => {
               customPlayerId,
               role: provided?.role || "Player",
               status: slotStatus,
-              addedById: hostId
-            }
+              addedById: hostId,
+            },
           });
         }
       } else {
         // PROFESSIONAL Mode: Team A vs Team B
         const teams = [
           { key: "teamA", data: teamA, defaultName: "Team A" },
-          { key: "teamB", data: teamB, defaultName: "Team B" }
+          { key: "teamB", data: teamB, defaultName: "Team B" },
         ];
 
         for (const t of teams) {
@@ -580,14 +663,15 @@ export const createHostedGame = async (req, res) => {
               name: t.data?.name || t.defaultName,
               teamKey: t.key,
               image: sanitizeImage(t.data?.image),
-              linkedTeamId: t.data?.id || null
-            }
+              linkedTeamId: t.data?.id || null,
+            },
           });
 
           const slots = t.data?.slots || [];
           for (const s of slots) {
             let customPlayerId = null;
-            let slotStatus = s.status || (s.userId || s.user ? "JOINED" : "OPEN");
+            let slotStatus =
+              s.status || (s.userId || s.user ? "JOINED" : "OPEN");
 
             if (s.customPlayer && !s.userId && !s.user) {
               const token = randomUUID();
@@ -600,8 +684,8 @@ export const createHostedGame = async (req, res) => {
                   phone: cp.phone || "",
                   mustPay: cp.mustPay || false,
                   inviteToken: token,
-                  inviteStatus: "PENDING"
-                }
+                  inviteStatus: "PENDING",
+                },
               });
               customPlayerId = invite.id;
               slotStatus = s.status || "HELD";
@@ -615,8 +699,8 @@ export const createHostedGame = async (req, res) => {
                 customPlayerId,
                 role: s.role || "Player",
                 status: slotStatus,
-                addedById: hostId
-              }
+                addedById: hostId,
+              },
             });
           }
         }
@@ -628,28 +712,47 @@ export const createHostedGame = async (req, res) => {
         include: {
           teams: { include: { slots: true } },
           slots: true,
-          invites: true
-        }
+          invites: true,
+        },
       });
     });
 
     // Trigger notifications (non-blocking)
     const hostId = req.user.id || req.user.user;
-    let host = await prisma.user.findUnique({ where: { id: hostId }, select: { name: true, email: true, phone: true } });
-    if (!host) host = await prisma.ownerProfile.findFirst({ where: { OR: [{ id: hostId }, { userId: hostId }] }, select: { name: true, email: true, phone: true } });
+    let host = await prisma.user.findUnique({
+      where: { id: hostId },
+      select: { name: true, email: true, phone: true },
+    });
+    if (!host)
+      host = await prisma.ownerProfile.findFirst({
+        where: { OR: [{ id: hostId }, { userId: hostId }] },
+        select: { name: true, email: true, phone: true },
+      });
 
     NotificationService.notifyNewGame({ game: result, host });
 
     // Send invite emails to custom players (Queued)
     if (result.invites?.length) {
-      result.invites.forEach(cp => {
-        NotificationService.sendCustomPlayerInvite({ customPlayer: cp, game: result, host });
+      result.invites.forEach((cp) => {
+        NotificationService.sendCustomPlayerInvite({
+          customPlayer: cp,
+          game: result,
+          host,
+        });
       });
     }
 
     // Send invite email to custom umpire (Queued)
-    if (result.customUmpire && typeof result.customUmpire === 'object' && result.customUmpire.email) {
-      NotificationService.sendCustomUmpireInvite({ customUmpire: result.customUmpire, game: result, host });
+    if (
+      result.customUmpire &&
+      typeof result.customUmpire === "object" &&
+      result.customUmpire.email
+    ) {
+      NotificationService.sendCustomUmpireInvite({
+        customUmpire: result.customUmpire,
+        game: result,
+        host,
+      });
     }
 
     return res.status(201).json({
@@ -657,7 +760,6 @@ export const createHostedGame = async (req, res) => {
       message: "Game hosted successfully!",
       game: formatGameForClient(result),
     });
-
   } catch (error) {
     logger.error("Error in createHostedGame (Outer):", error);
     return res.status(error.status || 500).json({
@@ -676,7 +778,9 @@ export const getAllHostedGames = async (req, res) => {
 
     const compactGameInclude = {
       host: { select: { id: true, name: true, profilePicture: true } },
-      turf: { select: { id: true, name: true, city: true, state: true, images: true } },
+      turf: {
+        select: { id: true, name: true, city: true, state: true, images: true },
+      },
       umpire: { select: { id: true, name: true, profilePicture: true } },
       scorer: { select: { id: true, name: true, profilePicture: true } },
       streamer: { select: { id: true, name: true, profilePicture: true } },
@@ -685,8 +789,8 @@ export const getAllHostedGames = async (req, res) => {
           id: true,
           status: true,
           role: true,
-          user: { select: { id: true, name: true, profilePicture: true } }
-        }
+          user: { select: { id: true, name: true, profilePicture: true } },
+        },
       },
       teams: {
         select: {
@@ -698,32 +802,34 @@ export const getAllHostedGames = async (req, res) => {
               id: true,
               status: true,
               role: true,
-              user: { select: { id: true, name: true, profilePicture: true } }
-            }
-          }
-        }
-      }
+              user: { select: { id: true, name: true, profilePicture: true } },
+            },
+          },
+        },
+      },
     };
 
     const games = await prisma.hostedGame.findMany({
       where: {
         status: "ACTIVE",
-        ...(city ? { city: { contains: city, mode: 'insensitive' } } : {}),
-        ...(state ? { state: { contains: state, mode: 'insensitive' } } : {}),
-        ...(gameType ? { gameType } : {})
+        ...(city ? { city: { contains: city, mode: "insensitive" } } : {}),
+        ...(state ? { state: { contains: state, mode: "insensitive" } } : {}),
+        ...(gameType ? { gameType } : {}),
       },
-      orderBy: { date: 'asc' },
+      orderBy: { date: "asc" },
       take,
       skip,
-      include: compactGameInclude
+      include: compactGameInclude,
     });
 
     // Decorate using the still-pre-formatted games (slots live at game.slots
     // and game.teams[].slots before formatGameForClient reshapes the trees).
     const viewerId = req.user?.id || null;
-    const flagsByGame = new Map(games.map(g => [g.id, decorateViewerFlags(g, viewerId)]));
+    const flagsByGame = new Map(
+      games.map((g) => [g.id, decorateViewerFlags(g, viewerId)])
+    );
 
-    const formattedGames = games.map(g => ({
+    const formattedGames = games.map((g) => ({
       ...formatGameForClient(g),
       ...flagsByGame.get(g.id),
     }));
@@ -743,14 +849,17 @@ export const joinHostedGame = async (req, res) => {
       const game = await tx.hostedGame.findUnique({
         where: { id: gameId },
         include: {
-          slots: { orderBy: { createdAt: 'asc' } },
-          teams: { include: { slots: { orderBy: { createdAt: 'asc' } } } }
-        }
+          slots: { orderBy: { createdAt: "asc" } },
+          teams: { include: { slots: { orderBy: { createdAt: "asc" } } } },
+        },
       });
-      if (!game) throw new Error("Game not found");
+      if (!game)
+        throw new NotFoundError("Game not found", { code: "ENTITY_NOT_FOUND" });
 
       if (game.scoringStatus !== "NOT_STARTED") {
-        const error = new Error("Cannot join a game that is already locked for scoring.");
+        const error = new Error(
+          "Cannot join a game that is already locked for scoring."
+        );
         error.status = 400;
         throw error;
       }
@@ -761,9 +870,10 @@ export const joinHostedGame = async (req, res) => {
         throw error;
       }
 
-      const isAlreadyInSlot = game.slots.some(s => s.userId === userId) ||
-                              game.teams.some(t => t.slots.some(s => s.userId === userId));
-      
+      const isAlreadyInSlot =
+        game.slots.some((s) => s.userId === userId) ||
+        game.teams.some((t) => t.slots.some((s) => s.userId === userId));
+
       if (isAlreadyInSlot) {
         const error = new Error("You have already joined a slot in this game.");
         error.status = 400;
@@ -771,7 +881,11 @@ export const joinHostedGame = async (req, res) => {
       }
 
       const perPlayerCharge = Number(game.perPlayerCharge || 0);
-      const usableBalance = await WalletService.getUsableBalance(userId, 'user', tx);
+      const usableBalance = await WalletService.getUsableBalance(
+        userId,
+        "user",
+        tx
+      );
       if (usableBalance < perPlayerCharge) {
         const error = new Error("Insufficient coins to join this game.");
         error.status = 400;
@@ -785,20 +899,16 @@ export const joinHostedGame = async (req, res) => {
         targetSlot = game.slots[slotIndex];
       } else {
         const teamKey = team === "A" ? "teamA" : "teamB";
-        const targetTeam = game.teams.find(t => t.teamKey === teamKey);
-        if (!targetTeam) {
-          const e = new Error("Team not found");
-          e.status = 404;
-          throw e;
-        }
+        const targetTeam = game.teams.find((t) => t.teamKey === teamKey);
+        if (!targetTeam)
+          throw new NotFoundError("Team not found", {
+            code: "ENTITY_NOT_FOUND",
+          });
         targetSlot = targetTeam.slots[slotIndex];
       }
 
-      if (!targetSlot) {
-        const e = new Error("Slot not found");
-        e.status = 404;
-        throw e;
-      }
+      if (!targetSlot)
+        throw new NotFoundError("Slot not found", { code: "ENTITY_NOT_FOUND" });
       if (targetSlot.status !== "OPEN") {
         const error = new Error("Slot already taken or pending.");
         error.status = 400;
@@ -806,7 +916,7 @@ export const joinHostedGame = async (req, res) => {
       }
 
       // Reserve coins for player
-      await WalletService.reserve(userId, 'user', perPlayerCharge, tx);
+      await WalletService.reserve(userId, "user", perPlayerCharge, tx);
 
       await tx.walletTransaction.create({
         data: {
@@ -814,15 +924,16 @@ export const joinHostedGame = async (req, res) => {
           amount: perPlayerCharge,
           type: "JOIN_GAME",
           status: "RESERVED",
-          description: `Reserved for joining ${game.gameType} game`
-        }
+          description: `Reserved for joining ${game.gameType} game`,
+        },
       });
 
       // PUBLIC games auto-join (no host approval needed) — matches the
       // "Public/Private" toggle in the Flutter create-game UI. PRIVATE games
       // (or any older row missing the field) still go through the approval
       // flow.
-      const isPublic = String(game.visibility || "PUBLIC").toUpperCase() === "PUBLIC";
+      const isPublic =
+        String(game.visibility || "PUBLIC").toUpperCase() === "PUBLIC";
 
       await tx.gameSlot.update({
         where: { id: targetSlot.id },
@@ -856,6 +967,38 @@ export const joinHostedGame = async (req, res) => {
             }
       );
 
+      const playerUser = await prisma.user.findUnique({
+        where: { id: userId },
+      });
+      const hostUser = await prisma.user.findUnique({
+        where: { id: game.hostId },
+      });
+      if (isPublic) {
+        NotificationService.publishEvent("GAME_JOIN_APPROVED", {
+          recipientId: userId,
+          recipientModel: "User",
+          email: playerUser?.email,
+          phone: playerUser?.phone,
+          gameType: game.gameType,
+          date: game.date,
+          time: game.time,
+          hostName: hostUser?.name || "The host",
+          amount: perPlayerCharge,
+        });
+      } else {
+        NotificationService.publishEvent("GAME_JOIN_REQUESTED", {
+          recipientId: game.hostId,
+          recipientModel: "User",
+          email: hostUser?.email,
+          phone: hostUser?.phone,
+          playerName: playerUser?.name || "A player",
+          hostName: hostUser?.name || "Host",
+          gameType: game.gameType,
+          date: game.date,
+          time: game.time,
+        });
+      }
+
       return { autoJoined: isPublic };
     });
 
@@ -867,7 +1010,6 @@ export const joinHostedGame = async (req, res) => {
         : "Join request sent. Coins reserved.",
       data: { autoJoined },
     });
-
   } catch (error) {
     logger.error("Error in joinHostedGame:", error);
     return res.status(error.status || 500).json({ message: error.message });
@@ -880,19 +1022,30 @@ export const approveJoinRequest = async (req, res) => {
       const hostId = req.user.id || req.user.user;
       // Flutter parity: accept `userId` and resolve the pending slot from it,
       // so the host UI doesn't have to compute (team, slotIndex) client-side.
-      let { gameId, team, slotIndex, slotId, userId: requestedUserId } = req.body;
+      let {
+        gameId,
+        team,
+        slotIndex,
+        slotId,
+        userId: requestedUserId,
+      } = req.body;
 
       const game = await tx.hostedGame.findUnique({
         where: { id: gameId },
         include: {
-          slots: { orderBy: { createdAt: 'asc' } },
-          teams: { include: { slots: { orderBy: { createdAt: 'asc' } } } }
-        }
+          slots: { orderBy: { createdAt: "asc" } },
+          teams: { include: { slots: { orderBy: { createdAt: "asc" } } } },
+        },
       });
-      if (!game || game.hostId !== hostId) throw new Error("Unauthorized or game not found");
+      if (!game || game.hostId !== hostId)
+        throw new NotFoundError("Unauthorized or game not found", {
+          code: "ENTITY_NOT_FOUND",
+        });
 
       if (game.scoringStatus !== "NOT_STARTED") {
-        const error = new Error("Cannot modify roster for a game that is already locked for scoring.");
+        const error = new Error(
+          "Cannot modify roster for a game that is already locked for scoring."
+        );
         error.status = 400;
         throw error;
       }
@@ -901,7 +1054,7 @@ export const approveJoinRequest = async (req, res) => {
       // this game and convert it to a slotId — downstream code is unchanged.
       if (!slotId && requestedUserId && (team == null || slotIndex == null)) {
         const pendingSlot = await tx.gameSlot.findFirst({
-          where: { gameId, userId: requestedUserId, status: "PENDING" }
+          where: { gameId, userId: requestedUserId, status: "PENDING" },
         });
         if (pendingSlot) {
           slotId = pendingSlot.id;
@@ -913,56 +1066,76 @@ export const approveJoinRequest = async (req, res) => {
       if (slotId) {
         targetSlot = await tx.gameSlot.findUnique({ where: { id: slotId } });
         if (targetSlot?.teamId) {
-          targetTeam = game.teams.find(t => t.id === targetSlot.teamId);
+          targetTeam = game.teams.find((t) => t.id === targetSlot.teamId);
         }
       } else if (game.gameMode === "QUICK") {
         targetSlot = game.slots[slotIndex];
       } else {
-        const teamKey = (team === "A" || team === "teamA") ? "teamA" : "teamB";
-        targetTeam = game.teams.find(t => t.teamKey === teamKey);
-        if (!targetTeam) throw new Error("Team not found");
+        const teamKey = team === "A" || team === "teamA" ? "teamA" : "teamB";
+        targetTeam = game.teams.find((t) => t.teamKey === teamKey);
+        if (!targetTeam)
+          throw new NotFoundError("Team not found", {
+            code: "ENTITY_NOT_FOUND",
+          });
         targetSlot = targetTeam.slots[slotIndex];
       }
 
-      if (!targetSlot || targetSlot.status !== "PENDING") throw new Error("No pending request for this slot");
+      if (!targetSlot || targetSlot.status !== "PENDING")
+        throw new InternalError("No pending request for this slot", {
+          code: "INTERNAL_ERROR",
+        });
 
       const playerUserId = targetSlot.userId;
       const perPlayerCharge = Number(game.perPlayerCharge || 0);
 
       // Deduct coins from player (Release reserved + Debit)
       if (perPlayerCharge > 0) {
-        await WalletService.release(playerUserId, 'user', perPlayerCharge, true, tx);
+        await WalletService.release(
+          playerUserId,
+          "user",
+          perPlayerCharge,
+          true,
+          tx
+        );
 
         // Add to HostedGame escrow
         await tx.hostedGame.update({
           where: { id: gameId },
           data: {
             escrowAmount: {
-              increment: perPlayerCharge
-            }
-          }
+              increment: perPlayerCharge,
+            },
+          },
         });
 
         // Update player transaction to ESCROW
         const latestReservedTx = await tx.walletTransaction.findFirst({
-          where: { userId: playerUserId, amount: perPlayerCharge, status: "RESERVED", type: "JOIN_GAME" },
-          orderBy: { createdAt: 'desc' }
+          where: {
+            userId: playerUserId,
+            amount: perPlayerCharge,
+            status: "RESERVED",
+            type: "JOIN_GAME",
+          },
+          orderBy: { createdAt: "desc" },
         });
 
         if (latestReservedTx) {
           await tx.walletTransaction.update({
             where: { id: latestReservedTx.id },
-            data: { status: "ESCROW", description: `Joined ${game.gameType} game successfully. Funds in Escrow.` }
+            data: {
+              status: "ESCROW",
+              description: `Joined ${game.gameType} game successfully. Funds in Escrow.`,
+            },
           });
         }
       }
 
       await tx.gameSlot.update({
         where: { id: targetSlot.id },
-        data: { 
+        data: {
           status: "JOINED",
-          paymentStatus: "CAPTURED"
-        }
+          paymentStatus: "CAPTURED",
+        },
       });
 
       // Auto-create/link team for Cricket games
@@ -970,28 +1143,35 @@ export const approveJoinRequest = async (req, res) => {
         let currentLinkedTeamId = targetTeam.linkedTeamId;
 
         if (!currentLinkedTeamId) {
-          const hostProfile = await tx.user.findUnique({ where: { id: hostId } });
-          const randomId = Math.random().toString(36).substring(2, 6).toUpperCase();
-          const teamName = targetTeam.name || `${hostProfile?.name || 'Host'}'s Pickup Squad B - ${randomId}`;
+          const hostProfile = await tx.user.findUnique({
+            where: { id: hostId },
+          });
+          const randomId = Math.random()
+            .toString(36)
+            .substring(2, 6)
+            .toUpperCase();
+          const teamName =
+            targetTeam.name ||
+            `${hostProfile?.name || "Host"}'s Pickup Squad B - ${randomId}`;
           const newTeam = await tx.team.create({
             data: {
               name: teamName,
               visibility: "PRIVATE",
               sportType: "CRICKET",
               ownerId: hostId,
-              isTemporaryPickup: true
-            }
+              isTemporaryPickup: true,
+            },
           });
           currentLinkedTeamId = newTeam.id;
           await tx.gameTeam.update({
             where: { id: targetTeam.id },
-            data: { linkedTeamId: currentLinkedTeamId }
+            data: { linkedTeamId: currentLinkedTeamId },
           });
         }
 
         if (playerUserId) {
           const existingMember = await tx.teamMember.findFirst({
-            where: { teamId: currentLinkedTeamId, userId: playerUserId }
+            where: { teamId: currentLinkedTeamId, userId: playerUserId },
           });
           if (!existingMember) {
             await tx.teamMember.create({
@@ -999,16 +1179,35 @@ export const approveJoinRequest = async (req, res) => {
                 teamId: currentLinkedTeamId,
                 userId: playerUserId,
                 role: targetSlot.role || "PLAYER",
-                status: "JOINED"
-              }
+                status: "JOINED",
+              },
             });
           }
         }
       }
+
+      const playerUser = await tx.user.findUnique({
+        where: { id: playerUserId },
+      });
+      const hostUser = await tx.user.findUnique({ where: { id: hostId } });
+
+      NotificationService.publishEvent("GAME_JOIN_APPROVED", {
+        recipientId: playerUserId,
+        recipientModel: "User",
+        email: playerUser?.email,
+        phone: playerUser?.phone,
+        gameType: game.gameType,
+        date: game.date,
+        time: game.time,
+        hostName: hostUser?.name || "The host",
+        city: game.city || "your city",
+        amount: perPlayerCharge,
+      });
     });
 
-    return res.status(200).json({ success: true, message: "Player approved and coins deducted." });
-
+    return res
+      .status(200)
+      .json({ success: true, message: "Player approved and coins deducted." });
   } catch (error) {
     logger.error("Error in approveJoinRequest:", error);
     return res.status(error.status || 500).json({ message: error.message });
@@ -1021,8 +1220,8 @@ export const getMyHostedGames = async (req, res) => {
     const hostId = req.user.id || req.user.user;
     let games = await prisma.hostedGame.findMany({
       where: { hostId },
-      orderBy: { date: 'desc' },
-      include: fullGameInclude
+      orderBy: { date: "desc" },
+      include: fullGameInclude,
     });
 
     games = await populateRequestUsers(games);
@@ -1040,26 +1239,37 @@ export const rejectJoinRequest = async (req, res) => {
     await runInTransaction(async ({ tx }) => {
       const hostId = req.user.id || req.user.user;
       // Flutter parity: accept userId, same convention as approveJoinRequest.
-      let { gameId, team, slotIndex, slotId, userId: requestedUserId } = req.body;
+      let {
+        gameId,
+        team,
+        slotIndex,
+        slotId,
+        userId: requestedUserId,
+      } = req.body;
 
       const game = await tx.hostedGame.findUnique({
         where: { id: gameId },
         include: {
-          slots: { orderBy: { createdAt: 'asc' } },
-          teams: { include: { slots: { orderBy: { createdAt: 'asc' } } } }
-        }
+          slots: { orderBy: { createdAt: "asc" } },
+          teams: { include: { slots: { orderBy: { createdAt: "asc" } } } },
+        },
       });
-      if (!game || game.hostId !== hostId) throw new Error("Unauthorized or game not found");
+      if (!game || game.hostId !== hostId)
+        throw new NotFoundError("Unauthorized or game not found", {
+          code: "ENTITY_NOT_FOUND",
+        });
 
       if (game.scoringStatus !== "NOT_STARTED") {
-        const error = new Error("Cannot modify roster for a game that is already locked for scoring.");
+        const error = new Error(
+          "Cannot modify roster for a game that is already locked for scoring."
+        );
         error.status = 400;
         throw error;
       }
 
       if (!slotId && requestedUserId && (team == null || slotIndex == null)) {
         const pendingSlot = await tx.gameSlot.findFirst({
-          where: { gameId, userId: requestedUserId, status: "PENDING" }
+          where: { gameId, userId: requestedUserId, status: "PENDING" },
         });
         if (pendingSlot) slotId = pendingSlot.id;
       }
@@ -1070,30 +1280,50 @@ export const rejectJoinRequest = async (req, res) => {
       } else if (game.gameMode === "QUICK") {
         targetSlot = game.slots[slotIndex];
       } else {
-        const teamKey = (team === "A" || team === "teamA") ? "teamA" : "teamB";
-        const targetTeam = game.teams.find(t => t.teamKey === teamKey);
-        if (!targetTeam) throw new Error("Team not found");
+        const teamKey = team === "A" || team === "teamA" ? "teamA" : "teamB";
+        const targetTeam = game.teams.find((t) => t.teamKey === teamKey);
+        if (!targetTeam)
+          throw new NotFoundError("Team not found", {
+            code: "ENTITY_NOT_FOUND",
+          });
         targetSlot = targetTeam.slots[slotIndex];
       }
 
-      if (!targetSlot || targetSlot.status !== "PENDING") throw new Error("No pending request for this slot");
+      if (!targetSlot || targetSlot.status !== "PENDING")
+        throw new InternalError("No pending request for this slot", {
+          code: "INTERNAL_ERROR",
+        });
 
       const playerUserId = targetSlot.userId;
       const perPlayerCharge = Number(game.perPlayerCharge || 0);
 
       // Release reserved coins for player
-      await WalletService.release(playerUserId, 'user', perPlayerCharge, false, tx);
+      await WalletService.release(
+        playerUserId,
+        "user",
+        perPlayerCharge,
+        false,
+        tx
+      );
 
       // Update transaction to FAILED/REJECTED
       const latestReservedTx = await tx.walletTransaction.findFirst({
-        where: { userId: playerUserId, amount: perPlayerCharge, status: "RESERVED", type: "JOIN_GAME" },
-        orderBy: { createdAt: 'desc' }
+        where: {
+          userId: playerUserId,
+          amount: perPlayerCharge,
+          status: "RESERVED",
+          type: "JOIN_GAME",
+        },
+        orderBy: { createdAt: "desc" },
       });
 
       if (latestReservedTx) {
         await tx.walletTransaction.update({
           where: { id: latestReservedTx.id },
-          data: { status: "FAILED", description: `Join request for ${game.gameType} rejected by host` }
+          data: {
+            status: "FAILED",
+            description: `Join request for ${game.gameType} rejected by host`,
+          },
         });
       }
 
@@ -1103,13 +1333,31 @@ export const rejectJoinRequest = async (req, res) => {
           userId: null,
           role: "Player",
           status: "OPEN",
-          paymentStatus: "NONE"
-        }
+          paymentStatus: "NONE",
+        },
+      });
+
+      const playerUser = await tx.user.findUnique({
+        where: { id: playerUserId },
+      });
+      const hostUser = await tx.user.findUnique({ where: { id: hostId } });
+
+      NotificationService.publishEvent("GAME_JOIN_REJECTED", {
+        recipientId: playerUserId,
+        recipientModel: "User",
+        email: playerUser?.email,
+        phone: playerUser?.phone,
+        gameType: game.gameType,
+        date: game.date,
+        hostName: hostUser?.name || "The host",
+        amount: perPlayerCharge,
       });
     });
 
-    return res.status(200).json({ success: true, message: "Player request rejected and coins released." });
-
+    return res.status(200).json({
+      success: true,
+      message: "Player request rejected and coins released.",
+    });
   } catch (error) {
     logger.error("Error in rejectJoinRequest:", error);
     return res.status(error.status || 500).json({ message: error.message });
@@ -1126,14 +1374,20 @@ export const cancelHostedGame = async (req, res) => {
         where: { id: gameId },
         include: {
           slots: true,
-          teams: { include: { slots: true } }
-        }
+          teams: { include: { slots: true } },
+        },
       });
-      if (!game || game.hostId !== hostId) throw new Error("Unauthorized or game not found");
-      if (game.status === "CANCELLED") throw new Error("Game already cancelled");
-      
+      if (!game || game.hostId !== hostId)
+        throw new NotFoundError("Unauthorized or game not found", {
+          code: "ENTITY_NOT_FOUND",
+        });
+      if (game.status === "CANCELLED")
+        throw new ConflictError("Game already cancelled", { code: "CONFLICT" });
+
       if (game.scoringStatus !== "NOT_STARTED") {
-        const error = new Error("Cannot cancel a game that has already started scoring.");
+        const error = new Error(
+          "Cannot cancel a game that has already started scoring."
+        );
         error.status = 400;
         throw error;
       }
@@ -1161,14 +1415,14 @@ export const cancelHostedGame = async (req, res) => {
             turfId: game.turfId,
             bookingSource: "HOSTED_GAME",
             playStartTime: adjustedStartTime,
-            status: "CONFIRMED"
-          }
+            status: "CONFIRMED",
+          },
         });
 
         if (relatedBooking) {
           await tx.booking.update({
             where: { id: relatedBooking.id },
-            data: { status: "CANCELLED" }
+            data: { status: "CANCELLED" },
           });
         }
       }
@@ -1178,59 +1432,89 @@ export const cancelHostedGame = async (req, res) => {
       if (game.gameMode === "QUICK") {
         allSlots = game.slots || [];
       } else {
-        game.teams.forEach(t => {
+        game.teams.forEach((t) => {
           allSlots = [...allSlots, ...(t.slots || [])];
         });
       }
 
-      const pendingSlots = allSlots.filter(slot => slot.status === "PENDING" && slot.userId);
-      const joinedSlots = allSlots.filter(slot => slot.status === "JOINED" && slot.userId);
+      const pendingSlots = allSlots.filter(
+        (slot) => slot.status === "PENDING" && slot.userId
+      );
+      const joinedSlots = allSlots.filter(
+        (slot) => slot.status === "JOINED" && slot.userId
+      );
       const perPlayerCharge = Number(game.perPlayerCharge || 0);
 
       for (const slot of pendingSlots) {
-        await WalletService.release(slot.userId, 'user', perPlayerCharge, false, tx);
+        await WalletService.release(
+          slot.userId,
+          "user",
+          perPlayerCharge,
+          false,
+          tx
+        );
         await tx.walletTransaction.create({
           data: {
             userId: slot.userId,
             amount: perPlayerCharge,
             type: "REFUND",
             status: "SUCCESS",
-            description: `Refunded reserved coins due to game cancellation: ${game.gameType}`
-          }
+            description: `Refunded reserved coins due to game cancellation: ${game.gameType}`,
+          },
         });
       }
 
       for (const slot of joinedSlots) {
         // Credit player (Refund from escrow)
-        await WalletService.credit(slot.userId, 'user', perPlayerCharge, tx);
+        await WalletService.credit(slot.userId, "user", perPlayerCharge, tx);
         await tx.walletTransaction.create({
           data: {
             userId: slot.userId,
             amount: perPlayerCharge,
             type: "REFUND_ESCROW",
             status: "SUCCESS",
-            description: `Refunded slot payment due to game cancellation: ${game.gameType}`
-          }
+            description: `Refunded slot payment due to game cancellation: ${game.gameType}`,
+          },
         });
-        
+
         await tx.gameSlot.update({
           where: { id: slot.id },
-          data: { paymentStatus: "REFUNDED" }
+          data: { paymentStatus: "REFUNDED" },
         });
       }
 
       await tx.hostedGame.update({
         where: { id: gameId },
-        data: { 
+        data: {
           status: "CANCELLED",
           escrowAmount: 0,
-          payoutStatus: "REFUNDED"
-        }
+          payoutStatus: "REFUNDED",
+        },
       });
+
+      const hostUser = await tx.user.findUnique({ where: { id: hostId } });
+      for (const slot of [...pendingSlots, ...joinedSlots]) {
+        const playerUser = await tx.user.findUnique({
+          where: { id: slot.userId },
+        });
+        NotificationService.publishEvent("GAME_CANCELLED_BY_HOST", {
+          recipientId: slot.userId,
+          recipientModel: "User",
+          email: playerUser?.email,
+          phone: playerUser?.phone,
+          gameType: game.gameType,
+          date: game.date,
+          time: game.time,
+          hostName: hostUser?.name || "The host",
+          refundAmount: perPlayerCharge,
+        });
+      }
     });
 
-    return res.status(200).json({ success: true, message: "Game cancelled and all reserved coins released." });
-
+    return res.status(200).json({
+      success: true,
+      message: "Game cancelled and all reserved coins released.",
+    });
   } catch (error) {
     logger.error("Error in cancelHostedGame:", error);
     return res.status(error.status || 500).json({ message: error.message });
@@ -1246,19 +1530,19 @@ export const getMyJoinedGames = async (req, res) => {
       where: { userId },
       include: {
         game: {
-          include: fullGameInclude
-        }
+          include: fullGameInclude,
+        },
       },
-      orderBy: { game: { date: 'desc' } }
+      orderBy: { game: { date: "desc" } },
     });
 
-    const gamesWithMyInfo = slots.map(slot => {
+    const gamesWithMyInfo = slots.map((slot) => {
       const game = formatGameForClient(slot.game);
       return {
         ...game,
         mySlotStatus: slot.status,
         myRole: slot.role,
-        myTeam: slot.teamId // In the new schema, teamId represents the team
+        myTeam: slot.teamId, // In the new schema, teamId represents the team
       };
     });
 
@@ -1277,15 +1561,20 @@ export const leaveHostedGame = async (req, res) => {
 
       const userSlot = await tx.gameSlot.findFirst({
         where: { gameId, userId },
-        include: { game: true }
+        include: { game: true },
       });
 
-      if (!userSlot) throw new Error("You are not part of this game");
+      if (!userSlot)
+        throw new InternalError("You are not part of this game", {
+          code: "INTERNAL_ERROR",
+        });
 
       const game = userSlot.game;
 
       if (game.scoringStatus !== "NOT_STARTED") {
-        const error = new Error("Cannot modify roster for a game that is already locked for scoring.");
+        const error = new Error(
+          "Cannot modify roster for a game that is already locked for scoring."
+        );
         error.status = 400;
         throw error;
       }
@@ -1294,40 +1583,48 @@ export const leaveHostedGame = async (req, res) => {
 
       // If pending, just release reserved coins
       if (userSlot.status === "PENDING") {
-        await WalletService.release(userId, 'user', perPlayerCharge, false, tx);
+        await WalletService.release(userId, "user", perPlayerCharge, false, tx);
 
         const latestReservedTx = await tx.walletTransaction.findFirst({
-          where: { userId, amount: perPlayerCharge, status: "RESERVED", type: "JOIN_GAME" },
-          orderBy: { createdAt: 'desc' }
+          where: {
+            userId,
+            amount: perPlayerCharge,
+            status: "RESERVED",
+            type: "JOIN_GAME",
+          },
+          orderBy: { createdAt: "desc" },
         });
 
         if (latestReservedTx) {
           await tx.walletTransaction.update({
             where: { id: latestReservedTx.id },
-            data: { status: "FAILED", description: `Join request for ${game.gameType} cancelled by player` }
+            data: {
+              status: "FAILED",
+              description: `Join request for ${game.gameType} cancelled by player`,
+            },
           });
         }
       }
       // If joined, refund coins
       else if (userSlot.status === "JOINED") {
         // Credit player (Refund from escrow)
-        await WalletService.credit(userId, 'user', perPlayerCharge, tx);
+        await WalletService.credit(userId, "user", perPlayerCharge, tx);
         await tx.walletTransaction.create({
           data: {
             userId,
             amount: perPlayerCharge,
             type: "REFUND_ESCROW",
             status: "SUCCESS",
-            description: `Refunded coins for leaving ${game.gameType} game`
-          }
+            description: `Refunded coins for leaving ${game.gameType} game`,
+          },
         });
 
         // Decrement escrowAmount on HostedGame
         await tx.hostedGame.update({
           where: { id: gameId },
           data: {
-            escrowAmount: { decrement: perPlayerCharge }
-          }
+            escrowAmount: { decrement: perPlayerCharge },
+          },
         });
       }
 
@@ -1337,12 +1634,28 @@ export const leaveHostedGame = async (req, res) => {
         data: {
           userId: null,
           status: "OPEN",
-          paymentStatus: "NONE"
-        }
+          paymentStatus: "NONE",
+        },
+      });
+
+      const hostUser = await tx.user.findUnique({ where: { id: game.hostId } });
+      const playerUser = await tx.user.findUnique({ where: { id: userId } });
+      NotificationService.publishEvent("GAME_PLAYER_LEFT", {
+        recipientId: game.hostId,
+        recipientModel: "User",
+        email: hostUser?.email,
+        phone: hostUser?.phone,
+        gameType: game.gameType,
+        date: game.date,
+        time: game.time,
+        playerName: playerUser?.name || "A player",
+        refundAmount: perPlayerCharge,
       });
     });
 
-    return res.status(200).json({ success: true, message: "Left game and coins processed." });
+    return res
+      .status(200)
+      .json({ success: true, message: "Left game and coins processed." });
   } catch (error) {
     logger.error("Error in leaveHostedGame:", error);
     return res.status(error.status || 500).json({ message: error.message });
@@ -1353,30 +1666,34 @@ export const getHostedGameByShortId = async (req, res) => {
   try {
     const { shortId, id } = req.query;
     const queryId = shortId || id;
-    if (!queryId) return res.status(400).json({ message: "Search query is required" });
+    if (!queryId)
+      return res.status(400).json({ message: "Search query is required" });
 
     const searchUpper = queryId.toUpperCase().trim();
 
     const orClauses = [
-      { shortId: { contains: searchUpper, mode: 'insensitive' } }
+      { shortId: { contains: searchUpper, mode: "insensitive" } },
     ];
 
-    if (queryId.length === 24 || queryId.length === 36) { // Basic check for ID strings
+    if (queryId.length === 24 || queryId.length === 36) {
+      // Basic check for ID strings
       orClauses.push({ id: queryId });
     }
 
     const game = await prisma.hostedGame.findFirst({
       where: {
         OR: orClauses,
-        status: { in: ["ACTIVE", "PENDING"] }
+        status: { in: ["ACTIVE", "PENDING"] },
       },
-      include: fullGameInclude
+      include: fullGameInclude,
     });
 
     if (!game) return res.status(404).json({ message: "Game not found" });
     await populateRequestUsers([game]);
 
-    return res.status(200).json({ success: true, game: formatGameForClient(game) });
+    return res
+      .status(200)
+      .json({ success: true, game: formatGameForClient(game) });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -1388,28 +1705,38 @@ export const requestToUmpire = async (req, res) => {
     const { gameId } = req.body;
 
     const game = await prisma.hostedGame.findUnique({
-      where: { id: gameId }
+      where: { id: gameId },
     });
-    if (!game) throw new Error("Game not found");
+    if (!game)
+      throw new NotFoundError("Game not found", { code: "ENTITY_NOT_FOUND" });
 
-    if (game.umpireId) throw new Error("This game already has an umpire assigned");
+    if (game.umpireId)
+      throw new ConflictError("This game already has an umpire assigned", {
+        code: "CONFLICT",
+      });
 
     const owner = await prisma.ownerProfile.findFirst({ where: { userId } });
     const umpireId = owner ? owner.id : userId;
 
-    if (game.umpireRequest?.userId === umpireId || game.umpireRequest?.userId === userId) {
-      throw new Error("You have already sent a request for this game");
+    if (
+      game.umpireRequest?.userId === umpireId ||
+      game.umpireRequest?.userId === userId
+    ) {
+      throw new ConflictError("You have already sent a request for this game", {
+        code: "CONFLICT",
+      });
     }
 
     await prisma.hostedGame.update({
       where: { id: gameId },
       data: {
-        umpireRequest: { userId: umpireId, status: "PENDING" }
-      }
+        umpireRequest: { userId: umpireId, status: "PENDING" },
+      },
     });
 
-    return res.status(200).json({ success: true, message: "Umpire request sent to host!" });
-
+    return res
+      .status(200)
+      .json({ success: true, message: "Umpire request sent to host!" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -1421,9 +1748,12 @@ export const handleUmpireRequest = async (req, res) => {
     const { gameId, action } = req.body; // action: 'APPROVE' or 'REJECT'
 
     const game = await prisma.hostedGame.findFirst({
-      where: { id: gameId, hostId }
+      where: { id: gameId, hostId },
     });
-    if (!game) throw new Error("Unauthorized or game not found");
+    if (!game)
+      throw new NotFoundError("Unauthorized or game not found", {
+        code: "ENTITY_NOT_FOUND",
+      });
 
     if (action === "APPROVE") {
       const currentRequest = game.umpireRequest || {};
@@ -1432,21 +1762,28 @@ export const handleUmpireRequest = async (req, res) => {
         where: { id: gameId },
         data: {
           umpireId: game.umpireRequest.userId,
-          umpireRequest: updatedRequest
-        }
+          umpireRequest: updatedRequest,
+        },
       });
     } else {
       const currentRequest = game.umpireRequest || {};
-      const updatedRequest = { ...currentRequest, status: "REJECTED", userId: null };
+      const updatedRequest = {
+        ...currentRequest,
+        status: "REJECTED",
+        userId: null,
+      };
       await prisma.hostedGame.update({
         where: { id: gameId },
         data: {
-          umpireRequest: updatedRequest
-        }
+          umpireRequest: updatedRequest,
+        },
       });
     }
 
-    return res.status(200).json({ success: true, message: `Umpire request ${action.toLowerCase()}d successfully!` });
+    return res.status(200).json({
+      success: true,
+      message: `Umpire request ${action.toLowerCase()}d successfully!`,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -1458,28 +1795,38 @@ export const requestToStreamer = async (req, res) => {
     const { gameId } = req.body;
 
     const game = await prisma.hostedGame.findUnique({
-      where: { id: gameId }
+      where: { id: gameId },
     });
-    if (!game) throw new Error("Game not found");
+    if (!game)
+      throw new NotFoundError("Game not found", { code: "ENTITY_NOT_FOUND" });
 
-    if (game.streamerId) throw new Error("This game already has a streamer assigned");
+    if (game.streamerId)
+      throw new ConflictError("This game already has a streamer assigned", {
+        code: "CONFLICT",
+      });
 
     const owner = await prisma.ownerProfile.findFirst({ where: { userId } });
     const streamerId = owner ? owner.id : userId;
 
-    if (game.streamerRequest?.userId === streamerId || game.streamerRequest?.userId === userId) {
-      throw new Error("You have already sent a request for this game");
+    if (
+      game.streamerRequest?.userId === streamerId ||
+      game.streamerRequest?.userId === userId
+    ) {
+      throw new ConflictError("You have already sent a request for this game", {
+        code: "CONFLICT",
+      });
     }
 
     await prisma.hostedGame.update({
       where: { id: gameId },
       data: {
-        streamerRequest: { userId: streamerId, status: "PENDING" }
-      }
+        streamerRequest: { userId: streamerId, status: "PENDING" },
+      },
     });
 
-    return res.status(200).json({ success: true, message: "Streamer request sent to host!" });
-
+    return res
+      .status(200)
+      .json({ success: true, message: "Streamer request sent to host!" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -1491,9 +1838,12 @@ export const handleStreamerRequest = async (req, res) => {
     const { gameId, action } = req.body;
 
     const game = await prisma.hostedGame.findFirst({
-      where: { id: gameId, hostId }
+      where: { id: gameId, hostId },
     });
-    if (!game) throw new Error("Unauthorized or game not found");
+    if (!game)
+      throw new NotFoundError("Unauthorized or game not found", {
+        code: "ENTITY_NOT_FOUND",
+      });
 
     if (action === "APPROVE") {
       const currentRequest = game.streamerRequest || {};
@@ -1502,21 +1852,28 @@ export const handleStreamerRequest = async (req, res) => {
         where: { id: gameId },
         data: {
           streamerId: game.streamerRequest.userId,
-          streamerRequest: updatedRequest
-        }
+          streamerRequest: updatedRequest,
+        },
       });
     } else {
       const currentRequest = game.streamerRequest || {};
-      const updatedRequest = { ...currentRequest, status: "REJECTED", userId: null };
+      const updatedRequest = {
+        ...currentRequest,
+        status: "REJECTED",
+        userId: null,
+      };
       await prisma.hostedGame.update({
         where: { id: gameId },
         data: {
-          streamerRequest: updatedRequest
-        }
+          streamerRequest: updatedRequest,
+        },
       });
     }
 
-    return res.status(200).json({ success: true, message: `Streamer request ${action.toLowerCase()}d successfully!` });
+    return res.status(200).json({
+      success: true,
+      message: `Streamer request ${action.toLowerCase()}d successfully!`,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -1528,28 +1885,38 @@ export const requestToScorer = async (req, res) => {
     const { gameId } = req.body;
 
     const game = await prisma.hostedGame.findUnique({
-      where: { id: gameId }
+      where: { id: gameId },
     });
-    if (!game) throw new Error("Game not found");
+    if (!game)
+      throw new NotFoundError("Game not found", { code: "ENTITY_NOT_FOUND" });
 
-    if (game.scorerId) throw new Error("This game already has a scorer assigned");
+    if (game.scorerId)
+      throw new ConflictError("This game already has a scorer assigned", {
+        code: "CONFLICT",
+      });
 
     const owner = await prisma.ownerProfile.findFirst({ where: { userId } });
     const scorerId = owner ? owner.id : userId;
 
-    if (game.scorerRequest?.userId === scorerId || game.scorerRequest?.userId === userId) {
-      throw new Error("You have already sent a request for this game");
+    if (
+      game.scorerRequest?.userId === scorerId ||
+      game.scorerRequest?.userId === userId
+    ) {
+      throw new ConflictError("You have already sent a request for this game", {
+        code: "CONFLICT",
+      });
     }
 
     await prisma.hostedGame.update({
       where: { id: gameId },
       data: {
-        scorerRequest: { userId: scorerId, status: "PENDING" }
-      }
+        scorerRequest: { userId: scorerId, status: "PENDING" },
+      },
     });
 
-    return res.status(200).json({ success: true, message: "Scorer request sent to host!" });
-
+    return res
+      .status(200)
+      .json({ success: true, message: "Scorer request sent to host!" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -1561,9 +1928,12 @@ export const handleScorerRequest = async (req, res) => {
     const { gameId, action } = req.body;
 
     const game = await prisma.hostedGame.findFirst({
-      where: { id: gameId, hostId }
+      where: { id: gameId, hostId },
     });
-    if (!game) throw new Error("Unauthorized or game not found");
+    if (!game)
+      throw new NotFoundError("Unauthorized or game not found", {
+        code: "ENTITY_NOT_FOUND",
+      });
 
     if (action === "APPROVE") {
       const currentRequest = game.scorerRequest || {};
@@ -1572,21 +1942,28 @@ export const handleScorerRequest = async (req, res) => {
         where: { id: gameId },
         data: {
           scorerId: game.scorerRequest.userId,
-          scorerRequest: updatedRequest
-        }
+          scorerRequest: updatedRequest,
+        },
       });
     } else {
       const currentRequest = game.scorerRequest || {};
-      const updatedRequest = { ...currentRequest, status: "REJECTED", userId: null };
+      const updatedRequest = {
+        ...currentRequest,
+        status: "REJECTED",
+        userId: null,
+      };
       await prisma.hostedGame.update({
         where: { id: gameId },
         data: {
-          scorerRequest: updatedRequest
-        }
+          scorerRequest: updatedRequest,
+        },
       });
     }
 
-    return res.status(200).json({ success: true, message: `Scorer request ${action.toLowerCase()}d successfully!` });
+    return res.status(200).json({
+      success: true,
+      message: `Scorer request ${action.toLowerCase()}d successfully!`,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -1599,52 +1976,70 @@ export const inviteOfficial = async (req, res) => {
     const { gameId, officialId, type } = req.body; // type: 'UMPIRE', 'SCORER', 'STREAMER'
 
     const game = await prisma.hostedGame.findUnique({
-      where: { id: gameId }
+      where: { id: gameId },
     });
 
-    if (!game || game.hostId !== hostId) throw new Error("Unauthorized or game not found");
+    if (!game || game.hostId !== hostId)
+      throw new NotFoundError("Unauthorized or game not found", {
+        code: "ENTITY_NOT_FOUND",
+      });
 
-    const official = await prisma.user.findUnique({ where: { id: officialId } });
-    if (!official) throw new Error("User not found");
+    const official = await prisma.user.findUnique({
+      where: { id: officialId },
+    });
+    if (!official)
+      throw new NotFoundError("User not found", { code: "ENTITY_NOT_FOUND" });
 
     let fieldName = "";
     if (type === "UMPIRE") {
-      if (game.umpireId) throw new Error("Umpire already assigned");
+      if (game.umpireId)
+        throw new ConflictError("Umpire already assigned", {
+          code: "CONFLICT",
+        });
       fieldName = "umpireRequest";
     } else if (type === "SCORER") {
-      if (game.scorerId) throw new Error("Scorer already assigned");
+      if (game.scorerId)
+        throw new ConflictError("Scorer already assigned", {
+          code: "CONFLICT",
+        });
       fieldName = "scorerRequest";
     } else if (type === "STREAMER") {
-      if (game.streamerId) throw new Error("Streamer already assigned");
+      if (game.streamerId)
+        throw new ConflictError("Streamer already assigned", {
+          code: "CONFLICT",
+        });
       fieldName = "streamerRequest";
     }
 
-    if (!fieldName) throw new Error("Invalid official type");
+    if (!fieldName)
+      throw new BadRequestError("Invalid official type", {
+        code: "BAD_REQUEST",
+      });
 
     await prisma.hostedGame.update({
       where: { id: gameId },
       data: {
-        [fieldName]: { userId: officialId, status: "PENDING" }
-      }
+        [fieldName]: { userId: officialId, status: "PENDING" },
+      },
     });
 
-    NotificationService.sendInApp({
+    await NotificationService.publishEvent("PRO_INVITE_RECEIVED", {
+      email: official.email,
+      phone: official.phone,
       recipientId: officialId,
-      title: "Match Official Invitation",
-      message: `You have been invited to be a ${type} for a match.`,
-      type: "SYSTEM",
-      link: `/my-hosted-games`,
-      relatedId: gameId,
-      onModel: "HostedGame"
+      recipientModel: "User",
+      type,
+      matchName: game.name || game.title || "",
     });
 
-    return res.status(200).json({ success: true, message: `${type} invitation sent!` });
+    return res
+      .status(200)
+      .json({ success: true, message: `${type} invitation sent!` });
   } catch (error) {
     logger.error("Error in inviteOfficial:", error);
     return res.status(500).json({ message: error.message });
   }
 };
-
 
 // Official (Scorer/Umpire/Streamer) responds to invitation
 export const respondToOfficialInvitation = async (req, res) => {
@@ -1653,32 +2048,39 @@ export const respondToOfficialInvitation = async (req, res) => {
     const { gameId, type, action } = req.body; // type: 'UMPIRE', 'SCORER', 'STREAMER', action: 'APPROVE', 'REJECT'
 
     const game = await prisma.hostedGame.findUnique({
-      where: { id: gameId }
+      where: { id: gameId },
     });
-    if (!game) throw new Error("Game not found");
+    if (!game)
+      throw new NotFoundError("Game not found", { code: "ENTITY_NOT_FOUND" });
 
     let fieldName = "";
     let requestId = "";
     let roleToAssign = "";
 
     if (type === "UMPIRE") {
-      if (game.umpireRequest?.userId !== userId) throw new Error("Unauthorized");
+      if (game.umpireRequest?.userId !== userId)
+        throw new ForbiddenError("Unauthorized", { code: "FORBIDDEN" });
       fieldName = "umpireId";
       requestId = "umpireRequest";
       roleToAssign = "umpire";
     } else if (type === "SCORER") {
-      if (game.scorerRequest?.userId !== userId) throw new Error("Unauthorized");
+      if (game.scorerRequest?.userId !== userId)
+        throw new ForbiddenError("Unauthorized", { code: "FORBIDDEN" });
       fieldName = "scorerId";
       requestId = "scorerRequest";
       roleToAssign = "scorer";
     } else if (type === "STREAMER") {
-      if (game.streamerRequest?.userId !== userId) throw new Error("Unauthorized");
+      if (game.streamerRequest?.userId !== userId)
+        throw new ForbiddenError("Unauthorized", { code: "FORBIDDEN" });
       fieldName = "streamerId";
       requestId = "streamerRequest";
       roleToAssign = "streamer";
     }
 
-    if (!fieldName) throw new Error("Invalid official type");
+    if (!fieldName)
+      throw new BadRequestError("Invalid official type", {
+        code: "BAD_REQUEST",
+      });
 
     if (action === "APPROVE") {
       const currentRequest = game[requestId] || {};
@@ -1688,39 +2090,54 @@ export const respondToOfficialInvitation = async (req, res) => {
           where: { id: gameId },
           data: {
             [fieldName]: userId,
-            [requestId]: updatedRequest
-          }
+            [requestId]: updatedRequest,
+          },
         }),
         prisma.user.update({
           where: { id: userId },
-          data: { role: roleToAssign }
-        })
+          data: { role: roleToAssign },
+        }),
       ]);
     } else {
       const currentRequest = game[requestId] || {};
-      const updatedRequest = { ...currentRequest, status: "REJECTED", userId: null };
+      const updatedRequest = {
+        ...currentRequest,
+        status: "REJECTED",
+        userId: null,
+      };
       await prisma.hostedGame.update({
         where: { id: gameId },
         data: {
-          [requestId]: updatedRequest
-        }
+          [requestId]: updatedRequest,
+        },
       });
     }
 
-    // â”€â”€ Notify Host â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ──────────────────────────────────────────────────────────────────────────────────────────────────
     try {
-      const responder = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
-      const statusMsg = action === "APPROVE" ? "accepted" : "rejected";
-
-      NotificationService.sendInApp({
-        recipientId: game.hostId,
-        title: `Official Invitation ${action === "APPROVE" ? "Accepted" : "Rejected"}`,
-        message: `${responder?.name || "Someone"} has ${statusMsg} your invitation to be the ${type.toLowerCase()} for the match.`,
-        type: "SYSTEM",
-        link: `/hosted-game/${game.id}`,
-        relatedId: game.id,
-        onModel: "HostedGame"
+      const responder = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { name: true },
       });
+      const statusMsg = action === "APPROVE" ? "accepted" : "rejected";
+      const host = await prisma.user.findUnique({
+        where: { id: game.hostId },
+        select: { email: true, phone: true },
+      });
+
+      if (host) {
+        await NotificationService.publishEvent("OFFICIAL_INVITE_UPDATED", {
+          email: host.email,
+          phone: host.phone,
+          recipientId: game.hostId,
+          recipientModel: "User",
+          gameId: game.id,
+          matchName: game.name || game.title || "",
+          responderName: responder?.name || "Someone",
+          status: statusMsg,
+          type,
+        });
+      }
     } catch (notifErr) {
       logger.error("[Notification] Error notifying host:", notifErr);
     }
@@ -1736,8 +2153,8 @@ export const respondToOfficialInvitation = async (req, res) => {
         id: updatedUser.id,
         name: updatedUser.name,
         role: updatedUser.role,
-        email: updatedUser.email
-      }
+        email: updatedUser.email,
+      },
     });
   } catch (error) {
     logger.error("Error in respondToOfficialInvitation:", error);
@@ -1751,17 +2168,24 @@ export const updateVenue = async (req, res) => {
     const { gameId, groundId } = req.body;
 
     const game = await prisma.hostedGame.findFirst({
-      where: { id: gameId, hostId }
+      where: { id: gameId, hostId },
     });
-    if (!game) throw new Error("Unauthorized or game not found");
+    if (!game)
+      throw new NotFoundError("Unauthorized or game not found", {
+        code: "ENTITY_NOT_FOUND",
+      });
 
     const updatedGame = await prisma.hostedGame.update({
       where: { id: gameId },
       data: { turfId: groundId },
-      include: { turf: true }
+      include: { turf: true },
     });
 
-    return res.status(200).json({ success: true, message: "Venue updated successfully!", ground: updatedGame.turf });
+    return res.status(200).json({
+      success: true,
+      message: "Venue updated successfully!",
+      ground: updatedGame.turf,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -1776,11 +2200,11 @@ export const searchOfficials = async (req, res) => {
     const users = await prisma.user.findMany({
       where: {
         OR: [
-          { name: { contains: query, mode: 'insensitive' } },
-          { username: { contains: query, mode: 'insensitive' } },
-          { email: { contains: query, mode: 'insensitive' } },
-          { phone: { contains: query, mode: 'insensitive' } }
-        ]
+          { name: { contains: query, mode: "insensitive" } },
+          { username: { contains: query, mode: "insensitive" } },
+          { email: { contains: query, mode: "insensitive" } },
+          { phone: { contains: query, mode: "insensitive" } },
+        ],
       },
       select: {
         id: true,
@@ -1789,18 +2213,18 @@ export const searchOfficials = async (req, res) => {
         profilePicture: true,
         city: true,
         state: true,
-        email: true
+        email: true,
       },
-      take: 20
+      take: 20,
     });
 
     // Map them for frontend
-    const officials = users.map(u => ({
+    const officials = users.map((u) => ({
       id: u.id,
       name: u.name,
-      username: u.username || u.email.split('@')[0],
+      username: u.username || u.email.split("@")[0],
       profilePicture: u.profilePicture,
-      location: u.city ? `${u.city}, ${u.state}` : 'Unknown'
+      location: u.city ? `${u.city}, ${u.state}` : "Unknown",
     }));
 
     return res.status(200).json({ success: true, officials });
@@ -1815,32 +2239,40 @@ export const updateStreamConfig = async (req, res) => {
     const config = req.body;
 
     const game = await prisma.hostedGame.findUnique({ where: { id } });
-    if (!game) throw new Error("Game not found");
+    if (!game)
+      throw new NotFoundError("Game not found", { code: "ENTITY_NOT_FOUND" });
 
     const userId = req.user.id;
     const owner = await prisma.ownerProfile.findFirst({ where: { userId } });
     const streamerId = owner ? owner.id : userId;
 
     if (game.streamerId !== streamerId && game.hostId !== userId) {
-      return res.status(403).json({ success: false, message: "Unauthorized to update stream configuration" });
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to update stream configuration",
+      });
     }
 
     const updatedConfig = {
       ...(game.streamConfig || {}),
-      ...config
+      ...config,
     };
 
-    const isLive = config.status ? (config.status === "LIVE") : game.isLive;
+    const isLive = config.status ? config.status === "LIVE" : game.isLive;
 
     const updatedGame = await prisma.hostedGame.update({
       where: { id },
       data: {
         streamConfig: updatedConfig,
-        isLive
-      }
+        isLive,
+      },
     });
 
-    return res.status(200).json({ success: true, message: "Stream configuration updated successfully!", streamConfig: updatedGame.streamConfig });
+    return res.status(200).json({
+      success: true,
+      message: "Stream configuration updated successfully!",
+      streamConfig: updatedGame.streamConfig,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -1851,7 +2283,7 @@ export const getHostedGameById = async (req, res) => {
     const { id } = req.params;
     const game = await prisma.hostedGame.findUnique({
       where: { id },
-      include: fullGameInclude
+      include: fullGameInclude,
     });
 
     if (!game) {
@@ -1864,10 +2296,13 @@ export const getHostedGameById = async (req, res) => {
     const officialSetupStatus = {
       hasUmpire: !!game.umpireId,
       hasScorer: !!game.scorerId,
-      isUmpireApproved: game.umpireRequest?.status === 'APPROVED' || !!game.umpireId,
-      isScorerApproved: game.scorerRequest?.status === 'APPROVED' || !!game.scorerId,
-      streamingEnabled: (!!game.umpireId || game.umpireRequest?.status === 'APPROVED') &&
-        (!!game.scorerId || game.scorerRequest?.status === 'APPROVED')
+      isUmpireApproved:
+        game.umpireRequest?.status === "APPROVED" || !!game.umpireId,
+      isScorerApproved:
+        game.scorerRequest?.status === "APPROVED" || !!game.scorerId,
+      streamingEnabled:
+        (!!game.umpireId || game.umpireRequest?.status === "APPROVED") &&
+        (!!game.scorerId || game.scorerRequest?.status === "APPROVED"),
     };
 
     // Compute against the pre-format game (raw slots/teams arrays).
@@ -1876,7 +2311,7 @@ export const getHostedGameById = async (req, res) => {
     return res.status(200).json({
       success: true,
       game: { ...formatGameForClient(game), ...viewerFlags },
-      officialSetupStatus
+      officialSetupStatus,
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -1892,15 +2327,22 @@ export const assignQuickSlot = async (req, res) => {
     const { gameId, slotId, userId } = req.body;
 
     if (!slotId || !userId) {
-      return res.status(400).json({ message: "slotId and userId are required" });
+      return res
+        .status(400)
+        .json({ message: "slotId and userId are required" });
     }
 
     const game = await prisma.hostedGame.findFirst({
-      where: { id: gameId, hostId }
+      where: { id: gameId, hostId },
     });
-    if (!game) return res.status(404).json({ message: "Game not found or unauthorized" });
+    if (!game)
+      return res
+        .status(404)
+        .json({ message: "Game not found or unauthorized" });
     if (game.gameMode !== "QUICK") {
-      return res.status(400).json({ message: "Only Quick Games support slot assignment" });
+      return res
+        .status(400)
+        .json({ message: "Only Quick Games support slot assignment" });
     }
 
     await prisma.gameSlot.update({
@@ -1908,11 +2350,13 @@ export const assignQuickSlot = async (req, res) => {
       data: {
         userId,
         status: "HELD",
-        addedById: hostId
-      }
+        addedById: hostId,
+      },
     });
 
-    return res.status(200).json({ success: true, message: "Slot assigned successfully" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Slot assigned successfully" });
   } catch (error) {
     logger.error("[assignQuickSlot]", error);
     return res.status(500).json({ message: error.message });
@@ -1928,15 +2372,22 @@ export const inviteCustomPlayer = async (req, res) => {
     const { gameId, slotId, name, email, phone, mustPay } = req.body;
 
     if (!email || !name || !slotId) {
-      return res.status(400).json({ message: "name, email, and slotId are required" });
+      return res
+        .status(400)
+        .json({ message: "name, email, and slotId are required" });
     }
 
     const game = await prisma.hostedGame.findFirst({
-      where: { id: gameId, hostId }
+      where: { id: gameId, hostId },
     });
-    if (!game) return res.status(404).json({ message: "Game not found or unauthorized" });
+    if (!game)
+      return res
+        .status(404)
+        .json({ message: "Game not found or unauthorized" });
     if (game.gameMode !== "QUICK") {
-      return res.status(400).json({ message: "Only Quick Games support custom invites" });
+      return res
+        .status(400)
+        .json({ message: "Only Quick Games support custom invites" });
     }
 
     const token = randomUUID();
@@ -1951,8 +2402,8 @@ export const inviteCustomPlayer = async (req, res) => {
           phone: phone || "",
           mustPay: !!mustPay,
           inviteToken: token,
-          inviteStatus: "PENDING"
-        }
+          inviteStatus: "PENDING",
+        },
       });
 
       await tx.gameSlot.update({
@@ -1960,12 +2411,15 @@ export const inviteCustomPlayer = async (req, res) => {
         data: {
           status: "HELD",
           addedById: hostId,
-          customPlayerId: customPlayer.id
-        }
+          customPlayerId: customPlayer.id,
+        },
       });
 
       // Fire invite email (background)
-      const host = await tx.user.findUnique({ where: { id: hostId }, select: { name: true, email: true, phone: true } });
+      const host = await tx.user.findUnique({
+        where: { id: hostId },
+        select: { name: true, email: true, phone: true },
+      });
       NotificationService.sendCustomPlayerInvite({ customPlayer, game, host });
     });
 
@@ -1987,7 +2441,7 @@ export const verifyInviteToken = async (req, res) => {
     // Try finding player invite first
     let customPlayer = await prisma.customPlayer.findUnique({
       where: { inviteToken: token },
-      include: { game: true }
+      include: { game: true },
     });
 
     let inviteType = "PLAYER";
@@ -2001,7 +2455,7 @@ export const verifyInviteToken = async (req, res) => {
       // Try finding umpire invite
       let customUmpire = await prisma.customUmpire.findUnique({
         where: { inviteToken: token },
-        include: { game: true }
+        include: { game: true },
       });
 
       if (customUmpire && customUmpire.inviteStatus === "PENDING") {
@@ -2012,7 +2466,9 @@ export const verifyInviteToken = async (req, res) => {
     }
 
     if (!game || !inviteData) {
-      return res.status(404).json({ message: "Invite not found or already used" });
+      return res
+        .status(404)
+        .json({ message: "Invite not found or already used" });
     }
 
     return res.status(200).json({
@@ -2048,7 +2504,7 @@ export const getFollowersForSlot = async (req, res) => {
     // Union of followers + following, de-duped by id
     const seen = new Set();
     const people = [];
-    [...followers, ...following].forEach(u => {
+    [...followers, ...following].forEach((u) => {
       const key = u.id.toString();
       if (!seen.has(key)) {
         seen.add(key);
@@ -2075,12 +2531,13 @@ export const claimInviteSlot = async (req, res) => {
       const userId = req.user.id;
       const { token } = req.body;
 
-      if (!token) throw new Error("Token is required");
+      if (!token)
+        throw new BadRequestError("Token is required", { code: "BAD_REQUEST" });
 
       // Try player invite first
       let customPlayer = await tx.customPlayer.findUnique({
         where: { inviteToken: token },
-        include: { game: true }
+        include: { game: true },
       });
 
       let isUmpire = false;
@@ -2094,7 +2551,7 @@ export const claimInviteSlot = async (req, res) => {
         // Try umpire invite
         let customUmpire = await tx.customUmpire.findUnique({
           where: { inviteToken: token },
-          include: { game: true }
+          include: { game: true },
         });
         if (customUmpire && customUmpire.inviteStatus === "PENDING") {
           isUmpire = true;
@@ -2103,7 +2560,10 @@ export const claimInviteSlot = async (req, res) => {
         }
       }
 
-      if (!game || !inviteData) throw new Error("Invite not found or already claimed");
+      if (!game || !inviteData)
+        throw new NotFoundError("Invite not found or already claimed", {
+          code: "ENTITY_NOT_FOUND",
+        });
 
       if (isUmpire) {
         // Handle Umpire Claim
@@ -2111,14 +2571,16 @@ export const claimInviteSlot = async (req, res) => {
           where: { id: inviteData.id },
           data: {
             inviteStatus: "ACCEPTED",
-            claimedByUserId: userId
-          }
+            claimedByUserId: userId,
+          },
         });
 
         let owner = await tx.ownerProfile.findFirst({ where: { userId } });
 
         if (!owner) {
-          const userDetails = await tx.user.findUnique({ where: { id: userId } });
+          const userDetails = await tx.user.findUnique({
+            where: { id: userId },
+          });
           if (userDetails) {
             owner = await tx.ownerProfile.create({
               data: {
@@ -2127,16 +2589,17 @@ export const claimInviteSlot = async (req, res) => {
                 email: userDetails.email || inviteData.email,
                 phone: userDetails.phone || inviteData.phone || "",
                 role: "UMPIRE",
-                businessName: userDetails.name || inviteData.name || "Independent Partner"
-              }
+                businessName:
+                  userDetails.name || inviteData.name || "Independent Partner",
+              },
             });
 
             await tx.user.update({
               where: { id: userId },
               data: {
                 role: "UMPIRE",
-                ownerDetailsId: owner.id
-              }
+                ownerDetailsId: owner.id,
+              },
             });
 
             updatedRole = "UMPIRE";
@@ -2145,11 +2608,11 @@ export const claimInviteSlot = async (req, res) => {
         } else if (["VENUE_OWNER", "USER"].includes(owner.role)) {
           await tx.ownerProfile.update({
             where: { id: owner.id },
-            data: { role: "UMPIRE" }
+            data: { role: "UMPIRE" },
           });
           await tx.user.update({
             where: { id: userId },
-            data: { role: "UMPIRE" }
+            data: { role: "UMPIRE" },
           });
 
           updatedRole = "UMPIRE";
@@ -2160,14 +2623,16 @@ export const claimInviteSlot = async (req, res) => {
           where: { id: game.id },
           data: {
             umpireId: owner ? owner.id : userId,
-            umpireRequest: { userId: owner ? owner.id : userId, status: "APPROVED" }
-          }
+            umpireRequest: {
+              userId: owner ? owner.id : userId,
+              status: "APPROVED",
+            },
+          },
         });
-
       } else {
         // Handle Player Claim
         if (inviteData.mustPay && game.perPlayerCharge > 0) {
-          await WalletService.reserve(userId, 'user', game.perPlayerCharge, tx);
+          await WalletService.reserve(userId, "user", game.perPlayerCharge, tx);
         }
 
         // Update custom player status
@@ -2175,13 +2640,13 @@ export const claimInviteSlot = async (req, res) => {
           where: { id: inviteData.id },
           data: {
             inviteStatus: "CLAIMED",
-            claimedByUserId: userId
-          }
+            claimedByUserId: userId,
+          },
         });
 
         // Find the slot and update it
         const slot = await tx.gameSlot.findFirst({
-          where: { gameId: game.id, customPlayerId: inviteData.id }
+          where: { gameId: game.id, customPlayerId: inviteData.id },
         });
 
         if (slot) {
@@ -2189,28 +2654,47 @@ export const claimInviteSlot = async (req, res) => {
             where: { id: slot.id },
             data: {
               userId,
-              status: "JOINED"
-            }
+              status: "JOINED",
+            },
           });
         }
       }
 
-      return { success: true, updatedRole: updatedRole || null, updatedOwnerId: updatedOwnerId || null };
+      return {
+        success: true,
+        updatedRole: updatedRole || null,
+        updatedOwnerId: updatedOwnerId || null,
+      };
     });
 
     if (result.updatedRole && result.updatedRole !== req.user?.role) {
-      const newToken = await generateUserToken(req.user.id || req.user.user, result.updatedRole, result.updatedOwnerId);
-      const isProd = process.env.NODE_ENV === "production" || !!process.env.RAILWAY_ENVIRONMENT || !!process.env.RAILWAY_ENVIRONMENT_NAME || !!process.env.RAILWAY_PROJECT_ID;
+      const newToken = await generateUserToken(
+        req.user.id || req.user.user,
+        result.updatedRole,
+        result.updatedOwnerId
+      );
+      const isProd =
+        process.env.NODE_ENV === "production" ||
+        !!process.env.RAILWAY_ENVIRONMENT ||
+        !!process.env.RAILWAY_ENVIRONMENT_NAME ||
+        !!process.env.RAILWAY_PROJECT_ID;
       res.cookie("auth_token", newToken, {
         httpOnly: true,
         secure: isProd,
         sameSite: isProd ? "none" : "lax",
-        maxAge: 15 * 60 * 1000, 
+        maxAge: 15 * 60 * 1000,
       });
-      return res.status(200).json({ success: true, message: "Slot claimed successfully!", newToken, updatedRole: result.updatedRole });
+      return res.status(200).json({
+        success: true,
+        message: "Slot claimed successfully!",
+        newToken,
+        updatedRole: result.updatedRole,
+      });
     }
 
-    return res.status(200).json({ success: true, message: "Slot claimed successfully!" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Slot claimed successfully!" });
   } catch (error) {
     logger.error("[claimInviteSlot]", error);
     return res.status(error.status || 500).json({ message: error.message });
@@ -2224,19 +2708,28 @@ export const updateTickerTheme = async (req, res) => {
     const userId = req.user.id || req.user.user;
 
     const game = await prisma.hostedGame.findUnique({ where: { id } });
-    if (!game) throw new Error("Game not found");
+    if (!game)
+      throw new NotFoundError("Game not found", { code: "ENTITY_NOT_FOUND" });
 
     // Authorization: Only Host, assigned Streamer, or Scorer
-    const isAuthorizedUser = (game.hostId === userId || game.streamerId === userId || game.scorerId === userId) && userId !== undefined;
-    const isAuthorizedScorer = req.user.role === 'SCORER' && req.user.gameId === id;
+    const isAuthorizedUser =
+      (game.hostId === userId ||
+        game.streamerId === userId ||
+        game.scorerId === userId) &&
+      userId !== undefined;
+    const isAuthorizedScorer =
+      req.user.role === "SCORER" && req.user.gameId === id;
 
     if (!isAuthorizedUser && !isAuthorizedScorer) {
-      return res.status(403).json({ success: false, message: "Unauthorized to update ticker theme" });
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to update ticker theme",
+      });
     }
 
     const updatedGame = await prisma.hostedGame.update({
       where: { id },
-      data: { tickerTheme }
+      data: { tickerTheme },
     });
 
     // Update Redis cache live score theme if it exists
@@ -2260,7 +2753,10 @@ export const updateTickerTheme = async (req, res) => {
         }
       }
     } catch (cacheErr) {
-      logger.error("[Scoring] Redis/Socket error on ticker theme update:", cacheErr);
+      logger.error(
+        "[Scoring] Redis/Socket error on ticker theme update:",
+        cacheErr
+      );
     }
 
     return res.status(200).json({ success: true, game: updatedGame });
@@ -2277,28 +2773,40 @@ export const voteGameStarted = async (req, res) => {
     await runInTransaction(async ({ tx }) => {
       const game = await tx.hostedGame.findUnique({
         where: { id: gameId },
-        include: { slots: true }
+        include: { slots: true },
       });
-      if (!game) throw new Error("Game not found");
+      if (!game)
+        throw new NotFoundError("Game not found", { code: "ENTITY_NOT_FOUND" });
 
       if (game.coinTransferStatus !== "PENDING") {
-        throw new Error("Game is already settled or in dispute");
+        throw new ConflictError("Game is already settled or in dispute", {
+          code: "CONFLICT",
+        });
       }
 
       if (game.perPlayerCharge <= 0) {
-        throw new Error("Voting is only applicable for paid games");
+        throw new InternalError("Voting is only applicable for paid games", {
+          code: "INTERNAL_ERROR",
+        });
       }
 
-      const userSlot = game.slots.find(s => s.userId === userId && s.status === "JOINED");
-      if (!userSlot) throw new Error("Only joined users can vote");
+      const userSlot = game.slots.find(
+        (s) => s.userId === userId && s.status === "JOINED"
+      );
+      if (!userSlot)
+        throw new InternalError("Only joined users can vote", {
+          code: "INTERNAL_ERROR",
+        });
 
       if (game.votedStartedBy.includes(userId)) {
-        throw new Error("You have already voted");
+        throw new ConflictError("You have already voted", { code: "CONFLICT" });
       }
 
       const updatedVotes = [...game.votedStartedBy, userId];
 
-      const totalPaidSlots = game.slots.filter(s => s.status === "JOINED" && s.userId).length;
+      const totalPaidSlots = game.slots.filter(
+        (s) => s.status === "JOINED" && s.userId
+      ).length;
       const majorityRequired = Math.floor(totalPaidSlots / 2) + 1;
 
       let newStatus = "PENDING";
@@ -2310,13 +2818,13 @@ export const voteGameStarted = async (req, res) => {
         where: { id: gameId },
         data: {
           votedStartedBy: updatedVotes,
-          coinTransferStatus: newStatus
-        }
+          coinTransferStatus: newStatus,
+        },
       });
 
       if (newStatus === "COMPLETED") {
         const totalAmount = Number(game.perPlayerCharge) * totalPaidSlots;
-        await WalletService.credit(game.hostId, 'user', totalAmount, tx);
+        await WalletService.credit(game.hostId, "user", totalAmount, tx);
 
         await tx.walletTransaction.create({
           data: {
@@ -2324,13 +2832,16 @@ export const voteGameStarted = async (req, res) => {
             amount: totalAmount,
             type: "SLOT_INCOME",
             status: "SUCCESS",
-            description: "Received payment from players for game (Majority Voted)"
-          }
+            description:
+              "Received payment from players for game (Majority Voted)",
+          },
         });
       }
     });
 
-    return res.status(200).json({ success: true, message: "Vote recorded successfully" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Vote recorded successfully" });
   } catch (error) {
     logger.error("Error in voteGameStarted:", error);
     return res.status(error.status || 500).json({ message: error.message });
@@ -2345,24 +2856,33 @@ export const raiseDispute = async (req, res) => {
     await runInTransaction(async ({ tx }) => {
       const game = await tx.hostedGame.findUnique({
         where: { id: gameId },
-        include: { slots: true }
+        include: { slots: true },
       });
-      if (!game) throw new Error("Game not found");
+      if (!game)
+        throw new NotFoundError("Game not found", { code: "ENTITY_NOT_FOUND" });
 
       if (game.coinTransferStatus === "COMPLETED") {
-        throw new Error("Cannot raise dispute after coins have been transferred");
+        throw new InternalError(
+          "Cannot raise dispute after coins have been transferred",
+          { code: "INTERNAL_ERROR" }
+        );
       }
 
-      const userSlot = game.slots.find(s => s.userId === userId && s.status === "JOINED");
-      if (!userSlot) throw new Error("Only joined users can raise a dispute");
+      const userSlot = game.slots.find(
+        (s) => s.userId === userId && s.status === "JOINED"
+      );
+      if (!userSlot)
+        throw new InternalError("Only joined users can raise a dispute", {
+          code: "INTERNAL_ERROR",
+        });
 
       await tx.hostedGame.update({
         where: { id: gameId },
-        data: { 
+        data: {
           coinTransferStatus: "DISPUTED", // keep for legacy backwards-compatibility if needed
           payoutStatus: "FROZEN",
-          disputeRaised: true
-        }
+          disputeRaised: true,
+        },
       });
 
       await tx.gameDispute.create({
@@ -2370,12 +2890,14 @@ export const raiseDispute = async (req, res) => {
           gameId,
           raisedById: userId,
           reason: reason || "No reason provided",
-          status: "OPEN"
-        }
+          status: "OPEN",
+        },
       });
     });
 
-    return res.status(200).json({ success: true, message: "Dispute raised successfully" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Dispute raised successfully" });
   } catch (error) {
     logger.error("Error in raiseDispute:", error);
     return res.status(error.status || 500).json({ message: error.message });
@@ -2384,14 +2906,20 @@ export const raiseDispute = async (req, res) => {
 
 export const validateCoupon = async (req, res) => {
   try {
-    const { code, groundCost = 0, umpireCost = 0, streamerCost = 0, scorerCost = 0 } = req.body;
+    const {
+      code,
+      groundCost = 0,
+      umpireCost = 0,
+      streamerCost = 0,
+      scorerCost = 0,
+    } = req.body;
 
     if (!code) {
       return res.status(400).json({ message: "Coupon code is required" });
     }
 
     const coupon = await prisma.coupon.findUnique({
-      where: { code: code.toUpperCase() }
+      where: { code: code.toUpperCase() },
     });
 
     if (!coupon) {
@@ -2399,7 +2927,9 @@ export const validateCoupon = async (req, res) => {
     }
 
     if (!coupon.isActive) {
-      return res.status(400).json({ message: "This coupon is no longer active" });
+      return res
+        .status(400)
+        .json({ message: "This coupon is no longer active" });
     }
 
     if (coupon.validUntil && new Date(coupon.validUntil) < new Date()) {
@@ -2407,13 +2937,19 @@ export const validateCoupon = async (req, res) => {
     }
 
     if (coupon.usageLimit > 0 && coupon.timesUsed >= coupon.usageLimit) {
-      return res.status(400).json({ message: "This coupon usage limit has been reached" });
+      return res
+        .status(400)
+        .json({ message: "This coupon usage limit has been reached" });
     }
 
-    const subTotal = Number(groundCost) + Number(umpireCost) + Number(streamerCost) + Number(scorerCost);
+    const subTotal =
+      Number(groundCost) +
+      Number(umpireCost) +
+      Number(streamerCost) +
+      Number(scorerCost);
 
     let discountAmount = 0;
-    if (coupon.discountType === 'PERCENTAGE') {
+    if (coupon.discountType === "PERCENTAGE") {
       discountAmount = (subTotal * Number(coupon.discountValue)) / 100;
     } else {
       discountAmount = Number(coupon.discountValue);
@@ -2424,7 +2960,7 @@ export const validateCoupon = async (req, res) => {
     }
 
     const platformFee = (subTotal - discountAmount) * 0.015;
-    const finalCost = (subTotal - discountAmount) + platformFee;
+    const finalCost = subTotal - discountAmount + platformFee;
 
     return res.status(200).json({
       success: true,
@@ -2435,12 +2971,13 @@ export const validateCoupon = async (req, res) => {
         discountValue: coupon.discountValue,
         discountAmount,
         platformFee,
-        finalCost
-      }
+        finalCost,
+      },
     });
-
   } catch (error) {
     logger.error("validateCoupon error:", error);
-    return res.status(500).json({ message: error.message || "Failed to validate coupon" });
+    return res
+      .status(500)
+      .json({ message: error.message || "Failed to validate coupon" });
   }
 };

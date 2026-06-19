@@ -1,1 +1,35 @@
-{"responses":{"200":{"description":"Turf details retrieved","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"string","format":"uuid"},"ownerId":{"type":"string","format":"uuid"},"name":{"type":"string"},"description":{"type":"string","nullable":true},"location":{"type":"string"},"city":{"type":"string"},"state":{"type":"string"},"image":{"type":"string"},"images":{"type":"array","items":{"type":"string"}},"sportTypes":{"type":"array","items":{"type":"string"}},"pricePerHour":{"type":"number"},"openTime":{"type":"string"},"closeTime":{"type":"string"},"isActive":{"type":"boolean"},"status":{"type":"string","enum":["pending","approved","rejected"]}},"title":"Turf"}}}}}}
+{
+  "responses": {
+    "200": {
+      "description": "Turf details retrieved",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string", "format": "uuid" },
+              "ownerId": { "type": "string", "format": "uuid" },
+              "name": { "type": "string" },
+              "description": { "type": "string", "nullable": true },
+              "location": { "type": "string" },
+              "city": { "type": "string" },
+              "state": { "type": "string" },
+              "image": { "type": "string" },
+              "images": { "type": "array", "items": { "type": "string" } },
+              "sportTypes": { "type": "array", "items": { "type": "string" } },
+              "pricePerHour": { "type": "number" },
+              "openTime": { "type": "string" },
+              "closeTime": { "type": "string" },
+              "isActive": { "type": "boolean" },
+              "status": {
+                "type": "string",
+                "enum": ["pending", "approved", "rejected"]
+              }
+            },
+            "title": "Turf"
+          }
+        }
+      }
+    }
+  }
+}

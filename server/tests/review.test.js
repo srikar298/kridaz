@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals';
+import { jest } from "@jest/globals";
 import request from "supertest";
 import app from "../app.js";
 import { prisma } from "../config/prisma.js";
@@ -29,7 +29,7 @@ const seedOtp = async (email, phone) => {
       phone,
       emailOtp: "123456",
       phoneOtp: "123456",
-      expiresAt: new Date(Date.now() + 600000)
+      expiresAt: new Date(Date.now() + 600000),
     },
   });
 };
@@ -45,66 +45,86 @@ describe("Review Module API Integration", () => {
   let cloudinarySpy;
 
   beforeAll(async () => {
-    cloudinarySpy = jest.spyOn(cloudinary.uploader, "upload_stream").mockImplementation((options, callback) => {
-      return {
-        end: () => {
-          callback(null, { secure_url: "https://mock.cloudinary.com/image.jpg" });
-        }
-      };
-    });
+    cloudinarySpy = jest
+      .spyOn(cloudinary.uploader, "upload_stream")
+      .mockImplementation((options, callback) => {
+        return {
+          end: () => {
+            callback(null, {
+              secure_url: "https://mock.cloudinary.com/image.jpg",
+            });
+          },
+        };
+      });
 
     console.log("DB URL inside beforeAll:", process.env.DATABASE_URL);
     // 1. Cleanup old records if any exist
-    await prisma.review.deleteMany({
-      where: {
-        OR: [
-          { user: { email: testUserEmail } },
-          { turf: { owner: { user: { email: testOwnerEmail } } } }
-        ]
-      }
-    }).catch(() => {});
+    await prisma.review
+      .deleteMany({
+        where: {
+          OR: [
+            { user: { email: testUserEmail } },
+            { turf: { owner: { user: { email: testOwnerEmail } } } },
+          ],
+        },
+      })
+      .catch(() => {});
 
-    await prisma.turf.deleteMany({
-      where: { owner: { user: { email: testOwnerEmail } } }
-    }).catch(() => {});
+    await prisma.turf
+      .deleteMany({
+        where: { owner: { user: { email: testOwnerEmail } } },
+      })
+      .catch(() => {});
 
-    await prisma.ownerProfile.deleteMany({
-      where: { user: { email: testOwnerEmail } }
-    }).catch(() => {});
+    await prisma.ownerProfile
+      .deleteMany({
+        where: { user: { email: testOwnerEmail } },
+      })
+      .catch(() => {});
 
-    await prisma.user.deleteMany({
-      where: { OR: [{ email: testUserEmail }, { email: testOwnerEmail }] }
-    }).catch(() => {});
+    await prisma.user
+      .deleteMany({
+        where: { OR: [{ email: testUserEmail }, { email: testOwnerEmail }] },
+      })
+      .catch(() => {});
 
     // 2. Seed OTPs
     await seedOtp(testUserEmail, testUserPhone);
     await seedOtp(testOwnerEmail, testOwnerPhone);
 
     // 3. Register user (player)
-    const otpRes_userRegRes = await request(app).post('/api/user/auth/verify-otp').send({ email: testUserEmail, phone: testUserPhone, otp: "123456" });
-    const userRegRes = await request(app)
-      .post("/api/user/auth/register")
-      .send({
-        name: "Reviewer Player",
-        email: testUserEmail,
-        username: testUserUsername,
-        phone: testUserPhone,
-        gender: "Male",
-        location: "Review City",
-        password: "Review@Pass123",
-        confirmPassword: "Review@Pass123",
-        otp: "123456",
-        phoneOtp: "123456", registrationToken: otpRes_userRegRes.body.registrationToken});
+    const otpRes_userRegRes = await request(app)
+      .post("/api/user/auth/verify-otp")
+      .send({ email: testUserEmail, phone: testUserPhone, otp: "123456" });
+    const userRegRes = await request(app).post("/api/user/auth/register").send({
+      name: "Reviewer Player",
+      email: testUserEmail,
+      username: testUserUsername,
+      phone: testUserPhone,
+      gender: "Male",
+      location: "Review City",
+      password: "Review@Pass123",
+      confirmPassword: "Review@Pass123",
+      otp: "123456",
+      phoneOtp: "123456",
+      registrationToken: otpRes_userRegRes.body.registrationToken,
+    });
 
     console.log("User Register Status:", userRegRes.statusCode);
     if (userRegRes.statusCode === 201) {
       userToken = userRegRes.body.token;
     } else {
-      console.error("[SETUP ERROR] User registration failed:", userRegRes.statusCode, userRegRes.body);
+      console.error(
+        "[SETUP ERROR] User registration failed:",
+        userRegRes.statusCode,
+        userRegRes.body
+      );
     }
 
     // 4. Register owner
-    const otpRes_owner = await request(app).post('/api/user/auth/verify-otp').send({ email: testOwnerEmail, phone: testOwnerPhone, otp: "123456" });
+    const otpRes_owner = await request(app)
+      .post("/api/user/auth/verify-otp")
+      .send({ email: testOwnerEmail, phone: testOwnerPhone, otp: "123456" });
     const ownerRegRes = await request(app)
       .post("/api/owner/auth/owner/register")
       .send({
@@ -119,12 +139,16 @@ describe("Review Module API Integration", () => {
         otp: "123456",
         phoneOtp: "123456",
         role: "VENUE_OWNER",
-        registrationToken: otpRes_owner.body.registrationToken
+        registrationToken: otpRes_owner.body.registrationToken,
       });
 
     console.log("Owner Register Status:", ownerRegRes.statusCode);
     if (ownerRegRes.statusCode !== 201) {
-      console.error("[SETUP ERROR] Owner registration failed:", ownerRegRes.statusCode, ownerRegRes.body);
+      console.error(
+        "[SETUP ERROR] Owner registration failed:",
+        ownerRegRes.statusCode,
+        ownerRegRes.body
+      );
     }
 
     // Seed OTP and Login to get proper Owner Token
@@ -142,13 +166,17 @@ describe("Review Module API Integration", () => {
       ownerToken = ownerLoginRes.body.token;
       console.log("Owner Token received:", ownerToken);
     } else {
-      console.error("[SETUP ERROR] Owner login failed:", ownerLoginRes.statusCode, ownerLoginRes.body);
+      console.error(
+        "[SETUP ERROR] Owner login failed:",
+        ownerLoginRes.statusCode,
+        ownerLoginRes.body
+      );
     }
 
     // Explicitly check role of registered owner in database
     const ownerUserInDb = await prisma.user.findFirst({
       where: { email: testOwnerEmail },
-      include: { ownerProfile: true }
+      include: { ownerProfile: true },
     });
     console.log("Owner User in DB:", JSON.stringify(ownerUserInDb));
 
@@ -156,7 +184,7 @@ describe("Review Module API Integration", () => {
     if (ownerUserInDb) {
       await prisma.user.update({
         where: { id: ownerUserInDb.id },
-        data: { role: "VENUE_OWNER" }
+        data: { role: "VENUE_OWNER" },
       });
       console.log("Forced role update to VENUE_OWNER in database");
     }
@@ -179,13 +207,20 @@ describe("Review Module API Integration", () => {
         .field("openTime", "08:00 AM")
         .field("closeTime", "11:00 PM")
         .field("policies", policies)
-        .attach("images", getTestImageBuffer(), { filename: "turf.jpg", contentType: "image/jpeg" });
+        .attach("images", getTestImageBuffer(), {
+          filename: "turf.jpg",
+          contentType: "image/jpeg",
+        });
 
       console.log("Turf Registration Status:", turfRes.statusCode);
       if (turfRes.statusCode === 201) {
         createdTurfId = turfRes.body.turf.id;
       } else {
-        console.error("[SETUP ERROR] Turf registration failed:", turfRes.statusCode, turfRes.body);
+        console.error(
+          "[SETUP ERROR] Turf registration failed:",
+          turfRes.statusCode,
+          turfRes.body
+        );
       }
     }
   }, 40000);
@@ -195,31 +230,51 @@ describe("Review Module API Integration", () => {
       cloudinarySpy.mockRestore();
     }
     // Cleanup created reviews
-    await prisma.review.deleteMany({
-      where: { turfId: createdTurfId }
-    }).catch(() => {});
+    await prisma.review
+      .deleteMany({
+        where: { turfId: createdTurfId },
+      })
+      .catch(() => {});
 
     // Cleanup turf
     if (createdTurfId) {
-      await prisma.turf.delete({ where: { id: createdTurfId } }).catch(() => {});
+      await prisma.turf
+        .delete({ where: { id: createdTurfId } })
+        .catch(() => {});
     }
 
     // Cleanup owners/users
-    const ownerUser = await prisma.user.findFirst({ where: { email: testOwnerEmail } });
+    const ownerUser = await prisma.user.findFirst({
+      where: { email: testOwnerEmail },
+    });
     if (ownerUser) {
-      await prisma.ownerProfile.deleteMany({ where: { userId: ownerUser.id } }).catch(() => {});
-      await prisma.refreshToken.deleteMany({ where: { userId: ownerUser.id } }).catch(() => {});
+      await prisma.ownerProfile
+        .deleteMany({ where: { userId: ownerUser.id } })
+        .catch(() => {});
+      await prisma.refreshToken
+        .deleteMany({ where: { userId: ownerUser.id } })
+        .catch(() => {});
       await prisma.user.delete({ where: { id: ownerUser.id } }).catch(() => {});
     }
 
-    const playerUser = await prisma.user.findFirst({ where: { email: testUserEmail } });
+    const playerUser = await prisma.user.findFirst({
+      where: { email: testUserEmail },
+    });
     if (playerUser) {
-      await prisma.refreshToken.deleteMany({ where: { userId: playerUser.id } }).catch(() => {});
-      await prisma.user.delete({ where: { id: playerUser.id } }).catch(() => {});
+      await prisma.refreshToken
+        .deleteMany({ where: { userId: playerUser.id } })
+        .catch(() => {});
+      await prisma.user
+        .delete({ where: { id: playerUser.id } })
+        .catch(() => {});
     }
 
-    await prisma.oTP.deleteMany({ where: { email: testUserEmail } }).catch(() => {});
-    await prisma.oTP.deleteMany({ where: { email: testOwnerEmail } }).catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: testUserEmail } })
+      .catch(() => {});
+    await prisma.oTP
+      .deleteMany({ where: { email: testOwnerEmail } })
+      .catch(() => {});
 
     await prisma.$disconnect();
   });
@@ -228,12 +283,10 @@ describe("Review Module API Integration", () => {
   describe("POST /api/user/review/:id — Submit Review", () => {
     it("should reject review submission if user token is missing", async () => {
       const targetId = createdTurfId || "dummy-id";
-      const res = await request(app)
-        .post(`/api/user/review/${targetId}`)
-        .send({
-          rating: 4,
-          review: "Decent venue"
-        });
+      const res = await request(app).post(`/api/user/review/${targetId}`).send({
+        rating: 4,
+        review: "Decent venue",
+      });
 
       expect(res.statusCode).toBe(401);
     });
@@ -246,7 +299,7 @@ describe("Review Module API Integration", () => {
         .post(`/api/user/review/${targetId}`)
         .set("Authorization", `Bearer ${userToken}`)
         .send({
-          rating: 4
+          rating: 4,
         });
 
       expect(res.statusCode).toBe(400);
@@ -261,7 +314,7 @@ describe("Review Module API Integration", () => {
         .set("Authorization", `Bearer ${userToken}`)
         .send({
           rating: 4,
-          review: "Excellent court quality, lighting is brilliant!"
+          review: "Excellent court quality, lighting is brilliant!",
         });
 
       expect(res.statusCode).toBe(201);
@@ -279,12 +332,11 @@ describe("Review Module API Integration", () => {
         .set("Authorization", `Bearer ${userToken}`)
         .send({
           rating: 5,
-          review: "Best turf in town!"
+          review: "Best turf in town!",
         });
       expect(addRes.statusCode).toBe(201);
 
-      const res = await request(app)
-        .get(`/api/user/review/${createdTurfId}`);
+      const res = await request(app).get(`/api/user/review/${createdTurfId}`);
 
       expect(res.statusCode).toBe(200);
       expect(res.body.message).toContain("retrieved successfully");
@@ -307,7 +359,7 @@ describe("Review Module API Integration", () => {
       expect(res.statusCode).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
 
-      const turfSummary = res.body.find(t => t.id === createdTurfId);
+      const turfSummary = res.body.find((t) => t.id === createdTurfId);
       expect(turfSummary).toBeDefined();
       expect(turfSummary.name).toContain("Review Ground");
       expect(turfSummary.reviewCount).toBe(2);

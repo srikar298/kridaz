@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import axiosInstance from '@hooks/useAxiosInstance';
-import { toast } from 'react-hot-toast';
+import { useState, useEffect } from "react";
+import axiosInstance from "@hooks/useAxiosInstance";
+import { toast } from "react-hot-toast";
 
 const useGameDisputes = () => {
   const [disputedGames, setDisputedGames] = useState([]);
@@ -10,10 +10,10 @@ const useGameDisputes = () => {
   const fetchDisputes = async () => {
     try {
       setLoading(true);
-      const { data } = await axiosInstance.get('/hosted-game/admin/disputes');
+      const { data } = await axiosInstance.get("/hosted-game/admin/disputes");
       setDisputedGames(data.games || []);
     } catch (error) {
-      toast.error('Failed to load game disputes');
+      toast.error("Failed to load game disputes");
     } finally {
       setLoading(false);
     }
@@ -23,18 +23,20 @@ const useGameDisputes = () => {
     fetchDisputes();
   }, []);
 
-    const resolveDispute = async (gameId, action, refunds) => {
+  const resolveDispute = async (gameId, action, refunds) => {
     try {
       setProcessingId(gameId);
-      await axiosInstance.post('/hosted-game/admin/resolve-dispute', {
+      await axiosInstance.post("/hosted-game/admin/resolve-dispute", {
         gameId,
         action,
-        refunds
+        refunds,
       });
-      toast.success('Dispute resolved successfully');
-      setDisputedGames(prev => prev.filter(g => g.id !== gameId));
+      toast.success("Dispute resolved successfully");
+      setDisputedGames((prev) => prev.filter((g) => g.id !== gameId));
     } catch (error) {
-      toast.error(error?.response?.data?.message || 'Failed to resolve dispute');
+      toast.error(
+        error?.response?.data?.message || "Failed to resolve dispute"
+      );
       throw error;
     } finally {
       setProcessingId(null);
@@ -46,7 +48,7 @@ const useGameDisputes = () => {
     loading,
     processingId,
     resolveDispute,
-    refresh: fetchDisputes
+    refresh: fetchDisputes,
   };
 };
 

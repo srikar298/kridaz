@@ -1,10 +1,10 @@
-import sharp from 'sharp';
-import axios from 'axios';
-import fs from 'fs-extra';
-import path from 'path';
-import os from 'os';
-import { uploadToR2 } from './r2.js';
-import logger from './logger.js';
+import sharp from "sharp";
+import axios from "axios";
+import fs from "fs-extra";
+import path from "path";
+import os from "os";
+import { uploadToR2 } from "./r2.js";
+import logger from "./logger.js";
 
 /**
  * Generates a tiny base64 placeholder for an image
@@ -12,21 +12,27 @@ import logger from './logger.js';
 export const generatePlaceholder = async (sourceUrlOrBuffer) => {
   try {
     let input = sourceUrlOrBuffer;
-    
-    if (typeof sourceUrlOrBuffer === 'string') {
-      const response = await axios.get(sourceUrlOrBuffer, { responseType: 'arraybuffer' });
+
+    if (typeof sourceUrlOrBuffer === "string") {
+      const response = await axios.get(sourceUrlOrBuffer, {
+        responseType: "arraybuffer",
+      });
       input = Buffer.from(response.data);
     }
 
     const placeholder = await sharp(input)
-      .resize(15, 15, { fit: 'cover' })
+      .resize(15, 15, { fit: "cover" })
       .blur(2)
-      .toFormat('webp', { quality: 20 })
+      .toFormat("webp", { quality: 20 })
       .toBuffer();
 
-    return `data:image/webp;base64,${placeholder.toString('base64')}`;
+    return `data:image/webp;base64,${placeholder.toString("base64")}`;
   } catch (error) {
-    logger.error('[IMAGE_WORKER] Placeholder failed', { message: error.message, status: error.response?.status, data: error.response?.data });
+    logger.error("[IMAGE_WORKER] Placeholder failed", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
     return null;
   }
 };
@@ -37,13 +43,13 @@ export const generatePlaceholder = async (sourceUrlOrBuffer) => {
 export const optimizeAndUploadImage = async (inputPath, keyPrefix) => {
   const tempDir = path.join(os.tmpdir(), `img_${Date.now()}`);
   await fs.ensureDir(tempDir);
-  
-  const optimizedPath = path.join(tempDir, 'optimized.webp');
-  
+
+  const optimizedPath = path.join(tempDir, "optimized.webp");
+
   try {
     // 1. Optimize image (Convert to WebP, resize if massive)
     await sharp(inputPath)
-      .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+      .resize(1200, 1200, { fit: "inside", withoutEnlargement: true })
       .webp({ quality: 80 })
       .toFile(optimizedPath);
 
@@ -52,12 +58,12 @@ export const optimizeAndUploadImage = async (inputPath, keyPrefix) => {
 
     // 3. Upload to R2
     const key = `${keyPrefix}/${Date.now()}.webp`;
-    const uploadResult = await uploadToR2(optimizedPath, key, 'image/webp');
+    const uploadResult = await uploadToR2(optimizedPath, key, "image/webp");
 
     return {
       url: uploadResult.url,
       placeholder,
-      key
+      key,
     };
   } finally {
     await fs.remove(tempDir).catch(() => {});

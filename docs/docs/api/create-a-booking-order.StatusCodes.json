@@ -1,1 +1,1 @@
-{"responses":{"200":{"description":"Razorpay order created"}}}
+{ "responses": { "200": { "description": "Razorpay order created" } } }

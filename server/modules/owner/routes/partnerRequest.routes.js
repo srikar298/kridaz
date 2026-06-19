@@ -1,10 +1,10 @@
 import express from "express";
-import { 
-  getAllRequestedOwners, 
-  approveOwnerRequest, 
-  deleteOwnerRequest, 
+import {
+  getAllRequestedOwners,
+  approveOwnerRequest,
+  deleteOwnerRequest,
   reconsiderOwnerRequest,
-  getAllVerificationRequests
+  getAllVerificationRequests,
 } from "../../admin/admin.controller.js";
 
 import { validate } from "../../../middleware/validate.middleware.js";
@@ -21,7 +21,11 @@ const router = express.Router();
 
 router.get("/list", getAllRequestedOwners);
 router.get("/all", getAllVerificationRequests);
-router.put("/:id/accept", validate(approveOwnerRequestSchema), approveOwnerRequest);
+router.put(
+  "/:id/accept",
+  validate(approveOwnerRequestSchema),
+  approveOwnerRequest
+);
 router.delete("/:id", deleteOwnerRequest);
 router.put("/reconsider/:id", reconsiderOwnerRequest);
 

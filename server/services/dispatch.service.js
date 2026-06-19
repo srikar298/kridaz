@@ -5,6 +5,7 @@ import { notificationQueue } from "../queues/notification.queue.js";
 import { MatchingService } from "./matching.service.js";
 import { WalletBlockingService } from "./walletBlocking.service.js";
 import { TrustScoreLedgerService } from "./trustScore.service.js";
+import { NotificationService } from "./notification.service.js";
 import logger from "../utils/logger.js";
 
 /**
@@ -18,7 +19,9 @@ export class DispatchService {
    */
   static async startDispatch(requestId) {
     try {
-      logger.info(`[DispatchService] Starting dispatch for request ${requestId}`);
+      logger.info(
+        `[DispatchService] Starting dispatch for request ${requestId}`
+      );
 
       // 1. Load request
       const matchRequest = await prisma.professionalMatchRequest.findUnique({
@@ -27,7 +30,9 @@ export class DispatchService {
       });
 
       if (!matchRequest || matchRequest.status !== "SEARCHING") {
-        logger.warn(`[DispatchService] Request ${requestId} not found or not in SEARCHING status.`);
+        logger.warn(
+          `[DispatchService] Request ${requestId} not found or not in SEARCHING status.`
+        );
         return false;
       }
 
@@ -45,8 +50,10 @@ export class DispatchService {
       const sorted = await MatchingService.runPrioritizationEngine(filtered);
 
       if (sorted.length === 0) {
-        logger.info(`[DispatchService] No candidates found for request ${requestId}. Failing match.`);
-        
+        logger.info(
+          `[DispatchService] No candidates found for request ${requestId}. Failing match.`
+        );
+
         // Update request status
         await prisma.professionalMatchRequest.update({
           where: { id: requestId },
@@ -59,7 +66,8 @@ export class DispatchService {
           io.to(matchRequest.userId).emit("professional:match_failed", {
             requestId,
             reason: "no_candidates",
-            message: "No professionals available near this location. Try a different time, location, or budget.",
+            message:
+              "No professionals available near this location. Try a different time, location, or budget.",
           });
         }
 
@@ -85,7 +93,7 @@ export class DispatchService {
 
       // Generate a mock hash for otpHash field constraint
       const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-      
+
       const booking = await prisma.onDemandProfessionalBooking.create({
         data: {
           requestId,
@@ -110,13 +118,20 @@ export class DispatchService {
       });
 
       // 5. Reserve funds in user's wallet
-      await WalletBlockingService.reserveFunds(matchRequest.userId, booking.id, matchRequest.maxBudget);
+      await WalletBlockingService.reserveFunds(
+        matchRequest.userId,
+        booking.id,
+        matchRequest.maxBudget
+      );
 
       // 6. Notify the first candidate
       await this.notifyCandidate(booking.id, firstCandidate.id, 1);
       return true;
     } catch (error) {
-      logger.error(`[DispatchService] Error in startDispatch for request ${requestId}:`, error);
+      logger.error(
+        `[DispatchService] Error in startDispatch for request ${requestId}:`,
+        error
+      );
       return false;
     }
   }
@@ -166,9 +181,17 @@ export class DispatchService {
         const durationHours = (end - start) / (1000 * 60 * 60);
         const payout = parseFloat(pro.price) * durationHours;
 
-        const distance = booking.latitude && pro.latitude
-          ? MatchingService.calculateDistance ? MatchingService.calculateDistance(booking.latitude, booking.longitude, pro.latitude, pro.longitude) : 5.0
-          : 5.0;
+        const distance =
+          booking.latitude && pro.latitude
+            ? MatchingService.calculateDistance
+              ? MatchingService.calculateDistance(
+                  booking.latitude,
+                  booking.longitude,
+                  pro.latitude,
+                  pro.longitude
+                )
+              : 5.0
+            : 5.0;
 
         io.to(pro.user.id).emit("professional:booking_offered", {
           notificationId: notification.id,
@@ -189,9 +212,14 @@ export class DispatchService {
         { delay: 30000 }
       );
 
-      logger.info(`[DispatchService] Dispatched offer notification ${notification.id} to pro ${professionalId}`);
+      logger.info(
+        `[DispatchService] Dispatched offer notification ${notification.id} to pro ${professionalId}`
+      );
     } catch (error) {
-      logger.error(`[DispatchService] Failed to notify candidate pro ${professionalId}:`, error);
+      logger.error(
+        `[DispatchService] Failed to notify candidate pro ${professionalId}:`,
+        error
+      );
       throw error;
     }
   }
@@ -206,7 +234,9 @@ export class DispatchService {
       });
 
       if (!booking || booking.status !== "NOTIFYING") {
-        logger.warn(`[DispatchService] Booking ${bookingId} not in NOTIFYING status. Stopping dispatch.`);
+        logger.warn(
+          `[DispatchService] Booking ${bookingId} not in NOTIFYING status. Stopping dispatch.`
+        );
         return;
       }
 
@@ -232,7 +262,9 @@ export class DispatchService {
       } else {
         // End of Cycle candidates reached!
         if (booking.cycleNumber === 1) {
-          logger.info(`[DispatchService] Cycle 1 exhausted for booking ${bookingId}. Initiating Cycle 1 skip penalties & Cycle 2.`);
+          logger.info(
+            `[DispatchService] Cycle 1 exhausted for booking ${bookingId}. Initiating Cycle 1 skip penalties & Cycle 2.`
+          );
 
           // 1. Deduct -0.5 trust score from ignores in Cycle 1
           await this.applyCycleSkipPenalties(bookingId, 1);
@@ -251,7 +283,8 @@ export class DispatchService {
           if (io) {
             io.to(booking.userId).emit("professional:search_cycle_2", {
               bookingId,
-              message: "Still searching for a professional. Beginning Cycle 2 search...",
+              message:
+                "Still searching for a professional. Beginning Cycle 2 search...",
             });
           }
 
@@ -259,7 +292,9 @@ export class DispatchService {
           await this.notifyCandidate(bookingId, firstProId, 2);
         } else {
           // Cycle 2 exhausted! Match FAILED.
-          logger.info(`[DispatchService] Cycle 2 exhausted for booking ${bookingId}. Failing booking.`);
+          logger.info(
+            `[DispatchService] Cycle 2 exhausted for booking ${bookingId}. Failing booking.`
+          );
 
           // 1. Deduct -0.5 trust score from ignores in Cycle 2
           await this.applyCycleSkipPenalties(bookingId, 2);
@@ -280,7 +315,12 @@ export class DispatchService {
           ]);
 
           // 3. Refund user's blocked funds
-          await WalletBlockingService.releaseBlockedFunds(booking.userId, bookingId, booking.blockedAmount, false);
+          await WalletBlockingService.releaseBlockedFunds(
+            booking.userId,
+            bookingId,
+            booking.blockedAmount,
+            false
+          );
 
           // 4. Notify user via Socket
           const io = getIO();
@@ -288,18 +328,33 @@ export class DispatchService {
             io.to(booking.userId).emit("professional:match_failed", {
               bookingId,
               reason: "exhausted",
-              message: "No professional accepted the matching request. Funds have been refunded to your wallet.",
+              message:
+                "No professional accepted the matching request. Funds have been refunded to your wallet.",
             });
 
             // Broadcast skipped card removed to all pros
             io.emit("professional:skipped_card_removed", { bookingId });
           }
 
+          const customerUser = await prisma.user.findUnique({
+            where: { id: booking.userId },
+          });
+          NotificationService.publishEvent("PRO_ONDEMAND_EXPIRED", {
+            recipientId: booking.userId,
+            recipientModel: "User",
+            email: customerUser?.email,
+            phone: customerUser?.phone,
+            customerName: customerUser?.name || "Player",
+          });
+
           // 5. Clean up expired skipped card lists 10 minutes later (via background cron or BullMQ delay)
         }
       }
     } catch (error) {
-      logger.error(`[DispatchService] Error in dispatchNext for booking ${bookingId}:`, error);
+      logger.error(
+        `[DispatchService] Error in dispatchNext for booking ${bookingId}:`,
+        error
+      );
     }
   }
 
@@ -308,7 +363,9 @@ export class DispatchService {
    */
   static async handleOfferResponse(notificationId, proId, response) {
     try {
-      logger.info(`[DispatchService] Pro ${proId} responded ${response} to notification ${notificationId}`);
+      logger.info(
+        `[DispatchService] Pro ${proId} responded ${response} to notification ${notificationId}`
+      );
 
       const notification = await prisma.bookingNotification.findUnique({
         where: { id: notificationId },
@@ -316,7 +373,11 @@ export class DispatchService {
       });
 
       if (!notification || notification.action !== null) {
-        return { success: false, status: 400, message: "Offer has already been processed or expired." };
+        return {
+          success: false,
+          status: 400,
+          message: "Offer has already been processed or expired.",
+        };
       }
 
       const booking = notification.booking;
@@ -363,12 +424,20 @@ export class DispatchService {
         });
 
         // Add trust score event for booking acceptance (+1 point)
-        await TrustScoreLedgerService.recordEvent(proId, "BOOKING_ACCEPTED", 1, booking.id, "Accepted booking");
+        await TrustScoreLedgerService.recordEvent(
+          proId,
+          "BOOKING_ACCEPTED",
+          1,
+          booking.id,
+          "Accepted booking"
+        );
 
         // Broadcast skipped card removal to other professionals
         const io = getIO();
         if (io) {
-          io.emit("professional:skipped_card_removed", { bookingId: booking.id });
+          io.emit("professional:skipped_card_removed", {
+            bookingId: booking.id,
+          });
           io.to(booking.userId).emit("professional:match_confirmed", {
             bookingId: booking.id,
             otpCode: booking.otpCode,
@@ -401,8 +470,10 @@ export class DispatchService {
           data: { lockedForProId: null },
         });
 
-        logger.info(`[DispatchService] Pro ${proId} rejected offer. Cascading to next candidate.`);
-        
+        logger.info(
+          `[DispatchService] Pro ${proId} rejected offer. Cascading to next candidate.`
+        );
+
         // Immediate cascade to next pro
         await this.dispatchNext(booking.id);
 
@@ -428,7 +499,9 @@ export class DispatchService {
         return;
       }
 
-      logger.info(`[DispatchService] Notification offer ${notificationId} expired (SKIPPED) for booking ${bookingId}`);
+      logger.info(
+        `[DispatchService] Notification offer ${notificationId} expired (SKIPPED) for booking ${bookingId}`
+      );
 
       const proId = notification.professionalId;
 
@@ -453,7 +526,9 @@ export class DispatchService {
       });
 
       if (io && pro) {
-        io.to(pro.userId).emit("professional:skipped_card_added", { bookingId });
+        io.to(pro.userId).emit("professional:skipped_card_added", {
+          bookingId,
+        });
       }
 
       // 4. Increment consecutiveSkipCount on active session. Force offline if >= 2 skips.
@@ -505,14 +580,20 @@ export class DispatchService {
           }),
         ]);
 
-        logger.info(`[DispatchService] Pro ${proId} forced OFFLINE after 2 consecutive skips.`);
+        logger.info(
+          `[DispatchService] Pro ${proId} forced OFFLINE after 2 consecutive skips.`
+        );
 
         // Socket notification for forced offline
         const io = getIO();
         if (io && activeSession.professional?.userId) {
-          io.to(activeSession.professional.userId).emit("professional:forced_offline", {
-            message: "You missed 2 consecutive bookings and have been set offline. Tap to go back online.",
-          });
+          io.to(activeSession.professional.userId).emit(
+            "professional:forced_offline",
+            {
+              message:
+                "You missed 2 consecutive bookings and have been set offline. Tap to go back online.",
+            }
+          );
         }
       } else {
         // Just increment skip count
@@ -522,7 +603,10 @@ export class DispatchService {
         });
       }
     } catch (error) {
-      logger.error(`[DispatchService] Error in handleConsecutiveSkips for pro ${proId}:`, error);
+      logger.error(
+        `[DispatchService] Error in handleConsecutiveSkips for pro ${proId}:`,
+        error
+      );
     }
   }
 
@@ -548,7 +632,10 @@ export class DispatchService {
         );
       }
     } catch (error) {
-      logger.error(`[DispatchService] Failed to apply cycle skip penalties:`, error);
+      logger.error(
+        `[DispatchService] Failed to apply cycle skip penalties:`,
+        error
+      );
     }
   }
 
@@ -560,7 +647,7 @@ export class DispatchService {
       const key = `umpire:skipped_bookings:${proId}`;
       const list = await redisClient.lrange(key, 0, -1);
       const filtered = list.filter((id) => id !== bookingId);
-      
+
       await redisClient.del(key);
       if (filtered.length > 0) {
         // Push items back in reverse order since lpush unshifts
@@ -569,7 +656,10 @@ export class DispatchService {
         }
       }
     } catch (error) {
-      logger.error(`[DispatchService] Failed to remove skipped card in Redis for pro ${proId}:`, error);
+      logger.error(
+        `[DispatchService] Failed to remove skipped card in Redis for pro ${proId}:`,
+        error
+      );
     }
   }
 }

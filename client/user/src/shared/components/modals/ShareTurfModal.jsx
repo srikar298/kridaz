@@ -1,16 +1,26 @@
-import React, { useState, useMemo } from 'react';
-import { X, Search, Check, Send } from 'lucide-react';
-import { useGetFollowersFollowingQuery, useBroadcastMessageMutation } from '@redux/api/chatApi';
+import React, { useState, useMemo } from "react";
+import { X, Search, Check, Send } from "lucide-react";
+import {
+  useGetFollowersFollowingQuery,
+  useBroadcastMessageMutation,
+} from "@redux/api/chatApi";
 
 const ShareTurfModal = ({ isOpen, onClose, turf }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const { data: networkData, isLoading } = useGetFollowersFollowingQuery(undefined, { skip: !isOpen });
-  const [broadcastMessage, { isLoading: isSending }] = useBroadcastMessageMutation();
+  const { data: networkData, isLoading } = useGetFollowersFollowingQuery(
+    undefined,
+    { skip: !isOpen }
+  );
+  const [broadcastMessage, { isLoading: isSending }] =
+    useBroadcastMessageMutation();
 
   const connections = useMemo(() => {
     if (!networkData) return [];
-    const all = [...(networkData.followers || []), ...(networkData.following || [])];
+    const all = [
+      ...(networkData.followers || []),
+      ...(networkData.following || []),
+    ];
     const unique = [];
     const seen = new Set();
     for (const u of all) {
@@ -23,37 +33,41 @@ const ShareTurfModal = ({ isOpen, onClose, turf }) => {
   }, [networkData]);
 
   const filteredConnections = useMemo(() => {
-    return connections.filter(user => 
-      user.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      user.username?.toLowerCase().includes(searchQuery.toLowerCase())
+    return connections.filter(
+      (user) =>
+        user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.username?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [connections, searchQuery]);
 
   const toggleUser = (userId) => {
-    setSelectedUsers(prev => 
-      prev.includes(userId) 
-        ? prev.filter(id => id !== userId)
+    setSelectedUsers((prev) =>
+      prev.includes(userId)
+        ? prev.filter((id) => id !== userId)
         : [...prev, userId]
     );
   };
 
   const handleShare = async () => {
     if (selectedUsers.length === 0 || !turf) return;
-    
+
     // Construct the message content with ground details and URL
     const turfUrl = `${window.location.origin}/turf/${turf._id}`;
-    const content = `Check out this ground: ${turf.name}\n=��� ${turf.city || turf.location || 'Location'}\n=�Ʀ Starting Rs ${turf.pricePerHour || 800}/hr\n\nLink: ${turfUrl}`;
-    const media = turf.images?.[0] || turf.image ? [{ url: turf.images?.[0] || turf.image, type: 'image' }] : [];
+    const content = `Check out this ground: ${turf.name}\n=��� ${turf.city || turf.location || "Location"}\n=�Ʀ Starting Rs ${turf.pricePerHour || 800}/hr\n\nLink: ${turfUrl}`;
+    const media =
+      turf.images?.[0] || turf.image
+        ? [{ url: turf.images?.[0] || turf.image, type: "image" }]
+        : [];
 
     try {
-      await broadcastMessage({ 
-        content, 
+      await broadcastMessage({
+        content,
         media,
-        userIds: selectedUsers 
+        userIds: selectedUsers,
       }).unwrap();
       onClose();
       setSelectedUsers([]);
-      setSearchQuery('');
+      setSearchQuery("");
     } catch (err) {
       console.error("Failed to share turf:", err);
       alert(err.data?.message || "Failed to share turf");
@@ -64,14 +78,16 @@ const ShareTurfModal = ({ isOpen, onClose, turf }) => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-      <div 
+      <div
         className="bg-[#1a1a1a] border border-white/10 rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl flex flex-col animate-scale-up"
-        style={{ maxHeight: '80vh' }}
+        style={{ maxHeight: "80vh" }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-4 border-b border-white/10 shrink-0">
-          <h2 className="text-white font-black tracking-wider uppercase text-lg">Share Ground</h2>
-          <button 
+          <h2 className="text-white font-black tracking-wider uppercase text-lg">
+            Share Ground
+          </h2>
+          <button
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
           >
@@ -80,20 +96,27 @@ const ShareTurfModal = ({ isOpen, onClose, turf }) => {
         </div>
 
         <div className="p-4 bg-white/5 flex items-center gap-4 border-b border-white/10">
-          <img 
-            src={turf.images?.[0] || turf.image || "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=800&q=80"} 
-            className="w-16 h-16 rounded-[8px] object-cover border border-white/10" 
-            alt="" 
+          <img
+            src={
+              turf.images?.[0] ||
+              turf.image ||
+              "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=800&q=80"
+            }
+            className="w-16 h-16 rounded-[8px] object-cover border border-white/10"
+            alt=""
           />
           <div>
             <h3 className="text-white font-bold">{turf.name}</h3>
-            <p className="text-white/40 text-xs">{turf.city || 'Venue'}</p>
+            <p className="text-white/40 text-xs">{turf.city || "Venue"}</p>
           </div>
         </div>
 
         <div className="p-4 shrink-0 border-b border-white/5">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={18} />
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
+              size={18}
+            />
             <input
               type="text"
               placeholder="Search friends..."
@@ -117,23 +140,35 @@ const ShareTurfModal = ({ isOpen, onClose, turf }) => {
             filteredConnections.map((user) => {
               const isSelected = selectedUsers.includes(user._id);
               return (
-                <div 
+                <div
                   key={user._id}
                   onClick={() => toggleUser(user._id)}
-                  className={`flex items-center justify-between p-2 rounded-[8px] cursor-pointer transition-all ${ isSelected ? 'bg-[#BFF367]/10' : 'hover:bg-white/5' }`}
+                  className={`flex items-center justify-between p-2 rounded-[8px] cursor-pointer transition-all ${isSelected ? "bg-[#BFF367]/10" : "hover:bg-white/5"}`}
                 >
                   <div className="flex items-center gap-3">
-                    <img 
-                      src={user.profilePicture || user.profileImage || `https://ui-avatars.com/api/?name=${user.name}&background=random`} 
-                      alt={user.name} 
+                    <img
+                      src={
+                        user.profilePicture ||
+                        user.profileImage ||
+                        `https://ui-avatars.com/api/?name=${user.name}&background=random`
+                      }
+                      alt={user.name}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                     <div>
-                      <p className="text-white text-sm font-semibold">{user.name}</p>
-                      <p className="text-white/40 text-xs">@{user.username || user.name.toLowerCase().replace(' ', '')}</p>
+                      <p className="text-white text-sm font-semibold">
+                        {user.name}
+                      </p>
+                      <p className="text-white/40 text-xs">
+                        @
+                        {user.username ||
+                          user.name.toLowerCase().replace(" ", "")}
+                      </p>
                     </div>
                   </div>
-                  <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${ isSelected ? 'bg-[#BFF367] border-[#BFF367]' : 'border-white/20' }`}>
+                  <div
+                    className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${isSelected ? "bg-[#BFF367] border-[#BFF367]" : "border-white/20"}`}
+                  >
                     {isSelected && <Check size={14} className="text-black" />}
                   </div>
                 </div>
@@ -150,7 +185,9 @@ const ShareTurfModal = ({ isOpen, onClose, turf }) => {
               className="w-full flex items-center justify-center gap-2 py-3 bg-[#BFF367] text-black font-black uppercase tracking-wider text-sm rounded-[8px] hover:bg-[#95e61a] transition-colors disabled:opacity-50"
             >
               <Send size={16} />
-              {isSending ? "Sharing..." : `Share with ${selectedUsers.length} friend${selectedUsers.length > 1 ? 's' : ''}`}
+              {isSending
+                ? "Sharing..."
+                : `Share with ${selectedUsers.length} friend${selectedUsers.length > 1 ? "s" : ""}`}
             </button>
           </div>
         )}

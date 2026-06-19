@@ -1,17 +1,26 @@
-import { toast } from 'react-hot-toast';
-import { 
+import { toast } from "react-hot-toast";
+import {
   useGetMyJoinedGamesQuery,
-  useLeaveGameMutation
-} from '@redux/api/gamesApi';
+  useLeaveGameMutation,
+} from "@redux/api/gamesApi";
 
 const useJoinedGames = () => {
-  const { data: joinedGamesData, isLoading: loading, refetch } = useGetMyJoinedGamesQuery();
+  const {
+    data: joinedGamesData,
+    isLoading: loading,
+    refetch,
+  } = useGetMyJoinedGamesQuery();
   const [leaveGame, { isLoading: isLeaving }] = useLeaveGameMutation();
 
   const joinedGames = joinedGamesData?.games || [];
 
   const handleLeave = async (gameId) => {
-    if (!window.confirm("Are you sure you want to leave this game? Your coins will be refunded according to the refund policy.")) return;
+    if (
+      !window.confirm(
+        "Are you sure you want to leave this game? Your coins will be refunded according to the refund policy."
+      )
+    )
+      return;
     try {
       const res = await leaveGame({ gameId }).unwrap();
       if (res.success) {
@@ -28,7 +37,7 @@ const useJoinedGames = () => {
     loading,
     isLeaving,
     handleLeave,
-    refetch
+    refetch,
   };
 };
 

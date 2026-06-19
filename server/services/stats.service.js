@@ -1,4 +1,4 @@
-import { prisma } from '../config/prisma.js';
+import { prisma } from "../config/prisma.js";
 
 /**
  * Stats Service
@@ -10,7 +10,7 @@ class StatsService {
    */
   async getStats(userId) {
     return await prisma.userStats.findUnique({
-      where: { userId: userId.toString() }
+      where: { userId: userId.toString() },
     });
   }
 
@@ -21,13 +21,13 @@ class StatsService {
   async getBatchStats(userIds) {
     if (!userIds || userIds.length === 0) return new Map();
 
-    const ids = userIds.map(id => id.toString());
+    const ids = userIds.map((id) => id.toString());
     const allStats = await prisma.userStats.findMany({
-      where: { userId: { in: ids } }
+      where: { userId: { in: ids } },
     });
 
     const statsMap = new Map();
-    allStats.forEach(s => statsMap.set(s.userId, s));
+    allStats.forEach((s) => statsMap.set(s.userId, s));
     return statsMap;
   }
 
@@ -36,14 +36,14 @@ class StatsService {
    */
   async updateStats(userId, updateData) {
     const userIdStr = userId.toString();
-    
+
     return await prisma.userStats.upsert({
       where: { userId: userIdStr },
       update: {
         cricket: updateData.cricket,
         matchesOfficiated: updateData.matchesOfficiated,
         matchesScored: updateData.matchesScored,
-        streamsHosted: updateData.streamsHosted
+        streamsHosted: updateData.streamsHosted,
       },
       create: {
         userId: userIdStr,
@@ -51,8 +51,8 @@ class StatsService {
         matchesOfficiated: updateData.matchesOfficiated || 0,
         matchesScored: updateData.matchesScored || 0,
         streamsHosted: updateData.streamsHosted || 0,
-        badges: []
-      }
+        badges: [],
+      },
     });
   }
 
@@ -71,7 +71,7 @@ class StatsService {
             cricket: updateData.cricket,
             matchesOfficiated: updateData.matchesOfficiated,
             matchesScored: updateData.matchesScored,
-            streamsHosted: updateData.streamsHosted
+            streamsHosted: updateData.streamsHosted,
           },
           create: {
             userId: userId.toString(),
@@ -79,8 +79,8 @@ class StatsService {
             matchesOfficiated: updateData.matchesOfficiated || 0,
             matchesScored: updateData.matchesScored || 0,
             streamsHosted: updateData.streamsHosted || 0,
-            badges: []
-          }
+            badges: [],
+          },
         })
       );
     }
@@ -93,12 +93,14 @@ class StatsService {
    */
   async addBadge(userId, badge) {
     const userIdStr = userId.toString();
-    
+
     // In Prisma with JSON fields, we usually read and then write back or use a raw query
     // But since it's an array of strings/objects, let's do a findUnique then update
-    const stats = await prisma.userStats.findUnique({ where: { userId: userIdStr } });
+    const stats = await prisma.userStats.findUnique({
+      where: { userId: userIdStr },
+    });
     const currentBadges = stats?.badges || [];
-    
+
     await prisma.userStats.upsert({
       where: { userId: userIdStr },
       update: { badges: [...currentBadges, badge] },
@@ -108,8 +110,8 @@ class StatsService {
         cricket: {},
         matchesOfficiated: 0,
         matchesScored: 0,
-        streamsHosted: 0
-      }
+        streamsHosted: 0,
+      },
     });
   }
 
@@ -122,10 +124,12 @@ class StatsService {
     const transactions = badgeUpdates.map(async (update) => {
       const { userId, badges } = update;
       const userIdStr = userId.toString();
-      
-      const stats = await prisma.userStats.findUnique({ where: { userId: userIdStr } });
+
+      const stats = await prisma.userStats.findUnique({
+        where: { userId: userIdStr },
+      });
       const currentBadges = stats?.badges || [];
-      
+
       return prisma.userStats.upsert({
         where: { userId: userIdStr },
         update: { badges: [...currentBadges, ...badges] },
@@ -135,8 +139,8 @@ class StatsService {
           cricket: {},
           matchesOfficiated: 0,
           matchesScored: 0,
-          streamsHosted: 0
-        }
+          streamsHosted: 0,
+        },
       });
     });
 

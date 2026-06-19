@@ -8,17 +8,32 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "@redux/slices/authSlice";
 
-const registerSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().min(1, "Enter your email").regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Enter a valid email"),
-  phone: z.string().min(1, "Enter your phone number").regex(/^[0-9]{10}$/, "Enter a valid 10-digit phone number").length(10, "Phone number must be at least 10 digits long"),
-  password: z.string().min(1, "Enter your password").min(6, "Password must be at least 6 characters long"),
-  confirmPassword: z.string().min(1, "Confirm your password"),
-  role: z.string().min(1, "Role is required"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords must match",
-  path: ["confirmPassword"],
-});
+const registerSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    email: z
+      .string()
+      .min(1, "Enter your email")
+      .regex(
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        "Enter a valid email"
+      ),
+    phone: z
+      .string()
+      .min(1, "Enter your phone number")
+      .regex(/^[0-9]{10}$/, "Enter a valid 10-digit phone number")
+      .length(10, "Phone number must be at least 10 digits long"),
+    password: z
+      .string()
+      .min(1, "Enter your password")
+      .min(6, "Password must be at least 6 characters long"),
+    confirmPassword: z.string().min(1, "Confirm your password"),
+    role: z.string().min(1, "Role is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords must match",
+    path: ["confirmPassword"],
+  });
 
 const usePartnerSignUpForm = (predefinedRole = "venu_owners") => {
   const dispatch = useDispatch();
@@ -41,7 +56,10 @@ const usePartnerSignUpForm = (predefinedRole = "venu_owners") => {
     setLoading(true);
     const payload = { ...data, role: predefinedRole };
     try {
-      const response = await axiosInstance.post("/api/owner/auth/register", payload);
+      const response = await axiosInstance.post(
+        "/api/owner/auth/register",
+        payload
+      );
       const result = response.data;
 
       if (predefinedRole === "venu_owners" || predefinedRole === "owner") {
@@ -49,7 +67,8 @@ const usePartnerSignUpForm = (predefinedRole = "venu_owners") => {
         toast.success("Welcome to Kridaz!");
         window.location.href = "/venue-owner";
       } else {
-        const waitlistNumber = result.waitlistNumber || Math.floor(Math.random() * 50) + 1;
+        const waitlistNumber =
+          result.waitlistNumber || Math.floor(Math.random() * 50) + 1;
         toast.success("You're on the waitlist!");
         navigate("/waitlist-success", {
           state: {
@@ -74,4 +93,3 @@ const usePartnerSignUpForm = (predefinedRole = "venu_owners") => {
 };
 
 export default usePartnerSignUpForm;
-

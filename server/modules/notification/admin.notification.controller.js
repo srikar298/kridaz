@@ -34,9 +34,9 @@ const getUsersWithRegisteredDevices = async () => {
 export const getFailedJobs = async (req, res) => {
   try {
     const failedJobs = await notificationQueue.getFailed();
-    
+
     // Format jobs for a clean UI response
-    const formattedJobs = failedJobs.map(job => ({
+    const formattedJobs = failedJobs.map((job) => ({
       id: job.id,
       name: job.name,
       data: job.data,
@@ -46,10 +46,10 @@ export const getFailedJobs = async (req, res) => {
       attemptsMade: job.attemptsMade,
     }));
 
-    res.status(200).json({ 
-      success: true, 
+    res.status(200).json({
+      success: true,
       count: formattedJobs.length,
-      jobs: formattedJobs 
+      jobs: formattedJobs,
     });
   } catch (error) {
     logger.error("[Admin Notification] Error fetching failed jobs:", error);
@@ -65,16 +65,16 @@ export const retryJob = async (req, res) => {
   const { jobId } = req.params;
   try {
     const job = await notificationQueue.getJob(jobId);
-    
+
     if (!job) {
       return res.status(404).json({ success: false, message: "Job not found" });
     }
 
     await job.retry();
-    
-    res.status(200).json({ 
-      success: true, 
-      message: `Job ${jobId} has been queued for retry.` 
+
+    res.status(200).json({
+      success: true,
+      message: `Job ${jobId} has been queued for retry.`,
     });
   } catch (error) {
     logger.error(`[Admin Notification] Error retrying job ${jobId}:`, error);
@@ -90,16 +90,16 @@ export const removeFailedJob = async (req, res) => {
   const { jobId } = req.params;
   try {
     const job = await notificationQueue.getJob(jobId);
-    
+
     if (!job) {
       return res.status(404).json({ success: false, message: "Job not found" });
     }
 
     await job.remove();
-    
-    res.status(200).json({ 
-      success: true, 
-      message: `Job ${jobId} has been removed from the queue.` 
+
+    res.status(200).json({
+      success: true,
+      message: `Job ${jobId} has been removed from the queue.`,
     });
   } catch (error) {
     logger.error(`[Admin Notification] Error removing job ${jobId}:`, error);
@@ -114,13 +114,17 @@ export const removeFailedJob = async (req, res) => {
 export const sendAdminPushNotification = async (req, res) => {
   const admin = req.admin.role;
   if (admin?.toUpperCase() !== "ADMIN") {
-    return res.status(403).json({ success: false, message: "Unauthorized access denied" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized access denied" });
   }
 
   const { recipientId, title, message, type, link, metadata } = req.body;
 
   if (!title || !message) {
-    return res.status(400).json({ success: false, message: "Title and message are required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Title and message are required" });
   }
 
   try {
@@ -128,20 +132,25 @@ export const sendAdminPushNotification = async (req, res) => {
       const activeUsers = await getUsersWithRegisteredDevices();
 
       if (activeUsers.length === 0) {
-        return res.status(200).json({ success: true, message: "No active users with registered mobile devices found." });
+        return res.status(200).json({
+          success: true,
+          message: "No active users with registered mobile devices found.",
+        });
       }
 
-      const results = await Promise.all(activeUsers.map(user =>
-        processInAppNotification({
-          recipientId: user.id,
-          recipientModel: "User",
-          title,
-          message,
-          type: type || "SYSTEM",
-          link: link || "",
-          metadata: metadata || {}
-        })
-      ));
+      const results = await Promise.all(
+        activeUsers.map((user) =>
+          processInAppNotification({
+            recipientId: user.id,
+            recipientModel: "User",
+            title,
+            message,
+            type: type || "SYSTEM",
+            link: link || "",
+            metadata: metadata || {},
+          })
+        )
+      );
 
       const summary = summarizeDispatchResults(results);
       const delivery = summary.mock
@@ -151,21 +160,25 @@ export const sendAdminPushNotification = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: `Sent notification to ${activeUsers.length} user(s). ${delivery}`,
-        summary
+        summary,
       });
     } else {
       // Send to a single user
       if (!recipientId) {
-        return res.status(400).json({ success: false, message: "Recipient User ID is required" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Recipient User ID is required" });
       }
 
       const user = await prisma.user.findUnique({
         where: { id: recipientId },
-        select: { id: true }
+        select: { id: true },
       });
 
       if (!user) {
-        return res.status(404).json({ success: false, message: "User not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
       }
 
       const result = await processInAppNotification({
@@ -175,7 +188,7 @@ export const sendAdminPushNotification = async (req, res) => {
         message,
         type: type || "SYSTEM",
         link: link || "",
-        metadata: metadata || {}
+        metadata: metadata || {},
       });
 
       const summary = summarizeDispatchResults([result]);
@@ -186,12 +199,14 @@ export const sendAdminPushNotification = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: `Sent notification for user. ${delivery}`,
-        summary
+        summary,
       });
     }
   } catch (error) {
-    logger.error("[Admin Notification] Error sending custom admin push notification:", error);
+    logger.error(
+      "[Admin Notification] Error sending custom admin push notification:",
+      error
+    );
     res.status(500).json({ success: false, message: error.message });
   }
 };
-

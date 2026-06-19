@@ -22,7 +22,7 @@ export const processInAppNotification = async ({
   message,
   type,
   link,
-  metadata = {}
+  metadata = {},
 }) => {
   const data = {
     title,
@@ -30,7 +30,7 @@ export const processInAppNotification = async ({
     type,
     link,
     metadata,
-    recipientModel
+    recipientModel,
   };
 
   if (recipientModel === "User") {
@@ -52,7 +52,7 @@ export const processInAppNotification = async ({
         pushResult = await sendPushNotification(tokens, title, message, {
           notificationId: dbNotification.id,
           link: link || "",
-          type: type || ""
+          type: type || "",
         });
       }
     } catch (error) {
@@ -60,7 +60,7 @@ export const processInAppNotification = async ({
       pushResult = {
         successCount: 0,
         failureCount: tokenCount,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -68,7 +68,6 @@ export const processInAppNotification = async ({
   return {
     notification: dbNotification,
     tokenCount,
-    pushResult
+    pushResult,
   };
 };
-

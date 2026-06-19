@@ -57,6 +57,6 @@ export class TeamMapper {
     if (!Array.isArray(rawArray)) {
       return [];
     }
-    return rawArray.map(raw => this.toTeam(raw));
+    return rawArray.map((raw) => this.toTeam(raw));
   }
 }

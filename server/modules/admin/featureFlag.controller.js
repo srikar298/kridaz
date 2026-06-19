@@ -13,10 +13,10 @@ export const getAllFeatureFlags = async (req, res) => {
       return acc;
     }, {});
 
-    res.status(200).json({ 
-      success: true, 
-      data: flags, 
-      flagsMap: flagMap 
+    res.status(200).json({
+      success: true,
+      data: flags,
+      flagsMap: flagMap,
     });
   } catch (error) {
     logger.error("Error in getAllFeatureFlags:", error);
@@ -32,17 +32,21 @@ export const toggleFeatureFlag = async (req, res) => {
     const { key } = req.params;
     const { enabled } = req.body;
 
-    const existingFlag = await prisma.featureFlag.findUnique({ where: { key } });
+    const existingFlag = await prisma.featureFlag.findUnique({
+      where: { key },
+    });
 
     if (!existingFlag) {
-      return res.status(404).json({ success: false, message: "Feature flag not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Feature flag not found" });
     }
 
     const updatedFlag = await prisma.featureFlag.update({
       where: { key },
       data: {
-        enabled: enabled !== undefined ? enabled : !existingFlag.enabled
-      }
+        enabled: enabled !== undefined ? enabled : !existingFlag.enabled,
+      },
     });
 
     res.status(200).json({ success: true, data: updatedFlag });
@@ -61,32 +65,38 @@ export const seedFeatureFlags = async (req, res) => {
       {
         key: "find_professionals",
         name: "Find Professionals Section",
-        description: "Show the Find Professionals card section on the landing page.",
+        description:
+          "Show the Find Professionals card section on the landing page.",
         enabled: true,
       },
       {
         key: "join_games",
         name: "Join Games Near You Section",
-        description: "Show the Join Games Near You card section on the landing page.",
+        description:
+          "Show the Join Games Near You card section on the landing page.",
         enabled: true,
       },
     ];
 
     await prisma.$transaction(
-      defaultFlags.map(df => 
+      defaultFlags.map((df) =>
         prisma.featureFlag.upsert({
           where: { key: df.key },
-          update: { name: df.name, description: df.description, enabled: df.enabled },
-          create: df
+          update: {
+            name: df.name,
+            description: df.description,
+            enabled: df.enabled,
+          },
+          create: df,
         })
       )
     );
 
     const allFlags = await prisma.featureFlag.findMany({});
-    res.status(200).json({ 
-      success: true, 
-      data: allFlags, 
-      message: "Flags seeded successfully" 
+    res.status(200).json({
+      success: true,
+      data: allFlags,
+      message: "Flags seeded successfully",
     });
   } catch (error) {
     logger.error("Error in seedFeatureFlags:", error);

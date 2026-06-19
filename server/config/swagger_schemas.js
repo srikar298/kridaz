@@ -83,7 +83,15 @@ export const BookingSchema = {
     status: {
       type: "string",
       // Matches BookingStatus enum in schema.prisma
-      enum: ["PENDING", "CONFIRMED", "PLAYING", "IN_REVIEW_WINDOW", "COMPLETED", "CANCELLED", "DISPUTED"],
+      enum: [
+        "PENDING",
+        "CONFIRMED",
+        "PLAYING",
+        "IN_REVIEW_WINDOW",
+        "COMPLETED",
+        "CANCELLED",
+        "DISPUTED",
+      ],
     },
     revenueStatus: {
       type: "string",
@@ -106,7 +114,10 @@ export const WalletTransactionSchema = {
     userId: { type: "string", format: "uuid" },
     amount: { type: "number" },
     type: { type: "string", enum: ["TOPUP", "DEBIT", "REFUND", "OFFER"] },
-    status: { type: "string", enum: ["PENDING", "SUCCESS", "FAILED", "RESERVED"] },
+    status: {
+      type: "string",
+      enum: ["PENDING", "SUCCESS", "FAILED", "RESERVED"],
+    },
     description: { type: "string", nullable: true },
     razorpayOrderId: { type: "string", nullable: true },
     createdAt: { type: "string", format: "date-time" },
@@ -128,7 +139,10 @@ export const ReelSchema = {
     thumbnailUrl: { type: "string", nullable: true },
     aspectRatio: { type: "number" },
     duration: { type: "number", nullable: true },
-    status: { type: "string", enum: ["pending", "processing", "ready", "failed"] },
+    status: {
+      type: "string",
+      enum: ["pending", "processing", "ready", "failed"],
+    },
     isPrivate: { type: "boolean" },
     views: { type: "integer" },
     likes: { type: "integer" },
@@ -171,7 +185,10 @@ export const PostSchema = {
     mediaUrls: { type: "array", items: { type: "string" } },
     placeholder: { type: "string", nullable: true },
     hashtags: { type: "array", items: { type: "string" } },
-    status: { type: "string", enum: ["pending", "processing", "ready", "failed"] },
+    status: {
+      type: "string",
+      enum: ["pending", "processing", "ready", "failed"],
+    },
     createdAt: { type: "string", format: "date-time" },
   },
 };
@@ -231,7 +248,15 @@ export const HostedGameSchema = {
     pricePerPlayer: { type: "number" },
     status: {
       type: "string",
-      enum: ["open", "full", "cancelled", "completed", "LIVE", "COMPLETED", "ENDED"],
+      enum: [
+        "open",
+        "full",
+        "cancelled",
+        "completed",
+        "LIVE",
+        "COMPLETED",
+        "ENDED",
+      ],
     },
     createdAt: { type: "string", format: "date-time" },
   },

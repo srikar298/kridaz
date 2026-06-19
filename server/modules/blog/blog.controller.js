@@ -17,9 +17,10 @@ const getMockStats = (id) => {
 // Map Prisma Blog database model to legacy/extended frontend expectations
 const mapBlogResponse = (blog) => {
   if (!blog) return null;
-  
+
   const wordCount = blog.content ? blog.content.split(/\s+/).length : 0;
-  const computedReadTime = Math.max(1, Math.ceil(wordCount / 200)) + " MINS READ";
+  const computedReadTime =
+    Math.max(1, Math.ceil(wordCount / 200)) + " MINS READ";
   const { views, likes } = getMockStats(blog.id);
 
   return {
@@ -31,14 +32,16 @@ const mapBlogResponse = (blog) => {
     readTime: computedReadTime,
     category: (blog.tags && blog.tags[0]) || "SPORTS",
     author: blog.author?.name || "KRIDAZ TEAM",
-    date: new Date(blog.createdAt).toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    }).toUpperCase(),
+    date: new Date(blog.createdAt)
+      .toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+      .toUpperCase(),
     views,
     likes,
-    status: blog.status ? blog.status.toLowerCase() : "published"
+    status: blog.status ? blog.status.toLowerCase() : "published",
   };
 };
 
@@ -50,16 +53,16 @@ export const getBlogs = async (req, res) => {
 
     const blogs = await prisma.blog.findMany({
       where: whereClause,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       include: {
         author: {
           select: {
             id: true,
             name: true,
-            profilePicture: true
-          }
-        }
-      }
+            profilePicture: true,
+          },
+        },
+      },
     });
 
     const mappedBlogs = blogs.map(mapBlogResponse);
@@ -80,13 +83,16 @@ export const getBlogById = async (req, res) => {
           select: {
             id: true,
             name: true,
-            profilePicture: true
-          }
-        }
-      }
+            profilePicture: true,
+          },
+        },
+      },
     });
 
-    if (!blog) return res.status(404).json({ success: false, message: "Blog not found" });
+    if (!blog)
+      return res
+        .status(404)
+        .json({ success: false, message: "Blog not found" });
     res.status(200).json({ success: true, blog: mapBlogResponse(blog) });
   } catch (error) {
     logger.error("[getBlogById Error]:", error);
@@ -104,13 +110,16 @@ export const likeBlog = async (req, res) => {
           select: {
             id: true,
             name: true,
-            profilePicture: true
-          }
-        }
-      }
+            profilePicture: true,
+          },
+        },
+      },
     });
-    if (!blog) return res.status(404).json({ success: false, message: "Blog not found" });
-    
+    if (!blog)
+      return res
+        .status(404)
+        .json({ success: false, message: "Blog not found" });
+
     const mapped = mapBlogResponse(blog);
     mapped.likes = (mapped.likes || 0) + 1;
     res.status(200).json({ success: true, blog: mapped });
@@ -132,24 +141,37 @@ export const createBlog = async (req, res) => {
     }
 
     if (!featuredImage) {
-      return res.status(400).json({ success: false, message: "Article image is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Article image is required" });
     }
 
-    const { title, content, summary, subtitle, tags, status, category } = req.body;
+    const { title, content, summary, subtitle, tags, status, category } =
+      req.body;
     const authorId = req.user?.id;
 
     if (!title || !content || !authorId) {
-      return res.status(400).json({ success: false, message: "Missing required fields (title, content, or author)" });
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields (title, content, or author)",
+      });
     }
 
     // Generate unique slug
-    const slug = title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "") + "-" + Date.now();
+    const slug =
+      title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)+/g, "") +
+      "-" +
+      Date.now();
 
     // Prepare tags list
-    let tagsList = Array.isArray(tags) ? tags : (tags ? tags.split(',').map(t => t.trim()) : []);
+    let tagsList = Array.isArray(tags)
+      ? tags
+      : tags
+        ? tags.split(",").map((t) => t.trim())
+        : [];
     const finalCategory = category || "Sports";
     if (finalCategory && !tagsList.includes(finalCategory)) {
       tagsList = [finalCategory, ...tagsList];
@@ -164,23 +186,26 @@ export const createBlog = async (req, res) => {
         featuredImage,
         tags: tagsList,
         status: status ? status.toUpperCase() : "PUBLISHED",
-        authorId
+        authorId,
       },
       include: {
         author: {
           select: {
             id: true,
             name: true,
-            profilePicture: true
-          }
-        }
-      }
+            profilePicture: true,
+          },
+        },
+      },
     });
 
     res.status(201).json({ success: true, blog: mapBlogResponse(blog) });
   } catch (error) {
     logger.error("[createBlog Error]:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error during blog creation" });
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error during blog creation",
+    });
   }
 };
 
@@ -188,18 +213,33 @@ export const createBlog = async (req, res) => {
 export const updateBlog = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, content, summary, subtitle, imageUrl, tags, status, category } = req.body;
+    const {
+      title,
+      content,
+      summary,
+      subtitle,
+      imageUrl,
+      tags,
+      status,
+      category,
+    } = req.body;
 
     const existing = await prisma.blog.findUnique({ where: { id } });
-    if (!existing) return res.status(404).json({ success: false, message: "Blog not found" });
+    if (!existing)
+      return res
+        .status(404)
+        .json({ success: false, message: "Blog not found" });
 
     const updates = {};
     if (title !== undefined) {
       updates.title = title;
-      updates.slug = title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)+/g, "") + "-" + Date.now();
+      updates.slug =
+        title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)+/g, "") +
+        "-" +
+        Date.now();
     }
     if (content !== undefined) updates.content = content;
     if (summary !== undefined || subtitle !== undefined) {
@@ -211,14 +251,22 @@ export const updateBlog = async (req, res) => {
     if (tags !== undefined || category !== undefined) {
       let tagsList = [];
       if (tags !== undefined) {
-        tagsList = Array.isArray(tags) ? tags : (tags ? tags.split(',').map(t => t.trim()) : []);
+        tagsList = Array.isArray(tags)
+          ? tags
+          : tags
+            ? tags.split(",").map((t) => t.trim())
+            : [];
       } else {
         tagsList = existing.tags || [];
       }
-      
-      const finalCategory = category !== undefined ? category : (tagsList[0] || "Sports");
+
+      const finalCategory =
+        category !== undefined ? category : tagsList[0] || "Sports";
       if (finalCategory) {
-        tagsList = [finalCategory, ...tagsList.filter(t => t !== finalCategory)];
+        tagsList = [
+          finalCategory,
+          ...tagsList.filter((t) => t !== finalCategory),
+        ];
       }
       updates.tags = tagsList;
     }
@@ -226,7 +274,10 @@ export const updateBlog = async (req, res) => {
     // Handle image updates
     if (req.file) {
       logger.info("[updateBlog]: Uploading new file to Cloudinary...");
-      updates.featuredImage = await uploadToCloudinary(req.file.buffer, "kridaz/blogs");
+      updates.featuredImage = await uploadToCloudinary(
+        req.file.buffer,
+        "kridaz/blogs"
+      );
     } else if (imageUrl !== undefined) {
       updates.featuredImage = imageUrl;
     }
@@ -239,16 +290,19 @@ export const updateBlog = async (req, res) => {
           select: {
             id: true,
             name: true,
-            profilePicture: true
-          }
-        }
-      }
+            profilePicture: true,
+          },
+        },
+      },
     });
 
     res.status(200).json({ success: true, blog: mapBlogResponse(blog) });
   } catch (error) {
     logger.error("[updateBlog Error]:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error during blog update" });
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error during blog update",
+    });
   }
 };
 
@@ -256,7 +310,9 @@ export const updateBlog = async (req, res) => {
 export const deleteBlog = async (req, res) => {
   try {
     await prisma.blog.delete({ where: { id: req.params.id } });
-    res.status(200).json({ success: true, message: "Blog deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Blog deleted successfully" });
   } catch (error) {
     logger.error("[deleteBlog Error]:", error);
     res.status(500).json({ success: false, message: error.message });

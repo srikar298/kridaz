@@ -1,95 +1,125 @@
-/* eslint-disable react/prop-types */
 import React from "react";
 import { Link } from "react-router-dom";
 
 export default function DashboardHero() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 w-full">
-      {/* Leaderboard */}
+    <div className="grid grid-cols-4 gap-2 md:gap-3 mb-0 w-full pb-0 px-2">
+      {/* Leaderboard / Players Nearby */}
       <Link
-        to="/leaderboard"
-        className="relative rounded-[6px] px-3.5 py-2 overflow-visible force-overflow-visible flex flex-col justify-center h-[72px] cursor-pointer group hover:scale-[1.02] transition-all duration-300 shadow-xl border border-[#EBEBEB]/15"
-        style={{
-          background:
-            "radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 50%), radial-gradient(circle at 80% 50%, #2087FF 0%, #0E49B5 45%, #031533 100%)",
-          overflow: "visible",
-        }}
+        to="/players"
+        className="w-full flex flex-col items-center gap-1.5 md:gap-2 cursor-pointer group"
       >
-        <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[6px]" />
-        <span className="relative z-20 text-white font-bold text-xs sm:text-sm tracking-tight leading-tight max-w-[55%] font-open-sans">
-          Leaderboard
-        </span>
-        <img
-          src="/3d_map_location.svg"
-          alt="Leaderboard Map Icon"
-          className="absolute -right-2.5 -top-[16px] w-[98px] h-[98px] object-contain pointer-events-none transform group-hover:scale-105 group-hover:-translate-y-0.5 transition-all duration-300 z-10"
-        />
+        <div
+          className="relative w-full rounded-[12px] overflow-visible force-overflow-visible flex items-center justify-center aspect-square transition-all duration-300 shadow-xl border border-[#EBEBEB]/15 group-hover:scale-[1.02]"
+          style={{
+            background:
+              "radial-gradient(circle at 80% 50%, #2087FF 0%, #0E49B5 45%, #031533 100%)",
+          }}
+        >
+          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />
+          <img
+            src="/3d_map_location.svg"
+            alt="Leaderboard Map Icon"
+            className="absolute inset-0 w-full h-full object-contain p-[5%] pointer-events-none transform group-hover:scale-110 transition-all duration-300 z-10"
+          />
+        </div>
+        <div className="h-[28px] flex items-start justify-center">
+          <span
+            className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors"
+            style={{ fontFamily: "'Open Sans', sans-serif" }}
+          >
+            Players Nearby
+          </span>
+        </div>
       </Link>
 
       {/* Scoring */}
       <Link
         to="/my-teams"
         state={{ openStartScoringModal: true }}
-        className="relative rounded-[6px] px-3.5 py-2 overflow-visible force-overflow-visible flex flex-col justify-center h-[72px] cursor-pointer group hover:scale-[1.02] transition-all duration-300 shadow-xl border border-[#EBEBEB]/15"
-        style={{
-          background:
-            "radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 50%), radial-gradient(circle at 80% 50%, #FF9800 0%, #E65100 45%, #3E1700 100%)",
-          overflow: "visible",
-        }}
+        className="w-full flex flex-col items-center gap-1.5 md:gap-2 cursor-pointer group"
       >
-        <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[6px]" />
-        <span className="relative z-20 text-white font-bold text-xs sm:text-sm tracking-tight leading-tight max-w-[55%] font-open-sans">
-          Scoring
-        </span>
-        <img
-          src="/3d_scoreboard_v2.png"
-          alt="Scorer Icon"
-          className="absolute -right-3 -top-[20px] w-[105px] h-[105px] object-contain pointer-events-none transform group-hover:scale-105 group-hover:-translate-y-0.5 transition-all duration-300 z-10"
-        />
+        <div
+          className="relative w-full rounded-[12px] overflow-visible force-overflow-visible flex items-center justify-center aspect-square transition-all duration-300 shadow-xl border border-[#EBEBEB]/15 group-hover:scale-[1.02]"
+          style={{
+            background:
+              "radial-gradient(circle at 80% 50%, #FF9800 0%, #E65100 45%, #3E1700 100%)",
+          }}
+        >
+          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />
+          <img
+            src="/3d_scoreboard_v2.png"
+            alt="Scorer Icon"
+            className="absolute inset-0 w-full h-full object-contain p-[2.5%] pointer-events-none transform group-hover:scale-110 transition-all duration-300 z-10"
+          />
+        </div>
+        <div className="h-[28px] flex items-start justify-center">
+          <span
+            className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors"
+            style={{ fontFamily: "'Open Sans', sans-serif" }}
+          >
+            Score Match
+          </span>
+        </div>
       </Link>
 
       {/* Host & Join Games */}
       <Link
         to="/join-games"
-        className="relative rounded-[6px] px-3.5 py-2 overflow-visible force-overflow-visible flex flex-col justify-center h-[72px] cursor-pointer group hover:scale-[1.02] transition-all duration-300 shadow-xl border border-[#EBEBEB]/15"
-        style={{
-          background:
-            "radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 50%), radial-gradient(circle at 80% 50%, #22C55E 0%, #15803D 45%, #032512 100%)",
-          overflow: "visible",
-        }}
+        className="w-full flex flex-col items-center gap-1.5 md:gap-2 cursor-pointer group"
       >
-        <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[6px]" />
-        <span className="relative z-20 text-white font-bold text-xs sm:text-sm tracking-tight leading-tight max-w-[55%] font-open-sans">
-          Host & Join Games
-        </span>
-        <img
-          src="/3d_whistle.svg"
-          alt="Host & Join Games Whistle Icon"
-          className="absolute -right-2.5 -top-[14px] w-[98px] h-[98px] object-contain pointer-events-none transform group-hover:scale-105 group-hover:-translate-y-0.5 transition-all duration-300 z-10"
-        />
+        <div
+          className="relative w-full rounded-[12px] overflow-visible force-overflow-visible flex items-center justify-center aspect-square transition-all duration-300 shadow-xl border border-[#EBEBEB]/15 group-hover:scale-[1.02]"
+          style={{
+            background:
+              "radial-gradient(circle at 80% 50%, #22C55E 0%, #15803D 45%, #032512 100%)",
+          }}
+        >
+          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />
+          <img
+            src="/3d_whistle.svg"
+            alt="Host & Join Games Whistle Icon"
+            className="absolute inset-0 w-full h-full object-contain p-[2.5%] pointer-events-none transform group-hover:scale-110 transition-all duration-300 z-10"
+          />
+        </div>
+        <div className="h-[28px] flex items-start justify-center">
+          <span
+            className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors"
+            style={{ fontFamily: "'Open Sans', sans-serif" }}
+          >
+            Join Game
+          </span>
+        </div>
       </Link>
 
       {/* Pros */}
       <Link
         to="/professionals"
-        className="relative rounded-[6px] px-3.5 py-2 overflow-visible force-overflow-visible flex flex-col justify-center h-[72px] cursor-pointer group hover:scale-[1.02] transition-all duration-300 shadow-xl border border-[#EBEBEB]/15"
-        style={{
-          background:
-            "radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 50%), radial-gradient(circle at 80% 50%, #FFA2FF 0%, #A726E2 50%, #220038 100%)",
-          overflow: "visible",
-        }}
+        className="w-full flex flex-col items-center gap-1.5 md:gap-2 cursor-pointer group"
       >
-        <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[6px]" />
-        <span className="relative z-20 text-white font-bold text-xs sm:text-sm tracking-tight leading-tight max-w-[55%] font-open-sans">
-          Pros
-        </span>
-        <img
-          src="/3d_professional_v2.png"
-          alt="Pros Icon"
-          className="absolute -right-2 -top-[16px] w-[94px] h-[94px] object-contain pointer-events-none transform group-hover:scale-105 group-hover:-translate-y-0.5 transition-all duration-300 z-10"
-        />
+        <div
+          className="relative w-full rounded-[12px] overflow-visible force-overflow-visible flex items-center justify-center aspect-square transition-all duration-300 shadow-xl border border-[#EBEBEB]/15 group-hover:scale-[1.02]"
+          style={{
+            background:
+              "radial-gradient(circle at 80% 50%, #FFA2FF 0%, #A726E2 50%, #220038 100%)",
+          }}
+        >
+          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />
+          <img
+            src="/sports/3d_professional_v2.png"
+            alt="Pros Icon"
+            className="absolute inset-0 w-full h-full object-contain p-[10%] pointer-events-none transform group-hover:scale-110 transition-all duration-300 z-10"
+          />
+        </div>
+        <div className="h-[28px] flex items-start justify-center">
+          <span
+            className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors"
+            style={{ fontFamily: "'Open Sans', sans-serif" }}
+          >
+            Pro's
+          </span>
+        </div>
       </Link>
     </div>
   );
 }
-

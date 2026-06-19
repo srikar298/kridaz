@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { 
-  getPayoutSettings, 
+import {
+  getPayoutSettings,
   updatePayoutSettings,
   getPlatformConfigs,
-  updatePlatformConfigs
+  updatePlatformConfigs,
 } from "../settings.controller.js";
 import verifyAdminToken from "../../../middleware/jwt/admin.middleware.js";
 

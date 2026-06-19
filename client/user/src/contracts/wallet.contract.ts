@@ -4,14 +4,10 @@ export const transactionTypeSchema = z.enum([
   "DEPOSIT",
   "WITHDRAW",
   "PAYMENT",
-  "REFUND"
+  "REFUND",
 ]);
 
-export const transactionStatusSchema = z.enum([
-  "PENDING",
-  "SUCCESS",
-  "FAILED"
-]);
+export const transactionStatusSchema = z.enum(["PENDING", "SUCCESS", "FAILED"]);
 
 export const transactionSchema = z.object({
   id: z.string().uuid(),
@@ -20,7 +16,7 @@ export const transactionSchema = z.object({
   type: transactionTypeSchema,
   status: transactionStatusSchema,
   description: z.string().optional(),
-  createdAt: z.string().datetime()
+  createdAt: z.string().datetime(),
 });
 
 export const walletSchema = z.object({
@@ -28,12 +24,12 @@ export const walletSchema = z.object({
   userId: z.string().uuid(),
   balance: z.number().nonnegative().default(0),
   currency: z.string().default("INR"),
-  transactions: z.array(transactionSchema).default([])
+  transactions: z.array(transactionSchema).default([]),
 });
 
 export const addFundsSchema = z.object({
   amount: z.number().positive("Amount to add must be greater than 0"),
-  paymentMethod: z.enum(["RAZORPAY", "STRIPE", "UPI"]).default("RAZORPAY")
+  paymentMethod: z.enum(["RAZORPAY", "STRIPE", "UPI"]).default("RAZORPAY"),
 });
 
 export type TransactionType = z.infer<typeof transactionTypeSchema>;

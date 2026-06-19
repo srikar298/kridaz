@@ -5,7 +5,7 @@ import {
   replyToTicket,
   toggleAgentStatus,
   getAllDisputes,
-  resolveDispute
+  resolveDispute,
 } from "../support.controller.js";
 import verifyAdminToken from "../../../middleware/jwt/admin.middleware.js";
 
@@ -22,7 +22,11 @@ const router = Router();
 router.get("/tickets", verifyAdminToken, getAllTickets);
 router.put("/tickets/:ticketId/status", verifyAdminToken, updateTicketStatus);
 router.post("/tickets/:ticketId/reply", verifyAdminToken, replyToTicket);
-router.put("/tickets/:ticketId/agent-status", verifyAdminToken, toggleAgentStatus);
+router.put(
+  "/tickets/:ticketId/agent-status",
+  verifyAdminToken,
+  toggleAgentStatus
+);
 
 // Disputes
 router.get("/disputes", verifyAdminToken, getAllDisputes);

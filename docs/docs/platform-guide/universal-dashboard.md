@@ -9,7 +9,7 @@ The **Universal Professional Dashboard** is a unified, role-aware dashboard fold
 Historically, each professional category maintained a standalone dashboard layout, leading to code duplication and visual inconsistency. Kridaz consolidates these into a single **Universal Dashboard** framework.
 
 - **Shared Layout Structure**: A common layout handles routing, headers, sidebar options, and sub-pages.
-- **Role-Based Text & Accessibility**: Content adjusts conditionally (e.g., swapping labels like *"Officiating History"* for Umpires with *"Session History"* for Coaches).
+- **Role-Based Text & Accessibility**: Content adjusts conditionally (e.g., swapping labels like _"Officiating History"_ for Umpires with _"Session History"_ for Coaches).
 - **Consolidated Component Directory**: All sub-pages utilize the same base UI primitives, styling tokens (pure black background, `#55DEE8` to `#BFF367` brand gradients), and responsive grid patterns.
 
 ---
@@ -23,13 +23,11 @@ The **Overview Page** serves as the partner's command center. It aggregates comp
 1. **Earnings Comparison**
    - **Visualization**: Dual-line or comparative bar graph.
    - **Data Source**: Fetched from the revenue ledger.
-   - **Metrics**: Compares earnings from the *Previous Month* vs. the *Current Month*, indicating percentage growth or decline.
-   
+   - **Metrics**: Compares earnings from the _Previous Month_ vs. the _Current Month_, indicating percentage growth or decline.
 2. **Ticket Booking Size**
    - **Visualization**: Single-value KPI card with trend indicator.
    - **Data Source**: `/api/professional/analytics/ticket-size`
    - **Metrics**: Displays the average value (in coins or cash) generated per slot transaction, helping professionals analyze pricing efficiency.
-   
 3. **Peak Booking Hours**
    - **Visualization**: Horizontal bar chart or density heatmap.
    - **Data Source**: `/api/professional/analytics/peak-hours`
@@ -60,20 +58,24 @@ The **Bookings Page** functions as the primary scheduling grid, translating digi
 Beyond scheduling and main analytics, the dashboard includes four standard partner sub-pages:
 
 ### 1. Customers List
+
 - A directory of all athletes who have booked services from this professional.
 - Shows booking frequency, total amount spent, and quick action buttons to initiate a chat or send invites.
 
 ### 2. Revenue & Payouts
+
 - Financial control room tracking coin balances, pending platform settlements, and historical bank payout requests.
 - Leverages secure transaction ledgers to display payout statuses (`PENDING`, `SUCCESS`, `FAILED`).
 
 ### 3. Feedback & Reviews
+
 - Feedback grid showcasing review cards left by players.
 - Displays overall rating averages and feedback text to help professionals monitor service quality.
 
 ### 4. Profile Management
+
 - Direct interface to update operational parameters:
   - Service biography and certifications.
-  - Sports covered (Multi-select: *Cricket, Football, Tennis*, etc.).
+  - Sports covered (Multi-select: _Cricket, Football, Tennis_, etc.).
   - Standard hourly pricing rates.
   - Geographic location coordinates for map discovery.

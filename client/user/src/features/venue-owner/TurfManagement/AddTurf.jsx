@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Controller } from "react-hook-form";
 import { FormField } from "@components/common";
-import useAddTurf from "@hooks/owner/useAddTurf";
-import { Button } from "@components/common";
-import { fetchStates, fetchCities } from "@utils/locationService";
+import useAddTurf from "@hooks/venue-owner/useAddTurf";
+import {
+  fetchStates,
+  fetchCities,
+  searchLocations,
+} from "@utils/locationService";
 import { Search, Plus } from "lucide-react";
-import ClockPicker from "@components/common/ClockPicker";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const AddTurf = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -48,11 +53,17 @@ const AddTurf = () => {
     newManagerPhone,
     setNewManagerPhone,
     addManagerContact,
-    removeManagerContact
+    removeManagerContact,
   } = useAddTurf();
 
   const [statesList, setStatesList] = useState([]);
   const [citiesList, setCitiesList] = useState([]);
+
+  const [locationSearchQuery, setLocationSearchQuery] = useState("");
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [isSearchingLocation, setIsSearchingLocation] = useState(false);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+
   const selectedState = watch("state");
   const watchedLat = watch("latitude");
   const watchedLng = watch("longitude");
@@ -61,10 +72,93 @@ const AddTurf = () => {
   const watchedPricePerHour = watch("pricePerHour");
   const watchedSlotDuration = watch("slotDuration") || 60;
   const watchedFacilityCategory = watch("facilityCategory") || "Turf";
+  const watchedImages = watch("images");
+  const watchedMapUrl = watch("mapUrl");
+
+  // Auto-extract lat/lng from Google Maps URL
+  useEffect(() => {
+    if (watchedMapUrl) {
+      const regexAt = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+      const regexQ = /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/;
+      let lat, lng;
+      const matchAt = watchedMapUrl.match(regexAt);
+      if (matchAt && matchAt.length >= 3) {
+        lat = matchAt[1];
+        lng = matchAt[2];
+      } else {
+        const matchQ = watchedMapUrl.match(regexQ);
+        if (matchQ && matchQ.length >= 3) {
+          lat = matchQ[1];
+          lng = matchQ[2];
+        }
+      }
+      if (lat && lng) {
+        if (watchedLat !== lat)
+          setValue("latitude", lat, {
+            shouldValidate: true,
+            shouldDirty: true,
+          });
+        if (watchedLng !== lng)
+          setValue("longitude", lng, {
+            shouldValidate: true,
+            shouldDirty: true,
+          });
+      }
+    }
+  }, [watchedMapUrl, watchedLat, watchedLng, setValue]);
+
+  // Location Autocomplete
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (locationSearchQuery && locationSearchQuery.length >= 3) {
+        setIsSearchingLocation(true);
+        const results = await searchLocations(locationSearchQuery);
+        setLocationSuggestions(results);
+        setIsSearchingLocation(false);
+      } else {
+        setLocationSuggestions([]);
+      }
+    }, 500);
+    return () => clearTimeout(delayDebounceFn);
+  }, [locationSearchQuery]);
+
+  const handleLocationSelect = (loc) => {
+    setValue("location", loc.display_name, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    setValue("city", loc.city || loc.suburb || loc.display_name, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    setValue("state", loc.state || loc.display_name, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    setValue("latitude", loc.lat, { shouldValidate: true, shouldDirty: true });
+    setValue("longitude", loc.lon, { shouldValidate: true, shouldDirty: true });
+    setLocationSearchQuery(loc.display_name);
+    setShowLocationSuggestions(false);
+  };
+
+  const imagePreviews = React.useMemo(() => {
+    if (!watchedImages) return [];
+    try {
+      if (watchedImages.length > 0) {
+        return Array.from(watchedImages).map((file) =>
+          URL.createObjectURL(file)
+        );
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    return [];
+  }, [watchedImages]);
 
   // Calculate projected earnings
-  const activeSlotsCount = generatedSlots.filter(s => s.isActive).length;
-  const perSlotPrice = (Number(watchedPricePerHour) || 0) * (Number(watchedSlotDuration) / 60);
+  const activeSlotsCount = generatedSlots.filter((s) => s.isActive).length;
+  const perSlotPrice =
+    (Number(watchedPricePerHour) || 0) * (Number(watchedSlotDuration) / 60);
   const totalDailyEarnings = activeSlotsCount * perSlotPrice;
 
   // Load states on mount
@@ -83,63 +177,149 @@ const AddTurf = () => {
 
   // Build live map preview URL from coords or address
   const mapPreviewUrl = React.useMemo(() => {
-    if (watchedLat && watchedLng && !isNaN(Number(watchedLat)) && !isNaN(Number(watchedLng))) {
+    if (
+      watchedLat &&
+      watchedLng &&
+      !isNaN(Number(watchedLat)) &&
+      !isNaN(Number(watchedLng))
+    ) {
       return `https://maps.google.com/maps?q=${watchedLat},${watchedLng}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
     }
-    const q = [watchedLocation, watchedCity, selectedState].filter(Boolean).join(", ");
+    const q = [watchedLocation, watchedCity, selectedState]
+      .filter(Boolean)
+      .join(", ");
     if (q.length > 3) {
       return `https://maps.google.com/maps?q=${encodeURIComponent(q)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
     }
     return null;
   }, [watchedLat, watchedLng, watchedLocation, watchedCity, selectedState]);
 
-  const sportsOptions = ["Football", "Cricket", "Tennis", "Badminton", "Table Tennis", "Basketball", "Volleyball", "Hockey"];
-  const groundTypeOptions = ["Natural Grass", "Artificial Turf", "Clay", "Hard Court", "Small Turf", "Indoor Court"];
-  const facilitiesOptions = ["Parking", "Washroom", "Drinking Water", "Changing Room", "First Aid", "Locker Room", "Cafeteria", "WiFi", "Lighting", "Sitting Area"];
+  const sportsOptions = [
+    "Football",
+    "Cricket",
+    "Tennis",
+    "Badminton",
+    "Table Tennis",
+    "Basketball",
+    "Volleyball",
+    "Hockey",
+  ];
+  const groundTypeOptions = [
+    "Natural Grass",
+    "Artificial Turf",
+    "Clay",
+    "Hard Court",
+    "Small Turf",
+    "Indoor Court",
+  ];
+  const facilitiesOptions = [
+    "Parking",
+    "Washroom",
+    "Drinking Water",
+    "Changing Room",
+    "First Aid",
+    "Locker Room",
+    "Cafeteria",
+    "WiFi",
+    "Lighting",
+    "Sitting Area",
+    "Pavilion",
+    "Sight Screen",
+    "Flood Lights",
+    "Boundary Netting",
+    "Shower",
+  ];
 
   return (
-    <div className="h-full custom-scrollbar bg-[#000000] text-white">
-      <div className="p-4 lg:px-10 lg:pt-8 lg:pb-12 space-y-8 animate-fade-in pt-0 pb-24 h-full relative">
+    <div
+      className="h-full custom-scrollbar bg-[#000000] text-white"
+      onClick={() => setShowLocationSuggestions(false)}
+    >
+      <div className="px-1 lg:px-3 lg:pt-2 lg:pb-3 space-y-4 md:space-y-8 animate-fade-in pt-0 pb-4 h-full relative">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl lg:text-4xl font-black font-['Open_Sans'] tracking-tight text-white uppercase">
-                ADD NEW <span className="text-[#BFF367]">{watchedFacilityCategory.toUpperCase()}</span>
-              </h1>
+              <h2 className="text-[20px] sm:text-[24px] lg:text-[32px] mt-2 sm:mt-0 font-black font-['Open_Sans'] tracking-tight text-white uppercase whitespace-nowrap">
+                ADD NEW{" "}
+                <span className="text-[#B3DC26]">
+                  {watchedFacilityCategory.toUpperCase()}
+                </span>
+              </h2>
             </div>
-            <p className="text-[#878C9F] font-inter text-[20px] mt-2 ml-4">
+            <p className="text-white/70 font-inter text-[12px] md:text-[20px] mt-1 md:mt-2 ml-1 md:ml-4 font-light">
               Register a New Facility | Kridaz
             </p>
           </div>
         </header>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="grid grid-cols-1 md:grid-cols-2 gap-12 bg-[#000000] p-8 md:p-12 rounded-[8px] border border-[#2D2D2D] shadow-[var(--shadow-2)] relative overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#BFF367]/5 blur-[100px] pointer-events-none" />
-          
-          <div className="space-y-8 relative z-10">
-            <h3 className="text-[14px] font-bold text-[#BFF367] border-b border-[#2D2D2D] pb-3 mb-8 uppercase tracking-[3px]">General Information</h3>
-            
-            <div className="form-control">
-              <label className="label mb-2">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Facility Category</span>
-              </label>
-              <select
-                {...register("facilityCategory", { required: "Please select a facility category" })}
-                className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-12 rounded-[8px] px-4 transition-all appearance-none"
+        {/* Step Indicators */}
+        <div className="flex items-center justify-between relative z-10 mb-8">
+          {[1, 2, 3].map((step) => (
+            <div
+              key={step}
+              className={`flex-1 flex flex-col items-center gap-2 relative ${currentStep === step ? "opacity-100" : "opacity-50"}`}
+            >
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm z-10 ${currentStep === step ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black shadow-[0_0_15px_rgba(204,255,0,0.5)]" : "bg-[#121212]  -white/10 text-white"}`}
               >
-                <option value="">Select Category (e.g. Venue, Ground)</option>
-                <option value="Turf">Venue</option>
-                <option value="Ground">Ground</option>
-                <option value="Court">Court</option>
-                <option value="Stadium">Stadium</option>
-                <option value="Arena">Arena</option>
-                <option value="Studio">Studio</option>
-              </select>
-              {errors.facilityCategory && <span className="text-[#BFF367] text-[10px] font-bold uppercase mt-2 block ml-1">{errors.facilityCategory.message}</span>}
+                {step}
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-center">
+                {step === 1
+                  ? "General Info"
+                  : step === 2
+                    ? "Legalities"
+                    : "Slot Mgmt"}
+              </span>
+              {step < 3 && (
+                <div
+                  className={`absolute top-5 left-[50%] w-full h-[2px] ${currentStep > step ? "bg-[#B3DC26]" : "bg-[#1B1B1B]"}`}
+                />
+              )}
             </div>
+          ))}
+        </div>
+
+        <form
+          onSubmit={handleSubmit(onSubmit, (errors) => {
+            const firstErrorKey = Object.keys(errors)[0];
+            if (firstErrorKey) {
+              const errorMessage =
+                errors[firstErrorKey]?.message ||
+                `Please check the ${firstErrorKey} field`;
+              // Try to find which step the error is in to help the user navigate
+              let stepError = 1;
+              const step2Fields = [
+                "saleDeed",
+                "electricityBill",
+                "gstRegistration",
+                "rentalAgreement",
+                "ownershipAgreement",
+                "policies",
+                "managerContacts",
+              ];
+              const step3Fields = [
+                "pricePerHour",
+                "openTime",
+                "closeTime",
+                "slotDuration",
+                "breakTime",
+                "availableDays",
+                "offDays",
+                "slotsConfigDuration",
+                "slotsConfigWeeks",
+              ];
+              if (step2Fields.includes(firstErrorKey)) stepError = 2;
+              if (step3Fields.includes(firstErrorKey)) stepError = 3;
+              setCurrentStep(stepError);
+              toast.error(`Step ${stepError}: ${errorMessage}`);
+            } else {
+              toast.error("Please fill all required fields correctly.");
+            }
+          })}
+          className="grid grid-cols-1 gap-6 md:gap-12 bg-[#000000] px-2 py-4 md:p-8 rounded-[16px] border-none md:border md:border-white/10 md:shadow-[var(--shadow-2)] relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#B3DC26]/5 blur-[100px] pointer-events-none" />
 
             <FormField
               label={`${watchedFacilityCategory} Name`}
@@ -166,27 +346,346 @@ const AddTurf = () => {
               )}
             </div>
 
-            <div className="form-control">
-              <label className="label mb-2">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Venue Policies and Rules</span>
-              </label>
-              <textarea
-                {...register("policies")}
-                maxLength={1000}
-                className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-48 rounded-[8px] p-4 transition-all"
-                placeholder="Define your facility's rules, cancellation policies, and safety guidelines (Minimum 200 characters)..."
-              ></textarea>
-              <div className="flex justify-between mt-2 ml-1">
-                {errors.policies ? (
-                  <span className="text-[#BFF367] text-[10px] font-bold uppercase">
-                    {errors.policies.message}
+          {/* STEP 1: General Information */}
+          {currentStep === 1 && (
+            <div className="col-span-1 grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 animate-fade-in">
+              <div className="form-control col-span-1">
+                <label className="label mb-2">
+                  <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    {watchedFacilityCategory} Name
                   </span>
-                ) : (
-                  <span className="text-[#444] text-[10px] font-bold uppercase tracking-widest">
-                    {watch("policies")?.length || 0} / 1000 max characters (200 min)
+                </label>
+                <input
+                  type="text"
+                  placeholder={`${watchedFacilityCategory} Name`}
+                  {...register("name")}
+                  className={`w-full bg-[#121212] border ${errors.name ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all`}
+                />
+                {errors.name && (
+                  <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
+                    {errors.name.message}
                   </span>
                 )}
               </div>
+
+              <div className="form-control col-span-1">
+                <label className="label mb-2">
+                  <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Sport Arsenal
+                  </span>
+                </label>
+                <select
+                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none"
+                  onChange={(e) => addSportType(e.target.value)}
+                  value=""
+                >
+                  <option value="" disabled>
+                    Select Sports
+                  </option>
+                  {sportsOptions.map((o) => (
+                    <option key={o} value={o} disabled={sportTypes.includes(o)}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {sportTypes.map((type, index) => (
+                    <span
+                      key={index}
+                      className="px-2 md:px-3 py-1 md:py-1.5 bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold rounded-[16px] md:rounded-[16px] text-[8px] md:text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                    >
+                      {type}{" "}
+                      <button
+                        type="button"
+                        onClick={() => removeSportType(type)}
+                        className="hover:text-white transition-colors"
+                      >
+                        <Plus size={12} className="rotate-45" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-control col-span-1">
+                <label className="label mb-2">
+                  <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Facility Category
+                  </span>
+                </label>
+                <select
+                  {...register("facilityCategory", {
+                    required: "Please select a category",
+                  })}
+                  className={`w-full bg-[#121212] border ${errors.facilityCategory ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none`}
+                >
+                  <option value="">Select Category</option>
+                  <option value="Turf">Venue</option>
+                  <option value="Ground">Ground</option>
+                  <option value="Court">Court</option>
+                  <option value="Stadium">Stadium</option>
+                </select>
+              </div>
+
+              <div className="form-control col-span-1">
+                <label className="label mb-2">
+                  <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Ground Composition
+                  </span>
+                </label>
+                <select
+                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none"
+                  onChange={(e) => addGroundType(e.target.value)}
+                  value=""
+                >
+                  <option value="" disabled>
+                    Select Ground Types
+                  </option>
+                  {groundTypeOptions.map((o) => (
+                    <option
+                      key={o}
+                      value={o}
+                      disabled={groundTypes.includes(o)}
+                    >
+                      {o}
+                    </option>
+                  ))}
+                </select>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {groundTypes.map((type, index) => (
+                    <span
+                      key={index}
+                      className="px-2 md:px-3 py-1 md:py-1.5 bg-[#1B1B1B] border border-white/10 text-white font-bold rounded-[16px] md:rounded-[16px] text-[8px] md:text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                    >
+                      {type}{" "}
+                      <button
+                        type="button"
+                        onClick={() => removeGroundType(type)}
+                        className="hover:text-[#B3DC26] transition-colors"
+                      >
+                        <Plus size={12} className="rotate-45" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-control md:col-span-2">
+                <label className="label mb-2">
+                  <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Facility Description
+                  </span>
+                </label>
+                <textarea
+                  {...register("description")}
+                  className={`w-full bg-[#121212] border ${errors.description ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-24 md:h-32 rounded-[16px] md:rounded-[16px] p-3 md:p-4 transition-all`}
+                ></textarea>
+              </div>
+
+              <div className="form-control md:col-span-1">
+                <label className="label mb-2">
+                  <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Facility Images (Up to 10)
+                  </span>
+                </label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="w-full bg-[#121212] border border-white/10 text-white/70 text-[6px] md:text-sm file:bg-[#1B1B1B] file:text-white file:border-none file:px-2 md:file:px-6 file:h-7 md:file:h-12 file:mr-1 md:file:mr-4 file:font-bold file:uppercase file:text-[6px] md:file:text-[10px] file:tracking-widest rounded-[16px] md:rounded-[16px] h-7 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer"
+                  onChange={(e) => setValue("images", e.target.files)}
+                />
+                {errors.images && (
+                  <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
+                    {errors.images.message}
+                  </span>
+                )}
+
+                {imagePreviews.length > 0 && (
+                  <div className="flex gap-4 mt-4 overflow-x-auto pb-2 custom-scrollbar">
+                    {imagePreviews.map((src, i) => (
+                      <img
+                        key={i}
+                        src={src}
+                        alt={`preview ${i}`}
+                        className="w-20 h-20 object-cover rounded-[16px] border border-white/10"
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="form-control col-span-1">
+                <label className="label mb-2">
+                  <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Facilities
+                  </span>
+                </label>
+                <select
+                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none"
+                  onChange={(e) => addFacility(e.target.value)}
+                  value=""
+                >
+                  <option value="" disabled>
+                    Select Facilities
+                  </option>
+                  {facilitiesOptions.map((o) => (
+                    <option key={o} value={o} disabled={facilities.includes(o)}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {facilities.map((type, index) => (
+                    <span
+                      key={index}
+                      className="px-2 md:px-3 py-1 md:py-1.5 bg-[#1B1B1B] border border-white/10 text-[#B3DC26] font-bold rounded-[16px] md:rounded-[16px] text-[8px] md:text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                    >
+                      {type}{" "}
+                      <button
+                        type="button"
+                        onClick={() => removeFacility(type)}
+                        className="hover:text-white transition-colors"
+                      >
+                        <Plus size={12} className="rotate-45" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-control col-span-1 relative">
+                <label className="label mb-2">
+                  <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Search Location
+                  </span>
+                </label>
+                <div className="relative" onClick={(e) => e.stopPropagation()}>
+                  <Search
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70"
+                    size={16}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Type to search location..."
+                    className={`w-full bg-[#121212] border ${errors.location ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] pl-[30px] md:pl-12 pr-4 transition-all`}
+                    value={locationSearchQuery}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setLocationSearchQuery(val);
+                      setShowLocationSuggestions(true);
+                      setValue("location", val, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                      setValue("city", val, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                      setValue("state", val, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                    }}
+                    onFocus={() => setShowLocationSuggestions(true)}
+                  />
+
+                  {/* Autocomplete dropdown */}
+                  {showLocationSuggestions &&
+                    locationSuggestions.length > 0 && (
+                      <div className="absolute z-50 top-[52px] left-0 right-0 bg-[#121212] border border-white/10 rounded-[16px] shadow-2xl overflow-hidden max-h-[300px] overflow-y-auto custom-scrollbar">
+                        {locationSuggestions.map((loc, i) => (
+                          <div
+                            key={i}
+                            className="p-4 border-b border-white/10 last:border-b-0 hover:bg-[#1B1B1B] cursor-pointer transition-colors"
+                            onClick={() => handleLocationSelect(loc)}
+                          >
+                            <p className="text-sm text-white font-medium truncate">
+                              {loc.display_name}
+                            </p>
+                            {(loc.city || loc.state) && (
+                              <p className="text-[10px] text-white/70 mt-1 uppercase tracking-wider">
+                                {[loc.city, loc.state]
+                                  .filter(Boolean)
+                                  .join(", ")}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                </div>
+                {errors.location && (
+                  <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
+                    {errors.location.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="form-control col-span-1">
+                <label className="label mb-2">
+                  <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    YouTube Video URL
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="https://www.youtube.com/watch?v=..."
+                  {...register("youtubeUrl")}
+                  className={`w-full bg-[#121212] border ${errors.youtubeUrl ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all`}
+                />
+                {errors.youtubeUrl && (
+                  <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
+                    {errors.youtubeUrl.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="form-control col-span-1">
+                <label className="label mb-2">
+                  <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Google Maps URL
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="https://maps.app.goo.gl/..."
+                  {...register("mapUrl")}
+                  className={`w-full bg-[#121212] border ${errors.mapUrl ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all`}
+                />
+                {errors.mapUrl && (
+                  <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
+                    {errors.mapUrl.message}
+                  </span>
+                )}
+              </div>
+
+              {mapPreviewUrl && (
+                <div className="form-control md:col-span-3">
+                  <label className="label mb-4">
+                    <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1 flex items-center gap-2">
+                      📍 Map Preview
+                    </span>
+                  </label>
+                  <div
+                    className="relative w-full rounded-[16px] overflow-hidden border border-white/10 shadow-[var(--shadow-1)]"
+                    style={{ height: 220 }}
+                  >
+                    <iframe
+                      title="Location Preview"
+                      src={mapPreviewUrl}
+                      width="100%"
+                      height="100%"
+                      style={{
+                        border: 0,
+                        filter:
+                          "invert(90%) hue-rotate(180deg) saturate(0.7) brightness(0.9)",
+                      }}
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
             
             <FormField
@@ -198,341 +697,169 @@ const AddTurf = () => {
               className="bg-[#111111] border-[#2D2D2D] text-white focus:border-[#BFF367]/60"
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="form-control">
-                <label className="label mb-2">
-                  <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">State</span>
-                </label>
-                <select
-                  {...register("state")}
-                  className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-12 rounded-[8px] px-4 transition-all appearance-none"
-                  onChange={(e) => {
-                    setValue("state", e.target.value);
-                    setValue("city", ""); // Reset city on state change
-                  }}
-                >
-                  <option value="">Select State</option>
-                  {statesList.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-                {errors.state && <span className="text-[#BFF367] text-[10px] font-bold uppercase mt-2 block ml-1">{errors.state.message}</span>}
+          {/* STEP 2: Legalities & Management */}
+          {currentStep === 2 && (
+            <div className="col-span-1 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 relative z-10 animate-fade-in">
+              <div className="space-y-4 md:space-y-8">
+                <h3 className="text-[14px] font-bold text-[#B3DC26] border-b border-white/10 pb-3 mb-8 uppercase tracking-[3px]">
+                  Legal Documents
+                </h3>
+
+                <div className="grid grid-cols-2 gap-x-3 gap-y-4 md:gap-x-8 md:gap-y-6">
+                  {[
+                    { name: "gstRegistration", label: "GST Registration" },
+                    { name: "saleDeed", label: <>Sale Deed </> },
+                    { name: "electricityBill", label: <>Electricity Bill </> },
+                    { name: "rentalAgreement", label: "Rental Agreement" },
+                    {
+                      name: "ownershipAgreement",
+                      label: "Ownership Agreement",
+                    },
+                    {
+                      name: "googleProfileScreenshot",
+                      label: "Google Profile Screenshot",
+                    },
+                  ].map((doc) => {
+                    const selectedFiles = watch(doc.name);
+                    const hasFile = selectedFiles && selectedFiles.length > 0;
+                    return (
+                      <div className="form-control" key={doc.name}>
+                        <label className="label mb-2">
+                          <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                            {doc.label}
+                          </span>
+                        </label>
+                        <input
+                          type="file"
+                          accept=".pdf,image/*"
+                          className={`w-full bg-[#121212] border ${errors[doc.name] ? "border-red-500" : "border-white/10"} text-white/70 text-[6px] md:text-sm file:bg-[#1B1B1B] file:text-white file:border-none file:px-2 md:file:px-6 file:h-7 md:file:h-12 file:mr-1 md:file:mr-4 file:font-bold file:uppercase file:text-[6px] md:file:text-[10px] file:tracking-widest rounded-[16px] md:rounded-[16px] h-7 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer`}
+                          onChange={(e) =>
+                            setValue(doc.name, e.target.files, {
+                              shouldValidate: true,
+                            })
+                          }
+                        />
+                        {hasFile && (
+                          <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold mt-2 block ml-1 truncate">
+                            ✅ Selected: {selectedFiles[0].name}
+                          </span>
+                        )}
+                        {errors[doc.name] && (
+                          <span className="text-red-500 text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
+                            {errors[doc.name].message}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
+              <div className="space-y-4 md:space-y-8">
+                <h3 className="text-[14px] font-bold text-[#B3DC26] border-b border-white/10 pb-3 mb-8 uppercase tracking-[3px]">
+                  Management & Policies
+                </h3>
 
-              <div className="form-control">
-                <label className="label mb-2">
-                  <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">City</span>
-                </label>
-                <select
-                  {...register("city")}
-                  disabled={!selectedState}
-                  className={`w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-12 rounded-[8px] px-4 transition-all appearance-none ${!selectedState ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  <option value="">Select City</option>
-                  {citiesList.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-                {errors.city && <span className="text-[#BFF367] text-[10px] font-bold uppercase mt-2 block ml-1">{errors.city.message}</span>}
-              </div>
-            </div>
-
-            <div className="form-control">
-              <label className="label mb-4">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1 flex items-center gap-2">
-                   =??? Venue Coordinates & Map Preview
-                </span>
-              </label>
-
-              {/* Coordinate inputs row */}
-              <div className="flex gap-4 mb-4">
-                <input
-                  {...register("latitude")}
-                  placeholder="Latitude (e.g. 17.3850)"
-                  className="w-full bg-[#111111] border border-[#2D2D2D] text-white text-xs h-12 rounded-[8px] px-4 focus:outline-none focus:border-[#BFF367]/60 transition-all font-mono"
-                />
-                <input
-                  {...register("longitude")}
-                  placeholder="Longitude (e.g. 78.4867)"
-                  className="w-full bg-[#111111] border border-[#2D2D2D] text-white text-xs h-12 rounded-[8px] px-4 focus:outline-none focus:border-[#BFF367]/60 transition-all font-mono"
-                />
-                <button
-                  type="button"
-                  onClick={getMyLocation}
-                  className={`shrink-0 px-6 rounded-[8px] bg-[#BFF367]/10 text-[#BFF367] border border-[#BFF367]/20 hover:bg-[#BFF367] hover:text-black transition-all flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest ${isLocating ? 'animate-pulse' : ''}`}
-                  title="Capture Current Location"
-                >
-                  {isLocating ? "LocatingGO" : "=??? GPS"}
-                </button>
-              </div>
-              <p className="text-[10px] text-[#444] mb-4 uppercase tracking-widest italic ml-1">
-                Click GPS to auto-capture your device location, or type coordinates manually.
-              </p>
-
-              {/* Live Map Preview */}
-              {mapPreviewUrl ? (
-                <div className="relative w-full rounded-[8px] overflow-hidden border border-[#2D2D2D] shadow-[var(--shadow-1)]" style={{ height: 220 }}>
-                  <iframe
-                    title="Location Preview"
-                    src={mapPreviewUrl}
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) saturate(0.7) brightness(0.9)" }}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 px-4 py-2.5 bg-black/80 backdrop-blur-sm flex items-center justify-between border-t border-[#2D2D2D]">
-                    <span className="text-[10px] font-bold text-[#BFF367] uppercase tracking-[2px]">
-                      {watchedLat && watchedLng ? `=??? GPS: ${Number(watchedLat).toFixed(5)}, ${Number(watchedLng).toFixed(5)}` : "=??? Address-based preview"}
+                <div className="form-control space-y-4">
+                  <label className="label">
+                    <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                      Venue Managers (Contacts)
                     </span>
-                    {watchedLat && watchedLng && (
-                      <a
-                        href={`https://www.google.com/maps?q=${watchedLat},${watchedLng}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[10px] font-bold text-[#878C9F] hover:text-[#BFF367] uppercase tracking-widest transition-colors"
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-4">
+                    <input
+                      type="text"
+                      placeholder="Manager Name"
+                      value={newManagerName}
+                      onChange={(e) => setNewManagerName(e.target.value)}
+                      className="w-full bg-[#121212] border border-white/10 text-white text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 focus:outline-none focus:border-[#B3DC26]/60"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Phone"
+                      value={newManagerPhone}
+                      onChange={(e) => setNewManagerPhone(e.target.value)}
+                      className="w-full bg-[#121212] border border-white/10 text-white text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 focus:outline-none focus:border-[#B3DC26]/60"
+                    />
+                    <button
+                      type="button"
+                      onClick={addManagerContact}
+                      className="w-full md:w-auto px-8 h-12 rounded-[16px] bg-[#1B1B1B] text-white hover:bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none  transition-all text-[11px] font-bold uppercase tracking-widest"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  <div className="space-y-3 max-h-[150px] overflow-y-auto custom-scrollbar pr-2">
+                    {managerContacts.map((manager, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between bg-[#121212] p-4 rounded-[16px] border border-white/10"
                       >
-                        Open in Maps Rs ?
-                      </a>
-                    )}
+                        <div className="flex flex-col">
+                          <span className="text-white text-[13px] font-bold uppercase tracking-tight">
+                            {manager.name}
+                          </span>
+                          <span className="text-white/70 text-[11px] font-mono mt-0.5">
+                            {manager.phone}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeManagerContact(index)}
+                          className="text-[#444] hover:text-[#B3DC26] transition-colors uppercase text-[10px] font-bold tracking-widest"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ) : (
-                <div className="w-full rounded-[8px] border border-dashed border-[#2D2D2D] bg-[#000000] flex flex-col items-center justify-center py-10 gap-3">
-                  <div className="w-12 h-12 rounded-full bg-[#111] flex items-center justify-center border border-[#2D2D2D]">
-                     <Search size={20} className="text-[#333]" />
-                  </div>
-                  <p className="text-[10px] font-bold text-[#333] uppercase tracking-[4px]">
-                    Map preview will appear here
-                  </p>
+
+                <div className="form-control">
+                  <label className="label mb-2">
+                    <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                      Venue Policies and Rules
+                    </span>
+                  </label>
+                  <textarea
+                    {...register("policies")}
+                    maxLength={1000}
+                    className={`w-full bg-[#121212] border ${errors.policies ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-32 md:h-48 rounded-[16px] md:rounded-[16px] p-3 md:p-4 transition-all`}
+                  ></textarea>
                 </div>
-              )}
-            </div>
-
-            <FormField
-              label="Hourly Rate (INR)"
-              name="pricePerHour"
-              type="number"
-              register={register}
-              error={errors.pricePerHour}
-              className="bg-[#111111] border-[#2D2D2D] text-white focus:border-[#BFF367]/60"
-            />
-          </div>
-
-          <div className="space-y-8 relative z-10">
-            <h3 className="text-[14px] font-bold text-[#BFF367] border-b border-[#2D2D2D] pb-3 mb-8 uppercase tracking-[3px]">Operational Details</h3>
-            
-            <FormField
-              label="YouTube Video URL"
-              name="youtubeUrl"
-              type="text"
-              placeholder="https://www.youtube.com/watch?v=..."
-              register={register}
-              error={errors.youtubeUrl}
-              className="bg-[#111111] border-[#2D2D2D] text-white focus:border-[#BFF367]/60"
-            />
-
-            <div className="form-control">
-              <label className="label mb-2">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Facility Images (Up to 10)</span>
-              </label>
-              <div className="relative group">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="w-full bg-[#111111] border border-[#2D2D2D] text-[#878C9F] file:bg-[#2D2D2D] file:text-white file:border-none file:px-6 file:h-12 file:mr-4 file:font-bold file:uppercase file:text-[10px] file:tracking-widest rounded-[8px] h-12 flex items-center focus:outline-none transition-all cursor-pointer"
-                  onChange={(e) => {
-                    const files = e.target.files;
-                    setValue("images", files);
-                  }}
-                />
-              </div>
-              {errors.images && (
-                <span className="text-[#BFF367] text-[10px] font-bold uppercase mt-2 block ml-1">{errors.images.message}</span>
-              )}
-              <p className="text-[10px] text-[#444] mt-3 uppercase tracking-widest italic ml-1">Select multiple files at once. Max 10 images allowed.</p>
-            </div>
-
-            <div className="form-control">
-              <label className="label mb-2">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Sport Arsenal</span>
-              </label>
-              <select
-                className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-12 rounded-[8px] px-4 transition-all appearance-none"
-                onChange={(e) => addSportType(e.target.value)}
-                value=""
-              >
-                <option value="" disabled>Select Sports</option>
-                {sportsOptions.map(option => (
-                  <option key={option} value={option} disabled={sportTypes.includes(option)}>{option}</option>
-                ))}
-              </select>
-              <div className="mt-4 flex flex-wrap gap-2 min-h-[40px]">
-                {sportTypes.map((type, index) => (
-                  <span key={index} className="px-3 py-1.5 bg-[#BFF367] text-black font-bold rounded-[4px] text-[10px] flex items-center gap-2 uppercase tracking-widest">
-                    {type}
-                    <button
-                      type="button"
-                      onClick={() => removeSportType(type)}
-                      className="hover:text-white transition-colors"
-                    >
-                      <Plus size={12} className="rotate-45" />
-                    </button>
-                  </span>
-                ))}
               </div>
             </div>
 
-            <div className="form-control">
-              <label className="label mb-2">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">{watchedFacilityCategory} Composition</span>
-              </label>
-              <select
-                className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-12 rounded-[8px] px-4 transition-all appearance-none"
-                onChange={(e) => addGroundType(e.target.value)}
-                value=""
-              >
-                <option value="" disabled>Select {watchedFacilityCategory} Types</option>
-                {groundTypeOptions.map(option => (
-                  <option key={option} value={option} disabled={groundTypes.includes(option)}>{option}</option>
-                ))}
-              </select>
-              <div className="mt-4 flex flex-wrap gap-2 min-h-[40px]">
-                {groundTypes.map((type, index) => (
-                  <span key={index} className="px-3 py-1.5 bg-[#1A1A1A] border border-[#2D2D2D] text-white font-bold rounded-[4px] text-[10px] flex items-center gap-2 uppercase tracking-widest">
-                    {type}
-                    <button
-                      type="button"
-                      onClick={() => removeGroundType(type)}
-                      className="hover:text-[#BFF367] transition-colors"
-                    >
-                      <Plus size={12} className="rotate-45" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="form-control">
-              <label className="label mb-2">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">{watchedFacilityCategory} Facilities</span>
-              </label>
-              <select
-                className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-12 rounded-[8px] px-4 transition-all appearance-none"
-                onChange={(e) => addFacility(e.target.value)}
-                value=""
-              >
-                <option value="" disabled>Select Facilities</option>
-                {facilitiesOptions.map(option => (
-                  <option key={option} value={option} disabled={facilities.includes(option)}>{option}</option>
-                ))}
-              </select>
-              <div className="mt-4 flex flex-wrap gap-2 min-h-[40px]">
-                {facilities.map((type, index) => (
-                  <span key={index} className="px-3 py-1.5 bg-[#1A1A1A] border border-[#2D2D2D] text-[#BFF367] font-bold rounded-[4px] text-[10px] flex items-center gap-2 uppercase tracking-widest">
-                    {type}
-                    <button
-                      type="button"
-                      onClick={() => removeFacility(type)}
-                      className="hover:text-white transition-colors"
-                    >
-                      <Plus size={12} className="rotate-45" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <h3 className="text-[14px] font-bold text-[#BFF367] border-b border-[#2D2D2D] pb-3 mb-8 uppercase tracking-[3px] mt-12">Support & Navigation</h3>
-            
-            <FormField
-              label="Direct Google Maps URL"
-              name="mapUrl"
-              type="text"
-              placeholder="https://maps.app.goo.gl/..."
-              register={register}
-              error={errors.mapUrl}
-              className="bg-[#111111] border-[#2D2D2D] text-white focus:border-[#BFF367]/60"
-            />
-
-            <div className="form-control space-y-4">
-              <label className="label">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Venue Managers (Contacts)</span>
-              </label>
-              
-              <div className="flex flex-col md:flex-row gap-4">
-                <input
-                  type="text"
-                  placeholder="Manager Name"
-                  value={newManagerName}
-                  onChange={(e) => setNewManagerName(e.target.value)}
-                  className="w-full bg-[#111111] border border-[#2D2D2D] text-white text-sm h-12 rounded-[8px] px-4 focus:outline-none focus:border-[#BFF367]/60 transition-all"
-                />
-                <input
-                  type="text"
-                  placeholder="Manager Phone (10 digits)"
-                  value={newManagerPhone}
-                  onChange={(e) => setNewManagerPhone(e.target.value)}
-                  className="w-full bg-[#111111] border border-[#2D2D2D] text-white text-sm h-12 rounded-[8px] px-4 focus:outline-none focus:border-[#BFF367]/60 transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={addManagerContact}
-                  className="shrink-0 px-8 rounded-[8px] bg-white text-black hover:bg-[#BFF367] transition-all text-[11px] font-bold uppercase tracking-widest"
-                >
-                  Add
-                </button>
-              </div>
-
-              <div className="space-y-3 max-h-[150px] overflow-y-auto custom-scrollbar pr-2">
-                {managerContacts.map((manager, index) => (
-                  <div key={index} className="flex items-center justify-between bg-[#111111] p-4 rounded-[8px] border border-[#2D2D2D] group hover:border-[#BFF367]/30 transition-all">
-                    <div className="flex flex-col">
-                      <span className="text-white text-[13px] font-bold uppercase tracking-tight">{manager.name}</span>
-                      <span className="text-[#878C9F] text-[11px] font-mono mt-0.5">{manager.phone}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeManagerContact(index)}
-                      className="text-[#444] hover:text-[#BFF367] transition-colors uppercase text-[10px] font-bold tracking-widest"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
-                {managerContacts.length === 0 && (
-                  <p className="text-[#333] text-[10px] font-bold uppercase tracking-[4px] text-center py-6 border border-dashed border-[#2D2D2D] rounded-[8px] italic">
-                    No Managers Added Yet
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="md:col-span-2 space-y-12 pt-12 border-t border-[#2D2D2D] relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              <div className="space-y-10">
-                <h3 className="text-[14px] font-bold text-[#BFF367] border-b border-[#2D2D2D] pb-3 mb-6 uppercase tracking-[3px]">Slot Architecture</h3>
+          {/* STEP 3: Slot Management */}
+          {currentStep === 3 && (
+            <div className="col-span-1 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 relative z-10 animate-fade-in">
+              <div className="space-y-4 md:space-y-8">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="form-control">
                     <label className="label mb-2">
-                      <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Slot Duration</span>
+                      <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                        Slot Duration
+                      </span>
                     </label>
                     <select
                       {...register("slotDuration")}
-                      className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-12 rounded-[8px] px-4 transition-all appearance-none"
+                      className={`w-full bg-[#121212] border ${errors.slotDuration ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none`}
                     >
                       <option value={30}>30 Minutes</option>
                       <option value={60}>60 Minutes</option>
                       <option value={90}>90 Minutes</option>
                       <option value={120}>120 Minutes</option>
-                      <option value={180}>180 Minutes</option>
+                      <option value={210}>210 Minutes</option>
                     </select>
                   </div>
                   <div className="form-control">
                     <label className="label mb-2">
-                      <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Break Time</span>
+                      <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                        Break Time
+                      </span>
                     </label>
                     <select
                       {...register("breakTime")}
-                      className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-12 rounded-[8px] px-4 transition-all appearance-none"
+                      className={`w-full bg-[#121212] border ${errors.breakTime ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none`}
                     >
                       <option value={0}>No Break</option>
                       <option value={10}>10 Minutes</option>
@@ -544,60 +871,74 @@ const AddTurf = () => {
 
                   <div className="form-control">
                     <label className="label mb-2">
-                      <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Opening Time</span>
+                      <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                        Opening Time
+                      </span>
                     </label>
-                    <Controller
-                      name="openTime"
-                      control={control}
-                      rules={{ required: "Opening time is required" }}
-                      render={({ field }) => (
-                        <ClockPicker
-                          value={field.value}
-                          onChange={(date) => {
-                            field.onChange(date);
-                            setValue("closeTime", null);
-                          }}
-                          placeholder="12:00 AM"
-                        />
-                      )}
+                    <input
+                      type="time"
+                      {...register("openTime")}
+                      className={`w-full bg-[#121212] border ${errors.openTime ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all [color-scheme:dark]`}
                     />
-                    {errors.openTime && <span className="text-[#BFF367] text-[10px] font-bold uppercase mt-2 block ml-1">{errors.openTime.message}</span>}
                   </div>
 
                   <div className="form-control">
                     <label className="label mb-2">
-                      <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Closing Time</span>
+                      <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                        Closing Time
+                      </span>
                     </label>
-                    <Controller
-                      name="closeTime"
-                      control={control}
-                      rules={{ required: "Closing time is required" }}
-                      render={({ field }) => (
-                        <ClockPicker
-                          value={field.value}
-                          onChange={field.onChange}
-                          placeholder="12:00 AM"
-                          disabled={!openTime}
-                        />
-                      )}
+                    <input
+                      type="time"
+                      {...register("closeTime")}
+                      disabled={!openTime}
+                      className={`w-full bg-[#121212] border ${errors.closeTime ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all disabled:opacity-50 [color-scheme:dark]`}
                     />
-                    {errors.closeTime && <span className="text-[#BFF367] text-[10px] font-bold uppercase mt-2 block ml-1">{errors.closeTime.message}</span>}
                   </div>
+                </div>
+
+                <div className="form-control">
+                  <label className="label mb-2">
+                    <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                      Hourly Rate (INR)
+                    </span>
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="Hourly Rate (INR)"
+                    {...register("pricePerHour")}
+                    className={`w-full bg-[#121212] border ${errors.pricePerHour ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all`}
+                  />
+                  {errors.pricePerHour && (
+                    <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
+                      {errors.pricePerHour.message}
+                    </span>
+                  )}
                 </div>
 
                 <div className="space-y-6">
                   <label className="label">
-                    <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Weekly Operational Sequence</span>
+                    <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                      Weekly Operational Sequence
+                    </span>
                   </label>
-                  <div className="flex flex-wrap gap-3">
-                    {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(day => {
+                  <div className="flex w-full gap-1 md:gap-3">
+                    {[
+                      "Monday",
+                      "Tuesday",
+                      "Wednesday",
+                      "Thursday",
+                      "Friday",
+                      "Saturday",
+                      "Sunday",
+                    ].map((day) => {
                       const isActive = availableDays.includes(day);
                       return (
                         <button
                           key={day}
                           type="button"
                           onClick={() => toggleDay(day)}
-                          className={`px-5 py-3 rounded-[8px] text-[11px] font-black uppercase tracking-widest transition-all border ${ isActive ? "bg-[#BFF367] text-black border-[#BFF367] shadow-[0_5px_15px_rgba(204,255,0,0.2)]" : "bg-[#111111] text-[#444] border-[#2D2D2D] hover:border-[#BFF367]/40" }`}
+                          className={`flex-1 py-2 md:py-3 rounded-[16px] md:rounded-[16px] text-[8px] md:text-[11px] font-black uppercase tracking-wider md:tracking-widest transition-all  ${isActive ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black -[#B3DC26] shadow-[0_5px_15px_rgba(204,255,0,0.2)]" : "bg-[#121212] text-[#444] -white/10 hover:-[#B3DC26]/40"}`}
                         >
                           {day.substring(0, 3)}
                         </button>
@@ -607,135 +948,131 @@ const AddTurf = () => {
                 </div>
               </div>
 
-              <div className="space-y-10">
-                <div className="space-y-6 pt-6 border-t border-[#2D2D2D]">
-                  <div className="flex items-center gap-3">
-                    <div className="w-1 h-4 bg-[#BFF367] rounded-full" />
-                    <h4 className="text-[11px] font-bold text-white uppercase tracking-widest">Configuration Lifespan</h4>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="form-control">
-                      <label className="label mb-2">
-                        <span className="text-[10px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Duration Strategy</span>
-                      </label>
-                      <select
-                        {...register("slotsConfigDuration")}
-                        className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-xs h-11 rounded-[6px] px-4 transition-all appearance-none"
-                      >
-                        <option value="Until Changed">Infinite (Until Manual Change)</option>
-                        <option value="Fixed Weeks">Fixed Duration (Weekly Basis)</option>
-                      </select>
-                    </div>
-
-                    {watch("slotsConfigDuration") === "Fixed Weeks" && (
-                      <div className="form-control animate-fade-in">
-                        <label className="label mb-2">
-                          <span className="text-[10px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Active Duration (Weeks)</span>
-                        </label>
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="number"
-                            {...register("slotsConfigWeeks")}
-                            className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-xs h-11 rounded-[6px] px-4 transition-all"
-                            placeholder="e.g. 4"
-                          />
-                          <span className="text-[10px] font-bold text-[#444] uppercase tracking-widest">Weeks</span>
-                        </div>
-                        {errors.slotsConfigWeeks && <span className="text-[#BFF367] text-[9px] font-bold uppercase mt-2 block">{errors.slotsConfigWeeks.message}</span>}
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-[9px] text-[#444] uppercase tracking-widest italic ml-1 leading-relaxed">
-                    * After the selected duration, slots will be marked as "Needs Update" and booking will be blocked until pricing/timing is reviewed.
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-between border-b border-[#2D2D2D] pb-3 mb-6">
-                  <div className="space-y-1">
-                    <h3 className="text-[14px] font-bold text-[#BFF367] uppercase tracking-[3px]">Matrix Projection</h3>
-                    <p className="text-[9px] text-[#878C9F] font-bold uppercase tracking-widest italic">Set individual slot pricing below</p>
-                    <p className="text-[8px] text-[#444] uppercase tracking-widest font-medium mt-1">
-                      * After 5% service charge (Includes payment gateway charges and GST)
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex flex-col items-end">
-                      <span className="text-[8px] font-bold text-[#878C9F] uppercase tracking-widest mb-1">Max Daily Revenue</span>
-                      <span className="text-[11px] font-bold text-black uppercase bg-[#BFF367] px-4 py-1.5 rounded-[4px] shadow-[0_2px_10px_rgba(204,255,0,0.2)]">
-                        Rs {generatedSlots.reduce((acc, s) => acc + (s.isActive ? Number(s.price) : 0), 0).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                
+              <div className="space-y-4 md:space-y-8">
+                <h3 className="text-[14px] font-bold text-[#B3DC26] border-b border-white/10 pb-3 mb-6 uppercase tracking-[3px]">
+                  Slot Review
+                </h3>
                 {generatedSlots.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                     {generatedSlots.map((slot, index) => (
-                      <div 
+                      <div
                         key={index}
-                        className={`flex items-center gap-4 p-3 rounded-[8px] border transition-all ${ slot.isActive ? "bg-[#111111] border-[#2D2D2D] group hover:border-[#BFF367]/30" : "bg-black/50 border-[#1A1A1A] opacity-40 grayscale" }`}
+                        className={`group p-4 md:p-5 rounded-[16px] border transition-all duration-300 relative overflow-hidden flex flex-col justify-between ${
+                          slot.isActive
+                            ? "bg-[#121212] border-[#B3DC26]/40 shadow-[0_4px_20px_-4px_rgba(191,243,103,0.1)] hover:border-[#B3DC26]/80"
+                            : "bg-[#121212] border-white/10 opacity-60 hover:opacity-100 hover:border-white/20"
+                        }`}
                       >
-                        <button
-                          type="button"
-                          onClick={() => toggleSlotActive(index)}
-                          className={`w-10 h-10 shrink-0 rounded-[6px] border flex items-center justify-center transition-all ${ slot.isActive ? "bg-[#BFF367]/10 border-[#BFF367]/20 text-[#BFF367]" : "bg-[#1A1A1A] border-[#2D2D2D] text-[#444]" }`}
-                        >
-                          <span className="text-[10px] font-black">{index + 1}</span>
-                        </button>
+                        {/* Ambient Glow */}
+                        {slot.isActive && (
+                          <div className="absolute top-0 right-0 w-24 h-24 bg-[#B3DC26]/10 blur-[24px] rounded-full -mr-10 -mt-10 pointer-events-none transition-all duration-500 group-hover:bg-[#B3DC26]/20" />
+                        )}
 
-                        <div className="flex flex-col shrink-0 min-w-[120px]">
-                          <span className="text-[13px] font-bold text-white tracking-tighter">{slot.startTime} - {slot.endTime}</span>
-                          <span className="text-[9px] font-black text-[#878C9F] uppercase tracking-widest mt-0.5">
-                            {slot.isActive ? "Operational" : "Inactive"}
-                          </span>
-                        </div>
-
-                        <div className="flex-1 flex items-center gap-3 justify-end">
-                          <div className="flex flex-col items-end">
-                            <span className="text-[8px] font-black text-[#878C9F] uppercase tracking-[2px] mb-1">Slot Price (INR)</span>
-                            <div className="relative">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-[#444]">Rs</span>
-                              <input 
-                                type="number"
-                                value={slot.price}
-                                onChange={(e) => updateSlotPrice(index, e.target.value)}
-                                disabled={!slot.isActive}
-                                className="w-24 bg-black/50 border border-[#2D2D2D] text-white text-[11px] font-bold h-9 pl-6 pr-3 rounded-[4px] focus:outline-none focus:border-[#BFF367]/60 transition-all disabled:opacity-30"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="w-px h-8 bg-[#2D2D2D] mx-1" />
-
-                          <div className="flex flex-col items-end min-w-[80px]">
-                            <span className="text-[8px] font-black text-[#BFF367] uppercase tracking-[2px] mb-1">Your Net</span>
-                            <span className="text-[13px] font-black text-[#BFF367] font-mono tracking-tight italic">
-                              Rs {(slot.price * 0.95).toFixed(2)}
+                        <div className="flex justify-between items-center mb-5 relative z-10">
+                          <div className="flex flex-col">
+                            <span
+                              className={`text-[12px] md:text-[14px] font-bold font-mono tracking-tight transition-colors ${slot.isActive ? "text-white" : "text-white/70"}`}
+                            >
+                              {slot.startTime}{" "}
+                              <span className="text-white/70 font-light mx-1">
+                                →
+                              </span>{" "}
+                              {slot.endTime}
                             </span>
                           </div>
+                          <input
+                            type="checkbox"
+                            className="toggle toggle-sm bg-[#1B1B1B] border-none checked:bg-[#B3DC26] hover:bg-[#2A2A2A] transition-all cursor-pointer"
+                            checked={slot.isActive}
+                            onChange={() => toggleSlotActive(index)}
+                          />
+                        </div>
+
+                        <div
+                          className={`flex items-center gap-2 rounded-[16px] p-2.5 border transition-all duration-300 relative z-10 ${slot.isActive ? "bg-[#1B1B1B] border-white/10 focus-within:border-[#B3DC26]/50 focus-within:bg-[#121212]" : "bg-[#121212] border-transparent"}`}
+                        >
+                          <span
+                            className={`text-[12px] md:text-[14px] font-black ${slot.isActive ? "text-white/40" : "text-[#444]"}`}
+                          >
+                            ₹
+                          </span>
+                          <input
+                            type="number"
+                            value={slot.price}
+                            onChange={(e) =>
+                              updateSlotPrice(index, Number(e.target.value))
+                            }
+                            disabled={!slot.isActive}
+                            placeholder="0"
+                            className={`w-full bg-transparent text-[15px] md:text-[18px] font-black focus:outline-none font-mono tracking-wide [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none transition-colors ${slot.isActive ? "text-[#B3DC26]" : "text-[#444]"}`}
+                          />
+                          {slot.isActive && (
+                            <span className="text-[9px] uppercase font-bold tracking-widest text-white/70 ml-auto">
+                              Per Slot
+                            </span>
+                          )}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-[200px] bg-[#050505] rounded-[8px] border border-dashed border-[#2D2D2D]">
-                    <p className="text-[#333] text-[10px] font-bold uppercase tracking-[4px]">Set thresholds to view slots</p>
+                  <div className="text-center py-12 border border-dashed border-white/10 rounded-[16px] bg-[#121212]">
+                    <span className="text-[#444] text-[11px] font-bold uppercase tracking-[4px]">
+                      Set times to generate slots
+                    </span>
                   </div>
                 )}
-                <p className="text-[10px] text-[#444] italic uppercase tracking-widest text-center">Click a slot to toggle its operational availability.</p>
               </div>
             </div>
           </div>
 
-          <div className="md:col-span-2 pt-12 border-t border-[#2D2D2D] relative z-10 pb-12">
-            <button 
-              type="submit" 
-              className={`w-full py-5 bg-[#BFF367] text-black font-bold text-[16px] uppercase tracking-[6px] hover:bg-white transition-all transform hover:scale-[1.01] active:scale-[0.99] rounded-[8px] shadow-[0_10px_30px_rgba(204,255,0,0.15)] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-              disabled={loading}
-            >
-              {loading ? "SYNCHRONIZING..." : `INITIALIZE ${watchedFacilityCategory.toUpperCase()}`}
-            </button>
+          {/* Navigation Buttons */}
+          <div
+            className={`col-span-1 flex items-center mt-6 md:mt-8 pt-4 md:pt-6 border-t border-white/10 relative z-10 ${currentStep === 1 ? "justify-between" : "justify-end"}`}
+          >
+            {currentStep === 1 && (
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="px-6 md:px-8 py-2 md:py-3 rounded-[16px] font-bold text-xs md:text-sm text-white bg-[#1B1B1B] border border-white/10 hover:bg-[#2A2A2A] uppercase tracking-wider transition-all duration-300"
+              >
+                Cancel
+              </button>
+            )}
+
+            <div className="flex items-center gap-3 md:gap-4">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentStep((prev) => Math.max(1, prev - 1));
+                }}
+                className={`px-6 md:px-8 py-2 md:py-3 rounded-[16px] font-bold text-xs md:text-sm uppercase tracking-wider transition-all duration-300 ${currentStep === 1 ? "hidden" : "bg-[#1B1B1B] text-white border border-white/10 hover:bg-[#2A2A2A]"}`}
+              >
+                Back
+              </button>
+
+              {currentStep < 3 ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentStep((prev) => Math.min(4, prev + 1));
+                  }}
+                  className="px-8 md:px-10 py-2 md:py-3 rounded-[16px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-black font-bold text-xs md:text-sm uppercase tracking-wider hover:opacity-90 transition-all duration-300 shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none"
+                >
+                  Next Step
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`px-8 md:px-12 py-2 md:py-3 rounded-[16px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-black font-bold text-xs md:text-sm uppercase tracking-wider transition-all duration-300 flex items-center gap-2 shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none ${loading ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"}`}
+                >
+                  {loading ? "Submitting..." : "Submit Venue"}
+                </button>
+              )}
+            </div>
           </div>
         </form>
       </div>

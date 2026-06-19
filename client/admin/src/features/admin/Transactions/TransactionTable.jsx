@@ -13,7 +13,9 @@ const TransactionTable = ({
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="bg-white/5">
-            <th className="p-4 text-xs font-bold uppercase tracking-widest text-gray-500 border-b border-white/5">User</th>
+            <th className="p-4 text-xs font-bold uppercase tracking-widest text-gray-500 border-b border-white/5">
+              User
+            </th>
             <th className="p-4 text-xs font-bold uppercase tracking-widest text-gray-500 border-b border-white/5">
               <button
                 className="flex items-center group transition-colors hover:text-[#55DEE8]"
@@ -28,9 +30,15 @@ const TransactionTable = ({
                   ))}
               </button>
             </th>
-            <th className="p-4 text-xs font-bold uppercase tracking-widest text-gray-500 border-b border-white/5">Venue</th>
-            <th className="p-4 text-xs font-bold uppercase tracking-widest text-gray-500 border-b border-white/5">Order ID</th>
-            <th className="p-4 text-xs font-bold uppercase tracking-widest text-gray-500 border-b border-white/5">Payment ID</th>
+            <th className="p-4 text-xs font-bold uppercase tracking-widest text-gray-500 border-b border-white/5">
+              Venue
+            </th>
+            <th className="p-4 text-xs font-bold uppercase tracking-widest text-gray-500 border-b border-white/5">
+              Order ID
+            </th>
+            <th className="p-4 text-xs font-bold uppercase tracking-widest text-gray-500 border-b border-white/5">
+              Payment ID
+            </th>
             <th className="p-4 text-xs font-bold uppercase tracking-widest text-gray-500 border-b border-white/5 text-right">
               <button
                 className="flex items-center justify-end w-full group transition-colors hover:text-[#55DEE8]"
@@ -49,20 +57,31 @@ const TransactionTable = ({
         </thead>
         <tbody className="divide-y divide-white/5">
           {transactions.map((transaction) => (
-            <tr key={transaction._id} className="group hover:bg-white/[0.02] transition-colors">
+            <tr
+              key={transaction._id}
+              className="group hover:bg-white/[0.02] transition-colors"
+            >
               <td className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-1 rounded-full bg-white/5 group-hover:bg-[#55DEE8]/20 transition-colors">
-                     <Avatar name={transaction.user?.name || "Unknown"} size="32" round={true} />
+                    <Avatar
+                      name={transaction.user?.name || "Unknown"}
+                      size="32"
+                      round={true}
+                    />
                   </div>
-                  <span className="font-bold text-sm tracking-tight">{transaction.user?.name || "Unknown"}</span>
+                  <span className="font-bold text-sm tracking-tight">
+                    {transaction.user?.name || "Unknown"}
+                  </span>
                 </div>
               </td>
               <td className="p-4 text-xs font-medium text-gray-400">
                 {new Date(transaction.createdAt).toLocaleDateString()}
               </td>
               <td className="p-4">
-                 <span className="text-xs font-bold uppercase tracking-widest text-[#55DEE8]">{transaction.turf?.name || "Unknown"}</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-[#55DEE8]">
+                  {transaction.turf?.name || "Unknown"}
+                </span>
               </td>
               <td className="p-4 text-xs text-gray-500 truncate max-w-[120px]">
                 {transaction.payment?.orderId || "N/A"}
@@ -71,7 +90,9 @@ const TransactionTable = ({
                 {transaction.payment?.paymentId || "N/A"}
               </td>
               <td className="p-4 text-right">
-                 <span className="font-bold text-sm text-[#55DEE8] tracking-tight">Rs {transaction.totalPrice}</span>
+                <span className="font-bold text-sm text-[#55DEE8] tracking-tight">
+                  Rs {transaction.totalPrice}
+                </span>
               </td>
             </tr>
           ))}

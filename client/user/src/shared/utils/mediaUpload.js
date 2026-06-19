@@ -7,13 +7,13 @@
  */
 export const uploadFileToR2 = (uploadUrl, file, onProgress = undefined) => {
   return new Promise((resolve, reject) => {
-    console.log('[R2_UPLOAD] Starting XHR to:', uploadUrl);
-    if (!uploadUrl) return reject(new Error('Upload URL is missing'));
+    console.log("[R2_UPLOAD] Starting XHR to:", uploadUrl);
+    if (!uploadUrl) return reject(new Error("Upload URL is missing"));
 
     const xhr = new XMLHttpRequest();
-    
-    xhr.open('PUT', uploadUrl);
-    xhr.setRequestHeader('Content-Type', file.type);
+
+    xhr.open("PUT", uploadUrl);
+    xhr.setRequestHeader("Content-Type", file.type);
 
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) {
@@ -24,19 +24,23 @@ export const uploadFileToR2 = (uploadUrl, file, onProgress = undefined) => {
     };
 
     xhr.onload = () => {
-      console.log('[R2_UPLOAD] XHR onload status:', xhr.status);
+      console.log("[R2_UPLOAD] XHR onload status:", xhr.status);
       if (xhr.status >= 200 && xhr.status < 300) {
         if (onProgress) onProgress(100);
         resolve();
       } else {
-        console.error('[R2_UPLOAD_ERROR_RESPONSE]', xhr.responseText);
+        console.error("[R2_UPLOAD_ERROR_RESPONSE]", xhr.responseText);
         reject(new Error(`Upload failed with status: ${xhr.status}`));
       }
     };
 
     xhr.onerror = (error) => {
-      console.error('[R2_UPLOAD_ERROR]', error);
-      reject(new Error('Direct cloud upload failed. Check your connection and CORS settings.'));
+      console.error("[R2_UPLOAD_ERROR]", error);
+      reject(
+        new Error(
+          "Direct cloud upload failed. Check your connection and CORS settings."
+        )
+      );
     };
 
     xhr.send(file);

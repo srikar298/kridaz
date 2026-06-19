@@ -1,23 +1,30 @@
-import { Router } from 'express';
-import * as reelsController from '../reels.controller.js';
-import { protect, optionalProtect } from '../../../middleware/auth.middleware.js';
-import multer from 'multer';
-import { validate } from '../../../middleware/validate.middleware.js';
-import { interactSchema, reelCommentSchema, confirmUploadSchema } from '../reels.validator.js';
+import { Router } from "express";
+import * as reelsController from "../reels.controller.js";
+import {
+  protect,
+  optionalProtect,
+} from "../../../middleware/auth.middleware.js";
+import multer from "multer";
+import { validate } from "../../../middleware/validate.middleware.js";
+import {
+  interactSchema,
+  reelCommentSchema,
+  confirmUploadSchema,
+} from "../reels.validator.js";
 
 const router = Router();
 
 // Configure local multer for legacy support if needed
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/reels'),
+  destination: (req, file, cb) => cb(null, "uploads/reels"),
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + '-' + file.originalname);
-  }
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix + "-" + file.originalname);
+  },
 });
-const upload = multer({ 
+const upload = multer({
   storage,
-  limits: { fileSize: 100 * 1024 * 1024 } 
+  limits: { fileSize: 100 * 1024 * 1024 },
 });
 
 /**
@@ -36,7 +43,7 @@ const upload = multer({
  *     summary: Get reels feed
  *     tags: [Reels]
  */
-router.get('/feed', optionalProtect, reelsController.getReelsFeed);
+router.get("/feed", optionalProtect, reelsController.getReelsFeed);
 
 /**
  * @swagger
@@ -45,7 +52,7 @@ router.get('/feed', optionalProtect, reelsController.getReelsFeed);
  *     summary: Get recommended reels
  *     tags: [Reels]
  */
-router.get('/recommended', reelsController.getRecommendedReels);
+router.get("/recommended", reelsController.getRecommendedReels);
 
 /**
  * @swagger
@@ -54,7 +61,7 @@ router.get('/recommended', reelsController.getRecommendedReels);
  *     summary: Track reel watch time
  *     tags: [Reels]
  */
-router.post('/:reelId/heartbeat', reelsController.trackWatchTime);
+router.post("/:reelId/heartbeat", reelsController.trackWatchTime);
 
 // ── Authenticated Routes ────────────────────────────────────────────────────
 router.use(protect);
@@ -68,7 +75,7 @@ router.use(protect);
  *     security:
  *       - BearerAuth: []
  */
-router.get('/upload-url', reelsController.getUploadUrl);
+router.get("/upload-url", reelsController.getUploadUrl);
 
 /**
  * @swagger
@@ -79,7 +86,11 @@ router.get('/upload-url', reelsController.getUploadUrl);
  *     security:
  *       - BearerAuth: []
  */
-router.post('/confirm-upload', validate(confirmUploadSchema), reelsController.confirmUpload);
+router.post(
+  "/confirm-upload",
+  validate(confirmUploadSchema),
+  reelsController.confirmUpload
+);
 
 /**
  * @swagger
@@ -88,7 +99,7 @@ router.post('/confirm-upload', validate(confirmUploadSchema), reelsController.co
  *     summary: Legacy direct upload
  *     tags: [Reels]
  */
-router.post('/upload', upload.single('video'), reelsController.uploadReel);
+router.post("/upload", upload.single("video"), reelsController.uploadReel);
 
 /**
  * @swagger
@@ -99,7 +110,11 @@ router.post('/upload', upload.single('video'), reelsController.uploadReel);
  *     security:
  *       - BearerAuth: []
  */
-router.post('/:reelId/interact', validate(interactSchema), reelsController.interactWithReel);
+router.post(
+  "/:reelId/interact",
+  validate(interactSchema),
+  reelsController.interactWithReel
+);
 
 /**
  * @swagger
@@ -108,7 +123,7 @@ router.post('/:reelId/interact', validate(interactSchema), reelsController.inter
  *     summary: Get comments for a reel
  *     tags: [Reels]
  */
-router.get('/:reelId/comments', reelsController.getReelComments);
+router.get("/:reelId/comments", reelsController.getReelComments);
 
 /**
  * @swagger
@@ -119,7 +134,11 @@ router.get('/:reelId/comments', reelsController.getReelComments);
  *     security:
  *       - BearerAuth: []
  */
-router.post('/:reelId/comment', validate(reelCommentSchema), reelsController.addComment);
+router.post(
+  "/:reelId/comment",
+  validate(reelCommentSchema),
+  reelsController.addComment
+);
 
 /**
  * @swagger
@@ -130,7 +149,7 @@ router.post('/:reelId/comment', validate(reelCommentSchema), reelsController.add
  *     security:
  *       - BearerAuth: []
  */
-router.get('/analytics', reelsController.getCreatorAnalytics);
+router.get("/analytics", reelsController.getCreatorAnalytics);
 
 /**
  * @swagger
@@ -141,7 +160,7 @@ router.get('/analytics', reelsController.getCreatorAnalytics);
  *     security:
  *       - BearerAuth: []
  */
-router.delete('/:reelId', reelsController.deleteReel);
+router.delete("/:reelId", reelsController.deleteReel);
 
 /**
  * @swagger
@@ -152,7 +171,7 @@ router.delete('/:reelId', reelsController.deleteReel);
  *     security:
  *       - BearerAuth: []
  */
-router.post('/:reelId/report', reelsController.reportReel);
+router.post("/:reelId/report", reelsController.reportReel);
 
 /**
  * @swagger
@@ -163,6 +182,6 @@ router.post('/:reelId/report', reelsController.reportReel);
  *     security:
  *       - BearerAuth: []
  */
-router.get('/reports', reelsController.getReelReports);
+router.get("/reports", reelsController.getReelReports);
 
 export default router;

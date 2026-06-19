@@ -1,6 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { PackageOpen, User, Mail, Phone, Calendar, Building2, TrendingUp, ShieldCheck, ArrowLeft, Trash2 } from "lucide-react";
+import {
+  PackageOpen,
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  Building2,
+  TrendingUp,
+  ShieldCheck,
+  ArrowLeft,
+  Trash2,
+} from "lucide-react";
 import useTurfData from "@hooks/admin/useTurfData";
 import useOwners from "@hooks/admin/useOwners";
 import ConfirmationModal from "@components/shared/ConfirmationModal";
@@ -39,11 +50,14 @@ const TurfList = () => {
   return (
     <div className="space-y-8 pb-20">
       {/* ── Navigation ───────────────────────────────────────────── */}
-      <button 
+      <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] hover:text-[#CCFF00] transition-colors group w-fit"
       >
-        <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+        <ArrowLeft
+          size={14}
+          className="group-hover:-translate-x-1 transition-transform"
+        />
         Back to Directory
       </button>
 
@@ -52,16 +66,20 @@ const TurfList = () => {
         <div className="relative group">
           {/* Decorative background glow */}
           <div className="absolute -inset-4 bg-gradient-to-r from-[#CCFF00]/5 to-transparent rounded-[8px] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-          
+
           <div className="relative bms-card p-8 sm:p-10 overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#CCFF00]/5 rounded-full -mr-32 -mt-32 blur-3xl" />
-            
+
             <div className="flex flex-col lg:flex-row gap-10 items-start lg:items-center">
               {/* Profile Avatar Container */}
               <div className="relative shrink-0">
                 <div className="w-24 h-24 sm:w-32 sm:h-32 bg-zinc-900 rounded-[8px] border-2 border-[#CCFF00]/20 flex items-center justify-center overflow-hidden shadow-2xl relative z-10">
                   {owner.profilePicture ? (
-                    <img src={owner.profilePicture} alt={owner.name} className="w-full h-full object-cover" />
+                    <img
+                      src={owner.profilePicture}
+                      alt={owner.name}
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     <User size={48} className="text-[#CCFF00]/40" />
                   )}
@@ -88,7 +106,7 @@ const TurfList = () => {
                 </div>
 
                 <div className="flex gap-3">
-                  <button 
+                  <button
                     onClick={() => setShowDeleteModal(true)}
                     className="px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-400 font-black text-[10px] uppercase tracking-widest rounded-[8px] hover:bg-red-500/20 transition-all flex items-center gap-2"
                   >
@@ -102,8 +120,12 @@ const TurfList = () => {
                       <Mail size={16} className="text-[#CCFF00]" />
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Operational Email</p>
-                      <p className="text-white font-bold tracking-tight">{owner.email}</p>
+                      <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">
+                        Operational Email
+                      </p>
+                      <p className="text-white font-bold tracking-tight">
+                        {owner.email}
+                      </p>
                     </div>
                   </div>
 
@@ -112,8 +134,12 @@ const TurfList = () => {
                       <Phone size={16} className="text-[#CCFF00]" />
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Primary Contact</p>
-                      <p className="text-white font-bold tracking-tight">{owner.phone || "Not Provided"}</p>
+                      <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">
+                        Primary Contact
+                      </p>
+                      <p className="text-white font-bold tracking-tight">
+                        {owner.phone || "Not Provided"}
+                      </p>
                     </div>
                   </div>
 
@@ -122,9 +148,13 @@ const TurfList = () => {
                       <Calendar size={16} className="text-[#CCFF00]" />
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Partnership Since</p>
+                      <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">
+                        Partnership Since
+                      </p>
                       <p className="text-white font-bold tracking-tight">
-                        {owner.createdAt ? format(new Date(owner.createdAt), "MMMM yyyy") : "N/A"}
+                        {owner.createdAt
+                          ? format(new Date(owner.createdAt), "MMMM yyyy")
+                          : "N/A"}
                       </p>
                     </div>
                   </div>
@@ -136,19 +166,33 @@ const TurfList = () => {
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-2 rounded-full bg-[#CCFF00] shadow-[0_0_10px_rgba(204,255,0,0.5)]" />
                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em]">
-                        Approved By: <span className="text-white">{owner.approvalDetails.adminName}</span>
+                        Approved By:{" "}
+                        <span className="text-white">
+                          {owner.approvalDetails.adminName}
+                        </span>
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-2 rounded-full bg-white/20" />
                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em]">
-                        Designation: <span className="text-white">{owner.approvalDetails.adminDesignation}</span>
+                        Designation:{" "}
+                        <span className="text-white">
+                          {owner.approvalDetails.adminDesignation}
+                        </span>
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-2 rounded-full bg-white/20" />
                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em]">
-                        Auth Date: <span className="text-white">{owner.approvalDetails.approvedAt ? format(new Date(owner.approvalDetails.approvedAt), "dd MMM yyyy") : "N/A"}</span>
+                        Auth Date:{" "}
+                        <span className="text-white">
+                          {owner.approvalDetails.approvedAt
+                            ? format(
+                                new Date(owner.approvalDetails.approvedAt),
+                                "dd MMM yyyy"
+                              )
+                            : "N/A"}
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -158,8 +202,12 @@ const TurfList = () => {
               {/* Stats Module */}
               <div className="w-full lg:w-48 p-6 bg-white/5 rounded-[8px] border border-white/5 space-y-4">
                 <div className="text-center">
-                  <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">Total Assets</p>
-                  <p className="text-4xl font-display text-[#CCFF00] tracking-tighter">{turfData?.length || 0}</p>
+                  <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">
+                    Total Assets
+                  </p>
+                  <p className="text-4xl font-display text-[#CCFF00] tracking-tighter">
+                    {turfData?.length || 0}
+                  </p>
                 </div>
                 <div className="h-px bg-white/5 w-full" />
                 <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-gray-500 px-2">
@@ -183,7 +231,9 @@ const TurfList = () => {
               <Building2 size={20} className="text-[#CCFF00]" />
             </div>
             <div>
-              <h2 className="text-xl font-display uppercase tracking-tight text-white leading-none">Listed Grounds</h2>
+              <h2 className="text-xl font-display uppercase tracking-tight text-white leading-none">
+                Listed Grounds
+              </h2>
               <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">
                 Managing {turfData?.length || 0} active facilities
               </p>
@@ -196,7 +246,9 @@ const TurfList = () => {
             <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
               <PackageOpen size={32} className="text-gray-600" />
             </div>
-            <h3 className="text-xl font-display uppercase tracking-tight text-white mb-2">No Assets Detected</h3>
+            <h3 className="text-xl font-display uppercase tracking-tight text-white mb-2">
+              No Assets Detected
+            </h3>
             <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
               This partner has not listed any grounds yet
             </p>
@@ -210,7 +262,7 @@ const TurfList = () => {
         )}
       </div>
 
-      <ConfirmationModal 
+      <ConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDelete}

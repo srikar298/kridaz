@@ -24,44 +24,26 @@ import Translate from "@docusaurus/Translate";
   as={"h1"}
   className={"openapi__heading"}
   children={"Verify wallet top-up payment"}
->
-</Heading>
+></Heading>
 
 <MethodEndpoint
   method={"post"}
   path={"/user/wallet/topup/verify"}
   context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+></MethodEndpoint>
 
 Verifies the Razorpay payment and credits the amount to the user's wallet.
 
-<Heading
-  id={"request"}
-  as={"h2"}
-  className={"openapi-tabs__heading"}
->
+<Heading id={"request"} as={"h2"} className={"openapi-tabs__heading"}>
   <Translate id="theme.openapi.request.title">Request</Translate>
 </Heading>
 
-<ParamsDetails>
-  
-</ParamsDetails>
+<ParamsDetails></ParamsDetails>
 
 <RequestSchema
   {...require("./verify-wallet-top-up-payment.RequestSchema.json")}
->
-  
-</RequestSchema>
+></RequestSchema>
 
 <StatusCodes
   {...require("./verify-wallet-top-up-payment.StatusCodes.json")}
->
-  
-</StatusCodes>
-
-
-      
+></StatusCodes>

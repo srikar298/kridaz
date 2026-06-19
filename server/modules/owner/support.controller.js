@@ -4,10 +4,12 @@ import NotificationService from "../../services/notification.service.js";
 export const createTicket = async (req, res) => {
   const { id: userId } = req.owner;
   const { subject, message, category, images } = req.body;
-  
+
   try {
     if (message.length > 10000) {
-      return res.status(400).json({ message: "Message exceeds 10,000 characters limit" });
+      return res
+        .status(400)
+        .json({ message: "Message exceeds 10,000 characters limit" });
     }
 
     if (images && images.length > 5) {
@@ -20,8 +22,8 @@ export const createTicket = async (req, res) => {
         subject,
         description: message,
         category,
-        status: "OPEN"
-      }
+        status: "OPEN",
+      },
     });
 
     // Notify Admin (Queued)
@@ -29,7 +31,7 @@ export const createTicket = async (req, res) => {
       title: "New Support Ticket",
       message: `New ${category} ticket from partner: "${subject}"`,
       type: "SUPPORT",
-      link: "/admin/support"
+      link: "/admin/support",
     });
 
     res.status(201).json({ success: true, ticket });
@@ -43,10 +45,10 @@ export const getMyTickets = async (req, res) => {
   try {
     const tickets = await prisma.supportTicket.findMany({
       where: { userId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       include: {
-        replies: true
-      }
+        replies: true,
+      },
     });
     res.status(200).json({ success: true, tickets });
   } catch (error) {
@@ -58,12 +60,12 @@ export const addReply = async (req, res) => {
   const { id: userId } = req.owner;
   const { ticketId } = req.params;
   const { message } = req.body;
-  
+
   try {
     const ticket = await prisma.supportTicket.findFirst({
-      where: { id: ticketId, userId }
+      where: { id: ticketId, userId },
     });
-    
+
     if (!ticket) return res.status(404).json({ message: "Ticket not found" });
 
     const reply = await prisma.ticketReply.create({
@@ -71,8 +73,8 @@ export const addReply = async (req, res) => {
         ticketId,
         senderType: "USER",
         senderId: userId,
-        message
-      }
+        message,
+      },
     });
 
     // Notify Admin (Queued)
@@ -80,7 +82,7 @@ export const addReply = async (req, res) => {
       title: "Partner Replied to Ticket",
       message: `Partner replied to ticket: "${ticket.subject}"`,
       type: "SUPPORT",
-      link: "/admin/support"
+      link: "/admin/support",
     });
 
     res.status(200).json({ success: true, reply });
@@ -88,4 +90,3 @@ export const addReply = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-

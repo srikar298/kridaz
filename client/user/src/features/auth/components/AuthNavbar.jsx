@@ -50,9 +50,7 @@ export default function AuthNavbar() {
               <Link to="/auth/booking-history">My Bookings</Link>
             </li>
             <li>
-              <Link to="/partners">
-                Partner Network
-              </Link>
+              <Link to="/partners">Partner Network</Link>
             </li>
           </ul>
         </div>
@@ -76,9 +74,7 @@ export default function AuthNavbar() {
             <Link to="/auth/booking-history">My Bookings</Link>
           </li>
           <li>
-            <Link to="/partners">
-              Partner Network
-            </Link>
+            <Link to="/partners">Partner Network</Link>
           </li>
         </ul>
       </div>

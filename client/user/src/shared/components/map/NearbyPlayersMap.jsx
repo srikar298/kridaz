@@ -1,16 +1,24 @@
-import { MapContainer, TileLayer, useMap, useMapEvents, Marker, Popup } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  useMap,
+  useMapEvents,
+  Marker,
+  Popup,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useRef, useMemo } from "react";
 import L from "leaflet";
 import { Activity, Users, MapPin, User, Navigation } from "lucide-react";
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
+import { formatDistanceToNow } from "date-fns";
 
 // Fix default icon issue in Leaflet with Vite
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconUrl,
-  shadowUrl: iconShadow
+  shadowUrl: iconShadow,
 });
 
 const mapStyles = `
@@ -66,7 +74,7 @@ const MapEventsHandler = ({ onMapMove }) => {
     },
     zoomend: () => {
       onMapMove?.(map.getBounds(), map.getZoom());
-    }
+    },
   });
 
   useEffect(() => {
@@ -93,10 +101,10 @@ const MapController = ({ userLocation, radiusKm }) => {
       }
       circleRef.current = L.circle([userLocation.lat, userLocation.lng], {
         radius: radiusKm * 1000,
-        color: '#BFF367',
+        color: "#BFF367",
         fillOpacity: 0.05,
         strokeOpacity: 0.3,
-        weight: 1
+        weight: 1,
       }).addTo(map);
     }
     return () => {
@@ -111,15 +119,18 @@ const MapController = ({ userLocation, radiusKm }) => {
 
 const getValidAvatar = (url) => {
   const fallback = "https://pngimg.com/d/cricket_PNG102.png";
-  return (!url || url === "null" || url === "undefined") ? fallback : url;
+  return !url || url === "null" || url === "undefined" ? fallback : url;
 };
 
 const createClusterIcon = (count, previews) => {
-  const avatarsHtml = previews.map(p =>
-    `<img src="${getValidAvatar(p.profilePicture)}" 
+  const avatarsHtml = previews
+    .map(
+      (p) =>
+        `<img src="${getValidAvatar(p.profilePicture)}" 
           style="width:14px;height:14px;border-radius:50%;object-fit:cover;border:1px solid #BFF367" 
           onerror="this.src='https://pngimg.com/d/cricket_PNG102.png'; this.onerror=null;" />`
-  ).join('');
+    )
+    .join("");
 
   const html = `
     <div style="position:relative; cursor:pointer">
@@ -146,41 +157,73 @@ const createClusterIcon = (count, previews) => {
     html,
     className: "",
     iconSize: [56, 56],
-    iconAnchor: [28, 56]
+    iconAnchor: [28, 56],
   });
 };
 
-const createPlayerIcon = (profilePicture) => {
+const getTimeAgo = (lastSeen) => {
+  if (!lastSeen) return null;
+  const date = new Date(lastSeen);
+  const now = new Date();
+  const diffMinutes = (now - date) / (1000 * 60);
+
+  if (diffMinutes < 5) return "Online Now";
+
+  let text = formatDistanceToNow(date, { addSuffix: true });
+  text = text.replace("about ", "");
+  return `Active ${text}`;
+};
+
+const createPlayerIcon = (player) => {
+  const isOnline = player.lastSeen
+    ? (new Date() - new Date(player.lastSeen)) / (1000 * 60) < 5
+    : false;
+  const timeAgoText = getTimeAgo(player.lastSeen) || "";
+
+  const markerBorderColor = isOnline ? "#BFF367" : "rgba(255,255,255,0.4)";
+
+  const onlineDot = isOnline
+    ? `<div style="position:absolute; bottom:12px; right:-2px; width:12px; height:12px; background:#22c55e; border-radius:50%; border:2px solid #0a0a0a; box-shadow: 0 0 5px rgba(34,197,94,0.5); z-index:10;"></div>`
+    : ``;
+
+  const inactiveText =
+    !isOnline && timeAgoText
+      ? `<div style="position:absolute; bottom:-16px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:#ccc; font-size:9px; padding:2px 5px; border-radius:4px; white-space:nowrap; border:1px solid rgba(255,255,255,0.1); font-family: sans-serif; pointer-events:none;">${timeAgoText}</div>`
+      : ``;
+
   const markerHtml = `
     <div style="position:relative; cursor:pointer">
       <div style="
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        border: 2.5px solid #BFF367;
+        border: 2.5px solid ${markerBorderColor};
         overflow: hidden;
         box-shadow: 0 2px 8px rgba(0,0,0,0.5);
         background: #0a0a0a;
+        position: relative;
       ">
-        <img src="${getValidAvatar(profilePicture)}" 
-             style="width:100%;height:100%;object-fit:cover" 
+        <img src="${getValidAvatar(player.profilePicture)}" 
+             style="width:100%;height:100%;object-fit:cover${!isOnline ? "; filter: grayscale(40%)" : ""}" 
              onerror="this.src='https://pngimg.com/d/cricket_PNG102.png'; this.onerror=null;"
         />
       </div>
+      ${onlineDot}
       <div style="
         width: 0; height: 0;
         border-left: 6px solid transparent;
         border-right: 6px solid transparent;
-        border-top: 8px solid #BFF367;
+        border-top: 8px solid ${markerBorderColor};
         margin: 0 auto;
       "></div>
+      ${inactiveText}
     </div>
   `;
   return L.divIcon({
     html: markerHtml,
     className: "",
-    iconSize: [40, 48],
-    iconAnchor: [20, 48]
+    iconSize: [40, 56],
+    iconAnchor: [20, 50],
   });
 };
 
@@ -193,7 +236,10 @@ const PlayerMarker = ({ player, onPlayerClick }) => {
     }
   }, [player.lat, player.lng]);
 
-  const icon = useMemo(() => createPlayerIcon(player.profilePicture), [player.profilePicture]);
+  const icon = useMemo(
+    () => createPlayerIcon(player),
+    [player.profilePicture, player.lastSeen]
+  );
 
   return (
     <Marker
@@ -203,7 +249,7 @@ const PlayerMarker = ({ player, onPlayerClick }) => {
       eventHandlers={{
         click: () => {
           if (onPlayerClick) onPlayerClick(player._id);
-        }
+        },
       }}
     />
   );
@@ -221,18 +267,24 @@ const MapResizer = () => {
   return null;
 };
 
-const MapInner = ({ nearbyPlayers, onPlayerClick, userLocation, radiusKm, onMapMove }) => {
+const MapInner = ({
+  nearbyPlayers,
+  onPlayerClick,
+  userLocation,
+  radiusKm,
+  onMapMove,
+}) => {
   const map = useMap();
 
   const userIcon = L.divIcon({
-    className: 'pulsing-marker-container',
+    className: "pulsing-marker-container",
     html: `
       <div class="pulsing-marker">
         <img src="${getValidAvatar(userLocation?.profilePicture)}" onerror="this.src='https://pngimg.com/d/cricket_PNG102.png'; this.onerror=null;" />
       </div>
     `,
     iconSize: [24, 24],
-    iconAnchor: [12, 12]
+    iconAnchor: [12, 12],
   });
 
   return (
@@ -255,7 +307,9 @@ const MapInner = ({ nearbyPlayers, onPlayerClick, userLocation, radiusKm, onMapM
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              map.flyTo([userLocation.lat, userLocation.lng], 14, { duration: 1.5 });
+              map.flyTo([userLocation.lat, userLocation.lng], 14, {
+                duration: 1.5,
+              });
             }}
             className="w-10 h-10 bg-black/80 backdrop-blur-xl border border-white/10 rounded-full flex items-center justify-center text-[#BFF367] hover:bg-[#BFF367]/20 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.5)] cursor-pointer"
             title="Locate me"
@@ -271,7 +325,7 @@ const MapInner = ({ nearbyPlayers, onPlayerClick, userLocation, radiusKm, onMapM
         </Marker>
       )}
 
-      {nearbyPlayers.map(item => {
+      {nearbyPlayers.map((item) => {
         if (item.type === "cluster") {
           return (
             <Marker
@@ -279,7 +333,10 @@ const MapInner = ({ nearbyPlayers, onPlayerClick, userLocation, radiusKm, onMapM
               position={[item.lat, item.lng]}
               icon={createClusterIcon(item.count, item.previews)}
               eventHandlers={{
-                click: () => map.flyTo([item.lat, item.lng], map.getZoom() + 2, { duration: 0.5 })
+                click: () =>
+                  map.flyTo([item.lat, item.lng], map.getZoom() + 2, {
+                    duration: 0.5,
+                  }),
               }}
             />
           );
@@ -292,7 +349,6 @@ const MapInner = ({ nearbyPlayers, onPlayerClick, userLocation, radiusKm, onMapM
           />
         );
       })}
-
     </>
   );
 };
@@ -302,9 +358,11 @@ const NearbyPlayersMap = ({
   nearbyPlayers = [],
   radiusKm,
   onMapMove,
-  onPlayerClick
+  onPlayerClick,
 }) => {
-  const defaultCenter = userLocation ? [userLocation.lat, userLocation.lng] : [20.5937, 78.9629];
+  const defaultCenter = userLocation
+    ? [userLocation.lat, userLocation.lng]
+    : [20.5937, 78.9629];
 
   return (
     <div className="w-full h-full relative">

@@ -7,8 +7,13 @@ const syncLocationSharingFlag = (user) => {
   if (typeof window === "undefined" || !user) return;
   if (typeof user.locationSharingEnabled !== "boolean") return;
   try {
-    localStorage.setItem("kridaz_location_sharing", String(user.locationSharingEnabled));
-  } catch { /* private mode / quota — non-fatal */ }
+    localStorage.setItem(
+      "kridaz_location_sharing",
+      String(user.locationSharingEnabled)
+    );
+  } catch {
+    /* private mode / quota — non-fatal */
+  }
 };
 
 const authSlice = createSlice({
@@ -62,7 +67,9 @@ const authSlice = createSlice({
       }
     },
     unfollowUser: (state, action) => {
-      state.followingIds = state.followingIds.filter(id => id !== action.payload);
+      state.followingIds = state.followingIds.filter(
+        (id) => id !== action.payload
+      );
     },
     markRestored: (state) => {
       state.isRestored = true;
@@ -70,5 +77,14 @@ const authSlice = createSlice({
   },
 });
 
-export const { login, logout, updateUser, restoreAuth, setFollowingIds, followUser, unfollowUser, markRestored } = authSlice.actions;
+export const {
+  login,
+  logout,
+  updateUser,
+  restoreAuth,
+  setFollowingIds,
+  followUser,
+  unfollowUser,
+  markRestored,
+} = authSlice.actions;
 export default authSlice.reducer;

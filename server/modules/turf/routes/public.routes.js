@@ -42,4 +42,3 @@ router.get("/states", getStates);
 router.get("/cities", validate(locationQuerySchema), getCities);
 
 export default router;
-

@@ -1,1 +1,19 @@
-{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["videoKey","title"],"properties":{"videoKey":{"type":"string"},"title":{"type":"string"},"description":{"type":"string"}}}}}}}
+{
+  "title": "Body",
+  "body": {
+    "required": true,
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "required": ["videoKey", "title"],
+          "properties": {
+            "videoKey": { "type": "string" },
+            "title": { "type": "string" },
+            "description": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

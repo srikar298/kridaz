@@ -1,1 +1,14 @@
-{"responses":{"200":{"description":"OTP sent successfully"},"400":{"type":"object","properties":{"success":{"type":"boolean","example":false},"message":{"type":"string"},"error":{"type":"string","nullable":true}},"title":"ErrorResponse"}}}
+{
+  "responses": {
+    "200": { "description": "OTP sent successfully" },
+    "400": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean", "example": false },
+        "message": { "type": "string" },
+        "error": { "type": "string", "nullable": true }
+      },
+      "title": "ErrorResponse"
+    }
+  }
+}

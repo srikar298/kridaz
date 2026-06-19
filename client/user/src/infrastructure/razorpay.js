@@ -24,7 +24,7 @@ export const createOrder = async (totalPrice) => {
   const response = await axiosInstance.post("/api/user/booking/create-order", {
     totalPrice,
   });
-    return response.data;
+  return response.data;
 };
 
 export const handlePayment = async (order, user) => {
@@ -54,14 +54,14 @@ export const handlePayment = async (order, user) => {
         color: "#BFF367",
       },
       modal: {
-        ondismiss: function() {
+        ondismiss: function () {
           reject(new Error("Payment cancelled by user."));
-        }
-      }
+        },
+      },
     };
     const rzp1 = new window.Razorpay(options);
-    
-    rzp1.on('payment.failed', function (response) {
+
+    rzp1.on("payment.failed", function (response) {
       toast.error(response.error.description || "Payment failed");
       reject(response.error);
     });

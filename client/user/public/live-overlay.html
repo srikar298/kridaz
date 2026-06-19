@@ -1,239 +1,261 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kridaz Live Overlay</title>
-  <style>
-    /* 
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kridaz Live Overlay</title>
+    <style>
+      /* 
       1. Chroma-key friendly background for OBS. 
          True green (#00FF00) or magenta (#FF00FF) works well.
          We make it transparent so OBS browser sources can render it natively.
     */
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: transparent;
-      font-family: 'Inter', sans-serif;
-      overflow: hidden; /* No scrollbars in overlay */
-      color: white;
-    }
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: transparent;
+        font-family: "Inter", sans-serif;
+        overflow: hidden; /* No scrollbars in overlay */
+        color: white;
+      }
 
-    /* 
+      /* 
       2. Bottom-third positioning 
     */
-    #overlay-container {
-      position: absolute;
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      max-width: 1200px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+      #overlay-container {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 1200px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
 
-    /* 
+      /* 
       3. Premium modern styling 
     */
-    .scoreboard {
-      background: rgba(10, 10, 10, 0.85);
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
+      .scoreboard {
+        background: rgba(10, 10, 10, 0.85);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
 
-    .team-info {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
+      .team-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
 
-    .team-name {
-      font-size: 24px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
+      .team-name {
+        font-size: 24px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
 
-    .score {
-      font-size: 42px;
-      font-weight: 900;
-      color: #CCFF00; /* Primary brand color */
-      text-shadow: 0 0 10px rgba(204, 255, 0, 0.3);
-    }
+      .score {
+        font-size: 42px;
+        font-weight: 900;
+        color: #ccff00; /* Primary brand color */
+        text-shadow: 0 0 10px rgba(204, 255, 0, 0.3);
+      }
 
-    .overs {
-      font-size: 18px;
-      color: #aaa;
-      font-weight: 600;
-    }
+      .overs {
+        font-size: 18px;
+        color: #aaa;
+        font-weight: 600;
+      }
 
-    .crr {
-      font-size: 14px;
-      color: #888;
-      font-weight: bold;
-    }
+      .crr {
+        font-size: 14px;
+        color: #888;
+        font-weight: bold;
+      }
 
-    /* AI Commentary Banner */
-    .commentary-banner {
-      background: linear-gradient(90deg, rgba(204,255,0,0.9) 0%, rgba(150,200,0,0.9) 100%);
-      color: black;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 18px;
-      font-weight: 800;
-      text-transform: uppercase;
-      box-shadow: 0 4px 15px rgba(204, 255, 0, 0.3);
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
+      /* AI Commentary Banner */
+      .commentary-banner {
+        background: linear-gradient(
+          90deg,
+          rgba(204, 255, 0, 0.9) 0%,
+          rgba(150, 200, 0, 0.9) 100%
+        );
+        color: black;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 800;
+        text-transform: uppercase;
+        box-shadow: 0 4px 15px rgba(204, 255, 0, 0.3);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
 
-    .commentary-banner.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
+      .commentary-banner.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
 
-    /* Recent Balls */
-    .recent-balls {
-      display: flex;
-      gap: 8px;
-    }
+      /* Recent Balls */
+      .recent-balls {
+        display: flex;
+        gap: 8px;
+      }
 
-    .ball {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 14px;
-    }
+      .ball {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+      }
 
-    .ball.four { background: #3b82f6; color: white; }
-    .ball.six { background: #CCFF00; color: black; }
-    .ball.wicket { background: #ef4444; color: white; }
+      .ball.four {
+        background: #3b82f6;
+        color: white;
+      }
+      .ball.six {
+        background: #ccff00;
+        color: black;
+      }
+      .ball.wicket {
+        background: #ef4444;
+        color: white;
+      }
 
-    .score-group {
-      display: flex;
-      align-items: baseline;
-      gap: 15px;
-    }
+      .score-group {
+        display: flex;
+        align-items: baseline;
+        gap: 15px;
+      }
 
-    .meta-group {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-  </style>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-</head>
-<body>
-  <div id="overlay-container">
-    <div id="commentary" class="commentary-banner">Waiting for live action...</div>
-    <div class="scoreboard">
-      <div class="team-info">
-        <div id="team-name" class="team-name">TEAM A</div>
+      .meta-group {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+    </style>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  </head>
+  <body>
+    <div id="overlay-container">
+      <div id="commentary" class="commentary-banner">
+        Waiting for live action...
       </div>
-      
-      <div class="score-group">
-        <div id="score" class="score">0/0</div>
-        <div id="overs" class="overs">(0.0)</div>
-      </div>
+      <div class="scoreboard">
+        <div class="team-info">
+          <div id="team-name" class="team-name">TEAM A</div>
+        </div>
 
-      <div class="meta-group">
-        <div class="crr">CRR: <span id="crr">0.00</span></div>
-        <div id="recent-balls" class="recent-balls">
-          <!-- Populated dynamically -->
+        <div class="score-group">
+          <div id="score" class="score">0/0</div>
+          <div id="overs" class="overs">(0.0)</div>
+        </div>
+
+        <div class="meta-group">
+          <div class="crr">CRR: <span id="crr">0.00</span></div>
+          <div id="recent-balls" class="recent-balls">
+            <!-- Populated dynamically -->
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <script>
-    // Extract matchId and token from URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const matchId = window.location.pathname.split('/').pop() || urlParams.get('matchId');
-    const token = urlParams.get('token');
+    <script>
+      // Extract matchId and token from URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const matchId =
+        window.location.pathname.split("/").pop() || urlParams.get("matchId");
+      const token = urlParams.get("token");
 
-    // Setup Socket.IO connection
-    // Note: Assuming the socket server is on the same host, or specify the exact URL
-    const socketUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin;
-    const socket = io(socketUrl, {
-      auth: { token }
-    });
+      // Setup Socket.IO connection
+      // Note: Assuming the socket server is on the same host, or specify the exact URL
+      const socketUrl =
+        window.location.hostname === "localhost"
+          ? "http://localhost:5000"
+          : window.location.origin;
+      const socket = io(socketUrl, {
+        auth: { token },
+      });
 
-    socket.on('connect', () => {
-      console.log('Connected to live stream socket.');
-      socket.emit('joinMatch', matchId);
-    });
+      socket.on("connect", () => {
+        console.log("Connected to live stream socket.");
+        socket.emit("joinMatch", matchId);
+      });
 
-    socket.on('scoreUpdated', (data) => {
-      console.log('Score Update:', data);
-      
-      // Update basic score info
-      document.getElementById('team-name').innerText = data.battingTeamName || 'TEAM';
-      document.getElementById('score').innerText = `${data.totalRuns}/${data.totalWickets}`;
-      document.getElementById('overs').innerText = `(${data.overs}.${data.balls})`;
-      document.getElementById('crr').innerText = data.crr || '0.00';
+      socket.on("scoreUpdated", (data) => {
+        console.log("Score Update:", data);
 
-      // Update Commentary Banner
-      if (data.commentary && data.commentary.text) {
-        const commentaryEl = document.getElementById('commentary');
-        commentaryEl.innerText = data.commentary.text;
-        commentaryEl.classList.remove('show');
-        
-        // Retrigger animation
-        void commentaryEl.offsetWidth; 
-        commentaryEl.classList.add('show');
+        // Update basic score info
+        document.getElementById("team-name").innerText =
+          data.battingTeamName || "TEAM";
+        document.getElementById("score").innerText =
+          `${data.totalRuns}/${data.totalWickets}`;
+        document.getElementById("overs").innerText =
+          `(${data.overs}.${data.balls})`;
+        document.getElementById("crr").innerText = data.crr || "0.00";
 
-        // Hide after 8 seconds
-        setTimeout(() => {
-          commentaryEl.classList.remove('show');
-        }, 8000);
-      }
+        // Update Commentary Banner
+        if (data.commentary && data.commentary.text) {
+          const commentaryEl = document.getElementById("commentary");
+          commentaryEl.innerText = data.commentary.text;
+          commentaryEl.classList.remove("show");
 
-      // Update recent balls
-      if (data.lastBall) {
-        const recentBallsEl = document.getElementById('recent-balls');
-        const ballEl = document.createElement('div');
-        ballEl.className = 'ball';
-        
-        if (data.lastBall.isWicket) {
-          ballEl.classList.add('wicket');
-          ballEl.innerText = 'W';
-        } else if (data.lastBall.runs === 4) {
-          ballEl.classList.add('four');
-          ballEl.innerText = '4';
-        } else if (data.lastBall.runs === 6) {
-          ballEl.classList.add('six');
-          ballEl.innerText = '6';
-        } else {
-          ballEl.innerText = data.lastBall.runs || '0';
+          // Retrigger animation
+          void commentaryEl.offsetWidth;
+          commentaryEl.classList.add("show");
+
+          // Hide after 8 seconds
+          setTimeout(() => {
+            commentaryEl.classList.remove("show");
+          }, 8000);
         }
 
-        recentBallsEl.appendChild(ballEl);
-        
-        // Keep only last 6 balls
-        if (recentBallsEl.children.length > 6) {
-          recentBallsEl.removeChild(recentBallsEl.firstChild);
-        }
-      }
-    });
+        // Update recent balls
+        if (data.lastBall) {
+          const recentBallsEl = document.getElementById("recent-balls");
+          const ballEl = document.createElement("div");
+          ballEl.className = "ball";
 
-    socket.on('disconnect', () => {
-      console.log('Disconnected from live stream socket.');
-    });
-  </script>
-</body>
+          if (data.lastBall.isWicket) {
+            ballEl.classList.add("wicket");
+            ballEl.innerText = "W";
+          } else if (data.lastBall.runs === 4) {
+            ballEl.classList.add("four");
+            ballEl.innerText = "4";
+          } else if (data.lastBall.runs === 6) {
+            ballEl.classList.add("six");
+            ballEl.innerText = "6";
+          } else {
+            ballEl.innerText = data.lastBall.runs || "0";
+          }
+
+          recentBallsEl.appendChild(ballEl);
+
+          // Keep only last 6 balls
+          if (recentBallsEl.children.length > 6) {
+            recentBallsEl.removeChild(recentBallsEl.firstChild);
+          }
+        }
+      });
+
+      socket.on("disconnect", () => {
+        console.log("Disconnected from live stream socket.");
+      });
+    </script>
+  </body>
 </html>

@@ -10,16 +10,44 @@ export default function useBookingPass(bookingId) {
 
   const formatBookingData = (data) => {
     if (!data) return null;
-    const adjustedStartTime = parseISO(data.timeSlot.startTime);
-    const adjustedEndTime = parseISO(data.timeSlot.endTime);
+
+    let adjustedStartTime = null;
+    let adjustedEndTime = null;
+    let formattedStartTime = "TBD";
+    let formattedEndTime = "TBD";
+    let bookingDate = "TBD";
+
+    if (data.timeSlot?.startTime) {
+      adjustedStartTime = parseISO(data.timeSlot.startTime);
+      adjustedEndTime = parseISO(data.timeSlot.endTime);
+    } else if (data.playStartTime) {
+      adjustedStartTime = parseISO(data.playStartTime);
+      adjustedEndTime = parseISO(data.playEndTime);
+    } else if (data.createdAt) {
+      adjustedStartTime = parseISO(data.createdAt);
+    }
+
+    if (adjustedStartTime) {
+      formattedStartTime = format(adjustedStartTime, "hh:mm a");
+      bookingDate = format(adjustedStartTime, "dd MMM yyyy");
+    }
+    if (adjustedEndTime) {
+      formattedEndTime = format(adjustedEndTime, "hh:mm a");
+    }
 
     return {
       ...data,
       timeSlot: {
-        ...data.timeSlot,
-        formattedStartTime: format(adjustedStartTime, "hh:mm a"),
-        formattedEndTime: format(adjustedEndTime, "hh:mm a"),
-        date: format(adjustedStartTime, "dd MMM yyyy"),
+        ...(data.timeSlot || {}),
+        formattedStartTime,
+        formattedEndTime,
+        date: bookingDate,
+        startTime: adjustedStartTime ? adjustedStartTime.toISOString() : null,
+        endTime: adjustedEndTime ? adjustedEndTime.toISOString() : null,
+      },
+      turf: data.turf || {
+        name: data.customVenue || data.city || "Custom Venue",
+        location: data.city || "Unknown Location",
       },
     };
   };
@@ -28,12 +56,16 @@ export default function useBookingPass(bookingId) {
     if (!bookingId) return;
     setLoading(true);
     try {
-      const response = await axiosInstance.get(`/api/user/booking/${bookingId}`);
+      const response = await axiosInstance.get(
+        `/api/booking/user/${bookingId}`
+      );
       const formattedBooking = formatBookingData(response.data);
       setBooking(formattedBooking);
     } catch (error) {
-      Sentry.captureException(error);
-      toast.error(error.response?.data?.message || "Failed to fetch booking details");
+      console.error("Error fetching booking pass:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to fetch booking details"
+      );
     } finally {
       setLoading(false);
     }

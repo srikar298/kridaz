@@ -1,8 +1,24 @@
 import * as Sentry from "@sentry/react";
 import {
- Clock, MapPin, Calendar, QrCode, ShieldCheck, Zap, Activity, Wallet,
- CreditCard, FileText, Ticket, AlertOctagon, IndianRupee, Loader2, User,
- Star, ShieldAlert, X, RefreshCw, MessageCircle, CheckCircle
+  Clock,
+  MapPin,
+  Calendar,
+  QrCode,
+  ShieldCheck,
+  Zap,
+  Activity,
+  Wallet,
+  CreditCard,
+  FileText,
+  Ticket,
+  AlertOctagon,
+  IndianRupee,
+  Loader2,
+  User,
+  Star,
+  ShieldAlert,
+  X,
+  RefreshCw,
 } from "lucide-react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -10,31 +26,59 @@ import useBookingHistory from "../hooks/useBookingHistory";
 import useWriteReview from "@hooks/useWriteReview";
 import TurfBookingHistorySkeleton from "@components/ui/TurfBookingHistorySkeleton";
 import WriteReview from "@components/reviews/WriteReview";
-import RaiseDisputeModal from "@components/dispute/RaiseDisputeModal";
+import ReportIssueFlowModal from "@components/dispute/ReportIssueFlowModal";
 import useSimilarRecommendations from "@hooks/useSimilarRecommendations";
 import useRecommendations from "@hooks/useRecommendations";
 import { useSocket } from "@context/SocketContext";
 import { TurfCard } from "@features/turf";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useGetMyJoinedGamesQuery } from "@redux/api/gamesApi";
-import { useGetUserOnDemandBookingsQuery, useCreateMatchRequestMutation, useCompleteProfessionalBookingMutation } from "@redux/api/professionalApi";
+import {
+  useGetUserOnDemandBookingsQuery,
+  useCreateMatchRequestMutation,
+} from "@redux/api/professionalApi";
 import toast from "react-hot-toast";
 
 // ── Design tokens (exact match to OwnerDashboard) ──────────────────────────
 const BG = "#000000";
 const CARD = "#000000";
 const BORDER = "#2D2D2D";
-const ACCENT = "#CCFF00";
+const ACCENT = "#B3DC26";
 const MUTED = "#878C9F";
 const MUTED2 = "#999999";
 
 // ── Status badge config ────────────────────────────────────────────────────
 const STATUS_META = {
- CONFIRMED: { label: "Confirmed", color: ACCENT, bg: `${ACCENT}15`, border: `${ACCENT}30` },
- CANCELLED: { label: "Cancelled", color: "#EF4444", bg: "#EF444415", border: "#EF444430" },
- COMPLETED: { label: "Completed", color: "#10B981", bg: "#10B98115", border: "#10B98130" },
- DISPUTED: { label: "Under Review", color: "#BFF367", bg: "#BFF36715", border: "#BFF36730" },
- PLAYING: { label: "In Progress", color: "#3B82F6", bg: "#3B82F615", border: "#3B82F630" },
+  CONFIRMED: {
+    label: "Confirmed",
+    color: ACCENT,
+    bg: `${ACCENT}15`,
+    border: `${ACCENT}30`,
+  },
+  CANCELLED: {
+    label: "Cancelled",
+    color: "#EF4444",
+    bg: "#EF444415",
+    border: "#EF444430",
+  },
+  COMPLETED: {
+    label: "Completed",
+    color: "#10B981",
+    bg: "#10B98115",
+    border: "#10B98130",
+  },
+  DISPUTED: {
+    label: "Under Review",
+    color: ACCENT,
+    bg: `${ACCENT}15`,
+    border: `${ACCENT}30`,
+  },
+  PLAYING: {
+    label: "In Progress",
+    color: "#3B82F6",
+    bg: "#3B82F615",
+    border: "#3B82F630",
+  },
 };
 
 // ── Helper: hours until slot ───────────────────────────────────────────────
@@ -45,15 +89,25 @@ const TurfBookingHistory = () => {
   const navigate = useNavigate();
   const { loading, bookings, cancelBooking } = useBookingHistory();
   const {
-    isReviewModalOpen, rating, review, isSubmitting,
-    openReviewModal, closeReviewModal,
-    handleRatingChange, handleReviewChange, submitReview,
+    isReviewModalOpen,
+    rating,
+    review,
+    isSubmitting,
+    openReviewModal,
+    closeReviewModal,
+    handleRatingChange,
+    handleReviewChange,
+    submitReview,
   } = useWriteReview();
 
   const [selectedDisputeBooking, setSelectedDisputeBooking] = useState(null);
 
   // ── Professional Review & Dispute State ──────────────────────────────────
-  const [proReviewModal, setProReviewModal] = useState({ open: false, professionalId: null, professionalName: "", bookingId: null, isEdit: false });
+  const [proReviewModal, setProReviewModal] = useState({
+    open: false,
+    professionalId: null,
+    professionalName: "",
+  });
   const [proReviewRating, setProReviewRating] = useState(0);
   const [proReviewContent, setProReviewContent] = useState("");
   const [proReviewSubmitting, setProReviewSubmitting] = useState(false);
@@ -89,7 +143,11 @@ const TurfBookingHistory = () => {
   };
 
   const closeProReviewModal = () => {
-    setProReviewModal({ open: false, professionalId: null, professionalName: "", bookingId: null, isEdit: false });
+    setProReviewModal({
+      open: false,
+      professionalId: null,
+      professionalName: "",
+    });
     setProReviewRating(0);
     setProReviewContent("");
   };
@@ -123,11 +181,14 @@ const TurfBookingHistory = () => {
 
   const setBookingSubTab = (subTabName) => {
     setBookingSubTabState(subTabName);
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev);
-      next.set("subTab", subTabName);
-      return next;
-    }, { replace: true });
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set("subTab", subTabName);
+        return next;
+      },
+      { replace: true }
+    );
   };
 
   useEffect(() => {
@@ -137,11 +198,16 @@ const TurfBookingHistory = () => {
   }, [subTabParam]);
 
   // Load Joined Games
-  const { data: joinedGamesData, isLoading: loadingJoinedGames } = useGetMyJoinedGamesQuery();
+  const { data: joinedGamesData, isLoading: loadingJoinedGames } =
+    useGetMyJoinedGamesQuery();
   const joinedGames = joinedGamesData?.games || [];
 
   // Load On-Demand Match Requests & Bookings
-  const { data: onDemandData, isLoading: loadingOnDemand, refetch: refetchOnDemand } = useGetUserOnDemandBookingsQuery();
+  const {
+    data: onDemandData,
+    isLoading: loadingOnDemand,
+    refetch: refetchOnDemand,
+  } = useGetUserOnDemandBookingsQuery();
   const activeRequests = onDemandData?.activeRequests || [];
   const onDemandBookings = onDemandData?.bookings || [];
   const failedRequests = onDemandData?.failedRequests || [];
@@ -177,7 +243,7 @@ const TurfBookingHistory = () => {
         roles: req.roles,
         minBudget: Number(req.minBudget),
         maxBudget: Number(req.maxBudget),
-        expiresAt
+        expiresAt,
       }).unwrap();
       toast.success("Match request re-created successfully!");
       if (refetchOnDemand) refetchOnDemand();
@@ -226,17 +292,25 @@ const TurfBookingHistory = () => {
 
   // Proximity recommendations near user's latest booked turf
   const latestTurfId = bookings?.[0]?.turf?.id || bookings?.[0]?.turf?._id;
-  const { similarTurfs, loading: similarLoading } = useSimilarRecommendations(latestTurfId, { limit: 4 });
+  const { similarTurfs, loading: similarLoading } = useSimilarRecommendations(
+    latestTurfId,
+    { limit: 4 }
+  );
 
   // General proximity recommendations for empty booking states
-  const { recommendations, loading: recsLoading } = useRecommendations({ limit: 4 });
+  const { recommendations, loading: recsLoading } = useRecommendations({
+    limit: 4,
+  });
 
   const fetchBookingsRefresh = () => window.location.reload();
 
   if (loading) return <TurfBookingHistorySkeleton />;
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8 booking-history-container" style={{ fontFamily: "'Open Sans'" }}>
+    <div
+      className="max-w-7xl mx-auto px-3 md:px-0 pt-2 pb-8 booking-history-container"
+      style={{ fontFamily: "'Open Sans'" }}
+    >
       <style>{`
         .booking-history-container h1,
         .booking-history-container h2,
@@ -253,32 +327,33 @@ const TurfBookingHistory = () => {
         }
       `}</style>
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-        
         {/* Header and Sub-Tabs */}
-        <div className="flex flex-col xl:flex-row xl:items-center justify-between mb-8 pb-6 border-b border-white/10 gap-6">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between mb-6 pb-4 border-b border-white/10 gap-4 px-0">
           <div className="min-w-0">
-            <h2 className="text-sm sm:text-lg md:text-xl lg:text-2xl font-black uppercase tracking-tighter text-white whitespace-nowrap" style={{ fontFamily: "'Open Sans'" }}>
+            <h2
+              className="text-sm sm:text-lg md:text-xl lg:text-2xl font-black uppercase tracking-tighter text-white whitespace-nowrap"
+              style={{ fontFamily: "'Open Sans'" }}
+            >
               Booking & Game History
             </h2>
-            <p className="text-[10px] sm:text-xs md:text-sm font-light text-gray-500 uppercase tracking-widest mt-1" style={{ fontFamily: "'Open Sans'", fontWeight: 300 }}>Manage your turf reservations, joined matches, and hired professionals</p>
           </div>
-          
+
           <div className="flex flex-nowrap overflow-x-auto scrollbar-hide gap-2 pb-1 max-w-full shrink-0">
-            <button 
-              onClick={() => setBookingSubTab('venues')}
-              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${ bookingSubTab === 'venues' ? 'bg-[#CCFF00] text-black border-[#CCFF00] shadow-[0_4px_12px_rgba(204,255,0,0.2)]' : 'bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10' }`}
+            <button
+              onClick={() => setBookingSubTab("venues")}
+              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${bookingSubTab === "venues" ? "bg-[#CCFF00] text-black border-[#CCFF00] shadow-[0_4px_12px_rgba(204,255,0,0.2)]" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
             >
               Venue Bookings
             </button>
-            <button 
-              onClick={() => setBookingSubTab('games')}
-              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${ bookingSubTab === 'games' ? 'bg-[#CCFF00] text-black border-[#CCFF00] shadow-[0_4px_12px_rgba(204,255,0,0.2)]' : 'bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10' }`}
+            <button
+              onClick={() => setBookingSubTab("games")}
+              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${bookingSubTab === "games" ? "bg-[#CCFF00] text-black border-[#CCFF00] shadow-[0_4px_12px_rgba(204,255,0,0.2)]" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
             >
               Joined Games
             </button>
-            <button 
-              onClick={() => setBookingSubTab('professionals')}
-              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${ bookingSubTab === 'professionals' ? 'bg-[#CCFF00] text-black border-[#CCFF00] shadow-[0_4px_12px_rgba(204,255,0,0.2)]' : 'bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10' }`}
+            <button
+              onClick={() => setBookingSubTab("professionals")}
+              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${bookingSubTab === "professionals" ? "bg-[#CCFF00] text-black border-[#CCFF00] shadow-[0_4px_12px_rgba(204,255,0,0.2)]" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
             >
               Hired Professionals
             </button>
@@ -286,7 +361,7 @@ const TurfBookingHistory = () => {
         </div>
 
         <div className="space-y-6">
-          {bookingSubTab === 'venues' && (
+          {bookingSubTab === "venues" && (
             <div>
               {/* ── Bookings Feed ───────────────────────────────────────────── */}
               <div className="space-y-4">
@@ -295,32 +370,53 @@ const TurfBookingHistory = () => {
                     <div className="w-16 h-16 mx-auto rounded-full bg-[#222] flex items-center justify-center text-gray-500 mb-4">
                       <Calendar size={24} />
                     </div>
-                    <h2 className="text-xl font-black text-white uppercase tracking-tight">No Bookings Yet</h2>
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2">Explore local arenas and book your first game!</p>
-                    <Link to="/" className="mt-6 px-6 py-3 rounded-[6px] bg-[#CCFF00] text-black text-[10px] font-black uppercase tracking-widest hover:bg-[#b3ff00] transition-colors">
+                    <h2 className="text-xl font-black text-white uppercase tracking-tight">
+                      No Bookings Yet
+                    </h2>
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2">
+                      Explore local arenas and book your first game!
+                    </p>
+                    <Link
+                      to="/"
+                      className="mt-6 px-6 py-3 rounded-[6px] bg-[#CCFF00] text-black text-[10px] font-black uppercase tracking-widest hover:bg-[#b3ff00] transition-colors"
+                    >
                       Explore Venues
                     </Link>
                   </div>
                 ) : (
                   bookings.map((booking) => {
-                    const sm = STATUS_META[booking.status] || STATUS_META.CONFIRMED;
+                    const sm =
+                      STATUS_META[booking.status] || STATUS_META.CONFIRMED;
                     const hrs = hoursUntil(booking.playStartTime);
                     const slotOver = new Date() > new Date(booking.playEndTime);
 
                     return (
-                      <div key={booking.id || booking._id} className="bg-[#111111] border border-white/5 rounded-[8px] p-4 flex flex-col md:flex-row gap-6 hover:border-[#CCFF00]/30 transition-colors group relative overflow-hidden">
-                        
-                        {/* Left Image */}
-                        <div className="w-full md:w-64 h-40 shrink-0 rounded-[8px] overflow-hidden bg-[#222]">
-                          <img src={booking.turf?.images?.[0] || 'https://images.unsplash.com/photo-1518605368461-1ee7111d4e7a?auto=format&fit=crop&q=80'} className="w-full h-full object-cover transition-all duration-500" alt="Turf" />
-                        </div>
-
-                        {/* Content */}
-                        <div className="flex-1 flex flex-col justify-between py-2">
+                      <div
+                        key={booking.id || booking._id}
+                        className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-4 hover:shadow-[0px_8px_24px_rgba(179,220,38,0.15)] transition-all font-inter"
+                      >
+                        {/* 1. Venue & Header */}
+                        <div className="flex flex-col gap-1.5 md:w-[35%]">
+                          <div className="flex items-center justify-between md:justify-start gap-2">
+                            <span className="px-1.5 py-0.5 bg-[#B3DC26] text-[#000000] rounded-[4px] text-[8px] font-black uppercase tracking-widest">
+                              {booking.turf?.sportType || "FOOTBALL"}
+                            </span>
+                            <span className="text-[9px] font-bold text-[rgba(255,255,255,0.40)] uppercase tracking-widest">
+                              ID: #
+                              {(booking.id || booking._id)
+                                ?.slice(-5)
+                                .toUpperCase() || "B7402"}
+                            </span>
+                          </div>
                           <div>
-                            <div className="flex items-center gap-3 mb-3">
-                              <span className="px-2 py-1 bg-[#CCFF00]/10 text-[#CCFF00] rounded text-[9px] font-black uppercase tracking-widest">{booking.turf?.sportType || 'FOOTBALL'}</span>
-                              <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">BOOKING ID: #{(booking.id || booking._id)?.slice(-5).toUpperCase() || 'B7402'}</span>
+                            <h2 className="text-[14px] font-black text-[#FFFFFF] uppercase tracking-tight truncate">
+                              {booking.turf?.name || "Decathlon Sports Arena"}
+                            </h2>
+                            <div className="flex items-center gap-1 text-[10px] font-bold text-[rgba(255,255,255,0.70)] uppercase tracking-widest mt-0.5">
+                              <MapPin size={10} className="text-[#B3DC26]" />
+                              <span className="truncate">
+                                {booking.turf?.city || "Location"}
+                              </span>
                             </div>
                             <h2 className="text-xl font-black text-white uppercase tracking-tight mb-4">{booking.turf?.name || 'Decathlon Sports Arena'}</h2>
                             <div className="flex flex-wrap items-center gap-4 md:gap-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
@@ -361,21 +457,69 @@ const TurfBookingHistory = () => {
                           </div>
                         </div>
 
-                        {/* Right: Price & Status */}
-                        <div className="flex flex-col justify-between items-end py-2 shrink-0 mt-4 md:mt-0 border-t md:border-t-0 md:border-l border-white/5 pt-4 md:pt-0 md:pl-6">
-                          <div className="flex flex-col items-end">
-                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Total Paid</span>
-                            <div className="text-2xl font-black text-white">₹{Number(booking.advanceAmount) || Number(booking.totalPrice) || Number(booking.turf?.pricePerHour) || '1,500'}</div>
-                            {booking.paymentType === "PARTIAL" && (
-                              <div className="text-[9px] font-bold text-yellow-500 uppercase tracking-widest mt-1">Bal: ₹{Number(booking.balanceAmount) || 0}</div>
-                            )}
+                        <div className="hidden md:block w-[1px] h-10 bg-white/10 shrink-0"></div>
+                        <div className="md:hidden h-[1px] w-full bg-white/5 my-0.5"></div>
+
+                        {/* 2. Middle: Date/Time & Price/Status container */}
+                        <div className="flex justify-between items-end md:items-center md:flex-1">
+                          {/* Date & Time */}
+                          <div className="flex flex-col justify-center gap-1">
+                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#FFFFFF] uppercase tracking-widest">
+                              <Calendar
+                                size={12}
+                                className="text-[rgba(255,255,255,0.70)]"
+                              />
+                              {booking.timeSlot?.date || "12 Oct 2026"}
+                            </div>
+                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-[rgba(255,255,255,0.70)] uppercase tracking-widest">
+                              <Clock
+                                size={12}
+                                className="text-[rgba(255,255,255,0.70)]"
+                              />
+                              {booking.timeSlot?.formattedStartTime || "18:00"}{" "}
+                              - {booking.timeSlot?.formattedEndTime || "19:30"}
+                            </div>
                           </div>
-                          
-                          <div className="mt-4 md:mt-0">
-                            <div className="px-4 py-1.5 rounded text-[9px] font-black uppercase tracking-widest" style={{ color: sm.color, backgroundColor: sm.bg, border: `1px solid ${sm.border}` }}>
+
+                          {/* Price & Status */}
+                          <div className="flex flex-col justify-center items-end gap-1 md:pr-4">
+                            <div className="text-[14px] font-black text-[#B3DC26]">
+                              ₹
+                              {Number(booking.advanceAmount) ||
+                                Number(booking.totalPrice) ||
+                                Number(booking.turf?.pricePerHour) ||
+                                "1,500"}
+                            </div>
+                            <div
+                              className="px-1.5 py-0.5 rounded-[4px] text-[8px] font-black uppercase tracking-widest"
+                              style={{
+                                color: sm.color,
+                                backgroundColor: sm.bg,
+                                border: `1px solid ${sm.border}`,
+                              }}
+                            >
                               {sm.label}
                             </div>
                           </div>
+                        </div>
+
+                        {/* 3. Action */}
+                        <div className="mt-1 pt-3 border-t border-white/5 md:border-t-0 md:pt-0 md:mt-0 shrink-0 flex flex-col md:flex-row gap-2">
+                          {(booking.status === "confirmed" ||
+                            booking.status === "completed") && (
+                            <button
+                              onClick={() => setSelectedDisputeBooking(booking)}
+                              className="w-full md:w-auto h-[36px] px-4 rounded-[8px] border border-red-500/50 text-red-500 hover:bg-red-500/10 text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-1.5"
+                            >
+                              <AlertOctagon size={14} /> Report Issue
+                            </button>
+                          )}
+                          <Link
+                            to={`/booking-pass/${booking.id || booking._id}`}
+                            className="w-full md:w-auto h-[36px] px-6 rounded-[8px] bg-[#B3DC26] text-[#000000] text-[11px] font-black uppercase tracking-widest hover:bg-[#a2c921] transition-all flex items-center justify-center gap-2"
+                          >
+                            <Ticket size={14} /> View Pass
+                          </Link>
                         </div>
                       </div>
                     );
@@ -384,127 +528,160 @@ const TurfBookingHistory = () => {
               </div>
 
               {/* Case A: Bookings exist -> Render Proximity Recommendations near latest venue */}
-              {bookings.length > 0 && (similarLoading || (similarTurfs && similarTurfs.length > 0)) && (
-                <div className="mt-16 pt-10 border-t border-white/5 space-y-6">
-                  <div className="space-y-1">
-                    <h3 className="text-lg font-black uppercase text-[#CCFF00] tracking-tight flex items-center gap-2">
-                      Recommended Arenas Near You
-                    </h3>
-                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest font-inter">
-                      Handpicked grounds matching your recent game history
-                    </p>
-                  </div>
+              {bookings.length > 0 &&
+                (similarLoading ||
+                  (similarTurfs && similarTurfs.length > 0)) && (
+                  <div className="mt-16 pt-10 border-t border-white/5 space-y-6">
+                    <div className="space-y-1">
+                      <h3 className="text-lg font-black uppercase text-[#CCFF00] tracking-tight flex items-center gap-2">
+                        Recommended Arenas Near You
+                      </h3>
+                      <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest font-inter">
+                        Handpicked grounds matching your recent game history
+                      </p>
+                    </div>
 
-                  {similarLoading ? (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-                      {[...Array(4)].map((_, i) => (
-                        <div 
-                          key={i} 
-                          className="h-[280px] rounded-[8px] bg-[#111] border border-white/5 animate-pulse relative overflow-hidden"
-                        >
-                          <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent h-[50%]" />
-                          <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2">
-                            <div className="h-4 bg-white/10 rounded w-[80%]" />
-                            <div className="h-3 bg-white/5 rounded w-[50%]" />
+                    {similarLoading ? (
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+                        {[...Array(4)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="h-[280px] rounded-[8px] bg-[#111] border border-white/5 animate-pulse relative overflow-hidden"
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent h-[50%]" />
+                            <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2">
+                              <div className="h-4 bg-white/10 rounded w-[80%]" />
+                              <div className="h-3 bg-white/5 rounded w-[50%]" />
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-                      {similarTurfs.map((t) => (
-                        <TurfCard 
-                          key={t.id || t._id} 
-                          turf={t} 
-                          distance={t.distance ? `${(t.distance / 1000).toFixed(1)} km Away` : "Nearby"}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+                        {similarTurfs.map((t) => (
+                          <TurfCard
+                            key={t.id || t._id}
+                            turf={t}
+                            distance={
+                              t.distance
+                                ? `${(t.distance / 1000).toFixed(1)} km Away`
+                                : "Nearby"
+                            }
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
 
               {/* Case B: Bookings is empty -> Render general trending proximity feeds */}
-              {bookings.length === 0 && (recsLoading || (recommendations && recommendations.length > 0)) && (
-                <div className="mt-16 pt-10 border-t border-white/5 space-y-6">
-                  <div className="space-y-1 text-center md:text-left">
-                    <h3 className="text-lg font-black uppercase text-[#CCFF00] tracking-tight flex items-center gap-2 justify-center md:justify-start">
-                      Trending Arenas Near You
-                    </h3>
-                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest font-inter">
-                      Highly frequented grounds & elite hubs active in your city
-                    </p>
-                  </div>
+              {bookings.length === 0 &&
+                (recsLoading ||
+                  (recommendations && recommendations.length > 0)) && (
+                  <div className="mt-16 pt-10 border-t border-white/5 space-y-6">
+                    <div className="space-y-1 text-center md:text-left">
+                      <h3 className="text-lg font-black uppercase text-[#CCFF00] tracking-tight flex items-center gap-2 justify-center md:justify-start">
+                        Trending Arenas Near You
+                      </h3>
+                      <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest font-inter">
+                        Highly frequented grounds & elite hubs active in your
+                        city
+                      </p>
+                    </div>
 
-                  {recsLoading ? (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-                      {[...Array(4)].map((_, i) => (
-                        <div 
-                          key={i} 
-                          className="h-[280px] rounded-[8px] bg-[#111] border border-white/5 animate-pulse relative overflow-hidden"
-                        >
-                          <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent h-[50%]" />
-                          <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2">
-                            <div className="h-4 bg-white/10 rounded w-[80%]" />
-                            <div className="h-3 bg-white/5 rounded w-[50%]" />
+                    {recsLoading ? (
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+                        {[...Array(4)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="h-[280px] rounded-[8px] bg-[#111] border border-white/5 animate-pulse relative overflow-hidden"
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent h-[50%]" />
+                            <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2">
+                              <div className="h-4 bg-white/10 rounded w-[80%]" />
+                              <div className="h-3 bg-white/5 rounded w-[50%]" />
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-                      {recommendations.map((t) => (
-                        <TurfCard 
-                          key={t.id || t._id} 
-                          turf={t} 
-                          distance={t.distance ? `${(t.distance / 1000).toFixed(1)} km Away` : "Nearby"}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+                        {recommendations.map((t) => (
+                          <TurfCard
+                            key={t.id || t._id}
+                            turf={t}
+                            distance={
+                              t.distance
+                                ? `${(t.distance / 1000).toFixed(1)} km Away`
+                                : "Nearby"
+                            }
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
             </div>
           )}
 
-          {bookingSubTab === 'games' && (
+          {bookingSubTab === "games" && (
             <div className="space-y-4">
               {loadingJoinedGames ? (
                 <div className="text-center py-12 bg-[#0a0a0a] rounded-[8px] border border-white/5">
                   <Loader2 className="w-8 h-8 text-[#CCFF00] animate-spin mx-auto mb-2" />
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Loading Joined Games...</p>
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                    Loading Joined Games...
+                  </p>
                 </div>
               ) : joinedGames.length === 0 ? (
                 <div className="bg-[#111111] p-16 rounded-[8px] border border-white/5 text-center flex flex-col items-center justify-center">
                   <div className="w-14 h-14 rounded-full bg-[#222] flex items-center justify-center text-gray-500 mb-4">
                     <Zap size={24} />
                   </div>
-                  <h2 className="text-lg font-black text-white uppercase tracking-tight">No Joined Games</h2>
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2">You haven't joined any match lobbies or training games yet.</p>
+                  <h2 className="text-lg font-black text-white uppercase tracking-tight">
+                    No Joined Games
+                  </h2>
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2">
+                    You haven&apos;t joined any match lobbies or training games
+                    yet.
+                  </p>
                 </div>
               ) : (
                 joinedGames.map((game) => {
                   const statusColors = {
-                    JOINED: 'text-[#CCFF00] bg-[#CCFF00]/10 border-[#CCFF00]/20',
-                    PENDING: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20',
-                    CANCELLED: 'text-red-500 bg-red-500/10 border-red-500/20'
+                    JOINED:
+                      "text-[#CCFF00] bg-[#CCFF00]/10 border-[#CCFF00]/20",
+                    PENDING:
+                      "text-yellow-500 bg-yellow-500/10 border-yellow-500/20",
+                    CANCELLED: "text-red-500 bg-red-500/10 border-red-500/20",
                   };
-                  const statusText = game.mySlotStatus || 'JOINED';
-                  const statusClass = statusColors[statusText] || 'text-gray-400 bg-white/5 border-white/10';
+                  const statusText = game.mySlotStatus || "JOINED";
+                  const statusClass =
+                    statusColors[statusText] ||
+                    "text-gray-400 bg-white/5 border-white/10";
 
                   return (
-                    <div key={game._id} className="group relative rounded-[8px] p-[1px] transition-all duration-300 cursor-pointer overflow-hidden">
+                    <div
+                      key={game._id}
+                      className="group relative rounded-[8px] p-[1px] transition-all duration-300 cursor-pointer overflow-hidden"
+                    >
                       <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#CCFF00] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[8px]" />
                       <div className="absolute inset-0 border border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[8px]" />
-                      
+
                       <div className="relative bg-[#0d0d0d] rounded-[8px] p-4 flex flex-col md:flex-row gap-6 w-full">
                         <div className="w-full md:w-48 h-32 shrink-0 rounded-[8px] overflow-hidden bg-white/5 flex items-center justify-center relative">
                           {game.turf?.images?.[0] ? (
-                            <img src={game.turf.images[0]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
+                            <img
+                              src={game.turf.images[0]}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                              alt=""
+                            />
                           ) : (
                             <div className="flex flex-col items-center gap-2">
                               <Zap className="w-8 h-8 text-[#CCFF00]" />
-                              <span className="text-[8px] font-black uppercase text-gray-600 tracking-widest">{game.gameType || 'CRICKET'}</span>
+                              <span className="text-[8px] font-black uppercase text-gray-600 tracking-widest">
+                                {game.gameType || "CRICKET"}
+                              </span>
                             </div>
                           )}
                         </div>
@@ -513,7 +690,7 @@ const TurfBookingHistory = () => {
                           <div>
                             <div className="flex items-center gap-2 mb-2">
                               <span className="px-1.5 py-0.5 bg-[#CCFF00]/10 text-[#CCFF00] rounded text-[8px] font-black uppercase tracking-widest border border-[#CCFF00]/20">
-                                {game.gameType || 'CRICKET'}
+                                {game.gameType || "CRICKET"}
                               </span>
                               {game.format && (
                                 <span className="px-1.5 py-0.5 bg-white/5 text-white rounded text-[8px] font-black uppercase tracking-widest border border-white/10">
@@ -528,27 +705,52 @@ const TurfBookingHistory = () => {
                               {game.name || `${game.gameType} Practice Match`}
                             </h3>
                             <div className="flex flex-wrap items-center gap-4 text-[9px] font-black text-gray-500 uppercase tracking-widest">
-                              <div className="flex items-center gap-1.5"><Clock size={12} className="text-[#CCFF00]" /> {game.time}</div>
-                              <div className="flex items-center gap-1.5"><Calendar size={12} className="text-[#CCFF00]" /> {new Date(game.date).toLocaleDateString('en-GB')}</div>
-                              <div className="flex items-center gap-1.5"><MapPin size={12} className="text-[#CCFF00]" /> {game.turf?.name || game.customVenue || "Local Ground"}</div>
+                              <div className="flex items-center gap-1.5">
+                                <Clock size={12} className="text-[#CCFF00]" />{" "}
+                                {game.time}
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <Calendar
+                                  size={12}
+                                  className="text-[#CCFF00]"
+                                />{" "}
+                                {new Date(game.date).toLocaleDateString(
+                                  "en-GB"
+                                )}
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <MapPin size={12} className="text-[#CCFF00]" />{" "}
+                                {game.turf?.name ||
+                                  game.customVenue ||
+                                  "Local Ground"}
+                              </div>
                             </div>
                           </div>
 
                           <div className="flex items-center gap-2 mt-4">
                             <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
-                              Role: <span className="text-white font-black">{game.myRole || 'Player'}</span>
+                              Role:{" "}
+                              <span className="text-white font-black">
+                                {game.myRole || "Player"}
+                              </span>
                             </span>
                           </div>
                         </div>
 
                         <div className="flex flex-col justify-between items-end py-1 shrink-0 border-t md:border-t-0 md:border-l border-white/5 pt-4 md:pt-0 md:pl-6 min-w-[120px]">
                           <div className="text-right">
-                            <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-1">Entry Fee</p>
+                            <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-1">
+                              Entry Fee
+                            </p>
                             <p className="text-xl font-black text-white">
-                              {Number(game.perPlayerCharge) > 0 ? `₹${game.perPlayerCharge}` : 'Free'}
+                              {Number(game.perPlayerCharge) > 0
+                                ? `₹${game.perPlayerCharge}`
+                                : "Free"}
                             </p>
                           </div>
-                          <div className={`px-3 py-1 rounded-[8px] text-[8px] font-black uppercase tracking-widest border ${statusClass}`}>
+                          <div
+                            className={`px-3 py-1 rounded-[8px] text-[8px] font-black uppercase tracking-widest border ${statusClass}`}
+                          >
                             {statusText}
                           </div>
                         </div>
@@ -560,20 +762,30 @@ const TurfBookingHistory = () => {
             </div>
           )}
 
-          {bookingSubTab === 'professionals' && (
+          {bookingSubTab === "professionals" && (
             <div className="space-y-6 animate-in fade-in duration-300">
-              {(loadingProBookings || loadingOnDemand) ? (
+              {loadingProBookings || loadingOnDemand ? (
                 <div className="text-center py-12 bg-[#0a0a0a] rounded-[8px] border border-white/5">
                   <Loader2 className="w-8 h-8 text-[#CCFF00] animate-spin mx-auto mb-2" />
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Loading Hired Professionals...</p>
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                    Loading Hired Professionals...
+                  </p>
                 </div>
-              ) : (activeRequests.length === 0 && onDemandBookings.length === 0 && professionalBookings.length === 0 && failedRequests.length === 0) ? (
+              ) : activeRequests.length === 0 &&
+                onDemandBookings.length === 0 &&
+                professionalBookings.length === 0 &&
+                failedRequests.length === 0 ? (
                 <div className="bg-[#111111] p-16 rounded-[8px] border border-white/5 text-center flex flex-col items-center justify-center">
                   <div className="w-14 h-14 rounded-full bg-[#222] flex items-center justify-center text-gray-500 mb-4">
                     <User size={24} />
                   </div>
-                  <h2 className="text-lg font-black text-white uppercase tracking-tight">No Hired Professionals</h2>
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2">Book certified coaches, umpires, scorers, or commentators to elevate your game!</p>
+                  <h2 className="text-lg font-black text-white uppercase tracking-tight">
+                    No Hired Professionals
+                  </h2>
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2">
+                    Book certified coaches, umpires, scorers, or commentators to
+                    elevate your game!
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-8">
@@ -589,26 +801,42 @@ const TurfBookingHistory = () => {
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {activeRequests.map((req) => (
-                          <div key={req.id} className="bg-[#111] border border-[#BFF367]/20 rounded-lg p-5 relative overflow-hidden">
+                          <div
+                            key={req.id}
+                            className="bg-[#111] border border-[#BFF367]/20 rounded-lg p-5 relative overflow-hidden"
+                          >
                             <div className="space-y-3 font-sans">
                               <div>
-                                <span className="text-[8px] uppercase tracking-wider text-white/40 block">Target Roles</span>
+                                <span className="text-[8px] uppercase tracking-wider text-white/40 block">
+                                  Target Roles
+                                </span>
                                 <div className="flex flex-wrap gap-1.5 mt-1">
                                   {req.roles.map((r) => (
-                                    <span key={r} className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-bold text-white uppercase">{r}</span>
+                                    <span
+                                      key={r}
+                                      className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-bold text-white uppercase"
+                                    >
+                                      {r}
+                                    </span>
                                   ))}
                                 </div>
                               </div>
 
                               <div className="grid grid-cols-2 gap-4 pt-1.5">
                                 <div>
-                                  <span className="text-[8px] uppercase tracking-wider text-white/40 block">Venue/Location</span>
+                                  <span className="text-[8px] uppercase tracking-wider text-white/40 block">
+                                    Venue/Location
+                                  </span>
                                   <span className="text-xs font-bold text-white block truncate">
-                                    {req.ground?.name || req.customLocation?.address || "Custom Coords"}
+                                    {req.ground?.name ||
+                                      req.customLocation?.address ||
+                                      "Custom Coords"}
                                   </span>
                                 </div>
                                 <div>
-                                  <span className="text-[8px] uppercase tracking-wider text-white/40 block">Budget Scope</span>
+                                  <span className="text-[8px] uppercase tracking-wider text-white/40 block">
+                                    Budget Scope
+                                  </span>
                                   <span className="text-xs font-bold text-[#CCFF00]">
                                     ₹{req.minBudget} - ₹{req.maxBudget}
                                   </span>
@@ -616,8 +844,17 @@ const TurfBookingHistory = () => {
                               </div>
                               <div className="pt-3 border-t border-white/5 flex items-center justify-between flex-wrap gap-2 mt-2">
                                 <div className="flex items-center gap-1.5 text-[10px] text-gray-500 uppercase font-bold tracking-widest">
-                                  <Calendar size={10} className="text-[#BFF367]" /> {req.matchDate || "Flexible"}
-                                  <Clock size={10} className="text-[#BFF367] ml-2" /> {req.matchStartTime || "TBD"} - {req.matchEndTime || "TBD"}
+                                  <Calendar
+                                    size={10}
+                                    className="text-[#BFF367]"
+                                  />{" "}
+                                  {req.matchDate || "Flexible"}
+                                  <Clock
+                                    size={10}
+                                    className="text-[#BFF367] ml-2"
+                                  />{" "}
+                                  {req.matchStartTime || "TBD"} -{" "}
+                                  {req.matchEndTime || "TBD"}
                                 </div>
                               </div>
 
@@ -674,45 +911,71 @@ const TurfBookingHistory = () => {
                     <div className="space-y-3">
                       <h4 className="text-[10px] font-black uppercase text-red-500 tracking-widest flex items-center gap-2">
                         <AlertOctagon size={12} />
-                        Failed / Expired Search Requests ({failedRequests.length})
+                        Failed / Expired Search Requests (
+                        {failedRequests.length})
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {failedRequests.map((req) => (
-                          <div key={req.id} className="bg-[#111] border border-red-500/20 rounded-lg p-5 relative overflow-hidden transition-all duration-300 hover:border-red-500/40">
+                          <div
+                            key={req.id}
+                            className="bg-[#111] border border-red-500/20 rounded-lg p-5 relative overflow-hidden transition-all duration-300 hover:border-red-500/40"
+                          >
                             {/* Subtle overlay accent */}
                             <div className="absolute top-0 right-0 bg-red-500/10 text-red-500 px-3 py-1 rounded-bl-lg text-[8px] font-black uppercase tracking-wider border-l border-b border-red-500/20">
                               {req.status}
                             </div>
-                            
+
                             <div className="space-y-3 font-sans">
                               <div>
-                                <span className="text-[8px] uppercase tracking-wider text-white/40 block">Target Roles</span>
+                                <span className="text-[8px] uppercase tracking-wider text-white/40 block">
+                                  Target Roles
+                                </span>
                                 <div className="flex flex-wrap gap-1.5 mt-1">
                                   {req.roles.map((r) => (
-                                    <span key={r} className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-bold text-white uppercase">{r}</span>
+                                    <span
+                                      key={r}
+                                      className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-bold text-white uppercase"
+                                    >
+                                      {r}
+                                    </span>
                                   ))}
                                 </div>
                               </div>
 
                               <div className="grid grid-cols-2 gap-4 pt-1.5">
                                 <div>
-                                  <span className="text-[8px] uppercase tracking-wider text-white/40 block">Venue/Location</span>
+                                  <span className="text-[8px] uppercase tracking-wider text-white/40 block">
+                                    Venue/Location
+                                  </span>
                                   <span className="text-xs font-bold text-white block truncate">
-                                    {req.ground?.name || req.customLocation?.address || "Custom Coords"}
+                                    {req.ground?.name ||
+                                      req.customLocation?.address ||
+                                      "Custom Coords"}
                                   </span>
                                 </div>
                                 <div>
-                                  <span className="text-[8px] uppercase tracking-wider text-white/40 block">Budget Scope</span>
+                                  <span className="text-[8px] uppercase tracking-wider text-white/40 block">
+                                    Budget Scope
+                                  </span>
                                   <span className="text-xs font-bold text-red-400">
                                     ₹{req.minBudget} - ₹{req.maxBudget}
                                   </span>
                                 </div>
                               </div>
-                              
+
                               <div className="pt-3 border-t border-white/5 flex items-center gap-2 mt-2">
                                 <div className="flex items-center gap-1.5 text-[10px] text-gray-500 uppercase font-bold tracking-widest">
-                                  <Calendar size={10} className="text-red-400" /> {req.matchDate || "Flexible"}
-                                  <Clock size={10} className="text-red-400 ml-2" /> {req.matchStartTime || "TBD"} - {req.matchEndTime || "TBD"}
+                                  <Calendar
+                                    size={10}
+                                    className="text-red-400"
+                                  />{" "}
+                                  {req.matchDate || "Flexible"}
+                                  <Clock
+                                    size={10}
+                                    className="text-red-400 ml-2"
+                                  />{" "}
+                                  {req.matchStartTime || "TBD"} -{" "}
+                                  {req.matchEndTime || "TBD"}
                                 </div>
                               </div>
 
@@ -760,9 +1023,17 @@ const TurfBookingHistory = () => {
 
                               <div className="pt-3 border-t border-white/5 flex items-center justify-between flex-wrap gap-2 mt-2">
                                 <span className="text-[8px] text-gray-500 uppercase tracking-widest font-bold">
-                                  Requested: {new Date(req.createdAt).toLocaleDateString('en-GB')} at {new Date(req.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                  Requested:{" "}
+                                  {new Date(req.createdAt).toLocaleDateString(
+                                    "en-GB"
+                                  )}{" "}
+                                  at{" "}
+                                  {new Date(req.createdAt).toLocaleTimeString(
+                                    [],
+                                    { hour: "2-digit", minute: "2-digit" }
+                                  )}
                                 </span>
-                                
+
                                 <button
                                   onClick={() => handleRetryMatch(req)}
                                   className="px-3 py-1.5 bg-[#CCFF00]/10 hover:bg-[#CCFF00] hover:text-black border border-[#CCFF00]/20 text-[#CCFF00] text-[8px] font-black uppercase tracking-widest rounded-[6px] transition-all flex items-center gap-1.5 active:scale-95"
@@ -786,35 +1057,57 @@ const TurfBookingHistory = () => {
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {onDemandBookings.map((booking) => {
-                          const pro = booking.professional?.user || booking.professional;
-                          const plainOtp = booking.otpCode || localStorage.getItem(`otp_${booking.id}`);
-                          const getInitials = (name) => name?.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "??";
+                          const pro = booking.professional?.user;
+                          const plainOtp = null; // localStorage OTP removed per security audit
+                          const getInitials = (name) =>
+                            name
+                              ?.split(" ")
+                              .map((w) => w[0])
+                              .join("")
+                              .toUpperCase()
+                              .slice(0, 2) || "??";
 
                           return (
-                            <div key={booking.id} className="bg-[#111] border border-white/5 rounded-lg p-5">
+                            <div
+                              key={booking.id}
+                              className="bg-[#111] border border-white/5 rounded-lg p-5"
+                            >
                               <div className="flex items-start justify-between mb-4">
                                 <div className="flex items-center gap-3">
                                   {pro?.profilePicture ? (
-                                    <img src={pro.profilePicture} className="w-10 h-10 rounded-full object-cover border border-white/10" />
+                                    <img
+                                      src={pro.profilePicture}
+                                      className="w-10 h-10 rounded-full object-cover border border-white/10"
+                                    />
                                   ) : (
                                     <div className="w-10 h-10 rounded-full bg-neutral-900 border border-white/10 flex items-center justify-center text-white/40 text-xs font-bold">
-                                      {getInitials(booking.professional?.name || "Matched Pro")}
+                                      {getInitials(
+                                        booking.professional?.name ||
+                                          "Matched Pro"
+                                      )}
                                     </div>
                                   )}
                                   <div>
-                                    <h3 className="text-xs font-bold text-white capitalize">{booking.professional?.name?.toLowerCase()}</h3>
+                                    <h3 className="text-xs font-bold text-white capitalize">
+                                      {booking.professional?.name?.toLowerCase()}
+                                    </h3>
                                     <span className="px-1.5 py-0.5 rounded bg-[#BFF367]/10 text-[#BFF367] border border-[#BFF367]/20 text-[8px] font-black uppercase tracking-wider block mt-1 w-max">
                                       {booking.role}
                                     </span>
                                   </div>
                                 </div>
-                                
-                                <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
-                                  booking.status === "ASSIGNED" ? "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20" :
-                                  booking.status === "IN_PROGRESS" ? "bg-green-500/10 text-green-500 border border-green-500/20" :
-                                  booking.status === "COMPLETED" ? "bg-blue-500/10 text-blue-500 border border-blue-500/20" :
-                                  "bg-red-500/10 text-red-500 border border-red-500/20"
-                                }`}>
+
+                                <span
+                                  className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
+                                    booking.status === "ASSIGNED"
+                                      ? "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"
+                                      : booking.status === "IN_PROGRESS"
+                                        ? "bg-green-500/10 text-green-500 border border-green-500/20"
+                                        : booking.status === "COMPLETED"
+                                          ? "bg-blue-500/10 text-blue-500 border border-blue-500/20"
+                                          : "bg-red-500/10 text-red-500 border border-red-500/20"
+                                  }`}
+                                >
                                   {booking.status}
                                 </span>
                               </div>
@@ -823,30 +1116,54 @@ const TurfBookingHistory = () => {
                                 <div className="flex justify-between">
                                   <span className="text-white/40">Venue:</span>
                                   <span className="text-white font-bold max-w-[180px] truncate">
-                                    {booking.ground?.name || booking.customLocation?.address || "Custom location"}
+                                    {booking.ground?.name ||
+                                      booking.customLocation?.address ||
+                                      "Custom location"}
                                   </span>
                                 </div>
                                 <div className="flex justify-between">
-                                  <span className="text-white/40">Allocated Budget:</span>
-                                  <span className="text-[#CCFF00] font-black">₹{booking.hourlyRate}</span>
+                                  <span className="text-white/40">
+                                    Allocated Budget:
+                                  </span>
+                                  <span className="text-[#CCFF00] font-black">
+                                    ₹{booking.hourlyRate}
+                                  </span>
                                 </div>
                                 <div className="flex justify-between">
-                                  <span className="text-white/40">Matched On:</span>
-                                  <span className="text-white/80">{new Date(booking.createdAt).toLocaleDateString('en-GB')}</span>
+                                  <span className="text-white/40">
+                                    Matched On:
+                                  </span>
+                                  <span className="text-white/80">
+                                    {new Date(
+                                      booking.createdAt
+                                    ).toLocaleDateString("en-GB")}
+                                  </span>
                                 </div>
                                 <div className="flex justify-between">
-                                  <span className="text-white/40">Scheduled Time:</span>
-                                  <span className="text-white/80">{booking.matchDate || "N/A"} | {booking.matchStartTime || "TBD"} - {booking.matchEndTime || "TBD"}</span>
+                                  <span className="text-white/40">
+                                    Scheduled Time:
+                                  </span>
+                                  <span className="text-white/80">
+                                    {booking.matchDate || "N/A"} |{" "}
+                                    {booking.matchStartTime || "TBD"} -{" "}
+                                    {booking.matchEndTime || "TBD"}
+                                  </span>
                                 </div>
                               </div>
 
                               {booking.status === "ASSIGNED" && (
                                 <div className="bg-[#050505] border border-[#CCFF00]/30 text-[#CCFF00] rounded-lg p-3 text-center mt-4">
-                                  <span className="text-[9px] uppercase tracking-wider block text-white/50 mb-0.5">Check-In OTP Code</span>
+                                  <span className="text-[9px] uppercase tracking-wider block text-white/50 mb-0.5">
+                                    Check-In OTP Code
+                                  </span>
                                   {plainOtp ? (
-                                    <span className="text-xl font-black tracking-[0.25em]">{plainOtp}</span>
+                                    <span className="text-xl font-black tracking-[0.25em]">
+                                      {plainOtp}
+                                    </span>
                                   ) : (
-                                    <span className="text-[10px] text-white/40 italic block font-sans">OTP cached on matching device</span>
+                                    <span className="text-[10px] text-white/40 italic block font-sans">
+                                      OTP cached on matching device
+                                    </span>
                                   )}
                                 </div>
                               )}
@@ -855,50 +1172,39 @@ const TurfBookingHistory = () => {
                               <div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-white/5">
                                 {(!booking.reviews?.length || booking.status !== "COMPLETED") && ["IN_PROGRESS", "COMPLETED", "DISPUTED"].includes(booking.status) && (
                                   <button
-                                    onClick={() => {
-                                      const existingReview = booking.reviews?.[0];
+                                    onClick={() =>
                                       openProReviewModal(
-                                        booking.professional?.id || booking.professionalId,
-                                        booking.professional?.name || pro?.name || "Professional",
-                                        booking.id,
-                                        existingReview
-                                      );
-                                    }}
+                                        booking.professional?.id ||
+                                          booking.professionalId,
+                                        booking.professional?.name ||
+                                          pro?.name ||
+                                          "Professional"
+                                      )
+                                    }
                                     className="px-4 py-2 rounded-[6px] bg-[#CCFF00]/10 border border-[#CCFF00]/20 hover:bg-[#CCFF00] hover:text-black text-[#CCFF00] text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 active:scale-95"
                                   >
                                     <Star size={12} /> {booking.reviews && booking.reviews.length > 0 ? "Edit Review" : "Give Review"}
                                   </button>
                                 )}
-                                {["IN_PROGRESS"].includes(booking.status) && (
-                                  <button
-                                    onClick={() => setBookingToComplete(booking.id)}
-                                    className="px-4 py-2 rounded-[6px] bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500 hover:text-white text-blue-400 text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 active:scale-95"
-                                  >
-                                    <CheckCircle size={12} /> Booking Complete
-                                  </button>
-                                )}
-                                {canRaiseDispute(booking) && (
-                                  <button
-                                    onClick={() => setProDisputeBooking({
-                                      ...booking,
-                                      turf: { name: booking.professional?.name || booking.ground?.name || "Professional Service", ownerId: booking.professional?.id }
-                                    })}
-                                    className="px-4 py-2 rounded-[6px] bg-white/5 border border-white/10 hover:border-red-500/50 hover:text-red-500 text-gray-400 text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 active:scale-95"
-                                  >
-                                    <ShieldAlert size={12} /> Raise Dispute
-                                  </button>
-                                )}
-                                {booking.status === "DISPUTED" && (
-                                  <span className="px-3 py-1 bg-red-500/20 text-red-500 border border-red-500/30 rounded text-[10px] font-bold">DISPUTED (₹{booking.blockedAmount || 0})</span>
-                                )}
-                                {pro?.id && booking.status !== "CANCELLED" && (
-                                  <button
-                                    onClick={() => navigate(`/messages?userId=${pro.id}`)}
-                                    className="px-4 py-2 rounded-[6px] bg-[#CCFF00]/10 border border-[#CCFF00]/20 hover:bg-[#CCFF00] hover:text-black text-[#CCFF00] text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 active:scale-95"
-                                  >
-                                    <MessageCircle size={12} /> Chat
-                                  </button>
-                                )}
+                                {booking.status !== "CANCELLED" &&
+                                  booking.status !== "DISPUTED" && (
+                                    <button
+                                      onClick={() =>
+                                        setProDisputeBooking({
+                                          ...booking,
+                                          turf: {
+                                            name:
+                                              booking.professional?.name ||
+                                              booking.ground?.name ||
+                                              "Professional Service",
+                                          },
+                                        })
+                                      }
+                                      className="px-4 py-2 rounded-[6px] bg-white/5 border border-white/10 hover:border-red-500/50 hover:text-red-500 text-gray-400 text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 active:scale-95"
+                                    >
+                                      <ShieldAlert size={12} /> Raise Dispute
+                                    </button>
+                                  )}
                               </div>
                             </div>
                           );
@@ -917,20 +1223,32 @@ const TurfBookingHistory = () => {
                       <div className="space-y-4">
                         {professionalBookings.map((booking) => {
                           const statusColors = {
-                            APPROVED: 'text-[#CCFF00] bg-[#CCFF00]/10 border-[#CCFF00]/20',
-                            PENDING: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20',
-                            REJECTED: 'text-red-500 bg-red-500/10 border-red-500/20',
-                            COMPLETED: 'text-[#BFF367] bg-[#BFF367]/10 border-[#BFF367]/20'
+                            APPROVED:
+                              "text-[#CCFF00] bg-[#CCFF00]/10 border-[#CCFF00]/20",
+                            PENDING:
+                              "text-yellow-500 bg-yellow-500/10 border-yellow-500/20",
+                            REJECTED:
+                              "text-red-500 bg-red-500/10 border-red-500/20",
+                            COMPLETED:
+                              "text-[#BFF367] bg-[#BFF367]/10 border-[#BFF367]/20",
                           };
-                          const statusClass = statusColors[booking.status] || 'text-gray-400 bg-white/5 border-white/10';
-                          const profName = booking.professional?.user?.name || booking.professional?.businessName || "Professional";
-                          const profPic = booking.professional?.user?.profilePicture;
+                          const statusClass =
+                            statusColors[booking.status] ||
+                            "text-gray-400 bg-white/5 border-white/10";
+                          const profName =
+                            booking.professional?.user?.name ||
+                            booking.professional?.businessName ||
+                            "Professional";
+                          const profPic =
+                            booking.professional?.user?.profilePicture;
 
                           let slotsStr = "N/A";
                           try {
                             if (Array.isArray(booking.slots)) {
-                              slotsStr = booking.slots.map(s => `${s.startTime} - ${s.endTime}`).join(", ");
-                            } else if (typeof booking.slots === 'string') {
+                              slotsStr = booking.slots
+                                .map((s) => `${s.startTime} - ${s.endTime}`)
+                                .join(", ");
+                            } else if (typeof booking.slots === "string") {
                               slotsStr = booking.slots;
                             }
                           } catch (e) {
@@ -938,14 +1256,21 @@ const TurfBookingHistory = () => {
                           }
 
                           return (
-                            <div key={booking.id} className="group relative rounded-[8px] p-[1px] transition-all duration-300 cursor-pointer overflow-hidden">
+                            <div
+                              key={booking.id}
+                              className="group relative rounded-[8px] p-[1px] transition-all duration-300 cursor-pointer overflow-hidden"
+                            >
                               <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#CCFF00] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[8px]" />
                               <div className="absolute inset-0 border border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[8px]" />
-                              
+
                               <div className="relative bg-[#0d0d0d] rounded-[8px] p-4 flex flex-col md:flex-row gap-6 w-full">
                                 <div className="w-full md:w-32 h-32 shrink-0 rounded-[8px] overflow-hidden bg-white/5 flex items-center justify-center border border-white/5 relative">
                                   {profPic ? (
-                                    <img src={profPic} className="w-full h-full object-cover transition-all duration-500" alt="" />
+                                    <img
+                                      src={profPic}
+                                      className="w-full h-full object-cover transition-all duration-500"
+                                      alt=""
+                                    />
                                   ) : (
                                     <User className="w-12 h-12 text-gray-600" />
                                   )}
@@ -955,22 +1280,35 @@ const TurfBookingHistory = () => {
                                   <div>
                                     <div className="flex items-center gap-2 mb-2">
                                       <span className="px-1.5 py-0.5 bg-[#BFF367]/10 text-[#BFF367] rounded text-[8px] font-black uppercase tracking-widest border border-[#BFF367]/20">
-                                        {booking.bookingType || 'PROFESSIONAL'}
+                                        {booking.bookingType || "PROFESSIONAL"}
                                       </span>
                                       <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">
-                                        ID: #{booking.id?.slice(-5).toUpperCase()}
+                                        ID: #
+                                        {booking.id?.slice(-5).toUpperCase()}
                                       </span>
                                     </div>
                                     <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">
                                       {profName}
                                     </h3>
                                     <div className="flex flex-wrap items-center gap-4 text-[9px] font-black text-gray-500 uppercase tracking-widest">
-                                      <div className="flex items-center gap-1.5"><Clock size={12} className="text-[#CCFF00]" /> {slotsStr}</div>
-                                      <div className="flex items-center gap-1.5"><Calendar size={12} className="text-[#CCFF00]" /> {booking.date}</div>
+                                      <div className="flex items-center gap-1.5">
+                                        <Clock
+                                          size={12}
+                                          className="text-[#CCFF00]"
+                                        />{" "}
+                                        {slotsStr}
+                                      </div>
+                                      <div className="flex items-center gap-1.5">
+                                        <Calendar
+                                          size={12}
+                                          className="text-[#CCFF00]"
+                                        />{" "}
+                                        {booking.date}
+                                      </div>
                                     </div>
                                     {booking.message && (
                                       <p className="text-[10px] text-gray-500 italic mt-3 border-l-2 border-white/10 pl-2 leading-relaxed">
-                                        "{booking.message}"
+                                        &quot;{booking.message}&quot;
                                       </p>
                                     )}
                                   </div>
@@ -979,43 +1317,49 @@ const TurfBookingHistory = () => {
                                   <div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-white/5">
                                     {booking.status === "COMPLETED" && (
                                       <button
-                                        onClick={() => openProReviewModal(
-                                          booking.professional?.id || booking.professionalId,
-                                          profName
-                                        )}
+                                        onClick={() =>
+                                          openProReviewModal(
+                                            booking.professional?.id ||
+                                              booking.professionalId,
+                                            profName
+                                          )
+                                        }
                                         className="px-4 py-2 rounded-[6px] bg-[#CCFF00]/10 border border-[#CCFF00]/20 hover:bg-[#CCFF00] hover:text-black text-[#CCFF00] text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 active:scale-95"
                                       >
                                         <Star size={12} /> Rate Professional
                                       </button>
                                     )}
-                                    {booking.status !== "CANCELLED" && booking.status !== "DISPUTED" && booking.status !== "REJECTED" && (
-                                      <button
-                                        onClick={() => setProDisputeBooking({
-                                          ...booking,
-                                          turf: { name: profName }
-                                        })}
-                                        className="px-4 py-2 rounded-[6px] bg-white/5 border border-white/10 hover:border-red-500/50 hover:text-red-500 text-gray-400 text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 active:scale-95"
-                                      >
-                                        <ShieldAlert size={12} /> Raise Dispute
-                                      </button>
-                                    )}
-                                    {(booking.professional?.userId || booking.professional?.user?.id || booking.professionalId) && booking.status !== "CANCELLED" && (
-                                      <button
-                                        onClick={() => navigate(`/messages?userId=${booking.professional?.userId || booking.professional?.user?.id || booking.professionalId}`)}
-                                        className="px-4 py-2 rounded-[6px] bg-[#CCFF00]/10 border border-[#CCFF00]/20 hover:bg-[#CCFF00] hover:text-black text-[#CCFF00] text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 active:scale-95"
-                                      >
-                                        <MessageCircle size={12} /> Chat
-                                      </button>
-                                    )}
+                                    {booking.status !== "CANCELLED" &&
+                                      booking.status !== "DISPUTED" &&
+                                      booking.status !== "REJECTED" && (
+                                        <button
+                                          onClick={() =>
+                                            setProDisputeBooking({
+                                              ...booking,
+                                              turf: { name: profName },
+                                            })
+                                          }
+                                          className="px-4 py-2 rounded-[6px] bg-white/5 border border-white/10 hover:border-red-500/50 hover:text-red-500 text-gray-400 text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 active:scale-95"
+                                        >
+                                          <ShieldAlert size={12} /> Raise
+                                          Dispute
+                                        </button>
+                                      )}
                                   </div>
                                 </div>
 
                                 <div className="flex flex-col justify-between items-end py-1 shrink-0 border-t md:border-t-0 md:border-l border-white/5 pt-4 md:pt-0 md:pl-6 min-w-[120px]">
                                   <div className="text-right">
-                                    <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-1">Total Paid</p>
-                                    <p className="text-xl font-black text-white">₹{booking.totalAmount}</p>
+                                    <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-1">
+                                      Total Paid
+                                    </p>
+                                    <p className="text-xl font-black text-white">
+                                      ₹{booking.totalAmount}
+                                    </p>
                                   </div>
-                                  <div className={`px-3 py-1 rounded-[8px] text-[8px] font-black uppercase tracking-widest border ${statusClass}`}>
+                                  <div
+                                    className={`px-3 py-1 rounded-[8px] text-[8px] font-black uppercase tracking-widest border ${statusClass}`}
+                                  >
                                     {booking.status}
                                   </div>
                                 </div>
@@ -1046,7 +1390,7 @@ const TurfBookingHistory = () => {
         )}
 
         {selectedDisputeBooking && (
-          <RaiseDisputeModal
+          <ReportIssueFlowModal
             booking={selectedDisputeBooking}
             onClose={() => setSelectedDisputeBooking(null)}
             onSuccess={fetchBookingsRefresh}
@@ -1055,8 +1399,8 @@ const TurfBookingHistory = () => {
 
         {/* Professional-specific Dispute Modal */}
         {proDisputeBooking && (
-          <RaiseDisputeModal
-            isOpen={!!proDisputeBooking}
+          <ReportIssueFlowModal
+            booking={proDisputeBooking}
             onClose={() => setProDisputeBooking(null)}
             booking={proDisputeBooking}
           />
@@ -1095,15 +1439,22 @@ const TurfBookingHistory = () => {
         {proReviewModal.open && (
           <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[100] backdrop-blur-sm animate-fade-in">
             <div className="bg-zinc-950 border border-[#2D2D2D] rounded-[8px] p-8 w-full max-w-md shadow-2xl relative">
-              <button onClick={closeProReviewModal} className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors">
+              <button
+                onClick={closeProReviewModal}
+                className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
+              >
                 <X size={20} />
               </button>
-              <h2 className="text-2xl font-black uppercase tracking-tighter text-white mb-1">{proReviewModal.isEdit ? "Edit Review" : "Rate Professional"}</h2>
+              <h2 className="text-2xl font-black uppercase tracking-tighter text-white mb-1">
+                Rate Professional
+              </h2>
               <p className="text-[10px] font-bold text-[#CCFF00] uppercase tracking-widest mb-6">
                 {proReviewModal.professionalName}
               </p>
               <div className="mb-6">
-                <label className="block text-xs font-black uppercase tracking-widest text-zinc-500 mb-3">Rating</label>
+                <label className="block text-xs font-black uppercase tracking-widest text-zinc-500 mb-3">
+                  Rating
+                </label>
                 <div className="flex gap-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
@@ -1118,11 +1469,15 @@ const TurfBookingHistory = () => {
                   ))}
                 </div>
                 {proReviewRating === 0 && (
-                  <p className="text-[9px] text-zinc-600 mt-2 uppercase tracking-wider">Tap a star to rate</p>
+                  <p className="text-[9px] text-zinc-600 mt-2 uppercase tracking-wider">
+                    Tap a star to rate
+                  </p>
                 )}
               </div>
               <div className="mb-8">
-                <label className="block text-xs font-black uppercase tracking-widest text-zinc-500 mb-3">Your Review</label>
+                <label className="block text-xs font-black uppercase tracking-widest text-zinc-500 mb-3">
+                  Your Review
+                </label>
                 <textarea
                   rows="4"
                   className="w-full bg-[#000000] border border-[#2D2D2D] rounded-[8px] p-4 text-white placeholder-zinc-600 focus:outline-none focus:border-[#CCFF00]/50 transition-colors resize-none text-sm"

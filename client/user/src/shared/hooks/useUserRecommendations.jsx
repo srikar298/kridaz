@@ -17,10 +17,13 @@ const useUserRecommendations = (options = {}) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axiosInstance.get("/api/user/players/recommendations", {
-        params: { lat, lng, limit },
-        timeout: 10000
-      });
+      const response = await axiosInstance.get(
+        "/api/user/players/recommendations",
+        {
+          params: { lat, lng, limit },
+          timeout: 10000,
+        }
+      );
 
       if (response.data && response.data.players) {
         setRecommendations(response.data.players);
@@ -28,7 +31,10 @@ const useUserRecommendations = (options = {}) => {
         setRecommendations([]);
       }
     } catch (err) {
-      console.error("[useUserRecommendations] Error fetching user recommendations:", err);
+      console.error(
+        "[useUserRecommendations] Error fetching user recommendations:",
+        err
+      );
       let errMsg = "Failed to load player suggestions";
       if (err.response?.data?.message) {
         errMsg = err.response.data.message;

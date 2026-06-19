@@ -6,7 +6,7 @@ sidebar_label: Core Architecture
 
 # Tournament Platform Core Architecture
 
-This document describes the core architecture of the **Kridaz Unified Tournament Platform**. 
+This document describes the core architecture of the **Kridaz Unified Tournament Platform**.
 
 Rather than hardcoding tournament brackets or relying on unstructured JSON document fields, Kridaz uses a fully relational, decoupled stage database schema in PostgreSQL. This allows organizers to assemble custom tournament progression paths while keeping data structured, normalized, and performant.
 
@@ -55,7 +55,7 @@ model Stage {
   sequence        Int            // Order of execution
   isFinal         Boolean        @default(false)
   matchCount      Int
-  
+
   // Relations
   tournament      Tournament     @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   matches         Match[]

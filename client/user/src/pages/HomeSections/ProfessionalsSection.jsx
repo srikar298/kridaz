@@ -1,7 +1,14 @@
-/* eslint-disable react/prop-types */
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Star, Shield, Video, Activity, Award, Check } from "lucide-react";
+import {
+  Star,
+  Shield,
+  Video,
+  Activity,
+  Award,
+  Check,
+  ChevronRight,
+} from "lucide-react";
 
 const GRAD = "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)";
 
@@ -27,7 +34,7 @@ export default function ProfessionalsSection({
               style={{ background: GRAD }}
             ></div>
             <h2
-              className="text-3xl md:text-5xl lg:text-6xl font-black text-white uppercase tracking-tighter leading-none"
+              className="text-[14px] font-black text-white tracking-tighter leading-none"
               style={{ fontFamily: "'Open Sans', sans-serif" }}
             >
               PRO{" "}
@@ -49,31 +56,39 @@ export default function ProfessionalsSection({
             </p>
           </div>
 
-          {/* Refined Tabs */}
-          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 md:pb-0">
-            {["ALL SPORTS", "CRICKET", "BADMINTON", "FOOTBALL", "TENNIS"].map(
-              (tab, i) => (
-                <button
-                  key={tab}
-                  className={`px-6 py-2.5 rounded-full font-black text-[10px] shrink-0 transition-all duration-300 uppercase tracking-widest border ${
-                    i === 0
-                      ? "text-black shadow-[0_0_15px_rgba(85,222,232,0.3)]"
-                      : "bg-white/5 text-white/40 border-white/5 hover:border-white/10 hover:text-white"
-                  }`}
-                  style={
-                    i === 0
-                      ? {
-                          background:
-                            "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)",
-                          borderColor: "#BFF367",
-                        }
-                      : {}
-                  }
-                >
-                  {tab}
-                </button>
-              )
-            )}
+          <div className="flex items-center gap-4">
+            <div className="hidden lg:flex gap-2 overflow-x-auto no-scrollbar pb-2 md:pb-0 mr-4">
+              {["ALL SPORTS", "CRICKET", "BADMINTON", "FOOTBALL", "TENNIS"].map(
+                (tab, i) => (
+                  <button
+                    key={tab}
+                    className={`px-6 py-2.5 rounded-full font-black text-[10px] shrink-0 transition-all duration-300 uppercase tracking-widest border ${
+                      i === 0
+                        ? "text-black shadow-[0_0_15px_rgba(85,222,232,0.3)]"
+                        : "bg-white/5 text-white/40 border-white/5 hover:border-white/10 hover:text-white"
+                    }`}
+                    style={
+                      i === 0
+                        ? {
+                            background:
+                              "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)",
+                            borderColor: "#BFF367",
+                          }
+                        : {}
+                    }
+                  >
+                    {tab}
+                  </button>
+                )
+              )}
+            </div>
+            <Link
+              to="/professionals"
+              className="flex items-center gap-1 font-semibold text-[10px] md:text-[15px] transition-all hover:text-[#BFF367] text-[#888] whitespace-nowrap"
+            >
+              View All <span className="hidden md:inline">Pros</span>{" "}
+              <ChevronRight size={16} />
+            </Link>
           </div>
         </div>
 
@@ -95,9 +110,11 @@ export default function ProfessionalsSection({
           ) : (
             professionals.slice(0, 8).map((pro) => (
               <div
-                key={pro._id}
+                key={pro._id || pro.id}
                 className="group cursor-pointer"
-                onClick={() => navigate(`/professionals/${pro._id}`)}
+                onClick={() =>
+                  navigate(`/profile/${pro.userId || pro.id || pro._id}`)
+                }
               >
                 <div className="relative bg-[#121212] rounded-[8px] p-1.5 border border-white/5 transition-all duration-500 hover:border-[#BFF367]/20 hover:shadow-[0_15px_30px_rgba(0,0,0,0.4)]">
                   {/* Compact Profile Image Section */}
@@ -205,7 +222,9 @@ export default function ProfessionalsSection({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/professionals/${pro._id}`);
+                          navigate(
+                            `/profile/${pro.userId || pro.id || pro._id}`
+                          );
                         }}
                         className="px-4 py-2 rounded-[8px] font-black text-[9px] uppercase tracking-wider transition-all duration-300 text-black hover:scale-105 shadow-[0_0_15px_rgba(85,222,232,0.3)]"
                         style={{ background: GRAD }}
@@ -223,4 +242,3 @@ export default function ProfessionalsSection({
     </section>
   );
 }
-

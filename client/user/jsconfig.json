@@ -10,7 +10,6 @@
     "baseUrl": ".",
     "types": ["vite/client"],
     "paths": {
-      "@/*": ["src/*"],
       "@app/*": ["src/app/*"],
       "@components/*": ["src/shared/components/*"],
       "@hooks/useAxiosInstance": ["src/infrastructure/axios.js"],
@@ -31,7 +30,8 @@
       "@user/hooks/*": ["src/shared/hooks/*"],
       "@user/utils/*": ["src/shared/utils/*"],
       "@user/services/*": ["src/shared/services/*"],
-      "@user/*": ["src/*"]
+      "@user/*": ["src/*"],
+      "@/*": ["src/*"]
     }
   },
   "exclude": ["node_modules", "dist"]

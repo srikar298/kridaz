@@ -1,1 +1,10 @@
-{"parameters":[{"in":"query","name":"username","required":true,"schema":{"type":"string"}}]}
+{
+  "parameters": [
+    {
+      "in": "query",
+      "name": "username",
+      "required": true,
+      "schema": { "type": "string" }
+    }
+  ]
+}

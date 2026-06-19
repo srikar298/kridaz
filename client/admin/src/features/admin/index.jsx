@@ -2,6 +2,8 @@
 export { default as UserManagement } from "./UserManagement/UserPage";
 export { default as VerificationCenter } from "./OwnerRequests/VerificationCenter";
 export { default as AdminDashboard } from "./Dashboard/AdminDashboard";
+export { default as AddVenueInvite } from "./VenueInvites/AddVenueInvite";
+export { default as InviteDashboard } from "./VenueInvites/InviteDashboard";
 export { default as PartnerViewer } from "./OwnerManagement/OwnerViewer";
 export { default as TurfList } from "./Turf/TurfList";
 export { default as AllTurf } from "./Turf/AllTurf";
@@ -23,3 +25,4 @@ export { default as FinancialMissionControl } from "./Finance/FinancialMissionCo
 export { default as HostedGamesPage } from "./HostedGames/HostedGamesPage";
 export { default as CouponManagement } from "./Coupons/CouponManagement";
 export { default as ReelReports } from "./Reels/ReelReports";
+export { default as ErrorLogs } from "./ErrorLogs/ErrorLogs";

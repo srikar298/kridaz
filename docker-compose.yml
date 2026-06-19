@@ -1,0 +1,93 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: kridaz-db
+    environment:
+      POSTGRES_USER: kridaz
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: kridaz
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kridaz"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: kridaz-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: kridaz-api
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    environment:
+      - DATABASE_URL=postgresql://kridaz:password@db:5432/kridaz
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=development
+      - PORT=4000
+      - ENABLE_WORKERS=false
+    # To run migrations prior to API starting locally, you can use:
+    # command: sh -c "pnpm run migrate && pnpm run start"
+    command: sh -c "pnpm run migrate && pnpm run start"
+
+  worker:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: kridaz-worker
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      api:
+        condition: service_started
+    environment:
+      - DATABASE_URL=postgresql://kridaz:password@db:5432/kridaz
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=development
+      - ENABLE_WORKERS=true
+    command: pnpm run worker
+
+  user-web:
+    build:
+      context: .
+      dockerfile: client/user/Dockerfile
+    container_name: kridaz-user-web
+    ports:
+      - "3000:80"
+
+  admin-web:
+    build:
+      context: .
+      dockerfile: client/admin/Dockerfile
+    container_name: kridaz-admin-web
+    ports:
+      - "3001:80"
+
+volumes:
+  pgdata:
+  redisdata:

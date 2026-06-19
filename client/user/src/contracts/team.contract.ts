@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-export const teamMemberRoleSchema = z.enum(["CAPTAIN", "VICE_CAPTAIN", "PLAYER", "GUEST"]);
+export const teamMemberRoleSchema = z.enum([
+  "CAPTAIN",
+  "VICE_CAPTAIN",
+  "PLAYER",
+  "GUEST",
+]);
 
 export const teamMemberSchema = z.object({
   id: z.string().uuid(),
@@ -8,7 +13,7 @@ export const teamMemberSchema = z.object({
   userId: z.string().uuid().optional(),
   name: z.string().min(1),
   role: teamMemberRoleSchema.default("PLAYER"),
-  status: z.enum(["PENDING", "ACCEPTED", "DECLINED"]).default("PENDING")
+  status: z.enum(["PENDING", "ACCEPTED", "DECLINED"]).default("PENDING"),
 });
 
 export const teamSchema = z.object({
@@ -19,13 +24,13 @@ export const teamSchema = z.object({
   sportType: z.string().min(1, "Sport type is required"),
   creatorId: z.string().uuid(),
   members: z.array(teamMemberSchema).default([]),
-  createdAt: z.string().datetime().optional()
+  createdAt: z.string().datetime().optional(),
 });
 
 export const createTeamSchema = z.object({
   name: z.string().min(3, "Team name must be at least 3 characters"),
   sportType: z.string().min(1, "Sport type is required"),
-  logo: z.string().optional()
+  logo: z.string().optional(),
 });
 
 export const teamInviteSchema = z.object({
@@ -33,7 +38,7 @@ export const teamInviteSchema = z.object({
   userId: z.string().uuid().optional(),
   name: z.string().optional(),
   phone: z.string().optional(),
-  email: z.string().email().optional()
+  email: z.string().email().optional(),
 });
 
 export type TeamMemberRole = z.infer<typeof teamMemberRoleSchema>;

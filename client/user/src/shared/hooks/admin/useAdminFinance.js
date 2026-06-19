@@ -16,15 +16,19 @@ const useAdminFinance = () => {
         axiosInstance.get("/api/admin/withdrawals/list"),
         axiosInstance.get("/api/admin/owners/all"),
         axiosInstance.get("/api/admin/settings/payout"),
-        axiosInstance.get("/api/admin/dashboard/")
+        axiosInstance.get("/api/admin/dashboard/"),
       ]);
 
       setPayoutRequests(reqsRes.data.requests || []);
-      setKycQueue(kycRes.data.owners?.filter(o => o.bankingDetails?.kycStatus === "PENDING") || []);
+      setKycQueue(
+        kycRes.data.owners?.filter(
+          (o) => o.bankingDetails?.kycStatus === "PENDING"
+        ) || []
+      );
       setPayoutSettings(settingsRes.data.settings);
       setStats({
         totalRevenue: statsRes.data.totalPayouts + statsRes.data.totalBookings, // Rough estimation
-        totalPayouts: statsRes.data.totalPayouts
+        totalPayouts: statsRes.data.totalPayouts,
       });
     } catch (err) {
       console.error(err);
@@ -58,7 +62,16 @@ const useAdminFinance = () => {
     fetchData();
   }, []);
 
-  return { payoutRequests, kycQueue, payoutSettings, stats, loading, updatePayoutSettings: updatePayoutSettingsConfig, verifyKYC, refresh: fetchData };
+  return {
+    payoutRequests,
+    kycQueue,
+    payoutSettings,
+    stats,
+    loading,
+    updatePayoutSettings: updatePayoutSettingsConfig,
+    verifyKYC,
+    refresh: fetchData,
+  };
 };
 
 export default useAdminFinance;

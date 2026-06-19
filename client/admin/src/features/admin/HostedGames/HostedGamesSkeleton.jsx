@@ -11,7 +11,7 @@ const HostedGamesSkeleton = () => {
         </div>
         <div className="h-14 bg-[#2D2D2D]/20 rounded-[12px] w-full lg:w-96"></div>
       </div>
-      
+
       <div className="space-y-6">
         {/* Table Header */}
         <div className="hidden lg:grid grid-cols-12 gap-4 px-8 py-4 bg-[#0d0d0d] border border-[#2D2D2D]/30 rounded-[12px]">
@@ -25,7 +25,10 @@ const HostedGamesSkeleton = () => {
         {/* List Items */}
         <div className="space-y-3">
           {[...Array(6)].map((_, index) => (
-            <div key={index} className="bg-[#000000] border border-[#2D2D2D]/30 rounded-[12px] p-5">
+            <div
+              key={index}
+              className="bg-[#000000] border border-[#2D2D2D]/30 rounded-[12px] p-5"
+            >
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
                 <div className="lg:col-span-3 flex items-center gap-5">
                   <div className="w-11 h-11 rounded-[10px] bg-[#2D2D2D]/50"></div>

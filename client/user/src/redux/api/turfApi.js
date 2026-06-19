@@ -23,6 +23,14 @@ export const turfApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Turf"],
     }),
+    getTurfDetails: builder.query({
+      query: (id) => `/api/user/turf/details/${id}`,
+      providesTags: ["Turf"],
+    }),
+    getTurfReviews: builder.query({
+      query: (id) => `/api/user/review/${id}`,
+      providesTags: ["Turf"],
+    }),
   }),
 });
 
@@ -30,4 +38,6 @@ export const {
   useGetTurfsQuery,
   useGetSavedTurfsQuery,
   useToggleTurfLikeMutation,
+  useGetTurfDetailsQuery,
+  useGetTurfReviewsQuery,
 } = turfApi;

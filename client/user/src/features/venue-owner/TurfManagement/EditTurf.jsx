@@ -1,16 +1,19 @@
 ﻿import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Controller } from "react-hook-form";
-import { setHours, setMinutes } from "date-fns";
-import ClockPicker from "@components/common/ClockPicker";
-import { FormField, Button } from "@components/common";
-import useEditTurf from "@hooks/owner/useEditTurf";
-import DashboardSkeleton from "../Dashboard/DashboardSkeleton";
-import { ArrowLeft, MapPin, Map, LocateFixed, X } from "lucide-react";
+import { FormField } from "@components/common";
+import { useParams } from "react-router-dom";
+import useEditTurf from "@hooks/venue-owner/useEditTurf";
+import {
+  fetchStates,
+  fetchCities,
+  searchLocations,
+} from "@utils/locationService";
+import { Search, Plus } from "lucide-react";
+import toast from "react-hot-toast";
 
 const EditTurf = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -49,14 +52,193 @@ const EditTurf = () => {
     setNewManagerPhone,
     addManagerContact,
     removeManagerContact,
-    updateSlotPrice,
     turf,
-    settings
   } = useEditTurf(id);
 
-  const sportsOptions = ["Football", "Cricket", "Tennis", "Badminton", "Table Tennis", "Basketball", "Volleyball", "Hockey"];
-  const groundTypeOptions = ["Natural Grass", "Artificial Turf", "Clay", "Hard Court", "Small Turf", "Indoor Court"];
-  const facilitiesOptions = ["Parking", "Washroom", "Drinking Water", "Changing Room", "First Aid", "Locker Room", "Cafeteria", "WiFi", "Lighting", "Sitting Area"];
+  const [currentStep, setCurrentStep] = useState(1);
+  const [statesList, setStatesList] = useState([]);
+  const [citiesList, setCitiesList] = useState([]);
+
+  const [locationSearchQuery, setLocationSearchQuery] = useState("");
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [isSearchingLocation, setIsSearchingLocation] = useState(false);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+
+  // Pre-fill location search box once turf data loads
+  useEffect(() => {
+    if (turf?.location && !locationSearchQuery) {
+      setLocationSearchQuery(turf.location);
+    }
+  }, [turf]);
+
+  const selectedState = watch("state");
+  const watchedLat = watch("latitude");
+  const watchedLng = watch("longitude");
+  const watchedLocation = watch("location");
+  const watchedCity = watch("city");
+  const watchedPricePerHour = watch("pricePerHour");
+  const watchedSlotDuration = watch("slotDuration") || 60;
+  const watchedFacilityCategory = watch("facilityCategory") || "Turf";
+  const watchedImages = watch("images");
+  const watchedMapUrl = watch("mapUrl");
+
+  // Auto-extract lat/lng from Google Maps URL
+  useEffect(() => {
+    if (watchedMapUrl) {
+      const regexAt = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+      const regexQ = /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/;
+      let lat, lng;
+      const matchAt = watchedMapUrl.match(regexAt);
+      if (matchAt && matchAt.length >= 3) {
+        lat = matchAt[1];
+        lng = matchAt[2];
+      } else {
+        const matchQ = watchedMapUrl.match(regexQ);
+        if (matchQ && matchQ.length >= 3) {
+          lat = matchQ[1];
+          lng = matchQ[2];
+        }
+      }
+      if (lat && lng) {
+        if (watchedLat !== lat)
+          setValue("latitude", lat, {
+            shouldValidate: true,
+            shouldDirty: true,
+          });
+        if (watchedLng !== lng)
+          setValue("longitude", lng, {
+            shouldValidate: true,
+            shouldDirty: true,
+          });
+      }
+    }
+  }, [watchedMapUrl, watchedLat, watchedLng, setValue]);
+
+  // Location Autocomplete
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (locationSearchQuery && locationSearchQuery.length >= 3) {
+        setIsSearchingLocation(true);
+        const results = await searchLocations(locationSearchQuery);
+        setLocationSuggestions(results);
+        setIsSearchingLocation(false);
+      } else {
+        setLocationSuggestions([]);
+      }
+    }, 500);
+    return () => clearTimeout(delayDebounceFn);
+  }, [locationSearchQuery]);
+
+  const handleLocationSelect = (loc) => {
+    setValue("location", loc.display_name, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    setValue("city", loc.city || loc.suburb || loc.display_name, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    setValue("state", loc.state || loc.display_name, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    setValue("latitude", loc.lat, { shouldValidate: true, shouldDirty: true });
+    setValue("longitude", loc.lon, { shouldValidate: true, shouldDirty: true });
+    setLocationSearchQuery(loc.display_name);
+    setShowLocationSuggestions(false);
+  };
+
+  const imagePreviews = React.useMemo(() => {
+    if (!watchedImages) return [];
+    try {
+      if (watchedImages.length > 0) {
+        return Array.from(watchedImages).map((file) =>
+          URL.createObjectURL(file)
+        );
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    return [];
+  }, [watchedImages]);
+
+  // Calculate projected earnings
+  const activeSlotsCount = generatedSlots.filter((s) => s.isActive).length;
+  const hasSlotPrices = generatedSlots.some(
+    (s) => s.isActive && Number(s.price) > 0
+  );
+  const perSlotPrice =
+    (Number(watchedPricePerHour) || 0) * (Number(watchedSlotDuration) / 60);
+  const totalDailyEarnings = activeSlotsCount * perSlotPrice;
+
+  // Load states on mount
+  useEffect(() => {
+    fetchStates().then(setStatesList);
+  }, []);
+
+  // Load cities when state changes
+  useEffect(() => {
+    if (selectedState) {
+      fetchCities(selectedState).then(setCitiesList);
+    } else {
+      setCitiesList([]);
+    }
+  }, [selectedState]);
+
+  // Build live map preview URL from coords or address
+  const mapPreviewUrl = React.useMemo(() => {
+    if (
+      watchedLat &&
+      watchedLng &&
+      !isNaN(Number(watchedLat)) &&
+      !isNaN(Number(watchedLng))
+    ) {
+      return `https://maps.google.com/maps?q=${watchedLat},${watchedLng}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+    }
+    const q = [watchedLocation, watchedCity, selectedState]
+      .filter(Boolean)
+      .join(", ");
+    if (q.length > 3) {
+      return `https://maps.google.com/maps?q=${encodeURIComponent(q)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+    }
+    return null;
+  }, [watchedLat, watchedLng, watchedLocation, watchedCity, selectedState]);
+
+  const sportsOptions = [
+    "Football",
+    "Cricket",
+    "Tennis",
+    "Badminton",
+    "Table Tennis",
+    "Basketball",
+    "Volleyball",
+    "Hockey",
+  ];
+  const groundTypeOptions = [
+    "Natural Grass",
+    "Artificial Turf",
+    "Clay",
+    "Hard Court",
+    "Small Turf",
+    "Indoor Court",
+  ];
+  const facilitiesOptions = [
+    "Parking",
+    "Washroom",
+    "Drinking Water",
+    "Changing Room",
+    "First Aid",
+    "Locker Room",
+    "Cafeteria",
+    "WiFi",
+    "Lighting",
+    "Sitting Area",
+    "Pavilion",
+    "Sight Screen",
+    "Flood Lights",
+    "Boundary Netting",
+    "Shower",
+  ];
 
   const [previews, setPreviews] = React.useState([]);
 
@@ -85,94 +267,462 @@ const EditTurf = () => {
   ) : null;
 
   return (
-    <div className="h-full custom-scrollbar bg-[#000000] text-white">
-      <div className="p-4 lg:px-10 lg:pt-8 lg:pb-12 space-y-8 animate-fade-in pt-0 pb-24 h-full relative">
+    <div
+      className="h-full custom-scrollbar bg-[#000000] text-white"
+      onClick={() => setShowLocationSuggestions(false)}
+    >
+      <div className="px-1 lg:px-3 lg:pt-2 lg:pb-3 space-y-8 animate-fade-in pt-0 pb-4 h-full relative">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
           <div className="space-y-1">
-            <div className="flex items-center gap-4">
-              <button 
-                onClick={() => navigate(-1)}
-                className="w-10 h-10 flex items-center justify-center bg-[#111] border border-[#2D2D2D] text-[#878C9F] hover:text-[#BFF367] hover:border-[#BFF367]/40 rounded-full transition-all group"
-                title="Cancel Changes"
-              >
-                <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
-              </button>
-              <div className="flex items-center gap-3">
-                
-                <h1 className="text-[28px] lg:text-[32px] font-bold font-open-sans text-white tracking-tight leading-none uppercase">
-                  EDIT <span className="text-[#BFF367]">FACILITY</span>
-                </h1>
-              </div>
+            <div className="flex items-center gap-3">
+              <h2 className="text-[20px] sm:text-[24px] lg:text-[32px] mt-2 sm:mt-0 font-black font-['Open_Sans'] tracking-tight text-white uppercase whitespace-nowrap">
+                EDIT{" "}
+                <span className="text-[#B3DC26]">
+                  {watchedFacilityCategory.toUpperCase()}
+                </span>
+              </h2>
             </div>
-            <p className="text-[#878C9F] font-inter text-[20px] mt-2 ml-14">
-              Update Facility Parameters | {turf?.name || "Kridaz"}
+            <p className="text-white/70 font-inter text-[20px] mt-2 ml-4">
+              Register a New Facility | Kridaz
             </p>
           </div>
         </header>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="grid grid-cols-1 md:grid-cols-2 gap-12 bg-[#000000] p-8 md:p-12 rounded-[8px] border border-[#2D2D2D] shadow-[var(--shadow-2)] relative overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#BFF367]/5 blur-[100px] pointer-events-none" />
-          
-          <div className="space-y-8 relative z-10">
-            <h3 className="text-[14px] font-bold text-[#BFF367] border-b border-[#2D2D2D] pb-3 mb-8 uppercase tracking-[3px] font-open-sans">General Information</h3>
-            
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1 flex items-center">
-                Turf Name <FieldStatus isPending={!!pendingUpdates?.name} />
-              </label>
-              <input
-                {...register("name")}
-                type="text"
-                className={`w-full bg-[#111111] border ${pendingUpdates?.name ? 'border-amber-500/40' : 'border-[#2D2D2D]'} text-white px-4 py-3 rounded-[8px] focus:border-[#BFF367]/60 focus:outline-none transition-all text-sm font-medium placeholder-[#333]`}
-                placeholder="Enter arena identity..."
-              />
-              {errors.name && <p className="text-[#BFF367] text-[10px] font-bold uppercase mt-2 block ml-1">{errors.name.message}</p>}
-            </div>
-            
-            <div className="form-control">
-              <label className="label mb-2">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1 flex items-center">
-                  Facility Description <FieldStatus isPending={!!pendingUpdates?.description} />
-                </span>
-              </label>
-              <textarea
-                {...register("description")}
-                className={`w-full bg-[#111111] border ${pendingUpdates?.description ? 'border-amber-500/40' : 'border-[#2D2D2D]'} text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-32 rounded-[8px] p-4 transition-all resize-none`}
-                placeholder="Describe your facility's features and amenities..."
-              ></textarea>
-              {errors.description && (
-                <span className="text-[#BFF367] text-[10px] font-bold uppercase mt-2 block ml-1">
-                  {errors.description.message}
-                </span>
+        {/* Step Indicators */}
+        <div className="flex items-center justify-between relative z-10 mb-8">
+          {[1, 2, 3].map((step) => (
+            <div
+              key={step}
+              className={`flex-1 flex flex-col items-center gap-2 relative ${currentStep === step ? "opacity-100" : "opacity-50"}`}
+            >
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm z-10 ${currentStep === step ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black shadow-[0_0_15px_rgba(204,255,0,0.5)]" : "bg-[#121212]  -white/10 text-white"}`}
+              >
+                {step}
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-center">
+                {step === 1
+                  ? "General Info"
+                  : step === 2
+                    ? "Legalities"
+                    : "Slot Mgmt"}
+              </span>
+              {step < 3 && (
+                <div
+                  className={`absolute top-5 left-[50%] w-full h-[2px] ${currentStep > step ? "bg-[#B3DC26]" : "bg-[#1B1B1B]"}`}
+                />
               )}
             </div>
+          ))}
+        </div>
 
-            <div className="form-control">
-              <label className="label mb-2">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1 flex items-center">
-                  Venue Policies and Rules <FieldStatus isPending={!!pendingUpdates?.policies} />
-                </span>
-              </label>
-              <textarea
-                {...register("policies")}
-                maxLength={1000}
-                className={`w-full bg-[#111111] border ${pendingUpdates?.policies ? 'border-amber-500/40' : 'border-[#2D2D2D]'} text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-48 rounded-[8px] p-4 transition-all resize-none`}
-                placeholder="Define your facility's rules, cancellation policies, and safety guidelines (Minimum 200 characters)..."
-              ></textarea>
-              <div className="flex justify-between mt-2 ml-1">
-                {errors.policies ? (
-                  <span className="text-[#BFF367] text-[10px] font-bold uppercase">
-                    {errors.policies.message}
+        <form
+          onSubmit={handleSubmit(onSubmit, (errors) => {
+            const firstErrorKey = Object.keys(errors)[0];
+            if (firstErrorKey) {
+              const errorMessage =
+                errors[firstErrorKey]?.message ||
+                `Please check the ${firstErrorKey} field`;
+              let stepError = 1;
+              const step2Fields = [
+                "saleDeed",
+                "electricityBill",
+                "gstRegistration",
+                "rentalAgreement",
+                "ownershipAgreement",
+                "policies",
+                "managerContacts",
+              ];
+              const step3Fields = [
+                "pricePerHour",
+                "openTime",
+                "closeTime",
+                "slotDuration",
+                "breakTime",
+                "availableDays",
+                "offDays",
+                "slotsConfigDuration",
+                "slotsConfigWeeks",
+              ];
+              if (step2Fields.includes(firstErrorKey)) stepError = 2;
+              if (step3Fields.includes(firstErrorKey)) stepError = 3;
+
+              toast.error(`Step ${stepError}: ${errorMessage}`);
+            } else {
+              toast.error("Please fill all required fields correctly.");
+            }
+          })}
+          className="grid grid-cols-1 gap-6 md:gap-12 bg-[#000000] px-2 py-4 md:p-8 rounded-[16px] border-none md:border md:border-white/10 md:shadow-[var(--shadow-2)] relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#B3DC26]/5 blur-[100px] pointer-events-none" />
+
+          {/* Hidden fields for coords to still take GPS data */}
+          <input type="hidden" {...register("latitude")} />
+          <input type="hidden" {...register("longitude")} />
+          <input type="hidden" {...register("state")} />
+          <input type="hidden" {...register("city")} />
+
+          {/* STEP 1: General Information */}
+          {currentStep === 1 && (
+            <div className="col-span-1 grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 animate-fade-in">
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    {watchedFacilityCategory} Name
                   </span>
-                ) : (
-                  <span className="text-[#444] text-[10px] font-bold uppercase tracking-widest">
-                    {watch("policies")?.length || 0} / 1000 max characters (200 min)
+                </label>
+                <input
+                  type="text"
+                  placeholder={`${watchedFacilityCategory} Name`}
+                  {...register("name")}
+                  className={`w-full bg-[#121212] border ${errors.name ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
+                />
+                {errors.name && (
+                  <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
+                    {errors.name.message}
                   </span>
                 )}
               </div>
+
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Facility Images (Up to 10)
+                  </span>
+                </label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="w-full bg-[#121212] border border-white/10 text-white/70 file:bg-[#1B1B1B] file:text-white file:border-none file:px-6 file:h-12 file:mr-4 file:font-bold file:uppercase file:text-[10px] file:tracking-widest rounded-[16px] h-12 flex items-center focus:outline-none transition-all cursor-pointer"
+                  onChange={(e) => setValue("images", e.target.files)}
+                />
+                {errors.images && (
+                  <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
+                    {errors.images.message}
+                  </span>
+                )}
+
+                {/* New file previews */}
+                {imagePreviews.length > 0 && (
+                  <div className="flex gap-4 mt-4 overflow-x-auto pb-2 custom-scrollbar">
+                    {imagePreviews.map((src, i) => (
+                      <img
+                        key={i}
+                        src={src}
+                        alt={`preview ${i}`}
+                        className="w-20 h-20 object-cover rounded-[16px] border border-white/10"
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Existing images from server (shown when no new file chosen) */}
+                {imagePreviews.length === 0 && turf?.images?.length > 0 && (
+                  <div>
+                    <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-3 mb-2 ml-1">
+                      Current Images
+                    </p>
+                    <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                      {turf.images.map((src, i) => (
+                        <img
+                          key={i}
+                          src={src}
+                          alt={`existing ${i}`}
+                          className="w-20 h-20 object-cover rounded-[16px] border border-[#B3DC26]/20 shrink-0"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    YouTube Video URL
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="https://www.youtube.com/watch?v=..."
+                  {...register("youtubeUrl")}
+                  className={`w-full bg-[#121212] border ${errors.youtubeUrl ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
+                />
+                {errors.youtubeUrl && (
+                  <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
+                    {errors.youtubeUrl.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Facility Category
+                  </span>
+                </label>
+                <select
+                  {...register("facilityCategory", {
+                    required: "Please select a category",
+                  })}
+                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
+                >
+                  <option value="">Select Category</option>
+                  <option value="Turf">Venue</option>
+                  <option value="Ground">Ground</option>
+                  <option value="Court">Court</option>
+                  <option value="Stadium">Stadium</option>
+                </select>
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Sport Arsenal
+                  </span>
+                </label>
+                <select
+                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
+                  onChange={(e) => addSportType(e.target.value)}
+                  value=""
+                >
+                  <option value="" disabled>
+                    Select Sports
+                  </option>
+                  {sportsOptions.map((o) => (
+                    <option key={o} value={o} disabled={sportTypes.includes(o)}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {sportTypes.map((type, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1.5 bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold rounded-[16px] text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                    >
+                      {type}{" "}
+                      <button
+                        type="button"
+                        onClick={() => removeSportType(type)}
+                        className="hover:text-white transition-colors"
+                      >
+                        <Plus size={12} className="rotate-45" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Ground Composition
+                  </span>
+                </label>
+                <select
+                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
+                  onChange={(e) => addGroundType(e.target.value)}
+                  value=""
+                >
+                  <option value="" disabled>
+                    Select Ground Types
+                  </option>
+                  {groundTypeOptions.map((o) => (
+                    <option
+                      key={o}
+                      value={o}
+                      disabled={groundTypes.includes(o)}
+                    >
+                      {o}
+                    </option>
+                  ))}
+                </select>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {groundTypes.map((type, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1.5 bg-[#1B1B1B] border border-white/10 text-white font-bold rounded-[16px] text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                    >
+                      {type}{" "}
+                      <button
+                        type="button"
+                        onClick={() => removeGroundType(type)}
+                        className="hover:text-[#B3DC26] transition-colors"
+                      >
+                        <Plus size={12} className="rotate-45" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Facilities
+                  </span>
+                </label>
+                <select
+                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
+                  onChange={(e) => addFacility(e.target.value)}
+                  value=""
+                >
+                  <option value="" disabled>
+                    Select Facilities
+                  </option>
+                  {facilitiesOptions.map((o) => (
+                    <option key={o} value={o} disabled={facilities.includes(o)}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {facilities.map((type, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1.5 bg-[#1B1B1B] border border-white/10 text-[#B3DC26] font-bold rounded-[16px] text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                    >
+                      {type}{" "}
+                      <button
+                        type="button"
+                        onClick={() => removeFacility(type)}
+                        className="hover:text-white transition-colors"
+                      >
+                        <Plus size={12} className="rotate-45" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-control md:col-span-3">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Facility Description
+                  </span>
+                </label>
+                <textarea
+                  {...register("description")}
+                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-32 rounded-[16px] p-4 transition-all"
+                ></textarea>
+              </div>
+
+              {/* Searchable Location Input */}
+              <div className="form-control relative">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Search Location
+                  </span>
+                </label>
+                <div className="relative" onClick={(e) => e.stopPropagation()}>
+                  <Search
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70"
+                    size={16}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Type to search location..."
+                    className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] pl-12 pr-4 transition-all"
+                    value={locationSearchQuery}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setLocationSearchQuery(val);
+                      setShowLocationSuggestions(true);
+                      setValue("location", val, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                      setValue("city", val, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                      setValue("state", val, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                    }}
+                    onFocus={() => setShowLocationSuggestions(true)}
+                  />
+
+                  {/* Autocomplete dropdown */}
+                  {showLocationSuggestions &&
+                    locationSuggestions.length > 0 && (
+                      <div className="absolute z-50 top-[52px] left-0 right-0 bg-[#121212] border border-white/10 rounded-[16px] shadow-2xl overflow-hidden max-h-[300px] overflow-y-auto custom-scrollbar">
+                        {locationSuggestions.map((loc, i) => (
+                          <div
+                            key={i}
+                            className="p-4 border-b border-white/10 last:border-b-0 hover:bg-[#1B1B1B] cursor-pointer transition-colors"
+                            onClick={() => handleLocationSelect(loc)}
+                          >
+                            <p className="text-sm text-white font-medium truncate">
+                              {loc.display_name}
+                            </p>
+                            {(loc.city || loc.state) && (
+                              <p className="text-[10px] text-white/70 mt-1 uppercase tracking-wider">
+                                {[loc.city, loc.state]
+                                  .filter(Boolean)
+                                  .join(", ")}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                </div>
+                {errors.location && (
+                  <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
+                    {errors.location.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-2">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                    Direct Google Maps URL
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="https://maps.app.goo.gl/..."
+                  {...register("mapUrl")}
+                  className={`w-full bg-[#121212] border ${errors.mapUrl ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
+                />
+                {errors.mapUrl && (
+                  <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
+                    {errors.mapUrl.message}
+                  </span>
+                )}
+              </div>
+
+              {mapPreviewUrl && (
+                <div className="form-control">
+                  <label className="label mb-4">
+                    <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1 flex items-center gap-2">
+                      📍 Map Preview
+                    </span>
+                  </label>
+                  <div
+                    className="relative w-full rounded-[16px] overflow-hidden border border-white/10 shadow-[var(--shadow-1)]"
+                    style={{ height: 220 }}
+                  >
+                    <iframe
+                      title="Location Preview"
+                      src={mapPreviewUrl}
+                      width="100%"
+                      height="100%"
+                      style={{
+                        border: 0,
+                        filter:
+                          "invert(90%) hue-rotate(180deg) saturate(0.7) brightness(0.9)",
+                      }}
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
             
             <div className="space-y-2">
@@ -188,289 +738,165 @@ const EditTurf = () => {
               {errors.location && <p className="text-[#BFF367] text-[10px] font-bold uppercase mt-2 block ml-1">{errors.location.message}</p>}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="form-control">
-                <label className="label mb-2">
-                  <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">City</span>
-                </label>
-                <input
-                  {...register("city")}
-                  type="text"
-                  placeholder="City"
-                  className="w-full bg-[#111111] border border-[#2D2D2D] text-white px-4 py-3 rounded-[8px] focus:border-[#BFF367]/60 focus:outline-none text-sm font-medium placeholder-[#333]"
-                />
-              </div>
+          {/* STEP 2: Legalities & Management */}
+          {currentStep === 2 && (
+            <div className="col-span-1 grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10 animate-fade-in">
+              <div className="space-y-8">
+                <h3 className="text-[14px] font-bold text-[#B3DC26] border-b border-white/10 pb-3 mb-8 uppercase tracking-[3px]">
+                  Legal Documents
+                </h3>
 
-              <div className="form-control">
-                <label className="label mb-2">
-                  <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">State</span>
-                </label>
-                <input
-                  {...register("state")}
-                  type="text"
-                  placeholder="State"
-                  className="w-full bg-[#111111] border border-[#2D2D2D] text-white px-4 py-3 rounded-[8px] focus:border-[#BFF367]/60 focus:outline-none text-sm font-medium placeholder-[#333]"
-                />
-              </div>
-            </div>
-
-            <div className="form-control">
-              <label className="label mb-4">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1 flex items-center gap-2">
-                   =��� Venue Coordinates & Map Preview
-                </span>
-              </label>
-
-              <div className="flex gap-4 mb-4">
-                <input
-                  {...register("latitude")}
-                  placeholder="Latitude"
-                  className="w-full bg-[#111111] border border-[#2D2D2D] text-white text-xs h-12 rounded-[8px] px-4 focus:outline-none focus:border-[#BFF367]/60 transition-all font-mono"
-                />
-                <input
-                  {...register("longitude")}
-                  placeholder="Longitude"
-                  className="w-full bg-[#111111] border border-[#2D2D2D] text-white text-xs h-12 rounded-[8px] px-4 focus:outline-none focus:border-[#BFF367]/60 transition-all font-mono"
-                />
-                <button
-                  type="button"
-                  onClick={getMyLocation}
-                  className={`shrink-0 px-6 rounded-[8px] bg-[#BFF367]/10 text-[#BFF367] border border-[#BFF367]/20 hover:bg-[#BFF367] hover:text-black transition-all flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest ${isLocating ? 'animate-pulse' : ''}`}
-                >
-                  {isLocating ? "LocatingGǪ" : "=��� GPS"}
-                </button>
-              </div>
-
-              <div className="w-full rounded-[8px] border border-[#2D2D2D] bg-[#050505] flex flex-col items-center justify-center py-10 gap-3 border-dashed">
-                <p className="text-[10px] font-bold text-[#333] uppercase tracking-[4px]">Map telemetry active</p>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1 flex items-center">
-                Hourly Rate (INR) <FieldStatus isPending={!!pendingUpdates?.pricePerHour} />
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#BFF367] font-bold text-sm">G�</span>
-                <input
-                  {...register("pricePerHour")}
-                  type="number"
-                  className={`w-full bg-[#111111] border ${pendingUpdates?.pricePerHour ? 'border-amber-500/40' : 'border-[#2D2D2D]'} text-white pl-10 pr-4 py-3 rounded-[8px] focus:border-[#BFF367]/60 focus:outline-none text-sm font-medium`}
-                />
-              </div>
-              {errors.pricePerHour && <p className="text-[#BFF367] text-[10px] font-bold uppercase mt-2 block ml-1">{errors.pricePerHour.message}</p>}
-            </div>
-          </div>
-
-          <div className="space-y-8 relative z-10">
-            <h3 className="text-[14px] font-bold text-[#BFF367] border-b border-[#2D2D2D] pb-3 mb-8 uppercase tracking-[3px] font-open-sans">Operational Details</h3>
-            
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1 flex items-center">
-                YouTube Telemetry (URL) <FieldStatus isPending={!!pendingUpdates?.youtubeUrl} />
-              </label>
-              <input
-                {...register("youtubeUrl")}
-                type="text"
-                className={`w-full bg-[#111111] border ${pendingUpdates?.youtubeUrl ? 'border-amber-500/40' : 'border-[#2D2D2D]'} text-white px-4 py-3 rounded-[8px] focus:border-[#BFF367]/60 focus:outline-none text-sm font-medium placeholder-[#333]`}
-                placeholder="https://www.youtube.com/watch?v=..."
-              />
-            </div>
-
-            <div className="form-control">
-              <label className="label mb-2">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Facility Images</span>
-              </label>
-              <div className="relative group">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="w-full bg-[#111111] border border-[#2D2D2D] text-[#878C9F] file:bg-[#2D2D2D] file:text-white file:border-none file:px-6 file:h-12 file:mr-4 file:font-bold file:uppercase file:text-[10px] file:tracking-widest rounded-[8px] h-12 flex items-center focus:outline-none transition-all cursor-pointer"
-                  onChange={handleImageChange}
-                />
-              </div>
-              
-              {previews.length > 0 && (
-                <div className="mt-4 grid grid-cols-5 gap-2">
-                  {previews.map((url, i) => (
-                    <div key={i} className="aspect-square rounded-[6px] border border-[#2D2D2D] overflow-hidden bg-[#050505] relative group/item">
-                      <img src={url} className="w-full h-full object-cover opacity-80 group-hover/item:opacity-100 transition-opacity" />
+                {[
+                  { name: "gstRegistration", label: "GST Registration" },
+                  { name: "saleDeed", label: "Sale Deed" },
+                  { name: "electricityBill", label: "Electricity Bill" },
+                  { name: "rentalAgreement", label: "Rental Agreement" },
+                  { name: "ownershipAgreement", label: "Ownership Agreement" },
+                  {
+                    name: "googleProfileScreenshot",
+                    label: "Google Profile Screenshot",
+                  },
+                ].map((doc) => {
+                  const selectedFiles = watch(doc.name);
+                  const hasFile = selectedFiles && selectedFiles.length > 0;
+                  return (
+                    <div className="form-control" key={doc.name}>
+                      <label className="label mb-2">
+                        <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                          {doc.label}
+                        </span>
+                      </label>
+                      <input
+                        type="file"
+                        accept=".pdf,image/*"
+                        className="w-full bg-[#121212] border border-white/10 text-white/70 file:bg-[#1B1B1B] file:text-white file:border-none file:px-6 file:h-12 file:mr-4 file:font-bold file:uppercase file:text-[10px] file:tracking-widest rounded-[16px] h-12 flex items-center focus:outline-none transition-all cursor-pointer"
+                        onChange={(e) =>
+                          setValue(doc.name, e.target.files, {
+                            shouldValidate: true,
+                          })
+                        }
+                      />
+                      {hasFile && (
+                        <span className="text-[#B3DC26] text-[10px] font-bold mt-2 block ml-1 truncate">
+                          ✅ Selected: {selectedFiles[0].name}
+                        </span>
+                      )}
+                      {errors[doc.name] && (
+                        <span className="text-red-500 text-[10px] font-bold uppercase mt-2 block ml-1">
+                          {errors[doc.name].message}
+                        </span>
+                      )}
                     </div>
-                  ))}
-                </div>
-              )}
-              <p className="text-[10px] text-[#444] mt-3 uppercase tracking-widest italic ml-1">Leave empty to retain current imagery.</p>
-            </div>
-
-            <div className="form-control">
-              <label className="label mb-2">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1 flex items-center">
-                  Sport Arsenal <FieldStatus isPending={!!pendingUpdates?.sportTypes} />
-                </span>
-              </label>
-              <select
-                className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-12 rounded-[8px] px-4 transition-all appearance-none"
-                onChange={(e) => addSportType(e.target.value)}
-                value=""
-              >
-                <option value="" disabled>Add Sport</option>
-                {sportsOptions.map(option => (
-                  <option key={option} value={option} disabled={sportTypes.includes(option)}>{option}</option>
-                ))}
-              </select>
-              <div className="mt-4 flex flex-wrap gap-2 min-h-[40px]">
-                {sportTypes.map((type, index) => (
-                  <span key={index} className="px-3 py-1.5 bg-[#BFF367] text-black font-bold rounded-[4px] text-[10px] flex items-center gap-2 uppercase tracking-widest">
-                    {type}
-                    <button type="button" onClick={() => removeSportType(type)} className="hover:text-white transition-colors">
-                      <X size={12} />
-                    </button>
-                  </span>
-                ))}
+                  );
+                })}
               </div>
-            </div>
+              <div className="space-y-8">
+                <h3 className="text-[14px] font-bold text-[#B3DC26] border-b border-white/10 pb-3 mb-8 uppercase tracking-[3px]">
+                  Management & Policies
+                </h3>
 
-            <div className="form-control">
-              <label className="label mb-2">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1 flex items-center">
-                  Ground Composition <FieldStatus isPending={!!pendingUpdates?.groundTypes} />
-                </span>
-              </label>
-              <select
-                className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-12 rounded-[8px] px-4 transition-all appearance-none"
-                onChange={(e) => addGroundType(e.target.value)}
-                value=""
-              >
-                <option value="" disabled>Add Ground Type</option>
-                {groundTypeOptions.map(option => (
-                  <option key={option} value={option} disabled={groundTypes.includes(option)}>{option}</option>
-                ))}
-              </select>
-              <div className="mt-4 flex flex-wrap gap-2 min-h-[40px]">
-                {groundTypes.map((type, index) => (
-                  <span key={index} className="px-3 py-1.5 bg-[#1A1A1A] border border-[#2D2D2D] text-white font-bold rounded-[4px] text-[10px] flex items-center gap-2 uppercase tracking-widest">
-                    {type}
-                    <button type="button" onClick={() => removeGroundType(type)} className="hover:text-[#BFF367] transition-colors">
-                      <X size={12} />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="form-control">
-              <label className="label mb-2">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Integrated Facilities</span>
-              </label>
-              <select
-                className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-12 rounded-[8px] px-4 transition-all appearance-none"
-                onChange={(e) => addFacility(e.target.value)}
-                value=""
-              >
-                <option value="" disabled>Add Facility</option>
-                {facilitiesOptions.map(option => (
-                  <option key={option} value={option} disabled={facilities.includes(option)}>{option}</option>
-                ))}
-              </select>
-              <div className="mt-4 flex flex-wrap gap-2 min-h-[40px]">
-                {facilities.map((type, index) => (
-                  <span key={index} className="px-3 py-1.5 bg-[#1A1A1A] border border-[#2D2D2D] text-[#BFF367] font-bold rounded-[4px] text-[10px] flex items-center gap-2 uppercase tracking-widest">
-                    {type}
-                    <button type="button" onClick={() => removeFacility(type)} className="hover:text-white transition-colors">
-                      <X size={12} />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <h3 className="text-[14px] font-bold text-[#BFF367] border-b border-[#2D2D2D] pb-3 mb-8 uppercase tracking-[3px] font-open-sans mt-12">Support & Navigation</h3>
-            
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1 flex items-center">
-                Direct Google Maps URL <FieldStatus isPending={!!pendingUpdates?.mapUrl} />
-              </label>
-              <input
-                {...register("mapUrl")}
-                type="text"
-                placeholder="https://maps.app.goo.gl/..."
-                className={`w-full bg-[#111111] border ${pendingUpdates?.mapUrl ? 'border-amber-500/40' : 'border-[#2D2D2D]'} text-white px-4 py-3 rounded-[8px] focus:border-[#BFF367]/60 focus:outline-none text-sm font-medium`}
-              />
-            </div>
-
-            <div className="form-control space-y-4">
-              <label className="label">
-                <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Venue Managers</span>
-              </label>
-              
-              <div className="flex flex-col md:flex-row gap-4">
-                <input
-                  type="text"
-                  placeholder="Name"
-                  value={newManagerName}
-                  onChange={(e) => setNewManagerName(e.target.value)}
-                  className="w-full bg-[#111111] border border-[#2D2D2D] text-white text-sm h-12 rounded-[8px] px-4 focus:outline-none"
-                />
-                <input
-                  type="text"
-                  placeholder="Phone"
-                  value={newManagerPhone}
-                  onChange={(e) => setNewManagerPhone(e.target.value)}
-                  className="w-full bg-[#111111] border border-[#2D2D2D] text-white text-sm h-12 rounded-[8px] px-4 focus:outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={addManagerContact}
-                  className="shrink-0 px-8 rounded-[8px] bg-white text-black hover:bg-[#BFF367] transition-all text-[11px] font-bold uppercase tracking-widest"
-                >
-                  Add
-                </button>
-              </div>
-
-              <div className="space-y-3 max-h-[150px] overflow-y-auto custom-scrollbar pr-2">
-                {managerContacts.map((manager, index) => (
-                  <div key={index} className="flex items-center justify-between bg-[#111111] p-4 rounded-[8px] border border-[#2D2D2D] hover:border-[#BFF367]/30 transition-all">
-                    <div className="flex flex-col">
-                      <span className="text-white text-[13px] font-bold uppercase tracking-tight">{manager.name}</span>
-                      <span className="text-[#878C9F] text-[11px] font-mono mt-0.5">{manager.phone}</span>
-                    </div>
-                    <button type="button" onClick={() => removeManagerContact(index)} className="text-[#444] hover:text-[#BFF367] transition-colors uppercase text-[10px] font-bold tracking-widest">
-                      Remove
+                <div className="form-control space-y-4">
+                  <label className="label">
+                    <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                      Venue Managers (Contacts)
+                    </span>
+                  </label>
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <input
+                      type="text"
+                      placeholder="Manager Name"
+                      value={newManagerName}
+                      onChange={(e) => setNewManagerName(e.target.value)}
+                      className="w-full bg-[#121212] border border-white/10 text-white text-sm h-12 rounded-[16px] px-4 focus:outline-none focus:border-[#B3DC26]/60"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Phone"
+                      value={newManagerPhone}
+                      onChange={(e) => setNewManagerPhone(e.target.value)}
+                      className="w-full bg-[#121212] border border-white/10 text-white text-sm h-12 rounded-[16px] px-4 focus:outline-none focus:border-[#B3DC26]/60"
+                    />
+                    <button
+                      type="button"
+                      onClick={addManagerContact}
+                      className="shrink-0 px-8 rounded-[16px] bg-white text-black hover:bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none transition-all text-[11px] font-bold uppercase tracking-widest"
+                    >
+                      Add
                     </button>
                   </div>
-                ))}
+                  <div className="space-y-3 max-h-[150px] overflow-y-auto custom-scrollbar pr-2">
+                    {managerContacts.map((manager, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between bg-[#121212] p-4 rounded-[16px] border border-white/10"
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-white text-[13px] font-bold uppercase tracking-tight">
+                            {manager.name}
+                          </span>
+                          <span className="text-white/70 text-[11px] font-mono mt-0.5">
+                            {manager.phone}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeManagerContact(index)}
+                          className="text-[#444] hover:text-[#B3DC26] transition-colors uppercase text-[10px] font-bold tracking-widest"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="form-control">
+                  <label className="label mb-2">
+                    <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                      Venue Policies and Rules
+                    </span>
+                  </label>
+                  <textarea
+                    {...register("policies")}
+                    maxLength={1000}
+                    className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-48 rounded-[16px] p-4 transition-all"
+                  ></textarea>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="md:col-span-2 space-y-12 pt-12 border-t border-[#2D2D2D] relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              <div className="space-y-10">
-                <h3 className="text-[14px] font-bold text-[#BFF367] border-b border-[#2D2D2D] pb-3 mb-6 uppercase tracking-[3px] font-open-sans">Slot Architecture</h3>
+          {/* STEP 3: Slot Management */}
+          {currentStep === 3 && (
+            <div className="col-span-1 grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10 animate-fade-in">
+              <div className="space-y-8">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="form-control">
                     <label className="label mb-2">
-                      <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Slot Duration</span>
+                      <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                        Slot Duration
+                      </span>
                     </label>
                     <select
                       {...register("slotDuration")}
-                      className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-12 rounded-[8px] px-4 appearance-none"
+                      className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
                     >
                       <option value={30}>30 Minutes</option>
                       <option value={60}>60 Minutes</option>
                       <option value={90}>90 Minutes</option>
                       <option value={120}>120 Minutes</option>
-                      <option value={180}>180 Minutes</option>
+                      <option value={210}>210 Minutes</option>
                     </select>
                   </div>
                   <div className="form-control">
                     <label className="label mb-2">
-                      <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Break Time</span>
+                      <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                        Break Time
+                      </span>
                     </label>
                     <select
                       {...register("breakTime")}
-                      className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-12 rounded-[8px] px-4 appearance-none"
+                      className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
                     >
                       <option value={0}>No Break</option>
                       <option value={10}>10 Minutes</option>
@@ -482,58 +908,83 @@ const EditTurf = () => {
 
                   <div className="form-control">
                     <label className="label mb-2">
-                      <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Opening Threshold</span>
+                      <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                        Opening Time
+                      </span>
                     </label>
-                    <Controller
-                      name="openTime"
-                      control={control}
-                      render={({ field }) => (
-                        <ClockPicker
-                          value={field.value}
-                          onChange={(date) => {
-                            field.onChange(date);
-                            setValue("closeTime", null);
-                          }}
-                          placeholder="12:00 AM"
-                        />
-                      )}
+                    <input
+                      type="time"
+                      {...register("openTime")}
+                      className={`w-full bg-[#121212] border ${errors.openTime ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all [color-scheme:dark]`}
                     />
-                    {errors.openTime && <p className="text-[#BFF367] text-[10px] font-bold uppercase mt-2 block ml-1">{errors.openTime.message}</p>}
                   </div>
 
                   <div className="form-control">
                     <label className="label mb-2">
-                      <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Closing Threshold</span>
+                      <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                        Closing Time
+                      </span>
                     </label>
-                    <Controller
-                      name="closeTime"
-                      control={control}
-                      render={({ field }) => (
-                        <ClockPicker
-                          value={field.value}
-                          onChange={field.onChange}
-                          placeholder="12:00 AM"
-                          disabled={!openTime}
-                        />
-                      )}
+                    <input
+                      type="time"
+                      {...register("closeTime")}
+                      disabled={!openTime}
+                      className={`w-full bg-[#121212] border ${errors.closeTime ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all disabled:opacity-50 [color-scheme:dark]`}
                     />
-                    {errors.closeTime && <p className="text-[#BFF367] text-[10px] font-bold uppercase mt-2 block ml-1">{errors.closeTime.message}</p>}
                   </div>
                 </div>
 
+                {!hasSlotPrices ? (
+                  <div className="form-control">
+                    <label className="label mb-2">
+                      <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                        Hourly Rate (INR)
+                      </span>
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Hourly Rate (INR)"
+                      {...register("pricePerHour", { valueAsNumber: true })}
+                      className={`w-full bg-[#121212] border ${errors.pricePerHour ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
+                    />
+                    {errors.pricePerHour && (
+                      <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
+                        {errors.pricePerHour.message}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 p-3 rounded-[12px] bg-[#B3DC26]/5 border border-[#B3DC26]/20">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#B3DC26] animate-pulse shrink-0" />
+                    <p className="text-[11px] text-[#B3DC26] font-medium">
+                      Slot prices set individually — hourly rate is overridden.
+                    </p>
+                  </div>
+                )}
+
                 <div className="space-y-6">
                   <label className="label">
-                    <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Weekly Operational Sequence</span>
+                    <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
+                      Weekly Operational Sequence
+                    </span>
                   </label>
                   <div className="flex flex-wrap gap-3">
-                    {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(day => {
+                    {[
+                      "Monday",
+                      "Tuesday",
+                      "Wednesday",
+                      "Thursday",
+                      "Friday",
+                      "Saturday",
+                      "Sunday",
+                    ].map((day) => {
                       const isActive = availableDays.includes(day);
                       return (
                         <button
                           key={day}
                           type="button"
                           onClick={() => toggleDay(day)}
-                          className={`px-5 py-3 rounded-[8px] text-[11px] font-black uppercase tracking-widest transition-all border ${ isActive ? "bg-[#BFF367] text-black border-[#BFF367] shadow-[0_5px_15px_rgba(204,255,0,0.2)]" : "bg-[#111111] text-[#444] border-[#2D2D2D] hover:border-[#BFF367]/40" }`}
+                          className={`px-5 py-3 rounded-[16px] text-[11px] font-black uppercase tracking-widest transition-all  ${isActive ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black -[#B3DC26] shadow-[0_5px_15px_rgba(204,255,0,0.2)]" : "bg-[#121212] text-[#444] -white/10 hover:-[#B3DC26]/40"}`}
                         >
                           {day.substring(0, 3)}
                         </button>
@@ -543,143 +994,91 @@ const EditTurf = () => {
                 </div>
               </div>
 
-              <div className="space-y-10">
-                <div className="flex items-center justify-between border-b border-[#2D2D2D] pb-3 mb-6">
-                  <h3 className="text-[14px] font-bold text-[#BFF367] uppercase tracking-[3px] font-open-sans">Configuration Lifespan</h3>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="form-control">
-                    <label className="label mb-2">
-                      <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Update Frequency</span>
-                    </label>
-                    <select
-                      {...register("slotsConfigDuration")}
-                      className="w-full bg-[#111111] border border-[#2D2D2D] text-white focus:border-[#BFF367]/60 focus:outline-none text-sm h-12 rounded-[8px] px-4 appearance-none"
-                    >
-                      <option value="Until Changed">Until Manual Update</option>
-                      <option value="Fixed Weeks">Fixed Duration (Weekly)</option>
-                    </select>
-                  </div>
-
-                  {watch("slotsConfigDuration") === "Fixed Weeks" && (
-                    <>
-                      <div className="form-control">
-                        <label className="label mb-2">
-                          <span className="text-[11px] font-bold text-[#878C9F] uppercase tracking-widest ml-1">Active Duration (Weeks)</span>
-                        </label>
-                        <input
-                          {...register("slotsConfigWeeks")}
-                          type="number"
-                          min="1"
-                          max="52"
-                          className="w-full bg-[#111111] border border-[#2D2D2D] text-white px-4 py-3 rounded-[8px] focus:border-[#BFF367]/60 focus:outline-none text-sm font-medium"
-                        />
-                      </div>
-                      
-                      <div className="md:col-span-2 mt-4 p-4 bg-[#BFF367]/5 border border-[#BFF367]/20 rounded-[8px] space-y-2">
-                        <div className="flex items-center gap-2 text-[#BFF367]">
-                          <div className="w-1.5 h-1.5 rounded-full bg-[#BFF367] animate-pulse" />
-                          <span className="text-[10px] font-bold uppercase tracking-widest">Availability Expiry Preview</span>
-                        </div>
-                        <p className="text-[13px] text-white/90 font-medium">
-                          Your venue slots will be bookable until <span className="text-[#BFF367] font-bold underline decoration-wavy underline-offset-4">
-                            {(() => {
-                              const weeks = watch("slotsConfigWeeks") || 1;
-                              const date = new Date();
-                              date.setDate(date.getDate() + (weeks * 7));
-                              return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
-                            })()}
-                          </span>
-                        </p>
-                        <p className="text-[9px] text-[#878C9F] uppercase tracking-wider leading-relaxed">
-                          After this date, all slots will be automatically blocked to prevent overbooking beyond your planned schedule.
-                        </p>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between border-b border-[#2D2D2D] pb-3 mb-6 mt-12">
-                  <div className="space-y-1">
-                    <h3 className="text-[14px] font-bold text-[#BFF367] uppercase tracking-[3px] font-open-sans">Matrix Projection</h3>
-                    <p className="text-[9px] text-[#444] uppercase tracking-widest font-bold">Override individual slot pricing below</p>
-                    <p className="text-[8px] text-[#878C9F] uppercase tracking-widest font-medium mt-1">
-                      * After 5% service charge (Includes payment gateway charges and GST)
-                    </p>
-                  </div>
-                  <span className="text-[10px] font-bold text-[#BFF367] uppercase bg-[#BFF367]/10 border border-[#BFF367]/20 px-4 py-1 rounded-full">
-                    {generatedSlots.length} Active Slots
-                  </span>
-                </div>
-                
+              <div className="space-y-8">
+                <h3 className="text-[14px] font-bold text-[#B3DC26] border-b border-white/10 pb-3 mb-6 uppercase tracking-[3px]">
+                  Slot Review
+                </h3>
                 {generatedSlots.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar">
-                    {generatedSlots.map((slot, index) => {
-                      const platformFeePercent = settings?.platformFeePercentage || 5;
-                      const platformFee = platformFeePercent / 100;
-                      const netRevenue = (slot.price * (1 - platformFee)).toFixed(2);
-
-                      return (
-                        <div
-                          key={index}
-                          className={`p-4 rounded-[8px] border transition-all flex flex-col gap-4 ${ slot.isActive ? "bg-[#111111] border-[#2D2D2D] hover:border-[#BFF367]/20" : "bg-black/50 border-[#1A1A1A] opacity-40" }`}
-                        >
-                          <div className="flex justify-between items-center">
-                            <button
-                              type="button"
-                              onClick={() => toggleSlotActive(index)}
-                              className="flex items-center gap-2 group"
-                            >
-                              <div className={`w-3 h-3 rounded-full border border-[#2D2D2D] ${slot.isActive ? 'bg-[#BFF367]' : 'bg-[#111]'}`} />
-                              <span className={`text-[11px] font-bold tracking-widest uppercase ${slot.isActive ? 'text-white' : 'text-[#444] line-through'}`}>
-                                {slot.startTime} - {slot.endTime}
-                              </span>
-                            </button>
-                            {slot.isActive && (
-                              <span className="text-[9px] font-black text-[#BFF367] uppercase tracking-tighter bg-[#BFF367]/5 px-2 py-0.5 rounded">Active</span>
-                            )}
-                          </div>
-
-                          {slot.isActive && (
-                            <div className="space-y-3 pt-2 border-t border-[#1A1A1A]">
-                              <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#BFF367] font-bold text-[10px]">G�</span>
-                                <input
-                                  type="number"
-                                  value={slot.price}
-                                  onChange={(e) => updateSlotPrice(index, e.target.value)}
-                                  className="w-full bg-black border border-[#1A1A1A] text-white text-xs py-2 pl-7 pr-3 rounded focus:outline-none focus:border-[#BFF367]/40 transition-all font-mono"
-                                  placeholder="Slot Price"
-                                />
-                              </div>
-                              <div className="flex flex-col items-end px-1">
-                                <span className="text-[8px] font-black text-[#BFF367] uppercase tracking-[2px] mb-1">Your Net</span>
-                                <span className="text-[10px] font-bold text-[#BFF367] font-mono">Rs {netRevenue}</span>
-                              </div>
-                            </div>
-                          )}
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    {generatedSlots.map((slot, index) => (
+                      <div
+                        key={index}
+                        className={`p-4 rounded-[16px] border transition-all ${slot.isActive ? "bg-[#1B1B1B] border-[#B3DC26]/30" : "bg-[#121212] border-white/10 opacity-50"}`}
+                      >
+                        <div className="flex justify-between items-center mb-3">
+                          <span
+                            className={`text-[12px] font-bold font-mono tracking-tight ${slot.isActive ? "text-white" : "text-white/70"}`}
+                          >
+                            {slot.startTime} - {slot.endTime}
+                          </span>
+                          <input
+                            type="checkbox"
+                            className="toggle toggle-sm bg-[#1B1B1B] border-none checked:bg-[#B3DC26]"
+                            checked={slot.isActive}
+                            onChange={() => toggleSlotActive(index)}
+                          />
                         </div>
-                      );
-                    })}
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] font-bold text-white/70">
+                            ₹
+                          </span>
+                          <input
+                            type="number"
+                            value={slot.price}
+                            onChange={(e) =>
+                              updateSlotPrice(index, Number(e.target.value))
+                            }
+                            disabled={!slot.isActive}
+                            className={`w-full bg-transparent text-[14px] font-bold focus:outline-none font-mono ${slot.isActive ? "text-[#B3DC26]" : "text-[#444]"}`}
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-[200px] bg-[#050505] rounded-[8px] border border-dashed border-[#2D2D2D]">
-                    <p className="text-[#333] text-[10px] font-bold uppercase tracking-[4px]">Adjust thresholds to view slots</p>
+                  <div className="text-center py-12 border border-dashed border-white/10 rounded-[16px] bg-[#121212]">
+                    <span className="text-[#444] text-[11px] font-bold uppercase tracking-[4px]">
+                      Set times to generate slots
+                    </span>
                   </div>
                 )}
               </div>
             </div>
           </div>
 
-          <div className="md:col-span-2 pt-12 border-t border-[#2D2D2D] relative z-10 pb-12">
-            <button 
-              type="submit" 
-              className={`w-full py-5 bg-[#BFF367] text-black font-bold text-[16px] uppercase tracking-[6px] font-open-sans hover:bg-white transition-all transform hover:scale-[1.01] active:scale-[0.99] rounded-[8px] shadow-[0_10px_30px_rgba(204,255,0,0.15)] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-              disabled={loading}
+          {/* Navigation Buttons */}
+          <div className="col-span-1 flex justify-between mt-12 pt-8 border-t border-white/10 relative z-10">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentStep((prev) => Math.max(1, prev - 1));
+              }}
+              className={`px-8 py-3 rounded-[16px] font-bold text-sm uppercase tracking-wider transition-all duration-300 ${currentStep === 1 ? "opacity-0 pointer-events-none" : "bg-[#1B1B1B] text-white hover:bg-[#2A2A2A]"}`}
             >
               {loading ? "SYNCHRONIZING..." : "COMMIT OPERATIONAL CHANGES"}
             </button>
+
+            {currentStep < 3 ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentStep((prev) => Math.min(3, prev + 1));
+                }}
+                className="px-10 py-3 rounded-[16px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold text-sm uppercase tracking-wider hover:opacity-90 transition-all duration-300"
+              >
+                Next Step
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={loading}
+                className={`px-12 py-3 rounded-[16px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold text-sm uppercase tracking-wider transition-all duration-300 flex items-center gap-2 ${loading ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"}`}
+              >
+                {loading ? "Submitting..." : "Submit Venue"}
+              </button>
+            )}
           </div>
         </form>
       </div>

@@ -7,7 +7,8 @@ const options = {
     info: {
       title: "Kridaz API Documentation",
       version: "1.0.0",
-      description: "Complete API reference for Kridaz - Sports Venue Booking & Social Platform",
+      description:
+        "Complete API reference for Kridaz - Sports Venue Booking & Social Platform",
       contact: {
         name: "Kridaz Support",
         url: "https://kridaz.com",
@@ -84,11 +85,7 @@ const options = {
       { name: "Upload", description: "Media Upload Utilities" },
     ],
   },
-  apis: [
-    "./routes/*.js",
-    "./routes/**/*.js",
-    "./modules/**/*.routes.js",
-  ],
+  apis: ["./routes/*.js", "./routes/**/*.js", "./modules/**/*.routes.js"],
 };
 
 const swaggerSpec = swaggerJsdoc(options);

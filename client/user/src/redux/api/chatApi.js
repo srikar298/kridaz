@@ -13,7 +13,7 @@ export const transformMessage = (msg) => {
         ...msg.senderUser,
         _id: msg.senderUser.id,
         id: msg.senderUser.id,
-      }
+      },
     };
   } else if (msg.senderOwner) {
     sender = {
@@ -28,14 +28,14 @@ export const transformMessage = (msg) => {
         id: msg.senderOwner.id,
         name: msg.senderOwner.businessName || msg.senderOwner.user?.name,
         profilePicture: msg.senderOwner.user?.profilePicture,
-      }
+      },
     };
   } else if (msg.sender) {
     sender = msg.sender;
   }
 
   let chat = msg.chat;
-  if (chat && typeof chat === 'object') {
+  if (chat && typeof chat === "object") {
     chat = {
       ...chat,
       _id: chat.id,
@@ -63,17 +63,19 @@ export const transformChat = (chat) => {
         ...p.owner,
       };
     }
-    
+
     const userId = p.userId || p.ownerId;
-    const resolvedUserObj = userObj ? {
-      ...userObj,
-      _id: userObj.id || userId,
-      id: userObj.id || userId,
-    } : {
-      _id: userId,
-      id: userId,
-      name: "Deleted User",
-    };
+    const resolvedUserObj = userObj
+      ? {
+          ...userObj,
+          _id: userObj.id || userId,
+          id: userObj.id || userId,
+        }
+      : {
+          _id: userId,
+          id: userId,
+          name: "Deleted User",
+        };
 
     return {
       ...p,
@@ -83,7 +85,13 @@ export const transformChat = (chat) => {
   });
 
   const groupAdmins = (chat.participants || [])
-    .filter((p) => p.role === 'ADMIN' || p.role === 'SUPER_ADMIN' || p.isChatAdmin || p.isAdmin)
+    .filter(
+      (p) =>
+        p.role === "ADMIN" ||
+        p.role === "SUPER_ADMIN" ||
+        p.isChatAdmin ||
+        p.isAdmin
+    )
     .map((p) => {
       let userObj = p.user;
       if (p.owner) {
@@ -98,14 +106,16 @@ export const transformChat = (chat) => {
       return {
         ...p,
         _id: p.id,
-        user: userObj ? {
-          ...userObj,
-          _id: userObj.id || userId,
-          id: userObj.id || userId,
-        } : {
-          _id: userId,
-          id: userId,
-        }
+        user: userObj
+          ? {
+              ...userObj,
+              _id: userObj.id || userId,
+              id: userObj.id || userId,
+            }
+          : {
+              _id: userId,
+              id: userId,
+            },
       };
     });
 
@@ -140,7 +150,7 @@ export const transformChat = (chat) => {
   }
 
   let parentCommunity = chat.parentCommunity;
-  if (chat.parentCommunity && typeof chat.parentCommunity === 'object') {
+  if (chat.parentCommunity && typeof chat.parentCommunity === "object") {
     parentCommunity = {
       ...chat.parentCommunity,
       _id: chat.parentCommunity.id || chat.parentCommunity._id,
@@ -170,7 +180,9 @@ export const chatApi = baseApi.injectEndpoints({
         if (response && response.chats) {
           return {
             chats: response.chats.map(transformChat),
-            invitations: response.invitations ? response.invitations.map(transformChat) : []
+            invitations: response.invitations
+              ? response.invitations.map(transformChat)
+              : [],
           };
         }
         return response;
@@ -179,8 +191,11 @@ export const chatApi = baseApi.injectEndpoints({
     }),
     getMessages: builder.query({
       query: (chatId) => `/api/chat/message/${chatId}`,
-      transformResponse: (response) => Array.isArray(response) ? response.map(transformMessage) : response,
-      providesTags: (result, error, chatId) => [{ type: "Message", id: chatId }],
+      transformResponse: (response) =>
+        Array.isArray(response) ? response.map(transformMessage) : response,
+      providesTags: (result, error, chatId) => [
+        { type: "Message", id: chatId },
+      ],
     }),
     sendMessage: builder.mutation({
       query: (data) => ({
@@ -189,7 +204,10 @@ export const chatApi = baseApi.injectEndpoints({
         body: data,
       }),
       transformResponse: (response) => transformMessage(response),
-      invalidatesTags: (result, error, { chatId }) => [{ type: "Message", id: chatId }, "Chat"],
+      invalidatesTags: (result, error, { chatId }) => [
+        { type: "Message", id: chatId },
+        "Chat",
+      ],
     }),
     createGroupChat: builder.mutation({
       query: (data) => ({
@@ -238,7 +256,9 @@ export const chatApi = baseApi.injectEndpoints({
           method: "PUT",
           body: data,
         });
-        return result.data ? { data: transformChat(result.data) } : { error: result.error };
+        return result.data
+          ? { data: transformChat(result.data) }
+          : { error: result.error };
       },
       invalidatesTags: ["Chat"],
     }),
@@ -268,13 +288,16 @@ export const chatApi = baseApi.injectEndpoints({
       async onQueryStarted({ chatId }, { dispatch, getState, queryFulfilled }) {
         // Get current user id
         const state = /** @type {any} */ (getState());
-        const userId = state.auth?.user?._id || state.auth?.user?.id || state.auth?.user?.userId;
-        
+        const userId =
+          state.auth?.user?._id ||
+          state.auth?.user?.id ||
+          state.auth?.user?.userId;
+
         // Optimistically toggle pinnedBy in cache
         const patchResult = dispatch(
-          chatApi.util.updateQueryData('getChats', undefined, (draft) => {
+          chatApi.util.updateQueryData("getChats", undefined, (draft) => {
             const chats = draft?.chats || (Array.isArray(draft) ? draft : []);
-            const chat = chats.find(c => c._id === chatId || c.id === chatId);
+            const chat = chats.find((c) => c._id === chatId || c.id === chatId);
             if (chat) {
               if (!chat.pinnedBy) chat.pinnedBy = [];
               const idx = chat.pinnedBy.indexOf(userId);
@@ -300,7 +323,10 @@ export const chatApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: (result, error, { chatId }) => [{ type: "Message", id: chatId }, "Chat"],
+      invalidatesTags: (result, error, { chatId }) => [
+        { type: "Message", id: chatId },
+        "Chat",
+      ],
     }),
     forwardMessage: builder.mutation({
       query: (data) => ({
@@ -326,20 +352,26 @@ export const chatApi = baseApi.injectEndpoints({
       async onQueryStarted(chatId, { dispatch, queryFulfilled }) {
         // Optimistically remove chat from the list immediately
         const patchResult = dispatch(
-          chatApi.util.updateQueryData('getChats', undefined, (draft) => {
+          chatApi.util.updateQueryData("getChats", undefined, (draft) => {
             if (draft?.chats) {
               // Also remove child groups if it's a community
-              const chat = draft.chats.find(c => c._id === chatId || c.id === chatId);
+              const chat = draft.chats.find(
+                (c) => c._id === chatId || c.id === chatId
+              );
               if (chat?.isCommunity) {
-                draft.chats = draft.chats.filter(c => {
+                draft.chats = draft.chats.filter((c) => {
                   const parentId = c.parentCommunity?._id || c.parentCommunity;
-                  return (c._id !== chatId && c.id !== chatId) && parentId !== chatId;
+                  return (
+                    c._id !== chatId && c.id !== chatId && parentId !== chatId
+                  );
                 });
               } else {
-                draft.chats = draft.chats.filter(c => c._id !== chatId && c.id !== chatId);
+                draft.chats = draft.chats.filter(
+                  (c) => c._id !== chatId && c.id !== chatId
+                );
               }
             } else if (Array.isArray(draft)) {
-              return draft.filter(c => c._id !== chatId && c.id !== chatId);
+              return draft.filter((c) => c._id !== chatId && c.id !== chatId);
             }
           })
         );
@@ -357,7 +389,10 @@ export const chatApi = baseApi.injectEndpoints({
         method: "POST",
         body: { chatId },
       }),
-      invalidatesTags: (result, error, chatId) => [{ type: "Message", id: chatId }, "Chat"],
+      invalidatesTags: (result, error, chatId) => [
+        { type: "Message", id: chatId },
+        "Chat",
+      ],
     }),
     addGroupsToCommunity: builder.mutation({
       query: (data) => ({
@@ -411,5 +446,5 @@ export const {
   useMakeGroupAdminMutation,
   useDismissGroupAdminMutation,
   useGetChatMediaQuery,
-  useTogglePinChatMutation
+  useTogglePinChatMutation,
 } = chatApi;

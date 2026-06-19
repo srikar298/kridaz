@@ -1,1 +1,16 @@
-{"parameters":[{"in":"query","name":"turfId","required":true,"schema":{"type":"string","format":"uuid"}},{"in":"query","name":"date","required":true,"schema":{"type":"string","format":"date","example":"2024-05-17"}}]}
+{
+  "parameters": [
+    {
+      "in": "query",
+      "name": "turfId",
+      "required": true,
+      "schema": { "type": "string", "format": "uuid" }
+    },
+    {
+      "in": "query",
+      "name": "date",
+      "required": true,
+      "schema": { "type": "string", "format": "date", "example": "2024-05-17" }
+    }
+  ]
+}
