@@ -60,8 +60,8 @@ const sportsCategories = [
   { name: "Tennis", image: "/sports/tennis.png" },
   { name: "Table Tennis", image: "/sports/table-tennis.png" },
   { name: "Badminton", image: "/sports/badminton.png" },
-  { name: "Pickleball", image: "/sports/pickle-ball.png" },
-  { name: "Volleyball", image: "/sports/volley-ball.png" },
+  { name: "Pickleball", image: "/sports/pickleball.png" },
+  { name: "Volleyball", image: "/sports/volleyball.png" },
 ];
 
 export default function Home() {
@@ -179,7 +179,6 @@ export default function Home() {
   const [turfFilters, setTurfFilters] = useState({});
 
   const combinedTurfFilters = useMemo(() => {
-    if (locationStatus === "detecting") return { _skip: true };
     const base = { ...turfFilters };
     if (userLocation && userLocation.lat && userLocation.lng) {
       base.lat = userLocation.lat;
@@ -250,7 +249,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (locationStatus === "detecting") return;
     const fetchPlayers = async () => {
       setLoading(true);
       try {
