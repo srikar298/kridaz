@@ -93,12 +93,10 @@ export const authenticateScoringApp = async (req, res) => {
       error.message === "INVALID_PASSWORD" ||
       error.message === "GAME_NOT_FOUND"
     ) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Invalid password or game not found",
-        });
+      return res.status(401).json({
+        success: false,
+        message: "Invalid password or game not found",
+      });
     }
     handleControllerError(res, error);
   }
@@ -119,12 +117,10 @@ export const notifyPlayers = async (req, res) => {
       `[Scoring] Dispatched notifications to players for match ${matchId}`
     );
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Notifications dispatched successfully",
-      });
+    res.status(200).json({
+      success: true,
+      message: "Notifications dispatched successfully",
+    });
   } catch (error) {
     logger.error("[Scoring] Notify Players Error:", error);
     handleControllerError(res, error);
@@ -658,26 +654,22 @@ export const updateHouseRules = async (req, res) => {
   try {
     const { scoringId, houseRules } = req.body;
     if (!scoringId) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          code: "MISSING_SCORING_ID",
-          message: "scoringId is required",
-        });
+      return res.status(400).json({
+        success: false,
+        code: "MISSING_SCORING_ID",
+        message: "scoringId is required",
+      });
     }
     if (
       !houseRules ||
       typeof houseRules !== "object" ||
       Array.isArray(houseRules)
     ) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          code: "INVALID_HOUSE_RULES",
-          message: "houseRules must be an object",
-        });
+      return res.status(400).json({
+        success: false,
+        code: "INVALID_HOUSE_RULES",
+        message: "houseRules must be an object",
+      });
     }
     const result = await scoringService.updateHouseRules(
       scoringId,

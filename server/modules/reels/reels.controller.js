@@ -375,12 +375,10 @@ export const interactWithReel = async (req, res) => {
       normalizedType
     );
     if (alreadyInteracted) {
-      return res
-        .status(200)
-        .json({
-          success: true,
-          message: "Interaction already tracked (Bloom hit)",
-        });
+      return res.status(200).json({
+        success: true,
+        message: "Interaction already tracked (Bloom hit)",
+      });
     }
 
     // Check if interaction already exists in DB (Bloom miss doesn't mean it's new)

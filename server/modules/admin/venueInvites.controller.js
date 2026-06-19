@@ -10,11 +10,9 @@ export const createVenueInvite = async (req, res) => {
   const { email, phone, turfData } = req.body;
 
   if (!email && !phone) {
-    return res
-      .status(400)
-      .json({
-        message: "Either email or phone is required to send an invite.",
-      });
+    return res.status(400).json({
+      message: "Either email or phone is required to send an invite.",
+    });
   }
 
   if (!turfData || !turfData.name) {

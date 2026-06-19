@@ -131,16 +131,14 @@ describe("Hosted Game Module API", () => {
 
   describe("POST /api/hosted-game/create", () => {
     it("should reject game creation without auth token", async () => {
-      const res = await request(app)
-        .post("/api/hosted-game/create")
-        .send({
-          gameType: "Cricket",
-          date: "2026-06-01",
-          time: "18:00",
-          city: "Test City",
-          state: "Test State",
-          perPlayerCharge: 0,
-        });
+      const res = await request(app).post("/api/hosted-game/create").send({
+        gameType: "Cricket",
+        date: "2026-06-01",
+        time: "18:00",
+        city: "Test City",
+        state: "Test State",
+        perPlayerCharge: 0,
+      });
 
       expect(res.statusCode).toBe(401);
     });

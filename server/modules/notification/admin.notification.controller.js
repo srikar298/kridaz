@@ -132,12 +132,10 @@ export const sendAdminPushNotification = async (req, res) => {
       const activeUsers = await getUsersWithRegisteredDevices();
 
       if (activeUsers.length === 0) {
-        return res
-          .status(200)
-          .json({
-            success: true,
-            message: "No active users with registered mobile devices found.",
-          });
+        return res.status(200).json({
+          success: true,
+          message: "No active users with registered mobile devices found.",
+        });
       }
 
       const results = await Promise.all(

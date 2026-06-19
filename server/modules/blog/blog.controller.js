@@ -151,12 +151,10 @@ export const createBlog = async (req, res) => {
     const authorId = req.user?.id;
 
     if (!title || !content || !authorId) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Missing required fields (title, content, or author)",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields (title, content, or author)",
+      });
     }
 
     // Generate unique slug
@@ -204,12 +202,10 @@ export const createBlog = async (req, res) => {
     res.status(201).json({ success: true, blog: mapBlogResponse(blog) });
   } catch (error) {
     logger.error("[createBlog Error]:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Internal Server Error during blog creation",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error during blog creation",
+    });
   }
 };
 
@@ -303,12 +299,10 @@ export const updateBlog = async (req, res) => {
     res.status(200).json({ success: true, blog: mapBlogResponse(blog) });
   } catch (error) {
     logger.error("[updateBlog Error]:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Internal Server Error during blog update",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error during blog update",
+    });
   }
 };
 

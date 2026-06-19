@@ -138,13 +138,11 @@ export const getPublicPlayers = async (req, res) => {
             isFollowing,
           };
         });
-        return res
-          .status(200)
-          .json({
-            success: true,
-            players,
-            followingIds: currentUserFollowingIds,
-          });
+        return res.status(200).json({
+          success: true,
+          players,
+          followingIds: currentUserFollowingIds,
+        });
       }
     }
 

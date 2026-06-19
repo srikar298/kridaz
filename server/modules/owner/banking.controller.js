@@ -129,44 +129,36 @@ export const requestPayout = async (req, res) => {
     }
 
     if (amount < 5000) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Minimum withdrawal amount is Rs 5000",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Minimum withdrawal amount is Rs 5000",
+      });
     }
 
     if (amount > 300000) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Maximum withdrawal limit is Rs 300,000",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Maximum withdrawal limit is Rs 300,000",
+      });
     }
 
     // Check if banking info exists
     const bankingDetails = owner.bankingDetails || {};
     if (!bankingDetails || !bankingDetails.accountName) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Please configure your banking details first",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Please configure your banking details first",
+      });
     }
 
     if (
       bankingDetails.payoutMode === "BANK" &&
       (!bankingDetails.accountNumber || !bankingDetails.ifscCode)
     ) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Bank account number and IFSC code are required",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Bank account number and IFSC code are required",
+      });
     }
 
     if (bankingDetails.payoutMode === "UPI" && !bankingDetails.upiId) {

@@ -10,12 +10,10 @@ export const validateCoupon = async (req, res) => {
     const { code, amount } = req.body;
 
     if (!code || !amount) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Coupon code and amount are required",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Coupon code and amount are required",
+      });
     }
 
     const coupon = await prisma.coupon.findUnique({
@@ -90,11 +88,9 @@ export const createTopupOrder = async (req, res) => {
     }
 
     if (amount > maxTopup) {
-      return res
-        .status(400)
-        .json({
-          message: `Maximum top-up amount is Rs ${maxTopup.toLocaleString("en-IN")}`,
-        });
+      return res.status(400).json({
+        message: `Maximum top-up amount is Rs ${maxTopup.toLocaleString("en-IN")}`,
+      });
     }
 
     let payableAmount = Number(amount);
@@ -380,13 +376,11 @@ export const getWalletData = async (req, res) => {
     });
   } catch (error) {
     logger.error("Error in getWalletData:", error);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Could not retrieve wallet data.",
-        error: error.message,
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Could not retrieve wallet data.",
+      error: error.message,
+    });
   }
 };
 
@@ -453,22 +447,18 @@ export const checkPaymentStatus = async (req, res) => {
             });
           }
 
-          return res
-            .status(200)
-            .json({
-              success: true,
-              message: "Payment was successful. Wallet updated.",
-            });
+          return res.status(200).json({
+            success: true,
+            message: "Payment was successful. Wallet updated.",
+          });
         }
       }
     }
 
-    return res
-      .status(200)
-      .json({
-        success: false,
-        message: "No successful payment found for this order.",
-      });
+    return res.status(200).json({
+      success: false,
+      message: "No successful payment found for this order.",
+    });
   } catch (error) {
     logger.error("Error in checkPaymentStatus:", error);
     return res
@@ -547,12 +537,10 @@ export const requestWithdrawal = async (req, res) => {
     });
   } catch (error) {
     logger.error("Error in requestWithdrawal:", error);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Could not process withdrawal request.",
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Could not process withdrawal request.",
+    });
   }
 };
 

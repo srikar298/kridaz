@@ -306,12 +306,10 @@ export const replyToDispute = async (req, res) => {
     }
 
     if (dispute.status === "RESOLVED") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Cannot reply to a resolved dispute.",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Cannot reply to a resolved dispute.",
+      });
     }
 
     const reply = await prisma.disputeReply.create({
@@ -899,21 +897,17 @@ export const ownerActionDispute = async (req, res) => {
       return { updatedDispute, activeBooking };
     });
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: `Dispute action ${action} recorded`,
-        data: result.updatedDispute,
-      });
+    return res.status(200).json({
+      success: true,
+      message: `Dispute action ${action} recorded`,
+      data: result.updatedDispute,
+    });
   } catch (error) {
     logger.error("[DISPUTE] Error processing owner action:", error);
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: error.message || "Failed to process owner action.",
-      });
+    return res.status(400).json({
+      success: false,
+      message: error.message || "Failed to process owner action.",
+    });
   }
 };
 
@@ -949,20 +943,16 @@ export const escalateDispute = async (req, res) => {
       data: { isEscalated: true },
     });
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Dispute escalated to KRIDAZ Admin",
-        data: updatedDispute,
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Dispute escalated to KRIDAZ Admin",
+      data: updatedDispute,
+    });
   } catch (error) {
     logger.error("[DISPUTE] Error escalating:", error);
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: error.message || "Failed to escalate.",
-      });
+    return res.status(400).json({
+      success: false,
+      message: error.message || "Failed to escalate.",
+    });
   }
 };

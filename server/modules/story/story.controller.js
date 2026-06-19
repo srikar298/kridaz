@@ -166,12 +166,10 @@ export const confirmStory = async (req, res) => {
 };
 
 export const createStory = async (req, res) => {
-  res
-    .status(400)
-    .json({
-      success: false,
-      message: "Deprecated: Please use direct R2 upload flow (/upload-url)",
-    });
+  res.status(400).json({
+    success: false,
+    message: "Deprecated: Please use direct R2 upload flow (/upload-url)",
+  });
 };
 
 export const getStories = async (req, res) => {
@@ -353,12 +351,10 @@ export const updateStory = async (req, res) => {
     }
 
     if (req.file) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Media updates must use the R2 upload flow.",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Media updates must use the R2 upload flow.",
+      });
     }
 
     const updatedStory = await prisma.story.update({

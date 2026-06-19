@@ -216,13 +216,11 @@ export const getDashboardData = async (req, res) => {
     });
   } catch (error) {
     logger.error("CRITICAL ERROR in getDashboardData:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error fetching dashboard data",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error fetching dashboard data",
+      error: error.message,
+    });
   }
 };
 
@@ -346,13 +344,11 @@ export const getCoachDashboardData = async (req, res) => {
     });
   } catch (error) {
     logger.error("CRITICAL ERROR in getCoachDashboardData:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error fetching coach dashboard data",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error fetching coach dashboard data",
+      error: error.message,
+    });
   }
 };
 
@@ -496,13 +492,11 @@ export const getUmpireDashboardData = async (req, res) => {
     res.json(responseData);
   } catch (error) {
     logger.error("CRITICAL ERROR in getUmpireDashboardData:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error fetching umpire dashboard data",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error fetching umpire dashboard data",
+      error: error.message,
+    });
   }
 };
 
@@ -652,13 +646,11 @@ export const getStreamerDashboardData = async (req, res) => {
     res.json(responseData);
   } catch (error) {
     logger.error("CRITICAL ERROR in getStreamerDashboardData:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error fetching streamer dashboard data",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error fetching streamer dashboard data",
+      error: error.message,
+    });
   }
 };
 

@@ -1354,12 +1354,10 @@ export const rejectJoinRequest = async (req, res) => {
       });
     });
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Player request rejected and coins released.",
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Player request rejected and coins released.",
+    });
   } catch (error) {
     logger.error("Error in rejectJoinRequest:", error);
     return res.status(error.status || 500).json({ message: error.message });
@@ -1513,12 +1511,10 @@ export const cancelHostedGame = async (req, res) => {
       }
     });
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Game cancelled and all reserved coins released.",
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Game cancelled and all reserved coins released.",
+    });
   } catch (error) {
     logger.error("Error in cancelHostedGame:", error);
     return res.status(error.status || 500).json({ message: error.message });
@@ -1784,12 +1780,10 @@ export const handleUmpireRequest = async (req, res) => {
       });
     }
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: `Umpire request ${action.toLowerCase()}d successfully!`,
-      });
+    return res.status(200).json({
+      success: true,
+      message: `Umpire request ${action.toLowerCase()}d successfully!`,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -1876,12 +1870,10 @@ export const handleStreamerRequest = async (req, res) => {
       });
     }
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: `Streamer request ${action.toLowerCase()}d successfully!`,
-      });
+    return res.status(200).json({
+      success: true,
+      message: `Streamer request ${action.toLowerCase()}d successfully!`,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -1968,12 +1960,10 @@ export const handleScorerRequest = async (req, res) => {
       });
     }
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: `Scorer request ${action.toLowerCase()}d successfully!`,
-      });
+    return res.status(200).json({
+      success: true,
+      message: `Scorer request ${action.toLowerCase()}d successfully!`,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -2191,13 +2181,11 @@ export const updateVenue = async (req, res) => {
       include: { turf: true },
     });
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Venue updated successfully!",
-        ground: updatedGame.turf,
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Venue updated successfully!",
+      ground: updatedGame.turf,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -2259,12 +2247,10 @@ export const updateStreamConfig = async (req, res) => {
     const streamerId = owner ? owner.id : userId;
 
     if (game.streamerId !== streamerId && game.hostId !== userId) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Unauthorized to update stream configuration",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to update stream configuration",
+      });
     }
 
     const updatedConfig = {
@@ -2282,13 +2268,11 @@ export const updateStreamConfig = async (req, res) => {
       },
     });
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Stream configuration updated successfully!",
-        streamConfig: updatedGame.streamConfig,
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Stream configuration updated successfully!",
+      streamConfig: updatedGame.streamConfig,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -2700,14 +2684,12 @@ export const claimInviteSlot = async (req, res) => {
         sameSite: isProd ? "none" : "lax",
         maxAge: 15 * 60 * 1000,
       });
-      return res
-        .status(200)
-        .json({
-          success: true,
-          message: "Slot claimed successfully!",
-          newToken,
-          updatedRole: result.updatedRole,
-        });
+      return res.status(200).json({
+        success: true,
+        message: "Slot claimed successfully!",
+        newToken,
+        updatedRole: result.updatedRole,
+      });
     }
 
     return res
@@ -2739,12 +2721,10 @@ export const updateTickerTheme = async (req, res) => {
       req.user.role === "SCORER" && req.user.gameId === id;
 
     if (!isAuthorizedUser && !isAuthorizedScorer) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Unauthorized to update ticker theme",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to update ticker theme",
+      });
     }
 
     const updatedGame = await prisma.hostedGame.update({

@@ -24,13 +24,11 @@ export const getPayoutSettings = async (req, res) => {
         },
       });
     }
-    res
-      .status(200)
-      .json({
-        success: true,
-        settings: settings.value,
-        payoutSettings: settings.value,
-      });
+    res.status(200).json({
+      success: true,
+      settings: settings.value,
+      payoutSettings: settings.value,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

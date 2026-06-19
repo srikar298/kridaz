@@ -822,12 +822,10 @@ export const updateProfessionalProfile = async (req, res) => {
       }
     );
 
-    return res
-      .status(200)
-      .json({
-        message: "Profile updated successfully",
-        professional: updatedProfessional,
-      });
+    return res.status(200).json({
+      message: "Profile updated successfully",
+      professional: updatedProfessional,
+    });
   } catch (error) {
     logger.error("Error in updateProfessionalProfile:", error);
     return res.status(500).json({ message: error.message });
@@ -974,12 +972,10 @@ export const updateWorkingHours = async (req, res) => {
       data: { workingHours },
     });
 
-    return res
-      .status(200)
-      .json({
-        message: "Working hours updated successfully",
-        workingHours: updatedProfile.workingHours,
-      });
+    return res.status(200).json({
+      message: "Working hours updated successfully",
+      workingHours: updatedProfile.workingHours,
+    });
   } catch (error) {
     logger.error("Error in updateWorkingHours:", error);
     return res.status(500).json({ message: error.message });
@@ -1116,11 +1112,9 @@ export const createMatchRequest = async (req, res) => {
         !customLocation.latitude ||
         !customLocation.longitude
       ) {
-        return res
-          .status(400)
-          .json({
-            message: "Custom location coordinates (lat, lon) are required.",
-          });
+        return res.status(400).json({
+          message: "Custom location coordinates (lat, lon) are required.",
+        });
       }
       latitude = parseFloat(customLocation.latitude);
       longitude = parseFloat(customLocation.longitude);
@@ -1128,11 +1122,9 @@ export const createMatchRequest = async (req, res) => {
 
     const usableBalance = await WalletService.getUsableBalance(userId, "user");
     if (usableBalance < limitMaxBudget) {
-      return res
-        .status(400)
-        .json({
-          message: `Insufficient wallet balance. You need at least ₹${limitMaxBudget} to request matching.`,
-        });
+      return res.status(400).json({
+        message: `Insufficient wallet balance. You need at least ₹${limitMaxBudget} to request matching.`,
+      });
     }
 
     const requestTimeout = expiresAt
@@ -1205,12 +1197,10 @@ export const createMatchRequest = async (req, res) => {
     }
 
     if (matchedPros.length === 0) {
-      return res
-        .status(404)
-        .json({
-          message:
-            "No professionals found matching your criteria in the nearby area. Try expanding your budget or changing the role.",
-        });
+      return res.status(404).json({
+        message:
+          "No professionals found matching your criteria in the nearby area. Try expanding your budget or changing the role.",
+      });
     }
 
     const candidateIds = matchedPros.map((p) => p.id);
@@ -1299,12 +1289,10 @@ export const acceptMatchOffer = async (req, res) => {
     const usableBalance = await WalletService.getUsableBalance(userId, "user");
 
     if (usableBalance < limitMaxBudget) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Customer no longer has sufficient wallet balance for this booking.",
-        });
+      return res.status(400).json({
+        message:
+          "Customer no longer has sufficient wallet balance for this booking.",
+      });
     }
 
     const plainOtp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -1527,11 +1515,9 @@ export const verifyOTPCheckIn = async (req, res) => {
     const argon2 = await import("argon2");
     const isValid = await argon2.verify(booking.otpHash, otp.toString());
     if (!isValid) {
-      return res
-        .status(400)
-        .json({
-          message: "Invalid OTP code. Please verify with the customer.",
-        });
+      return res.status(400).json({
+        message: "Invalid OTP code. Please verify with the customer.",
+      });
     }
 
     await prisma.$transaction(async (tx) => {
@@ -1592,12 +1578,10 @@ export const verifyOTPCheckIn = async (req, res) => {
       date: booking.matchDate,
     });
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Check-in successful. Funds transferred.",
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Check-in successful. Funds transferred.",
+    });
   } catch (error) {
     logger.error("Error in verifyOTPCheckIn:", error);
     return res.status(500).json({ message: error.message });

@@ -201,22 +201,18 @@ export const saveDeviceToken = async (req, res) => {
   try {
     const id = req.user?.id || req.user?.userId || req.user?._id;
     if (!token) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          code: "TOKEN_REQUIRED",
-          message: "Token is required",
-        });
+      return res.status(400).json({
+        success: false,
+        code: "TOKEN_REQUIRED",
+        message: "Token is required",
+      });
     }
     if (!id) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          code: "NO_USER",
-          message: "Authenticated user could not be resolved",
-        });
+      return res.status(401).json({
+        success: false,
+        code: "NO_USER",
+        message: "Authenticated user could not be resolved",
+      });
     }
 
     const normalized = normalizePlatform(platform);
@@ -269,13 +265,11 @@ export const unregisterDeviceToken = async (req, res) => {
   const { token } = req.body;
   try {
     if (!token) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          code: "TOKEN_REQUIRED",
-          message: "Token is required",
-        });
+      return res.status(400).json({
+        success: false,
+        code: "TOKEN_REQUIRED",
+        message: "Token is required",
+      });
     }
     await prisma.userDevice.deleteMany({ where: { token } });
     res
@@ -295,43 +289,35 @@ export const subscribeToTopic = async (req, res) => {
   const { topic, tokens } = req.body;
   try {
     if (!topic || !TOPIC_REGEX.test(topic)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          code: "INVALID_TOPIC",
-          message: "Invalid topic",
-        });
+      return res.status(400).json({
+        success: false,
+        code: "INVALID_TOPIC",
+        message: "Invalid topic",
+      });
     }
     const tokenList = Array.isArray(tokens) ? tokens.filter(Boolean) : [];
     if (!tokenList.length) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          code: "NO_TOKENS",
-          message: "tokens[] is required",
-        });
+      return res.status(400).json({
+        success: false,
+        code: "NO_TOKENS",
+        message: "tokens[] is required",
+      });
     }
     if (!admin || !admin.apps?.length) {
       logger.warn(
         `[notification] topic subscribe skipped (firebase not configured): ${topic}`
       );
-      return res
-        .status(200)
-        .json({
-          success: true,
-          message: "Topic subscription skipped (firebase disabled)",
-        });
+      return res.status(200).json({
+        success: true,
+        message: "Topic subscription skipped (firebase disabled)",
+      });
     }
     const result = await admin.messaging().subscribeToTopic(tokenList, topic);
-    res
-      .status(200)
-      .json({
-        success: true,
-        successCount: result.successCount,
-        failureCount: result.failureCount,
-      });
+    res.status(200).json({
+      success: true,
+      successCount: result.successCount,
+      failureCount: result.failureCount,
+    });
   } catch (error) {
     logger.error("[notification] topic subscribe error", error);
     res.status(500).json({ success: false, message: error.message });
@@ -342,45 +328,37 @@ export const unsubscribeFromTopic = async (req, res) => {
   const { topic, tokens } = req.body;
   try {
     if (!topic || !TOPIC_REGEX.test(topic)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          code: "INVALID_TOPIC",
-          message: "Invalid topic",
-        });
+      return res.status(400).json({
+        success: false,
+        code: "INVALID_TOPIC",
+        message: "Invalid topic",
+      });
     }
     const tokenList = Array.isArray(tokens) ? tokens.filter(Boolean) : [];
     if (!tokenList.length) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          code: "NO_TOKENS",
-          message: "tokens[] is required",
-        });
+      return res.status(400).json({
+        success: false,
+        code: "NO_TOKENS",
+        message: "tokens[] is required",
+      });
     }
     if (!admin || !admin.apps?.length) {
       logger.warn(
         `[notification] topic unsubscribe skipped (firebase not configured): ${topic}`
       );
-      return res
-        .status(200)
-        .json({
-          success: true,
-          message: "Topic unsubscription skipped (firebase disabled)",
-        });
+      return res.status(200).json({
+        success: true,
+        message: "Topic unsubscription skipped (firebase disabled)",
+      });
     }
     const result = await admin
       .messaging()
       .unsubscribeFromTopic(tokenList, topic);
-    res
-      .status(200)
-      .json({
-        success: true,
-        successCount: result.successCount,
-        failureCount: result.failureCount,
-      });
+    res.status(200).json({
+      success: true,
+      successCount: result.successCount,
+      failureCount: result.failureCount,
+    });
   } catch (error) {
     logger.error("[notification] topic unsubscribe error", error);
     res.status(500).json({ success: false, message: error.message });

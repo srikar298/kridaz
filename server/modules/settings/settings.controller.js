@@ -24,13 +24,11 @@ export const getPayoutSettings = async (req, res) => {
         },
       });
     }
-    res
-      .status(200)
-      .json({
-        success: true,
-        settings: settings.value,
-        payoutSettings: settings.value,
-      });
+    res.status(200).json({
+      success: true,
+      settings: settings.value,
+      payoutSettings: settings.value,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -148,11 +146,9 @@ export const updatePlatformConfigs = async (req, res) => {
   try {
     const updates = req.body.configs || req.body;
     if (!updates || typeof updates !== "object") {
-      return res
-        .status(400)
-        .json({
-          message: "Invalid payload. Expected key-value configuration pairs.",
-        });
+      return res.status(400).json({
+        message: "Invalid payload. Expected key-value configuration pairs.",
+      });
     }
 
     const updatedConfigs = [];

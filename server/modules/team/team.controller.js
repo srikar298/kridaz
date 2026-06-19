@@ -204,12 +204,10 @@ export const createTeam = async (req, res) => {
     });
   } catch (error) {
     logger.error("Create team error:", error);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: error.message || "Failed to create team",
-      });
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to create team",
+    });
   }
 };
 
@@ -835,13 +833,11 @@ export const updateTeam = async (req, res) => {
       await updateGeoPoint("Team", id, finalLat, finalLng);
     }
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        team: mapTeamUserAvatar(updatedTeam),
-        message: "Team updated successfully",
-      });
+    return res.status(200).json({
+      success: true,
+      team: mapTeamUserAvatar(updatedTeam),
+      message: "Team updated successfully",
+    });
   } catch (error) {
     logger.error("Update team error:", error);
     return res.status(500).json({ success: false, message: error.message });
@@ -901,12 +897,10 @@ export const requestOpponent = async (req, res) => {
 
     // Only owner can send opponent request
     if (myTeam.ownerId !== req.user.id) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Only the team owner can send opponent requests",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Only the team owner can send opponent requests",
+      });
     }
 
     let targetTeam;
@@ -928,12 +922,10 @@ export const requestOpponent = async (req, res) => {
 
     // Prevent requesting your own team
     if (targetTeam.id === myTeam.id) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "You cannot add your own team as an opponent",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "You cannot add your own team as an opponent",
+      });
     }
 
     // Check if already opponents
@@ -947,12 +939,10 @@ export const requestOpponent = async (req, res) => {
       },
     });
     if (alreadyOpponents) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "This team is already your opponent",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "This team is already your opponent",
+      });
     }
 
     // Check if request already pending
@@ -1299,12 +1289,10 @@ export const requestToJoin = async (req, res) => {
       where: { teamId: id, userId },
     });
     if (existingMember) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "You are already a member or have a pending request",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "You are already a member or have a pending request",
+      });
     }
 
     await prisma.teamMember.create({
@@ -1358,12 +1346,10 @@ export const handleJoinRequest = async (req, res) => {
         .json({ success: false, message: "Team not found" });
 
     if (team.ownerId !== currentUserId) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Only team owner can handle requests",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Only team owner can handle requests",
+      });
     }
 
     const memberRequest = await prisma.teamMember.findFirst({

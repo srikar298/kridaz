@@ -40,7 +40,7 @@ router.post(
     { name: "gstRegistration", maxCount: 1 },
     { name: "rentalAgreement", maxCount: 1 },
     { name: "ownershipAgreement", maxCount: 1 },
-    { name: "googleProfileScreenshot", maxCount: 1 }
+    { name: "googleProfileScreenshot", maxCount: 1 },
   ]),
   validate(turfRegisterSchema),
   turfRegister
@@ -78,8 +78,8 @@ router.get("/:id/details", verifyOwnerToken, getTurfDetailsWithSlots);
  *       - BearerAuth: []
  */
 router.put(
-  "/:id", 
-  verifyOwnerToken, 
+  "/:id",
+  verifyOwnerToken,
   upload.fields([
     { name: "images", maxCount: 10 },
     { name: "saleDeed", maxCount: 1 },
@@ -87,7 +87,7 @@ router.put(
     { name: "gstRegistration", maxCount: 1 },
     { name: "rentalAgreement", maxCount: 1 },
     { name: "ownershipAgreement", maxCount: 1 },
-    { name: "googleProfileScreenshot", maxCount: 1 }
+    { name: "googleProfileScreenshot", maxCount: 1 },
   ]),
   editTurfById
 );

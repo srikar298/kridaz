@@ -727,12 +727,10 @@ export const approveOwnerRequest = async (req, res) => {
       }
     );
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Owner request approved and profile created",
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Owner request approved and profile created",
+    });
   } catch (err) {
     logger.error("Error in approveOwnerRequest: ", err);
     return res.status(500).json({ message: "error", data: err.message });
@@ -903,12 +901,10 @@ export const approveWithdrawalRequest = async (req, res) => {
     }
 
     if (request.status !== "PENDING") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: `Request is already ${request.status.toLowerCase()}`,
-        });
+      return res.status(400).json({
+        success: false,
+        message: `Request is already ${request.status.toLowerCase()}`,
+      });
     }
 
     const owner = await prisma.ownerProfile.findUnique({
@@ -1004,12 +1000,10 @@ export const rejectWithdrawalRequest = async (req, res) => {
     }
 
     if (request.status !== "PENDING") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: `Request is already ${request.status.toLowerCase()}`,
-        });
+      return res.status(400).json({
+        success: false,
+        message: `Request is already ${request.status.toLowerCase()}`,
+      });
     }
 
     const owner = await prisma.ownerProfile.findUnique({
@@ -1124,13 +1118,11 @@ export const updateUserStatus = async (req, res) => {
       { status }
     );
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: `User status updated to ${status}`,
-        user,
-      });
+    res.status(200).json({
+      success: true,
+      message: `User status updated to ${status}`,
+      user,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -1161,12 +1153,10 @@ export const deleteUser = async (req, res) => {
       email: user.email,
     });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "User and all associated data permanently deleted",
-      });
+    res.status(200).json({
+      success: true,
+      message: "User and all associated data permanently deleted",
+    });
   } catch (error) {
     logger.error("Error in deleteUser:", error);
     res.status(500).json({ message: error.message });
@@ -1207,12 +1197,10 @@ export const deleteOwner = async (req, res) => {
       email: owner.email,
     });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Owner and all associated data permanently deleted",
-      });
+    res.status(200).json({
+      success: true,
+      message: "Owner and all associated data permanently deleted",
+    });
   } catch (error) {
     logger.error("Error in deleteOwner:", error);
     res.status(500).json({ message: error.message });
@@ -1299,13 +1287,11 @@ export const batchDeleteGames = async (req, res) => {
       gameIds,
     });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: `Successfully deleted ${result.count} games`,
-        count: result.count,
-      });
+    res.status(200).json({
+      success: true,
+      message: `Successfully deleted ${result.count} games`,
+      count: result.count,
+    });
   } catch (error) {
     logger.error("Error in batchDeleteGames:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -1339,13 +1325,11 @@ export const batchUpdateGameStatus = async (req, res) => {
       { count: result.count, status, gameIds }
     );
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: `Successfully updated ${result.count} games to ${status}`,
-        count: result.count,
-      });
+    res.status(200).json({
+      success: true,
+      message: `Successfully updated ${result.count} games to ${status}`,
+      count: result.count,
+    });
   } catch (error) {
     logger.error("Error in batchUpdateGameStatus:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -1380,13 +1364,11 @@ export const batchDeleteUsers = async (req, res) => {
       userIds,
     });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: `Successfully deleted ${result.count} users and all associated data`,
-        count: result.count,
-      });
+    res.status(200).json({
+      success: true,
+      message: `Successfully deleted ${result.count} users and all associated data`,
+      count: result.count,
+    });
   } catch (error) {
     logger.error("Error in batchDeleteUsers:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -1419,13 +1401,11 @@ export const batchUpdateUserStatus = async (req, res) => {
       userIds,
     });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: `Successfully updated ${result.count} users to ${status}`,
-        count: result.count,
-      });
+    res.status(200).json({
+      success: true,
+      message: `Successfully updated ${result.count} users to ${status}`,
+      count: result.count,
+    });
   } catch (error) {
     logger.error("Error in batchUpdateUserStatus:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -1467,13 +1447,11 @@ export const batchDeleteOwners = async (req, res) => {
       ownerIds,
     });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: `Successfully deleted ${result.count} records`,
-        count: result.count,
-      });
+    res.status(200).json({
+      success: true,
+      message: `Successfully deleted ${result.count} records`,
+      count: result.count,
+    });
   } catch (error) {
     logger.error("Error in batchDeleteOwners:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -1518,13 +1496,11 @@ export const batchUpdateOwnerStatus = async (req, res) => {
       { count, status, ownerIds }
     );
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: `Successfully updated ${count} records to ${status}`,
-        count,
-      });
+    res.status(200).json({
+      success: true,
+      message: `Successfully updated ${count} records to ${status}`,
+      count,
+    });
   } catch (error) {
     logger.error("Error in batchUpdateOwnerStatus:", error);
     res.status(500).json({ success: false, message: "Internal server error" });

@@ -119,12 +119,10 @@ export const togglePromotionStatus = async (req, res) => {
       data: { isActive: !coupon.isActive },
     });
 
-    res
-      .status(200)
-      .json({
-        message: "Promotion status updated",
-        isActive: updatedCoupon.isActive,
-      });
+    res.status(200).json({
+      message: "Promotion status updated",
+      isActive: updatedCoupon.isActive,
+    });
   } catch (error) {
     logger.error("Error toggling promotion status:", error);
     res.status(500).json({ message: "Internal server error" });

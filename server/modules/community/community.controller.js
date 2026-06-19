@@ -581,12 +581,10 @@ export const updatePost = async (req, res) => {
       },
     });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        post: { ...updatedPost, adminId: updatedPost.author },
-      });
+    res.status(200).json({
+      success: true,
+      post: { ...updatedPost, adminId: updatedPost.author },
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -924,12 +922,10 @@ export const deleteComment = async (req, res) => {
 
     // Allow user to delete their own comment, OR post admin can delete any comment
     if (comment.userId !== userId && post.authorId !== userId) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Unauthorized to delete this comment",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to delete this comment",
+      });
     }
 
     await prisma.comment.delete({ where: { id: commentId } });

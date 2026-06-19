@@ -86,12 +86,10 @@ export const getRevenueSummary = async (req, res) => {
     });
   } catch (error) {
     logger.error("[REVENUE API] Summary error:", error);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Server error fetching revenue summary.",
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Server error fetching revenue summary.",
+    });
   }
 };
 
