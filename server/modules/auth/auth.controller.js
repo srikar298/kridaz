@@ -2545,21 +2545,6 @@ export const updateProfile = asyncHandler(async (req, res) => {
       phoneConditions.push({ phone: `+91${phone}` });
     }
 
-    const conflictPhone = await prisma.user.findFirst({
-      where: {
-        OR: phoneConditions,
-        NOT: {
-          id: user.id,
-        },
-      },
-    });
-    if (conflictPhone) {
-      return res.status(400).json({
-        success: false,
-        message: "Phone number already registered to another account",
-      });
-    }
-  }
   const finalInterests = interests || sportTypes || [];
   let hashedPassword;
   if (password) {
@@ -2577,7 +2562,6 @@ export const updateProfile = asyncHandler(async (req, res) => {
   const updateData = cleanObject({
     name,
     username: username?.toLowerCase(),
-    phone,
     bio,
     gender,
     dob: dob ? new Date(dob) : undefined,
@@ -2794,6 +2778,17 @@ export const verifyPhoneOtp = asyncHandler(async (req, res) => {
       },
     });
   }
+
+  // Update the user's phone number
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      phone: phone,
+    },
+  });
+
   return res.status(200).json({
     success: true,
     message: "Phone number verified successfully",

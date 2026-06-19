@@ -32,6 +32,12 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [isSearchingLocation, setIsSearchingLocation] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Phone OTP States
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
   const locationRef = useRef(null);
 
   // Username check states
@@ -187,13 +193,13 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const submitProfileUpdate = async (finalPhone = formData.phone) => {
     setLoading(true);
     try {
+      const payload = { ...formData, phone: finalPhone };
       const response = await axiosInstance.put(
         "/api/user/auth/updateProfile",
-        formData
+        payload
       );
       if (response.data.success) {
         dispatch(updateUser(response.data.user));
@@ -205,6 +211,56 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
       toast.error(error.response?.data?.message || "Failed to update profile");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Check if phone was changed
+    const phoneChanged = formData.phone !== (user?.phone || "");
+    
+    if (phoneChanged && formData.phone) {
+      setSendingOtp(true);
+      try {
+        const res = await axiosInstance.post("/api/user/auth/send-phone-verification-otp", { phone: formData.phone });
+        if (res.data?.success) {
+          toast.success("OTP sent to new phone number!");
+          setShowOtpModal(true);
+        }
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Failed to send OTP");
+      } finally {
+        setSendingOtp(false);
+      }
+      return; // Do not submit the rest of the profile yet
+    }
+    
+    submitProfileUpdate();
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otp.length < 6) {
+      toast.error("Please enter a valid 6-digit OTP");
+      return;
+    }
+    setVerifyingOtp(true);
+    try {
+      const res = await axiosInstance.post("/api/user/auth/verify-phone-otp", {
+        phone: formData.phone,
+        otp: otp
+      });
+      if (res.data?.success) {
+        toast.success("Phone verified successfully!");
+        setShowOtpModal(false);
+        setOtp("");
+        // Continue saving the rest of the profile
+        submitProfileUpdate();
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Invalid or expired OTP");
+    } finally {
+      setVerifyingOtp(false);
     }
   };
 
@@ -685,14 +741,15 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                 loading ||
                 isCheckingUsername ||
                 usernameStatus === "taken" ||
-                usernameStatus === "short"
+                usernameStatus === "short" ||
+                sendingOtp
               }
               className="w-full md:flex-[2] h-[58px] bg-[linear-gradient(90deg,#55DEE8_0%,#B3DC26_100%)] rounded-[16px] text-[#000000] text-[18px] font-bold shadow-[0px_8px_24px_rgba(179,220,38,0.15)] hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:scale-100 disabled:shadow-none"
             >
-              {loading ? (
+              {loading || sendingOtp ? (
                 <>
                   <Loader2 size={20} className="animate-spin text-[#000000]" />
-                  Updating...
+                  {sendingOtp ? "Sending OTP..." : "Updating..."}
                 </>
               ) : (
                 "Save Changes"
@@ -701,6 +758,41 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
           </div>
         </form>
       </div>
+
+      {/* OTP Modal Overlay */}
+      {showOtpModal && (
+        <div className="absolute inset-0 z-50 bg-[#1B1B1B]/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 animate-in fade-in duration-200">
+          <h3 className="text-[20px] font-bold text-white mb-2">Verify Phone Number</h3>
+          <p className="text-[14px] text-white/70 mb-6 text-center">
+            We've sent an OTP to <span className="text-[#B3DC26]">{formData.phone}</span>
+          </p>
+          <input
+            type="text"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+            placeholder="Enter 6-digit OTP"
+            className="w-full max-w-[250px] h-[58px] bg-[#121212] border border-white/[0.08] rounded-[16px] text-center text-[20px] tracking-widest text-white focus:outline-none focus:border-[#55DEE8] transition-all mb-6"
+            maxLength={6}
+          />
+          <div className="flex gap-4 w-full max-w-[250px]">
+            <button
+              type="button"
+              onClick={() => setShowOtpModal(false)}
+              className="flex-1 h-[48px] bg-[#121212] border border-white/[0.08] rounded-[12px] text-white text-[14px] font-bold hover:bg-[#1B1B1B] transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleVerifyOtp}
+              disabled={verifyingOtp || otp.length < 6}
+              className="flex-1 h-[48px] bg-[linear-gradient(90deg,#55DEE8_0%,#B3DC26_100%)] rounded-[12px] text-[#000000] text-[14px] font-bold hover:opacity-90 transition-all disabled:opacity-40"
+            >
+              {verifyingOtp ? <Loader2 className="w-5 h-5 mx-auto animate-spin" /> : "Verify"}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
