@@ -1024,15 +1024,11 @@ export default function ProfessionalProfile() {
       {/* Header */}
       <header className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 relative z-10 pb-4 border-b border-white/5">
         <div className="flex items-center gap-3">
-          <div
-            className="w-1 h-8 rounded-full"
-            style={{ backgroundColor: themeColor }}
-          />
           <div>
-            <h1 className="text-2xl lg:text-3xl font-black tracking-tight font-['Open_Sans'] uppercase leading-none text-white">
-              {portalName} <span style={{ color: themeColor }}>PROFILE</span>
+            <h1 className="text-xl lg:text-2xl font-black tracking-tight font-['Open_Sans'] capitalize leading-none text-white">
+              {portalName?.toLowerCase()} <span style={{ color: themeColor }}>Profile</span>
             </h1>
-            <p className="text-[#878C9F] text-[9px] font-black uppercase tracking-[0.2em] font-inter mt-1 ml-0.5 opacity-60">
+            <p className="text-[#878C9F] text-[9px] font-black tracking-[0.28em] font-inter mt-1 ml-0.5 opacity-60">
               Manage your professional presence and preferences
             </p>
           </div>
@@ -1096,9 +1092,12 @@ export default function ProfessionalProfile() {
               <div className="lg:col-span-5 space-y-6">
                 {/* Identity & Presence Card */}
                 <div className="bg-[#111111] border border-white/5 rounded-xl p-5 space-y-4">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#878C9F] flex items-center gap-2">
+                  <h3 
+                    className="text-[10px] font-black tracking-[0.3em] text-[#878C9F] flex items-center gap-2"
+                    style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                  >
                     <User size={14} style={{ color: themeColor }} /> Identity &
-                    Presence
+                    presence
                   </h3>
 
                   <div className="space-y-4">
@@ -1170,63 +1169,64 @@ export default function ProfessionalProfile() {
                       </div>
                     </div>
 
-                    {/* Editable Full Name */}
-                    <div>
-                      <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
-                        Full Name
-                      </label>
-                      <div className="relative flex items-center">
-                        <User
-                          size={14}
-                          className="absolute left-3 text-neutral-500"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Your full name"
-                          className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg pl-8 pr-3 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
-                          value={formData.name}
-                          onChange={(e) =>
-                            setFormData({ ...formData, name: e.target.value })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    {/* Editable Username */}
-                    <div>
-                      <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
-                        Username
-                      </label>
-                      <div className="relative flex items-center">
-                        <span className="absolute left-3 text-neutral-500 text-xs font-bold">
-                          @
-                        </span>
-                        <input
-                          type="text"
-                          placeholder="your_username"
-                          className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg pl-8 pr-3 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
-                          value={formData.username}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              username: e.target.value
-                                .toLowerCase()
-                                .replace(/[^a-z0-9_]/g, ""),
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {/* Full Name & Username */}
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
+                        <label className="text-[8px] sm:text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
+                          Full Name
+                        </label>
+                        <div className="relative flex items-center">
+                          <User
+                            size={14}
+                            className="absolute left-2.5 text-neutral-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Your full name"
+                            className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg pl-7 pr-2 py-2.5 text-[11px] sm:text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
+                            value={formData.name}
+                            onChange={(e) =>
+                              setFormData({ ...formData, name: e.target.value })
+                            }
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[8px] sm:text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
+                          Username
+                        </label>
+                        <div className="relative flex items-center">
+                          <span className="absolute left-2.5 text-neutral-500 text-xs font-bold">
+                            @
+                          </span>
+                          <input
+                            type="text"
+                            placeholder="username"
+                            className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg pl-7 pr-2 py-2.5 text-[11px] sm:text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
+                            value={formData.username}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                username: e.target.value
+                                  .toLowerCase()
+                                  .replace(/[^a-z0-9_]/g, ""),
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[8px] sm:text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
                           Email Address
                         </label>
-                        <div className="flex items-center gap-2 bg-white/[0.02] border border-white/5 rounded-lg px-3 py-2.5 text-xs text-neutral-400 font-medium overflow-hidden truncate">
+                        <div className="flex items-center gap-1.5 bg-white/[0.02] border border-white/5 rounded-lg px-2.5 py-2.5 text-[10px] sm:text-xs text-neutral-400 font-medium overflow-hidden truncate">
                           <Mail
-                            size={14}
-                            className="text-neutral-600 shrink-0"
+                            size={12}
+                            className="text-neutral-600 shrink-0 sm:w-3.5 sm:h-3.5"
                           />
                           <span className="truncate">
                             {formData.email || "N/A"}
@@ -1235,12 +1235,12 @@ export default function ProfessionalProfile() {
                       </div>
 
                       <div>
-                        <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
-                          Phone Number
+                        <label className="text-[8px] sm:text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
+                          Phone
                         </label>
-                        <div className="flex items-center gap-2 bg-white/[0.02] border border-white/5 rounded-lg px-3 py-2.5 text-xs text-neutral-400 font-medium">
-                          <Phone size={14} className="text-neutral-600" />
-                          <span>{formData.phone || "N/A"}</span>
+                        <div className="flex items-center gap-1.5 bg-white/[0.02] border border-white/5 rounded-lg px-2.5 py-2.5 text-[10px] sm:text-xs text-neutral-400 font-medium overflow-hidden truncate">
+                          <Phone size={12} className="text-neutral-600 shrink-0 sm:w-3.5 sm:h-3.5" />
+                          <span className="truncate">{formData.phone || "N/A"}</span>
                         </div>
                       </div>
                     </div>
@@ -1470,9 +1470,12 @@ export default function ProfessionalProfile() {
               <div className="lg:col-span-7 space-y-6">
                 {/* Professional Matrix & Engagement */}
                 <div className="bg-[#111111] border border-white/5 rounded-xl p-5 space-y-6 shadow-2xl relative overflow-hidden">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#878C9F] flex items-center gap-2">
+                  <h3 
+                    className="text-[10px] font-black tracking-[0.3em] text-[#878C9F] flex items-center gap-2"
+                    style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                  >
                     <FileText size={14} style={{ color: themeColor }} />{" "}
-                    Professional Matrix
+                    Professional matrix
                   </h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2008,9 +2011,12 @@ export default function ProfessionalProfile() {
 
                 {/* Preferred Locations & Timings Card */}
                 <div className="bg-[#111111] border border-white/5 rounded-xl p-5 space-y-4 relative z-20">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#878C9F] flex items-center gap-2">
+                  <h3 
+                    className="text-[10px] font-black tracking-[0.3em] text-[#878C9F] flex items-center gap-2"
+                    style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                  >
                     <MapPin size={14} style={{ color: themeColor }} /> Preferred
-                    Locations & Timings
+                    locations & timings
                   </h3>
 
                   <div className="space-y-4">
@@ -2354,8 +2360,11 @@ export default function ProfessionalProfile() {
                       <Award size={20} />
                     </div>
                     <div>
-                      <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-500">
-                        Professional Services
+                      <h3 
+                        className="text-[10px] font-black tracking-[0.3em] text-neutral-500"
+                        style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                      >
+                        Professional services
                       </h3>
                       <p className="text-white text-[14px] font-black uppercase tracking-tight font-['Open_Sans']">
                         Services Offered / Provided
@@ -2554,7 +2563,10 @@ export default function ProfessionalProfile() {
                       <Award size={20} />
                     </div>
                     <div>
-                      <h3 className="text-[9px] font-black uppercase tracking-[0.3em] text-neutral-500">
+                      <h3 
+                        className="text-[9px] font-black tracking-[0.3em] text-neutral-500"
+                        style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                      >
                         Verification
                       </h3>
                       <p className="text-white text-[12px] font-black uppercase tracking-tight">
@@ -2647,9 +2659,12 @@ export default function ProfessionalProfile() {
               <div className="lg:col-span-8 space-y-4">
                 <div className="bg-[#111111] border border-white/5 rounded-xl p-5 space-y-6 min-h-[500px] relative overflow-hidden">
                   <div className="flex items-center justify-between border-b border-white/5 pb-4 relative z-10">
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white flex items-center gap-3 font-['Open_Sans']">
+                    <h3 
+                      className="text-[10px] font-black tracking-[0.3em] text-white flex items-center gap-3"
+                      style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                    >
                       <ShieldCheck size={16} style={{ color: themeColor }} />{" "}
-                      Verified Stack
+                      Verified stack
                     </h3>
                     <span className="text-[8px] font-black text-neutral-600 uppercase tracking-widest px-3 py-1 bg-white/5 rounded-full border border-white/5">
                       {formData.certifications.length} Credentials
@@ -2709,11 +2724,14 @@ export default function ProfessionalProfile() {
             <div className="bg-[#111111] border border-white/5 rounded-xl p-5 space-y-6 relative overflow-hidden mt-6">
               <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-b border-white/5 pb-4">
                 <div>
-                  <h3 className="text-lg font-black text-white uppercase tracking-widest flex items-center gap-3">
+                  <h3 
+                    className="text-lg font-black text-white tracking-widest flex items-center gap-3"
+                    style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                  >
                     <Trophy size={20} style={{ color: themeColor }} /> Career
-                    Achievements
+                    achievements
                   </h3>
-                  <p className="text-[8px] text-neutral-500 font-bold uppercase tracking-[0.3em] mt-1">
+                  <p className="text-[8px] text-neutral-500 font-bold tracking-[0.28em] font-inter mt-1">
                     Log your verified career awards, titles, and milestones with
                     rich details
                   </p>
@@ -2786,7 +2804,7 @@ export default function ProfessionalProfile() {
                   formData.structuredAchievements.length === 0) && (
                   <div className="col-span-full py-10 bg-white/[0.01] rounded-lg border border-dashed border-white/5 flex flex-col items-center justify-center space-y-2">
                     <Trophy size={24} className="text-neutral-800" />
-                    <p className="text-[8px] text-neutral-500 font-black uppercase tracking-[0.5em]">
+                    <p className="text-[8px] text-neutral-500 font-black tracking-[0.5em]">
                       No career achievements logged yet
                     </p>
                   </div>
@@ -2828,7 +2846,10 @@ export default function ProfessionalProfile() {
                       <Layout size={20} />
                     </div>
                     <div>
-                      <h3 className="text-[9px] font-black uppercase tracking-[0.3em] text-neutral-500">
+                      <h3 
+                        className="text-[9px] font-black tracking-[0.3em] text-neutral-500"
+                        style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                      >
                         Portfolio
                       </h3>
                       <p className="text-white text-[12px] font-black uppercase tracking-tight">
@@ -2993,9 +3014,12 @@ export default function ProfessionalProfile() {
               <div className="lg:col-span-8 space-y-4">
                 <div className="bg-[#111111] border border-white/5 rounded-xl p-5 space-y-6 min-h-[500px] relative overflow-hidden">
                   <div className="flex items-center justify-between border-b border-white/5 pb-4 relative z-10">
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white flex items-center gap-3 font-['Open_Sans']">
+                    <h3 
+                      className="text-[10px] font-black tracking-[0.3em] text-white flex items-center gap-3"
+                      style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                    >
                       <Layout size={16} style={{ color: themeColor }} />{" "}
-                      Exhibition Showcase
+                      Exhibition showcase
                     </h3>
                     <span className="text-[8px] font-black text-neutral-600 uppercase tracking-widest px-3 py-1 bg-white/5 rounded-full border border-white/5">
                       {formData.portfolio?.length || 0} Assets Linked

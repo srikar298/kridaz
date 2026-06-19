@@ -1,5 +1,11 @@
 import express from "express";
 import {
+  createInquiry,
+  getProInquiries,
+  updateInquiryStatus,
+  checkRecentInquiry,
+} from "../inquiry.controller.js";
+import {
   getAllProfessionals,
   getProfessionalFilters,
   getProfessionalById,
@@ -304,5 +310,11 @@ router.get("/on-demand-bookings", protect, getMyOnDemandBookings);
 router.get("/user-on-demand-bookings", protect, getUserOnDemandBookings);
 router.get("/dashboard-stats", protect, getDashboardStats);
 router.get("/trust-score-history", protect, getTrustScoreHistory);
+
+// Inquiries Routes
+router.post("/inquiries", protect, createInquiry);
+router.get("/inquiries/pro", protect, getProInquiries);
+router.get("/inquiries/check/:proId", protect, checkRecentInquiry);
+router.patch("/inquiries/:id", protect, updateInquiryStatus);
 
 export default router;

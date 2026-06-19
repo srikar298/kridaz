@@ -314,13 +314,34 @@ const OverviewTab = ({ role, profile }) => {
       {/* Analytics Dashboard Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
         {/* Bookings */}
-        <div className="col-span-2 lg:col-span-2 p-5 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-36 relative">
+        <div className="col-span-2 lg:col-span-2 p-4 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-28 relative">
           <div className="flex justify-between items-start">
             <span className="text-xs text-[#878C9F] font-semibold uppercase tracking-wider">
               Bookings
             </span>
-            <div className="p-2 bg-white/5 rounded-lg absolute top-4 right-4">
-              <Activity size={16} className="text-gray-400" />
+            <div className="relative inline-flex items-center">
+              <select
+                value={bookingsTimeline}
+                onChange={(e) => setBookingsTimeline(e.target.value)}
+                className="appearance-none bg-transparent text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider pr-4 outline-none cursor-pointer hover:text-white transition-colors z-10 text-right"
+              >
+                <option className="bg-[#141414] text-white" value="Today">
+                  Today
+                </option>
+                <option className="bg-[#141414] text-white" value="This Week">
+                  This Week
+                </option>
+                <option className="bg-[#141414] text-white" value="This Month">
+                  This Month
+                </option>
+                <option className="bg-[#141414] text-white" value="All Time">
+                  All Time
+                </option>
+              </select>
+              <ChevronDown
+                size={12}
+                className="text-[#878C9F] absolute right-0 pointer-events-none"
+              />
             </div>
           </div>
           <div className="mt-2 flex items-center gap-4">
@@ -328,7 +349,7 @@ const OverviewTab = ({ role, profile }) => {
               <p className="text-[10px] text-gray-500 uppercase font-bold mb-0.5">
                 Completed
               </p>
-              <h3 className="text-2xl font-bold text-white">
+              <h3 className="text-lg font-bold text-white" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
                 {statsData?.stats?.bookings?.completed || 0}
               </h3>
             </div>
@@ -337,7 +358,7 @@ const OverviewTab = ({ role, profile }) => {
               <p className="text-[10px] text-[#BFF367] uppercase font-bold mb-0.5">
                 Assigned
               </p>
-              <h3 className="text-xl font-bold text-white">
+              <h3 className="text-base font-bold text-white" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
                 {statsData?.stats?.bookings?.assigned || 0}
               </h3>
             </div>
@@ -346,34 +367,27 @@ const OverviewTab = ({ role, profile }) => {
               <p className="text-[10px] text-green-400 uppercase font-bold mb-0.5">
                 In Progress
               </p>
-              <h3 className="text-xl font-bold text-white">
+              <h3 className="text-base font-bold text-white" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
                 {statsData?.stats?.bookings?.inProgress || 0}
               </h3>
             </div>
           </div>
-          <div className="mt-3 flex items-center border-t border-[#2D2D2D] pt-3">
-            <span className="text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider">
-              All Time
-            </span>
-          </div>
         </div>
 
         {/* Earnings */}
-        <div className="p-5 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-36 relative">
+        <div className="p-4 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-28 relative">
           <div className="flex justify-between items-start">
             <span className="text-xs text-[#878C9F] font-semibold uppercase tracking-wider">
               Earnings
             </span>
-            <div className="p-2 bg-[#BFF367]/10 rounded-lg absolute top-4 right-4">
-              <IndianRupee size={16} className="text-[#BFF367]" />
-            </div>
+            <IndianRupee size={14} className="text-[#BFF367] absolute top-4 right-4" />
           </div>
           <div className="mt-1">
-            <h3 className="text-3xl font-bold text-[#BFF367]">
+            <h3 className="text-xl font-bold text-[#BFF367]" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
               ₹{getEarningsValue()}
             </h3>
           </div>
-          <div className="mt-3 flex items-center border-t border-[#2D2D2D] pt-3">
+          <div className="mt-2 flex items-center border-t border-[#2D2D2D] pt-2">
             <div className="relative inline-flex items-center w-full">
               <select
                 value={earningsTimeline}
@@ -402,24 +416,22 @@ const OverviewTab = ({ role, profile }) => {
         </div>
 
         {/* Daily Avg Time */}
-        <div className="p-5 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-36 relative">
+        <div className="p-4 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-28 relative">
           <div className="flex justify-between items-start">
             <span className="text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider leading-tight">
               Daily Avg
               <br />
               Time
             </span>
-            <div className="p-2 bg-[#BFF367]/10 rounded-lg absolute top-4 right-4">
-              <Clock size={16} className="text-[#BFF367]" />
-            </div>
+            <Clock size={14} className="text-[#BFF367] absolute top-4 right-4" />
           </div>
           <div className="mt-1">
-            <h3 className="text-2xl font-bold text-white">
+            <h3 className="text-lg font-bold text-white" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
               {statsData?.stats?.daat || 0}%{" "}
-              <span className="text-sm font-normal text-gray-400">active</span>
+              <span className="text-xs font-normal text-gray-400" style={{ fontFamily: "'Inter', sans-serif" }}>active</span>
             </h3>
           </div>
-          <div className="mt-3 flex items-center border-t border-[#2D2D2D] pt-3">
+          <div className="mt-2 flex items-center border-t border-[#2D2D2D] pt-2">
             <span className="text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider">
               30 Days
             </span>
@@ -427,22 +439,20 @@ const OverviewTab = ({ role, profile }) => {
         </div>
 
         {/* Rating */}
-        <div className="p-5 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-36 relative">
+        <div className="p-4 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-28 relative">
           <div className="flex justify-between items-start">
             <span className="text-xs text-[#878C9F] font-semibold uppercase tracking-wider">
               Rating
             </span>
-            <div className="p-2 bg-yellow-400/10 rounded-lg absolute top-4 right-4">
-              <Star size={16} className="text-yellow-400" />
-            </div>
+            <Star size={14} className="text-yellow-400 absolute top-4 right-4" />
           </div>
           <div className="mt-1 flex items-center gap-1.5">
-            <h3 className="text-3xl font-bold text-white">
+            <h3 className="text-xl font-bold text-white" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
               {getRatingValue()}
             </h3>
-            <Star size={18} className="text-yellow-400 fill-yellow-400" />
+            <Star size={16} className="text-yellow-400 fill-yellow-400" />
           </div>
-          <div className="mt-3 flex items-center border-t border-[#2D2D2D] pt-3">
+          <div className="mt-2 flex items-center border-t border-[#2D2D2D] pt-2">
             <div className="relative inline-flex items-center w-full">
               <select
                 value={ratingTimeline}
@@ -470,30 +480,50 @@ const OverviewTab = ({ role, profile }) => {
           </div>
         </div>
 
-        {/* Requests & Acceptance */}
-        <div className="col-span-2 lg:col-span-1 p-5 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-36 relative">
+        {/* Conflict Balance */}
+        <div className="p-4 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-28 relative">
           <div className="flex justify-between items-start">
             <span className="text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider leading-tight">
-              Match
+              Conflict
               <br />
-              Requests
+              Balance
+            </span>
+            <Shield size={14} className="text-red-400 absolute top-4 right-4" />
+          </div>
+          <div className="mt-1">
+            <h3 className="text-lg font-bold text-white" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
+              ₹{profile?.disputeBalance || 0}
+            </h3>
+          </div>
+          <div className="mt-2 flex items-center border-t border-[#2D2D2D] pt-2">
+            <span className="text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider">
+              Funds on Hold
+            </span>
+          </div>
+        </div>
+
+        {/* Requests & Acceptance */}
+        <div className="col-span-2 lg:col-span-1 p-4 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-28 relative">
+          <div className="flex justify-between items-start">
+            <span className="text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider leading-tight">
+              Match Requests
             </span>
           </div>
           <div className="mt-1 flex items-center gap-3">
             <div>
               <p className="text-[10px] text-gray-500 uppercase font-bold mb-0.5">
-                Acc
+                Accepted
               </p>
-              <h3 className="text-xl font-bold text-green-400">
+              <h3 className="text-base font-bold text-green-400" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
                 {statsData?.stats?.acceptedRequests ?? pastBookingsCount}
               </h3>
             </div>
             <div className="w-px h-6 bg-[#2D2D2D]"></div>
             <div>
               <p className="text-[10px] text-gray-500 uppercase font-bold mb-0.5">
-                Rej
+                Rejected
               </p>
-              <h3 className="text-xl font-bold text-red-400">
+              <h3 className="text-base font-bold text-red-400" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
                 {statsData?.stats?.rejectedRequests ?? 0}
               </h3>
             </div>
@@ -502,38 +532,14 @@ const OverviewTab = ({ role, profile }) => {
               <p className="text-[10px] text-[#BFF367] uppercase font-bold mb-0.5">
                 Rate
               </p>
-              <h3 className="text-xl font-bold text-white">
+              <h3 className="text-base font-bold text-white" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
                 {statsData?.stats?.acceptanceRate ?? 100}%
               </h3>
             </div>
           </div>
-          <div className="mt-3 flex items-center border-t border-[#2D2D2D] pt-3">
+          <div className="mt-2 flex items-center border-t border-[#2D2D2D] pt-2">
             <span className="text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider">
               30 Days
-            </span>
-          </div>
-        </div>
-
-        {/* Conflict Balance */}
-        <div className="p-5 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-36 relative">
-          <div className="flex justify-between items-start">
-            <span className="text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider leading-tight">
-              Conflict
-              <br />
-              Balance
-            </span>
-            <div className="p-2 bg-red-500/10 rounded-lg absolute top-4 right-4">
-              <Shield size={16} className="text-red-400" />
-            </div>
-          </div>
-          <div className="mt-1">
-            <h3 className="text-2xl font-bold text-white">
-              ₹{profile?.disputeBalance || 0}
-            </h3>
-          </div>
-          <div className="mt-3 flex items-center border-t border-[#2D2D2D] pt-3">
-            <span className="text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider">
-              Funds on Hold
             </span>
           </div>
         </div>
@@ -548,7 +554,7 @@ const OverviewTab = ({ role, profile }) => {
               <div className="flex justify-between items-center border-b border-[#2D2D2D] pb-4">
                 <div className="flex items-center gap-3">
                   <span className="animate-ping w-2.5 h-2.5 rounded-full bg-[#BFF367]" />
-                  <h2 className="text-lg font-bold tracking-tight">
+                  <h2 className="text-lg font-bold tracking-tight uppercase" style={{ fontFamily: "'Open Sans', sans-serif" }}>
                     Active Match Assignment
                   </h2>
                 </div>
@@ -677,7 +683,7 @@ const OverviewTab = ({ role, profile }) => {
             </div>
           ) : isOnline ? (
             <div className="p-6 rounded-2xl bg-[#141414] border border-[#2D2D2D] space-y-4">
-              <h3 className="text-lg font-bold text-white">Bookings Pending</h3>
+              <h3 className="text-lg font-bold text-white uppercase tracking-wide" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bookings Pending</h3>
 
               <div className="space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[#BFF367]">
@@ -742,7 +748,7 @@ const OverviewTab = ({ role, profile }) => {
                 <MapPin size={24} />
               </div>
               <div>
-                <h3 className="text-lg font-bold">Bookings Pending</h3>
+                <h3 className="text-lg font-bold uppercase tracking-wide" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bookings Pending</h3>
                 <p className="text-[#878C9F] text-sm mt-1 max-w-md mx-auto">
                   You are offline. Go online using the toggle above to start
                   receiving match booking offers.
@@ -754,7 +760,7 @@ const OverviewTab = ({ role, profile }) => {
           {/* Bookings vs Income Graph */}
           <div className="p-6 rounded-2xl bg-[#141414] border border-[#2D2D2D] space-y-4">
             <div className="flex justify-between items-center relative z-20">
-              <h3 className="text-lg font-bold text-white">
+              <h3 className="text-lg font-bold text-white uppercase tracking-wide" style={{ fontFamily: "'Open Sans', sans-serif" }}>
                 Bookings vs Income
               </h3>
               <div className="relative inline-flex items-center">

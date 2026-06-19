@@ -13,6 +13,11 @@ import {
   FileCheck,
   Loader2,
   Clock,
+  Sparkles,
+  ClipboardList,
+  Apple,
+  Activity,
+  ChevronLeft,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -46,6 +51,10 @@ const availableRoles = [
   { id: "umpire", label: "Umpire", icon: Target },
   { id: "streamer", label: "Streamer", icon: Video },
   { id: "commentator", label: "Commentator", icon: Users },
+  { id: "cheerleader", label: "Cheerleader", icon: Sparkles },
+  { id: "scorer", label: "Scorer", icon: ClipboardList },
+  { id: "nutritionist", label: "Nutritionist", icon: Apple },
+  { id: "physiotherapist", label: "Physio", icon: Activity },
 ];
 
 const BG =
@@ -71,6 +80,10 @@ export default function ProfessionalLanding() {
     "commentator",
     "venue_owner",
     "venu_owners",
+    "cheerleader",
+    "scorer",
+    "nutritionist",
+    "physiotherapist",
   ];
   const hasExistingRole =
     isLoggedIn &&
@@ -83,7 +96,7 @@ export default function ProfessionalLanding() {
     const role = user?.role?.toLowerCase();
     if (role === "venue_owner" || role === "venu_owners" || user?.ownerProfile)
       return "/venue-owner";
-    if (["coach", "umpire", "streamer", "commentator", "scorer"].includes(role))
+    if (["coach", "umpire", "streamer", "commentator", "scorer", "cheerleader", "nutritionist", "physiotherapist"].includes(role))
       return `/professional/${role}`;
     return "/";
   };
@@ -107,7 +120,7 @@ export default function ProfessionalLanding() {
     }
     if (
       user?.ownerProfile ||
-      ["coach", "umpire", "streamer", "commentator", "venue_owner"].includes(
+      ["coach", "umpire", "streamer", "commentator", "venue_owner", "scorer", "cheerleader", "nutritionist", "physiotherapist"].includes(
         user?.role?.toLowerCase()
       )
     ) {
@@ -119,9 +132,9 @@ export default function ProfessionalLanding() {
 
   const handleDocumentSubmit = async (e) => {
     e.preventDefault();
-    if (!aadharFront || !aadharBack || !panFront || !panBack) {
+    if (!aadharFront || !aadharBack || !panFront) {
       toast.error(
-        "Please upload front and back of both Aadhaar and PAN cards."
+        "Please upload front and back of Aadhaar, and PAN card."
       );
       return;
     }
@@ -137,7 +150,9 @@ export default function ProfessionalLanding() {
       data.append("documents", aadharFront, `aadhar_front_${aadharFront.name}`);
       data.append("documents", aadharBack, `aadhar_back_${aadharBack.name}`);
       data.append("documents", panFront, `pan_front_${panFront.name}`);
-      data.append("documents", panBack, `pan_back_${panBack.name}`);
+      if (panBack) {
+        data.append("documents", panBack, `pan_back_${panBack.name}`);
+      }
 
       const response = await axiosInstance.post(
         "/api/user/auth/upgrade-request",
@@ -174,27 +189,21 @@ export default function ProfessionalLanding() {
     }
   };
 
-  const handleAadharUpload = (e) => {
+  const handleAadharFrontUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      if (!aadharFront) {
-        setAadharFront(file);
-      } else if (!aadharBack) {
-        setAadharBack(file);
-      }
-    }
+    if (file) setAadharFront(file);
     e.target.value = null;
   };
 
-  const handlePanUpload = (e) => {
+  const handleAadharBackUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      if (!panFront) {
-        setPanFront(file);
-      } else if (!panBack) {
-        setPanBack(file);
-      }
-    }
+    if (file) setAadharBack(file);
+    e.target.value = null;
+  };
+
+  const handlePanFrontUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) setPanFront(file);
     e.target.value = null;
   };
 
@@ -511,15 +520,8 @@ export default function ProfessionalLanding() {
 
       {/* ── Modals ── */}
       {modalStep === 1 && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#111] border border-white/10 rounded-[10px] p-6 md:p-8 w-full max-w-lg relative animate-fadeInUp">
-            <button
-              onClick={() => setModalStep(0)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
-            >
-              <X size={24} />
-            </button>
-
+        <div className="fixed inset-0 z-[100] bg-[#111] flex flex-col p-6 animate-fadeInUp overflow-y-auto no-scrollbar">
+          <div className="w-full max-w-lg mx-auto relative flex-1 flex flex-col pt-4 pb-8 justify-center">
             {user?.ownerProfile ||
             [
               "coach",
@@ -527,24 +529,28 @@ export default function ProfessionalLanding() {
               "streamer",
               "commentator",
               "venue_owner",
+              "scorer",
+              "cheerleader",
+              "nutritionist",
+              "physiotherapist",
             ].includes(user?.role?.toLowerCase()) ? (
-              <div className="text-center py-8">
+              <div className="text-center py-6 mt-4">
                 <div
-                  className="w-16 h-16 rounded-full border flex items-center justify-center mx-auto mb-6"
+                  className="w-14 h-14 rounded-full border flex items-center justify-center mx-auto mb-4"
                   style={{
                     borderColor: "rgba(191,243,103,0.3)",
                     backgroundColor: "rgba(191,243,103,0.1)",
                   }}
                 >
-                  <CheckCircle size={32} className="text-[#BFF367]" />
+                  <CheckCircle size={28} className="text-[#BFF367]" />
                 </div>
                 <h2
-                  className="text-2xl font-bold mb-4 uppercase tracking-wider text-white"
+                  className="text-lg font-bold mb-3 tracking-wider text-white normal-case"
                   style={{ fontFamily: "'Open Sans'" }}
                 >
                   Already a Professional
                 </h2>
-                <p className="text-gray-400 text-sm mb-6 leading-relaxed">
+                <p className="text-gray-400 text-xs mb-5 leading-relaxed">
                   You already have an active professional role ({user?.role}).
                   You can manage your professional profile from your dashboard.
                 </p>
@@ -553,31 +559,31 @@ export default function ProfessionalLanding() {
                     setModalStep(0);
                     navigate(getDashboardPath());
                   }}
-                  className="w-full py-4 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all"
+                  className="w-full py-3 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all text-sm"
                   style={{ background: GRADIENT, fontFamily: "'Inter'" }}
                 >
                   Go to Dashboard{" "}
-                  <ArrowRight size={20} className="inline ml-2" />
+                  <ArrowRight size={18} className="inline ml-2" />
                 </button>
               </div>
             ) : user?.applicationStatus === "pending" ? (
-              <div className="text-center py-8">
+              <div className="text-center py-6 mt-4">
                 <div
-                  className="w-16 h-16 rounded-full border flex items-center justify-center mx-auto mb-6"
+                  className="w-14 h-14 rounded-full border flex items-center justify-center mx-auto mb-4"
                   style={{
                     borderColor: "rgba(85,222,232,0.3)",
                     backgroundColor: "rgba(85,222,232,0.1)",
                   }}
                 >
-                  <Loader2 size={32} className="text-[#BFF367] animate-spin" />
+                  <Loader2 size={28} className="text-[#BFF367] animate-spin" />
                 </div>
                 <h2
-                  className="text-2xl font-bold mb-4 uppercase tracking-wider text-white"
+                  className="text-lg font-bold mb-3 tracking-wider text-white normal-case"
                   style={{ fontFamily: "'Open Sans'" }}
                 >
                   Application Pending
                 </h2>
-                <p className="text-gray-400 text-sm mb-6 leading-relaxed">
+                <p className="text-gray-400 text-xs mb-5 leading-relaxed">
                   You have applied for{" "}
                   <span className="text-[#BFF367] font-bold">
                     {user?.applicationRole || "a professional role"}
@@ -587,7 +593,7 @@ export default function ProfessionalLanding() {
                 </p>
                 <button
                   onClick={() => setModalStep(0)}
-                  className="w-full py-4 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all"
+                  className="w-full py-3 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all text-sm"
                   style={{ background: GRADIENT, fontFamily: "'Inter'" }}
                 >
                   Close
@@ -595,30 +601,40 @@ export default function ProfessionalLanding() {
               </div>
             ) : (
               <>
-                <h2
-                  className="text-2xl font-bold mb-2 uppercase tracking-wider text-white text-center"
-                  style={{ fontFamily: "'Open Sans'" }}
-                >
-                  Select Your Role
-                </h2>
-                <p className="text-gray-400 text-center mb-8 text-sm">
-                  Please select your primary profession.
-                </p>
+                <div className="flex items-start justify-start mb-6 -ml-2 gap-1.5">
+                  <button
+                    onClick={() => setModalStep(0)}
+                    className="text-gray-400 hover:text-white transition-colors p-1 mt-0.5"
+                  >
+                    <ChevronLeft size={28} />
+                  </button>
+                  <div className="flex flex-col text-left">
+                    <h2
+                      className="text-xl font-bold text-white tracking-normal normal-case mb-1"
+                      style={{ fontFamily: "'Open Sans'" }}
+                    >
+                      Select your role
+                    </h2>
+                    <p className="text-gray-400 text-xs">
+                      Please select your primary profession.
+                    </p>
+                  </div>
+                </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="grid grid-cols-2 gap-2.5 mb-5">
                   {availableRoles.map((role) => {
                     const isSelected = selectedRoles.includes(role.id);
                     return (
                       <button
                         key={role.id}
                         onClick={() => toggleRole(role.id)}
-                        className={`flex flex-col items-center justify-center p-6 border rounded-[10px] transition-all ${isSelected ? "border-[#BFF367] bg-[#BFF367]/10 text-white" : "border-white/10 bg-white/5 text-gray-400 hover:border-white/30 hover:bg-white/10"}`}
+                        className={`flex flex-col items-center justify-center p-3.5 border rounded-[10px] transition-all ${isSelected ? "border-[#BFF367] bg-[#BFF367]/10 text-white shadow-[0_0_15px_rgba(191,243,103,0.15)]" : "border-white/10 bg-white/5 text-gray-400 hover:border-white/30 hover:bg-white/10"}`}
                       >
                         <role.icon
-                          size={32}
-                          className={`mb-3 ${isSelected ? "text-[#BFF367]" : ""}`}
+                          size={24}
+                          className={`mb-2 ${isSelected ? "text-[#BFF367]" : ""}`}
                         />
-                        <span className="font-bold uppercase tracking-wider text-sm">
+                        <span className="font-bold uppercase tracking-wider text-[10px]">
                           {role.label}
                         </span>
                       </button>
@@ -628,10 +644,10 @@ export default function ProfessionalLanding() {
 
                 <button
                   onClick={handleRoleContinue}
-                  className="w-full py-4 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all"
+                  className="w-full py-3.5 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all text-sm"
                   style={{ background: GRADIENT, fontFamily: "'Inter'" }}
                 >
-                  Continue <ArrowRight size={20} className="inline ml-2" />
+                  Continue <ArrowRight size={18} className="inline ml-2" />
                 </button>
               </>
             )}
@@ -640,63 +656,56 @@ export default function ProfessionalLanding() {
       )}
 
       {modalStep === 2 && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#111] border border-white/10 rounded-[10px] p-6 md:p-8 w-full max-w-lg relative animate-fadeInUp">
+        <div className="fixed inset-0 z-[100] bg-[#111] flex flex-col p-6 animate-fadeInUp overflow-y-auto no-scrollbar">
+          <div className="w-full max-w-lg mx-auto relative flex-1 flex flex-col pt-12 pb-8 justify-center">
             <button
               onClick={() => setModalStep(1)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+              className="absolute top-2 left-0 text-gray-400 hover:text-white transition-colors flex items-center"
             >
-              <X size={24} />
+              <ChevronLeft size={32} />
             </button>
             <h2
-              className="text-2xl font-bold mb-8 uppercase tracking-wider text-white text-center"
+              className="text-3xl font-bold mb-8 text-white text-center"
               style={{ fontFamily: "'Open Sans'" }}
             >
               Document Verification
             </h2>
 
             <form className="space-y-6 mt-4" onSubmit={handleDocumentSubmit}>
-              <div className="grid grid-cols-2 gap-4 md:gap-6">
-                {/* Aadhaar Upload Box */}
+              <div className="grid grid-cols-2 gap-4 md:gap-6 mt-4">
+                {/* Aadhaar Front Box */}
                 <label
-                  className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${aadharFront && aadharBack ? "opacity-80" : ""}`}
+                  className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${aadharFront ? "opacity-80" : ""}`}
                 >
                   <span
-                    className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base"
+                    className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base leading-tight"
                     style={{ fontFamily: "'Inter'" }}
                   >
-                    AADHAAR CARD
+                    AADHAAR CARD <br /> FRONT
                   </span>
                   <div
-                    className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] p-2 md:p-3 overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharFront && aadharBack ? "ring-2 ring-[#BFF367]" : "group-hover:ring-2 group-hover:ring-[#BFF367]"}`}
+                    className={`relative w-full h-[110px] md:h-[130px] bg-[#E8E8E8] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharFront ? "ring-2 ring-[#BFF367]" : "group-hover:ring-2 group-hover:ring-[#BFF367]"}`}
                   >
-                    {/* Hover Overlay & Upload Logic */}
-                    {aadharFront && aadharBack ? (
+                    {aadharFront ? (
                       <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
                         <FileCheck className="text-[#BFF367] mb-2" size={32} />
                         <span
                           className="text-white font-bold tracking-wider uppercase text-center text-xs"
                           style={{ fontFamily: "'Inter'" }}
                         >
-                          Aadhaar Uploaded
+                          Uploaded
                         </span>
                       </div>
                     ) : (
-                      <div
-                        className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm transition-opacity ${aadharFront && !aadharBack ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
-                      >
+                      <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
                         <span
                           className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs"
                           style={{ fontFamily: "'Inter'" }}
                         >
-                          {aadharFront
-                            ? "Upload Aadhaar Back"
-                            : "Upload Aadhaar Front"}
+                          Upload Front
                         </span>
                       </div>
                     )}
-
-                    {/* Content */}
                     <div className="flex justify-between items-start opacity-60">
                       <Landmark className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
                       <div className="space-y-1 md:space-y-1.5 flex flex-col items-end mt-0.5">
@@ -704,13 +713,9 @@ export default function ProfessionalLanding() {
                         <div className="w-8 md:w-14 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
                       </div>
                     </div>
-
                     <div className="flex gap-2 md:gap-3 mt-1 opacity-60">
                       <div className="w-10 h-12 md:w-12 md:h-14 bg-gray-400/30 rounded-[8px] overflow-hidden flex items-end justify-center border border-gray-400/20">
-                        <User
-                          className="w-8 h-8 md:w-10 md:h-10 text-gray-600 -mb-1.5"
-                          fill="currentColor"
-                        />
+                        <User className="w-8 h-8 md:w-10 md:h-10 text-gray-600 -mb-1.5" fill="currentColor" />
                       </div>
                       <div className="flex-1 space-y-2 md:space-y-2.5 mt-0.5 md:mt-1">
                         <div className="w-full h-2 md:h-2.5 bg-gray-500 rounded-full"></div>
@@ -723,14 +728,62 @@ export default function ProfessionalLanding() {
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={handleAadharUpload}
-                    disabled={aadharFront && aadharBack}
+                    onChange={handleAadharFrontUpload}
+                  />
+                </label>
+
+                {/* Aadhaar Back Box */}
+                <label
+                  className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${aadharBack ? "opacity-80" : ""}`}
+                >
+                  <span
+                    className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base leading-tight"
+                    style={{ fontFamily: "'Inter'" }}
+                  >
+                    AADHAAR CARD <br /> BACK
+                  </span>
+                  <div
+                    className={`relative w-full h-[110px] md:h-[130px] bg-[#E8E8E8] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharBack ? "ring-2 ring-[#BFF367]" : "group-hover:ring-2 group-hover:ring-[#BFF367]"}`}
+                  >
+                    {aadharBack ? (
+                      <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
+                        <FileCheck className="text-[#BFF367] mb-2" size={32} />
+                        <span
+                          className="text-white font-bold tracking-wider uppercase text-center text-xs"
+                          style={{ fontFamily: "'Inter'" }}
+                        >
+                          Uploaded
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span
+                          className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs"
+                          style={{ fontFamily: "'Inter'" }}
+                        >
+                          Upload Back
+                        </span>
+                      </div>
+                    )}
+                    {/* Abstract Back ID UI */}
+                    <div className="w-full h-4 bg-gray-400 mt-2"></div>
+                    <div className="p-2 space-y-1.5 opacity-60">
+                      <div className="w-full h-1.5 bg-gray-500 rounded-full"></div>
+                      <div className="w-4/5 h-1.5 bg-gray-500 rounded-full"></div>
+                      <div className="w-3/4 h-1.5 bg-gray-500 rounded-full"></div>
+                    </div>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAadharBackUpload}
                   />
                 </label>
 
                 {/* PAN Upload Box */}
                 <label
-                  className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${panFront && panBack ? "opacity-80" : ""}`}
+                  className={`col-span-2 w-full max-w-xs mx-auto flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${panFront ? "opacity-80" : ""}`}
                 >
                   <span
                     className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base"
@@ -739,38 +792,32 @@ export default function ProfessionalLanding() {
                     PAN CARD
                   </span>
                   <div
-                    className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${panFront && panBack ? "ring-2 ring-[#BFF367]" : "group-hover:ring-2 group-hover:ring-[#BFF367]"}`}
+                    className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${panFront ? "ring-2 ring-[#BFF367]" : "group-hover:ring-2 group-hover:ring-[#BFF367]"}`}
                   >
-                    {/* Hover Overlay & Upload Logic */}
-                    {panFront && panBack ? (
+                    {panFront ? (
                       <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
                         <FileCheck className="text-[#BFF367] mb-2" size={32} />
                         <span
                           className="text-white font-bold tracking-wider uppercase text-center text-xs"
                           style={{ fontFamily: "'Inter'" }}
                         >
-                          PAN Uploaded
+                          Uploaded
                         </span>
                       </div>
                     ) : (
-                      <div
-                        className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm transition-opacity ${panFront && !panBack ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
-                      >
+                      <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
                         <span
                           className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs"
                           style={{ fontFamily: "'Inter'" }}
                         >
-                          {panFront ? "Upload PAN Back" : "Upload PAN Front"}
+                          Upload Photo
                         </span>
                       </div>
                     )}
-
-                    {/* Top Stripe */}
                     <div className="w-full h-5 md:h-6 bg-gray-400/60 flex justify-between items-center px-2 md:px-3 opacity-60 shrink-0">
                       <div className="w-4 h-4 md:w-5 md:h-5 bg-gray-600 rounded-sm"></div>
                       <div className="w-12 md:w-20 h-1.5 md:h-2 bg-gray-600 rounded-full"></div>
                     </div>
-
                     <div className="p-2 md:p-3 flex-1 flex flex-col justify-between opacity-60">
                       <div className="flex gap-1.5 md:gap-2">
                         <div className="flex-1 space-y-1.5 md:space-y-2 mt-0.5">
@@ -789,7 +836,6 @@ export default function ProfessionalLanding() {
                           <div className="w-3/4 h-1 md:h-1.5 bg-gray-500 rounded-full"></div>
                         </div>
                       </div>
-
                       <div className="flex justify-between items-end mt-1">
                         <span className="text-gray-600 font-bold tracking-widest font-mono text-[8px] md:text-[10px]">
                           ABCDE1234F
@@ -802,8 +848,7 @@ export default function ProfessionalLanding() {
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={handlePanUpload}
-                    disabled={panFront && panBack}
+                    onChange={handlePanFrontUpload}
                   />
                 </label>
               </div>

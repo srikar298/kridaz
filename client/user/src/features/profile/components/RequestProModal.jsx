@@ -1,20 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Send } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { toast } from "react-hot-toast";
+import { useSelector } from "react-redux";
 
-const RequestProModal = ({ isOpen, onClose, pro }) => {
+const RequestProModal = ({ isOpen, onClose, pro, onRequestSuccess }) => {
+  const user = useSelector((state) => state.auth?.user);
   const [interestFor, setInterestFor] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState(user?.phone || user?.phoneNumber || "");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    console.log("RequestProModal user object:", user);
+    const userPhone = user?.phone || user?.phoneNumber;
+    if (userPhone) {
+      setPhone(userPhone);
+    }
+  }, [user, isOpen]);
 
   const interestOptions = ["Booking", "Mentorship", "Event", "Collaboration"];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!interestFor || !phone || !message) {
-      toast.error("Please fill all fields");
+      toast.error("Please fill all fields, including your phone number.");
       return;
     }
 
@@ -31,6 +41,7 @@ const RequestProModal = ({ isOpen, onClose, pro }) => {
       if (res.data.success) {
         toast.success("Inquiry sent successfully!");
         onClose();
+        if (onRequestSuccess) onRequestSuccess();
         setInterestFor("");
         setPhone("");
         setMessage("");
@@ -94,9 +105,14 @@ const RequestProModal = ({ isOpen, onClose, pro }) => {
             <input
               type="tel"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="Enter your phone number"
-              className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#BFF367] transition-colors"
+              onChange={(e) => {
+                if (!(user?.phone || user?.phoneNumber)) setPhone(e.target.value);
+              }}
+              readOnly={!!(user?.phone || user?.phoneNumber)}
+              placeholder={(user?.phone || user?.phoneNumber) ? "Phone number from profile" : "Enter your phone number"}
+              className={`w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-colors ${
+                (user?.phone || user?.phoneNumber) ? "opacity-50 cursor-not-allowed" : "focus:border-[#BFF367]"
+              }`}
             />
           </div>
 

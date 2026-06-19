@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useScrollDirection } from "@hooks/useScrollDirection.js";
 import {
   Home,
   Search,
@@ -20,6 +21,7 @@ const MobileBottomNav = () => {
   const navigate = useNavigate();
   const { isLoggedIn } = useSelector((state) => state.auth);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { scrollDirection } = useScrollDirection();
 
   // Hide bottom nav when a modal sets the body attribute
   const [isHidden, setIsHidden] = useState(
@@ -110,7 +112,7 @@ const MobileBottomNav = () => {
 
       {/* Floating Bottom Nav Container */}
       <div
-        className="lg:hidden fixed left-4 right-4 z-[100] flex flex-col justify-end pointer-events-none mb-4"
+        className={`lg:hidden fixed left-4 right-4 z-[100] flex flex-col justify-end pointer-events-none mb-4 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${scrollDirection === "down" && !isMenuOpen ? "translate-y-[150%]" : "translate-y-0"}`}
         style={{ bottom: "env(safe-area-inset-bottom)" }}
       >
         <div

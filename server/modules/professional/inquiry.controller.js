@@ -12,6 +12,24 @@ export const createInquiry = async (req, res) => {
         .json({ success: false, message: "Missing required fields" });
     }
 
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const recentInquiry = await prisma.professionalInquiry.findFirst({
+      where: {
+        userId,
+        proId,
+        createdAt: {
+          gte: twentyFourHoursAgo,
+        },
+      },
+    });
+
+    if (recentInquiry) {
+      return res.status(429).json({
+        success: false,
+        message: "You can only send one request to this professional every 24 hours.",
+      });
+    }
+
     const inquiry = await prisma.professionalInquiry.create({
       data: {
         userId,
@@ -54,6 +72,29 @@ export const getProInquiries = async (req, res) => {
     return res.status(200).json({ success: true, inquiries });
   } catch (error) {
     logger.error("Error fetching pro inquiries:", error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const checkRecentInquiry = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { proId } = req.params;
+
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const recentInquiry = await prisma.professionalInquiry.findFirst({
+      where: {
+        userId,
+        proId,
+        createdAt: {
+          gte: twentyFourHoursAgo,
+        },
+      },
+    });
+
+    return res.status(200).json({ success: true, hasRecentInquiry: !!recentInquiry });
+  } catch (error) {
+    logger.error("Error checking recent inquiry:", error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };

@@ -11,6 +11,7 @@ import {
   TrendingUp,
   AlertTriangle,
   Info,
+  ArrowLeft,
 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -210,7 +211,7 @@ const PayoutsTab = ({ role }) => {
   const kycStatus = banking?.bankingDetails?.kycStatus || "PENDING";
 
   return (
-    <div className="space-y-6 text-white font-inter">
+    <div className="space-y-6 text-white font-inter w-full overflow-x-hidden pb-4">
       {/* feedback message banner */}
       {feedbackMsg && (
         <div
@@ -232,7 +233,7 @@ const PayoutsTab = ({ role }) => {
       )}
 
       {/* TOP BANK DETAILS SECTION */}
-      <div className="p-6 rounded-2xl bg-gradient-to-br from-[#141414] to-[#0d0d0d] border border-[#2D2D2D] space-y-6 relative overflow-hidden">
+      <div className="p-4 rounded-2xl bg-gradient-to-br from-[#141414] to-[#0d0d0d] border border-[#2D2D2D] space-y-4 relative overflow-hidden">
         {/* Glow element */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#BFF367]/5 blur-[80px] pointer-events-none" />
 
@@ -241,6 +242,13 @@ const PayoutsTab = ({ role }) => {
           <div className="space-y-6">
             <div className="flex items-center justify-between border-b border-[#2D2D2D] pb-4">
               <div className="flex items-start sm:items-center gap-2.5 flex-1 min-w-0">
+                <button
+                  type="button"
+                  onClick={() => setIsEditingBank(false)}
+                  className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all shrink-0 mt-0.5 sm:mt-0"
+                >
+                  <ArrowLeft size={18} />
+                </button>
                 <Landmark
                   size={22}
                   className="text-[#BFF367] shrink-0 mt-1 sm:mt-0"
@@ -255,14 +263,6 @@ const PayoutsTab = ({ role }) => {
                   </p>
                 </div>
               </div>
-              {hasConfiguredBank && (
-                <button
-                  onClick={() => setIsEditingBank(false)}
-                  className="px-3.5 py-1.5 rounded-lg bg-[#222] hover:bg-[#333] text-xs font-semibold border border-white/5 transition-all"
-                >
-                  Cancel
-                </button>
-              )}
             </div>
 
             <div className="flex bg-black p-1 rounded-xl border border-[#2D2D2D] gap-2 w-full sm:max-w-xs">
@@ -382,33 +382,36 @@ const PayoutsTab = ({ role }) => {
               <div className="w-14 h-14 rounded-2xl bg-[#BFF367]/10 flex items-center justify-center border border-[#BFF367]/20">
                 <Landmark size={28} className="text-[#BFF367]" />
               </div>
-              <div className="space-y-1 flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <h4 className="font-bold text-white tracking-tight text-lg truncate">
-                    {payoutMode === "BANK"
-                      ? bankName
-                      : "UPI Payment Destination"}
-                  </h4>
-                  <span
-                    className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border whitespace-nowrap ${
-                      kycStatus === "VERIFIED"
-                        ? "bg-green-500/10 text-green-400 border-green-500/20"
-                        : kycStatus === "REJECTED"
-                          ? "bg-red-500/10 text-red-400 border-red-500/20"
-                          : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
-                    }`}
-                  >
-                    {kycStatus === "VERIFIED"
-                      ? "Verified"
+              <div className="flex-1 min-w-0 flex flex-col items-start justify-center">
+                <span
+                  className={`mb-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border whitespace-nowrap ${
+                    kycStatus === "VERIFIED"
+                      ? "bg-green-500/10 text-green-400 border-green-500/20"
                       : kycStatus === "REJECTED"
-                        ? "Rejected"
-                        : "Verification Pending"}
-                  </span>
-                </div>
-                <p className="text-xs text-[#878C9F] font-semibold uppercase tracking-widest font-mono truncate">
+                        ? "bg-red-500/10 text-red-400 border-red-500/20"
+                        : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+                  }`}
+                >
+                  {kycStatus === "VERIFIED"
+                    ? "Verified"
+                    : kycStatus === "REJECTED"
+                      ? "Rejected"
+                      : "Verification Pending"}
+                </span>
+                {bankName && payoutMode === "BANK" && (
+                  <h4 className="font-bold text-white tracking-tight text-base sm:text-lg truncate w-full">
+                    {bankName}
+                  </h4>
+                )}
+                {payoutMode === "UPI" && (
+                  <h4 className="font-bold text-white tracking-tight text-base sm:text-lg truncate w-full">
+                    UPI Payment Destination
+                  </h4>
+                )}
+                <p className="text-[10px] sm:text-xs text-[#878C9F] font-semibold uppercase tracking-widest font-mono truncate w-full mt-0.5">
                   {payoutMode === "BANK"
-                    ? `A/C Number: *******${accountNumber.slice(-4)} (${accountName})`
-                    : `UPI ID: ${upiId} (${accountName})`}
+                    ? `A/C: *******${accountNumber ? accountNumber.slice(-4) : "0000"} (${accountName || "N/A"})`
+                    : `UPI ID: ${upiId} (${accountName || "N/A"})`}
                 </p>
               </div>
             </div>
@@ -436,15 +439,12 @@ const PayoutsTab = ({ role }) => {
       </div>
 
       {/* FOUR FINANCIAL BOXES (2 per row layout) */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         {/* Card 1: Usable Balance */}
-        <div className="p-4 rounded-xl bg-gradient-to-br from-[#141414] to-[#0f0f0f] border border-[#2D2D2D] relative overflow-hidden flex flex-col justify-between min-h-[120px]">
-          <div className="absolute right-2 top-2 text-[#BFF367]/5 pointer-events-none">
-            <IndianRupee size={50} />
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[9px] text-[#878C9F] font-bold uppercase tracking-[0.15em] truncate mr-1">
+        <div className="py-3.5 px-3 rounded-2xl bg-gradient-to-br from-[#141414] to-[#0f0f0f] border border-[#2D2D2D] relative overflow-hidden flex flex-col justify-center min-h-[5.5rem] h-auto text-center items-center gap-1.5">
+          <div className="w-full">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <span className="text-[8px] text-[#878C9F] font-bold uppercase tracking-wider truncate">
                 Usable Balance
               </span>
               <button
@@ -456,29 +456,25 @@ const PayoutsTab = ({ role }) => {
                 className="text-gray-500 hover:text-white transition-colors"
                 title="View Details"
               >
-                <Info size={13} />
+                <Info size={11} />
               </button>
             </div>
-            <h2 className="text-xl font-black text-[#BFF367] mt-1 tracking-tight">
+            <h2 className="text-xl font-black text-[#BFF367] tracking-tight" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
               ₹{walletBalance.toFixed(2)}
             </h2>
           </div>
-          {activeDescCard === "usable" ? (
-            <div className="text-[9px] text-gray-300 mt-2 bg-black/40 p-1.5 rounded border border-white/5 animate-in fade-in duration-200">
+          {activeDescCard === "usable" && (
+            <div className="text-[9px] text-gray-300 bg-black/40 p-1.5 rounded border border-white/5 animate-in fade-in duration-200 w-full mt-1">
               Available for immediate withdrawal request.
-            </div>
-          ) : (
-            <div className="text-[9px] text-gray-500 mt-2 flex items-center gap-1">
-              <CheckCircle size={10} className="text-green-500" /> Ready
             </div>
           )}
         </div>
 
         {/* Card 2: Reserved Escrow */}
-        <div className="p-4 rounded-xl bg-[#141414] border border-[#2D2D2D] relative overflow-hidden flex flex-col justify-between min-h-[120px]">
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[9px] text-[#878C9F] font-bold uppercase tracking-[0.15em] truncate mr-1">
+        <div className="py-3.5 px-3 rounded-2xl bg-[#141414] border border-[#2D2D2D] relative overflow-hidden flex flex-col justify-center min-h-[5.5rem] h-auto text-center items-center gap-1.5">
+          <div className="w-full">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <span className="text-[8px] text-[#878C9F] font-bold uppercase tracking-wider truncate">
                 Reserved Escrow
               </span>
               <button
@@ -490,30 +486,26 @@ const PayoutsTab = ({ role }) => {
                 className="text-gray-500 hover:text-white transition-colors"
                 title="View Details"
               >
-                <Info size={13} />
+                <Info size={11} />
               </button>
             </div>
-            <h2 className="text-xl font-bold text-white mt-1 tracking-tight">
+            <h2 className="text-xl font-bold text-white tracking-tight" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
               ₹{reservedBalance.toFixed(2)}
             </h2>
           </div>
-          {activeDescCard === "reserved" ? (
-            <div className="text-[9px] text-gray-300 mt-2 bg-black/40 p-1.5 rounded border border-white/5 animate-in fade-in duration-200">
+          {activeDescCard === "reserved" && (
+            <div className="text-[9px] text-gray-300 bg-black/40 p-1.5 rounded border border-white/5 animate-in fade-in duration-200 w-full mt-1">
               Released to usable balance automatically upon successful match
               completion.
-            </div>
-          ) : (
-            <div className="text-[9px] text-gray-500 mt-2 flex items-center gap-1">
-              <Clock size={10} className="text-yellow-500" /> Pending Match
             </div>
           )}
         </div>
 
         {/* Card 3: Dispute Balance */}
-        <div className="p-4 rounded-xl bg-[#141414] border border-[#2D2D2D] relative overflow-hidden flex flex-col justify-between min-h-[120px]">
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[9px] text-[#878C9F] font-bold uppercase tracking-[0.15em] truncate mr-1">
+        <div className="py-3.5 px-3 rounded-2xl bg-[#141414] border border-[#2D2D2D] relative overflow-hidden flex flex-col justify-center min-h-[5.5rem] h-auto text-center items-center gap-1.5">
+          <div className="w-full">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <span className="text-[8px] text-[#878C9F] font-bold uppercase tracking-wider truncate">
                 Conflict Balance
               </span>
               <button
@@ -525,30 +517,26 @@ const PayoutsTab = ({ role }) => {
                 className="text-gray-500 hover:text-white transition-colors"
                 title="View Details"
               >
-                <Info size={13} />
+                <Info size={11} />
               </button>
             </div>
-            <h2 className="text-xl font-bold text-white mt-1 tracking-tight">
+            <h2 className="text-xl font-bold text-white tracking-tight" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
               ₹{disputeBalance.toFixed(2)}
             </h2>
           </div>
-          {activeDescCard === "dispute" ? (
-            <div className="text-[9px] text-gray-300 mt-2 bg-black/40 p-1.5 rounded border border-white/5 animate-in fade-in duration-200">
+          {activeDescCard === "dispute" && (
+            <div className="text-[9px] text-gray-300 bg-black/40 p-1.5 rounded border border-white/5 animate-in fade-in duration-200 w-full mt-1">
               Under review due to dispute/claims raised within 12 hours of match
               ending.
-            </div>
-          ) : (
-            <div className="text-[9px] text-gray-500 mt-2 flex items-center gap-1">
-              <AlertTriangle size={10} className="text-red-500" /> On hold
             </div>
           )}
         </div>
 
         {/* Card 4: Total Lifetime Earnings with Filtering */}
-        <div className="p-4 rounded-xl bg-[#141414] border border-[#2D2D2D] relative overflow-hidden flex flex-col justify-between min-h-[120px]">
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[9px] text-[#878C9F] font-bold uppercase tracking-[0.15em] truncate mr-1">
+        <div className="py-3.5 px-3 rounded-2xl bg-[#141414] border border-[#2D2D2D] relative overflow-hidden flex flex-col justify-center min-h-[5.5rem] h-auto text-center items-center gap-1.5">
+          <div className="w-full flex flex-col items-center">
+            <div className="flex items-center justify-center gap-1 mb-1 w-full">
+              <span className="text-[8px] text-[#878C9F] font-bold uppercase tracking-wider truncate">
                 Lifetime Earnings
               </span>
               <button
@@ -560,25 +548,25 @@ const PayoutsTab = ({ role }) => {
                 className="text-gray-500 hover:text-white transition-colors"
                 title="View Details"
               >
-                <Info size={13} />
+                <Info size={11} />
               </button>
             </div>
-            <div className="flex flex-col gap-1 mt-1">
-              <h2 className="text-xl font-bold text-white tracking-tight">
+            <div className="flex flex-col items-center gap-1 w-full">
+              <h2 className="text-xl font-bold text-white tracking-tight" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
                 ₹{getFilteredLifetimeEarning().toLocaleString()}
               </h2>
               {/* Filter Dropdown */}
               <select
                 value={earningsFilter}
                 onChange={(e) => setEarningsFilter(e.target.value)}
-                className="bg-black/60 border border-[#2D2D2D] text-[9px] font-bold text-white rounded px-1.5 py-1 focus:outline-none focus:border-[#BFF367] transition-all cursor-pointer w-fit max-w-full"
+                className="bg-black/60 border border-[#2D2D2D] text-[8px] font-bold text-white rounded px-1.5 py-0.5 focus:outline-none focus:border-[#BFF367] transition-all cursor-pointer w-fit max-w-[90%] text-center mx-auto"
               >
                 <option value="ALL_TIME">All Time</option>
                 <option value="TODAY">Today's Journey</option>
                 <option value="7_DAYS">Last 7 Days</option>
                 <option value="THIS_MONTH">This Month</option>
                 <option value="LAST_MONTH">Last Month</option>
-                <option value="CUSTOM">Custom Date Range</option>
+                <option value="CUSTOM">Custom Range</option>
               </select>
             </div>
           </div>
@@ -603,13 +591,9 @@ const PayoutsTab = ({ role }) => {
             </div>
           )}
 
-          {activeDescCard === "lifetime" ? (
-            <div className="text-[9px] text-gray-300 mt-2 bg-black/40 p-1.5 rounded border border-white/5 animate-in fade-in duration-200">
+          {activeDescCard === "lifetime" && (
+            <div className="text-[9px] text-gray-300 bg-black/40 p-1.5 rounded border border-white/5 animate-in fade-in duration-200 w-full mt-1">
               Gross earnings generated from all completed match duties.
-            </div>
-          ) : (
-            <div className="text-[9px] text-[#BFF367] mt-2 flex items-center gap-1">
-              <TrendingUp size={10} /> Tracked
             </div>
           )}
         </div>

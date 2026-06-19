@@ -70,6 +70,8 @@ model User {
   professionalCustomers   ProfessionalCustomer[]
   matchRequests           ProfessionalMatchRequest[]
   recoveryToken           RecoveryToken?
+  sentInquiries           ProfessionalInquiry[]         @relation("InquirySender")
+  receivedInquiries       ProfessionalInquiry[]         @relation("InquiryReceiver")
   reels                   Reel[]
   reelComments            ReelComment[]
   reelInteractions        ReelInteraction[]
@@ -1691,4 +1693,19 @@ model TournamentVenue {
   turf         Turf       @relation(fields: [turfId], references: [id])
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+}
+
+model ProfessionalInquiry {
+  id          String   @id @default(uuid())
+  userId      String
+  proId       String
+  interestFor String
+  phone       String
+  message     String   @db.Text
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation("InquirySender", fields: [userId], references: [id])
+  pro         User     @relation("InquiryReceiver", fields: [proId], references: [id])
 }

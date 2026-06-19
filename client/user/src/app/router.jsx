@@ -38,6 +38,9 @@ const ProfessionalDashboard = lazy(
 const BookingsTab = lazy(
   () => import("@features/professional/pages/BookingsTab")
 );
+const InquiriesTab = lazy(
+  () => import("@features/professional/components/InquiriesTab")
+);
 const PayoutsTab = lazy(
   () => import("@features/professional/pages/PayoutsTab")
 );
@@ -491,6 +494,14 @@ const router = createBrowserRouter([
         element: (
           <S>
             <BookingsTab />
+          </S>
+        ),
+      },
+      {
+        path: "inquiries",
+        element: (
+          <S>
+            <InquiriesTab />
           </S>
         ),
       },

@@ -45,7 +45,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
       setFormData({
         name: user.name || "",
         username: user.username || "",
-        phone: user.phone || "",
+        phone: user.phone || user.phoneNumber || "",
         bio: user.bio || "",
         gender: user.gender || "",
         location: user.location || user.city || "",
@@ -189,6 +189,12 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.phone || formData.phone.trim() === "") {
+      toast.error("Contact number is mandatory. Please enter a valid phone number.");
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await axiosInstance.put(
@@ -442,8 +448,13 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                   type="text"
                   name="phone"
                   value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full h-[58px] bg-[#121212] border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-4 text-[14px] text-white focus:outline-none focus:border-[#55DEE8] transition-all placeholder-white/70"
+                  onChange={(e) => {
+                    if (!(user?.phone || user?.phoneNumber)) handleChange(e);
+                  }}
+                  readOnly={!!(user?.phone || user?.phoneNumber)}
+                  className={`w-full h-[58px] bg-[#121212] border rounded-[16px] py-4 pl-12 pr-4 text-[14px] text-white focus:outline-none transition-all placeholder-white/70 ${
+                    (user?.phone || user?.phoneNumber) ? "border-white/[0.08] opacity-50 cursor-not-allowed" : "border-white/[0.08] focus:border-[#55DEE8]"
+                  }`}
                   placeholder="Phone number"
                 />
               </div>

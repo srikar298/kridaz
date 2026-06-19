@@ -7,6 +7,7 @@ import {
   User,
   IndianRupee,
   Star,
+  MessageSquare,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@redux/slices/authSlice.js";
@@ -34,6 +35,7 @@ const ProfessionalSidebar = ({
   const mainNavItems = [
     { to: `/professional/${role}`, label: "Overview", icon: LayoutDashboard },
     { to: `/professional/${role}/profile`, label: "Edit Profile", icon: User },
+    { to: `/professional/${role}/inquiries`, label: "Inquiries", icon: MessageSquare },
     { to: `/professional/${role}/bookings`, label: "Bookings", icon: Activity },
     {
       to: `/professional/${role}/payouts`,

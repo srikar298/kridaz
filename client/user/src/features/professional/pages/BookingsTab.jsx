@@ -103,51 +103,31 @@ const BookingsTab = ({ role }) => {
   return (
     <div className="space-y-6 text-white font-inter">
       {/* Tab Selectors */}
-      <div className="border-b border-[#1A1A1A] pb-1">
-        <div className="grid grid-cols-4 w-full text-center">
+      <div className="border-b border-[#1A1A1A] pb-1 overflow-x-auto no-scrollbar">
+        <div className="flex w-full min-w-max sm:min-w-0 sm:grid sm:grid-cols-4 text-center">
           <button
             onClick={() => setActiveSubTab("active")}
-            className={`pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "active" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "active" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
           >
-            <span className="block sm:hidden">
-              Active ({activeBookings.length})
-            </span>
-            <span className="hidden sm:block">
-              Active ({activeBookings.length})
-            </span>
+            Active ({activeBookings.length})
           </button>
           <button
             onClick={() => setActiveSubTab("history")}
-            className={`pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "history" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "history" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
           >
-            <span className="block sm:hidden">
-              History ({completedBookings.length})
-            </span>
-            <span className="hidden sm:block">
-              History ({completedBookings.length})
-            </span>
+            History ({completedBookings.length})
           </button>
           <button
             onClick={() => setActiveSubTab("nonAccepted")}
-            className={`pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "nonAccepted" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "nonAccepted" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
           >
-            <span className="block sm:hidden">
-              Rejected ({nonAcceptedBookings.length})
-            </span>
-            <span className="hidden sm:block">
-              Rejected ({nonAcceptedBookings.length})
-            </span>
+            Rejected ({nonAcceptedBookings.length})
           </button>
           <button
             onClick={() => setActiveSubTab("skipped")}
-            className={`pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "skipped" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "skipped" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
           >
-            <span className="block sm:hidden">
-              Skipped ({skippedBookings.length})
-            </span>
-            <span className="hidden sm:block">
-              Skipped ({skippedBookings.length})
-            </span>
+            Skipped ({skippedBookings.length})
           </button>
         </div>
       </div>

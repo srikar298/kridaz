@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useScrollDirection } from "@hooks/useScrollDirection.js";
 import {
   LayoutGrid,
   BookOpen,
@@ -13,6 +14,7 @@ import {
 
 const VenueOwnerBottomNav = () => {
   const location = useLocation();
+  const { scrollDirection } = useScrollDirection();
 
   const mainNavItems = [
     { to: "/venue-owner", label: "Dashboard", icon: LayoutGrid },
@@ -26,7 +28,7 @@ const VenueOwnerBottomNav = () => {
   ];
 
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] bg-[#000000] border-t border-[#2D2D2D] shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
+    <div className={`lg:hidden fixed bottom-0 left-0 right-0 z-[100] bg-[#000000] border-t border-[#2D2D2D] shadow-[0_-5px_20px_rgba(0,0,0,0.5)] transition-transform duration-500 ${scrollDirection === "down" ? "translate-y-full" : "translate-y-0"}`}>
       <div className="flex overflow-x-auto no-scrollbar items-center justify-start px-2 py-2 gap-1 pb-safe">
         {mainNavItems.map((item) => {
           const isActive = location.pathname === item.to;

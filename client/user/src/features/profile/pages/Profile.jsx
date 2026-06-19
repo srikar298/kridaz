@@ -628,6 +628,7 @@ export default function Profile() {
   const [otpState, setOtpState] = useState("idle");
   const [otpCode, setOtpCode] = useState("");
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [hasRecentInquiry, setHasRecentInquiry] = useState(false);
   const handleEditEmailClick = () => {
     setEditingEmail(true);
     setOtpState("idle");
@@ -1001,6 +1002,17 @@ export default function Profile() {
 
           setProfileUser(profileData);
           if (isOwnProfile) dispatch(updateUser(profileData));
+          
+          if (currentUser && isProfessionalRole(profileData.role)) {
+            axiosInstance.get(`/api/professional/user/inquiries/check/${targetUserId}`)
+              .then(res => {
+                if (res.data.success) {
+                  setHasRecentInquiry(res.data.hasRecentInquiry);
+                }
+              })
+              .catch(err => console.error("Error checking recent inquiry", err));
+          }
+
         }
         if (postsRes.data.success) {
           setUserPosts(postsRes.data.posts || []);
@@ -2064,12 +2076,18 @@ export default function Profile() {
                             </div>
                           </div>
 
-                          <button
-                            onClick={() => setIsRequestModalOpen(true)}
-                            className="w-full bg-gradient-to-r from-[#B3DC26] to-[#B3DC26] text-black py-4 rounded-lg font-black text-xs uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2"
-                          >
-                            ⚡ Request
-                          </button>
+                          {hasRecentInquiry ? (
+                            <div className="w-full bg-red-500/10 border border-red-500/20 text-red-400 py-4 rounded-lg font-bold text-xs text-center px-4">
+                              You can only send one request to this professional every 24 hours.
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => setIsRequestModalOpen(true)}
+                              className="w-full bg-gradient-to-r from-[#B3DC26] to-[#B3DC26] text-black py-4 rounded-lg font-black text-xs uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2"
+                            >
+                              ⚡ Request
+                            </button>
+                          )}
                         </div>
 
                         {/* Connect & Socials Card */}
@@ -3278,6 +3296,7 @@ export default function Profile() {
         isOpen={isRequestModalOpen}
         onClose={() => setIsRequestModalOpen(false)}
         pro={profileUser}
+        onRequestSuccess={() => setHasRecentInquiry(true)}
       />
       <MatchDetailModal
         isOpen={selectedMatch !== null}
