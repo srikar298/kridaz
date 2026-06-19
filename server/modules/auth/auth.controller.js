@@ -2534,17 +2534,6 @@ export const updateProfile = asyncHandler(async (req, res) => {
     }
   }
 
-  // Check if phone is taken
-  if (phone) {
-    const phoneConditions = [{ phone }];
-    const withoutCountry = phone.replace(/^\+\d{1,3}/, "");
-    if (withoutCountry && withoutCountry !== phone) {
-      phoneConditions.push({ phone: withoutCountry });
-    }
-    if (!phone.startsWith("+")) {
-      phoneConditions.push({ phone: `+91${phone}` });
-    }
-
   const finalInterests = interests || sportTypes || [];
   let hashedPassword;
   if (password) {
