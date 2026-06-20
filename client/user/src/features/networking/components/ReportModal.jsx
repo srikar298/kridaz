@@ -2,7 +2,8 @@ import { useState } from "react";
 import { X, Loader2, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useReportPostMutation } from "@redux/api/communityApi";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button, Input, Textarea } from "@kridaz/ui";
+
 
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
 const SUBHEADING_STYLE = {
@@ -65,12 +66,12 @@ const ReportModal = ({ postId, onClose }) => {
               Report Post
             </h3>
           </div>
-          <button
+          <Button
             onClick={onClose}
             className="text-white/40 hover:text-white transition-colors"
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -80,13 +81,13 @@ const ReportModal = ({ postId, onClose }) => {
                 key={reason}
                 className="flex items-center gap-3 p-3 rounded-[8px] bg-white/[0.02] border border-white/5 hover:border-white/10 cursor-pointer transition-all"
               >
-                <input
+                <Input
                   type="radio"
                   name="report-reason"
                   value={reason}
                   checked={selectedReason === reason}
                   onChange={() => setSelectedReason(reason)}
-                  className="accent-[#BFF367]"
+                  className="accent-[var(--primary)]"
                 />
                 <span
                   className="text-xs text-white/90 font-medium"
@@ -99,24 +100,24 @@ const ReportModal = ({ postId, onClose }) => {
           </div>
 
           {selectedReason === "Other" && (
-            <textarea
+            <Textarea
               value={customReason}
               onChange={(e) => setCustomReason(e.target.value)}
               placeholder="Please specify your reason..."
-              className="w-full bg-white/[0.01] border border-white/10 focus:border-[#BFF367]/30 rounded-[8px] p-3 text-white text-xs outline-none transition-all duration-300 resize-none h-20 placeholder:text-white/20"
+              className="w-full bg-white/[0.01] border border-white/10 focus:border-primary/30 rounded-[8px] p-3 text-white text-xs outline-none transition-all duration-300 resize-none h-20 placeholder:text-white/20"
               style={SUBHEADING_STYLE}
             />
           )}
 
           <div className="flex items-center justify-end gap-3 pt-2 border-t border-white/5">
-            <button
+            <Button
               type="button"
               onClick={onClose}
               className="px-4 h-9 rounded-[8px] text-xs font-bold text-neutral-400 hover:text-white transition-all"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={
                 isLoading ||
@@ -127,7 +128,7 @@ const ReportModal = ({ postId, onClose }) => {
             >
               {isLoading && <Loader2 size={13} className="animate-spin" />}
               Report
-            </button>
+            </Button>
           </div>
         </form>
       </motion.div>

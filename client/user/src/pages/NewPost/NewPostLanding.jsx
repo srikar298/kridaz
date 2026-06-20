@@ -6,7 +6,8 @@ import {
   Sparkles,
   SwitchCamera,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";import { Button } from "@kridaz/ui";
+
 
 const POST_TYPES = ["Post", "Reel", "Story"];
 
@@ -379,7 +380,7 @@ const NewPostLanding = () => {
 
         {/* Top Controls */}
         <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-10">
-          <button
+          <Button
             onClick={() => {
               URL.revokeObjectURL(previewMedia.url);
               setPreviewMedia(null);
@@ -388,7 +389,7 @@ const NewPostLanding = () => {
             className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center border border-white/10 hover:bg-black/60 transition-colors"
           >
             <X size={24} />
-          </button>
+          </Button>
         </div>
 
         {/* Bottom Controls */}
@@ -396,15 +397,15 @@ const NewPostLanding = () => {
           {/* Spacer for flex distribution */}
           <div className="flex-1" />
 
-          <button
+          <Button
             onClick={() => handleMediaCaptured(previewMedia.file)}
-            className="px-8 py-3 bg-[#BFF367] text-black font-bold uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(191,243,103,0.3)] hover:scale-105 active:scale-95 transition-all"
+            className="px-8 py-3 bg-primary text-black font-bold uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(191,243,103,0.3)] hover:scale-105 active:scale-95 transition-all"
           >
             Continue
-          </button>
+          </Button>
 
           <div className="flex-1 flex justify-end">
-            <button
+            <Button
               onClick={() => {
                 URL.revokeObjectURL(previewMedia.url);
                 setPreviewMedia(null);
@@ -413,7 +414,7 @@ const NewPostLanding = () => {
               className="px-6 py-2.5 bg-white/10 backdrop-blur-md text-white font-medium rounded-full hover:bg-white/20 transition-colors flex items-center gap-2"
             >
               Retake
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -437,12 +438,12 @@ const NewPostLanding = () => {
 
       {/* Top Controls */}
       <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-10">
-        <button
+        <Button
           onClick={() => navigate(-1)}
           className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center border border-white/10 hover:bg-black/60 transition-colors"
         >
           <X size={24} />
-        </button>
+        </Button>
         {isRecording && (
           <div className="flex items-center gap-2 bg-red-500/80 backdrop-blur-md px-3 py-1.5 rounded-full">
             <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
@@ -452,7 +453,7 @@ const NewPostLanding = () => {
           </div>
         )}
         <div className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center border border-white/10">
-          <Sparkles size={20} className="text-[#BFF367]" />
+          <Sparkles size={20} className="text-primary" />
         </div>
       </div>
 
@@ -461,7 +462,7 @@ const NewPostLanding = () => {
         {/* Post Type Selector */}
         <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-full p-1.5 flex gap-1 shadow-2xl mb-4">
           {POST_TYPES.map((type) => (
-            <button
+            <Button
               key={type}
               onClick={() => handleTabSwitch(type)}
               className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
@@ -471,33 +472,33 @@ const NewPostLanding = () => {
               }`}
             >
               {type}
-            </button>
+            </Button>
           ))}
         </div>
 
         {/* Actions Row */}
         <div className="relative flex items-center justify-center w-full h-24 mt-2">
           {/* Upload Button */}
-          <button
+          <Button
             onClick={handleGalleryUpload}
             className={`absolute transition-all duration-300 flex items-center justify-center gap-1 hover:bg-white/10 bg-black/60 backdrop-blur-md border border-white/20 rounded-full shadow-xl left-4 px-2.5 py-1 z-10`}
           >
             <div
-              className={`w-6 h-6 rounded-full bg-[#BFF367]/10 flex items-center justify-center`}
+              className={`w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center`}
             >
               {activeTab === "Reel" ? (
-                <Video size={12} className="text-[#BFF367]" />
+                <Video size={12} className="text-primary" />
               ) : (
-                <ImageIcon size={12} className="text-[#BFF367]" />
+                <ImageIcon size={12} className="text-primary" />
               )}
             </div>
             <span className="text-[9px] font-bold text-white tracking-wide uppercase pr-0.5">
               Upload
             </span>
-          </button>
+          </Button>
 
           {/* Capture Button */}
-          <button
+          <Button
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerUp} // Safety to stop if finger slides off
@@ -510,15 +511,15 @@ const NewPostLanding = () => {
                 <div className="w-14 h-14 border-[2px] border-black/10 rounded-full" />
               )}
             </div>
-          </button>
+          </Button>
 
           {/* Flip Camera Button */}
-          <button
+          <Button
             onClick={toggleCamera}
             className={`absolute transition-all duration-300 flex items-center justify-center w-11 h-11 hover:bg-white/10 bg-black/60 backdrop-blur-md border border-white/20 rounded-full shadow-xl right-4 z-10`}
           >
             <SwitchCamera size={20} className="text-white" />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

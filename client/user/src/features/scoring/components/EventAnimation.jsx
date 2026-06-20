@@ -6,10 +6,10 @@ const SFX_URLS = {}; // Disabled due to 403 Forbidden hotlinking block from Pixa
 
 const THEME_STYLES = {
   neon_classic: {
-    bg: "linear-gradient(135deg, #0f172a, #000000)",
-    border: "4px solid #a3e635",
+    bg: "linear-gradient(135deg, #0f172a, var(--background))",
+    border: "4px solid var(--primary)",
     shadow: "0 0 50px rgba(163, 230, 53, 0.5)",
-    text: "#a3e635",
+    text: "var(--primary)",
     font: "'Orbitron', sans-serif",
   },
   premium_glass: {
@@ -17,28 +17,28 @@ const THEME_STYLES = {
     border: "1px solid rgba(255,255,255,0.2)",
     shadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
     backdropFilter: "blur(10px)",
-    text: "#ffffff",
+    text: "var(--foreground)",
     font: "'Montserrat', sans-serif",
   },
   retro_arcade: {
-    bg: "#000000",
+    bg: "var(--background)",
     border: "4px solid #ff00ff",
     shadow: "4px 4px 0px #00ffff",
     text: "#ff00ff",
     font: "'Press Start 2P', monospace",
   },
   sports_network: {
-    bg: "#ffffff",
-    border: "4px solid #dc2626",
+    bg: "var(--foreground)",
+    border: "4px solid var(--destructive)",
     shadow: "0 10px 25px rgba(220, 38, 38, 0.4)",
     text: "#1e3a8a",
     font: "'Roboto Condensed', sans-serif",
   },
   cyber_pulse: {
     bg: "#050505",
-    border: "2px solid #00f3ff",
-    shadow: "0 0 20px #00f3ff",
-    text: "#00f3ff",
+    border: "2px solid var(--secondary)",
+    shadow: "0 0 20px var(--secondary)",
+    text: "var(--secondary)",
     font: "'Rajdhani', sans-serif",
   },
 };
@@ -128,7 +128,7 @@ const EventAnimation = ({ badge, theme = "neon_classic" }) => {
             transition={{ delay: 0.5 }}
             style={{
               fontSize: "32px",
-              color: "#ffffff",
+              color: "var(--foreground)",
               marginTop: "20px",
               background: "rgba(0,0,0,0.5)",
               padding: "10px 20px",

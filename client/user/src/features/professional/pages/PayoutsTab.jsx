@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "axios";
+import axios from "axios";import { Button, Input, Select } from "@kridaz/ui";
+
 import {
   BarChart,
   Bar,
@@ -223,35 +224,35 @@ const PayoutsTab = ({ role }) => {
             <AlertCircle size={20} className="flex-shrink-0" />
           )}
           <span className="text-sm font-medium flex-1">{feedbackMsg}</span>
-          <button
+          <Button
             onClick={() => setFeedbackMsg("")}
             className="text-gray-400 hover:text-white transition-colors"
           >
             <X size={16} />
-          </button>
+          </Button>
         </div>
       )}
 
       {/* TOP BANK DETAILS SECTION */}
-      <div className="p-4 rounded-2xl bg-gradient-to-br from-[#141414] to-[#0d0d0d] border border-[#2D2D2D] space-y-4 relative overflow-hidden">
+      <div className="p-4 rounded-2xl bg-gradient-to-br from-[#141414] to-background border border-border space-y-4 relative overflow-hidden">
         {/* Glow element */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#BFF367]/5 blur-[80px] pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] pointer-events-none" />
 
         {isEditingBank ? (
           // BANK CONFIGURATION INPUT FORM
           <div className="space-y-6">
-            <div className="flex items-center justify-between border-b border-[#2D2D2D] pb-4">
+            <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-start sm:items-center gap-2.5 flex-1 min-w-0">
-                <button
+                <Button
                   type="button"
                   onClick={() => setIsEditingBank(false)}
                   className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all shrink-0 mt-0.5 sm:mt-0"
                 >
                   <ArrowLeft size={18} />
-                </button>
+                </Button>
                 <Landmark
                   size={22}
-                  className="text-[#BFF367] shrink-0 mt-1 sm:mt-0"
+                  className="text-primary shrink-0 mt-1 sm:mt-0"
                 />
                 <div className="flex-1 min-w-0">
                   <h3 className="text-[16px] sm:text-lg font-black tracking-widest uppercase font-inter text-white break-words">
@@ -265,21 +266,21 @@ const PayoutsTab = ({ role }) => {
               </div>
             </div>
 
-            <div className="flex bg-black p-1 rounded-xl border border-[#2D2D2D] gap-2 w-full sm:max-w-xs">
-              <button
+            <div className="flex bg-black p-1 rounded-xl border border-border gap-2 w-full sm:max-w-xs">
+              <Button
                 type="button"
                 onClick={() => setPayoutMode("BANK")}
-                className={`flex-1 font-bold text-xs py-2 rounded-lg transition-all uppercase tracking-wider ${payoutMode === "BANK" ? "bg-[#222] text-[#BFF367]" : "text-[#878C9F] hover:text-white"}`}
+                className={`flex-1 font-bold text-xs py-2 rounded-lg transition-all uppercase tracking-wider ${payoutMode === "BANK" ? "bg-card text-primary" : "text-muted-foreground hover:text-white"}`}
               >
                 Bank Account
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => setPayoutMode("UPI")}
-                className={`flex-1 font-bold text-xs py-2 rounded-lg transition-all uppercase tracking-wider ${payoutMode === "UPI" ? "bg-[#222] text-[#BFF367]" : "text-[#878C9F] hover:text-white"}`}
+                className={`flex-1 font-bold text-xs py-2 rounded-lg transition-all uppercase tracking-wider ${payoutMode === "UPI" ? "bg-card text-primary" : "text-muted-foreground hover:text-white"}`}
               >
                 UPI ID
-              </button>
+              </Button>
             </div>
 
             <form
@@ -287,39 +288,39 @@ const PayoutsTab = ({ role }) => {
               className="grid grid-cols-1 md:grid-cols-2 gap-5"
             >
               <div className="space-y-2 min-w-0">
-                <label className="text-xs text-[#878C9F] font-bold uppercase tracking-widest ml-1 truncate block">
+                <label className="text-xs text-muted-foreground font-bold uppercase tracking-widest ml-1 truncate block">
                   Account Holder Name
                 </label>
-                <input
+                <Input
                   type="text"
                   required
                   value={accountName}
                   onChange={(e) => setAccountName(e.target.value)}
                   placeholder="Name as in Bank Account"
-                  className="w-full bg-black border border-[#2D2D2D] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#BFF367] transition-colors"
+                  className="w-full bg-black border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
                 />
               </div>
 
               {payoutMode === "BANK" ? (
                 <>
                   <div className="space-y-2 min-w-0">
-                    <label className="text-xs text-[#878C9F] font-bold uppercase tracking-widest ml-1 truncate block">
+                    <label className="text-xs text-muted-foreground font-bold uppercase tracking-widest ml-1 truncate block">
                       Bank Name
                     </label>
-                    <input
+                    <Input
                       type="text"
                       required
                       value={bankName}
                       onChange={(e) => setBankName(e.target.value)}
                       placeholder="e.g., HDFC Bank"
-                      className="w-full bg-black border border-[#2D2D2D] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#BFF367] transition-colors"
+                      className="w-full bg-black border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
                     />
                   </div>
                   <div className="space-y-2 min-w-0">
-                    <label className="text-xs text-[#878C9F] font-bold uppercase tracking-widest ml-1 truncate block">
+                    <label className="text-xs text-muted-foreground font-bold uppercase tracking-widest ml-1 truncate block">
                       IFSC Code
                     </label>
-                    <input
+                    <Input
                       type="text"
                       required
                       value={ifscCode}
@@ -327,14 +328,14 @@ const PayoutsTab = ({ role }) => {
                         setIfscCode(e.target.value.toUpperCase())
                       }
                       placeholder="IFSC Code"
-                      className="w-full bg-black border border-[#2D2D2D] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#BFF367] transition-colors font-mono uppercase"
+                      className="w-full bg-black border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors font-mono uppercase"
                     />
                   </div>
                   <div className="space-y-2 min-w-0">
-                    <label className="text-xs text-[#878C9F] font-bold uppercase tracking-widest ml-1 truncate block">
+                    <label className="text-xs text-muted-foreground font-bold uppercase tracking-widest ml-1 truncate block">
                       Account Number
                     </label>
-                    <input
+                    <Input
                       type="text"
                       required
                       value={accountNumber}
@@ -342,36 +343,36 @@ const PayoutsTab = ({ role }) => {
                         setAccountNumber(e.target.value.replace(/\D/g, ""))
                       }
                       placeholder="Enter Account Number"
-                      className="w-full bg-black border border-[#2D2D2D] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#BFF367] transition-colors font-mono"
+                      className="w-full bg-black border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors font-mono"
                     />
                   </div>
                 </>
               ) : (
                 <div className="space-y-2 md:col-span-2 min-w-0">
-                  <label className="text-xs text-[#878C9F] font-bold uppercase tracking-widest ml-1 truncate block">
+                  <label className="text-xs text-muted-foreground font-bold uppercase tracking-widest ml-1 truncate block">
                     UPI ID / VPA
                   </label>
-                  <input
+                  <Input
                     type="text"
                     required
                     value={upiId}
                     onChange={(e) => setUpiId(e.target.value)}
                     placeholder="username@bank"
-                    className="w-full bg-black border border-[#2D2D2D] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#BFF367] transition-colors font-mono"
+                    className="w-full bg-black border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors font-mono"
                   />
                 </div>
               )}
 
               <div className="md:col-span-2 pt-2 flex flex-col sm:flex-row gap-3 min-w-0 w-full">
-                <button
+                <Button
                   type="submit"
                   disabled={isSavingDetails}
-                  className="w-full md:w-auto px-4 sm:px-8 bg-[#BFF367] hover:bg-[#aee057] text-black font-extrabold rounded-xl py-3.5 transition-all text-xs sm:text-sm shadow-[0_0_20px_rgba(191,243,103,0.15)] uppercase tracking-wider whitespace-normal break-words"
+                  className="w-full md:w-auto px-4 sm:px-8 bg-primary hover:bg-[#aee057] text-black font-extrabold rounded-xl py-3.5 transition-all text-xs sm:text-sm shadow-[0_0_20px_rgba(191,243,103,0.15)] uppercase tracking-wider whitespace-normal break-words"
                 >
                   {isSavingDetails
                     ? "Saving Configuration..."
                     : "Submit for Verification"}
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -379,8 +380,8 @@ const PayoutsTab = ({ role }) => {
           // CONFIGURED BANK VIEW (ICON + VERIFICATION STATUS)
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-[#BFF367]/10 flex items-center justify-center border border-[#BFF367]/20">
-                <Landmark size={28} className="text-[#BFF367]" />
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                <Landmark size={28} className="text-primary" />
               </div>
               <div className="flex-1 min-w-0 flex flex-col items-start justify-center">
                 <span
@@ -408,7 +409,7 @@ const PayoutsTab = ({ role }) => {
                     UPI Payment Destination
                   </h4>
                 )}
-                <p className="text-[10px] sm:text-xs text-[#878C9F] font-semibold uppercase tracking-widest font-mono truncate w-full mt-0.5">
+                <p className="text-[10px] sm:text-xs text-muted-foreground font-semibold uppercase tracking-widest font-mono truncate w-full mt-0.5">
                   {payoutMode === "BANK"
                     ? `A/C: *******${accountNumber ? accountNumber.slice(-4) : "0000"} (${accountName || "N/A"})`
                     : `UPI ID: ${upiId} (${accountName || "N/A"})`}
@@ -417,22 +418,22 @@ const PayoutsTab = ({ role }) => {
             </div>
 
             <div className="flex items-center gap-3 w-full md:w-auto">
-              <button
+              <Button
                 onClick={() => setIsEditingBank(true)}
-                className="flex-1 md:flex-initial px-4 py-3 bg-[#1A1A1A] hover:bg-[#252525] border border-[#2D2D2D] rounded-xl text-xs font-bold text-gray-300 transition-all flex items-center justify-center gap-2"
+                className="flex-1 md:flex-initial px-4 py-3 bg-card hover:bg-[#252525] border border-border rounded-xl text-xs font-bold text-gray-300 transition-all flex items-center justify-center gap-2"
               >
                 <Edit2 size={14} />
                 Edit Bank details
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={() => setIsWithdrawModalOpen(true)}
                 disabled={walletBalance <= 0 || kycStatus !== "VERIFIED"}
-                className="flex-1 md:flex-initial px-6 py-3 bg-[#BFF367] hover:bg-[#aee057] disabled:bg-neutral-800 disabled:text-neutral-500 text-black font-extrabold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(191,243,103,0.1)]"
+                className="flex-1 md:flex-initial px-6 py-3 bg-primary hover:bg-[#aee057] disabled:bg-neutral-800 disabled:text-neutral-500 text-black font-extrabold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(191,243,103,0.1)]"
               >
                 <ArrowUpRight size={15} />
                 Withdrawal
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -441,13 +442,13 @@ const PayoutsTab = ({ role }) => {
       {/* FOUR FINANCIAL BOXES (2 per row layout) */}
       <div className="grid grid-cols-2 gap-3">
         {/* Card 1: Usable Balance */}
-        <div className="py-3.5 px-3 rounded-2xl bg-gradient-to-br from-[#141414] to-[#0f0f0f] border border-[#2D2D2D] relative overflow-hidden flex flex-col justify-center min-h-[5.5rem] h-auto text-center items-center gap-1.5">
+        <div className="py-3.5 px-3 rounded-2xl bg-gradient-to-br from-[#141414] to-[#0f0f0f] border border-border relative overflow-hidden flex flex-col justify-center min-h-[5.5rem] h-auto text-center items-center gap-1.5">
           <div className="w-full">
             <div className="flex items-center justify-center gap-1 mb-1">
-              <span className="text-[8px] text-[#878C9F] font-bold uppercase tracking-wider truncate">
+              <span className="text-[8px] text-muted-foreground font-bold uppercase tracking-wider truncate">
                 Usable Balance
               </span>
-              <button
+              <Button
                 onClick={() =>
                   setActiveDescCard(
                     activeDescCard === "usable" ? null : "usable"
@@ -457,9 +458,9 @@ const PayoutsTab = ({ role }) => {
                 title="View Details"
               >
                 <Info size={11} />
-              </button>
+              </Button>
             </div>
-            <h2 className="text-xl font-black text-[#BFF367] tracking-tight" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
+            <h2 className="text-xl font-black text-primary tracking-tight" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
               ₹{walletBalance.toFixed(2)}
             </h2>
           </div>
@@ -471,13 +472,13 @@ const PayoutsTab = ({ role }) => {
         </div>
 
         {/* Card 2: Reserved Escrow */}
-        <div className="py-3.5 px-3 rounded-2xl bg-[#141414] border border-[#2D2D2D] relative overflow-hidden flex flex-col justify-center min-h-[5.5rem] h-auto text-center items-center gap-1.5">
+        <div className="py-3.5 px-3 rounded-2xl bg-[#141414] border border-border relative overflow-hidden flex flex-col justify-center min-h-[5.5rem] h-auto text-center items-center gap-1.5">
           <div className="w-full">
             <div className="flex items-center justify-center gap-1 mb-1">
-              <span className="text-[8px] text-[#878C9F] font-bold uppercase tracking-wider truncate">
+              <span className="text-[8px] text-muted-foreground font-bold uppercase tracking-wider truncate">
                 Reserved Escrow
               </span>
-              <button
+              <Button
                 onClick={() =>
                   setActiveDescCard(
                     activeDescCard === "reserved" ? null : "reserved"
@@ -487,7 +488,7 @@ const PayoutsTab = ({ role }) => {
                 title="View Details"
               >
                 <Info size={11} />
-              </button>
+              </Button>
             </div>
             <h2 className="text-xl font-bold text-white tracking-tight" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
               ₹{reservedBalance.toFixed(2)}
@@ -502,13 +503,13 @@ const PayoutsTab = ({ role }) => {
         </div>
 
         {/* Card 3: Dispute Balance */}
-        <div className="py-3.5 px-3 rounded-2xl bg-[#141414] border border-[#2D2D2D] relative overflow-hidden flex flex-col justify-center min-h-[5.5rem] h-auto text-center items-center gap-1.5">
+        <div className="py-3.5 px-3 rounded-2xl bg-[#141414] border border-border relative overflow-hidden flex flex-col justify-center min-h-[5.5rem] h-auto text-center items-center gap-1.5">
           <div className="w-full">
             <div className="flex items-center justify-center gap-1 mb-1">
-              <span className="text-[8px] text-[#878C9F] font-bold uppercase tracking-wider truncate">
+              <span className="text-[8px] text-muted-foreground font-bold uppercase tracking-wider truncate">
                 Conflict Balance
               </span>
-              <button
+              <Button
                 onClick={() =>
                   setActiveDescCard(
                     activeDescCard === "dispute" ? null : "dispute"
@@ -518,7 +519,7 @@ const PayoutsTab = ({ role }) => {
                 title="View Details"
               >
                 <Info size={11} />
-              </button>
+              </Button>
             </div>
             <h2 className="text-xl font-bold text-white tracking-tight" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
               ₹{disputeBalance.toFixed(2)}
@@ -533,13 +534,13 @@ const PayoutsTab = ({ role }) => {
         </div>
 
         {/* Card 4: Total Lifetime Earnings with Filtering */}
-        <div className="py-3.5 px-3 rounded-2xl bg-[#141414] border border-[#2D2D2D] relative overflow-hidden flex flex-col justify-center min-h-[5.5rem] h-auto text-center items-center gap-1.5">
+        <div className="py-3.5 px-3 rounded-2xl bg-[#141414] border border-border relative overflow-hidden flex flex-col justify-center min-h-[5.5rem] h-auto text-center items-center gap-1.5">
           <div className="w-full flex flex-col items-center">
             <div className="flex items-center justify-center gap-1 mb-1 w-full">
-              <span className="text-[8px] text-[#878C9F] font-bold uppercase tracking-wider truncate">
+              <span className="text-[8px] text-muted-foreground font-bold uppercase tracking-wider truncate">
                 Lifetime Earnings
               </span>
-              <button
+              <Button
                 onClick={() =>
                   setActiveDescCard(
                     activeDescCard === "lifetime" ? null : "lifetime"
@@ -549,17 +550,17 @@ const PayoutsTab = ({ role }) => {
                 title="View Details"
               >
                 <Info size={11} />
-              </button>
+              </Button>
             </div>
             <div className="flex flex-col items-center gap-1 w-full">
               <h2 className="text-xl font-bold text-white tracking-tight" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
                 ₹{getFilteredLifetimeEarning().toLocaleString()}
               </h2>
               {/* Filter Dropdown */}
-              <select
+              <Select
                 value={earningsFilter}
                 onChange={(e) => setEarningsFilter(e.target.value)}
-                className="bg-black/60 border border-[#2D2D2D] text-[8px] font-bold text-white rounded px-1.5 py-0.5 focus:outline-none focus:border-[#BFF367] transition-all cursor-pointer w-fit max-w-[90%] text-center mx-auto"
+                className="bg-black/60 border border-border text-[8px] font-bold text-white rounded px-1.5 py-0.5 focus:outline-none focus:border-primary transition-all cursor-pointer w-fit max-w-[90%] text-center mx-auto"
               >
                 <option value="ALL_TIME">All Time</option>
                 <option value="TODAY">Today's Journey</option>
@@ -567,7 +568,7 @@ const PayoutsTab = ({ role }) => {
                 <option value="THIS_MONTH">This Month</option>
                 <option value="LAST_MONTH">Last Month</option>
                 <option value="CUSTOM">Custom Range</option>
-              </select>
+              </Select>
             </div>
           </div>
 
@@ -578,14 +579,14 @@ const PayoutsTab = ({ role }) => {
                   selected={customStartDate}
                   onChange={(date) => setCustomStartDate(date)}
                   placeholderText="Start"
-                  className="bg-black border border-[#2D2D2D] rounded px-1 py-0.5 text-[8px] text-white focus:outline-none w-14"
+                  className="bg-black border border-border rounded px-1 py-0.5 text-[8px] text-white focus:outline-none w-14"
                 />
-                <span className="text-[8px] text-[#878C9F]">to</span>
+                <span className="text-[8px] text-muted-foreground">to</span>
                 <DatePicker
                   selected={customEndDate}
                   onChange={(date) => setCustomEndDate(date)}
                   placeholderText="End"
-                  className="bg-black border border-[#2D2D2D] rounded px-1 py-0.5 text-[8px] text-white focus:outline-none w-14"
+                  className="bg-black border border-border rounded px-1 py-0.5 text-[8px] text-white focus:outline-none w-14"
                 />
               </div>
             </div>
@@ -600,19 +601,19 @@ const PayoutsTab = ({ role }) => {
       </div>
 
       {/* GRAPH / ANALYTICS SECTION */}
-      <div className="p-6 rounded-2xl bg-[#141414] border border-[#2D2D2D] space-y-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-[#2D2D2D] pb-4 gap-4 sm:gap-0">
+      <div className="p-6 rounded-2xl bg-[#141414] border border-border space-y-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-border pb-4 gap-4 sm:gap-0">
           <div className="min-w-0 flex-1">
             <h3 className="text-[16px] sm:text-lg font-black tracking-widest uppercase font-inter text-white break-words">
               Balance Distribution
             </h3>
-            <p className="text-xs text-[#878C9F] mt-1 break-words">
+            <p className="text-xs text-muted-foreground mt-1 break-words">
               Live breakdown of your wallet across categories
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-sm bg-[#BFF367]" />
+              <div className="w-3 h-3 rounded-sm bg-primary" />
               <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
                 Active Balance
               </span>
@@ -634,27 +635,27 @@ const PayoutsTab = ({ role }) => {
             >
               <defs>
                 <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#BFF367" stopOpacity={0.9} />
-                  <stop offset="95%" stopColor="#BFF367" stopOpacity={0.4} />
+                  <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.9} />
+                  <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.4} />
                 </linearGradient>
                 <linearGradient id="colorWithdrawn" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#878C9F" stopOpacity={0.7} />
-                  <stop offset="95%" stopColor="#878C9F" stopOpacity={0.3} />
+                  <stop offset="5%" stopColor="var(--muted-foreground)" stopOpacity={0.7} />
+                  <stop offset="95%" stopColor="var(--muted-foreground)" stopOpacity={0.3} />
                 </linearGradient>
               </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke="#2D2D2D"
+                stroke="var(--border)"
                 vertical={false}
               />
               <XAxis
                 dataKey="name"
-                stroke="#878C9F"
+                stroke="var(--muted-foreground)"
                 fontSize={10}
                 tickLine={false}
               />
               <YAxis
-                stroke="#878C9F"
+                stroke="var(--muted-foreground)"
                 fontSize={10}
                 tickLine={false}
                 axisLine={false}
@@ -662,12 +663,12 @@ const PayoutsTab = ({ role }) => {
               <Tooltip
                 contentStyle={{
                   backgroundColor: "#111",
-                  border: "1px solid #2D2D2D",
+                  border: "1px solid var(--border)",
                   borderRadius: "10px",
                 }}
                 itemStyle={{ color: "#fff", fontSize: "12px" }}
                 labelStyle={{
-                  color: "#878C9F",
+                  color: "var(--muted-foreground)",
                   fontSize: "11px",
                   fontWeight: "bold",
                 }}
@@ -696,16 +697,16 @@ const PayoutsTab = ({ role }) => {
       {/* WITHDRAWAL REQUEST OVERLAY MODAL */}
       {isWithdrawModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-md bg-[#111] border border-[#2D2D2D] rounded-2xl p-6 space-y-6 relative animate-in zoom-in-95 duration-200">
-            <button
+          <div className="w-full max-w-md bg-card border border-border rounded-2xl p-6 space-y-6 relative animate-in zoom-in-95 duration-200">
+            <Button
               onClick={() => setIsWithdrawModalOpen(false)}
               className="absolute right-4 top-4 p-1.5 rounded-lg hover:bg-neutral-800 text-gray-400 hover:text-white transition-colors"
             >
               <X size={18} />
-            </button>
+            </Button>
 
             <div className="space-y-1">
-              <h3 className="text-lg sm:text-xl font-black tracking-widest text-[#BFF367] uppercase italic font-inter">
+              <h3 className="text-lg sm:text-xl font-black tracking-widest text-primary uppercase italic font-inter">
                 Request Fund Withdrawal
               </h3>
               <p className="text-xs text-gray-400">
@@ -714,25 +715,25 @@ const PayoutsTab = ({ role }) => {
               </p>
             </div>
 
-            <div className="bg-[#1A1A1A] p-4 rounded-xl border border-[#2D2D2D] flex items-center justify-between">
+            <div className="bg-card p-4 rounded-xl border border-border flex items-center justify-between">
               <span className="text-xs text-gray-400 uppercase tracking-widest font-semibold">
                 Available quantum:
               </span>
-              <span className="text-lg font-black text-[#BFF367] font-inter">
+              <span className="text-lg font-black text-primary font-inter">
                 ₹{walletBalance.toFixed(2)}
               </span>
             </div>
 
             <form onSubmit={handleRequestPayout} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-xs text-[#878C9F] font-bold uppercase tracking-widest ml-1">
+                <label className="text-xs text-muted-foreground font-bold uppercase tracking-widest ml-1">
                   Withdrawal Amount (INR)
                 </label>
                 <div className="relative">
                   <span className="absolute left-4 top-3.5 text-lg font-bold text-gray-500">
                     ₹
                   </span>
-                  <input
+                  <Input
                     type="number"
                     min={1}
                     max={walletBalance}
@@ -740,30 +741,30 @@ const PayoutsTab = ({ role }) => {
                     placeholder="0.00"
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
-                    className="w-full bg-black border border-[#2D2D2D] rounded-xl pl-10 pr-4 py-3.5 text-lg font-bold text-white focus:outline-none focus:border-[#BFF367] transition-colors"
+                    className="w-full bg-black border border-border rounded-xl pl-10 pr-4 py-3.5 text-lg font-bold text-white focus:outline-none focus:border-primary transition-colors"
                   />
                 </div>
               </div>
 
               <div className="flex gap-3 pt-2">
-                <button
+                <Button
                   type="button"
                   onClick={() => setIsWithdrawModalOpen(false)}
-                  className="flex-1 bg-[#222] hover:bg-[#333] text-white font-bold rounded-xl py-3.5 transition-all text-sm uppercase tracking-wider border border-[#2D2D2D]"
+                  className="flex-1 bg-card hover:bg-[#333] text-white font-bold rounded-xl py-3.5 transition-all text-sm uppercase tracking-wider border border-border"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
                   disabled={
                     isSubmittingPayout ||
                     !withdrawAmount ||
                     parseFloat(withdrawAmount) > walletBalance
                   }
-                  className="flex-1 bg-[#BFF367] hover:bg-[#aee057] disabled:bg-neutral-800 disabled:text-neutral-500 text-black font-extrabold rounded-xl py-3.5 transition-all text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(191,243,103,0.15)]"
+                  className="flex-1 bg-primary hover:bg-[#aee057] disabled:bg-neutral-800 disabled:text-neutral-500 text-black font-extrabold rounded-xl py-3.5 transition-all text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(191,243,103,0.15)]"
                 >
                   {isSubmittingPayout ? "Processing..." : "Confirm Request"}
-                </button>
+                </Button>
               </div>
             </form>
           </div>

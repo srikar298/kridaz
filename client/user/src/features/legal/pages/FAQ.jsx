@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { ChevronDown, HelpCircle, Search } from "lucide-react";
+import { ChevronDown, HelpCircle, Search } from "lucide-react";import { Input } from "@kridaz/ui";
 
-const GRAD = "linear-gradient(135deg, #BFF367 0%, #BFF367 100%)";
+
+const GRAD = "linear-gradient(135deg, var(--primary) 0%, var(--primary) 100%)";
 const BDR = "rgba(255,255,255,0.08)";
 
 const faqs = [
@@ -96,7 +97,7 @@ const FAQItem = ({ q, a }) => {
       className="border rounded-[8px] overflow-hidden transition-all duration-300 cursor-pointer"
       style={{
         borderColor: open ? "rgba(85,222,232,0.3)" : BDR,
-        backgroundColor: open ? "rgba(85,222,232,0.04)" : "#0d0d0d",
+        backgroundColor: open ? "rgba(85,222,232,0.04)" : "var(--background)",
       }}
       onClick={() => setOpen(!open)}
     >
@@ -178,7 +179,7 @@ const FAQ = () => {
             style={{
               borderColor: BDR,
               background: "rgba(85,222,232,0.07)",
-              color: "#BFF367",
+              color: "var(--primary)",
             }}
           >
             <HelpCircle size={12} /> Help Center
@@ -188,7 +189,7 @@ const FAQ = () => {
             style={{ fontFamily: "'Open Sans', sans-serif" }}
           >
             Frequently{" "}
-            <span className="bg-gradient-to-br from-[#BFF367] to-[#BFF367] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-br from-primary to-primary bg-clip-text text-transparent">
               Asked
             </span>
             <br />
@@ -208,12 +209,12 @@ const FAQ = () => {
             size={18}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
           />
-          <input
+          <Input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search questions..."
-            className="w-full bg-[#0d0d0d] border rounded-[8px] pl-12 pr-5 py-4 text-white placeholder-gray-600 outline-none transition-all"
+            className="w-full bg-background border rounded-[8px] pl-12 pr-5 py-4 text-white placeholder-gray-600 outline-none transition-all"
             style={{ borderColor: BDR, fontSize: "16px" }}
             onFocus={(e) =>
               (e.target.style.borderColor = "rgba(85,222,232,0.5)")

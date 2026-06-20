@@ -1,6 +1,7 @@
 ﻿import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { X, Clock } from "lucide-react";
+import { X, Clock } from "lucide-react";import { Button } from "@kridaz/ui";
+
 
 const ClockPicker = ({
   value,
@@ -160,12 +161,12 @@ const ClockPicker = ({
 
   return (
     <>
-      <button
+      <Button
         ref={triggerRef}
         type="button"
         onClick={open}
         disabled={disabled}
-        className={`w-full bg-[#111111] border ${isOpen ? "border-[#BFF367]/60" : "border-[#2D2D2D]"} text-white text-sm h-12 rounded-[8px] px-4 transition-all flex items-center justify-between ${disabled ? "opacity-30 cursor-not-allowed" : "cursor-pointer hover:border-[#BFF367]/40"}`}
+        className={`w-full bg-card border ${isOpen ? "border-primary/60" : "border-border"} text-white text-sm h-12 rounded-[8px] px-4 transition-all flex items-center justify-between ${disabled ? "opacity-30 cursor-not-allowed" : "cursor-pointer hover:border-primary/40"}`}
       >
         <span
           className={
@@ -176,8 +177,8 @@ const ClockPicker = ({
         >
           {fmt()}
         </span>
-        <Clock size={14} className="text-[#BFF367] opacity-60 shrink-0" />
-      </button>
+        <Clock size={14} className="text-primary opacity-60 shrink-0" />
+      </Button>
 
       {isOpen &&
         createPortal(
@@ -189,45 +190,45 @@ const ClockPicker = ({
               left: pos.left,
               zIndex: 99999,
             }}
-            className="w-[270px] bg-[#0A0A0A] border border-[#2D2D2D] rounded-[8px] shadow-[0_20px_60px_rgba(0,0,0,0.9)] overflow-hidden select-none"
+            className="w-[270px] bg-background border border-border rounded-[8px] shadow-[0_20px_60px_rgba(0,0,0,0.9)] overflow-hidden select-none"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-[#1A1A1A]">
-              <span className="text-[9px] font-black text-[#878C9F] uppercase tracking-[3px]">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-card">
+              <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[3px]">
                 {mode === "hours" ? "Select Hour" : "Select Minute"}
               </span>
-              <button
+              <Button
                 onClick={() => setIsOpen(false)}
                 className="text-[#444] hover:text-white transition-colors"
               >
                 <X size={13} />
-              </button>
+              </Button>
             </div>
 
             {/* Time Display */}
             <div className="flex items-center justify-center gap-1 pt-4 pb-1">
-              <button
+              <Button
                 onClick={() => setMode("hours")}
-                className={`text-[32px] font-black transition-colors ${mode === "hours" ? "text-[#BFF367]" : "text-white/40 hover:text-white"}`}
+                className={`text-[32px] font-black transition-colors ${mode === "hours" ? "text-primary" : "text-white/40 hover:text-white"}`}
               >
                 {String(hour).padStart(2, "0")}
-              </button>
+              </Button>
               <span className="text-[32px] font-black text-white/20">:</span>
-              <button
+              <Button
                 onClick={() => setMode("minutes")}
-                className={`text-[32px] font-black transition-colors ${mode === "minutes" ? "text-[#BFF367]" : "text-white/40 hover:text-white"}`}
+                className={`text-[32px] font-black transition-colors ${mode === "minutes" ? "text-primary" : "text-white/40 hover:text-white"}`}
               >
                 {String(minute).padStart(2, "0")}
-              </button>
+              </Button>
               <div className="flex flex-col gap-1 ml-3">
                 {["AM", "PM"].map((p) => (
-                  <button
+                  <Button
                     key={p}
                     onClick={() => setPeriod(p)}
-                    className={`text-[9px] font-black px-2 py-1 rounded-[4px] uppercase tracking-wider transition-all ${period === p ? "bg-[#BFF367] text-black" : "text-[#555] hover:text-white"}`}
+                    className={`text-[9px] font-black px-2 py-1 rounded-[4px] uppercase tracking-wider transition-all ${period === p ? "bg-primary text-black" : "text-[#555] hover:text-white"}`}
                   >
                     {p}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -246,7 +247,7 @@ const ClockPicker = ({
                   cy="50"
                   r="48"
                   fill="#111"
-                  stroke="#2D2D2D"
+                  stroke="var(--border)"
                   strokeWidth="0.5"
                 />
 
@@ -257,12 +258,12 @@ const ClockPicker = ({
                     y1="50"
                     x2={handEnd.x}
                     y2={handEnd.y}
-                    stroke="#BFF367"
+                    stroke="var(--primary)"
                     strokeWidth="2"
                     strokeLinecap="round"
                   />
-                  <circle cx={handEnd.x} cy={handEnd.y} r="3" fill="#BFF367" />
-                  <circle cx="50" cy="50" r="2.5" fill="#BFF367" />
+                  <circle cx={handEnd.x} cy={handEnd.y} r="3" fill="var(--primary)" />
+                  <circle cx="50" cy="50" r="2.5" fill="var(--primary)" />
                 </g>
 
                 {mode === "hours" &&
@@ -276,7 +277,7 @@ const ClockPicker = ({
                           cx={p.x}
                           cy={p.y}
                           r="6.5"
-                          fill={sel ? "#BFF367" : "transparent"}
+                          fill={sel ? "var(--primary)" : "transparent"}
                         />
                         <text
                           x={p.x}
@@ -304,7 +305,7 @@ const ClockPicker = ({
                           cx={p.x}
                           cy={p.y}
                           r="6.5"
-                          fill={sel ? "#BFF367" : "transparent"}
+                          fill={sel ? "var(--primary)" : "transparent"}
                         />
                         <text
                           x={p.x}
@@ -327,27 +328,27 @@ const ClockPicker = ({
             {/* Action Buttons */}
             <div className="px-5 pb-4 flex gap-3">
               {mode === "hours" && (
-                <button
+                <Button
                   onClick={() => setMode("minutes")}
-                  className="flex-1 py-2.5 bg-[#BFF367]/10 border border-[#BFF367]/20 text-[#BFF367] text-[9px] font-black uppercase tracking-widest rounded-[8px] hover:bg-[#BFF367]/20 transition-all"
+                  className="flex-1 py-2.5 bg-primary/10 border border-primary/20 text-primary text-[9px] font-black uppercase tracking-widest rounded-[8px] hover:bg-primary/20 transition-all"
                 >
                   Next ΓåÆ
-                </button>
+                </Button>
               )}
               {mode === "minutes" && (
                 <>
-                  <button
+                  <Button
                     onClick={() => setMode("hours")}
-                    className="flex-1 py-2.5 border border-[#2D2D2D] text-[#878C9F] text-[9px] font-black uppercase tracking-widest rounded-[8px] hover:text-white transition-all"
+                    className="flex-1 py-2.5 border border-border text-muted-foreground text-[9px] font-black uppercase tracking-widest rounded-[8px] hover:text-white transition-all"
                   >
                     ΓåÉ Back
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => confirm(minute)}
-                    className="flex-1 py-2.5 bg-[#BFF367] text-black text-[9px] font-black uppercase tracking-widest rounded-[8px] hover:bg-white transition-all"
+                    className="flex-1 py-2.5 bg-primary text-black text-[9px] font-black uppercase tracking-widest rounded-[8px] hover:bg-white transition-all"
                   >
                     Confirm
-                  </button>
+                  </Button>
                 </>
               )}
             </div>

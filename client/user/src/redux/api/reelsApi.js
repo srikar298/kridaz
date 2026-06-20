@@ -108,8 +108,6 @@ export const reelsApi = baseApi.injectEndpoints({
             };
 
             patchFeed(undefined);
-            patchFeed({});
-            patchFeed({ cursor: null, initialId: undefined });
           }
         } catch (err) {
           console.error("[CONFIRM_REEL_UPLOAD_ON_QUERY_STARTED_FAILED]", err);
@@ -153,14 +151,10 @@ export const reelsApi = baseApi.injectEndpoints({
             );
           };
           const p1 = patchFeed(undefined);
-          const p2 = patchFeed({});
-          const p3 = patchFeed({ cursor: null, initialId: undefined });
           try {
             await queryFulfilled;
           } catch {
             p1.undo();
-            p2.undo();
-            p3.undo();
           }
         }
       },
@@ -195,14 +189,10 @@ export const reelsApi = baseApi.injectEndpoints({
           );
         };
         const p1 = patchFeed(undefined);
-        const p2 = patchFeed({});
-        const p3 = patchFeed({ cursor: null, initialId: undefined });
         try {
           await queryFulfilled;
         } catch {
           p1.undo();
-          p2.undo();
-          p3.undo();
         }
       },
     }),
@@ -222,14 +212,10 @@ export const reelsApi = baseApi.injectEndpoints({
           );
         };
         const p1 = patchFeed(undefined);
-        const p2 = patchFeed({});
-        const p3 = patchFeed({ cursor: null, initialId: undefined });
         try {
           await queryFulfilled;
         } catch {
           p1.undo();
-          p2.undo();
-          p3.undo();
         }
       },
     }),

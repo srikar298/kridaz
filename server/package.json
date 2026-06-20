@@ -12,7 +12,10 @@
     "migrate": "npx prisma migrate deploy",
     "server": "nodemon server.js",
     "worker": "node worker.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "seed": "node prisma/seed/index.js",
+    "seed:all": "node prisma/seed/index.js && node prisma/seed-venues/seedVenues.js",
+    "migrate:r2": "node migrate_to_r2.cjs"
   },
   "keywords": [],
   "author": "",
@@ -42,7 +45,6 @@
     "argon2": "^0.40.3",
     "axios": "^1.18.0",
     "bullmq": "^5.76.8",
-    "cloudinary": "^2.3.0",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

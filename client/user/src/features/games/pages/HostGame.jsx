@@ -30,7 +30,8 @@ import {
 } from "lucide-react";
 import { useGetMyTeamsQuery } from "@redux/api/teamApi";
 import CoinAnimation from "@components/CoinAnimation";
-import { fetchStates, fetchCities } from "@utils/locationService";
+import { fetchStates, fetchCities } from "@utils/locationService";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
 const SUBHEADING_STYLE = {
@@ -861,7 +862,7 @@ const HostGame = () => {
   };
 
   return (
-    <div className="h-full bg-[#000] text-white pt-4 pb-4 px-3 sm:px-6">
+    <div className="h-full bg-background text-white pt-4 pb-4 px-3 sm:px-6">
       <div
         className={`max-w-4xl mx-auto transition-all duration-700 ${mounted ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
       >
@@ -882,7 +883,7 @@ const HostGame = () => {
             {[1, 2, 3, 4, 5].map((s) => (
               <div
                 key={s}
-                className={`w-8 h-1.5 rounded-full transition-all duration-500 ${step >= s ? "bg-gradient-to-r from-[#55DEE8] to-[#BFF367]" : "bg-[#1B1B1B]"}`}
+                className={`w-8 h-1.5 rounded-full transition-all duration-500 ${step >= s ? "bg-gradient-to-r from-secondary to-primary" : "bg-card"}`}
               />
             ))}
           </div>
@@ -899,7 +900,7 @@ const HostGame = () => {
               <div className="space-y-6">
                 <div>
                   <h2 className="text-sm font-bold text-white/70 mb-3 uppercase tracking-widest flex items-center gap-2">
-                    <div className="w-[3px] h-[14px] bg-gradient-to-b from-[#55DEE8] to-[#BFF367] rounded-full" />
+                    <div className="w-[3px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
                     Matches & Players
                   </h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -941,7 +942,7 @@ const HostGame = () => {
                         desc: "Need bowlers for nets",
                       },
                     ].map((req) => (
-                      <button
+                      <Button
                         key={req.id}
                         onClick={() => {
                           if (req.id === "TOURNAMENT") {
@@ -957,13 +958,13 @@ const HostGame = () => {
                         className="group relative rounded-[16px] p-[1.5px] transition-all duration-300 cursor-pointer overflow-hidden text-center flex flex-col"
                       >
                         {/* Gradient Border Overlay - Only visible on hover */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#BFF367] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
 
                         {/* Normal Border Overlay - Fades out on hover */}
                         <div className="absolute inset-0 border-[1.5px] border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[16px]" />
 
-                        <div className="relative bg-[#0d0d0d] rounded-[15px] p-3 sm:p-4 h-full w-full flex flex-col items-center justify-center">
-                          <div className="w-10 h-10 rounded-full bg-[#1B1B1B] text-white/70 flex items-center justify-center mb-2 group-hover:text-[#BFF367] transition-colors">
+                        <div className="relative bg-background rounded-[15px] p-3 sm:p-4 h-full w-full flex flex-col items-center justify-center">
+                          <div className="w-10 h-10 rounded-full bg-card text-white/70 flex items-center justify-center mb-2 group-hover:text-primary transition-colors">
                             {req.icon}
                           </div>
                           <h3
@@ -979,14 +980,14 @@ const HostGame = () => {
                             {req.desc}
                           </p>
                         </div>
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
 
                 <div>
                   <h2 className="text-sm font-bold text-white/70 mb-3 uppercase tracking-widest flex items-center gap-2">
-                    <div className="w-[3px] h-[14px] bg-gradient-to-b from-[#55DEE8] to-[#BFF367] rounded-full" />
+                    <div className="w-[3px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
                     Hire Professionals
                   </h2>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -1016,7 +1017,7 @@ const HostGame = () => {
                         desc: "Hire a trainer",
                       },
                     ].map((req) => (
-                      <button
+                      <Button
                         key={req.id}
                         onClick={() => {
                           setGameData({
@@ -1028,13 +1029,13 @@ const HostGame = () => {
                         className="group relative rounded-[16px] p-[1.5px] transition-all duration-300 cursor-pointer overflow-hidden text-center flex flex-col"
                       >
                         {/* Gradient Border Overlay - Only visible on hover */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#BFF367] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
 
                         {/* Normal Border Overlay - Fades out on hover */}
                         <div className="absolute inset-0 border-[1.5px] border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[16px]" />
 
-                        <div className="relative bg-[#0d0d0d] rounded-[15px] p-3 sm:p-4 h-full w-full flex flex-col items-center justify-center">
-                          <div className="w-10 h-10 rounded-full bg-[#1B1B1B] text-white/70 flex items-center justify-center mb-2 group-hover:text-[#BFF367] transition-colors">
+                        <div className="relative bg-background rounded-[15px] p-3 sm:p-4 h-full w-full flex flex-col items-center justify-center">
+                          <div className="w-10 h-10 rounded-full bg-card text-white/70 flex items-center justify-center mb-2 group-hover:text-primary transition-colors">
                             {req.icon}
                           </div>
                           <h3
@@ -1050,35 +1051,35 @@ const HostGame = () => {
                             {req.desc}
                           </p>
                         </div>
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
               </div>
             ) : gameData.requestType === "MATCH" && !gameData.gameMode ? (
               <div className="space-y-3">
-                <button
+                <Button
                   onClick={() => setGameData({ ...gameData, requestType: "" })}
                   className="text-xs text-cyan-400 mb-2"
                 >
                   &larr; Back to Options
-                </button>
+                </Button>
                 <div className="grid grid-cols-2 gap-3">
                   {/* QUICK GAME BUTTON */}
-                  <button
+                  <Button
                     onClick={() =>
                       setGameData({ ...gameData, gameMode: "QUICK" })
                     }
                     className="group relative rounded-[16px] p-[1.5px] transition-all duration-300 cursor-pointer overflow-hidden text-center flex flex-col h-full"
                   >
                     {/* Gradient Border Overlay - Only visible on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#BFF367] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
 
                     {/* Normal Border Overlay - Fades out on hover */}
                     <div className="absolute inset-0 border-[1.5px] border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[16px]" />
 
-                    <div className="relative bg-[#0d0d0d] rounded-[15px] p-3 sm:p-4 h-full w-full flex flex-col items-center justify-center">
-                      <div className="w-10 h-10 rounded-full bg-[#1B1B1B] text-white/70 flex items-center justify-center mb-2 group-hover:text-[#BFF367] transition-colors">
+                    <div className="relative bg-background rounded-[15px] p-3 sm:p-4 h-full w-full flex flex-col items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-card text-white/70 flex items-center justify-center mb-2 group-hover:text-primary transition-colors">
                         <Zap size={20} />
                       </div>
                       <h3
@@ -1094,23 +1095,23 @@ const HostGame = () => {
                         One pool of players.
                       </p>
                     </div>
-                  </button>
+                  </Button>
 
                   {/* PROFESSIONAL GAME BUTTON */}
-                  <button
+                  <Button
                     onClick={() =>
                       setGameData({ ...gameData, gameMode: "PROFESSIONAL" })
                     }
                     className="group relative rounded-[16px] p-[1.5px] transition-all duration-300 cursor-pointer overflow-hidden text-center flex flex-col h-full"
                   >
                     {/* Gradient Border Overlay - Only visible on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#BFF367] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
 
                     {/* Normal Border Overlay - Fades out on hover */}
                     <div className="absolute inset-0 border-[1.5px] border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[16px]" />
 
-                    <div className="relative bg-[#0d0d0d] rounded-[15px] p-3 sm:p-4 h-full w-full flex flex-col items-center justify-center">
-                      <div className="w-10 h-10 rounded-full bg-[#1B1B1B] text-white/70 flex items-center justify-center mb-2 group-hover:text-[#BFF367] transition-colors">
+                    <div className="relative bg-background rounded-[15px] p-3 sm:p-4 h-full w-full flex flex-col items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-card text-white/70 flex items-center justify-center mb-2 group-hover:text-primary transition-colors">
                         <ShieldCheck size={20} />
                       </div>
                       <h3
@@ -1126,7 +1127,7 @@ const HostGame = () => {
                         Two balanced teams.
                       </p>
                     </div>
-                  </button>
+                  </Button>
                 </div>
               </div>
             ) : null}
@@ -1134,7 +1135,7 @@ const HostGame = () => {
             {(gameData.requestType !== "MATCH" || gameData.gameMode) &&
               gameData.requestType && (
                 <div className="flex justify-end mt-2">
-                  <button
+                  <Button
                     onClick={() =>
                       setGameData({
                         ...gameData,
@@ -1145,7 +1146,7 @@ const HostGame = () => {
                     className="text-xs text-white/50 hover:text-white"
                   >
                     &larr; Change Type
-                  </button>
+                  </Button>
                 </div>
               )}
 
@@ -1160,18 +1161,18 @@ const HostGame = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <section>
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-[#55DEE8] to-[#BFF367] rounded-full" />
+                      <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
                       <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
                         Select Sport
                       </label>
                     </div>
 
                     {/* Dropdown Toggle Button */}
-                    <button
+                    <Button
                       onClick={() =>
                         setIsSportDropdownOpen(!isSportDropdownOpen)
                       }
-                      className="w-full flex items-center justify-between bg-[#000] border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-2.5 px-3 text-[11px] font-bold transition-all text-white mb-3"
+                      className="w-full flex items-center justify-between bg-background border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-2.5 px-3 text-[11px] font-bold transition-all text-white mb-3"
                     >
                       <div className="flex items-center gap-3">
                         {gameData.gameType ? (
@@ -1194,7 +1195,7 @@ const HostGame = () => {
                         size={16}
                         className={`text-white/70 transition-transform duration-300 ${isSportDropdownOpen ? "rotate-180" : ""}`}
                       />
-                    </button>
+                    </Button>
 
                     <AnimatePresence>
                       {isSportDropdownOpen && (
@@ -1209,14 +1210,14 @@ const HostGame = () => {
                             {Object.keys(SPORT_DEFAULTS).map((sport) => (
                               <div
                                 key={sport}
-                                className={`rounded-[16px] p-[1.5px] transition-all duration-300 ${gameData.gameType === sport ? "bg-gradient-to-b from-[#55DEE8] to-[#BFF367] shadow-[0_0_15px_rgba(6,182,212,0.12)] scale-[1.015]" : "bg-[#1B1B1B]/40 hover:bg-neutral-700/40"}`}
+                                className={`rounded-[16px] p-[1.5px] transition-all duration-300 ${gameData.gameType === sport ? "bg-gradient-to-b from-secondary to-primary shadow-[0_0_15px_rgba(6,182,212,0.12)] scale-[1.015]" : "bg-card/40 hover:bg-neutral-700/40"}`}
                               >
-                                <button
+                                <Button
                                   onClick={() => {
                                     initSlots(sport);
                                     setIsSportDropdownOpen(false);
                                   }}
-                                  className={`w-full bg-[#000] rounded-[16px] p-2.5 flex flex-col items-center justify-center gap-1.5 relative transition-all duration-300 group overflow-hidden ${gameData.gameType === sport ? "" : "hover:bg-[#121212]"}`}
+                                  className={`w-full bg-background rounded-[16px] p-2.5 flex flex-col items-center justify-center gap-1.5 relative transition-all duration-300 group overflow-hidden ${gameData.gameType === sport ? "" : "hover:bg-card"}`}
                                 >
                                   {/* Diagonal Corner Hover Glow Effects (Only when selected) */}
                                   {gameData.gameType === sport && (
@@ -1239,12 +1240,12 @@ const HostGame = () => {
                                       {sport}
                                     </span>
                                     {gameData.gameType === sport && (
-                                      <div className="w-5 h-[2px] bg-gradient-to-r from-[#55DEE8] to-[#BFF367] mt-1.5 rounded-full" />
+                                      <div className="w-5 h-[2px] bg-gradient-to-r from-secondary to-primary mt-1.5 rounded-full" />
                                     )}
                                   </div>
 
                                   {gameData.gameType === sport && (
-                                    <div className="absolute top-2.5 right-2.5 bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] rounded-full p-0.5 flex items-center justify-center w-4 h-4 shadow-[0_0_10px_rgba(6,182,212,0.35)] z-10">
+                                    <div className="absolute top-2.5 right-2.5 bg-gradient-to-r from-secondary to-primary text-background rounded-full p-0.5 flex items-center justify-center w-4 h-4 shadow-[0_0_10px_rgba(6,182,212,0.35)] z-10">
                                       <svg
                                         viewBox="0 0 24 24"
                                         fill="none"
@@ -1256,7 +1257,7 @@ const HostGame = () => {
                                       </svg>
                                     </div>
                                   )}
-                                </button>
+                                </Button>
                               </div>
                             ))}
                           </div>
@@ -1267,16 +1268,16 @@ const HostGame = () => {
 
                   <section className="space-y-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-[#55DEE8] to-[#BFF367] rounded-full" />
+                      <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
                       <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
                         Date & Time
                       </label>
                     </div>
                     <div className="relative">
-                      <button
+                      <Button
                         type="button"
                         onClick={() => setShowDateTimePicker(true)}
-                        className="w-full flex items-center justify-between bg-[#000] border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-2.5 px-3 text-[11px] font-bold transition-all text-white"
+                        className="w-full flex items-center justify-between bg-background border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-2.5 px-3 text-[11px] font-bold transition-all text-white"
                       >
                         <div className="flex items-center gap-3">
                           <Calendar size={18} className="text-cyan-400" />
@@ -1291,7 +1292,7 @@ const HostGame = () => {
                           </span>
                         </div>
                         <ChevronDown size={16} className="text-white/70" />
-                      </button>
+                      </Button>
 
                       <MaterialDateTimePicker
                         isOpen={showDateTimePicker}
@@ -1308,7 +1309,7 @@ const HostGame = () => {
 
                 <section className="space-y-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-[#55DEE8] to-[#BFF367] rounded-full" />
+                    <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
                     <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
                       Location (State & City)
                     </label>
@@ -1320,13 +1321,13 @@ const HostGame = () => {
                         className="absolute left-4 top-[18px] text-cyan-400 pointer-events-none z-10"
                         size={18}
                       />
-                      <button
+                      <Button
                         onClick={() =>
                           !loadingStates &&
                           setIsStateDropdownOpen(!isStateDropdownOpen)
                         }
                         disabled={loadingStates}
-                        className="w-full bg-[#000] border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-4 pl-12 pr-10 text-left text-sm text-white outline-none transition-all font-bold disabled:opacity-50 flex items-center justify-between"
+                        className="w-full bg-background border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-4 pl-12 pr-10 text-left text-sm text-white outline-none transition-all font-bold disabled:opacity-50 flex items-center justify-between"
                       >
                         <span className="truncate">
                           {loadingStates
@@ -1337,7 +1338,7 @@ const HostGame = () => {
                           className={`text-white/70 transition-transform duration-300 ${isStateDropdownOpen ? "rotate-180" : ""}`}
                           size={16}
                         />
-                      </button>
+                      </Button>
 
                       <AnimatePresence>
                         {isStateDropdownOpen && (
@@ -1346,15 +1347,15 @@ const HostGame = () => {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
                             transition={{ duration: 0.2 }}
-                            className="absolute left-0 right-0 top-full mt-2 bg-[#1B1B1B] border border-white/10 rounded-[16px] z-[60] shadow-xl flex flex-col"
+                            className="absolute left-0 right-0 top-full mt-2 bg-card border border-white/10 rounded-[16px] z-[60] shadow-xl flex flex-col"
                           >
-                            <div className="p-3 border-b border-white/10 sticky top-0 bg-[#1B1B1B] z-10 rounded-t-[8px]">
+                            <div className="p-3 border-b border-white/10 sticky top-0 bg-card z-10 rounded-t-[8px]">
                               <div className="relative">
                                 <Search
                                   className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70"
                                   size={14}
                                 />
-                                <input
+                                <Input
                                   type="text"
                                   placeholder="Search state..."
                                   value={stateSearch}
@@ -1362,7 +1363,7 @@ const HostGame = () => {
                                     setStateSearch(e.target.value)
                                   }
                                   onClick={(e) => e.stopPropagation()}
-                                  className="w-full bg-[#121212] border border-white/10 rounded-[16px] py-2 pl-9 pr-3 text-sm text-white focus:border-[#55DEE8] outline-none transition-all"
+                                  className="w-full bg-card border border-white/10 rounded-[16px] py-2 pl-9 pr-3 text-sm text-white focus:border-secondary outline-none transition-all"
                                 />
                               </div>
                             </div>
@@ -1385,7 +1386,7 @@ const HostGame = () => {
                                       setIsStateDropdownOpen(false);
                                       setStateSearch("");
                                     }}
-                                    className={`px-4 py-3 text-sm cursor-pointer transition-colors ${gameData.state === s ? "text-cyan-400 bg-cyan-400/10" : "text-white/70 hover:bg-[#1B1B1B]/80 hover:text-white"}`}
+                                    className={`px-4 py-3 text-sm cursor-pointer transition-colors ${gameData.state === s ? "text-cyan-400 bg-cyan-400/10" : "text-white/70 hover:bg-card/80 hover:text-white"}`}
                                   >
                                     {s}
                                   </div>
@@ -1429,13 +1430,13 @@ const HostGame = () => {
                         <line x1="9" y1="16" x2="15" y2="16" />
                         <path d="M9 6h.01M15 6h.01M9 10h.01M15 10h.01" />
                       </svg>
-                      <button
+                      <Button
                         onClick={() =>
                           !(!gameData.state || loadingCities) &&
                           setIsCityDropdownOpen(!isCityDropdownOpen)
                         }
                         disabled={!gameData.state || loadingCities}
-                        className="w-full bg-[#000] border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-4 pl-12 pr-10 text-left text-sm text-white outline-none transition-all font-bold disabled:opacity-50 flex items-center justify-between"
+                        className="w-full bg-background border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-4 pl-12 pr-10 text-left text-sm text-white outline-none transition-all font-bold disabled:opacity-50 flex items-center justify-between"
                       >
                         <span className="truncate">
                           {loadingCities
@@ -1448,7 +1449,7 @@ const HostGame = () => {
                           className={`text-white/70 transition-transform duration-300 ${isCityDropdownOpen ? "rotate-180" : ""}`}
                           size={16}
                         />
-                      </button>
+                      </Button>
 
                       <AnimatePresence>
                         {isCityDropdownOpen && (
@@ -1457,15 +1458,15 @@ const HostGame = () => {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
                             transition={{ duration: 0.2 }}
-                            className="absolute left-0 right-0 top-full mt-2 bg-[#1B1B1B] border border-white/10 rounded-[16px] z-[60] shadow-xl flex flex-col"
+                            className="absolute left-0 right-0 top-full mt-2 bg-card border border-white/10 rounded-[16px] z-[60] shadow-xl flex flex-col"
                           >
-                            <div className="p-3 border-b border-white/10 sticky top-0 bg-[#1B1B1B] z-10 rounded-t-[8px]">
+                            <div className="p-3 border-b border-white/10 sticky top-0 bg-card z-10 rounded-t-[8px]">
                               <div className="relative">
                                 <Search
                                   className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70"
                                   size={14}
                                 />
-                                <input
+                                <Input
                                   type="text"
                                   placeholder="Search city..."
                                   value={citySearch}
@@ -1473,7 +1474,7 @@ const HostGame = () => {
                                     setCitySearch(e.target.value)
                                   }
                                   onClick={(e) => e.stopPropagation()}
-                                  className="w-full bg-[#121212] border border-white/10 rounded-[16px] py-2 pl-9 pr-3 text-sm text-white focus:border-[#55DEE8] outline-none transition-all"
+                                  className="w-full bg-card border border-white/10 rounded-[16px] py-2 pl-9 pr-3 text-sm text-white focus:border-secondary outline-none transition-all"
                                 />
                               </div>
                             </div>
@@ -1492,7 +1493,7 @@ const HostGame = () => {
                                       setIsCityDropdownOpen(false);
                                       setCitySearch("");
                                     }}
-                                    className={`px-4 py-3 text-sm cursor-pointer transition-colors ${gameData.city === c ? "text-cyan-400 bg-cyan-400/10" : "text-white/70 hover:bg-[#1B1B1B]/80 hover:text-white"}`}
+                                    className={`px-4 py-3 text-sm cursor-pointer transition-colors ${gameData.city === c ? "text-cyan-400 bg-cyan-400/10" : "text-white/70 hover:bg-card/80 hover:text-white"}`}
                                   >
                                     {c}
                                   </div>
@@ -1517,12 +1518,12 @@ const HostGame = () => {
                 {gameData.requestType === "LOOKING_FOR_TEAM" && (
                   <section className="space-y-4 mt-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-[#55DEE8] to-[#BFF367] rounded-full" />
+                      <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
                       <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
                         Your Role / Preference
                       </label>
                     </div>
-                    <input
+                    <Input
                       type="text"
                       placeholder="e.g. Opening Batsman, Pace Bowler..."
                       value={gameData.matchPreferences?.role || ""}
@@ -1535,7 +1536,7 @@ const HostGame = () => {
                           },
                         })
                       }
-                      className="w-full bg-[#000] border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-4 px-4 text-sm text-white outline-none transition-all font-bold"
+                      className="w-full bg-background border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-4 px-4 text-sm text-white outline-none transition-all font-bold"
                     />
                   </section>
                 )}
@@ -1543,7 +1544,7 @@ const HostGame = () => {
                 {gameData.gameMode === "HIRING" && (
                   <section className="space-y-4 mt-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-[#55DEE8] to-[#BFF367] rounded-full" />
+                      <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
                       <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
                         Hiring Details
                       </label>
@@ -1553,7 +1554,7 @@ const HostGame = () => {
                         <label className="text-[10px] text-white/50 uppercase">
                           Budget (₹)
                         </label>
-                        <input
+                        <Input
                           type="number"
                           placeholder="e.g. 1500"
                           value={gameData.matchPreferences?.budget || ""}
@@ -1566,14 +1567,14 @@ const HostGame = () => {
                               },
                             })
                           }
-                          className="w-full bg-[#121212] border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-[#55DEE8] outline-none transition-all"
+                          className="w-full bg-card border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-secondary outline-none transition-all"
                         />
                       </div>
                       <div className="flex flex-col gap-1">
                         <label className="text-[10px] text-white/50 uppercase">
                           Pay Rate
                         </label>
-                        <select
+                        <Select
                           value={
                             gameData.matchPreferences?.budgetType || "Per Match"
                           }
@@ -1586,19 +1587,19 @@ const HostGame = () => {
                               },
                             })
                           }
-                          className="w-full bg-[#121212] border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-[#55DEE8] outline-none transition-all"
+                          className="w-full bg-card border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-secondary outline-none transition-all"
                         >
                           <option value="Per Match">Per Match</option>
                           <option value="Per Day">Per Day</option>
                           <option value="Per Hour">Per Hour</option>
-                        </select>
+                        </Select>
                       </div>
                     </div>
                     <div className="flex flex-col gap-1">
                       <label className="text-[10px] text-white/50 uppercase">
                         Requirements / Notes
                       </label>
-                      <textarea
+                      <Textarea
                         placeholder="e.g. Need experienced umpire for T20 final..."
                         rows={3}
                         value={gameData.matchPreferences?.requirements || ""}
@@ -1611,11 +1612,11 @@ const HostGame = () => {
                             },
                           })
                         }
-                        className="w-full bg-[#121212] border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-[#55DEE8] outline-none transition-all resize-none"
+                        className="w-full bg-card border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-secondary outline-none transition-all resize-none"
                       />
                     </div>
-                    <div className="flex items-center gap-3 bg-[#121212] border border-white/10 rounded-[16px] p-3">
-                      <input
+                    <div className="flex items-center gap-3 bg-card border border-white/10 rounded-[16px] p-3">
+                      <Input
                         type="checkbox"
                         id="flex-date"
                         checked={
@@ -1630,7 +1631,7 @@ const HostGame = () => {
                             },
                           })
                         }
-                        className="w-4 h-4 rounded border-white/20 text-cyan-400 focus:ring-0 focus:ring-offset-0 bg-[#000]"
+                        className="w-4 h-4 rounded border-white/20 text-cyan-400 focus:ring-0 focus:ring-offset-0 bg-background"
                       />
                       <label
                         htmlFor="flex-date"
@@ -1643,13 +1644,13 @@ const HostGame = () => {
                 )}
 
                 <div className="flex gap-3 pt-4 mt-4">
-                  <button
+                  <Button
                     onClick={() => navigate(-1)}
-                    className="flex-1 py-3 sm:py-3.5 bg-[#121212] text-white/70 font-bold rounded-[16px] sm:rounded-[16px] border border-white/10 hover:border-white/10 transition-all duration-300 text-sm sm:text-base font-open-sans uppercase tracking-wider"
+                    className="flex-1 py-3 sm:py-3.5 bg-card text-white/70 font-bold rounded-[16px] sm:rounded-[16px] border border-white/10 hover:border-white/10 transition-all duration-300 text-sm sm:text-base font-open-sans uppercase tracking-wider"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => {
                       if (
                         gameData.requestType === "LOOKING_FOR_TEAM" ||
@@ -1673,7 +1674,7 @@ const HostGame = () => {
                         (!gameData.matchPreferences?.budget ||
                           !gameData.matchPreferences?.requirements))
                     }
-                    className="flex-[2] h-[40px] sm:h-[40px] bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] font-bold rounded-[16px] sm:rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 text-xs sm:text-xs font-open-sans shadow-[0_8px_24px_rgba(191,243,103,0.15)] uppercase tracking-wider disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
+                    className="flex-[2] h-[40px] sm:h-[40px] bg-gradient-to-r from-secondary to-primary text-background font-bold rounded-[16px] sm:rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 text-xs sm:text-xs font-open-sans shadow-[0_8px_24px_rgba(191,243,103,0.15)] uppercase tracking-wider disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
                   >
                     {loading
                       ? "WAIT..."
@@ -1681,7 +1682,7 @@ const HostGame = () => {
                           gameData.gameMode === "HIRING"
                         ? "PUBLISH"
                         : "CONTINUE"}
-                  </button>
+                  </Button>
                 </div>
               </motion.div>
             )}
@@ -1704,8 +1705,8 @@ const HostGame = () => {
                       Opponent Preference
                     </label>
                   </div>
-                  <div className="bg-[#121212] border border-white/10 rounded-[16px] overflow-hidden">
-                    <button
+                  <div className="bg-card border border-white/10 rounded-[16px] overflow-hidden">
+                    <Button
                       onClick={() =>
                         setGameData({
                           ...gameData,
@@ -1715,17 +1716,17 @@ const HostGame = () => {
                           },
                         })
                       }
-                      className={`w-full flex items-center justify-between p-4 transition-all ${gameData.matchPreferences?.gbnoPreference === "SPECIFIC_PLAYERS" ? "bg-[#BFF367]/10 border-b border-[#BFF367]/20" : "hover:bg-white/5 border-b border-white/5"}`}
+                      className={`w-full flex items-center justify-between p-4 transition-all ${gameData.matchPreferences?.gbnoPreference === "SPECIFIC_PLAYERS" ? "bg-primary/10 border-b border-primary/20" : "hover:bg-white/5 border-b border-white/5"}`}
                     >
                       <span className="text-sm font-bold text-white">
                         Specific number of players
                       </span>
                       {gameData.matchPreferences?.gbnoPreference ===
                         "SPECIFIC_PLAYERS" && (
-                        <Trophy size={16} className="text-[#BFF367]" />
+                        <Trophy size={16} className="text-primary" />
                       )}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() =>
                         setGameData({
                           ...gameData,
@@ -1735,16 +1736,16 @@ const HostGame = () => {
                           },
                         })
                       }
-                      className={`w-full flex items-center justify-between p-4 transition-all ${gameData.matchPreferences?.gbnoPreference === "FULL_TEAM" ? "bg-[#BFF367]/10" : "hover:bg-white/5"}`}
+                      className={`w-full flex items-center justify-between p-4 transition-all ${gameData.matchPreferences?.gbnoPreference === "FULL_TEAM" ? "bg-primary/10" : "hover:bg-white/5"}`}
                     >
                       <span className="text-sm font-bold text-white">
                         Full opponent team
                       </span>
                       {gameData.matchPreferences?.gbnoPreference ===
                         "FULL_TEAM" && (
-                        <Trophy size={16} className="text-[#BFF367]" />
+                        <Trophy size={16} className="text-primary" />
                       )}
-                    </button>
+                    </Button>
                   </div>
                 </section>
               ) : (
@@ -1753,7 +1754,7 @@ const HostGame = () => {
                     <label className="text-xs font-black text-white/70 uppercase tracking-widest whitespace-nowrap">
                       Select Ground
                     </label>
-                    <span className="text-[10px] text-white/70 font-black px-3 py-1 bg-[#1B1B1B] rounded-full uppercase tracking-tighter">
+                    <span className="text-[10px] text-white/70 font-black px-3 py-1 bg-card rounded-full uppercase tracking-tighter">
                       Optional
                     </span>
                   </div>
@@ -1777,12 +1778,12 @@ const HostGame = () => {
                           </p>
                           <div className="flex flex-wrap gap-2 mb-3">
                             {gameData.date && (
-                              <span className="px-2 py-1 bg-[#1B1B1B] rounded text-[10px] text-cyan-400 font-bold uppercase">
+                              <span className="px-2 py-1 bg-card rounded text-[10px] text-cyan-400 font-bold uppercase">
                                 {new Date(gameData.date).toLocaleDateString()}
                               </span>
                             )}
                             {gameData.time && (
-                              <span className="px-2 py-1 bg-[#1B1B1B] rounded text-[10px] text-lime-400 font-bold uppercase">
+                              <span className="px-2 py-1 bg-card rounded text-[10px] text-lime-400 font-bold uppercase">
                                 {gameData.time}
                               </span>
                             )}
@@ -1794,21 +1795,21 @@ const HostGame = () => {
                                 ? gameData.groundPrice
                                 : selectedGround.pricePerHour}
                             </span>
-                            <button
+                            <Button
                               onClick={() => {
                                 setSelectedGround(null);
                                 setGameData({ ...gameData, groundId: null });
                               }}
-                              className="px-4 py-2 bg-[#1B1B1B] text-white rounded-[16px] text-xs font-black uppercase tracking-widest hover:bg-neutral-700 transition-colors"
+                              className="px-4 py-2 bg-card text-white rounded-[16px] text-xs font-black uppercase tracking-widest hover:bg-neutral-700 transition-colors"
                             >
                               Remove
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <button
+                    <Button
                       onClick={() => {
                         sessionStorage.setItem(
                           "hostGameData",
@@ -1818,15 +1819,15 @@ const HostGame = () => {
                           `/venues?returnTo=${encodeURIComponent(`/host-game?step=3&city=${gameData.city}&state=${gameData.state}`)}`
                         );
                       }}
-                      className="w-full py-4 rounded-[16px] border-2 border-dashed border-white/10 hover:border-cyan-400 bg-[#121212] hover:bg-cyan-400/5 flex flex-col items-center justify-center gap-3 transition-all group"
+                      className="w-full py-4 rounded-[16px] border-2 border-dashed border-white/10 hover:border-cyan-400 bg-card hover:bg-cyan-400/5 flex flex-col items-center justify-center gap-3 transition-all group"
                     >
-                      <div className="w-8 h-8 rounded-full bg-[#1B1B1B] group-hover:bg-cyan-400/20 flex items-center justify-center text-white/70 group-hover:text-cyan-400 transition-colors">
+                      <div className="w-8 h-8 rounded-full bg-card group-hover:bg-cyan-400/20 flex items-center justify-center text-white/70 group-hover:text-cyan-400 transition-colors">
                         <MapPin size={24} />
                       </div>
                       <span className="font-black text-sm uppercase tracking-widest text-white/70 group-hover:text-white">
                         Book Venue
                       </span>
-                    </button>
+                    </Button>
                   )}
                 </section>
               )}
@@ -1834,17 +1835,17 @@ const HostGame = () => {
 
             {/* Pricing / Quick Settings Section */}
             {gameData.gameMode === "QUICK" ? (
-              <div className="bg-[#121212] border border-white/10 rounded-[16px] p-3 sm:p-4 shadow-xl shadow-black/30 mb-3">
+              <div className="bg-card border border-white/10 rounded-[16px] p-3 sm:p-4 shadow-xl shadow-black/30 mb-3">
                 <div className="space-y-4 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-2 mb-4">
-                      <div className="w-[3px] h-[16px] bg-gradient-to-b from-[#55DEE8] to-[#BFF367] rounded-full" />
+                      <div className="w-[3px] h-[16px] bg-gradient-to-b from-secondary to-primary rounded-full" />
                       <h3 className="text-xs font-black uppercase text-white tracking-wider">
                         Quick Game Settings
                       </h3>
                     </div>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-3 bg-[#000000] p-2.5 rounded-[16px] border border-white/10 justify-between">
+                      <div className="flex items-center gap-3 bg-background p-2.5 rounded-[16px] border border-white/10 justify-between">
                         <div className="flex flex-col text-left">
                           <span className="text-[9px] font-black uppercase text-white/70 tracking-wider">
                             Total Players
@@ -1854,7 +1855,7 @@ const HostGame = () => {
                           </span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <button
+                          <Button
                             type="button"
                             onClick={() =>
                               setGameData((prev) => ({
@@ -1865,14 +1866,14 @@ const HostGame = () => {
                                 ),
                               }))
                             }
-                            className="w-5 h-5 rounded-full bg-[#121212] border border-[#BFF367]/20 text-[#BFF367] flex items-center justify-center hover:bg-[#BFF367]/10 transition-colors"
+                            className="w-5 h-5 rounded-full bg-card border border-primary/20 text-primary flex items-center justify-center hover:bg-primary/10 transition-colors"
                           >
                             <Minus size={14} />
-                          </button>
+                          </Button>
                           <span className="text-lg font-black text-white w-6 text-center select-none tabular-nums">
                             {gameData.quickPlayerCount || 2}
                           </span>
-                          <button
+                          <Button
                             type="button"
                             onClick={() =>
                               setGameData((prev) => ({
@@ -1883,13 +1884,13 @@ const HostGame = () => {
                                 ),
                               }))
                             }
-                            className="w-5 h-5 rounded-full bg-[#121212] border border-[#BFF367]/20 text-[#BFF367] flex items-center justify-center hover:bg-[#BFF367]/10 transition-colors"
+                            className="w-5 h-5 rounded-full bg-card border border-primary/20 text-primary flex items-center justify-center hover:bg-primary/10 transition-colors"
                           >
                             <Plus size={14} />
-                          </button>
+                          </Button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 bg-[#000000] p-2.5 rounded-[16px] border border-white/10 justify-between">
+                      <div className="flex items-center gap-3 bg-background p-2.5 rounded-[16px] border border-white/10 justify-between">
                         <div className="flex flex-col text-left">
                           <span className="text-[9px] font-black uppercase text-white/70 tracking-wider">
                             Entry Fee
@@ -1898,9 +1899,9 @@ const HostGame = () => {
                             Per player (₹)
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 bg-[#121212] p-1.5 px-3 rounded-[16px] border border-white/10 focus-within:border-[#55DEE8] transition-all">
-                          <Coins className="text-[#BFF367]" size={14} />
-                          <input
+                        <div className="flex items-center gap-2 bg-card p-1.5 px-3 rounded-[16px] border border-white/10 focus-within:border-secondary transition-all">
+                          <Coins className="text-primary" size={14} />
+                          <Input
                             type="number"
                             placeholder="0"
                             value={gameData.perPlayerCharge || ""}
@@ -1916,15 +1917,15 @@ const HostGame = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="text-center py-2.5 px-3 bg-[#BFF367]/5 border border-[#BFF367]/10 rounded-[16px] mt-4 md:mt-0">
-                    <span className="text-[9px] font-black text-[#BFF367] uppercase tracking-widest">
+                  <div className="text-center py-2.5 px-3 bg-primary/5 border border-primary/10 rounded-[16px] mt-4 md:mt-0">
+                    <span className="text-[9px] font-black text-primary uppercase tracking-widest">
                       You + {gameData.quickPlayerCount - 1} Players Pool
                     </span>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="bg-[#121212] p-8 rounded-[16px] border-2 border-white/10 flex flex-col md:flex-row items-center justify-between gap-3 mb-3">
+              <div className="bg-card p-8 rounded-[16px] border-2 border-white/10 flex flex-col md:flex-row items-center justify-between gap-3 mb-3">
                 <div className="space-y-1">
                   <span className="text-xs font-black text-white/70 uppercase tracking-widest">
                     Entry Charge per Player
@@ -1937,7 +1938,7 @@ const HostGame = () => {
                   <div className="w-12 h-12 bg-yellow-500/10 rounded-[16px] flex items-center justify-center">
                     <Coins className="text-yellow-500" size={24} />
                   </div>
-                  <input
+                  <Input
                     type="number"
                     value={gameData.perPlayerCharge}
                     onChange={(e) =>
@@ -1953,27 +1954,27 @@ const HostGame = () => {
             )}
 
             <div className="flex gap-3">
-              <button
+              <Button
                 onClick={() => setStep(1)}
-                className="flex-1 h-[40px] flex items-center justify-center bg-[#121212] text-white/70 font-bold rounded-[16px] border border-white/10 hover:border-white/20 transition-all duration-300 text-xs font-open-sans uppercase tracking-wider"
+                className="flex-1 h-[40px] flex items-center justify-center bg-card text-white/70 font-bold rounded-[16px] border border-white/10 hover:border-white/20 transition-all duration-300 text-xs font-open-sans uppercase tracking-wider"
               >
                 Back
-              </button>
+              </Button>
               {gameData.gameMode === "QUICK" ? (
-                <button
+                <Button
                   disabled={gameData.quickPlayerCount < 2}
                   onClick={initQuickSlots}
-                  className="flex-[2] h-[40px] sm:h-[40px] bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] font-bold rounded-[16px] sm:rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 text-xs sm:text-xs font-open-sans shadow-[0_8px_24px_rgba(191,243,103,0.15)] disabled:opacity-50 uppercase tracking-wider"
+                  className="flex-[2] h-[40px] sm:h-[40px] bg-gradient-to-r from-secondary to-primary text-background font-bold rounded-[16px] sm:rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 text-xs sm:text-xs font-open-sans shadow-[0_8px_24px_rgba(191,243,103,0.15)] disabled:opacity-50 uppercase tracking-wider"
                 >
                   SETUP SLOTS
-                </button>
+                </Button>
               ) : (
-                <button
+                <Button
                   onClick={() => setStep(4)}
-                  className="flex-[2] h-[40px] sm:h-[40px] bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] font-bold rounded-[16px] sm:rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 text-xs sm:text-xs font-open-sans shadow-[0_8px_24px_rgba(191,243,103,0.15)] uppercase tracking-wider"
+                  className="flex-[2] h-[40px] sm:h-[40px] bg-gradient-to-r from-secondary to-primary text-background font-bold rounded-[16px] sm:rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 text-xs sm:text-xs font-open-sans shadow-[0_8px_24px_rgba(191,243,103,0.15)] uppercase tracking-wider"
                 >
                   Continue
-                </button>
+                </Button>
               )}
             </div>
           </motion.div>
@@ -1997,16 +1998,16 @@ const HostGame = () => {
                   Assign players to slots or leave them open for the community
                 </p>
               </div>
-              <button
+              <Button
                 onClick={() => {
                   setFillingTeamKey("quick");
                   setShowTeamFillModal(true);
                 }}
-                className="flex items-center gap-1.5 px-3 py-2 bg-[#BFF367]/10 border border-[#BFF367]/20 rounded-[16px] text-[#BFF367] font-black text-[10px] uppercase tracking-widest hover:bg-gradient-to-r hover:from-[#BFF367] hover:to-[#BFF367] hover:text-black transition-all"
+                className="flex items-center gap-1.5 px-3 py-2 bg-primary/10 border border-primary/20 rounded-[16px] text-primary font-black text-[10px] uppercase tracking-widest hover:bg-gradient-to-r hover:from-primary hover:to-primary hover:text-black transition-all"
               >
                 <ShieldCheck size={14} /> Fill{" "}
                 <span className="hidden sm:inline">from My </span>Team
-              </button>
+              </Button>
             </div>
 
             <div className="grid grid-cols-4 gap-2 sm:gap-3">
@@ -2014,10 +2015,10 @@ const HostGame = () => {
                 <div
                   key={idx}
                   onClick={() => idx !== 0 && setActiveSlotPicker({ idx })}
-                  className={`relative p-1 sm:p-4 rounded-[16px] border-2 transition-all cursor-pointer group flex flex-col items-center justify-center text-center h-28 sm:h-36 ${slot.userId || slot.customPlayer ? "border-[#BFF367]/30 bg-[#BFF367]/5" : "border-white/10 bg-[#121212] hover:border-white/10"}`}
+                  className={`relative p-1 sm:p-4 rounded-[16px] border-2 transition-all cursor-pointer group flex flex-col items-center justify-center text-center h-28 sm:h-36 ${slot.userId || slot.customPlayer ? "border-primary/30 bg-primary/5" : "border-white/10 bg-card hover:border-white/10"}`}
                 >
                   <div
-                    className={`w-10 h-10 sm:w-14 sm:h-14 rounded-[16px] flex items-center justify-center mb-1 sm:mb-2 transition-transform duration-500 group-hover:scale-110 overflow-hidden ${slot.userId || slot.customPlayer ? "border-2 border-[#BFF367] bg-[#121212]" : "bg-[#1B1B1B] text-white/70"}`}
+                    className={`w-10 h-10 sm:w-14 sm:h-14 rounded-[16px] flex items-center justify-center mb-1 sm:mb-2 transition-transform duration-500 group-hover:scale-110 overflow-hidden ${slot.userId || slot.customPlayer ? "border-2 border-primary bg-card" : "bg-card text-white/70"}`}
                   >
                     {slot.profilePicture ? (
                       <img
@@ -2033,12 +2034,12 @@ const HostGame = () => {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="text-xl font-black bg-[#BFF367] text-black w-full h-full flex items-center justify-center">
+                        <div className="text-xl font-black bg-primary text-black w-full h-full flex items-center justify-center">
                           {user?.name ? user.name.charAt(0).toUpperCase() : "?"}
                         </div>
                       )
                     ) : slot.userId || slot.customPlayer ? (
-                      <div className="text-xl font-black bg-[#BFF367] text-black w-full h-full flex items-center justify-center">
+                      <div className="text-xl font-black bg-primary text-black w-full h-full flex items-center justify-center">
                         {(slot.name || slot.customPlayer?.name || "?")
                           .charAt(0)
                           .toUpperCase()}
@@ -2063,7 +2064,7 @@ const HostGame = () => {
                   </div>
 
                   {idx !== 0 && (slot.userId || slot.customPlayer) && (
-                    <button
+                    <Button
                       onClick={(e) => {
                         e.stopPropagation();
                         const newSlots = [...gameData.quickSlotsData];
@@ -2073,11 +2074,11 @@ const HostGame = () => {
                       className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-lg hover:bg-red-600"
                     >
                       <Trash2 size={14} />
-                    </button>
+                    </Button>
                   )}
 
                   {idx === 0 && (
-                    <div className="absolute top-4 right-4 text-[#BFF367]">
+                    <div className="absolute top-4 right-4 text-primary">
                       <CheckCircle2 size={16} />
                     </div>
                   )}
@@ -2092,18 +2093,18 @@ const HostGame = () => {
             </div>
 
             <div className="flex gap-3 max-w-lg mx-auto w-full">
-              <button
+              <Button
                 onClick={() => setStep(3)}
-                className="flex-1 h-[40px] flex items-center justify-center bg-[#121212] text-white/70 font-bold rounded-[16px] border border-white/10 hover:border-white/20 transition-all text-xs font-open-sans uppercase tracking-wider"
+                className="flex-1 h-[40px] flex items-center justify-center bg-card text-white/70 font-bold rounded-[16px] border border-white/10 hover:border-white/20 transition-all text-xs font-open-sans uppercase tracking-wider"
               >
                 BACK
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setStep(5)}
-                className="flex-[2] h-[40px] bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] font-bold rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 text-xs font-open-sans shadow-[0_8px_24px_rgba(191,243,103,0.15)] uppercase tracking-widest"
+                className="flex-[2] h-[40px] bg-gradient-to-r from-secondary to-primary text-background font-bold rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 text-xs font-open-sans shadow-[0_8px_24px_rgba(191,243,103,0.15)] uppercase tracking-widest"
               >
                 PREVIEW MATCH
-              </button>
+              </Button>
             </div>
           </motion.div>
         )}
@@ -2116,9 +2117,9 @@ const HostGame = () => {
             className="space-y-10"
           >
             {/* Team Selection Tabs */}
-            <div className="flex p-1 bg-[#121212] border border-white/10 rounded-[16px] max-w-sm mx-auto mb-3">
+            <div className="flex p-1 bg-card border border-white/10 rounded-[16px] max-w-sm mx-auto mb-3">
               {["teamA", "teamB"].map((tab) => (
-                <button
+                <Button
                   key={tab}
                   onClick={() => setActiveTeamTab(tab)}
                   className={`flex-1 py-3 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-[16px] transition-all relative ${
@@ -2130,7 +2131,7 @@ const HostGame = () => {
                   {activeTeamTab === tab && (
                     <motion.div
                       layoutId="activeTeamTabIndicator"
-                      className="absolute inset-0 bg-gradient-to-r from-[#55DEE8] to-[#BFF367] rounded-[16px]"
+                      className="absolute inset-0 bg-gradient-to-r from-secondary to-primary rounded-[16px]"
                       transition={{
                         type: "spring",
                         bounce: 0.2,
@@ -2141,11 +2142,11 @@ const HostGame = () => {
                   <span className="relative z-10">
                     {tab === "teamA" ? "Team A" : "Team B"}
                   </span>
-                </button>
+                </Button>
               ))}
             </div>
 
-            <div className="bg-[#121212] border border-white/10 rounded-[16px] p-4 sm:p-6 overflow-hidden">
+            <div className="bg-card border border-white/10 rounded-[16px] p-4 sm:p-6 overflow-hidden">
               <AnimatePresence mode="wait">
                 {[activeTeamTab].map((teamKey) => (
                   <motion.div
@@ -2178,7 +2179,7 @@ const HostGame = () => {
                           <label className="text-[10px] font-black text-white/70 uppercase tracking-widest block mb-1">
                             Team Name
                           </label>
-                          <input
+                          <Input
                             className="bg-transparent text-2xl font-black border-none outline-none focus:ring-0 w-full p-0 tracking-tight"
                             placeholder={
                               teamKey === "teamA"
@@ -2198,16 +2199,16 @@ const HostGame = () => {
                           />
                         </div>
                       </div>
-                      <button
+                      <Button
                         onClick={() => {
                           setFillingTeamKey(teamKey);
                           setShowTeamFillModal(true);
                         }}
-                        className="px-4 h-[40px] bg-gradient-to-r from-[#55DEE8] to-[#BFF367] rounded-[16px] text-[#000000] font-bold uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-lg"
+                        className="px-4 h-[40px] bg-gradient-to-r from-secondary to-primary rounded-[16px] text-background font-bold uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-lg"
                         title="Add Team"
                       >
                         Add Team
-                      </button>
+                      </Button>
                     </div>
 
                     {/* Team Image Upload */}
@@ -2220,7 +2221,7 @@ const HostGame = () => {
                       <div className="flex items-center gap-3">
                         {/* Preview */}
                         <div
-                          className="relative w-28 h-18 shrink-0 rounded-[16px] overflow-hidden border border-white/10 bg-[#121212]"
+                          className="relative w-28 h-18 shrink-0 rounded-[16px] overflow-hidden border border-white/10 bg-card"
                           style={{ height: "70px" }}
                         >
                           <img
@@ -2234,15 +2235,15 @@ const HostGame = () => {
                         {/* Upload button */}
                         <label
                           htmlFor={`img-upload-${teamKey}`}
-                          className="flex-1 flex flex-col items-center justify-center gap-2 p-4 border-2 border-dashed border-[#BFF367]/30 rounded-[16px] cursor-pointer hover:border-[#BFF367]/60 hover:bg-[#BFF367]/5 transition-all group"
+                          className="flex-1 flex flex-col items-center justify-center gap-2 p-4 border-2 border-dashed border-primary/30 rounded-[16px] cursor-pointer hover:border-primary/60 hover:bg-primary/5 transition-all group"
                         >
-                          <div className="w-5 h-5 rounded-full bg-[#BFF367]/10 border border-[#BFF367]/20 flex items-center justify-center group-hover:bg-[#BFF367]/20 transition-all">
+                          <div className="w-5 h-5 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-all">
                             <ImageIcon
                               size={16}
-                              className="text-[#BFF367] group-hover:text-[#BFF367] transition-colors"
+                              className="text-primary group-hover:text-primary transition-colors"
                             />
                           </div>
-                          <span className="text-[10px] font-bold bg-gradient-to-r from-[#55DEE8] to-[#BFF367] bg-clip-text text-transparent uppercase tracking-widest">
+                          <span className="text-[10px] font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent uppercase tracking-widest">
                             {gameData[teamKey].imageName
                               ? "Change Photo"
                               : "Upload Photo"}
@@ -2252,7 +2253,7 @@ const HostGame = () => {
                               {gameData[teamKey].imageName}
                             </span>
                           )}
-                          <input
+                          <Input
                             id={`img-upload-${teamKey}`}
                             type="file"
                             accept="image/*"
@@ -2269,7 +2270,7 @@ const HostGame = () => {
                         </p>
                         <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
                           {MOCK_TEAM_IMAGES.map((img) => (
-                            <button
+                            <Button
                               key={img.url}
                               onClick={() =>
                                 setGameData((prev) => ({
@@ -2281,7 +2282,7 @@ const HostGame = () => {
                                   },
                                 }))
                               }
-                              className={`relative rounded-[16px] overflow-hidden border-2 transition-all shrink-0 w-20 aspect-video ${gameData[teamKey].image === img.url ? "border-[#CCFF00] shadow-[0_0_10px_rgba(204,255,0,0.3)]" : "border-transparent hover:border-white/20"}`}
+                              className={`relative rounded-[16px] overflow-hidden border-2 transition-all shrink-0 w-20 aspect-video ${gameData[teamKey].image === img.url ? "border-primary shadow-[0_0_10px_rgba(204,255,0,0.3)]" : "border-transparent hover:border-white/20"}`}
                             >
                               <img
                                 src={img.url}
@@ -2289,17 +2290,17 @@ const HostGame = () => {
                                 className="w-full h-full object-cover"
                               />
                               {gameData[teamKey].image === img.url && (
-                                <div className="absolute inset-0 bg-[#CCFF00]/20 flex items-center justify-center">
+                                <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
                                   <CheckCircle2
                                     size={14}
-                                    className="text-[#CCFF00]"
+                                    className="text-primary"
                                   />
                                 </div>
                               )}
                               <p className="absolute bottom-0 left-0 right-0 bg-black/70 text-[6px] font-black text-white text-center py-0.5 uppercase">
                                 {img.label}
                               </p>
-                            </button>
+                            </Button>
                           ))}
                         </div>
                       </div>
@@ -2313,9 +2314,9 @@ const HostGame = () => {
                           className="flex items-center gap-3 group"
                         >
                           <div
-                            className={`flex-1 flex items-center gap-3 bg-[#121212] border ${slot.userId || slot.customPlayer ? "border-[#CCFF00]/50 bg-[#CCFF00]/5" : "border-white/10"} p-4 rounded-[16px] group-hover:border-[#CCFF00]/30 transition-all`}
+                            className={`flex-1 flex items-center gap-3 bg-card border ${slot.userId || slot.customPlayer ? "border-primary/50 bg-primary/5" : "border-white/10"} p-4 rounded-[16px] group-hover:border-primary/30 transition-all`}
                           >
-                            <input
+                            <Input
                               className="bg-transparent text-xs font-black uppercase tracking-widest outline-none w-full"
                               value={slot.role}
                               onChange={(e) =>
@@ -2329,17 +2330,17 @@ const HostGame = () => {
                                     slot.customPlayer?.name ||
                                     slot.customPlayer?.email}
                                 </span>
-                                <span className="text-[9px] font-black text-black uppercase tracking-tighter bg-[#CCFF00] px-2 py-1 rounded shrink-0">
+                                <span className="text-[9px] font-black text-black uppercase tracking-tighter bg-primary px-2 py-1 rounded shrink-0">
                                   FILLED
                                 </span>
                               </div>
                             ) : (
-                              <span className="text-[9px] font-black text-neutral-600 uppercase tracking-tighter bg-[#1B1B1B] px-2 py-1 rounded shrink-0">
+                              <span className="text-[9px] font-black text-neutral-600 uppercase tracking-tighter bg-card px-2 py-1 rounded shrink-0">
                                 OPEN
                               </span>
                             )}
                           </div>
-                          <button
+                          <Button
                             onClick={() => {
                               if (slot.userId || slot.customPlayer) {
                                 const newSlots = [...gameData[teamKey].slots];
@@ -2358,38 +2359,38 @@ const HostGame = () => {
                                 removeSlot(teamKey, idx);
                               }
                             }}
-                            className="p-3 text-neutral-600 hover:text-red-500 transition-colors bg-[#121212] rounded-[16px] border border-white/10 shrink-0"
+                            className="p-3 text-neutral-600 hover:text-red-500 transition-colors bg-card rounded-[16px] border border-white/10 shrink-0"
                           >
                             <Trash2 size={16} />
-                          </button>
+                          </Button>
                         </div>
                       ))}
                     </div>
 
-                    <button
+                    <Button
                       onClick={() => addSlot(teamKey)}
-                      className="w-full py-4 border-2 border-dashed border-white/10 rounded-[16px] text-white/70 text-xs font-black uppercase tracking-widest hover:border-[#CCFF00]/30 hover:text-[#CCFF00] transition-all flex items-center justify-center gap-2 bg-[#121212]/30"
+                      className="w-full py-4 border-2 border-dashed border-white/10 rounded-[16px] text-white/70 text-xs font-black uppercase tracking-widest hover:border-primary/30 hover:text-primary transition-all flex items-center justify-center gap-2 bg-card/30"
                     >
                       <Plus size={16} /> Add More Slots
-                    </button>
+                    </Button>
                   </motion.div>
                 ))}
               </AnimatePresence>
             </div>
 
             <div className="flex gap-3">
-              <button
+              <Button
                 onClick={() => setStep(3)}
-                className="flex-1 h-[40px] flex items-center justify-center bg-[#121212] text-white/70 font-bold rounded-[16px] border border-white/10 hover:border-white/20 transition-all text-xs font-open-sans uppercase tracking-wider"
+                className="flex-1 h-[40px] flex items-center justify-center bg-card text-white/70 font-bold rounded-[16px] border border-white/10 hover:border-white/20 transition-all text-xs font-open-sans uppercase tracking-wider"
               >
                 Back
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setStep(5)}
-                className="flex-[2] h-[40px] bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] font-bold rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all text-xs shadow-[0_8px_24px_rgba(191,243,103,0.15)] font-open-sans uppercase tracking-wider"
+                className="flex-[2] h-[40px] bg-gradient-to-r from-secondary to-primary text-background font-bold rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all text-xs shadow-[0_8px_24px_rgba(191,243,103,0.15)] font-open-sans uppercase tracking-wider"
               >
                 PREVIEW MATCH
-              </button>
+              </Button>
             </div>
           </motion.div>
         )}
@@ -2403,7 +2404,7 @@ const HostGame = () => {
           >
             {/* Header Section */}
             <div className="text-center space-y-3 pb-6 border-b border-white/10">
-              <span className="bg-[#BFF367]/10 text-[#BFF367] text-[10px] font-black px-3 py-1 rounded-[4px] uppercase tracking-widest font-inter inline-block border border-[#BFF367]/20">
+              <span className="bg-primary/10 text-primary text-[10px] font-black px-3 py-1 rounded-[4px] uppercase tracking-widest font-inter inline-block border border-primary/20">
                 {gameData.gameMode === "QUICK"
                   ? "Quick Game"
                   : "Professional Match"}
@@ -2413,19 +2414,19 @@ const HostGame = () => {
               </h2>
               <div className="flex justify-center items-center gap-3 text-white/70 font-bold text-[11px] uppercase tracking-widest font-inter">
                 <span className="flex items-center gap-1.5">
-                  <Calendar size={14} className="text-[#BFF367]" />{" "}
+                  <Calendar size={14} className="text-primary" />{" "}
                   {gameData.date}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Clock size={14} className="text-[#BFF367]" /> {gameData.time}
+                  <Clock size={14} className="text-primary" /> {gameData.time}
                 </span>
               </div>
             </div>
 
             {/* Venue Details */}
-            <div className="bg-[#121212] border border-white/10 p-3 sm:p-4 rounded-[16px] flex items-center gap-3">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#1B1B1B]/80 rounded-[16px] flex items-center justify-center shrink-0 border border-white/10/50">
-                <MapPin className="text-[#BFF367] w-5 h-5" />
+            <div className="bg-card border border-white/10 p-3 sm:p-4 rounded-[16px] flex items-center gap-3">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-card/80 rounded-[16px] flex items-center justify-center shrink-0 border border-white/10/50">
+                <MapPin className="text-primary w-5 h-5" />
               </div>
               <div className="min-w-0 w-full text-left flex-1">
                 <p className="text-[10px] text-white/70 uppercase font-black tracking-widest mb-1 font-inter">
@@ -2442,7 +2443,7 @@ const HostGame = () => {
 
             {/* Match Setup Details */}
             {gameData.gameMode === "QUICK" ? (
-              <div className="p-5 bg-[#121212] border border-white/10 rounded-[16px] flex items-center justify-between">
+              <div className="p-5 bg-card border border-white/10 rounded-[16px] flex items-center justify-between">
                 <div className="text-left">
                   <p className="text-[10px] text-white/70 uppercase font-black tracking-widest mb-1 font-inter">
                     Player Slots
@@ -2457,22 +2458,22 @@ const HostGame = () => {
                   }).map((_, i) => (
                     <div
                       key={i}
-                      className="w-5 h-5 rounded-full border-2 border-neutral-900 bg-[#1B1B1B] flex items-center justify-center text-[#BFF367]"
+                      className="w-5 h-5 rounded-full border-2 border-neutral-900 bg-card flex items-center justify-center text-primary"
                     >
                       <Users size={14} />
                     </div>
                   ))}
                   {gameData.quickPlayerCount > 5 && (
-                    <div className="w-5 h-5 rounded-full border-2 border-neutral-900 bg-[#BFF367] text-black flex items-center justify-center text-[10px] font-black font-inter">
+                    <div className="w-5 h-5 rounded-full border-2 border-neutral-900 bg-primary text-black flex items-center justify-center text-[10px] font-black font-inter">
                       +{gameData.quickPlayerCount - 5}
                     </div>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center p-6 bg-[#121212] border border-white/10 rounded-[16px] gap-8">
+              <div className="flex items-center justify-center p-6 bg-card border border-white/10 rounded-[16px] gap-8">
                 <div className="flex flex-col items-center gap-2">
-                  <div className="w-16 h-16 rounded-[16px] bg-[#1B1B1B] overflow-hidden border border-white/10/50 shadow-lg">
+                  <div className="w-16 h-16 rounded-[16px] bg-card overflow-hidden border border-white/10/50 shadow-lg">
                     <img
                       src={
                         gameData.teamA.image ||
@@ -2487,12 +2488,12 @@ const HostGame = () => {
                   </span>
                 </div>
 
-                <div className="px-4 py-2 bg-[#121212] rounded-[4px] border border-white/10 text-xs font-black text-white/70 uppercase tracking-widest italic font-inter">
+                <div className="px-4 py-2 bg-card rounded-[4px] border border-white/10 text-xs font-black text-white/70 uppercase tracking-widest italic font-inter">
                   VS
                 </div>
 
                 <div className="flex flex-col items-center gap-2">
-                  <div className="w-16 h-16 rounded-[16px] bg-[#1B1B1B] overflow-hidden border border-white/10/50 shadow-lg">
+                  <div className="w-16 h-16 rounded-[16px] bg-card overflow-hidden border border-white/10/50 shadow-lg">
                     <img
                       src={
                         gameData.teamB.image ||
@@ -2511,7 +2512,7 @@ const HostGame = () => {
 
             {/* Entry Fee */}
             {gameData.perPlayerCharge > 0 && (
-              <div className="bg-[#121212] border border-white/10 p-3 sm:p-4 rounded-[16px] flex items-center justify-between">
+              <div className="bg-card border border-white/10 p-3 sm:p-4 rounded-[16px] flex items-center justify-between">
                 <div className="text-left">
                   <p className="text-[10px] text-white/70 uppercase font-black tracking-widest mb-1 font-inter">
                     Entry Charge
@@ -2530,9 +2531,9 @@ const HostGame = () => {
             )}
 
             {/* Billing Summary & Coupon */}
-            <div className="bg-[#121212] border border-white/10 rounded-[16px] overflow-hidden">
-              <div className="p-3 border-b border-white/10/50 flex items-center gap-3 bg-[#1B1B1B]/20">
-                <Receipt className="text-[#BFF367] w-5 h-5" />
+            <div className="bg-card border border-white/10 rounded-[16px] overflow-hidden">
+              <div className="p-3 border-b border-white/10/50 flex items-center gap-3 bg-card/20">
+                <Receipt className="text-primary w-5 h-5" />
                 <h3 className="text-sm font-black uppercase tracking-widest text-white font-open-sans">
                   Checkout Summary
                 </h3>
@@ -2547,7 +2548,7 @@ const HostGame = () => {
                     </span>
                   </div>
                   {discountAmount > 0 && (
-                    <div className="flex justify-between items-center text-[#BFF367]">
+                    <div className="flex justify-between items-center text-primary">
                       <span>Discount Applied</span>
                       <span className="font-bold">-{discountAmount} coins</span>
                     </div>
@@ -2563,7 +2564,7 @@ const HostGame = () => {
                 {/* Coupon Input */}
                 <div className="pt-4 border-t border-white/10/50">
                   <div className="flex gap-2">
-                    <input
+                    <Input
                       type="text"
                       placeholder="Enter Coupon Code"
                       value={couponCode}
@@ -2571,18 +2572,18 @@ const HostGame = () => {
                         setCouponCode(e.target.value.toUpperCase())
                       }
                       disabled={!!couponData}
-                      className="flex-1 bg-black border border-white/10 rounded-[16px] px-4 py-3 text-sm text-white font-bold outline-none focus:border-[#55DEE8] uppercase tracking-wider disabled:opacity-50 transition-colors"
+                      className="flex-1 bg-black border border-white/10 rounded-[16px] px-4 py-3 text-sm text-white font-bold outline-none focus:border-secondary uppercase tracking-wider disabled:opacity-50 transition-colors"
                     />
                     {!couponData ? (
-                      <button
+                      <Button
                         onClick={handleValidateCoupon}
                         disabled={applyingCoupon || !couponCode}
-                        className="px-6 py-3 bg-[#1B1B1B] text-white font-black rounded-[16px] text-[11px] uppercase tracking-widest hover:bg-neutral-700 disabled:opacity-50 transition-all font-inter"
+                        className="px-6 py-3 bg-card text-white font-black rounded-[16px] text-[11px] uppercase tracking-widest hover:bg-neutral-700 disabled:opacity-50 transition-all font-inter"
                       >
                         {applyingCoupon ? "..." : "Apply"}
-                      </button>
+                      </Button>
                     ) : (
-                      <button
+                      <Button
                         onClick={() => {
                           setCouponData(null);
                           setCouponCode("");
@@ -2591,7 +2592,7 @@ const HostGame = () => {
                         className="px-6 py-3 bg-red-500/10 text-red-500 border border-red-500/20 font-black rounded-[16px] text-[11px] uppercase tracking-widest hover:bg-red-500/20 transition-all font-inter"
                       >
                         Remove
-                      </button>
+                      </Button>
                     )}
                   </div>
                   {couponError && (
@@ -2600,7 +2601,7 @@ const HostGame = () => {
                     </p>
                   )}
                   {couponData && (
-                    <p className="text-[#BFF367] text-[10px] uppercase font-black tracking-widest mt-2">
+                    <p className="text-primary text-[10px] uppercase font-black tracking-widest mt-2">
                       Coupon applied successfully!
                     </p>
                   )}
@@ -2608,7 +2609,7 @@ const HostGame = () => {
               </div>
 
               {/* Total Box */}
-              <div className="bg-[#BFF367] p-3 flex justify-between items-center">
+              <div className="bg-primary p-3 flex justify-between items-center">
                 <div>
                   <p className="text-[10px] text-black/70 font-black uppercase tracking-widest font-inter mb-0.5">
                     Total Amount
@@ -2628,18 +2629,18 @@ const HostGame = () => {
 
             {/* Action Buttons */}
             <div className="flex gap-3 pt-2">
-              <button
+              <Button
                 onClick={() => setStep(gameData.gameMode === "QUICK" ? 4.5 : 4)}
-                className="flex-[0.8] h-[40px] bg-[#121212] text-white/70 font-black rounded-[16px] border border-white/10 hover:border-white/10 hover:text-white transition-all text-[11px] uppercase tracking-widest font-open-sans flex items-center justify-center"
+                className="flex-[0.8] h-[40px] bg-card text-white/70 font-black rounded-[16px] border border-white/10 hover:border-white/10 hover:text-white transition-all text-[11px] uppercase tracking-widest font-open-sans flex items-center justify-center"
               >
                 Back
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setShowConfirm(true)}
-                className="flex-[2] h-[40px] bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] font-bold rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all text-xs sm:text-xs font-open-sans uppercase tracking-widest shadow-[0_8px_24px_rgba(191,243,103,0.15)] flex justify-center items-center gap-3"
+                className="flex-[2] h-[40px] bg-gradient-to-r from-secondary to-primary text-background font-bold rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all text-xs sm:text-xs font-open-sans uppercase tracking-widest shadow-[0_8px_24px_rgba(191,243,103,0.15)] flex justify-center items-center gap-3"
               >
                 CONFIRM <ArrowRight size={20} />
-              </button>
+              </Button>
             </div>
           </motion.div>
         )}
@@ -2659,7 +2660,7 @@ const HostGame = () => {
               initial={{ scale: 0.9, y: 30 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 30 }}
-              className="relative bg-[#0a0a0a] border border-white/10 p-8 rounded-[16px] max-w-md w-full shadow-2xl overflow-hidden"
+              className="relative bg-background border border-white/10 p-8 rounded-[16px] max-w-md w-full shadow-2xl overflow-hidden"
             >
               <div className="absolute -top-24 -right-24 w-48 h-48 bg-yellow-500/10 blur-[100px] rounded-full" />
 
@@ -2683,10 +2684,10 @@ const HostGame = () => {
                     <div
                       key={team._id}
                       onClick={() => handleFillFromTeam(team)}
-                      className="p-4 bg-[#121212] border border-white/5 rounded-[16px] flex items-center justify-between group hover:border-yellow-500/50 transition-all cursor-pointer"
+                      className="p-4 bg-card border border-white/5 rounded-[16px] flex items-center justify-between group hover:border-yellow-500/50 transition-all cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-[16px] bg-[#1B1B1B] border border-white/5 overflow-hidden">
+                        <div className="w-12 h-12 rounded-[16px] bg-card border border-white/5 overflow-hidden">
                           <img
                             src={
                               team.logo ||
@@ -2697,7 +2698,7 @@ const HostGame = () => {
                           />
                         </div>
                         <div>
-                          <h4 className="font-bold text-xs group-hover:text-transparent bg-clip-text bg-gradient-to-r from-[#55DEE8] to-[#BFF367] transition-colors">
+                          <h4 className="font-bold text-xs group-hover:text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary transition-colors">
                             {team.name}
                           </h4>
                           <p className="text-[10px] text-white/70 font-black uppercase tracking-widest">
@@ -2705,13 +2706,13 @@ const HostGame = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="p-2 bg-gradient-to-r from-[#BFF367]/10 to-[#BFF367]/10 rounded-lg text-transparent bg-clip-text bg-gradient-to-r from-[#55DEE8] to-[#BFF367] group-hover:bg-gradient-to-r from-[#55DEE8] to-[#BFF367] group-hover:text-[#000000] transition-all">
+                      <div className="p-2 bg-gradient-to-r from-primary/10 to-primary/10 rounded-lg text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary group-hover:bg-gradient-to-r from-secondary to-primary group-hover:text-background transition-all">
                         <Plus size={16} />
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-12 space-y-4 bg-[#121212] rounded-[16px] border border-dashed border-white/10">
+                  <div className="text-center py-12 space-y-4 bg-card rounded-[16px] border border-dashed border-white/10">
                     <ShieldAlert
                       className="mx-auto text-neutral-700"
                       size={48}
@@ -2733,12 +2734,12 @@ const HostGame = () => {
                   Note: This will fill empty slots with team members. Host slot
                   will not be overwritten.
                 </p>
-                <button
+                <Button
                   onClick={() => setShowTeamFillModal(false)}
-                  className="w-full py-4 bg-[#1B1B1B] rounded-[16px] font-black text-[11px] uppercase tracking-widest text-white/70 hover:bg-neutral-700 transition-all"
+                  className="w-full py-4 bg-card rounded-[16px] font-black text-[11px] uppercase tracking-widest text-white/70 hover:bg-neutral-700 transition-all"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </motion.div>
           </div>
@@ -2769,9 +2770,9 @@ const HostGame = () => {
               initial={{ scale: 0.9, y: 30 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 30 }}
-              className="relative bg-[#0a0a0a] border border-white/10 p-8 rounded-[16px] max-w-md w-full shadow-2xl overflow-hidden"
+              className="relative bg-background border border-white/10 p-8 rounded-[16px] max-w-md w-full shadow-2xl overflow-hidden"
             >
-              <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-r from-[#BFF367]/10 to-[#BFF367]/10 blur-[100px] rounded-full" />
+              <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-r from-primary/10 to-primary/10 blur-[100px] rounded-full" />
 
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-yellow-500/10 rounded-[16px] flex items-center justify-center">
@@ -2792,7 +2793,7 @@ const HostGame = () => {
                   <label className="text-[10px] font-black text-white/70 uppercase tracking-widest ml-1">
                     Full Name
                   </label>
-                  <input
+                  <Input
                     type="text"
                     placeholder="Enter umpire name"
                     value={customUmpireData.name}
@@ -2802,7 +2803,7 @@ const HostGame = () => {
                         name: e.target.value,
                       })
                     }
-                    className="w-full bg-[#121212] border-2 border-white/10 rounded-[16px] py-4 px-6 text-sm text-white focus:border-yellow-500 outline-none transition-all font-bold"
+                    className="w-full bg-card border-2 border-white/10 rounded-[16px] py-4 px-6 text-sm text-white focus:border-yellow-500 outline-none transition-all font-bold"
                   />
                 </div>
 
@@ -2810,7 +2811,7 @@ const HostGame = () => {
                   <label className="text-[10px] font-black text-white/70 uppercase tracking-widest ml-1">
                     Email Address
                   </label>
-                  <input
+                  <Input
                     type="email"
                     placeholder="name@example.com"
                     value={customUmpireData.email}
@@ -2820,7 +2821,7 @@ const HostGame = () => {
                         email: e.target.value,
                       })
                     }
-                    className="w-full bg-[#121212] border-2 border-white/10 rounded-[16px] py-4 px-6 text-sm text-white focus:border-yellow-500 outline-none transition-all font-bold"
+                    className="w-full bg-card border-2 border-white/10 rounded-[16px] py-4 px-6 text-sm text-white focus:border-yellow-500 outline-none transition-all font-bold"
                   />
                 </div>
 
@@ -2828,7 +2829,7 @@ const HostGame = () => {
                   <label className="text-[10px] font-black text-white/70 uppercase tracking-widest ml-1">
                     Phone Number (Optional)
                   </label>
-                  <input
+                  <Input
                     type="tel"
                     placeholder="Enter phone number"
                     value={customUmpireData.phone}
@@ -2838,19 +2839,19 @@ const HostGame = () => {
                         phone: e.target.value,
                       })
                     }
-                    className="w-full bg-[#121212] border-2 border-white/10 rounded-[16px] py-4 px-6 text-sm text-white focus:border-yellow-500 outline-none transition-all font-bold"
+                    className="w-full bg-card border-2 border-white/10 rounded-[16px] py-4 px-6 text-sm text-white focus:border-yellow-500 outline-none transition-all font-bold"
                   />
                 </div>
               </div>
 
               <div className="flex gap-3 mt-10">
-                <button
+                <Button
                   onClick={() => setShowCustomUmpireModal(false)}
-                  className="flex-1 py-4 bg-[#1B1B1B] rounded-[16px] font-black text-[10px] uppercase tracking-widest text-white/70 hover:bg-neutral-700 transition-all"
+                  className="flex-1 py-4 bg-card rounded-[16px] font-black text-[10px] uppercase tracking-widest text-white/70 hover:bg-neutral-700 transition-all"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   disabled={!customUmpireData.name || !customUmpireData.email}
                   onClick={() => {
                     setSelectedUmpire(null);
@@ -2863,7 +2864,7 @@ const HostGame = () => {
                   className="flex-[2] py-4 bg-yellow-500 text-black font-black rounded-[16px] text-[10px] uppercase tracking-widest hover:bg-yellow-400 transition-all disabled:opacity-50 disabled:grayscale"
                 >
                   Confirm Umpire
-                </button>
+                </Button>
               </div>
             </motion.div>
           </div>
@@ -2899,21 +2900,21 @@ const HostGame = () => {
                 confirmed.
               </p>
               <div className="flex gap-3">
-                <button
+                <Button
                   onClick={() => setShowConfirm(false)}
-                  className="flex-1 py-4 bg-[#1B1B1B] rounded-[16px] font-black text-[11px] uppercase tracking-widest text-white/70"
+                  className="flex-1 py-4 bg-card rounded-[16px] font-black text-[11px] uppercase tracking-widest text-white/70"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => {
                     setShowConfirm(false);
                     handleCreateGame();
                   }}
-                  className="flex-1 h-[40px] bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] font-bold rounded-[16px] shadow-[0_8px_24px_rgba(191,243,103,0.15)] text-[11px] uppercase tracking-widest hover:scale-[1.02] transition-all"
+                  className="flex-1 h-[40px] bg-gradient-to-r from-secondary to-primary text-background font-bold rounded-[16px] shadow-[0_8px_24px_rgba(191,243,103,0.15)] text-[11px] uppercase tracking-widest hover:scale-[1.02] transition-all"
                 >
                   Confirm
-                </button>
+                </Button>
               </div>
             </motion.div>
           </div>
@@ -2934,10 +2935,10 @@ const HostGame = () => {
         <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center">
           <div className="flex flex-col items-center gap-3">
             <div className="relative w-20 h-20">
-              <div className="absolute inset-0 border-4 border-[#BFF367]/20 rounded-full" />
-              <div className="absolute inset-0 border-4 border-[#BFF367] border-t-transparent rounded-full animate-spin" />
+              <div className="absolute inset-0 border-4 border-primary/20 rounded-full" />
+              <div className="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin" />
             </div>
-            <p className="text-transparent bg-clip-text bg-gradient-to-r from-[#55DEE8] to-[#BFF367] font-bold uppercase tracking-[0.3em] text-xs">
+            <p className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary font-bold uppercase tracking-[0.3em] text-xs">
               Reserving Coins...
             </p>
           </div>

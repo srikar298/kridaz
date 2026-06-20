@@ -41,13 +41,6 @@ services:
       - key: PASSWORD
         sync: false
 
-      # ── Cloudinary (image uploads) ─────────────────────────────────────────
-      - key: CLOUDINARY_CLOUD_NAME
-        sync: false
-      - key: CLOUDINARY_API_KEY
-        sync: false
-      - key: CLOUDINARY_API_SECRET
-        sync: false
 
       # ── Cloudflare R2 (HLS video storage) ─────────────────────────────────
       - key: R2_ENDPOINT
@@ -159,13 +152,6 @@ services:
       - key: REELS_CDN_URL
         sync: false
 
-      # ── Cloudinary (thumbnail fallback) ───────────────────────────────────
-      - key: CLOUDINARY_CLOUD_NAME
-        sync: false
-      - key: CLOUDINARY_API_KEY
-        sync: false
-      - key: CLOUDINARY_API_SECRET
-        sync: false
 
       # ── Monitoring ────────────────────────────────────────────────────────
       - key: SENTRY_DSN

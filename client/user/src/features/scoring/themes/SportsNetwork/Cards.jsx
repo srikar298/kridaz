@@ -7,8 +7,8 @@ const SportsNetworkEndOfOverCard = ({ score }) => (
     style={{
       padding: "20px",
       width: "350px",
-      background: "#ffffff",
-      border: "4px solid #dc2626",
+      background: "var(--foreground)",
+      border: "4px solid var(--destructive)",
       borderRadius: "8px",
       color: "#000",
       fontFamily: "'Open Sans', sans-serif",
@@ -37,7 +37,7 @@ const SportsNetworkMilestoneCard = ({ data }) => (
       padding: "20px",
       width: "300px",
       textAlign: "center",
-      background: "#ffffff",
+      background: "var(--foreground)",
       border: "4px solid #1e3a8a",
       borderRadius: "8px",
       color: "#000",
@@ -56,7 +56,7 @@ const SportsNetworkMilestoneCard = ({ data }) => (
       MILESTONE
     </h3>
     <div style={{ fontSize: "24px", fontWeight: "bold" }}>{data?.name}</div>
-    <div style={{ fontSize: "48px", fontWeight: 900, color: "#dc2626" }}>
+    <div style={{ fontSize: "48px", fontWeight: 900, color: "var(--destructive)" }}>
       {data?.runs || data?.wickets}
     </div>
   </div>
@@ -67,8 +67,8 @@ const SportsNetworkFallOfWicketCard = ({ data }) => (
     style={{
       padding: "20px",
       width: "350px",
-      background: "#ffffff",
-      border: "4px solid #dc2626",
+      background: "var(--foreground)",
+      border: "4px solid var(--destructive)",
       borderRadius: "8px",
       color: "#000",
       fontFamily: "'Open Sans', sans-serif",
@@ -78,7 +78,7 @@ const SportsNetworkFallOfWicketCard = ({ data }) => (
       style={{
         margin: "0 0 10px 0",
         fontSize: "18px",
-        color: "#dc2626",
+        color: "var(--destructive)",
         textTransform: "uppercase",
         fontWeight: 900,
       }}
@@ -99,7 +99,7 @@ const SportsNetworkPartnershipCard = ({ data }) => (
     style={{
       padding: "20px",
       width: "350px",
-      background: "#ffffff",
+      background: "var(--foreground)",
       border: "4px solid #1e3a8a",
       borderRadius: "8px",
       color: "#000",
@@ -125,7 +125,7 @@ const SportsNetworkNewBatterCard = ({ data }) => (
     style={{
       padding: "20px",
       width: "300px",
-      background: "#ffffff",
+      background: "var(--foreground)",
       border: "4px solid #1e3a8a",
       borderRadius: "8px",
       color: "#000",
@@ -151,8 +151,8 @@ const SportsNetworkBowlerChangeCard = ({ data }) => (
     style={{
       padding: "20px",
       width: "300px",
-      background: "#ffffff",
-      border: "4px solid #dc2626",
+      background: "var(--foreground)",
+      border: "4px solid var(--destructive)",
       borderRadius: "8px",
       color: "#000",
       fontFamily: "'Open Sans', sans-serif",
@@ -162,7 +162,7 @@ const SportsNetworkBowlerChangeCard = ({ data }) => (
       style={{
         margin: "0 0 10px 0",
         fontSize: "14px",
-        color: "#dc2626",
+        color: "var(--destructive)",
         textTransform: "uppercase",
       }}
     >
@@ -178,7 +178,7 @@ const SportsNetworkInningsBreakCard = ({ data }) => (
       padding: "30px",
       width: "400px",
       textAlign: "center",
-      background: "#ffffff",
+      background: "var(--foreground)",
       border: "6px solid #1e3a8a",
       borderRadius: "8px",
       color: "#000",
@@ -206,7 +206,7 @@ const SportsNetworkMatchResultCard = ({ data }) => (
       padding: "40px",
       width: "500px",
       textAlign: "center",
-      background: "#ffffff",
+      background: "var(--foreground)",
       border: "6px solid #1e3a8a",
       borderRadius: "8px",
       color: "#000",
@@ -215,7 +215,7 @@ const SportsNetworkMatchResultCard = ({ data }) => (
   >
     <h1
       style={{
-        color: "#dc2626",
+        color: "var(--destructive)",
         textTransform: "uppercase",
         margin: "0 0 20px 0",
       }}
@@ -233,7 +233,7 @@ const SportsNetworkWeatherCard = ({ data }) => (
     style={{
       padding: "20px",
       width: "300px",
-      background: "#ffffff",
+      background: "var(--foreground)",
       border: "4px solid #1e3a8a",
       borderRadius: "8px",
       color: "#000",
@@ -262,8 +262,8 @@ const SportsNetworkTimeoutCard = ({ data }) => (
       padding: "20px",
       width: "300px",
       textAlign: "center",
-      background: "#ffffff",
-      border: "4px solid #dc2626",
+      background: "var(--foreground)",
+      border: "4px solid var(--destructive)",
       borderRadius: "8px",
       color: "#000",
       fontFamily: "'Open Sans', sans-serif",
@@ -273,7 +273,7 @@ const SportsNetworkTimeoutCard = ({ data }) => (
       style={{
         margin: "0 0 10px 0",
         fontSize: "18px",
-        color: "#dc2626",
+        color: "var(--destructive)",
         textTransform: "uppercase",
         fontWeight: 900,
       }}
@@ -289,7 +289,7 @@ const SportsNetworkWormCard = ({ data }) => (
     style={{
       padding: "20px",
       width: "400px",
-      background: "#ffffff",
+      background: "var(--foreground)",
       border: "4px solid #1e3a8a",
       borderRadius: "8px",
       color: "#000",
@@ -327,7 +327,7 @@ const SportsNetworkWinProbCard = ({ data }) => (
     style={{
       padding: "20px",
       width: "350px",
-      background: "#ffffff",
+      background: "var(--foreground)",
       border: "4px solid #1e3a8a",
       borderRadius: "8px",
       color: "#000",

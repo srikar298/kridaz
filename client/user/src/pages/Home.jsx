@@ -28,7 +28,8 @@ import {
 import { useListGamesQuery } from "@redux/api/gamesApi";
 import { useGetProfessionalsListQuery } from "@redux/api/professionalApi";
 import { useGetUserBookingsQuery } from "@redux/api/userApi";
-import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";
+import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";import { Button } from "@kridaz/ui";
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -523,7 +524,7 @@ export default function Home() {
                               </div>
                             </div>
                             <div className="text-[10px] font-medium text-right leading-tight">
-                              <span className="text-[#BFF367]">
+                              <span className="text-primary">
                                 Overs: {match.overs || 0}
                               </span>
                               <br />
@@ -541,7 +542,7 @@ export default function Home() {
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <div
-                                  className={`w-6 h-6 rounded bg-[#111] border border-white/10 flex items-center justify-center shrink-0`}
+                                  className={`w-6 h-6 rounded bg-card border border-white/10 flex items-center justify-center shrink-0`}
                                 >
                                   {teamA.logo ? (
                                     <img
@@ -593,7 +594,7 @@ export default function Home() {
                                   {teamB.name || "Team B"}
                                 </span>
                               </div>
-                              <div className="text-[14px] font-black text-white font-mono tracking-tight shadow-[#BFF367]">
+                              <div className="text-[14px] font-black text-white font-mono tracking-tight shadow-[var(--primary)]">
                                 {teamB.score || "0"}{" "}
                                 <span className="text-[9px] font-medium text-white/60 ml-0.5">
                                   ({teamB.oversPlayed || "0.0"})
@@ -633,7 +634,7 @@ export default function Home() {
                 >
                   {loadingBookings ? (
                     <div className="w-full py-4 flex justify-center items-center">
-                      <div className="w-4 h-4 border-2 border-[#BFF367] border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
                     </div>
                   ) : (
                     upcomingBookingsList.map((booking) => {
@@ -692,7 +693,7 @@ export default function Home() {
                         <Link
                           key={booking._id || booking.id}
                           to={`/booking-pass/${booking.id || booking._id}`}
-                          className="min-w-[145px] w-[145px] flex flex-col rounded-xl border border-gray-600/60 bg-[#070708] overflow-hidden group shrink-0 shadow-sm transition-all hover:border-[#BFF367]/50"
+                          className="min-w-[145px] w-[145px] flex flex-col rounded-xl border border-gray-600/60 bg-[#070708] overflow-hidden group shrink-0 shadow-sm transition-all hover:border-primary/50"
                         >
                           <div className="relative w-full aspect-[4/5] overflow-hidden bg-white/5">
                             <img
@@ -716,12 +717,12 @@ export default function Home() {
                               <span className="text-[11px] font-black text-white leading-none">
                                 {dayStr}
                               </span>
-                              <span className="text-[7px] font-bold text-[#BFF367] leading-none mt-1 uppercase">
+                              <span className="text-[7px] font-bold text-primary leading-none mt-1 uppercase">
                                 {monthStr}
                               </span>
                             </div>
                             <div className="flex-1 min-w-0 flex flex-col justify-center">
-                              <h5 className="text-[10px] font-bold text-white leading-tight group-hover:text-[#BFF367] transition-colors line-clamp-2">
+                              <h5 className="text-[10px] font-bold text-white leading-tight group-hover:text-primary transition-colors line-clamp-2">
                                 {turfName}
                               </h5>
                               <p className="text-[8px] text-white/50 truncate mt-0.5 font-medium">
@@ -791,7 +792,7 @@ export default function Home() {
           <div className="!mt-4 px-2">
             <Link
               to="/business/venue"
-              className="relative block overflow-hidden rounded-2xl w-full aspect-video shadow-[0_4px_20px_rgba(0,0,0,0.5)] group border border-white/[0.05] hover:border-[#BFF367]/50 transition-all duration-300"
+              className="relative block overflow-hidden rounded-2xl w-full aspect-video shadow-[0_4px_20px_rgba(0,0,0,0.5)] group border border-white/[0.05] hover:border-primary/50 transition-all duration-300"
             >
               <div
                 className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
@@ -877,17 +878,17 @@ export default function Home() {
           {/* Header */}
           <div className="p-6 border-b border-white/5 flex items-center justify-between">
             <h2
-              className="text-lg font-bold uppercase tracking-widest text-[#BFF367]"
+              className="text-lg font-bold uppercase tracking-widest text-primary"
               style={HEADING_STYLE}
             >
               Filters
             </h2>
-            <button
+            <Button
               onClick={() => setIsFilterOpen(false)}
               className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-white/50 hover:text-white transition-colors"
             >
               <X size={18} />
-            </button>
+            </Button>
           </div>
 
           {/* Filter Content */}
@@ -901,18 +902,18 @@ export default function Home() {
                 {VENUE_TYPES.map((type) => {
                   const isSelected = selectedVenueTypes.includes(type);
                   return (
-                    <button
+                    <Button
                       key={type}
                       onClick={() => handleToggleVenueType(type)}
                       className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                         isSelected
-                          ? "bg-[#BFF367]/15 border border-[#BFF367] text-[#BFF367]"
+                          ? "bg-primary/15 border border-primary text-primary"
                           : "bg-white/5 border border-white/10 text-white/50 hover:border-white/20"
                       }`}
                     >
                       {isSelected && <Check size={10} strokeWidth={3} />}
                       {type}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -927,18 +928,18 @@ export default function Home() {
                 {ROLES.map((role) => {
                   const isSelected = selectedRoles.includes(role);
                   return (
-                    <button
+                    <Button
                       key={role}
                       onClick={() => handleToggleRole(role)}
                       className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                         isSelected
-                          ? "bg-[#BFF367]/15 border border-[#BFF367] text-[#BFF367]"
+                          ? "bg-primary/15 border border-primary text-primary"
                           : "bg-white/5 border border-white/10 text-white/50 hover:border-white/20"
                       }`}
                     >
                       {isSelected && <Check size={10} strokeWidth={3} />}
                       {role}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -953,18 +954,18 @@ export default function Home() {
                 {["JOINABLE GAMES ONLY", "LIVE GAMES"].map((type) => {
                   const isSelected = selectedJoinGames.includes(type);
                   return (
-                    <button
+                    <Button
                       key={type}
                       onClick={() => handleToggleJoinGame(type)}
                       className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                         isSelected
-                          ? "bg-[#BFF367]/15 border border-[#BFF367] text-[#BFF367]"
+                          ? "bg-primary/15 border border-primary text-primary"
                           : "bg-white/5 border border-white/10 text-white/50 hover:border-white/20"
                       }`}
                     >
                       {isSelected && <Check size={10} strokeWidth={3} />}
                       {type}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -979,18 +980,18 @@ export default function Home() {
                 {SPORTS.map((type) => {
                   const isSelected = selectedPlayers.includes(type);
                   return (
-                    <button
+                    <Button
                       key={type}
                       onClick={() => handleTogglePlayerFilter(type)}
                       className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                         isSelected
-                          ? "bg-[#BFF367]/15 border border-[#BFF367] text-[#BFF367]"
+                          ? "bg-primary/15 border border-primary text-primary"
                           : "bg-white/5 border border-white/10 text-white/50 hover:border-white/20"
                       }`}
                     >
                       {isSelected && <Check size={10} strokeWidth={3} />}
                       {type}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -998,8 +999,8 @@ export default function Home() {
           </div>
 
           {/* Footer Actions */}
-          <div className="p-6 border-t border-white/5 flex gap-3 bg-[#0A0A0A]">
-            <button
+          <div className="p-6 border-t border-white/5 flex gap-3 bg-background">
+            <Button
               onClick={() => {
                 setSelectedRoles([]);
                 setSelectedVenueTypes([]);
@@ -1009,13 +1010,13 @@ export default function Home() {
               className="flex-1 py-3 rounded-lg border border-white/10 text-xs font-bold text-white/70 hover:text-white hover:bg-white/5 transition-colors uppercase tracking-widest"
             >
               Reset
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setIsFilterOpen(false)}
-              className="flex-[2] py-3 rounded-lg bg-[#BFF367] text-black text-xs font-black uppercase tracking-widest hover:bg-[#BFF367]/90 transition-colors shadow-[0_0_15px_rgba(191,243,103,0.3)]"
+              className="flex-[2] py-3 rounded-lg bg-primary text-black text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(191,243,103,0.3)]"
             >
               Apply Filters
-            </button>
+            </Button>
           </div>
         </div>
       </div>

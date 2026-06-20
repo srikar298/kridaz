@@ -2,7 +2,7 @@ import { jest } from "@jest/globals";
 import request from "supertest";
 import app from "../app.js";
 import { prisma } from "../config/prisma.js";
-import cloudinary from "../utils/cloudinary.js";
+import * as r2Upload from "../utils/r2Upload.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -42,20 +42,12 @@ const getTestImageBuffer = () => {
 };
 
 describe("Review Module API Integration", () => {
-  let cloudinarySpy;
+  let r2Spy;
 
   beforeAll(async () => {
-    cloudinarySpy = jest
-      .spyOn(cloudinary.uploader, "upload_stream")
-      .mockImplementation((options, callback) => {
-        return {
-          end: () => {
-            callback(null, {
-              secure_url: "https://mock.cloudinary.com/image.jpg",
-            });
-          },
-        };
-      });
+    r2Spy = jest
+      .spyOn(r2Upload, "uploadToR2")
+      .mockResolvedValue("https://mock.r2.com/image.jpg");
 
     console.log("DB URL inside beforeAll:", process.env.DATABASE_URL);
     // 1. Cleanup old records if any exist

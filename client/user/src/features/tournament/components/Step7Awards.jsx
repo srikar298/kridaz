@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ArrowRight, ArrowLeft, Trophy, Medal, Star } from "lucide-react";
+import { ArrowRight, ArrowLeft, Trophy, Medal, Star } from "lucide-react";import { Button, Input } from "@kridaz/ui";
+
 
 const Step7Awards = ({ formData, onNext, onBack, isLoading }) => {
   const [localData, setLocalData] = useState({
@@ -46,9 +47,9 @@ const Step7Awards = ({ formData, onNext, onBack, isLoading }) => {
   };
 
   const renderAwardCheckbox = (key, label, icon) => (
-    <label className="flex items-center gap-3 p-4 bg-[#111] rounded-xl border border-white/5 cursor-pointer hover:border-[#FFD700]/50 transition-colors">
+    <label className="flex items-center gap-3 p-4 bg-card rounded-xl border border-white/5 cursor-pointer hover:border-[#FFD700]/50 transition-colors">
       <div className="relative flex items-center justify-center">
-        <input
+        <Input
           type="checkbox"
           checked={localData.details.individualAwards[key]}
           onChange={() => toggleAward(key)}
@@ -89,13 +90,13 @@ const Step7Awards = ({ formData, onNext, onBack, isLoading }) => {
             <label className="text-xs text-white/50 block mb-2">
               Total Prize Pool (â‚¹)
             </label>
-            <input
+            <Input
               type="number"
               name="prizePool"
               value={localData.prizePool}
               onChange={handleNumChange}
               placeholder="e.g. 100000"
-              className="w-full bg-[#111] border border-[#FFD700]/30 rounded-xl px-4 py-4 text-lg font-black text-[#FFD700] focus:outline-none focus:border-[#FFD700] transition-colors text-center"
+              className="w-full bg-card border border-[#FFD700]/30 rounded-xl px-4 py-4 text-lg font-black text-[#FFD700] focus:outline-none focus:border-[#FFD700] transition-colors text-center"
             />
           </div>
 
@@ -104,26 +105,26 @@ const Step7Awards = ({ formData, onNext, onBack, isLoading }) => {
               <label className="text-xs text-white/50 block mb-2">
                 Winner Prize
               </label>
-              <input
+              <Input
                 type="number"
                 name="winnerPrize"
                 value={localData.details.winnerPrize}
                 onChange={handleDetailsNumChange}
                 placeholder="â‚¹"
-                className="w-full bg-[#111] border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"
+                className="w-full bg-card border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"
               />
             </div>
             <div>
               <label className="text-xs text-white/50 block mb-2">
                 Runner Up Prize
               </label>
-              <input
+              <Input
                 type="number"
                 name="runnerUpPrize"
                 value={localData.details.runnerUpPrize}
                 onChange={handleDetailsNumChange}
                 placeholder="â‚¹"
-                className="w-full bg-[#111] border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"
+                className="w-full bg-card border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"
               />
             </div>
           </div>
@@ -132,7 +133,7 @@ const Step7Awards = ({ formData, onNext, onBack, isLoading }) => {
 
       <section className="space-y-4 pt-4 border-t border-white/5">
         <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
-          <Medal size={16} className="text-[#BFF367]" />
+          <Medal size={16} className="text-primary" />
           Individual Awards
         </h2>
 
@@ -140,12 +141,12 @@ const Step7Awards = ({ formData, onNext, onBack, isLoading }) => {
           {renderAwardCheckbox(
             "manOfTheSeries",
             "Player of the Tournament",
-            <Star size={16} className="text-[#BFF367]" />
+            <Star size={16} className="text-primary" />
           )}
           {renderAwardCheckbox(
             "bestBowler",
             "Best Bowler",
-            <Trophy size={16} className="text-[#55DEE8]" />
+            <Trophy size={16} className="text-secondary" />
           )}
           {renderAwardCheckbox(
             "bestBatsman",
@@ -156,23 +157,23 @@ const Step7Awards = ({ formData, onNext, onBack, isLoading }) => {
       </section>
 
       {/* Bottom Fixed Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#000] via-[#000]/90 to-transparent pt-12 pb-6 px-4 z-40">
+      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/90 to-transparent pt-12 pb-6 px-4 z-40">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <button
+          <Button
             onClick={onBack}
             className="flex items-center gap-2 text-white/70 hover:text-white px-4 py-2 font-bold text-xs uppercase tracking-wider transition-colors"
           >
             <ArrowLeft size={16} /> Back
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={submit}
             disabled={isLoading}
-            className="flex items-center gap-2 bg-[#BFF367] text-black font-black px-8 py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-xs"
+            className="flex items-center gap-2 bg-primary text-black font-black px-8 py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-xs"
           >
             {isLoading ? "Saving..." : "Continue"}
             <ArrowRight size={16} />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

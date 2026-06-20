@@ -4,7 +4,8 @@ import {
   useGetStandingsQuery,
   useManualScheduleMutation,
 } from "../../../../redux/api/tournamentApi";
-import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";import { Button, Input, Select } from "@kridaz/ui";
+
 
 const KnockoutSchedulerModal = ({ tournament, onClose }) => {
   const { data: standingsRes, isLoading: isLoadingStandings } =
@@ -90,10 +91,10 @@ const KnockoutSchedulerModal = ({ tournament, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-[#111] border border-white/10 rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col relative overflow-hidden">
-        <div className="p-6 border-b border-white/10 flex justify-between items-center bg-[#1a1a1a]">
+      <div className="bg-card border border-white/10 rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col relative overflow-hidden">
+        <div className="p-6 border-b border-white/10 flex justify-between items-center bg-card">
           <div>
-            <h3 className="text-lg font-black uppercase tracking-widest text-[#BFF367]">
+            <h3 className="text-lg font-black uppercase tracking-widest text-primary">
               Manual Knockout Scheduler
             </h3>
             <p className="text-xs text-white/50">
@@ -101,17 +102,17 @@ const KnockoutSchedulerModal = ({ tournament, onClose }) => {
               manually.
             </p>
           </div>
-          <button
+          <Button
             onClick={onClose}
             className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white/50 hover:text-white transition-colors"
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
           {/* Left Panel: Teams Bank (Standings) */}
-          <div className="w-full md:w-1/3 border-r border-white/10 bg-[#0a0a0a] overflow-y-auto p-4">
+          <div className="w-full md:w-1/3 border-r border-white/10 bg-background overflow-y-auto p-4">
             <h4 className="text-xs font-bold text-white/50 uppercase tracking-widest mb-4">
               Qualified Teams
             </h4>
@@ -121,10 +122,10 @@ const KnockoutSchedulerModal = ({ tournament, onClose }) => {
                   key={idx}
                   draggable
                   onDragStart={(e) => handleDragStart(e, team)}
-                  className="bg-[#111] border border-white/10 p-3 rounded-xl cursor-grab active:cursor-grabbing hover:border-[#55DEE8]/50 hover:bg-[#55DEE8]/5 transition-colors group"
+                  className="bg-card border border-white/10 p-3 rounded-xl cursor-grab active:cursor-grabbing hover:border-secondary/50 hover:bg-secondary/5 transition-colors group"
                 >
                   <div className="flex justify-between items-center">
-                    <span className="font-bold text-sm text-white group-hover:text-[#55DEE8] transition-colors">
+                    <span className="font-bold text-sm text-white group-hover:text-secondary transition-colors">
                       {team.teamName}
                     </span>
                     <span className="text-[10px] font-black bg-white/10 px-2 py-1 rounded text-white/70">
@@ -150,15 +151,15 @@ const KnockoutSchedulerModal = ({ tournament, onClose }) => {
                 <label className="text-[10px] font-bold text-white/50 uppercase tracking-widest block mb-2">
                   Stage
                 </label>
-                <select
+                <Select
                   value={stage}
                   onChange={(e) => setStage(e.target.value)}
-                  className="w-full bg-[#111] border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#BFF367]"
+                  className="w-full bg-card border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary"
                 >
                   <option value="QUARTER_FINAL">Quarter Final</option>
                   <option value="SEMI_FINAL">Semi Final</option>
                   <option value="FINAL">Final</option>
-                </select>
+                </Select>
               </div>
               <div>
                 <label className="text-[10px] font-bold text-white/50 uppercase tracking-widest block mb-2">
@@ -169,11 +170,11 @@ const KnockoutSchedulerModal = ({ tournament, onClose }) => {
                     size={14}
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30"
                   />
-                  <input
+                  <Input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full bg-[#111] border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:border-[#BFF367]"
+                    className="w-full bg-card border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
@@ -186,11 +187,11 @@ const KnockoutSchedulerModal = ({ tournament, onClose }) => {
                     size={14}
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30"
                   />
-                  <input
+                  <Input
                     type="time"
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
-                    className="w-full bg-[#111] border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:border-[#BFF367]"
+                    className="w-full bg-card border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
@@ -206,19 +207,19 @@ const KnockoutSchedulerModal = ({ tournament, onClose }) => {
                     onDragOver={handleDragOver}
                     className={`flex-1 h-32 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all ${
                       team1
-                        ? "border-[#BFF367] bg-[#BFF367]/5"
-                        : "border-white/20 bg-[#111] hover:border-[#BFF367]/50"
+                        ? "border-primary bg-primary/5"
+                        : "border-white/20 bg-card hover:border-primary/50"
                     }`}
                   >
                     {team1 ? (
                       <div className="text-center w-full relative group">
-                        <button
+                        <Button
                           onClick={() => setTeam1(null)}
                           className="absolute -top-6 -right-2 text-white/30 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <X size={16} />
-                        </button>
-                        <div className="w-12 h-12 rounded-full bg-[#BFF367]/20 text-[#BFF367] flex items-center justify-center font-black mx-auto mb-2 text-lg">
+                        </Button>
+                        <div className="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center font-black mx-auto mb-2 text-lg">
                           {team1.teamName.substring(0, 2).toUpperCase()}
                         </div>
                         <h4 className="font-bold text-sm truncate">
@@ -242,19 +243,19 @@ const KnockoutSchedulerModal = ({ tournament, onClose }) => {
                     onDragOver={handleDragOver}
                     className={`flex-1 h-32 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all ${
                       team2
-                        ? "border-[#55DEE8] bg-[#55DEE8]/5"
-                        : "border-white/20 bg-[#111] hover:border-[#55DEE8]/50"
+                        ? "border-secondary bg-secondary/5"
+                        : "border-white/20 bg-card hover:border-secondary/50"
                     }`}
                   >
                     {team2 ? (
                       <div className="text-center w-full relative group">
-                        <button
+                        <Button
                           onClick={() => setTeam2(null)}
                           className="absolute -top-6 -right-2 text-white/30 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <X size={16} />
-                        </button>
-                        <div className="w-12 h-12 rounded-full bg-[#55DEE8]/20 text-[#55DEE8] flex items-center justify-center font-black mx-auto mb-2 text-lg">
+                        </Button>
+                        <div className="w-12 h-12 rounded-full bg-secondary/20 text-secondary flex items-center justify-center font-black mx-auto mb-2 text-lg">
                           {team2.teamName.substring(0, 2).toUpperCase()}
                         </div>
                         <h4 className="font-bold text-sm truncate">
@@ -273,19 +274,19 @@ const KnockoutSchedulerModal = ({ tournament, onClose }) => {
 
             {/* Actions */}
             <div className="mt-auto border-t border-white/5 pt-6 flex justify-end gap-3">
-              <button
+              <Button
                 onClick={onClose}
                 className="px-6 py-3 rounded-full text-xs font-bold text-white/70 hover:text-white hover:bg-white/5 transition-colors"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleSaveMatch}
                 disabled={isScheduling || !team1 || !team2}
-                className="bg-[#BFF367] text-black font-black px-8 py-3 rounded-full text-xs uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors"
+                className="bg-primary text-black font-black px-8 py-3 rounded-full text-xs uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors"
               >
                 {isScheduling ? "Saving..." : "Save Match"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

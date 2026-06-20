@@ -16,13 +16,14 @@ import Dock from "../shared/components/ui/Dock";
 import ComparisonTable from "../shared/components/ui/ComparisonTable";
 import Masonry from "@components/ui/Masonry";
 import MobileMasonrySlider from "@components/ui/MobileMasonrySlider";
-import TestimonialMarquee from "./HomeSections/TestimonialMarquee";
+import TestimonialMarquee from "./HomeSections/TestimonialMarquee";import { Button } from "@kridaz/ui";
+
 
 // Menu items for CardNav
 const cardNavItems = [
   {
     label: "Play",
-    bgColor: "#0A0A0A",
+    bgColor: "var(--background)",
     textColor: "#fff",
     links: [
       { label: "Venues", href: "/venues", ariaLabel: "Browse Venues" },
@@ -33,7 +34,7 @@ const cardNavItems = [
   },
   {
     label: "Manage",
-    bgColor: "#0A0A0A",
+    bgColor: "var(--background)",
     textColor: "#fff",
     links: [
       {
@@ -50,7 +51,7 @@ const cardNavItems = [
   },
   {
     label: "Support",
-    bgColor: "#0A0A0A",
+    bgColor: "var(--background)",
     textColor: "#fff",
     links: [
       { label: "Help and FAQs", href: "/faq", ariaLabel: "Help and FAQs" },
@@ -148,7 +149,7 @@ export default function LandingPage() {
     >
       <div className="mb-8">
         <h2 className="text-4xl font-black tracking-tight leading-[1.05] font-poppins font-medium normal-case text-white">
-          The <span className="text-[#BFF367]">Ecosystem</span> in Action
+          The <span className="text-primary">Ecosystem</span> in Action
         </h2>
       </div>
       <div className="hidden md:block w-full">
@@ -223,7 +224,7 @@ export default function LandingPage() {
     <div className="h-[100dvh] w-full bg-[#050505] text-white font-sans overflow-hidden relative">
       {/* Background Ambient Glows */}
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(191,243,103,0.05),rgba(255,255,255,0))] pointer-events-none z-0" />
-      <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-[#BFF367]/5 blur-[120px] rounded-full pointer-events-none z-0" />
+      <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-primary/5 blur-[120px] rounded-full pointer-events-none z-0" />
 
       {/* MIDDLE SECTION (Single Item Sliding Carousel) - FULL SCREEN */}
       <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
@@ -242,24 +243,24 @@ export default function LandingPage() {
 
         {/* Carousel Navigation Arrows */}
         <div className="absolute top-1/2 -translate-y-1/2 right-4 sm:right-8 flex flex-col items-center gap-3 z-30">
-          <button
+          <Button
             onClick={prevSlide}
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
-            className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-black hover:bg-[#BFF367] hover:border-[#BFF367] transition-all shadow-lg"
+            className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-black hover:bg-primary hover:border-primary transition-all shadow-lg"
             aria-label="Previous Slide"
           >
             <ChevronLeft size={20} strokeWidth={2.5} />
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={nextSlide}
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
-            className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-black hover:bg-[#BFF367] hover:border-[#BFF367] transition-all shadow-lg"
+            className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-black hover:bg-primary hover:border-primary transition-all shadow-lg"
             aria-label="Next Slide"
           >
             <ChevronRight size={20} strokeWidth={2.5} />
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -273,7 +274,7 @@ export default function LandingPage() {
           headerExtra={
             <Link
               to="/business/venue"
-              className="flex items-center gap-2 text-white/90 hover:text-[#BFF367] transition-colors text-sm md:text-base font-bold tracking-wide"
+              className="flex items-center gap-2 text-white/90 hover:text-primary transition-colors text-sm md:text-base font-bold tracking-wide"
             >
               List your sports venue
             </Link>
@@ -282,13 +283,13 @@ export default function LandingPage() {
       </div>
 
       {/* Side Box Icon Toggle */}
-      <button
+      <Button
         onClick={() => setIsBottomNavOpen(!isBottomNavOpen)}
-        className="absolute bottom-6 left-6 md:left-12 z-50 fluid-glass w-12 h-[43px] rounded-[8px] flex items-center justify-center text-white/70 hover:text-white hover:border-[#BFF367]/50 hover:shadow-[0_0_15px_rgba(191,243,103,0.3)] transition-all cursor-pointer"
+        className="absolute bottom-6 left-6 md:left-12 z-50 fluid-glass w-12 h-[43px] rounded-[8px] flex items-center justify-center text-white/70 hover:text-white hover:border-primary/50 hover:shadow-[0_0_15px_rgba(191,243,103,0.3)] transition-all cursor-pointer"
         aria-label="Toggle Bottom Navigation"
       >
         {isBottomNavOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
+      </Button>
 
       {/* FOOTER (Floating Bottom Strip) */}
       <div

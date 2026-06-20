@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from "framer-motion";import { Button, Input } from "@kridaz/ui";
+
 import {
   Lock,
   Shield,
@@ -182,12 +183,12 @@ const TossModal = ({ teamA, teamB, hasPassword, onConfirm, onCancel }) => {
               )}
 
               {step === "FLIP_IDLE" && (
-                <button
+                <Button
                   onClick={onCancel}
                   className="w-full py-4 rounded-lg border border-[#3e4a3e] bg-white/5 hover:bg-white/10 transition-all active:scale-95 font-bold text-[12px] uppercase tracking-[0.15em] text-[#bdcaba]"
                 >
                   Back
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -217,10 +218,10 @@ const TossModal = ({ teamA, teamB, hasPassword, onConfirm, onCancel }) => {
                   const isTeamA = index === 0;
 
                   return (
-                    <button
+                    <Button
                       key={team.id}
                       onClick={() => setWinnerTeam(team.id)}
-                      className={`group relative flex flex-col items-center justify-center p-4 bg-[#1c1b1b] border rounded-xl transition-all active:scale-[0.98] text-center overflow-hidden ${isSelected ? "border-[#7bf090] bg-[#222222]" : "border-[#3e4a3e]"}`}
+                      className={`group relative flex flex-col items-center justify-center p-4 bg-[#1c1b1b] border rounded-xl transition-all active:scale-[0.98] text-center overflow-hidden ${isSelected ? "border-[#7bf090] bg-card" : "border-[#3e4a3e]"}`}
                     >
                       {/* Animated Green Outline */}
                       {isSelected && (
@@ -257,7 +258,7 @@ const TossModal = ({ teamA, teamB, hasPassword, onConfirm, onCancel }) => {
                           </p>
                         </div>
                       </div>
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -278,12 +279,12 @@ const TossModal = ({ teamA, teamB, hasPassword, onConfirm, onCancel }) => {
 
                 <div className="grid grid-cols-2 gap-3">
                   {/* BAT */}
-                  <button
+                  <Button
                     onClick={() => {
                       if (winnerTeam) setDecision("BAT");
                     }}
                     disabled={!winnerTeam}
-                    className={`group relative flex flex-col items-center justify-center p-4 rounded-xl transition-all active:scale-[0.98] text-center overflow-hidden ${!winnerTeam ? "opacity-40 cursor-not-allowed bg-[#131313] border border-[#2a2a2a]" : decision === "BAT" ? "bg-[linear-gradient(135deg,#7bf090_0%,#45dada_100%)] text-[#003914] shadow-[0_0_20px_rgba(123,240,144,0.2)]" : "bg-[#1c1b1b] border border-[#3e4a3e] text-white hover:bg-[#222]"}`}
+                    className={`group relative flex flex-col items-center justify-center p-4 rounded-xl transition-all active:scale-[0.98] text-center overflow-hidden ${!winnerTeam ? "opacity-40 cursor-not-allowed bg-[#131313] border border-border" : decision === "BAT" ? "bg-[linear-gradient(135deg,#7bf090_0%,#45dada_100%)] text-[#003914] shadow-[0_0_20px_rgba(123,240,144,0.2)]" : "bg-[#1c1b1b] border border-[#3e4a3e] text-white hover:bg-card"}`}
                   >
                     <Activity
                       className={`mb-2 ${decision === "BAT" ? "text-[#004f26]" : "text-[#bdcaba] opacity-40"}`}
@@ -301,15 +302,15 @@ const TossModal = ({ teamA, teamB, hasPassword, onConfirm, onCancel }) => {
                     >
                       SET THE TARGET
                     </p>
-                  </button>
+                  </Button>
 
                   {/* BOWL */}
-                  <button
+                  <Button
                     onClick={() => {
                       if (winnerTeam) setDecision("BOWL");
                     }}
                     disabled={!winnerTeam}
-                    className={`group relative flex flex-col items-center justify-center p-4 rounded-xl transition-all active:scale-[0.98] text-center overflow-hidden ${!winnerTeam ? "opacity-40 cursor-not-allowed bg-[#131313] border border-[#2a2a2a]" : decision === "BOWL" ? "bg-[linear-gradient(135deg,#7bf090_0%,#45dada_100%)] text-[#003914] shadow-[0_0_20px_rgba(123,240,144,0.2)]" : "bg-[#1c1b1b] border border-[#3e4a3e] text-white hover:bg-[#222]"}`}
+                    className={`group relative flex flex-col items-center justify-center p-4 rounded-xl transition-all active:scale-[0.98] text-center overflow-hidden ${!winnerTeam ? "opacity-40 cursor-not-allowed bg-[#131313] border border-border" : decision === "BOWL" ? "bg-[linear-gradient(135deg,#7bf090_0%,#45dada_100%)] text-[#003914] shadow-[0_0_20px_rgba(123,240,144,0.2)]" : "bg-[#1c1b1b] border border-[#3e4a3e] text-white hover:bg-card"}`}
                   >
                     <CircleDot
                       className={`mb-2 ${decision === "BOWL" ? "text-[#004f26]" : "text-[#bdcaba] opacity-40"}`}
@@ -327,19 +328,19 @@ const TossModal = ({ teamA, teamB, hasPassword, onConfirm, onCancel }) => {
                     >
                       CHASE LATER
                     </p>
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
 
             {/* Bottom Actions */}
             <div className="flex flex-col gap-3 pb-4 pt-6 mt-auto">
-              <button
+              <Button
                 onClick={() => {
                   if (winnerTeam && decision) setStep("SUMMARY");
                 }}
                 disabled={!winnerTeam || !decision}
-                className={`w-full py-4 rounded-lg font-bold text-[13px] text-[#003914] uppercase tracking-widest shadow-lg transition-all ${!winnerTeam || !decision ? "opacity-50 cursor-not-allowed bg-[#2a2a2a] text-white/50" : "active:scale-95"}`}
+                className={`w-full py-4 rounded-lg font-bold text-[13px] text-[#003914] uppercase tracking-widest shadow-lg transition-all ${!winnerTeam || !decision ? "opacity-50 cursor-not-allowed bg-border text-white/50" : "active:scale-95"}`}
                 style={{
                   background:
                     winnerTeam && decision
@@ -348,15 +349,15 @@ const TossModal = ({ teamA, teamB, hasPassword, onConfirm, onCancel }) => {
                 }}
               >
                 PROCEED TO SUMMARY
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => {
                   onConfirm({ winnerTeam: null, decision: null, password });
                 }}
-                className="w-full py-4 bg-[#1c1b1b] border border-[#3e4a3e] text-[#bdcaba] rounded-lg font-bold text-[13px] uppercase tracking-widest hover:text-white hover:bg-[#2a2a2a] transition-all"
+                className="w-full py-4 bg-[#1c1b1b] border border-[#3e4a3e] text-[#bdcaba] rounded-lg font-bold text-[13px] uppercase tracking-widest hover:text-white hover:bg-border transition-all"
               >
                 SKIP TO MATCH
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -430,7 +431,7 @@ const TossModal = ({ teamA, teamB, hasPassword, onConfirm, onCancel }) => {
 
               {/* Toss Result Status Card */}
               <div className="bg-[#1c1b1b] rounded-xl border border-[#3e4a3e] p-4 flex items-center gap-4">
-                <div className="w-10 h-10 rounded-lg bg-[#2a2a2a] flex items-center justify-center border border-[#3e4a3e]">
+                <div className="w-10 h-10 rounded-lg bg-border flex items-center justify-center border border-[#3e4a3e]">
                   <Coins className="text-[#7bf090]" size={20} />
                 </div>
                 <div>
@@ -453,7 +454,7 @@ const TossModal = ({ teamA, teamB, hasPassword, onConfirm, onCancel }) => {
                   <label className="text-[10px] font-black text-[#879485] uppercase tracking-widest pl-1 flex items-center gap-1">
                     <Lock size={14} /> MATCH PASSWORD
                   </label>
-                  <input
+                  <Input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -466,15 +467,15 @@ const TossModal = ({ teamA, teamB, hasPassword, onConfirm, onCancel }) => {
 
             {/* Bottom Actions - Side by Side */}
             <div className="flex gap-3 pb-4 pt-4 mt-auto border-t border-[#3e4a3e]/30">
-              <button
+              <Button
                 onClick={handleReToss}
                 disabled={isSubmitting}
-                className="flex-[1] py-4 bg-[#1c1b1b] border border-[#3e4a3e] text-[#bdcaba] rounded-lg font-bold text-[13px] uppercase tracking-widest hover:text-white hover:bg-[#2a2a2a] transition-all flex items-center justify-center gap-2"
+                className="flex-[1] py-4 bg-[#1c1b1b] border border-[#3e4a3e] text-[#bdcaba] rounded-lg font-bold text-[13px] uppercase tracking-widest hover:text-white hover:bg-border transition-all flex items-center justify-center gap-2"
               >
                 RE-TOSS
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={handleStartMatch}
                 disabled={(hasPassword && !password) || isSubmitting}
                 className={`flex-[1.5] py-4 font-black text-[15px] uppercase tracking-[0.1em] rounded-lg text-[#003914] shadow-[0_4px_20px_rgba(123,240,144,0.3)] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
@@ -484,7 +485,7 @@ const TossModal = ({ teamA, teamB, hasPassword, onConfirm, onCancel }) => {
                 }}
               >
                 {isSubmitting ? "STARTING..." : "START MATCH"}
-              </button>
+              </Button>
             </div>
           </div>
         )}

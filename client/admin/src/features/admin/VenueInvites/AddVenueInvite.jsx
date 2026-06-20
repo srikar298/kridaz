@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Search, Plus, Copy } from "lucide-react";
 import toast from "react-hot-toast";
-import useAddVenueInvite from "./useAddVenueInvite";
+import useAddVenueInvite from "./useAddVenueInvite";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 
 const AddVenueInvite = () => {
   const {
@@ -70,9 +71,9 @@ const AddVenueInvite = () => {
 
   if (magicLink) {
     return (
-      <div className="h-full custom-scrollbar bg-[#000000] text-white p-6 md:p-12 animate-fade-in flex flex-col items-center justify-center">
-        <div className="bg-[#121212] border border-[#B3DC26]/40 p-8 rounded-[24px] shadow-[0_8px_32px_rgba(179,220,38,0.15)] text-center max-w-lg w-full">
-          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[#55DEE8] to-[#B3DC26] rounded-full flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(179,220,38,0.4)]">
+      <div className="h-full custom-scrollbar bg-background text-white p-6 md:p-12 animate-fade-in flex flex-col items-center justify-center">
+        <div className="bg-card border border-primary/40 p-8 rounded-[24px] shadow-[0_8px_32px_rgba(179,220,38,0.15)] text-center max-w-lg w-full">
+          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-secondary to-primary rounded-full flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(179,220,38,0.4)]">
             <span className="text-black text-3xl">🎉</span>
           </div>
           <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-2">
@@ -83,31 +84,31 @@ const AddVenueInvite = () => {
             owner.
           </p>
 
-          <div className="bg-[#1B1B1B] border border-white/10 rounded-xl p-4 mb-6 flex items-center justify-between group hover:border-[#B3DC26]/40 transition-colors">
-            <span className="text-[#B3DC26] font-mono text-xs truncate max-w-[80%]">
+          <div className="bg-card border border-white/10 rounded-xl p-4 mb-6 flex items-center justify-between group hover:border-primary/40 transition-colors">
+            <span className="text-primary font-mono text-xs truncate max-w-[80%]">
               {magicLink}
             </span>
-            <button
+            <Button
               onClick={copyMagicLink}
               className="text-white/50 hover:text-white p-2 rounded-lg hover:bg-white/5 transition-colors"
             >
               <Copy size={18} />
-            </button>
+            </Button>
           </div>
 
           <div className="flex gap-4">
-            <button
+            <Button
               onClick={() => window.location.reload()}
-              className="flex-1 px-6 py-3 rounded-[16px] bg-[#1B1B1B] text-white font-bold text-sm uppercase tracking-wider hover:bg-[#2A2A2A] transition-all"
+              className="flex-1 px-6 py-3 rounded-[16px] bg-card text-white font-bold text-sm uppercase tracking-wider hover:bg-border transition-all"
             >
               Send Another
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={copyMagicLink}
-              className="flex-1 px-6 py-3 rounded-[16px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-black font-bold text-sm uppercase tracking-wider hover:opacity-90 shadow-[0_8px_24px_rgba(179,220,38,0.15)] transition-all"
+              className="flex-1 px-6 py-3 rounded-[16px] bg-gradient-to-r from-secondary to-primary text-black font-bold text-sm uppercase tracking-wider hover:opacity-90 shadow-[0_8px_24px_rgba(179,220,38,0.15)] transition-all"
             >
               Copy Link
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -115,13 +116,13 @@ const AddVenueInvite = () => {
   }
 
   return (
-    <div className="h-full custom-scrollbar bg-[#000000] text-white">
+    <div className="h-full custom-scrollbar bg-background text-white">
       <div className="px-4 lg:px-8 lg:pt-6 lg:pb-8 space-y-4 md:space-y-8 animate-fade-in pt-4 pb-4 h-full relative max-w-6xl mx-auto">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
               <h2 className="text-[20px] sm:text-[24px] lg:text-[32px] mt-2 sm:mt-0 font-black tracking-tight text-white uppercase whitespace-nowrap">
-                INVITE <span className="text-[#B3DC26]">VENUE OWNER</span>
+                INVITE <span className="text-primary">VENUE OWNER</span>
               </h2>
             </div>
             <p className="text-white/70 text-[12px] md:text-[16px] mt-1 md:mt-2 ml-1 font-light">
@@ -138,7 +139,7 @@ const AddVenueInvite = () => {
               className={`flex-1 flex flex-col items-center gap-3 relative ${currentStep === step ? "opacity-100" : "opacity-50"}`}
             >
               <div
-                className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg z-10 ${currentStep === step ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black shadow-[0_0_15px_rgba(204,255,0,0.5)]" : "bg-[#121212] border border-white/10 text-white"}`}
+                className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg z-10 ${currentStep === step ? "bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black shadow-[0_0_15px_rgba(204,255,0,0.5)]" : "bg-card border border-white/10 text-white"}`}
               >
                 {step}
               </div>
@@ -147,7 +148,7 @@ const AddVenueInvite = () => {
               </span>
               {step === 1 && (
                 <div
-                  className={`absolute top-6 left-[50%] w-full h-[2px] ${currentStep > step ? "bg-[#B3DC26]" : "bg-[#1B1B1B]"}`}
+                  className={`absolute top-6 left-[50%] w-full h-[2px] ${currentStep > step ? "bg-primary" : "bg-card"}`}
                 />
               )}
             </div>
@@ -159,9 +160,9 @@ const AddVenueInvite = () => {
             console.log("Validation errors:", errs);
             toast.error("Please fill all required fields correctly.");
           })}
-          className="grid grid-cols-1 gap-6 md:gap-12 bg-[#000000] px-4 py-6 md:p-12 rounded-[24px] border border-white/5 shadow-2xl relative overflow-hidden"
+          className="grid grid-cols-1 gap-6 md:gap-12 bg-background px-4 py-6 md:p-12 rounded-[24px] border border-white/5 shadow-2xl relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#B3DC26]/5 blur-[120px] pointer-events-none" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] pointer-events-none" />
 
           {/* STEP 1: General Information */}
           {currentStep === 1 && (
@@ -172,14 +173,14 @@ const AddVenueInvite = () => {
                     {watchedFacilityCategory} Name
                   </span>
                 </label>
-                <input
+                <Input
                   type="text"
                   placeholder={`${watchedFacilityCategory} Name`}
                   {...register("name")}
-                  className={`w-full bg-[#121212] border ${errors.name ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
+                  className={`w-full bg-card border ${errors.name ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
                 />
                 {errors.name && (
-                  <span className="text-[#B3DC26] text-xs font-bold mt-2 block ml-1">
+                  <span className="text-primary text-xs font-bold mt-2 block ml-1">
                     {errors.name.message}
                   </span>
                 )}
@@ -191,8 +192,8 @@ const AddVenueInvite = () => {
                     Sport Arsenal
                   </span>
                 </label>
-                <select
-                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
+                <Select
+                  className="w-full bg-card border border-white/10 text-white focus:border-primary/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
                   onChange={(e) => addSportType(e.target.value)}
                   value=""
                 >
@@ -204,21 +205,21 @@ const AddVenueInvite = () => {
                       {o}
                     </option>
                   ))}
-                </select>
+                </Select>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {sportTypes.map((type, index) => (
                     <span
                       key={index}
-                      className="px-3 py-1.5 bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-black font-bold rounded-[16px] text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                      className="px-3 py-1.5 bg-gradient-to-r from-secondary to-primary text-black font-bold rounded-[16px] text-[10px] flex items-center gap-2 uppercase tracking-widest"
                     >
                       {type}{" "}
-                      <button
+                      <Button
                         type="button"
                         onClick={() => removeSportType(type)}
                         className="hover:text-white transition-colors"
                       >
                         <Plus size={12} className="rotate-45" />
-                      </button>
+                      </Button>
                     </span>
                   ))}
                 </div>
@@ -230,15 +231,15 @@ const AddVenueInvite = () => {
                     Facility Category
                   </span>
                 </label>
-                <select
+                <Select
                   {...register("facilityCategory")}
-                  className={`w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none`}
+                  className={`w-full bg-card border border-white/10 text-white focus:border-primary/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none`}
                 >
                   <option value="Turf">Venue</option>
                   <option value="Ground">Ground</option>
                   <option value="Court">Court</option>
                   <option value="Stadium">Stadium</option>
-                </select>
+                </Select>
               </div>
 
               <div className="form-control col-span-1">
@@ -247,8 +248,8 @@ const AddVenueInvite = () => {
                     Ground Composition
                   </span>
                 </label>
-                <select
-                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
+                <Select
+                  className="w-full bg-card border border-white/10 text-white focus:border-primary/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
                   onChange={(e) => addGroundType(e.target.value)}
                   value=""
                 >
@@ -264,21 +265,21 @@ const AddVenueInvite = () => {
                       {o}
                     </option>
                   ))}
-                </select>
+                </Select>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {groundTypes.map((type, index) => (
                     <span
                       key={index}
-                      className="px-3 py-1.5 bg-[#1B1B1B] border border-white/10 text-white font-bold rounded-[16px] text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                      className="px-3 py-1.5 bg-card border border-white/10 text-white font-bold rounded-[16px] text-[10px] flex items-center gap-2 uppercase tracking-widest"
                     >
                       {type}{" "}
-                      <button
+                      <Button
                         type="button"
                         onClick={() => removeGroundType(type)}
-                        className="hover:text-[#B3DC26] transition-colors"
+                        className="hover:text-primary transition-colors"
                       >
                         <Plus size={12} className="rotate-45" />
-                      </button>
+                      </Button>
                     </span>
                   ))}
                 </div>
@@ -290,8 +291,8 @@ const AddVenueInvite = () => {
                     Facilities
                   </span>
                 </label>
-                <select
-                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
+                <Select
+                  className="w-full bg-card border border-white/10 text-white focus:border-primary/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
                   onChange={(e) => addFacility(e.target.value)}
                   value=""
                 >
@@ -303,21 +304,21 @@ const AddVenueInvite = () => {
                       {o}
                     </option>
                   ))}
-                </select>
+                </Select>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {facilities.map((type, index) => (
                     <span
                       key={index}
-                      className="px-3 py-1.5 bg-[#1B1B1B] border border-white/10 text-[#B3DC26] font-bold rounded-[16px] text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                      className="px-3 py-1.5 bg-card border border-white/10 text-primary font-bold rounded-[16px] text-[10px] flex items-center gap-2 uppercase tracking-widest"
                     >
                       {type}{" "}
-                      <button
+                      <Button
                         type="button"
                         onClick={() => removeFacility(type)}
                         className="hover:text-white transition-colors"
                       >
                         <Plus size={12} className="rotate-45" />
-                      </button>
+                      </Button>
                     </span>
                   ))}
                 </div>
@@ -329,10 +330,10 @@ const AddVenueInvite = () => {
                     Facility Description
                   </span>
                 </label>
-                <textarea
+                <Textarea
                   {...register("description")}
-                  className={`w-full bg-[#121212] border ${errors.description ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-24 rounded-[16px] p-4 transition-all`}
-                ></textarea>
+                  className={`w-full bg-card border ${errors.description ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-sm h-24 rounded-[16px] p-4 transition-all`}
+                ></Textarea>
               </div>
 
               <div className="form-control col-span-1">
@@ -341,11 +342,11 @@ const AddVenueInvite = () => {
                     Location Address
                   </span>
                 </label>
-                <input
+                <Input
                   type="text"
                   placeholder="Full Address"
                   {...register("location")}
-                  className={`w-full bg-[#121212] border ${errors.location ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
+                  className={`w-full bg-card border ${errors.location ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
                 />
               </div>
 
@@ -356,11 +357,11 @@ const AddVenueInvite = () => {
                       City
                     </span>
                   </label>
-                  <input
+                  <Input
                     type="text"
                     placeholder="City"
                     {...register("city")}
-                    className={`w-full bg-[#121212] border ${errors.city ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
+                    className={`w-full bg-card border ${errors.city ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
                   />
                 </div>
                 <div className="form-control">
@@ -369,11 +370,11 @@ const AddVenueInvite = () => {
                       State
                     </span>
                   </label>
-                  <input
+                  <Input
                     type="text"
                     placeholder="State"
                     {...register("state")}
-                    className={`w-full bg-[#121212] border ${errors.state ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
+                    className={`w-full bg-card border ${errors.state ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
                   />
                 </div>
               </div>
@@ -384,7 +385,7 @@ const AddVenueInvite = () => {
           {currentStep === 2 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 relative z-10 animate-fade-in">
               <div className="space-y-8">
-                <h3 className="text-sm font-bold text-[#B3DC26] border-b border-white/10 pb-3 uppercase tracking-[3px]">
+                <h3 className="text-sm font-bold text-primary border-b border-white/10 pb-3 uppercase tracking-[3px]">
                   Contact Info
                 </h3>
                 <div className="form-control">
@@ -393,14 +394,14 @@ const AddVenueInvite = () => {
                       Owner Email
                     </span>
                   </label>
-                  <input
+                  <Input
                     type="email"
                     placeholder="owner@example.com"
                     {...register("email")}
-                    className={`w-full bg-[#121212] border ${errors.email ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
+                    className={`w-full bg-card border ${errors.email ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
                   />
                   {errors.email && (
-                    <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
+                    <span className="text-primary text-[10px] font-bold uppercase mt-2 block ml-1">
                       {errors.email.message}
                     </span>
                   )}
@@ -411,14 +412,14 @@ const AddVenueInvite = () => {
                       Owner Phone
                     </span>
                   </label>
-                  <input
+                  <Input
                     type="text"
                     placeholder="10-digit phone"
                     {...register("phone")}
-                    className={`w-full bg-[#121212] border ${errors.phone ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
+                    className={`w-full bg-card border ${errors.phone ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
                   />
                   {errors.phone && (
-                    <span className="text-[#B3DC26] text-[10px] font-bold uppercase mt-2 block ml-1">
+                    <span className="text-primary text-[10px] font-bold uppercase mt-2 block ml-1">
                       {errors.phone.message}
                     </span>
                   )}
@@ -427,7 +428,7 @@ const AddVenueInvite = () => {
                   </p>
                 </div>
 
-                <h3 className="text-sm font-bold text-[#B3DC26] border-b border-white/10 pb-3 uppercase tracking-[3px] mt-8">
+                <h3 className="text-sm font-bold text-primary border-b border-white/10 pb-3 uppercase tracking-[3px] mt-8">
                   Time Details
                 </h3>
                 <div className="grid grid-cols-2 gap-6">
@@ -437,10 +438,10 @@ const AddVenueInvite = () => {
                         Opening Time
                       </span>
                     </label>
-                    <input
+                    <Input
                       type="time"
                       {...register("openTime")}
-                      className={`w-full bg-[#121212] border ${errors.openTime ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all [color-scheme:dark]`}
+                      className={`w-full bg-card border ${errors.openTime ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all [color-scheme:dark]`}
                     />
                   </div>
                   <div className="form-control">
@@ -449,11 +450,11 @@ const AddVenueInvite = () => {
                         Closing Time
                       </span>
                     </label>
-                    <input
+                    <Input
                       type="time"
                       {...register("closeTime")}
                       disabled={!openTime}
-                      className={`w-full bg-[#121212] border ${errors.closeTime ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all disabled:opacity-50 [color-scheme:dark]`}
+                      className={`w-full bg-card border ${errors.closeTime ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all disabled:opacity-50 [color-scheme:dark]`}
                     />
                   </div>
                   <div className="form-control">
@@ -462,14 +463,14 @@ const AddVenueInvite = () => {
                         Slot Duration
                       </span>
                     </label>
-                    <select
+                    <Select
                       {...register("slotDuration")}
-                      className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
+                      className="w-full bg-card border border-white/10 text-white focus:border-primary/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all appearance-none"
                     >
                       <option value={60}>60 Minutes</option>
                       <option value={90}>90 Minutes</option>
                       <option value={120}>120 Minutes</option>
-                    </select>
+                    </Select>
                   </div>
                   <div className="form-control">
                     <label className="label mb-2">
@@ -477,18 +478,18 @@ const AddVenueInvite = () => {
                         Hourly Rate (INR)
                       </span>
                     </label>
-                    <input
+                    <Input
                       type="number"
                       placeholder="Hourly Rate (INR)"
                       {...register("pricePerHour")}
-                      className={`w-full bg-[#121212] border ${errors.pricePerHour ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
+                      className={`w-full bg-card border ${errors.pricePerHour ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-sm h-12 rounded-[16px] px-4 transition-all`}
                     />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-8">
-                <h3 className="text-sm font-bold text-[#B3DC26] border-b border-white/10 pb-3 mb-6 uppercase tracking-[3px]">
+                <h3 className="text-sm font-bold text-primary border-b border-white/10 pb-3 mb-6 uppercase tracking-[3px]">
                   Slot Preview
                 </h3>
                 {generatedSlots.length > 0 ? (
@@ -498,8 +499,8 @@ const AddVenueInvite = () => {
                         key={index}
                         className={`group p-4 rounded-[16px] border transition-all duration-300 relative overflow-hidden flex flex-col justify-between ${
                           slot.isActive
-                            ? "bg-[#121212] border-[#B3DC26]/40 shadow-[0_4px_20px_-4px_rgba(191,243,103,0.1)]"
-                            : "bg-[#121212] border-white/10 opacity-60"
+                            ? "bg-card border-primary/40 shadow-[0_4px_20px_-4px_rgba(191,243,103,0.1)]"
+                            : "bg-card border-white/10 opacity-60"
                         }`}
                       >
                         <div className="flex justify-between items-center mb-4 relative z-10">
@@ -512,36 +513,36 @@ const AddVenueInvite = () => {
                             </span>{" "}
                             {slot.endTime}
                           </span>
-                          <input
+                          <Input
                             type="checkbox"
-                            className="toggle toggle-sm bg-[#1B1B1B] border-none checked:bg-[#B3DC26]"
+                            className="toggle toggle-sm bg-card border-none checked:bg-primary"
                             checked={slot.isActive}
                             onChange={() => toggleSlotActive(index)}
                           />
                         </div>
                         <div
-                          className={`flex items-center gap-2 rounded-xl p-2 border ${slot.isActive ? "bg-[#1B1B1B] border-white/10" : "bg-transparent border-transparent"}`}
+                          className={`flex items-center gap-2 rounded-xl p-2 border ${slot.isActive ? "bg-card border-white/10" : "bg-transparent border-transparent"}`}
                         >
                           <span
                             className={`text-sm font-black ${slot.isActive ? "text-white/40" : "text-[#444]"}`}
                           >
                             ₹
                           </span>
-                          <input
+                          <Input
                             type="number"
                             value={slot.price}
                             onChange={(e) =>
                               updateSlotPrice(index, Number(e.target.value))
                             }
                             disabled={!slot.isActive}
-                            className={`w-full bg-transparent text-lg font-black focus:outline-none font-mono ${slot.isActive ? "text-[#B3DC26]" : "text-[#444]"}`}
+                            className={`w-full bg-transparent text-lg font-black focus:outline-none font-mono ${slot.isActive ? "text-primary" : "text-[#444]"}`}
                           />
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-16 border border-dashed border-white/10 rounded-[24px] bg-[#121212]">
+                  <div className="text-center py-16 border border-dashed border-white/10 rounded-[24px] bg-card">
                     <span className="text-[#444] text-xs font-bold uppercase tracking-[4px]">
                       Set times to view slots
                     </span>
@@ -556,37 +557,37 @@ const AddVenueInvite = () => {
             className={`flex items-center mt-8 pt-6 border-t border-white/10 relative z-10 ${currentStep === 1 ? "justify-end" : "justify-between"}`}
           >
             {currentStep > 1 && (
-              <button
+              <Button
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
                   setCurrentStep(1);
                 }}
-                className="px-8 py-3 rounded-[16px] font-bold text-sm uppercase tracking-wider bg-[#1B1B1B] text-white hover:bg-[#2A2A2A] transition-all"
+                className="px-8 py-3 rounded-[16px] font-bold text-sm uppercase tracking-wider bg-card text-white hover:bg-border transition-all"
               >
                 Back
-              </button>
+              </Button>
             )}
 
             {currentStep === 1 ? (
-              <button
+              <Button
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
                   setCurrentStep(2);
                 }}
-                className="px-10 py-3 rounded-[16px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-black font-bold text-sm uppercase tracking-wider hover:opacity-90 shadow-[0_8px_24px_rgba(179,220,38,0.15)] transition-all"
+                className="px-10 py-3 rounded-[16px] bg-gradient-to-r from-secondary to-primary text-black font-bold text-sm uppercase tracking-wider hover:opacity-90 shadow-[0_8px_24px_rgba(179,220,38,0.15)] transition-all"
               >
                 Next Step
-              </button>
+              </Button>
             ) : (
-              <button
+              <Button
                 type="submit"
                 disabled={loading}
-                className={`px-12 py-3 rounded-[16px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-black font-bold text-sm uppercase tracking-wider shadow-[0_8px_24px_rgba(179,220,38,0.15)] transition-all flex items-center gap-2 ${loading ? "opacity-70" : "hover:opacity-90"}`}
+                className={`px-12 py-3 rounded-[16px] bg-gradient-to-r from-secondary to-primary text-black font-bold text-sm uppercase tracking-wider shadow-[0_8px_24px_rgba(179,220,38,0.15)] transition-all flex items-center gap-2 ${loading ? "opacity-70" : "hover:opacity-90"}`}
               >
                 {loading ? "Sending..." : "Send Invite & Create"}
-              </button>
+              </Button>
             )}
           </div>
         </form>

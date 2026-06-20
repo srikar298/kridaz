@@ -5,8 +5,8 @@ import { useSelector } from "react-redux";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
 import Hls from "hls.js";
 
-const GRAD = "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)";
-const BDR = "#2A2A2A";
+const GRAD = "linear-gradient(90deg, var(--primary) 0%, var(--primary) 100%)";
+const BDR = "var(--border)";
 
 const SocialArenaReelCard = ({ reel, shouldPlay, navigate }) => {
   const videoRef = useRef(null);
@@ -95,7 +95,7 @@ const SocialArenaReelCard = ({ reel, shouldPlay, navigate }) => {
 
   return (
     <div
-      className="w-[180px] md:w-[210px] aspect-[9/16] shrink-0 bg-[#0A0A0A] border rounded-[12px] overflow-hidden snap-start group transition-all relative cursor-pointer"
+      className="w-[180px] md:w-[210px] aspect-[9/16] shrink-0 bg-background border rounded-[12px] overflow-hidden snap-start group transition-all relative cursor-pointer"
       style={{ borderColor: BDR }}
       onClick={(e) => {
         e.preventDefault();

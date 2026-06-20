@@ -1,7 +1,8 @@
 ﻿import { useState } from "react";
 import { X, Trophy, Check, Loader2 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button } from "@kridaz/ui";
+
 
 const SPORTS = [
   "Cricket",
@@ -53,7 +54,7 @@ const InterestsModal = ({ isOpen, onClose, onSaved }) => {
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-      <div className="bg-[#000000] border border-[#2D2D2D] w-full max-w-lg rounded-[8px] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
+      <div className="bg-background border border-border w-full max-w-lg rounded-[8px] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
         <div className="p-8 space-y-8">
           <div className="flex justify-between items-start">
             <div className="space-y-1">
@@ -64,22 +65,22 @@ const InterestsModal = ({ isOpen, onClose, onSaved }) => {
                 Select the sports you live for
               </p>
             </div>
-            <button
+            <Button
               onClick={onClose}
-              className="p-2 hover:bg-[#000000] rounded-full transition-colors text-white/40"
+              className="p-2 hover:bg-background rounded-full transition-colors text-white/40"
             >
               <X size={20} />
-            </button>
+            </Button>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             {SPORTS.map((sport) => {
               const isSelected = selected.includes(sport);
               return (
-                <button
+                <Button
                   key={sport}
                   onClick={() => toggleSport(sport)}
-                  className={`flex items-center justify-between p-4 rounded-[8px] border transition-all duration-300 ${isSelected ? "bg-[#BFF367] border-[#BFF367] text-black scale-[1.02]" : "bg-[#000000] border-[#2D2D2D] text-white/60 hover:border-white/20"}`}
+                  className={`flex items-center justify-between p-4 rounded-[8px] border transition-all duration-300 ${isSelected ? "bg-primary border-primary text-black scale-[1.02]" : "bg-background border-border text-white/60 hover:border-white/20"}`}
                 >
                   <span className="text-xs font-black uppercase tracking-wider">
                     {sport}
@@ -89,13 +90,13 @@ const InterestsModal = ({ isOpen, onClose, onSaved }) => {
                   ) : (
                     <div className="w-3.5 h-3.5 rounded-full border border-current opacity-20" />
                   )}
-                </button>
+                </Button>
               );
             })}
           </div>
 
           <div className="pt-4">
-            <button
+            <Button
               onClick={handleSave}
               disabled={loading}
               className="w-full bg-white text-black py-4 rounded-[8px] font-black uppercase tracking-[0.15em] text-xs flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 transition-all shadow-xl disabled:opacity-50"
@@ -106,7 +107,7 @@ const InterestsModal = ({ isOpen, onClose, onSaved }) => {
                 <Trophy size={16} />
               )}
               Complete Profile
-            </button>
+            </Button>
           </div>
         </div>
       </div>

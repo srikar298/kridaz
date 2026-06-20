@@ -19,7 +19,8 @@ import {
   Database,
   AlertCircle,
 } from "lucide-react";
-import axiosInstance from "@hooks/useAxiosInstance";
+import axiosInstance from "@hooks/useAxiosInstance";import { Button } from "@kridaz/ui";
+
 
 const VerificationDetailModal = ({
   request,
@@ -67,9 +68,9 @@ const VerificationDetailModal = ({
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-5xl bg-[#080808] border border-[#2D2D2D] rounded-[12px] overflow-hidden shadow-2xl animate-scale-in max-h-[90vh] flex flex-col">
+      <div className="relative w-full max-w-5xl bg-[#080808] border border-border rounded-[12px] overflow-hidden shadow-2xl animate-scale-in max-h-[90vh] flex flex-col">
         {/* Header Section */}
-        <div className="p-6 border-b border-[#2D2D2D] bg-[#0A0A0A] flex items-center justify-between sticky top-0 z-20">
+        <div className="p-6 border-b border-border bg-background flex items-center justify-between sticky top-0 z-20">
           <div
             onClick={() =>
               request.userId &&
@@ -78,7 +79,7 @@ const VerificationDetailModal = ({
             className="flex items-center gap-4 cursor-pointer group/header"
           >
             <div
-              className={`w-12 h-12 rounded-[6px] bg-[#2D2D2D] border border-[#404040] flex items-center justify-center overflow-hidden text-[20px] font-bold ${isRejected ? "text-red-500" : "text-[#CCFF00]"} uppercase group-hover/header:border-[#CCFF00] transition-colors`}
+              className={`w-12 h-12 rounded-[6px] bg-border border border-[#404040] flex items-center justify-center overflow-hidden text-[20px] font-bold ${isRejected ? "text-red-500" : "text-primary"} uppercase group-hover/header:border-primary transition-colors`}
             >
               {request.userId?.profilePicture ? (
                 <img
@@ -92,42 +93,42 @@ const VerificationDetailModal = ({
             </div>
             <div>
               <div className="flex items-center gap-3">
-                <h2 className="text-xl font-bold text-white uppercase tracking-tight group-hover/header:text-[#CCFF00] transition-colors">
+                <h2 className="text-xl font-bold text-white uppercase tracking-tight group-hover/header:text-primary transition-colors">
                   {request.name}
                 </h2>
                 <span
-                  className={`px-2 py-0.5 rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] ${isRejected ? "bg-red-500/10 text-red-500 border border-red-500/20" : "bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20"}`}
+                  className={`px-2 py-0.5 rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] ${isRejected ? "bg-red-500/10 text-red-500 border border-red-500/20" : "bg-primary/10 text-primary border border-primary/20"}`}
                 >
                   {request.role}
                 </span>
                 <ExternalLink
                   size={14}
-                  className="text-[#CCFF00] opacity-0 group-hover/header:opacity-100 transition-opacity"
+                  className="text-primary opacity-0 group-hover/header:opacity-100 transition-opacity"
                 />
               </div>
-              <p className="text-[10px] font-bold text-[#878C9F] uppercase tracking-[0.2em] mt-1 flex items-center gap-2">
-                <Zap size={10} className="text-[#CCFF00]" /> PARTNER
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-1 flex items-center gap-2">
+                <Zap size={10} className="text-primary" /> PARTNER
                 VERIFICATION DOSSIER #{request.id?.slice(-8)}
               </p>
             </div>
           </div>
-          <button
+          <Button
             onClick={onClose}
             className="p-2 hover:bg-white/5 rounded-full text-gray-500 transition-colors"
           >
             <X size={24} />
-          </button>
+          </Button>
         </div>
 
         {/* Content Section */}
         <div className="flex-1 overflow-y-auto custom-scrollbar">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
             {/* Left Column: Core Identity & Business Details */}
-            <div className="lg:col-span-4 border-r border-[#2D2D2D] p-8 space-y-10 bg-[#090909]">
+            <div className="lg:col-span-4 border-r border-border p-8 space-y-10 bg-[#090909]">
               <section className="space-y-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <User size={14} className="text-[#CCFF00]" />
-                  <h3 className="text-[10px] font-black text-[#878C9F] uppercase tracking-[0.3em]">
+                  <User size={14} className="text-primary" />
+                  <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">
                     Identity Core
                   </h3>
                 </div>
@@ -150,10 +151,10 @@ const VerificationDetailModal = ({
                 </div>
               </section>
 
-              <section className="space-y-6 pt-6 border-t border-[#2D2D2D]/50">
+              <section className="space-y-6 pt-6 border-t border-border/50">
                 <div className="flex items-center gap-2 mb-4">
-                  <Briefcase size={14} className="text-[#CCFF00]" />
-                  <h3 className="text-[10px] font-black text-[#878C9F] uppercase tracking-[0.3em]">
+                  <Briefcase size={14} className="text-primary" />
+                  <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">
                     Entity Operations
                   </h3>
                 </div>
@@ -202,12 +203,12 @@ const VerificationDetailModal = ({
               <section>
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2">
-                    <Database size={16} className="text-[#CCFF00]" />
+                    <Database size={16} className="text-primary" />
                     <h3 className="text-[12px] font-black text-white uppercase tracking-[0.2em]">
                       Verification Dossier
                     </h3>
                   </div>
-                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-[#1A1A1A] px-2 py-1 rounded-[4px] border border-[#2D2D2D]">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-card px-2 py-1 rounded-[4px] border border-border">
                     {request.documents?.length || 0} Artifacts Loaded
                   </span>
                 </div>
@@ -271,7 +272,7 @@ const VerificationDetailModal = ({
                         d.name?.toLowerCase().includes(keyword)
                       )
                   ).length > 0 && (
-                    <div className="space-y-4 pt-6 border-t border-[#2D2D2D]/50">
+                    <div className="space-y-4 pt-6 border-t border-border/50">
                       <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
                         Supplemental Artifacts
                       </h4>
@@ -300,7 +301,7 @@ const VerificationDetailModal = ({
                   )}
 
                   {!request.documents?.length && (
-                    <div className="p-10 border-2 border-dashed border-[#2D2D2D] rounded-[12px] text-center bg-white/[0.02]">
+                    <div className="p-10 border-2 border-dashed border-border rounded-[12px] text-center bg-white/[0.02]">
                       <FileText className="w-12 h-12 text-gray-700 mx-auto mb-4" />
                       <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
                         No Documents Provided
@@ -310,16 +311,16 @@ const VerificationDetailModal = ({
                 </div>
               </section>
 
-              <section className="pt-10 border-t border-[#2D2D2D]/50">
+              <section className="pt-10 border-t border-border/50">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2">
-                    <ImageIcon size={16} className="text-[#CCFF00]" />
+                    <ImageIcon size={16} className="text-primary" />
                     <h3 className="text-[12px] font-black text-white uppercase tracking-[0.2em]">
                       Associated Assets / Grounds
                     </h3>
                   </div>
                   {grounds.length > 0 && (
-                    <span className="text-[10px] font-bold text-[#CCFF00] uppercase tracking-widest bg-[#CCFF00]/5 px-2 py-1 rounded-[4px] border border-[#CCFF00]/20">
+                    <span className="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/5 px-2 py-1 rounded-[4px] border border-primary/20">
                       {grounds.length} Detected
                     </span>
                   )}
@@ -327,7 +328,7 @@ const VerificationDetailModal = ({
 
                 {loadingGrounds ? (
                   <div className="flex items-center justify-center py-10">
-                    <div className="w-8 h-8 border-2 border-[#CCFF00] border-t-transparent rounded-full animate-spin" />
+                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                   </div>
                 ) : grounds.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -336,7 +337,7 @@ const VerificationDetailModal = ({
                     ))}
                   </div>
                 ) : (
-                  <div className="p-10 border-2 border-dashed border-[#2D2D2D] rounded-[12px] text-center bg-white/[0.02]">
+                  <div className="p-10 border-2 border-dashed border-border rounded-[12px] text-center bg-white/[0.02]">
                     <Globe className="w-12 h-12 text-gray-700 mx-auto mb-4" />
                     <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
                       No Active Asset Integration Detected
@@ -352,7 +353,7 @@ const VerificationDetailModal = ({
         </div>
 
         {/* Action Bar */}
-        <div className="p-6 bg-[#0A0A0A] border-t border-[#2D2D2D] flex items-center justify-between sticky bottom-0 z-20">
+        <div className="p-6 bg-background border-t border-border flex items-center justify-between sticky bottom-0 z-20">
           <div className="flex items-center gap-6">
             <div className="hidden sm:flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
               <Shield size={14} /> SECURITY CLEARANCE: LEVEL 3 ADMIN
@@ -360,29 +361,29 @@ const VerificationDetailModal = ({
           </div>
           <div className="flex items-center gap-4">
             {isRejected ? (
-              <button
+              <Button
                 onClick={() => onAccept(request.id)}
                 disabled={isProcessing}
-                className="px-8 py-3 bg-[#CCFF00] text-black text-[12px] font-black uppercase tracking-[0.2em] rounded-[6px] hover:bg-[#DFFF00] transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(204,255,0,0.2)] disabled:opacity-50"
+                className="px-8 py-3 bg-primary text-black text-[12px] font-black uppercase tracking-[0.2em] rounded-[6px] hover:bg-[#DFFF00] transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(204,255,0,0.2)] disabled:opacity-50"
               >
                 Authorize Partner
-              </button>
+              </Button>
             ) : (
               <>
-                <button
+                <Button
                   onClick={() => onReject(request.id)}
                   disabled={isProcessing}
                   className="px-8 py-3 bg-transparent border border-red-500/30 text-red-500 text-[12px] font-black uppercase tracking-[0.2em] rounded-[6px] hover:bg-red-500/5 hover:border-red-500 transition-all disabled:opacity-50"
                 >
                   Decline
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => onAccept(request.id)}
                   disabled={isProcessing}
-                  className="px-8 py-3 bg-[#CCFF00] text-black text-[12px] font-black uppercase tracking-[0.2em] rounded-[6px] hover:bg-[#DFFF00] transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(204,255,0,0.2)] disabled:opacity-50"
+                  className="px-8 py-3 bg-primary text-black text-[12px] font-black uppercase tracking-[0.2em] rounded-[6px] hover:bg-[#DFFF00] transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(204,255,0,0.2)] disabled:opacity-50"
                 >
                   Approve Authorization <ChevronRight size={16} />
-                </button>
+                </Button>
               </>
             )}
           </div>
@@ -397,10 +398,10 @@ const IdentityItem = ({ label, value, icon: Icon }) => (
     <p className="text-[9px] font-bold text-gray-600 uppercase tracking-widest mb-1.5">
       {label}
     </p>
-    <div className="flex items-center gap-3 bg-white/[0.03] p-3 rounded-[6px] border border-[#2D2D2D] group-hover:border-[#CCFF00]/30 transition-colors">
+    <div className="flex items-center gap-3 bg-white/[0.03] p-3 rounded-[6px] border border-border group-hover:border-primary/30 transition-colors">
       <Icon
         size={14}
-        className="text-[#CCFF00]/60 group-hover:text-[#CCFF00]"
+        className="text-primary/60 group-hover:text-primary"
       />
       <span className="text-[13px] font-semibold text-white tracking-tight break-all uppercase">
         {value || "NOT PROVIDED"}
@@ -411,12 +412,12 @@ const IdentityItem = ({ label, value, icon: Icon }) => (
 
 const DocumentSlot = ({ label, doc }) => (
   <div
-    className={`group relative p-4 rounded-[8px] border transition-all ${doc ? "bg-[#111111] border-[#2D2D2D] hover:border-[#CCFF00]/40" : "bg-black/40 border-[#2D2D2D] border-dashed opacity-60"}`}
+    className={`group relative p-4 rounded-[8px] border transition-all ${doc ? "bg-card border-border hover:border-primary/40" : "bg-black/40 border-border border-dashed opacity-60"}`}
   >
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
         <div
-          className={`w-8 h-8 rounded-[4px] flex items-center justify-center ${doc ? "bg-[#CCFF00]/10 text-[#CCFF00]" : "bg-gray-800 text-gray-500"}`}
+          className={`w-8 h-8 rounded-[4px] flex items-center justify-center ${doc ? "bg-primary/10 text-primary" : "bg-gray-800 text-gray-500"}`}
         >
           <FileText size={16} />
         </div>
@@ -436,7 +437,7 @@ const DocumentSlot = ({ label, doc }) => (
           href={doc.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="p-2 hover:bg-[#CCFF00]/10 rounded-full text-[#CCFF00] transition-colors"
+          className="p-2 hover:bg-primary/10 rounded-full text-primary transition-colors"
         >
           <ExternalLink size={14} />
         </a>
@@ -452,10 +453,10 @@ const DocumentCard = ({ doc }) => (
     href={doc.url}
     target="_blank"
     rel="noopener noreferrer"
-    className="group bg-[#111111] border border-[#2D2D2D] rounded-[8px] p-4 flex items-center justify-between hover:border-[#CCFF00]/40 transition-all hover:bg-[#CCFF00]/5"
+    className="group bg-card border border-border rounded-[8px] p-4 flex items-center justify-between hover:border-primary/40 transition-all hover:bg-primary/5"
   >
     <div className="flex items-center gap-4">
-      <div className="w-10 h-10 rounded-[4px] bg-[#1A1A1A] border border-[#2D2D2D] flex items-center justify-center text-gray-400 group-hover:text-[#CCFF00] group-hover:border-[#CCFF00]/30 transition-all">
+      <div className="w-10 h-10 rounded-[4px] bg-card border border-border flex items-center justify-center text-gray-400 group-hover:text-primary group-hover:border-primary/30 transition-all">
         <FileText size={20} />
       </div>
       <div>
@@ -469,20 +470,20 @@ const DocumentCard = ({ doc }) => (
     </div>
     <ExternalLink
       size={14}
-      className="text-gray-600 group-hover:text-[#CCFF00] transition-colors"
+      className="text-gray-600 group-hover:text-primary transition-colors"
     />
   </a>
 );
 
 const GroundCard = ({ ground }) => (
-  <div className="group bg-[#111111] border border-[#2D2D2D] rounded-[8px] overflow-hidden hover:border-[#CCFF00]/40 transition-all">
-    <div className="h-32 bg-[#1A1A1A] relative overflow-hidden">
+  <div className="group bg-card border border-border rounded-[8px] overflow-hidden hover:border-primary/40 transition-all">
+    <div className="h-32 bg-card relative overflow-hidden">
       <img
         src={ground.image}
         alt={ground.name}
         className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity"
       />
-      <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-[2px] bg-black/60 backdrop-blur-md border border-white/10 text-[8px] font-black text-[#CCFF00] uppercase tracking-widest">
+      <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-[2px] bg-black/60 backdrop-blur-md border border-white/10 text-[8px] font-black text-primary uppercase tracking-widest">
         {ground.status}
       </div>
     </div>

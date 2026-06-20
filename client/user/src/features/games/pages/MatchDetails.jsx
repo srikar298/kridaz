@@ -16,7 +16,8 @@ import {
 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { toast } from "react-hot-toast";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button } from "@kridaz/ui";
+
 
 const MatchDetails = () => {
   const { matchId } = useParams();
@@ -73,7 +74,7 @@ const MatchDetails = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button
+            <Button
               onClick={() => {
                 const shareUrl = window.location.href;
                 if (navigator.share) {
@@ -88,10 +89,10 @@ const MatchDetails = () => {
                   toast.success("Link copied!");
                 }
               }}
-              className="p-3 bg-white/5 rounded-[8px] hover:bg-[#BFF367]/10 hover:text-[#BFF367] transition-all group"
+              className="p-3 bg-white/5 rounded-[8px] hover:bg-primary/10 hover:text-primary transition-all group"
             >
               <Share2 size={18} className="text-gray-400" />
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -137,18 +138,18 @@ const MatchDetails = () => {
 
             <div className="flex flex-col gap-4 w-full md:w-auto">
               {isCompleted ? (
-                <button
+                <Button
                   onClick={() =>
                     navigate(`/analytics/${game.shortId || game._id}`)
                   }
                   className="h-16 px-10 bg-primary text-black font-black uppercase text-sm tracking-widest rounded-[8px] shadow-[0_20px_50px_rgba(85,222,232,0.3)] hover:scale-[1.02] transition-all flex items-center justify-center gap-3"
                 >
                   View Full Analytics <Activity size={20} />
-                </button>
+                </Button>
               ) : (
                 <div className="flex flex-col gap-3">
                   {isUmpire && (
-                    <button
+                    <Button
                       onClick={() =>
                         window.open(
                           `/scoring/${game._id}`,
@@ -160,12 +161,12 @@ const MatchDetails = () => {
                     >
                       Launch Scoring Console{" "}
                       <Zap size={20} fill="currentColor" />
-                    </button>
+                    </Button>
                   )}
-                  <button className="h-16 px-10 bg-white/5 border border-white/10 text-white font-black uppercase text-sm tracking-widest rounded-[8px] cursor-default flex items-center justify-center gap-3">
+                  <Button className="h-16 px-10 bg-white/5 border border-white/10 text-white font-black uppercase text-sm tracking-widest rounded-[8px] cursor-default flex items-center justify-center gap-3">
                     Match In Progress{" "}
                     <Clock size={20} className="animate-spin-slow" />
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
@@ -342,9 +343,9 @@ const MatchDetails = () => {
                       {game.ground.location}
                     </p>
                   </div>
-                  <button className="w-full py-3 bg-white/5 hover:bg-white/10 rounded-[8px] text-[10px] font-black uppercase tracking-widest transition-all">
+                  <Button className="w-full py-3 bg-white/5 hover:bg-white/10 rounded-[8px] text-[10px] font-black uppercase tracking-widest transition-all">
                     View on Google Maps
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 <div className="p-6 bg-white/5 rounded-[8px] text-center">

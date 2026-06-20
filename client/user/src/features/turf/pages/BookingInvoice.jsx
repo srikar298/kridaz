@@ -30,8 +30,8 @@ const BookingInvoice = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#000] flex flex-col items-center justify-center gap-4">
-        <Loader2 size={40} className="text-[#BFF367] animate-spin" />
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
+        <Loader2 size={40} className="text-primary animate-spin" />
         <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">
           Preparing your invoice...
         </p>
@@ -41,7 +41,7 @@ const BookingInvoice = () => {
 
   if (error || !booking) {
     return (
-      <div className="min-h-screen bg-[#000] flex flex-col items-center justify-center p-6 text-center">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
         <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mb-6 border border-red-500/20">
           <ShieldCheck size={40} className="text-red-500" />
         </div>
@@ -62,7 +62,7 @@ const BookingInvoice = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#000] py-6 flex flex-col font-sans">
+    <div className="min-h-screen bg-background py-6 flex flex-col font-sans">
       <div className="w-full flex-1 flex flex-col">
         {/* Top Navigation */}
         <div className="flex items-center justify-between gap-4 mb-6 px-4">
@@ -83,7 +83,7 @@ const BookingInvoice = () => {
             href={invoiceDownloadUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 bg-[#BFF367] hover:bg-[#b8e600] rounded-[8px] px-4 py-2 text-black text-[10px] font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(204,255,0,0.1)]"
+            className="flex items-center justify-center gap-2 bg-primary hover:bg-[#b8e600] rounded-[8px] px-4 py-2 text-black text-[10px] font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(204,255,0,0.1)]"
           >
             <Download size={14} />
             Download
@@ -106,7 +106,7 @@ const BookingInvoice = () => {
                 href={invoiceDownloadUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-[#BFF367] text-black px-6 py-3 rounded-full font-bold text-xs uppercase tracking-widest"
+                className="bg-primary text-black px-6 py-3 rounded-full font-bold text-xs uppercase tracking-widest"
               >
                 Download PDF to View
               </a>

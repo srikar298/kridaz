@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { X } from "lucide-react";import { Button, Input } from "@kridaz/ui";
+
 
 export default function PenaltyModal({ matchData, onClose, onConfirm }) {
   const teamA =
@@ -40,7 +41,7 @@ export default function PenaltyModal({ matchData, onClose, onConfirm }) {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: "100%", opacity: 0 }}
           transition={{ type: "spring", damping: 24 }}
-          className="relative w-full max-w-sm bg-[#000] border border-white/5 rounded-[12px] shadow-2xl z-10 overflow-hidden"
+          className="relative w-full max-w-sm bg-background border border-white/5 rounded-[12px] shadow-2xl z-10 overflow-hidden"
         >
           {/* Header */}
           <div className="px-6 pt-6 pb-4 border-b border-white/10">
@@ -49,12 +50,12 @@ export default function PenaltyModal({ matchData, onClose, onConfirm }) {
                 Award extra runs
               </span>
               {onClose && (
-                <button
+                <Button
                   onClick={onClose}
                   className="p-1 rounded-full hover:bg-white/10 text-neutral-500 hover:text-white transition-colors"
                 >
                   <X size={16} />
-                </button>
+                </Button>
               )}
             </div>
             <h2 className="font-inter text-[24px] font-semibold tracking-tight uppercase text-white leading-tight">
@@ -69,20 +70,20 @@ export default function PenaltyModal({ matchData, onClose, onConfirm }) {
                   Select Team to Receive Runs
                 </label>
                 <div className="flex gap-2">
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setSelectedTeam(teamA?.id || teamA?._id)}
-                    className={`flex-1 py-3 px-2 rounded-[8px] text-[11px] font-black uppercase tracking-widest transition-all ${selectedTeam === (teamA?.id || teamA?._id) ? "bg-[#00C187]/20 border border-[#00C187]/50 text-[#00C187]" : "bg-white/5 border border-white/5 text-neutral-400 hover:text-white"}`}
+                    className={`flex-1 py-3 px-2 rounded-[8px] text-[11px] font-black uppercase tracking-widest transition-all ${selectedTeam === (teamA?.id || teamA?._id) ? "bg-success/20 border border-success/50 text-success" : "bg-white/5 border border-white/5 text-neutral-400 hover:text-white"}`}
                   >
                     {teamA?.name || "TBD"}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
                     onClick={() => setSelectedTeam(teamB?.id || teamB?._id)}
-                    className={`flex-1 py-3 px-2 rounded-[8px] text-[11px] font-black uppercase tracking-widest transition-all ${selectedTeam === (teamB?.id || teamB?._id) ? "bg-[#00C187]/20 border border-[#00C187]/50 text-[#00C187]" : "bg-white/5 border border-white/5 text-neutral-400 hover:text-white"}`}
+                    className={`flex-1 py-3 px-2 rounded-[8px] text-[11px] font-black uppercase tracking-widest transition-all ${selectedTeam === (teamB?.id || teamB?._id) ? "bg-success/20 border border-success/50 text-success" : "bg-white/5 border border-white/5 text-neutral-400 hover:text-white"}`}
                   >
                     {teamB?.name || "TBD"}
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -90,24 +91,24 @@ export default function PenaltyModal({ matchData, onClose, onConfirm }) {
                 <label className="text-[10px] font-black text-neutral-500 uppercase tracking-widest pl-2">
                   Penalty Runs
                 </label>
-                <input
+                <Input
                   type="number"
                   min="1"
                   value={runs}
                   onChange={(e) => setRuns(e.target.value)}
                   placeholder="e.g. 5"
-                  className="w-full bg-white/5 border border-white/10 rounded-[8px] p-4 text-center text-2xl font-black text-white focus:outline-none focus:border-[#00C187]/50 transition-all placeholder:text-neutral-700"
+                  className="w-full bg-white/5 border border-white/10 rounded-[8px] p-4 text-center text-2xl font-black text-white focus:outline-none focus:border-success/50 transition-all placeholder:text-neutral-700"
                   required
                 />
               </div>
 
-              <button
+              <Button
                 type="submit"
                 disabled={!runs || !selectedTeam}
                 className="w-full h-14 bg-red-600 text-white rounded-[8px] flex items-center justify-center text-[12px] font-black uppercase tracking-[0.3em] hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-4"
               >
                 Apply Penalty
-              </button>
+              </Button>
             </form>
           </div>
         </motion.div>

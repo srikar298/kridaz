@@ -1,0 +1,20 @@
+/* Base Reset & Hide scrollbar but keep scrollable */
+*, *::before, *::after { box-sizing: border-box; }
+*:focus { outline: none !important; }
+
+.no-scrollbar::-webkit-scrollbar, .scrollbar-hide::-webkit-scrollbar, .landing-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar, .scrollbar-hide, .landing-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--background); }
+::-webkit-scrollbar-thumb { background: #111111; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* Force native select elements and options */
+select { color-scheme: dark !important; accent-color: var(--primary) !important; }
+select::-webkit-scrollbar-thumb { background: #111111 !important; border-radius: 10px !important; }
+select::-webkit-scrollbar-thumb:hover { background: var(--primary) !important; }
+select option:checked, select option:hover, select option:focus, select option:active {
+  background-color: var(--primary) !important; color: #000000 !important;
+}

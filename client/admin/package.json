@@ -14,6 +14,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@kridaz/common": "workspace:*",
     "@kridaz/shared-constants": "workspace:*",
+    "@kridaz/ui": "workspace:*",
     "@reduxjs/toolkit": "^2.2.6",
     "@sentry/react": "^10.53.1",
     "axios": "^1.18.0",

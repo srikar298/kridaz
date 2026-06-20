@@ -8,7 +8,8 @@ import {
   Globe,
   Info,
 } from "lucide-react";
-import useAuditLogs from "@hooks/admin/useAuditLogs";
+import useAuditLogs from "@hooks/admin/useAuditLogs";import { Input } from "@kridaz/ui";
+
 
 const AuditLogs = () => {
   const { logs, loading } = useAuditLogs();
@@ -35,13 +36,13 @@ const AuditLogs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white p-6 lg:p-10">
+    <div className="min-h-screen bg-background text-white p-6 lg:p-10">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight uppercase flex items-center gap-4">
-              <Shield className="text-[#84CC16]" size={40} />
+              <Shield className="text-primary" size={40} />
               Audit <span className="text-white/50">Trails</span>
             </h1>
             <p className="text-gray-400 text-sm mt-2 font-medium tracking-wide">
@@ -51,10 +52,10 @@ const AuditLogs = () => {
 
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
-            <input
+            <Input
               type="text"
               placeholder="Search logs..."
-              className="bg-[#111] border border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-sm w-full md:w-80 focus:outline-none focus:border-[#84CC16] transition-all"
+              className="bg-card border border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-sm w-full md:w-80 focus:outline-none focus:border-primary transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -63,7 +64,7 @@ const AuditLogs = () => {
 
         {/* Log Terminal */}
         <div className="bg-[#050505] border border-white/10 rounded-[8px] overflow-hidden shadow-2xl">
-          <div className="bg-[#111] px-4 py-2 border-b border-white/10 flex items-center gap-2">
+          <div className="bg-card px-4 py-2 border-b border-white/10 flex items-center gap-2">
             <div className="flex gap-1.5">
               <div className="w-2.5 h-2.5 rounded-full bg-red-500/50"></div>
               <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div>
@@ -125,7 +126,7 @@ const AuditLogs = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded bg-[#84CC16]/20 flex items-center justify-center text-[#84CC16] border border-[#84CC16]/30">
+                          <div className="w-6 h-6 rounded bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
                             <User size={12} />
                           </div>
                           <span className="text-white font-bold">
@@ -141,7 +142,7 @@ const AuditLogs = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-[#84CC16] font-bold">
+                        <span className="text-primary font-bold">
                           {log.action}
                         </span>
                       </td>
@@ -152,7 +153,7 @@ const AuditLogs = () => {
                               size={14}
                               className="text-gray-500 hover:text-white transition-colors"
                             />
-                            <div className="absolute bottom-full left-0 mb-2 hidden group-hover/meta:block w-64 bg-[#1a1a1a] border border-white/10 rounded-[8px] p-3 shadow-2xl z-50">
+                            <div className="absolute bottom-full left-0 mb-2 hidden group-hover/meta:block w-64 bg-card border border-white/10 rounded-[8px] p-3 shadow-2xl z-50">
                               <pre className="text-[10px] text-gray-300 overflow-auto max-h-40 no-scrollbar">
                                 {JSON.stringify(log.details, null, 2)}
                               </pre>
@@ -173,7 +174,7 @@ const AuditLogs = () => {
 
         {/* Security Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-[#111] border border-white/10 p-6 rounded-[8px] flex items-start gap-4">
+          <div className="bg-card border border-white/10 p-6 rounded-[8px] flex items-start gap-4">
             <div className="w-10 h-10 bg-blue-500/10 rounded-[8px] flex items-center justify-center text-blue-500 border border-blue-500/20">
               <HardDrive size={20} />
             </div>
@@ -187,8 +188,8 @@ const AuditLogs = () => {
               </p>
             </div>
           </div>
-          <div className="bg-[#111] border border-white/10 p-6 rounded-[8px] flex items-start gap-4">
-            <div className="w-10 h-10 bg-[#84CC16]/10 rounded-[8px] flex items-center justify-center text-[#84CC16] border border-[#84CC16]/20">
+          <div className="bg-card border border-white/10 p-6 rounded-[8px] flex items-start gap-4">
+            <div className="w-10 h-10 bg-primary/10 rounded-[8px] flex items-center justify-center text-primary border border-primary/20">
               <Terminal size={20} />
             </div>
             <div>
@@ -201,7 +202,7 @@ const AuditLogs = () => {
               </p>
             </div>
           </div>
-          <div className="bg-[#111] border border-white/10 p-6 rounded-[8px] flex items-start gap-4">
+          <div className="bg-card border border-white/10 p-6 rounded-[8px] flex items-start gap-4">
             <div className="w-10 h-10 bg-red-500/10 rounded-[8px] flex items-center justify-center text-red-500 border border-red-500/20">
               <Shield size={20} />
             </div>

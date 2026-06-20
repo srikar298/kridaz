@@ -1,6 +1,6 @@
 const TurfCardSkeleton = () => {
   return (
-    <div className="bg-[#0A0A0A] rounded-[8px] border border-white/[0.05] overflow-hidden flex flex-col h-full animate-pulse">
+    <div className="bg-background rounded-[8px] border border-white/[0.05] overflow-hidden flex flex-col h-full animate-pulse">
       {/* Image Skeleton */}
       <div className="w-full h-[200px] bg-white/[0.03] shrink-0"></div>
 

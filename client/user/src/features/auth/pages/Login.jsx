@@ -8,6 +8,7 @@ import GoogleAuthButton from "../components/GoogleAuthButton";
 import OnboardingModal from "@components/modals/OnboardingModal";
 import { Capacitor } from "@capacitor/core";
 import { ArrowRight, X, User, Lock, Eye, EyeOff } from "lucide-react";
+
 import { useAuthModal } from "../../../context/AuthModalContext";
 import { fetchCountryCodes } from "@utils/locationService";
 
@@ -112,11 +113,11 @@ const Login = ({ isModal = false }) => {
       className={`relative z-10 w-full flex flex-col flex-1 h-full transition-all duration-700 ${mounted ? "opacity-100" : "opacity-0"}`}
     >
       {/* Logo */}
-      <div className="absolute top-40 -left-6 z-50">
+      <div className="absolute top-12 w-full flex justify-center z-50">
         <img
           src="/logo1.png"
           alt="Logo"
-          className="h-[250px] object-contain drop-shadow-lg"
+          className="h-10 w-auto object-contain drop-shadow-2xl"
         />
       </div>
 

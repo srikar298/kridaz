@@ -82,7 +82,7 @@ export default function DesktopTopNavbar({
           <img
             src="/logo.png"
             alt="Kridaz"
-            className="h-9 w-auto brightness-110"
+            className="h-7 w-auto brightness-110"
           />
         </Link>
 

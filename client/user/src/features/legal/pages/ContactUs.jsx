@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState } from "react";import { Button, Input, Textarea } from "@kridaz/ui";
+
 import {
   Mail,
   MapPin,
@@ -8,7 +9,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-const GRAD = "linear-gradient(135deg, #BFF367 0%, #BFF367 100%)";
+const GRAD = "linear-gradient(135deg, var(--primary) 0%, var(--primary) 100%)";
 const BDR = "rgba(255,255,255,0.08)";
 
 const ContactUs = () => {
@@ -78,7 +79,7 @@ const ContactUs = () => {
             style={{
               borderColor: BDR,
               background: "rgba(85,222,232,0.07)",
-              color: "#BFF367",
+              color: "var(--primary)",
             }}
           >
             <MessageCircle size={12} /> Get In Touch
@@ -88,7 +89,7 @@ const ContactUs = () => {
             style={{ fontFamily: "'Open Sans', sans-serif" }}
           >
             Contact{" "}
-            <span className="bg-gradient-to-br from-[#BFF367] to-[#BFF367] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-br from-primary to-primary bg-clip-text text-transparent">
               Us
             </span>
           </h1>
@@ -106,8 +107,8 @@ const ContactUs = () => {
           {contactCards.map((card, i) => (
             <div
               key={i}
-              className="rounded-[8px] p-6 border flex flex-col items-center text-center gap-4 group hover:border-[#BFF367]/40 transition-all duration-300"
-              style={{ borderColor: BDR, backgroundColor: "#0d0d0d" }}
+              className="rounded-[8px] p-6 border flex flex-col items-center text-center gap-4 group hover:border-primary/40 transition-all duration-300"
+              style={{ borderColor: BDR, backgroundColor: "var(--background)" }}
             >
               <div
                 className="w-12 h-12 rounded-[8px] flex items-center justify-center shrink-0"
@@ -134,7 +135,7 @@ const ContactUs = () => {
         {/* Form */}
         <div
           className="rounded-[8px] border p-8 md:p-12"
-          style={{ borderColor: BDR, backgroundColor: "#0a0a0a" }}
+          style={{ borderColor: BDR, backgroundColor: "var(--background)" }}
         >
           {submitted ? (
             <div className="text-center py-16">
@@ -173,13 +174,13 @@ const ContactUs = () => {
                     <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
                       Full Name
                     </label>
-                    <input
+                    <Input
                       name="name"
                       value={form.name}
                       onChange={handleChange}
                       required
                       placeholder="Your name"
-                      className="w-full bg-[#111] border rounded-[8px] px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-[#BFF367] transition-colors"
+                      className="w-full bg-card border rounded-[8px] px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-primary transition-colors"
                       style={{ borderColor: BDR }}
                     />
                   </div>
@@ -187,14 +188,14 @@ const ContactUs = () => {
                     <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
                       Email Address
                     </label>
-                    <input
+                    <Input
                       type="email"
                       name="email"
                       value={form.email}
                       onChange={handleChange}
                       required
                       placeholder="you@example.com"
-                      className="w-full bg-[#111] border rounded-[8px] px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-[#BFF367] transition-colors"
+                      className="w-full bg-card border rounded-[8px] px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-primary transition-colors"
                       style={{ borderColor: BDR }}
                     />
                   </div>
@@ -204,13 +205,13 @@ const ContactUs = () => {
                   <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
                     Subject
                   </label>
-                  <input
+                  <Input
                     name="subject"
                     value={form.subject}
                     onChange={handleChange}
                     required
                     placeholder="What's this about?"
-                    className="w-full bg-[#111] border rounded-[8px] px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-[#BFF367] transition-colors"
+                    className="w-full bg-card border rounded-[8px] px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-primary transition-colors"
                     style={{ borderColor: BDR }}
                   />
                 </div>
@@ -219,25 +220,25 @@ const ContactUs = () => {
                   <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
                     Message
                   </label>
-                  <textarea
+                  <Textarea
                     name="message"
                     value={form.message}
                     onChange={handleChange}
                     required
                     rows={6}
                     placeholder="Tell us more..."
-                    className="w-full bg-[#111] border rounded-[8px] px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-[#BFF367] transition-colors resize-none"
+                    className="w-full bg-card border rounded-[8px] px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-primary transition-colors resize-none"
                     style={{ borderColor: BDR }}
                   />
                 </div>
 
-                <button
+                <Button
                   type="submit"
                   className="inline-flex items-center gap-3 px-8 py-4 rounded-[8px] font-black text-black uppercase tracking-wider text-sm hover:scale-105 transition-all shadow-[0_0_30px_rgba(85,222,232,0.2)]"
                   style={{ background: GRAD }}
                 >
                   <Send size={16} /> Send Message
-                </button>
+                </Button>
               </form>
             </>
           )}

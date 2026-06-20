@@ -5,7 +5,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { startUpload } from "@redux/slices/mediaUploadSlice";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 
 const UploadReel = () => {
   const navigate = useNavigate();
@@ -170,7 +171,7 @@ const UploadReel = () => {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#BFF367] to-[#86d328] shadow-[0_0_50px_rgba(191,243,103,0.3)] flex items-center justify-center mb-6"
+              className="w-24 h-24 rounded-full bg-gradient-to-tr from-primary to-[#86d328] shadow-[0_0_50px_rgba(191,243,103,0.3)] flex items-center justify-center mb-6"
             >
               <Upload
                 size={32}
@@ -184,7 +185,7 @@ const UploadReel = () => {
             <p className="text-white/50 text-sm mt-2">
               MP4 or WebM • Up to 100MB
             </p>
-            <input
+            <Input
               ref={fileInputRef}
               type="file"
               accept="video/*"
@@ -221,7 +222,7 @@ const UploadReel = () => {
               <div className="max-w-md mx-auto space-y-4">
                 {/* Caption Input */}
                 <div className="relative">
-                  <textarea
+                  <Textarea
                     value={caption}
                     onChange={(e) => {
                       setCaption(e.target.value);
@@ -239,7 +240,7 @@ const UploadReel = () => {
                   {/* Hashtags */}
                   <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md border border-white/10 rounded-[16px] px-4 py-3.5">
                     <Hash size={18} className="text-white/70" />
-                    <input
+                    <Input
                       type="text"
                       value={hashtags}
                       onChange={(e) => setHashtags(e.target.value)}
@@ -250,7 +251,7 @@ const UploadReel = () => {
 
                   <div className="flex gap-3">
                     {/* Location */}
-                    <button
+                    <Button
                       onClick={!locationName ? fetchLocation : undefined}
                       className="flex-1 flex items-center gap-2 bg-black/40 backdrop-blur-md border border-white/10 rounded-[16px] px-4 py-3.5 text-[15px] font-medium transition-colors hover:bg-black/60 min-w-0"
                     >
@@ -272,7 +273,7 @@ const UploadReel = () => {
                           }}
                         />
                       )}
-                    </button>
+                    </Button>
 
                     {/* Privacy */}
                     <div className="relative flex-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-[16px] px-4 py-3.5 flex items-center gap-2 hover:bg-black/60 transition-colors">
@@ -280,25 +281,25 @@ const UploadReel = () => {
                       <span className="text-white/90 text-[15px] font-medium truncate">
                         {privacy}
                       </span>
-                      <select
+                      <Select
                         value={privacy}
                         onChange={(e) => setPrivacy(e.target.value)}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       >
                         <option value="Public">Public</option>
                         <option value="Private">Private</option>
-                      </select>
+                      </Select>
                     </div>
                   </div>
                 </div>
 
-                <button
+                <Button
                   onClick={handleUpload}
                   disabled={!file || isPreparing}
-                  className="w-full mt-4 py-4 bg-[#BFF367] text-black font-black uppercase tracking-widest rounded-[16px] shadow-[0_0_30px_rgba(191,243,103,0.3)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#a6d855] transition-all text-[15px]"
+                  className="w-full mt-4 py-4 bg-primary text-black font-black uppercase tracking-widest rounded-[16px] shadow-[0_0_30px_rgba(191,243,103,0.3)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#a6d855] transition-all text-[15px]"
                 >
                   {isPreparing ? "Preparing..." : "Share Reel"}
-                </button>
+                </Button>
               </div>
             </div>
           </div>

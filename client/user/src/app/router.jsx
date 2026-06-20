@@ -21,7 +21,7 @@ const PageLoader = () => (
       alt="Loading..."
       className="w-24 h-24 object-contain"
     />
-    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00C187] mt-3">
+    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-success mt-3">
       Loading page...
     </p>
   </div>

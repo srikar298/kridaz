@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Play, Youtube } from "lucide-react";
 import { gsap } from "gsap";
 
-const PRI = "#BFF367";
+const PRI = "var(--primary)";
 
 export const VideoSection = ({ videos = [] }) => {
   const scrollRef = useRef(null);
@@ -74,7 +74,7 @@ export const VideoSection = ({ videos = [] }) => {
             return (
               <div
                 key={`${video._id}-${idx}`}
-                className="w-[350px] md:w-[450px] aspect-video rounded-[8px] overflow-hidden border border-white/10 relative group bg-[#111]"
+                className="w-[350px] md:w-[450px] aspect-video rounded-[8px] overflow-hidden border border-white/10 relative group bg-card"
               >
                 <img
                   src={thumbUrl}

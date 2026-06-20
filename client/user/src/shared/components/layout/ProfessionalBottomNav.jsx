@@ -47,14 +47,14 @@ const ProfessionalBottomNav = () => {
             <Link
               key={item.name}
               to={item.path}
-              className={`flex flex-col items-center justify-center gap-1 flex-1 transition-all duration-300 ${isActive ? "text-[#BFF367]" : "text-white/40 hover:text-white/60"}`}
+              className={`flex flex-col items-center justify-center gap-1 flex-1 transition-all duration-300 ${isActive ? "text-primary" : "text-white/40 hover:text-white/60"}`}
             >
               <div
                 className={`relative p-1.5 rounded-[8px] transition-all duration-300 ${isActive ? "scale-110" : ""}`}
               >
                 <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
                 {isActive && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#BFF367] rounded-full shadow-[0_0_8px_#BFF367]" />
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full shadow-[0_0_8px_var(--primary)]" />
                 )}
               </div>
               <span

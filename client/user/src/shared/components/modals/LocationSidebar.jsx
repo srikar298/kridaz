@@ -15,7 +15,8 @@ import {
   setUserLocation,
   setLocationStatus,
 } from "@redux/slices/uiSlice";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";import { Button, Input } from "@kridaz/ui";
+
 
 const LocationSidebar = () => {
   const dispatch = useDispatch();
@@ -189,12 +190,12 @@ const LocationSidebar = () => {
       >
         {/* Header */}
         <div className="flex items-center gap-4 p-5 pb-4">
-          <button
+          <Button
             onClick={handleClose}
             className="text-white hover:text-white/70 transition-colors"
           >
             <ArrowLeft size={24} />
-          </button>
+          </Button>
           <h2 className="text-xl font-bold text-white tracking-tight">
             Set Location
           </h2>
@@ -207,16 +208,16 @@ const LocationSidebar = () => {
               className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40"
               size={18}
             />
-            <input
+            <Input
               type="text"
               placeholder="Search for a city or area..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#242424] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-[#BFF367]/50 transition-colors"
+              className="w-full bg-[#242424] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 transition-colors"
             />
             {isSearching && (
               <Loader2
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#BFF367] animate-spin"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-primary animate-spin"
                 size={18}
               />
             )}
@@ -231,13 +232,13 @@ const LocationSidebar = () => {
                 </div>
               ) : searchResults.length > 0 ? (
                 searchResults.map((result, idx) => (
-                  <button
+                  <Button
                     key={idx}
                     onClick={() => handleSelectResult(result)}
                     className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-white/5 transition-colors text-left border border-white/5"
                   >
                     <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0">
-                      <MapPin size={18} className="text-[#BFF367]" />
+                      <MapPin size={18} className="text-primary" />
                     </div>
                     <div className="flex flex-col overflow-hidden">
                       <span className="text-[14px] font-bold text-white/90 truncate">
@@ -249,7 +250,7 @@ const LocationSidebar = () => {
                         {result.display_name}
                       </span>
                     </div>
-                  </button>
+                  </Button>
                 ))
               ) : (
                 <div className="text-white/40 text-sm text-center py-4">
@@ -260,12 +261,12 @@ const LocationSidebar = () => {
           )}
 
           {/* Current Location Button */}
-          <button
+          <Button
             onClick={handleDetectLocation}
-            className="w-full flex items-center justify-between bg-[#242424] hover:bg-[#2A2A2A] transition-colors rounded-xl p-4 border border-white/5 group"
+            className="w-full flex items-center justify-between bg-[#242424] hover:bg-border transition-colors rounded-xl p-4 border border-white/5 group"
           >
             <div className="flex items-center gap-4">
-              <Crosshair size={22} className="text-[#BFF367]" />
+              <Crosshair size={22} className="text-primary" />
               <span className="text-[16px] font-bold text-white">
                 {isDetecting ? "Detecting..." : "Use Current Location"}
               </span>
@@ -274,7 +275,7 @@ const LocationSidebar = () => {
               size={20}
               className="text-white/40 group-hover:text-white transition-colors group-hover:translate-x-1"
             />
-          </button>
+          </Button>
 
           {/* Nearby Suggestions Section */}
           {searchQuery.length < 3 && (
@@ -289,7 +290,7 @@ const LocationSidebar = () => {
                   </div>
                 ) : nearbySuggestions.length > 0 ? (
                   nearbySuggestions.map((result, idx) => (
-                    <button
+                    <Button
                       key={idx}
                       onClick={() => handleSelectResult(result)}
                       className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-white/5 transition-colors text-left border border-white/5"
@@ -307,7 +308,7 @@ const LocationSidebar = () => {
                           {result.display_name}
                         </span>
                       </div>
-                    </button>
+                    </Button>
                   ))
                 ) : (
                   <div className="text-white/40 text-sm text-center py-4">

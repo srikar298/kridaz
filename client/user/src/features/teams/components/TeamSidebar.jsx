@@ -8,7 +8,8 @@ import { Plus, Users, Search, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AddOpponentModal from "./AddOpponentModal";
 import { StartScoringModal } from "@features/scoring";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";import { Button, Input } from "@kridaz/ui";
+
 
 const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
   const location = useLocation();
@@ -76,12 +77,12 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
   });
 
   return (
-    <div className="w-full md:w-80 h-full border-r border-[rgba(255,255,255,0.08)] bg-[#000000] flex flex-col overflow-hidden">
+    <div className="w-full md:w-80 h-full border-r border-[rgba(255,255,255,0.08)] bg-background flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="p-5 border-b border-[rgba(255,255,255,0.08)] bg-[#000000]">
+      <div className="p-5 border-b border-[rgba(255,255,255,0.08)] bg-background">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex-1 min-w-0 mr-2">
-            <h2 className="text-[18px] sm:text-[20px] font-[700] text-[#FFFFFF] tracking-tight uppercase font-inter truncate">
+            <h2 className="text-[18px] sm:text-[20px] font-[700] text-foreground tracking-tight uppercase font-inter truncate">
               {activeTab === "myTeams"
                 ? "My Teams"
                 : activeTab === "opponentTeams"
@@ -90,19 +91,19 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
             </h2>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <button
+            <Button
               onClick={() => setIsStartScoringOpen(true)}
-              className="flex items-center justify-center px-4 h-8 bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] rounded-[16px] hover:scale-105 shadow-[0_4px_24px_rgba(179,220,38,0.25)] transition-all duration-300 shrink-0"
+              className="flex items-center justify-center px-4 h-8 bg-gradient-to-r from-secondary to-primary text-background rounded-[16px] hover:scale-105 shadow-[0_4px_24px_rgba(179,220,38,0.25)] transition-all duration-300 shrink-0"
               title="Start Scoring"
             >
               <span className="text-[10px] font-[800] uppercase tracking-widest font-inter">
                 Start Scoring
               </span>
-            </button>
+            </Button>
             <div className="relative">
-              <button
+              <Button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-8 h-8 flex items-center justify-center bg-[#1B1B1B] text-[#FFFFFF] border border-[rgba(255,255,255,0.08)] rounded-[8px] hover:bg-[rgba(255,255,255,0.08)] hover:scale-105 transition-all duration-300 shrink-0"
+                className="w-8 h-8 flex items-center justify-center bg-card text-foreground border border-[rgba(255,255,255,0.08)] rounded-[8px] hover:bg-[rgba(255,255,255,0.08)] hover:scale-105 transition-all duration-300 shrink-0"
                 title="Add New"
               >
                 <Plus
@@ -110,7 +111,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                   strokeWidth={3}
                   className={`transition-transform duration-300 ${isDropdownOpen ? "rotate-45" : ""}`}
                 />
-              </button>
+              </Button>
               <AnimatePresence>
                 {isDropdownOpen && (
                   <>
@@ -123,47 +124,47 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-full mt-2 w-48 bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[16px] shadow-[0_4px_24px_rgba(0,0,0,0.5)] overflow-hidden z-50"
+                      className="absolute right-0 top-full mt-2 w-48 bg-card border border-[rgba(255,255,255,0.08)] rounded-[16px] shadow-[0_4px_24px_rgba(0,0,0,0.5)] overflow-hidden z-50"
                     >
                       <div className="flex flex-col py-1">
-                        <button
+                        <Button
                           onClick={() => {
                             onCreateTeam();
                             setIsDropdownOpen(false);
                           }}
-                          className="px-4 py-2.5 text-left text-[14px] text-[rgba(255,255,255,0.70)] hover:text-[#FFFFFF] hover:bg-[rgba(255,255,255,0.08)] font-[500] font-inter transition-colors"
+                          className="px-4 py-2.5 text-left text-[14px] text-[rgba(255,255,255,0.70)] hover:text-foreground hover:bg-[rgba(255,255,255,0.08)] font-[500] font-inter transition-colors"
                         >
-                          <span className="text-[#B3DC26] font-[800] text-[10px] uppercase tracking-wider block mb-0.5">
+                          <span className="text-primary font-[800] text-[10px] uppercase tracking-wider block mb-0.5">
                             My Teams
                           </span>
                           Create New Squad
-                        </button>
+                        </Button>
                         <div className="h-px bg-[rgba(255,255,255,0.08)] w-full" />
-                        <button
+                        <Button
                           onClick={() => {
                             setIsAddOpponentOpen(true);
                             setIsDropdownOpen(false);
                           }}
-                          className="px-4 py-2.5 text-left text-[14px] text-[rgba(255,255,255,0.70)] hover:text-[#FFFFFF] hover:bg-[rgba(255,255,255,0.08)] font-[500] font-inter transition-colors"
+                          className="px-4 py-2.5 text-left text-[14px] text-[rgba(255,255,255,0.70)] hover:text-foreground hover:bg-[rgba(255,255,255,0.08)] font-[500] font-inter transition-colors"
                         >
-                          <span className="text-[#B3DC26] font-[800] text-[10px] uppercase tracking-wider block mb-0.5">
+                          <span className="text-primary font-[800] text-[10px] uppercase tracking-wider block mb-0.5">
                             Opponents
                           </span>
                           Add Rival Team
-                        </button>
+                        </Button>
                         <div className="h-px bg-[rgba(255,255,255,0.08)] w-full" />
-                        <button
+                        <Button
                           onClick={() => {
                             setIsStartScoringOpen(true);
                             setIsDropdownOpen(false);
                           }}
-                          className="px-4 py-2.5 text-left text-[14px] text-[rgba(255,255,255,0.70)] hover:text-[#FFFFFF] hover:bg-[rgba(255,255,255,0.08)] font-[500] font-inter transition-colors"
+                          className="px-4 py-2.5 text-left text-[14px] text-[rgba(255,255,255,0.70)] hover:text-foreground hover:bg-[rgba(255,255,255,0.08)] font-[500] font-inter transition-colors"
                         >
                           <span className="text-[rgba(255,255,255,0.70)] font-[800] text-[10px] uppercase tracking-wider block mb-0.5">
                             Matches
                           </span>
                           Start Scoring Match
-                        </button>
+                        </Button>
                       </div>
                     </motion.div>
                   </>
@@ -177,10 +178,10 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
         <div className="mb-4">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.40)] text-[14px]" />
-            <input
+            <Input
               type="text"
               placeholder="Search..."
-              className="w-full bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[16px] py-2.5 pl-10 pr-4 text-[#FFFFFF] text-[14px] focus:outline-none focus:border-[#B3DC26] transition-colors font-[600] tracking-wider font-inter"
+              className="w-full bg-card border border-[rgba(255,255,255,0.08)] rounded-[16px] py-2.5 pl-10 pr-4 text-foreground text-[14px] focus:outline-none focus:border-primary transition-colors font-[600] tracking-wider font-inter"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -188,25 +189,25 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 p-1 bg-[#121212] rounded-[12px] border border-[rgba(255,255,255,0.08)]">
-          <button
+        <div className="flex gap-2 p-1 bg-card rounded-[12px] border border-[rgba(255,255,255,0.08)]">
+          <Button
             onClick={() => setActiveTab("myTeams")}
-            className={`flex-1 py-1.5 text-[10px] font-[800] font-inter uppercase tracking-widest rounded-[8px] transition-all ${activeTab === "myTeams" ? "bg-[#1B1B1B] text-[#B3DC26] border border-[rgba(255,255,255,0.08)] shadow-[0_2px_8px_rgba(0,0,0,0.5)]" : "text-[rgba(255,255,255,0.40)] hover:text-[#FFFFFF] border border-transparent"}`}
+            className={`flex-1 py-1.5 text-[10px] font-[800] font-inter uppercase tracking-widest rounded-[8px] transition-all ${activeTab === "myTeams" ? "bg-card text-primary border border-[rgba(255,255,255,0.08)] shadow-[0_2px_8px_rgba(0,0,0,0.5)]" : "text-[rgba(255,255,255,0.40)] hover:text-foreground border border-transparent"}`}
           >
             My Teams
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setActiveTab("opponentTeams")}
-            className={`flex-1 py-1.5 text-[10px] font-[800] font-inter uppercase tracking-widest rounded-[8px] transition-all ${activeTab === "opponentTeams" ? "bg-[#1B1B1B] text-[#B3DC26] border border-[rgba(255,255,255,0.08)] shadow-[0_2px_8px_rgba(0,0,0,0.5)]" : "text-[rgba(255,255,255,0.40)] hover:text-[#FFFFFF] border border-transparent"}`}
+            className={`flex-1 py-1.5 text-[10px] font-[800] font-inter uppercase tracking-widest rounded-[8px] transition-all ${activeTab === "opponentTeams" ? "bg-card text-primary border border-[rgba(255,255,255,0.08)] shadow-[0_2px_8px_rgba(0,0,0,0.5)]" : "text-[rgba(255,255,255,0.40)] hover:text-foreground border border-transparent"}`}
           >
             Opponents
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setActiveTab("scoringMatches")}
-            className={`flex-1 py-1.5 text-[10px] font-[800] font-inter uppercase tracking-widest rounded-[8px] transition-all ${activeTab === "scoringMatches" ? "bg-[#1B1B1B] text-[#B3DC26] border border-[rgba(255,255,255,0.08)] shadow-[0_2px_8px_rgba(0,0,0,0.5)]" : "text-[rgba(255,255,255,0.40)] hover:text-[#FFFFFF] border border-transparent"}`}
+            className={`flex-1 py-1.5 text-[10px] font-[800] font-inter uppercase tracking-widest rounded-[8px] transition-all ${activeTab === "scoringMatches" ? "bg-card text-primary border border-[rgba(255,255,255,0.08)] shadow-[0_2px_8px_rgba(0,0,0,0.5)]" : "text-[rgba(255,255,255,0.40)] hover:text-foreground border border-transparent"}`}
           >
             Matches
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -217,7 +218,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-20 bg-[#121212] border border-[rgba(255,255,255,0.08)] animate-pulse rounded-[16px]"
+                className="h-20 bg-card border border-[rgba(255,255,255,0.08)] animate-pulse rounded-[16px]"
               />
             ))}
           </div>
@@ -234,7 +235,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
               },
               LIVE: { bg: "bg-red-500/20", text: "text-red-400" },
               PAUSED: { bg: "bg-yellow-500/20", text: "text-yellow-400" },
-              COMPLETED: { bg: "bg-[#B3DC26]/10", text: "text-[#B3DC26]" },
+              COMPLETED: { bg: "bg-primary/10", text: "text-primary" },
             };
             // Games created on Flutter (or any hosted-game without a scoring
             // session yet) come through with `cricketMatch === null`. We show
@@ -255,10 +256,10 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
               return (
                 <div
                   key={itemId}
-                  className="w-full flex flex-col p-4 rounded-[16px] bg-[#121212] border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.15)] transition-colors"
+                  className="w-full flex flex-col p-4 rounded-[16px] bg-card border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.15)] transition-colors"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-[800] text-[#B3DC26] text-[14px] truncate flex-1 mr-2 font-inter">
+                    <h4 className="font-[800] text-primary text-[14px] truncate flex-1 mr-2 font-inter">
                       {item.name || item.title || "(unnamed match)"}
                     </h4>
                     <div className="flex items-center gap-2 flex-shrink-0">
@@ -268,7 +269,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                         {statusLabel}
                       </span>
                       {item.shortId && (
-                        <span className="text-[10px] font-[800] font-inter text-[#000000] bg-[#B3DC26] px-2 py-1 rounded-[4px] uppercase">
+                        <span className="text-[10px] font-[800] font-inter text-background bg-primary px-2 py-1 rounded-[4px] uppercase">
                           {item.shortId}
                         </span>
                       )}
@@ -292,16 +293,16 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                     </div>
                   )}
                   <div className="flex gap-2 mb-4">
-                    <div className="flex-1 text-center bg-[#1B1B1B] rounded-[8px] py-1.5 border border-[rgba(255,255,255,0.08)]">
-                      <span className="text-[12px] text-[#FFFFFF] font-[700] font-inter">
+                    <div className="flex-1 text-center bg-card rounded-[8px] py-1.5 border border-[rgba(255,255,255,0.08)]">
+                      <span className="text-[12px] text-foreground font-[700] font-inter">
                         {item.teams?.[0]?.name || "TBD"}
                       </span>
                     </div>
                     <div className="flex items-center justify-center text-[10px] text-[rgba(255,255,255,0.40)] font-[800] font-inter">
                       VS
                     </div>
-                    <div className="flex-1 text-center bg-[#1B1B1B] rounded-[8px] py-1.5 border border-[rgba(255,255,255,0.08)]">
-                      <span className="text-[12px] text-[#FFFFFF] font-[700] font-inter">
+                    <div className="flex-1 text-center bg-card rounded-[8px] py-1.5 border border-[rgba(255,255,255,0.08)]">
+                      <span className="text-[12px] text-foreground font-[700] font-inter">
                         {item.teams?.[1]?.name || "TBD"}
                       </span>
                     </div>
@@ -311,7 +312,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                       <>
                         <a
                           href={`/scoring/${item.id}`}
-                          className="flex-1 text-center text-[10px] uppercase font-[800] font-inter tracking-widest text-[#B3DC26] border border-[#B3DC26]/30 rounded-[8px] py-2 hover:bg-[#B3DC26]/10 transition-colors"
+                          className="flex-1 text-center text-[10px] uppercase font-[800] font-inter tracking-widest text-primary border border-primary/30 rounded-[8px] py-2 hover:bg-primary/10 transition-colors"
                         >
                           Launch App
                         </a>
@@ -319,7 +320,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                           href={`/analytics/${item.shortId || item.id}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex-1 text-center text-[10px] uppercase font-[800] font-inter tracking-widest text-[#B3DC26] border border-[#B3DC26]/30 rounded-[8px] py-2 hover:bg-[#B3DC26]/10 transition-colors"
+                          className="flex-1 text-center text-[10px] uppercase font-[800] font-inter tracking-widest text-primary border border-primary/30 rounded-[8px] py-2 hover:bg-primary/10 transition-colors"
                         >
                           Watch Live
                         </a>
@@ -327,7 +328,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                     ) : (
                       <a
                         href={`/scoring/${item.id}`}
-                        className="flex-1 text-center text-[10px] uppercase font-[800] font-inter tracking-widest text-[#000000] bg-[#B3DC26] rounded-[8px] py-2 hover:opacity-90 transition-opacity shadow-lg shadow-[#B3DC26]/10"
+                        className="flex-1 text-center text-[10px] uppercase font-[800] font-inter tracking-widest text-background bg-primary rounded-[8px] py-2 hover:opacity-90 transition-opacity shadow-lg shadow-[var(--primary)]/10"
                       >
                         ⚡ Start Scoring
                       </a>
@@ -348,11 +349,11 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                     onSelectTeam(item);
                   }
                 }}
-                className={`w-full flex items-center gap-3 p-3 rounded-[16px] transition-all group font-inter ${isSelected ? "bg-[#1B1B1B] border border-[#B3DC26] shadow-[0_4px_24px_rgba(179,220,38,0.1)]" : "bg-[#121212] border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.20)]"}`}
+                className={`w-full flex items-center gap-3 p-3 rounded-[16px] transition-all group font-inter ${isSelected ? "bg-card border border-primary shadow-[0_4px_24px_rgba(179,220,38,0.1)]" : "bg-card border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.20)]"}`}
               >
                 <div className="relative shrink-0">
                   <div
-                    className={`w-12 h-12 rounded-[12px] bg-[#000000] border-2 flex items-center justify-center text-[#B3DC26] font-[800] overflow-hidden transition-colors ${isSelected ? "border-[#B3DC26]" : "border-[rgba(255,255,255,0.08)] group-hover:border-[#B3DC26]/50"}`}
+                    className={`w-12 h-12 rounded-[12px] bg-background border-2 flex items-center justify-center text-primary font-[800] overflow-hidden transition-colors ${isSelected ? "border-primary" : "border-[rgba(255,255,255,0.08)] group-hover:border-primary/50"}`}
                   >
                     {item.image ? (
                       <img
@@ -366,14 +367,14 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                       </span>
                     )}
                   </div>
-                  <div className="absolute -bottom-2 -right-2 bg-[#121212] text-[#B3DC26] text-[8px] px-1.5 py-0.5 rounded-[4px] border border-[rgba(255,255,255,0.08)] font-[800] uppercase">
+                  <div className="absolute -bottom-2 -right-2 bg-card text-primary text-[8px] px-1.5 py-0.5 rounded-[4px] border border-[rgba(255,255,255,0.08)] font-[800] uppercase">
                     {item.sportType?.slice(0, 3)}
                   </div>
                 </div>
                 <div className="flex-1 text-left overflow-hidden ml-1">
                   <div className="flex items-center justify-between gap-2">
                     <h4
-                      className={`font-[800] text-[14px] truncate transition-colors ${isSelected ? "text-[#B3DC26]" : "text-[rgba(255,255,255,0.80)] group-hover:text-[#FFFFFF]"}`}
+                      className={`font-[800] text-[14px] truncate transition-colors ${isSelected ? "text-primary" : "text-[rgba(255,255,255,0.80)] group-hover:text-foreground"}`}
                     >
                       {item.name}
                     </h4>
@@ -394,14 +395,14 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                 </div>
                 <ChevronRight
                   size={16}
-                  className={`transition-all ${isSelected ? "text-[#B3DC26]" : "text-[rgba(255,255,255,0.20)] -rotate-90 md:rotate-0"}`}
+                  className={`transition-all ${isSelected ? "text-primary" : "text-[rgba(255,255,255,0.20)] -rotate-90 md:rotate-0"}`}
                 />
               </motion.button>
             );
           })
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-center p-8">
-            <div className="w-16 h-16 rounded-[16px] bg-[#121212] border border-[rgba(255,255,255,0.08)] flex items-center justify-center mb-4">
+            <div className="w-16 h-16 rounded-[16px] bg-card border border-[rgba(255,255,255,0.08)] flex items-center justify-center mb-4">
               <Users className="text-[rgba(255,255,255,0.20)]" size={32} />
             </div>
             <p className="text-[rgba(255,255,255,0.70)] text-[14px] font-[800] font-inter uppercase">

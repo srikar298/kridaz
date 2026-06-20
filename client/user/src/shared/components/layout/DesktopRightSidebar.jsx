@@ -43,9 +43,10 @@ import {
   useUnfollowPlayerMutation,
 } from "@redux/api/userApi";
 import { useGetTurfsQuery, useGetTurfDetailsQuery } from "@redux/api/turfApi";
-import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";
+import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";import { Button, Input } from "@kridaz/ui";
+
 const LIQUID_COLORS = {
-  color1: "#FFFFFF",
+  color1: "var(--foreground)",
   color2: "#1E10C5",
   color3: "#9089E2",
   color4: "#FCFCFE",
@@ -257,7 +258,7 @@ export default function DesktopRightSidebar({
       )}
 
       <aside
-        className={`fixed xl:sticky top-[77px] xl:top-[96px] right-0 bottom-0 xl:bottom-auto w-[440px] xl:w-[350px] bg-[#050505] xl:bg-transparent border-l border-white/5 xl:border-l-0 p-6 xl:p-0 xl:pl-6 overflow-y-auto xl:overflow-y-auto no-scrollbar transition-transform duration-300 z-[74] xl:z-[50] h-auto xl:h-[calc(100vh-120px)] shrink-0 ${isRightDrawerOpen ? "translate-x-0" : "translate-x-full xl:translate-x-0"}`}
+        className={`fixed xl:sticky top-[77px] xl:top-[96px] right-0 bottom-0 xl:bottom-auto w-[440px] xl:w-[350px] sidebar-glass xl:bg-transparent border-l border-white/5 xl:border-l-0 p-6 xl:p-0 xl:pl-6 overflow-y-auto xl:overflow-y-auto no-scrollbar transition-transform duration-300 z-[74] xl:z-[50] h-auto xl:h-[calc(100vh-120px)] shrink-0 ${isRightDrawerOpen ? "translate-x-0" : "translate-x-full xl:translate-x-0"}`}
       >
         <div className="space-y-4">
           {/* ── HOME & GENERAL PORTAL VIEW WIDGETS ── */}
@@ -266,7 +267,7 @@ export default function DesktopRightSidebar({
               {/* Host Your Venues CTA */}
               <Link
                 to="/host"
-                className="relative block overflow-hidden rounded-2xl w-full aspect-video shadow-[0_4px_20px_rgba(0,0,0,0.5)] group border border-white/[0.05] hover:border-[#BFF367]/50 transition-all duration-300 my-0"
+                className="relative block overflow-hidden rounded-2xl w-full aspect-video shadow-[0_4px_20px_rgba(0,0,0,0.5)] group border border-white/[0.05] hover:border-primary/50 transition-all duration-300 my-0"
               >
                 {/* Background Image */}
                 <div
@@ -297,18 +298,18 @@ export default function DesktopRightSidebar({
                         Live Now
                       </h4>
                       <div className="flex items-center gap-1.5">
-                        <button
+                        <Button
                           onClick={() => scrollLiveMatches("left")}
                           className="p-1 rounded-full bg-white/5 border border-white/5 hover:bg-[#E83441]/20 hover:border-[#E83441]/50 text-white hover:text-[#E83441] transition-all"
                         >
                           <ChevronLeft size={14} />
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           onClick={() => scrollLiveMatches("right")}
                           className="p-1 rounded-full bg-white/5 border border-white/5 hover:bg-[#E83441]/20 hover:border-[#E83441]/50 text-white hover:text-[#E83441] transition-all"
                         >
                           <ChevronRight size={14} />
-                        </button>
+                        </Button>
                       </div>
                     </div>
 
@@ -358,7 +359,7 @@ export default function DesktopRightSidebar({
                                   </div>
                                 </div>
                                 <div className="text-[10px] font-medium text-right leading-tight">
-                                  <span className="text-[#BFF367]">
+                                  <span className="text-primary">
                                     Overs: {match.overs || 0}
                                   </span>
                                   <br />
@@ -376,7 +377,7 @@ export default function DesktopRightSidebar({
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-2">
                                     <div
-                                      className={`w-6 h-6 rounded bg-[#111] border border-white/10 flex items-center justify-center shrink-0`}
+                                      className={`w-6 h-6 rounded bg-card border border-white/10 flex items-center justify-center shrink-0`}
                                     >
                                       {teamA.logo ? (
                                         <img
@@ -428,7 +429,7 @@ export default function DesktopRightSidebar({
                                       {teamB.name || "Team B"}
                                     </span>
                                   </div>
-                                  <div className="text-[14px] font-black text-white font-mono tracking-tight shadow-[#BFF367]">
+                                  <div className="text-[14px] font-black text-white font-mono tracking-tight shadow-[var(--primary)]">
                                     {teamB.score || "0"}{" "}
                                     <span className="text-[9px] font-medium text-white/60 ml-0.5">
                                       ({teamB.oversPlayed || "0.0"})
@@ -451,18 +452,18 @@ export default function DesktopRightSidebar({
                     Upcoming Bookings
                   </h4>
                   <div className="flex items-center gap-1.5">
-                    <button
+                    <Button
                       onClick={() => scrollNearby("left")}
-                      className="p-1 rounded-full bg-white/5 border border-white/5 hover:bg-white/10 hover:border-[#BFF367]/50 text-white hover:text-[#BFF367] transition-all"
+                      className="p-1 rounded-full bg-white/5 border border-white/5 hover:bg-white/10 hover:border-primary/50 text-white hover:text-primary transition-all"
                     >
                       <ChevronLeft size={14} />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => scrollNearby("right")}
-                      className="p-1 rounded-full bg-white/5 border border-white/5 hover:bg-white/10 hover:border-[#BFF367]/50 text-white hover:text-[#BFF367] transition-all"
+                      className="p-1 rounded-full bg-white/5 border border-white/5 hover:bg-white/10 hover:border-primary/50 text-white hover:text-primary transition-all"
                     >
                       <ChevronRight size={14} />
-                    </button>
+                    </Button>
                   </div>
                 </div>
                 <div
@@ -471,7 +472,7 @@ export default function DesktopRightSidebar({
                 >
                   {loadingBookings ? (
                     <div className="w-full py-4 flex justify-center items-center">
-                      <div className="w-4 h-4 border-2 border-[#BFF367] border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
                     </div>
                   ) : isLoggedIn && upcomingBookingsList.length > 0 ? (
                     upcomingBookingsList.map((booking, idx) => {
@@ -533,7 +534,7 @@ export default function DesktopRightSidebar({
                         <Link
                           key={booking._id || booking.id}
                           to={`/booking-pass/${booking.id || booking._id}`}
-                          className="min-w-[145px] w-[145px] flex flex-col rounded-xl border border-gray-600/60 bg-[#070708] overflow-hidden group shrink-0 shadow-sm transition-all hover:border-[#BFF367]/50"
+                          className="min-w-[145px] w-[145px] flex flex-col rounded-xl border border-gray-600/60 bg-[#070708] overflow-hidden group shrink-0 shadow-sm transition-all hover:border-primary/50"
                         >
                           {/* Image Section */}
                           <div className="relative w-full aspect-[4/5] overflow-hidden bg-white/5">
@@ -562,14 +563,14 @@ export default function DesktopRightSidebar({
                               <span className="text-[11px] font-black text-white leading-none">
                                 {dayStr}
                               </span>
-                              <span className="text-[7px] font-bold text-[#BFF367] leading-none mt-1 uppercase">
+                              <span className="text-[7px] font-bold text-primary leading-none mt-1 uppercase">
                                 {monthStr}
                               </span>
                             </div>
 
                             {/* Text Details */}
                             <div className="flex-1 min-w-0 flex flex-col justify-center">
-                              <h5 className="text-[10px] font-bold text-white leading-tight group-hover:text-[#BFF367] transition-colors line-clamp-2">
+                              <h5 className="text-[10px] font-bold text-white leading-tight group-hover:text-primary transition-colors line-clamp-2">
                                 {turfName}
                               </h5>
                               <p className="text-[8px] text-white/50 truncate mt-0.5 font-medium">
@@ -646,7 +647,7 @@ export default function DesktopRightSidebar({
                       <h3 className="text-[14px] font-black text-white uppercase tracking-tight leading-tight">
                         {activeTurf.name}
                       </h3>
-                      <div className="flex items-center gap-1.5 text-[11px] text-[#BFF367] font-bold">
+                      <div className="flex items-center gap-1.5 text-[11px] text-primary font-bold">
                         <Star
                           size={12}
                           fill="currentColor"
@@ -689,8 +690,8 @@ export default function DesktopRightSidebar({
                   </div>
 
                   {/* Quick Booking card */}
-                  <div className="bg-gradient-to-br from-[#BFF367]/10 to-transparent border border-[#BFF367]/20 rounded-xl p-4 space-y-3.5 shadow-lg">
-                    <div className="flex items-center gap-1.5 text-[11px] text-[#BFF367] font-black uppercase tracking-wider">
+                  <div className="bg-gradient-to-br from-primary/10 to-transparent border border-primary/20 rounded-xl p-4 space-y-3.5 shadow-lg">
+                    <div className="flex items-center gap-1.5 text-[11px] text-primary font-black uppercase tracking-wider">
                       <Sparkles size={12} className="animate-pulse" />
                       <span>Ready to play?</span>
                     </div>
@@ -700,7 +701,7 @@ export default function DesktopRightSidebar({
                     </p>
                     <Link
                       to={`/checkout/${activeTurf._id || activeTurf.id}`}
-                      className="block w-full text-center py-3 bg-[#BFF367] text-black font-black uppercase text-[10px] tracking-widest rounded-lg hover:scale-102 transition-transform shadow-[0_4px_15px_rgba(191,243,103,0.15)]"
+                      className="block w-full text-center py-3 bg-primary text-black font-black uppercase text-[10px] tracking-widest rounded-lg hover:scale-102 transition-transform shadow-[0_4px_15px_rgba(191,243,103,0.15)]"
                     >
                       Quick Book Now
                     </Link>
@@ -715,7 +716,7 @@ export default function DesktopRightSidebar({
                       <div className="flex gap-2.5 text-[11px] text-white/70 font-sans">
                         <MapPin
                           size={14}
-                          className="text-[#BFF367] shrink-0 mt-0.5"
+                          className="text-primary shrink-0 mt-0.5"
                         />
                         <div>
                           <p className="font-bold text-white uppercase">
@@ -744,7 +745,7 @@ export default function DesktopRightSidebar({
                       </h5>
                       <div className="space-y-3">
                         <label className="flex items-center gap-3 cursor-pointer group">
-                          <input
+                          <Input
                             type="checkbox"
                             checked={searchFilters.onlyAvailable || false}
                             onChange={(e) =>
@@ -752,14 +753,14 @@ export default function DesktopRightSidebar({
                                 setFilters({ onlyAvailable: e.target.checked })
                               )
                             }
-                            className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                            className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                           />
                           <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                             Show Only Available Venues
                           </span>
                         </label>
                         <label className="flex items-center gap-3 cursor-pointer group">
-                          <input
+                          <Input
                             type="checkbox"
                             checked={searchFilters.onlyFavorites || false}
                             onChange={(e) =>
@@ -767,7 +768,7 @@ export default function DesktopRightSidebar({
                                 setFilters({ onlyFavorites: e.target.checked })
                               )
                             }
-                            className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                            className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                           />
                           <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                             Show Only Favorites
@@ -783,7 +784,7 @@ export default function DesktopRightSidebar({
                       </h5>
                       <div className="space-y-3">
                         <label className="flex items-center gap-3 cursor-pointer group">
-                          <input
+                          <Input
                             type="checkbox"
                             checked={searchFilters.timingMorning || false}
                             onChange={(e) =>
@@ -791,14 +792,14 @@ export default function DesktopRightSidebar({
                                 setFilters({ timingMorning: e.target.checked })
                               )
                             }
-                            className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                            className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                           />
                           <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                             Morning (6:00 AM - 11:00 AM)
                           </span>
                         </label>
                         <label className="flex items-center gap-3 cursor-pointer group">
-                          <input
+                          <Input
                             type="checkbox"
                             checked={searchFilters.timingAfternoon || false}
                             onChange={(e) =>
@@ -808,14 +809,14 @@ export default function DesktopRightSidebar({
                                 })
                               )
                             }
-                            className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                            className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                           />
                           <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                             Afternoon (11:00 AM - 5:00 PM)
                           </span>
                         </label>
                         <label className="flex items-center gap-3 cursor-pointer group">
-                          <input
+                          <Input
                             type="checkbox"
                             checked={searchFilters.timingEvening || false}
                             onChange={(e) =>
@@ -823,14 +824,14 @@ export default function DesktopRightSidebar({
                                 setFilters({ timingEvening: e.target.checked })
                               )
                             }
-                            className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                            className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                           />
                           <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                             Evening (5:00 PM - 10:00 PM)
                           </span>
                         </label>
                         <label className="flex items-center gap-3 cursor-pointer group">
-                          <input
+                          <Input
                             type="checkbox"
                             checked={searchFilters.timingLateNight || false}
                             onChange={(e) =>
@@ -840,7 +841,7 @@ export default function DesktopRightSidebar({
                                 })
                               )
                             }
-                            className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                            className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                           />
                           <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                             Late Night (After 10 PM)
@@ -863,7 +864,7 @@ export default function DesktopRightSidebar({
                               {(searchFilters.minRating || 0).toFixed(1)}
                             </span>
                           </div>
-                          <input
+                          <Input
                             type="range"
                             min="0"
                             max="5"
@@ -877,9 +878,9 @@ export default function DesktopRightSidebar({
                               )
                             }
                             style={{
-                              background: `linear-gradient(to right, #BFF367 ${((searchFilters.minRating || 0) / 5) * 100}%, #1F1F1F ${((searchFilters.minRating || 0) / 5) * 100}%)`,
+                              background: `linear-gradient(to right, var(--primary) ${((searchFilters.minRating || 0) / 5) * 100}%, #1F1F1F ${((searchFilters.minRating || 0) / 5) * 100}%)`,
                             }}
-                            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#BFF367]"
+                            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
                           />
                         </div>
                       </div>
@@ -892,19 +893,19 @@ export default function DesktopRightSidebar({
                       </h5>
                       <div className="space-y-3">
                         <label className="flex items-center gap-3 cursor-pointer group">
-                          <input
+                          <Input
                             type="checkbox"
-                            className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                            className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                           />
                           <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                             Less than ₹5000
                           </span>
                         </label>
                         <label className="flex items-center gap-3 cursor-pointer group">
-                          <input
+                          <Input
                             type="checkbox"
                             defaultChecked
-                            className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                            className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                           />
                           <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                             ₹5000 and above
@@ -927,7 +928,7 @@ export default function DesktopRightSidebar({
                   Active Tournament Info
                 </h4>
                 <div className="bg-[#0B0B0C] border border-white/[0.05] rounded-xl p-4 space-y-3 shadow-md">
-                  <span className="px-2 py-0.5 bg-[#BFF367]/10 text-[#BFF367] rounded text-[8px] font-black uppercase tracking-wider border border-[#BFF367]/20">
+                  <span className="px-2 py-0.5 bg-primary/10 text-primary rounded text-[8px] font-black uppercase tracking-wider border border-primary/20">
                     BOX CRICKET
                   </span>
                   <h3 className="text-[14px] font-black text-white uppercase tracking-tight">
@@ -982,7 +983,7 @@ export default function DesktopRightSidebar({
                     <span className="text-[8px] font-black uppercase text-white/40">
                       15 Jun | 18:00
                     </span>
-                    <span className="text-[8px] font-black uppercase text-[#BFF367]">
+                    <span className="text-[8px] font-black uppercase text-primary">
                       Match 01
                     </span>
                   </div>
@@ -1013,7 +1014,7 @@ export default function DesktopRightSidebar({
                       Player Profile
                     </h4>
                     <div className="bg-[#0B0B0C] border border-white/[0.05] rounded-xl p-5 text-center space-y-3.5 shadow-md">
-                      <div className="w-16 h-16 rounded-full overflow-hidden bg-white/5 border border-[#BFF367]/25 mx-auto">
+                      <div className="w-16 h-16 rounded-full overflow-hidden bg-white/5 border border-primary/25 mx-auto">
                         <img
                           src={
                             activePlayer.profilePicture ||
@@ -1066,7 +1067,7 @@ export default function DesktopRightSidebar({
                         <span className="text-[8px] font-bold text-white/45 uppercase tracking-widest block">
                           Rating
                         </span>
-                        <div className="text-[15px] font-black text-[#BFF367] mt-1.5 leading-none">
+                        <div className="text-[15px] font-black text-primary mt-1.5 leading-none">
                           {activePlayer.rating || "4.9"}
                         </div>
                       </div>
@@ -1089,13 +1090,13 @@ export default function DesktopRightSidebar({
                     <div className="space-y-2">
                       <Link
                         to="/messages"
-                        className="block w-full text-center py-3 bg-[#BFF367] text-black font-black uppercase text-[10px] tracking-widest rounded-lg hover:scale-102 transition-transform shadow-[0_4px_12px_rgba(191,243,103,0.15)]"
+                        className="block w-full text-center py-3 bg-primary text-black font-black uppercase text-[10px] tracking-widest rounded-lg hover:scale-102 transition-transform shadow-[0_4px_12px_rgba(191,243,103,0.15)]"
                       >
                         Send Message
                       </Link>
-                      <button className="w-full py-3 bg-white/5 border border-white/10 text-white font-black uppercase text-[10px] tracking-widest rounded-lg hover:bg-white/10 transition-colors">
+                      <Button className="w-full py-3 bg-white/5 border border-white/10 text-white font-black uppercase text-[10px] tracking-widest rounded-lg hover:bg-white/10 transition-colors">
                         Invite to Match
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -1122,8 +1123,8 @@ export default function DesktopRightSidebar({
             !isJoinGamesPage && (
               <>
                 {/* Quick Info */}
-                <div className="bg-gradient-to-br from-[#BFF367]/5 to-transparent border border-white/5 rounded-xl p-4.5 space-y-3">
-                  <div className="flex items-center gap-1.5 text-[11px] text-[#BFF367] font-black uppercase tracking-wider">
+                <div className="bg-gradient-to-br from-primary/5 to-transparent border border-white/5 rounded-xl p-4.5 space-y-3">
+                  <div className="flex items-center gap-1.5 text-[11px] text-primary font-black uppercase tracking-wider">
                     <Info size={12} />
                     <span>Kridaz Arena</span>
                   </div>
@@ -1149,7 +1150,7 @@ export default function DesktopRightSidebar({
                       </h5>
                     </div>
                     <div>
-                      <span className="px-1.5 py-0.5 bg-[#BFF367]/10 text-[#BFF367] rounded text-[7px] font-black uppercase tracking-wider">
+                      <span className="px-1.5 py-0.5 bg-primary/10 text-primary rounded text-[7px] font-black uppercase tracking-wider">
                         ACTIVE
                       </span>
                       <h5 className="text-[11px] font-bold text-white mt-1.5 truncate">

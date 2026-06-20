@@ -22,7 +22,7 @@ const helmetConfig = {
         "'self'",
         "data:",
         "blob:",
-        "https://res.cloudinary.com",
+        "https://pub-*.r2.dev", // Cloudflare R2 public domains
         "https://lh3.googleusercontent.com",
         "https://*.tile.openstreetmap.org", // Required for Leaflet maps
       ],

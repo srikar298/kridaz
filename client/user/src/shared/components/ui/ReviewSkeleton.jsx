@@ -1,3 +1,4 @@
+import { Input } from "@kridaz/ui";
 const ReviewSkeleton = () => {
   return (
     <div className="card bg-base-100 shadow-xl animate-pulse">
@@ -12,7 +13,7 @@ const ReviewSkeleton = () => {
         </div>
         <div className="rating rating-md">
           {[...Array(5)].map((_, i) => (
-            <input
+            <Input
               key={i}
               type="radio"
               name={`rating-${i}`}

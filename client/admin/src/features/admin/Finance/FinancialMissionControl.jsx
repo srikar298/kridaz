@@ -22,7 +22,8 @@ import {
 } from "lucide-react";
 import CountUp from "react-countup";
 import useAdminFinance from "@hooks/admin/useAdminFinance";
-import useWithdrawals from "@hooks/admin/useWithdrawals";
+import useWithdrawals from "@hooks/admin/useWithdrawals";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 
 const FinancialMissionControl = () => {
   const navigate = useNavigate();
@@ -114,7 +115,7 @@ const FinancialMissionControl = () => {
       case "PENDING":
         return "text-yellow-500 bg-yellow-500/10 border-yellow-500/20";
       case "COMPLETED":
-        return "text-[#CCFF00] bg-[#CCFF00]/10 border-[#CCFF00]/20";
+        return "text-primary bg-primary/10 border-primary/20";
       case "REJECTED":
         return "text-red-500 bg-red-500/10 border-red-500/20";
       default:
@@ -142,20 +143,20 @@ const FinancialMissionControl = () => {
   ).length;
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-background text-white overflow-x-hidden">
       {/* Background Glows */}
-      <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-[#CCFF00]/5 blur-[120px] pointer-events-none z-0" />
-      <div className="fixed bottom-0 left-0 w-[500px] h-[500px] bg-[#CCFF00]/5 blur-[120px] pointer-events-none z-0" />
+      <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] pointer-events-none z-0" />
+      <div className="fixed bottom-0 left-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] pointer-events-none z-0" />
 
       <div className="relative z-10 p-6 lg:p-10 space-y-10 max-w-[1600px] mx-auto pb-32">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <div className="w-1.5 h-8 bg-[#CCFF00] rounded-full shadow-[0_0_15px_rgba(204,255,0,0.5)]" />
+              <div className="w-1.5 h-8 bg-primary rounded-full shadow-[0_0_15px_rgba(204,255,0,0.5)]" />
               <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic">
                 FINANCIAL{" "}
-                <span className="text-[#CCFF00]">MISSION CONTROL</span>
+                <span className="text-primary">MISSION CONTROL</span>
               </h1>
             </div>
             <p className="text-gray-400 font-medium tracking-wider uppercase text-xs ml-4">
@@ -163,19 +164,19 @@ const FinancialMissionControl = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 bg-[#1A1A1A] p-1 rounded-[8px] border border-[#2D2D2D]">
+          <div className="flex items-center gap-2 bg-card p-1 rounded-[8px] border border-border">
             {["payouts", "kyc", "settings"].map((tab) => (
-              <button
+              <Button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-6 py-2 rounded-[6px] text-[11px] font-bold uppercase tracking-widest transition-all ${activeTab === tab ? "bg-[#CCFF00] text-black shadow-[0_0_20px_rgba(204,255,0,0.1)]" : "text-gray-500 hover:text-white"}`}
+                className={`px-6 py-2 rounded-[6px] text-[11px] font-bold uppercase tracking-widest transition-all ${activeTab === tab ? "bg-primary text-black shadow-[0_0_20px_rgba(204,255,0,0.1)]" : "text-gray-500 hover:text-white"}`}
               >
                 {tab === "kyc"
                   ? "KYC Queue"
                   : tab === "payouts"
                     ? "Payouts"
                     : "Logistics"}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -234,24 +235,24 @@ const FinancialMissionControl = () => {
           {activeTab === "payouts" && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6">
               {/* Filter Bar */}
-              <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-[#0A0A0A] p-4 rounded-[8px] border border-[#2D2D2D]">
+              <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-background p-4 rounded-[8px] border border-border">
                 <div className="relative w-full md:w-96">
                   <Search
                     className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
                     size={16}
                   />
-                  <input
+                  <Input
                     type="text"
                     placeholder="Search partner, email or account..."
-                    className="w-full bg-[#1A1A1A] border border-[#2D2D2D] rounded-[6px] py-2.5 pl-11 pr-4 text-[13px] text-white focus:outline-none focus:border-[#CCFF00] transition-all font-inter"
+                    className="w-full bg-card border border-border rounded-[6px] py-2.5 pl-11 pr-4 text-[13px] text-white focus:outline-none focus:border-primary transition-all font-inter"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
                 <div className="flex items-center gap-3 w-full md:w-auto">
                   <Filter className="text-gray-500" size={16} />
-                  <select
-                    className="flex-1 md:w-48 bg-[#1A1A1A] border border-[#2D2D2D] rounded-[6px] py-2.5 px-4 text-[13px] text-white focus:outline-none focus:border-[#CCFF00] transition-all cursor-pointer uppercase font-bold tracking-wider"
+                  <Select
+                    className="flex-1 md:w-48 bg-card border border-border rounded-[6px] py-2.5 px-4 text-[13px] text-white focus:outline-none focus:border-primary transition-all cursor-pointer uppercase font-bold tracking-wider"
                     value={payoutFilter}
                     onChange={(e) => setPayoutFilter(e.target.value)}
                   >
@@ -259,43 +260,43 @@ const FinancialMissionControl = () => {
                     <option value="PENDING">Pending</option>
                     <option value="COMPLETED">Processed</option>
                     <option value="REJECTED">Rejected</option>
-                  </select>
+                  </Select>
                 </div>
               </div>
 
               {/* Payouts Table */}
-              <div className="bg-[#0A0A0A] rounded-[8px] border border-[#2D2D2D] overflow-hidden shadow-2xl">
+              <div className="bg-background rounded-[8px] border border-border overflow-hidden shadow-2xl">
                 <div className="overflow-x-auto no-scrollbar">
                   <table className="w-full text-left">
                     <thead>
-                      <tr className="bg-[#1A1A1A]/50 border-b border-[#2D2D2D]">
-                        <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#878C9F]">
+                      <tr className="bg-card/50 border-b border-border">
+                        <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                           Partner
                         </th>
-                        <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#878C9F]">
+                        <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                           Settlement Destination
                         </th>
-                        <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#878C9F]">
+                        <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                           Quantum
                         </th>
-                        <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#878C9F]">
+                        <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                           Lifecycle
                         </th>
-                        <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#878C9F]">
+                        <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                           Timestamp
                         </th>
-                        <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#878C9F] text-right">
+                        <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground text-right">
                           Governance
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#2D2D2D]/30">
+                    <tbody className="divide-y divide-[var(--border)]/30">
                       {isLoading ? (
                         <tr>
                           <td colSpan="6" className="px-6 py-24 text-center">
                             <div className="flex flex-col items-center gap-4">
-                              <div className="w-10 h-10 border-2 border-[#CCFF00] border-t-transparent rounded-full animate-spin" />
-                              <p className="text-[11px] font-black uppercase tracking-widest text-[#CCFF00]">
+                              <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                              <p className="text-[11px] font-black uppercase tracking-widest text-primary">
                                 Synchronizing Treasury Data...
                               </p>
                             </div>
@@ -316,7 +317,7 @@ const FinancialMissionControl = () => {
                         filteredWithdrawals.map((req) => (
                           <tr
                             key={req._id}
-                            className="group hover:bg-[#1A1A1A]/50 transition-all duration-300"
+                            className="group hover:bg-card/50 transition-all duration-300"
                           >
                             <td className="px-6 py-4">
                               <div
@@ -326,7 +327,7 @@ const FinancialMissionControl = () => {
                                 }
                                 className="flex items-center gap-3 cursor-pointer group/partner"
                               >
-                                <div className="w-9 h-9 rounded-[6px] bg-[#CCFF00]/10 border border-[#CCFF00]/20 flex items-center justify-center overflow-hidden group-hover/partner:border-[#CCFF00] transition-colors">
+                                <div className="w-9 h-9 rounded-[6px] bg-primary/10 border border-primary/20 flex items-center justify-center overflow-hidden group-hover/partner:border-primary transition-colors">
                                   {req.owner?.profilePicture ? (
                                     <img
                                       src={req.owner.profilePicture}
@@ -334,16 +335,16 @@ const FinancialMissionControl = () => {
                                       className="w-full h-full object-cover"
                                     />
                                   ) : (
-                                    <span className="text-[#CCFF00] font-bold text-xs">
+                                    <span className="text-primary font-bold text-xs">
                                       {req.owner?.name?.charAt(0)}
                                     </span>
                                   )}
                                 </div>
                                 <div>
-                                  <p className="font-bold text-white text-[14px] tracking-tight uppercase group-hover/partner:text-[#CCFF00] transition-colors">
+                                  <p className="font-bold text-white text-[14px] tracking-tight uppercase group-hover/partner:text-primary transition-colors">
                                     {req.owner?.name}
                                   </p>
-                                  <p className="text-[10px] text-[#878C9F] uppercase tracking-widest font-medium">
+                                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">
                                     {req.owner?.role || "PARTNER"}
                                   </p>
                                 </div>
@@ -354,14 +355,14 @@ const FinancialMissionControl = () => {
                                 <p className="text-[12px] text-gray-300 font-semibold flex items-center gap-1.5 uppercase tracking-tight">
                                   <Building
                                     size={12}
-                                    className="text-[#CCFF00]"
+                                    className="text-primary"
                                   />{" "}
                                   {req.bankDetails?.bankName}
                                 </p>
-                                <p className="text-[11px] text-[#878C9F] font-mono tracking-tighter">
+                                <p className="text-[11px] text-muted-foreground font-mono tracking-tighter">
                                   {req.bankDetails?.accountNumber}
                                 </p>
-                                <p className="text-[9px] text-[#CCFF00]/60 font-mono tracking-widest uppercase">
+                                <p className="text-[9px] text-primary/60 font-mono tracking-widest uppercase">
                                   {req.bankDetails?.ifscCode}
                                 </p>
                               </div>
@@ -378,7 +379,7 @@ const FinancialMissionControl = () => {
                                 {req.status}
                               </span>
                             </td>
-                            <td className="px-6 py-4 text-[11px] font-medium text-[#878C9F] uppercase tracking-wider">
+                            <td className="px-6 py-4 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                               {new Date(req.createdAt).toLocaleDateString(
                                 "en-IN",
                                 {
@@ -391,13 +392,13 @@ const FinancialMissionControl = () => {
                             <td className="px-6 py-4 text-right">
                               {req.status === "PENDING" ? (
                                 <div className="flex justify-end gap-2">
-                                  <button
+                                  <Button
                                     onClick={() => openSettleModal(req)}
-                                    className="px-3 py-1.5 bg-[#CCFF00]/10 text-[#CCFF00] hover:bg-[#CCFF00] hover:text-black rounded-[6px] transition-all border border-[#CCFF00]/20 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5"
+                                    className="px-3 py-1.5 bg-primary/10 text-primary hover:bg-primary hover:text-black rounded-[6px] transition-all border border-primary/20 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5"
                                   >
                                     <CheckCircle size={13} /> Settle
-                                  </button>
-                                  <button
+                                  </Button>
+                                  <Button
                                     onClick={() => {
                                       setRejectModal(req);
                                       setRejectReason("");
@@ -405,28 +406,28 @@ const FinancialMissionControl = () => {
                                     className="px-3 py-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-[6px] transition-all border border-red-500/20 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5"
                                   >
                                     <XCircle size={13} /> Reject
-                                  </button>
+                                  </Button>
                                 </div>
                               ) : (
                                 <div className="space-y-0.5">
-                                  <div className="text-[10px] text-[#878C9F] italic font-mono uppercase tracking-tighter">
+                                  <div className="text-[10px] text-muted-foreground italic font-mono uppercase tracking-tighter">
                                     {req.status === "COMPLETED"
                                       ? `TXN: ${req.transactionId?.slice(-8) || "N/A"}`
                                       : req.rejectionReason?.slice(0, 30)}
                                   </div>
                                   {req.status === "COMPLETED" &&
                                     req.bankDetails?.screenshotUrl && (
-                                      <button
+                                      <Button
                                         onClick={() =>
                                           window.open(
                                             req.bankDetails.screenshotUrl,
                                             "_blank"
                                           )
                                         }
-                                        className="text-[9px] text-[#CCFF00] font-bold uppercase tracking-wider flex items-center gap-1 hover:underline"
+                                        className="text-[9px] text-primary font-bold uppercase tracking-wider flex items-center gap-1 hover:underline"
                                       >
                                         <Image size={10} /> View Receipt
-                                      </button>
+                                      </Button>
                                     )}
                                 </div>
                               )}
@@ -443,20 +444,20 @@ const FinancialMissionControl = () => {
 
           {activeTab === "kyc" && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6">
-              <div className="bg-[#0A0A0A] p-8 rounded-[8px] border border-[#2D2D2D]">
+              <div className="bg-background p-8 rounded-[8px] border border-border">
                 <div className="mb-8">
                   <h3 className="text-xl font-black uppercase tracking-tighter italic mb-1">
                     Pending{" "}
-                    <span className="text-[#CCFF00]">KYC Verifications</span>
+                    <span className="text-primary">KYC Verifications</span>
                   </h3>
-                  <p className="text-[#878C9F] text-[11px] font-medium uppercase tracking-widest">
+                  <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-widest">
                     Partner bank accounts awaiting treasury clearance
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {kycQueue.length === 0 ? (
-                    <div className="col-span-full py-20 text-center text-gray-600 border border-dashed border-[#2D2D2D] rounded-[8px]">
+                    <div className="col-span-full py-20 text-center text-gray-600 border border-dashed border-border rounded-[8px]">
                       <ShieldCheck
                         size={40}
                         className="mx-auto mb-4 opacity-10"
@@ -469,10 +470,10 @@ const FinancialMissionControl = () => {
                     kycQueue.map((owner) => (
                       <div
                         key={owner._id}
-                        className="bg-[#1A1A1A] border border-[#2D2D2D] p-6 rounded-[8px] hover:border-[#CCFF00]/30 transition-all group relative overflow-hidden flex flex-col"
+                        className="bg-card border border-border p-6 rounded-[8px] hover:border-primary/30 transition-all group relative overflow-hidden flex flex-col"
                       >
                         <div className="absolute top-0 right-0 p-4 opacity-20">
-                          <ShieldCheck size={20} className="text-[#CCFF00]" />
+                          <ShieldCheck size={20} className="text-primary" />
                         </div>
                         <div
                           onClick={() =>
@@ -480,7 +481,7 @@ const FinancialMissionControl = () => {
                           }
                           className="flex items-start gap-4 mb-6 cursor-pointer group/profile"
                         >
-                          <div className="w-12 h-12 rounded-[6px] bg-[#CCFF00]/10 flex items-center justify-center overflow-hidden border border-[#CCFF00]/20 group-hover/profile:border-[#CCFF00] transition-colors">
+                          <div className="w-12 h-12 rounded-[6px] bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/20 group-hover/profile:border-primary transition-colors">
                             {owner.profilePicture ? (
                               <img
                                 src={owner.profilePicture}
@@ -488,24 +489,24 @@ const FinancialMissionControl = () => {
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <span className="text-[#CCFF00] font-black text-xl">
+                              <span className="text-primary font-black text-xl">
                                 {owner.name?.charAt(0)}
                               </span>
                             )}
                           </div>
                           <div>
-                            <h4 className="font-bold text-white uppercase tracking-tight text-[15px] group-hover/profile:text-[#CCFF00] transition-colors">
+                            <h4 className="font-bold text-white uppercase tracking-tight text-[15px] group-hover/profile:text-primary transition-colors">
                               {owner.name}
                             </h4>
-                            <p className="text-[10px] text-[#878C9F] uppercase tracking-widest">
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
                               {owner.email}
                             </p>
                           </div>
                         </div>
 
-                        <div className="space-y-3 bg-black/40 p-4 rounded-[6px] border border-[#2D2D2D] mb-6 flex-1">
+                        <div className="space-y-3 bg-black/40 p-4 rounded-[6px] border border-border mb-6 flex-1">
                           <div className="flex justify-between items-center">
-                            <span className="text-[9px] font-black uppercase text-[#878C9F] tracking-widest">
+                            <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">
                               Bank
                             </span>
                             <span className="text-xs text-gray-300 font-bold uppercase tracking-tight">
@@ -513,7 +514,7 @@ const FinancialMissionControl = () => {
                             </span>
                           </div>
                           <div className="flex justify-between items-center">
-                            <span className="text-[9px] font-black uppercase text-[#878C9F] tracking-widest">
+                            <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">
                               Account
                             </span>
                             <span className="text-xs text-gray-300 font-mono">
@@ -521,28 +522,28 @@ const FinancialMissionControl = () => {
                             </span>
                           </div>
                           <div className="flex justify-between items-center">
-                            <span className="text-[9px] font-black uppercase text-[#878C9F] tracking-widest">
+                            <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">
                               IFSC
                             </span>
-                            <span className="text-xs text-[#CCFF00] font-mono font-bold">
+                            <span className="text-xs text-primary font-mono font-bold">
                               {owner.bankingDetails?.ifscCode}
                             </span>
                           </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-3 mt-auto">
-                          <button
+                          <Button
                             onClick={() => verifyKYC(owner._id, "VERIFIED")}
-                            className="py-3 bg-[#CCFF00] text-black text-[10px] font-black uppercase tracking-widest rounded-[6px] hover:shadow-[0_0_20px_rgba(204,255,0,0.2)] transition-all"
+                            className="py-3 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-[6px] hover:shadow-[0_0_20px_rgba(204,255,0,0.2)] transition-all"
                           >
                             Verify
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             onClick={() => verifyKYC(owner._id, "REJECTED")}
                             className="py-3 bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-[6px] hover:bg-red-500 hover:text-white transition-all border border-red-500/20"
                           >
                             Decline
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     ))
@@ -554,19 +555,19 @@ const FinancialMissionControl = () => {
 
           {activeTab === "settings" && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-2xl">
-              <div className="bg-[#0A0A0A] p-8 lg:p-10 rounded-[8px] border border-[#2D2D2D] space-y-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#CCFF00]/5 blur-[60px]"></div>
+              <div className="bg-background p-8 lg:p-10 rounded-[8px] border border-border space-y-8 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[60px]"></div>
 
-                <div className="flex items-center gap-4 border-b border-[#2D2D2D] pb-8">
-                  <div className="p-3.5 bg-[#CCFF00]/10 text-[#CCFF00] rounded-[8px] border border-[#CCFF00]/20">
+                <div className="flex items-center gap-4 border-b border-border pb-8">
+                  <div className="p-3.5 bg-primary/10 text-primary rounded-[8px] border border-primary/20">
                     <Settings size={24} />
                   </div>
                   <div>
                     <h3 className="text-xl font-black uppercase tracking-tighter italic">
                       Settlement{" "}
-                      <span className="text-[#CCFF00]">Logistics</span>
+                      <span className="text-primary">Logistics</span>
                     </h3>
-                    <p className="text-[#878C9F] text-[11px] font-medium uppercase tracking-widest mt-1">
+                    <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-widest mt-1">
                       Global Payout Orchestration & Thresholds
                     </p>
                   </div>
@@ -574,13 +575,13 @@ const FinancialMissionControl = () => {
 
                 <div className="space-y-8">
                   <div className="space-y-4">
-                    <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#878C9F] block">
+                    <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground block">
                       Weekly Settlement Cycle
                     </label>
                     <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
                       {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
                         (day) => (
-                          <button
+                          <Button
                             key={day}
                             onClick={() =>
                               updatePayoutSettings({
@@ -588,55 +589,55 @@ const FinancialMissionControl = () => {
                                 payoutDay: day,
                               })
                             }
-                            className={`py-3.5 rounded-[6px] text-[11px] font-black uppercase tracking-widest transition-all border ${payoutSettings?.payoutDay === day ? "bg-[#CCFF00] text-black border-[#CCFF00] shadow-[0_0_15px_rgba(204,255,0,0.15)]" : "bg-[#1A1A1A] text-gray-500 border-[#2D2D2D] hover:border-[#CCFF00]/30"}`}
+                            className={`py-3.5 rounded-[6px] text-[11px] font-black uppercase tracking-widest transition-all border ${payoutSettings?.payoutDay === day ? "bg-primary text-black border-primary shadow-[0_0_15px_rgba(204,255,0,0.15)]" : "bg-card text-gray-500 border-border hover:border-primary/30"}`}
                           >
                             {day}
-                          </button>
+                          </Button>
                         )
                       )}
                     </div>
-                    <p className="text-[10px] text-[#878C9F] font-medium italic uppercase tracking-wider">
+                    <p className="text-[10px] text-muted-foreground font-medium italic uppercase tracking-wider">
                       Automated batch processing occurs at 00:00 GMT on selected
                       day.
                     </p>
                   </div>
 
-                  <div className="pt-8 border-t border-[#2D2D2D] space-y-4">
-                    <div className="flex items-center justify-between p-5 bg-[#1A1A1A] rounded-[8px] border border-[#2D2D2D] group hover:border-[#CCFF00]/20 transition-all">
+                  <div className="pt-8 border-t border-border space-y-4">
+                    <div className="flex items-center justify-between p-5 bg-card rounded-[8px] border border-border group hover:border-primary/20 transition-all">
                       <div className="flex items-center gap-4">
-                        <div className="p-2 bg-[#CCFF00]/10 rounded-[6px] text-[#CCFF00] group-hover:scale-110 transition-transform">
+                        <div className="p-2 bg-primary/10 rounded-[6px] text-primary group-hover:scale-110 transition-transform">
                           <IndianRupee size={18} />
                         </div>
                         <div>
                           <p className="text-[13px] font-bold text-white uppercase tracking-tight">
                             Auto-Payout Threshold
                           </p>
-                          <p className="text-[10px] text-[#878C9F] uppercase tracking-widest mt-0.5">
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">
                             Minimum processing value
                           </p>
                         </div>
                       </div>
-                      <p className="font-mono text-[#CCFF00] text-xl font-black italic">
+                      <p className="font-mono text-primary text-xl font-black italic">
                         Rs 5,000
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between p-5 bg-[#1A1A1A] rounded-[8px] border border-[#2D2D2D] group hover:border-[#CCFF00]/20 transition-all">
+                    <div className="flex items-center justify-between p-5 bg-card rounded-[8px] border border-border group hover:border-primary/20 transition-all">
                       <div className="flex items-center gap-4">
-                        <div className="p-2 bg-[#CCFF00]/10 rounded-[6px] text-[#CCFF00] group-hover:scale-110 transition-transform">
+                        <div className="p-2 bg-primary/10 rounded-[6px] text-primary group-hover:scale-110 transition-transform">
                           <Zap size={18} />
                         </div>
                         <div>
                           <p className="text-[13px] font-bold text-white uppercase tracking-tight">
                             Platform Service Fee
                           </p>
-                          <p className="text-[10px] text-[#878C9F] uppercase tracking-widest mt-0.5">
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">
                             Deducted from each slot booking
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <input
+                        <Input
                           type="number"
                           value={payoutSettings?.platformFeePercentage || 5}
                           onChange={(e) =>
@@ -645,28 +646,28 @@ const FinancialMissionControl = () => {
                               platformFeePercentage: Number(e.target.value),
                             })
                           }
-                          className="w-16 bg-black/40 border border-[#2D2D2D] rounded-[4px] px-2 py-1 text-[#CCFF00] font-mono text-lg font-black text-center focus:outline-none focus:border-[#CCFF00]"
+                          className="w-16 bg-black/40 border border-border rounded-[4px] px-2 py-1 text-primary font-mono text-lg font-black text-center focus:outline-none focus:border-primary"
                         />
-                        <span className="text-[#CCFF00] font-black">%</span>
+                        <span className="text-primary font-black">%</span>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between p-5 bg-[#1A1A1A] rounded-[8px] border border-[#2D2D2D] group hover:border-[#CCFF00]/20 transition-all">
+                    <div className="flex items-center justify-between p-5 bg-card rounded-[8px] border border-border group hover:border-primary/20 transition-all">
                       <div className="flex items-center gap-4">
-                        <div className="p-2 bg-[#CCFF00]/10 rounded-[6px] text-[#CCFF00] group-hover:scale-110 transition-transform">
+                        <div className="p-2 bg-primary/10 rounded-[6px] text-primary group-hover:scale-110 transition-transform">
                           <ShieldCheck size={18} />
                         </div>
                         <div>
                           <p className="text-[13px] font-bold text-white uppercase tracking-tight">
                             GST (Goods & Services Tax)
                           </p>
-                          <p className="text-[10px] text-[#878C9F] uppercase tracking-widest mt-0.5">
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">
                             Tax on total booking amount
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <input
+                        <Input
                           type="number"
                           value={payoutSettings?.gstPercentage || 18}
                           onChange={(e) =>
@@ -675,28 +676,28 @@ const FinancialMissionControl = () => {
                               gstPercentage: Number(e.target.value),
                             })
                           }
-                          className="w-16 bg-black/40 border border-[#2D2D2D] rounded-[4px] px-2 py-1 text-[#CCFF00] font-mono text-lg font-black text-center focus:outline-none focus:border-[#CCFF00]"
+                          className="w-16 bg-black/40 border border-border rounded-[4px] px-2 py-1 text-primary font-mono text-lg font-black text-center focus:outline-none focus:border-primary"
                         />
-                        <span className="text-[#CCFF00] font-black">%</span>
+                        <span className="text-primary font-black">%</span>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between p-5 bg-[#1A1A1A] rounded-[8px] border border-[#2D2D2D] group hover:border-[#CCFF00]/20 transition-all">
+                    <div className="flex items-center justify-between p-5 bg-card rounded-[8px] border border-border group hover:border-primary/20 transition-all">
                       <div className="flex items-center gap-4">
-                        <div className="p-2 bg-[#CCFF00]/10 rounded-[6px] text-[#CCFF00] group-hover:scale-110 transition-transform">
+                        <div className="p-2 bg-primary/10 rounded-[6px] text-primary group-hover:scale-110 transition-transform">
                           <ExternalLink size={18} />
                         </div>
                         <div>
                           <p className="text-[13px] font-bold text-white uppercase tracking-tight">
                             Payment Gateway Fee
                           </p>
-                          <p className="text-[10px] text-[#878C9F] uppercase tracking-widest mt-0.5">
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">
                             Razorpay/Transaction costs
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <input
+                        <Input
                           type="number"
                           value={payoutSettings?.gatewayFeePercentage || 2}
                           onChange={(e) =>
@@ -705,9 +706,9 @@ const FinancialMissionControl = () => {
                               gatewayFeePercentage: Number(e.target.value),
                             })
                           }
-                          className="w-16 bg-black/40 border border-[#2D2D2D] rounded-[4px] px-2 py-1 text-[#CCFF00] font-mono text-lg font-black text-center focus:outline-none focus:border-[#CCFF00]"
+                          className="w-16 bg-black/40 border border-border rounded-[4px] px-2 py-1 text-primary font-mono text-lg font-black text-center focus:outline-none focus:border-primary"
                         />
-                        <span className="text-[#CCFF00] font-black">%</span>
+                        <span className="text-primary font-black">%</span>
                       </div>
                     </div>
                   </div>
@@ -725,50 +726,50 @@ const FinancialMissionControl = () => {
           onClick={() => setSettleModal(null)}
         >
           <div
-            className="bg-[#0A0A0A] border border-[#2D2D2D] rounded-[12px] w-full max-w-md mx-4 shadow-2xl"
+            className="bg-background border border-border rounded-[12px] w-full max-w-md mx-4 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#2D2D2D]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <div>
                 <h3 className="text-white font-black text-sm uppercase tracking-wider">
                   Settle Withdrawal
                 </h3>
-                <p className="text-[#878C9F] text-[10px] mt-0.5 font-mono">
+                <p className="text-muted-foreground text-[10px] mt-0.5 font-mono">
                   {settleModal.owner?.name} · ₹
                   {Number(settleModal.amount).toLocaleString("en-IN")}
                 </p>
               </div>
-              <button
+              <Button
                 onClick={() => setSettleModal(null)}
                 className="p-1.5 hover:bg-white/5 rounded-md transition-colors"
               >
-                <X size={16} className="text-[#878C9F]" />
-              </button>
+                <X size={16} className="text-muted-foreground" />
+              </Button>
             </div>
 
             {/* Body */}
             <div className="px-6 py-5 space-y-4">
               {/* Transaction ID */}
               <div>
-                <label className="text-[10px] font-black text-[#878C9F] uppercase tracking-widest block mb-1.5">
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-1.5">
                   Transaction ID *
                 </label>
-                <input
+                <Input
                   type="text"
                   value={settleTxnId}
                   onChange={(e) => setSettleTxnId(e.target.value)}
                   placeholder="e.g. UTR123456789"
-                  className="w-full bg-black/60 border border-[#2D2D2D] rounded-[6px] px-3 py-2.5 text-white font-mono text-sm focus:outline-none focus:border-[#CCFF00] transition-colors placeholder:text-[#878C9F]/40"
+                  className="w-full bg-black/60 border border-border rounded-[6px] px-3 py-2.5 text-white font-mono text-sm focus:outline-none focus:border-primary transition-colors placeholder:text-muted-foreground/40"
                 />
               </div>
 
               {/* Screenshot Upload */}
               <div>
-                <label className="text-[10px] font-black text-[#878C9F] uppercase tracking-widest block mb-1.5">
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-1.5">
                   Payment Screenshot (Optional)
                 </label>
-                <input
+                <Input
                   ref={screenshotInputRef}
                   type="file"
                   accept="image/*"
@@ -776,54 +777,54 @@ const FinancialMissionControl = () => {
                   className="hidden"
                 />
                 {settleScreenshot ? (
-                  <div className="relative rounded-[6px] overflow-hidden border border-[#2D2D2D]">
+                  <div className="relative rounded-[6px] overflow-hidden border border-border">
                     <img
                       src={settleScreenshot}
                       alt="Receipt"
                       className="w-full max-h-48 object-contain bg-black"
                     />
-                    <button
+                    <Button
                       onClick={() => {
                         setSettleScreenshot(null);
                         setSettleScreenshotName("");
                       }}
-                      className="absolute top-2 right-2 p-1 bg-black/80 rounded-md border border-[#2D2D2D] hover:border-red-500 transition-colors"
+                      className="absolute top-2 right-2 p-1 bg-black/80 rounded-md border border-border hover:border-red-500 transition-colors"
                     >
                       <X size={12} className="text-red-400" />
-                    </button>
-                    <div className="px-3 py-1.5 bg-black/80 text-[9px] text-[#878C9F] font-mono truncate">
+                    </Button>
+                    <div className="px-3 py-1.5 bg-black/80 text-[9px] text-muted-foreground font-mono truncate">
                       {settleScreenshotName}
                     </div>
                   </div>
                 ) : (
-                  <button
+                  <Button
                     onClick={() => screenshotInputRef.current?.click()}
-                    className="w-full border-2 border-dashed border-[#2D2D2D] rounded-[6px] py-6 flex flex-col items-center gap-2 hover:border-[#CCFF00]/30 transition-colors group"
+                    className="w-full border-2 border-dashed border-border rounded-[6px] py-6 flex flex-col items-center gap-2 hover:border-primary/30 transition-colors group"
                   >
                     <Upload
                       size={20}
-                      className="text-[#878C9F] group-hover:text-[#CCFF00] transition-colors"
+                      className="text-muted-foreground group-hover:text-primary transition-colors"
                     />
-                    <span className="text-[10px] text-[#878C9F] group-hover:text-white font-bold uppercase tracking-wider transition-colors">
+                    <span className="text-[10px] text-muted-foreground group-hover:text-white font-bold uppercase tracking-wider transition-colors">
                       Upload Receipt
                     </span>
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-[#2D2D2D] flex gap-3">
-              <button
+            <div className="px-6 py-4 border-t border-border flex gap-3">
+              <Button
                 onClick={() => setSettleModal(null)}
-                className="flex-1 py-2.5 bg-white/5 text-[#878C9F] rounded-[6px] text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-colors"
+                className="flex-1 py-2.5 bg-white/5 text-muted-foreground rounded-[6px] text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-colors"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleSettleConfirm}
                 disabled={!settleTxnId.trim() || isSettling}
-                className="flex-1 py-2.5 bg-[#CCFF00] text-black rounded-[6px] text-[10px] font-black uppercase tracking-widest hover:bg-[#b8e600] transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+                className="flex-1 py-2.5 bg-primary text-black rounded-[6px] text-[10px] font-black uppercase tracking-widest hover:bg-[#b8e600] transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
               >
                 {isSettling ? (
                   <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
@@ -832,7 +833,7 @@ const FinancialMissionControl = () => {
                     <CheckCircle size={13} /> Confirm Settlement
                   </>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -845,51 +846,51 @@ const FinancialMissionControl = () => {
           onClick={() => setRejectModal(null)}
         >
           <div
-            className="bg-[#0A0A0A] border border-[#2D2D2D] rounded-[12px] w-full max-w-md mx-4 shadow-2xl"
+            className="bg-background border border-border rounded-[12px] w-full max-w-md mx-4 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#2D2D2D]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <div>
                 <h3 className="text-red-400 font-black text-sm uppercase tracking-wider">
                   Reject Withdrawal
                 </h3>
-                <p className="text-[#878C9F] text-[10px] mt-0.5 font-mono">
+                <p className="text-muted-foreground text-[10px] mt-0.5 font-mono">
                   {rejectModal.owner?.name} · ₹
                   {Number(rejectModal.amount).toLocaleString("en-IN")}
                 </p>
               </div>
-              <button
+              <Button
                 onClick={() => setRejectModal(null)}
                 className="p-1.5 hover:bg-white/5 rounded-md transition-colors"
               >
-                <X size={16} className="text-[#878C9F]" />
-              </button>
+                <X size={16} className="text-muted-foreground" />
+              </Button>
             </div>
 
             {/* Body */}
             <div className="px-6 py-5">
-              <label className="text-[10px] font-black text-[#878C9F] uppercase tracking-widest block mb-1.5">
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-1.5">
                 Rejection Reason *
               </label>
-              <textarea
+              <Textarea
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 placeholder="Explain why this withdrawal is being rejected…"
                 rows={4}
-                className="w-full bg-black/60 border border-[#2D2D2D] rounded-[6px] px-3 py-2.5 text-white text-sm resize-none focus:outline-none focus:border-red-500 transition-colors placeholder:text-[#878C9F]/40"
+                className="w-full bg-black/60 border border-border rounded-[6px] px-3 py-2.5 text-white text-sm resize-none focus:outline-none focus:border-red-500 transition-colors placeholder:text-muted-foreground/40"
               />
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-[#2D2D2D] flex gap-3">
-              <button
+            <div className="px-6 py-4 border-t border-border flex gap-3">
+              <Button
                 onClick={() => setRejectModal(null)}
-                className="flex-1 py-2.5 bg-white/5 text-[#878C9F] rounded-[6px] text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-colors"
+                className="flex-1 py-2.5 bg-white/5 text-muted-foreground rounded-[6px] text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-colors"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleRejectConfirm}
                 disabled={!rejectReason.trim() || isRejecting}
                 className="flex-1 py-2.5 bg-red-500 text-white rounded-[6px] text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
@@ -901,7 +902,7 @@ const FinancialMissionControl = () => {
                     <XCircle size={13} /> Reject Withdrawal
                   </>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -917,13 +918,13 @@ const FinanceStatsCard = ({
   suffix = "",
   icon: Icon,
   trend,
-  trendColor = "text-[#CCFF00]",
+  trendColor = "text-primary",
 }) => {
   return (
-    <div className="bg-[#000000] border border-[#2D2D2D] rounded-[8px] p-5 flex flex-col relative overflow-hidden group hover:border-[#CCFF00]/30 transition-all duration-500 min-h-[140px] shadow-2xl">
+    <div className="bg-background border border-border rounded-[8px] p-5 flex flex-col relative overflow-hidden group hover:border-primary/30 transition-all duration-500 min-h-[140px] shadow-2xl">
       <Icon className="absolute -right-4 -bottom-4 w-20 h-20 text-white/[0.02] group-hover:text-white/[0.04] transition-colors" />
       <div className="flex items-center justify-between mb-5 relative z-10">
-        <div className="w-10 h-10 bg-[#CCFF00]/10 rounded-[6px] text-[#CCFF00] flex items-center justify-center border border-[#CCFF00]/20 shadow-sm transition-all">
+        <div className="w-10 h-10 bg-primary/10 rounded-[6px] text-primary flex items-center justify-center border border-primary/20 shadow-sm transition-all">
           <Icon size={18} />
         </div>
         <div
@@ -933,7 +934,7 @@ const FinanceStatsCard = ({
         </div>
       </div>
       <div className="space-y-2 relative z-10">
-        <h3 className="text-[11px] font-normal text-[#878C9F] uppercase tracking-[1px]">
+        <h3 className="text-[11px] font-normal text-muted-foreground uppercase tracking-[1px]">
           {title}
         </h3>
         <div className="text-2xl font-black text-white tracking-tighter italic flex items-baseline gap-1">

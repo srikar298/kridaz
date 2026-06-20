@@ -26,7 +26,7 @@ const SportsNetworkAnimation = ({ badge }) => {
   let text = "";
   let subText = badge.description || "";
   let color = "#1e3a8a";
-  let borderColor = "#dc2626";
+  let borderColor = "var(--destructive)";
 
   switch (badge.type) {
     case "six":
@@ -37,7 +37,7 @@ const SportsNetworkAnimation = ({ badge }) => {
       break;
     case "wicket":
       text = "WICKET!";
-      color = "#dc2626";
+      color = "var(--destructive)";
       borderColor = "#1e3a8a";
       break;
     case "free_hit":
@@ -46,7 +46,7 @@ const SportsNetworkAnimation = ({ badge }) => {
       break;
     case "no_ball":
       text = "NO BALL";
-      color = "#dc2626";
+      color = "var(--destructive)";
       break;
     case "wide":
       text = "WIDE";
@@ -77,7 +77,7 @@ const SportsNetworkAnimation = ({ badge }) => {
           top: "30%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          background: "#ffffff",
+          background: "var(--foreground)",
           border: `4px solid ${borderColor}`,
           backdropFilter: "none",
           padding: "40px 80px",
@@ -115,7 +115,7 @@ const SportsNetworkAnimation = ({ badge }) => {
             transition={{ delay: 0.5 }}
             style={{
               fontSize: "32px",
-              color: "#ffffff",
+              color: "var(--foreground)",
               marginTop: "20px",
               background: "rgba(0,0,0,0.5)",
               padding: "10px 20px",

@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { Search, Plus, User, Phone, Mail, Loader2, Users } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button, Input, Textarea } from "@kridaz/ui";
+
 
 export default function ProfessionalCustomers() {
   const { role } = useSelector((state) => state.auth);
   const isScorer = role?.toLowerCase().includes("scorer");
-  const themeColor = isScorer ? "#BFF367" : "#BFF367";
+  const themeColor = isScorer ? "var(--primary)" : "var(--primary)";
 
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -90,13 +91,13 @@ export default function ProfessionalCustomers() {
             <h1 className="text-3xl lg:text-4xl font-black tracking-tight text-white font-inter uppercase leading-none">
               Customer <span style={{ color: themeColor }}>Directory</span>
             </h1>
-            <p className="text-[#878C9F] text-[10px] font-black uppercase tracking-[0.2em] font-inter mt-1.5">
+            <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.2em] font-inter mt-1.5">
               Manage your clients
             </p>
           </div>
         </div>
 
-        <button
+        <Button
           onClick={() => setShowAddModal(true)}
           className="h-12 px-6 rounded-lg font-black uppercase text-[12px] tracking-[0.2em] transition-all transform active:scale-95 flex items-center gap-2 shadow-xl text-black"
           style={{
@@ -105,7 +106,7 @@ export default function ProfessionalCustomers() {
           }}
         >
           <Plus size={18} /> Add Customer
-        </button>
+        </Button>
       </div>
 
       {/* Search */}
@@ -113,7 +114,7 @@ export default function ProfessionalCustomers() {
         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
           <Search size={18} className="text-neutral-500" />
         </div>
-        <input
+        <Input
           type="text"
           placeholder="Search by name, email, or phone..."
           value={searchTerm}
@@ -197,7 +198,7 @@ export default function ProfessionalCustomers() {
       {/* Add Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#111111] border border-white/10 rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl font-inter animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-card border border-white/10 rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl font-inter animate-in fade-in zoom-in-95 duration-200">
             <div className="p-6 border-b border-white/5">
               <h3 className="text-xl font-black text-white uppercase tracking-tight">
                 Add New <span style={{ color: themeColor }}>Customer</span>
@@ -208,7 +209,7 @@ export default function ProfessionalCustomers() {
                 <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">
                   Full Name *
                 </label>
-                <input
+                <Input
                   type="text"
                   value={newCustomer.name}
                   onChange={(e) =>
@@ -223,7 +224,7 @@ export default function ProfessionalCustomers() {
                 <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">
                   Phone Number
                 </label>
-                <input
+                <Input
                   type="tel"
                   value={newCustomer.phone}
                   onChange={(e) =>
@@ -237,7 +238,7 @@ export default function ProfessionalCustomers() {
                 <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">
                   Email Address
                 </label>
-                <input
+                <Input
                   type="email"
                   value={newCustomer.email}
                   onChange={(e) =>
@@ -251,7 +252,7 @@ export default function ProfessionalCustomers() {
                 <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">
                   Notes
                 </label>
-                <textarea
+                <Textarea
                   value={newCustomer.notes}
                   onChange={(e) =>
                     setNewCustomer({ ...newCustomer, notes: e.target.value })
@@ -262,14 +263,14 @@ export default function ProfessionalCustomers() {
               </div>
 
               <div className="pt-4 flex gap-4">
-                <button
+                <Button
                   type="button"
                   onClick={() => setShowAddModal(false)}
                   className="flex-1 h-12 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg font-black uppercase text-[12px] tracking-[0.2em] text-white transition-all"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
                   disabled={adding}
                   className="flex-1 h-12 text-black rounded-lg font-black uppercase text-[12px] tracking-[0.2em] transition-all flex items-center justify-center gap-2"
@@ -280,7 +281,7 @@ export default function ProfessionalCustomers() {
                   ) : (
                     "Save Customer"
                   )}
-                </button>
+                </Button>
               </div>
             </form>
           </div>

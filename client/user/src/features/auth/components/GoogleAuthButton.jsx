@@ -24,7 +24,8 @@ const GoogleIcon = () => (
   </svg>
 );
 
-import { Capacitor } from "@capacitor/core";
+import { Capacitor } from "@capacitor/core";import { Button } from "@kridaz/ui";
+
 
 const GoogleAuthButton = ({
   onSuccess,
@@ -50,24 +51,24 @@ const GoogleAuthButton = ({
   }
 
   return (
-    <button
+    <Button
       type="button"
       onClick={() => login()}
       disabled={isLoading}
-      className="group relative w-full flex items-center justify-center h-11 px-6 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-[#BFF367]/40 rounded-[8px] transition-all duration-500 active:scale-[0.98] overflow-hidden shadow-xl hover:shadow-[#BFF367]/5"
+      className="group relative w-full flex items-center justify-center h-11 px-6 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-primary/40 rounded-[8px] transition-all duration-500 active:scale-[0.98] overflow-hidden shadow-xl hover:shadow-[var(--primary)]/5"
     >
       {/* SHIMMER EFFECT */}
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite] pointer-events-none" />
 
       {/* GLOW EFFECT */}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-[#BFF367]/50 to-transparent" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-[#BFF367]/50 to-transparent" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
       </div>
 
       <div className="relative flex items-center justify-center">
         {isLoading ? (
-          <Loader2 className="w-5 h-5 animate-spin text-[#BFF367]" />
+          <Loader2 className="w-5 h-5 animate-spin text-primary" />
         ) : (
           <>
             <GoogleIcon />
@@ -82,7 +83,7 @@ const GoogleAuthButton = ({
 
       {/* INNER SHINE */}
       <div className="absolute inset-0 rounded-[8px] border border-white/5 pointer-events-none" />
-    </button>
+    </Button>
   );
 };
 

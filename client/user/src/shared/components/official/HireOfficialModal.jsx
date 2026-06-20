@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, User, X, Loader2, MapPin } from "lucide-react";
 import axios from "axios";
-import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
+
 
 const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent }) => {
   const [query, setQuery] = useState("");
@@ -89,12 +90,12 @@ const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent }) => {
                   Search by name, username, phone or email
                 </p>
               </div>
-              <button
+              <Button
                 onClick={onClose}
                 className="p-2 hover:bg-neutral-800 rounded-full transition-colors"
               >
                 <X size={20} />
-              </button>
+              </Button>
             </div>
 
             <div className="p-6 space-y-6">
@@ -103,7 +104,7 @@ const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent }) => {
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500"
                   size={18}
                 />
-                <input
+                <Input
                   type="text"
                   placeholder="Type 3+ characters to search..."
                   value={query}
@@ -117,7 +118,7 @@ const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent }) => {
                 {loading ? (
                   <div className="py-10 text-center">
                     <Loader2
-                      className="mx-auto mb-2 animate-spin text-transparent bg-clip-text bg-gradient-to-r from-[#BFF367] to-[#BFF367]"
+                      className="mx-auto mb-2 animate-spin text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary"
                       size={24}
                     />
                     <p className="text-xs text-neutral-500 uppercase font-black">
@@ -151,7 +152,7 @@ const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent }) => {
                           </div>
                         </div>
                       </div>
-                      <button
+                      <Button
                         onClick={() => handleInvite(user._id)}
                         disabled={invitingId === user._id}
                         className="px-4 py-2 bg-yellow-500 text-black text-[10px] font-black rounded-[8px] uppercase hover:scale-105 transition-all disabled:opacity-50 disabled:scale-100"
@@ -161,7 +162,7 @@ const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent }) => {
                         ) : (
                           "Invite"
                         )}
-                      </button>
+                      </Button>
                     </div>
                   ))
                 ) : query.length >= 3 ? (
@@ -186,12 +187,12 @@ const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent }) => {
             </div>
 
             <div className="p-4 bg-neutral-900/80 border-t border-neutral-800 flex justify-end">
-              <button
+              <Button
                 onClick={onClose}
                 className="px-6 py-2 text-xs font-black text-neutral-400 uppercase hover:text-white transition-colors"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </motion.div>
         </div>

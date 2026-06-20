@@ -16,7 +16,8 @@ import {
   useHandleOpponentRequestMutation,
   useHandleJoinRequestMutation,
 } from "@redux/api/teamApi";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button } from "@kridaz/ui";
+
 
 const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
   const [handleRequest, { isLoading: isHandling }] =
@@ -26,10 +27,10 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
 
   if (!team) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-[#0a0a0a] text-white/40 p-12">
+      <div className="flex-1 flex flex-col items-center justify-center bg-background text-white/40 p-12">
         <div className="w-24 h-24 rounded-[8px] bg-white/[0.03] border border-white/5 flex items-center justify-center mb-8 shadow-2xl relative overflow-hidden group">
-          <div className="absolute inset-0 bg-[#BFF367]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <Users className="text-white/20 text-4xl group-hover:text-[#BFF367]/50 transition-colors duration-500 relative z-10" />
+          <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <Users className="text-white/20 text-4xl group-hover:text-primary/50 transition-colors duration-500 relative z-10" />
         </div>
         <h2
           className="text-3xl font-bold text-white mb-3 tracking-tight"
@@ -45,9 +46,9 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
           organize your squad for upcoming matches.
         </p>
 
-        <button
+        <Button
           onClick={onCreateClick}
-          className="group relative px-8 py-4 bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black font-black rounded-[8px] flex items-center gap-3 shadow-lg shadow-[#BFF367]/10 hover:shadow-[#BFF367]/15 hover:brightness-[1.04] transition-all hover:-translate-y-0.5 active:translate-y-0 overflow-hidden duration-300"
+          className="group relative px-8 py-4 bg-gradient-to-r from-primary to-primary text-black font-black rounded-[8px] flex items-center gap-3 shadow-lg shadow-[var(--primary)]/10 hover:shadow-[var(--primary)]/15 hover:brightness-[1.04] transition-all hover:-translate-y-0.5 active:translate-y-0 overflow-hidden duration-300"
         >
           <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 skew-x-[30deg]" />
           <UserPlus className="text-lg" />
@@ -57,7 +58,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
           >
             Create New Team
           </span>
-        </button>
+        </Button>
       </div>
     );
   }
@@ -98,22 +99,22 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0a0a] overflow-y-auto relative pb-20 custom-scrollbar">
+    <div className="h-full flex flex-col bg-background overflow-y-auto relative pb-20 custom-scrollbar">
       {/* Mobile Back Button */}
-      <button
+      <Button
         onClick={onBack}
         className="md:hidden absolute top-4 left-4 z-20 p-2.5 bg-black/40 backdrop-blur-md rounded-[8px] text-white border border-white/10 shadow-lg"
       >
         <ChevronRight className="rotate-180" />
-      </button>
+      </Button>
 
       {/* Team Header Banner */}
       <div className="relative shrink-0 overflow-hidden pt-16 md:pt-20 px-4 md:px-6 pb-6 min-h-[14rem] md:min-h-[16rem]">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#BFF367]/15 via-[#BFF367]/5 to-[#0a0a0a]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/15 via-primary/5 to-background" />
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20" />
 
         <div
-          className="absolute top-4 md:top-6 right-4 md:right-6 z-10 flex items-center gap-2 px-3 md:px-4 py-2 bg-black/60 backdrop-blur-xl border border-white/10 rounded-[8px] group cursor-pointer hover:border-[#BFF367]/50 transition-all"
+          className="absolute top-4 md:top-6 right-4 md:right-6 z-10 flex items-center gap-2 px-3 md:px-4 py-2 bg-black/60 backdrop-blur-xl border border-white/10 rounded-[8px] group cursor-pointer hover:border-primary/50 transition-all"
           onClick={copyToClipboard}
         >
           <div className="flex flex-col items-end">
@@ -123,18 +124,18 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
             >
               Unique Team ID
             </span>
-            <span className="text-sm font-black text-[#BFF367] tracking-[0.2em]">
+            <span className="text-sm font-black text-primary tracking-[0.2em]">
               {team.teamCode}
             </span>
           </div>
           <Copy
             size={16}
-            className="text-white/20 group-hover:text-[#BFF367] transition-colors"
+            className="text-white/20 group-hover:text-primary transition-colors"
           />
         </div>
 
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-end gap-4 md:gap-6 mt-14 md:mt-12">
-          <div className="w-20 h-20 md:w-32 md:h-32 rounded-[8px] bg-black border-4 border-[#0a0a0a] shadow-2xl flex items-center justify-center text-[#BFF367] text-3xl md:text-4xl font-bold overflow-hidden shrink-0">
+          <div className="w-20 h-20 md:w-32 md:h-32 rounded-[8px] bg-black border-4 border-background shadow-2xl flex items-center justify-center text-primary text-3xl md:text-4xl font-bold overflow-hidden shrink-0">
             {team.image ? (
               <img
                 src={team.image}
@@ -154,7 +155,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                 {team.name}
               </h1>
               <span
-                className="px-3 py-1 rounded-full bg-gradient-to-r from-[#BFF367]/10 to-[#BFF367]/10 border border-[#BFF367]/10 text-[#BFF367] text-[10px] font-black uppercase tracking-widest shrink-0"
+                className="px-3 py-1 rounded-full bg-gradient-to-r from-primary/10 to-primary/10 border border-primary/10 text-primary text-[10px] font-black uppercase tracking-widest shrink-0"
                 style={{ fontFamily: "'Inter', sans-serif" }}
               >
                 {team.sportType}
@@ -168,20 +169,20 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
             </p>
           </div>
           <div className="w-full md:w-auto mt-2 md:mt-0 pb-1">
-            <button
+            <Button
               onClick={onInviteClick}
-              className="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-[#BFF367] to-[#BFF367] hover:brightness-[1.04] text-black font-black rounded-[8px] flex items-center justify-center gap-2 shadow-lg shadow-[#BFF367]/10 hover:shadow-[#BFF367]/15 transition-all hover:-translate-y-0.5 active:translate-y-0 duration-300 uppercase tracking-widest text-xs"
+              className="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-primary to-primary hover:brightness-[1.04] text-black font-black rounded-[8px] flex items-center justify-center gap-2 shadow-lg shadow-[var(--primary)]/10 hover:shadow-[var(--primary)]/15 transition-all hover:-translate-y-0.5 active:translate-y-0 duration-300 uppercase tracking-widest text-xs"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               <UserPlus size={16} /> Add Members
-            </button>
+            </Button>
           </div>
         </div>
       </div>
 
       {/* Team Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 shrink-0">
-        <div className="bg-[#121212] p-4 rounded-[8px] border border-white/5 flex items-center gap-4">
+        <div className="bg-card p-4 rounded-[8px] border border-white/5 flex items-center gap-4">
           <div className="w-12 h-12 rounded-[8px] shrink-0 bg-blue-500/10 flex items-center justify-center text-blue-500">
             <Shield size={20} />
           </div>
@@ -194,7 +195,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
             </p>
           </div>
         </div>
-        <div className="bg-[#121212] p-4 rounded-[8px] border border-white/5 flex items-center gap-4">
+        <div className="bg-card p-4 rounded-[8px] border border-white/5 flex items-center gap-4">
           <div className="w-12 h-12 rounded-[8px] bg-yellow-500/10 flex items-center justify-center text-yellow-500">
             <Trophy size={20} />
           </div>
@@ -207,7 +208,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
             </p>
           </div>
         </div>
-        <div className="bg-[#121212] p-4 rounded-[8px] border border-white/5 flex items-center gap-4">
+        <div className="bg-card p-4 rounded-[8px] border border-white/5 flex items-center gap-4">
           <div className="w-12 h-12 rounded-[8px] bg-red-500/10 flex items-center justify-center text-red-500">
             <Users size={20} />
           </div>
@@ -218,7 +219,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
             <p className="text-white font-black text-sm">{opponents.length}</p>
           </div>
         </div>
-        <div className="bg-[#121212] p-4 rounded-[8px] border border-white/5 flex items-center gap-4">
+        <div className="bg-card p-4 rounded-[8px] border border-white/5 flex items-center gap-4">
           <div className="w-12 h-12 rounded-[8px] shrink-0 bg-green-500/10 flex items-center justify-center text-green-500">
             <Calendar size={20} />
           </div>
@@ -263,20 +264,20 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                         </p>
                       </div>
                       <div className="flex gap-2">
-                        <button
+                        <Button
                           disabled={isHandling}
                           onClick={() => onHandleOpponent(req._id, "ACCEPT")}
                           className="w-8 h-8 bg-orange-500 text-black rounded-[8px] flex items-center justify-center hover:bg-orange-400 transition-colors"
                         >
                           <Check size={12} />
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           disabled={isHandling}
                           onClick={() => onHandleOpponent(req._id, "REJECT")}
                           className="w-8 h-8 bg-white/5 text-white/40 rounded-[8px] flex items-center justify-center hover:bg-white/10 transition-colors"
                         >
                           <X size={12} />
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -291,14 +292,14 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                   className="text-white font-bold text-lg tracking-tight flex items-center gap-2"
                   style={{ fontFamily: "'Inter', sans-serif" }}
                 >
-                  <span className="w-1 h-5 bg-[#BFF367] rounded-full" />
+                  <span className="w-1 h-5 bg-primary rounded-full" />
                   Join Requests ({pendingMembers.length})
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {pendingMembers.map((req) => (
                     <div
                       key={req._id}
-                      className="bg-[#BFF367]/5 border border-[#BFF367]/20 p-4 rounded-[8px] flex items-center gap-4"
+                      className="bg-primary/5 border border-primary/20 p-4 rounded-[8px] flex items-center gap-4"
                     >
                       <div className="w-10 h-10 rounded-[10px] bg-white/5 overflow-hidden border border-white/10 shrink-0">
                         <img
@@ -314,21 +315,21 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                         <p className="text-white font-bold text-sm truncate uppercase tracking-tight">
                           {req.username}
                         </p>
-                        <p className="text-[#BFF367]/60 text-[9px] font-bold uppercase tracking-widest mt-0.5">
+                        <p className="text-primary/60 text-[9px] font-bold uppercase tracking-widest mt-0.5">
                           Wants to join
                         </p>
                       </div>
                       <div className="flex gap-2">
-                        <button
+                        <Button
                           disabled={isHandlingJoin}
                           onClick={() =>
                             onHandleJoin(req.user?._id || req.userId, "ACCEPT")
                           }
-                          className="w-8 h-8 bg-[#BFF367] text-black rounded-[8px] flex items-center justify-center hover:brightness-110 transition-colors"
+                          className="w-8 h-8 bg-primary text-black rounded-[8px] flex items-center justify-center hover:brightness-110 transition-colors"
                         >
                           <Check size={12} />
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           disabled={isHandlingJoin}
                           onClick={() =>
                             onHandleJoin(req.user?._id || req.userId, "REJECT")
@@ -336,7 +337,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                           className="w-8 h-8 bg-white/5 text-white/40 rounded-[8px] flex items-center justify-center hover:bg-white/10 transition-colors"
                         >
                           <X size={12} />
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -350,14 +351,14 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                 className="text-white font-bold text-lg tracking-tight mb-4 flex items-center gap-2"
                 style={{ fontFamily: "'Inter', sans-serif" }}
               >
-                <span className="w-1 h-5 bg-gradient-to-b from-[#BFF367] to-[#BFF367] rounded-full" />
+                <span className="w-1 h-5 bg-gradient-to-b from-primary to-primary rounded-full" />
                 Platform Members ({members.length})
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {members.map((member) => (
                   <div
                     key={member._id}
-                    className="bg-white/[0.02] p-4 rounded-[8px] border border-white/5 hover:border-[#BFF367]/20 transition-all flex items-center gap-4 group"
+                    className="bg-white/[0.02] p-4 rounded-[8px] border border-white/5 hover:border-primary/20 transition-all flex items-center gap-4 group"
                   >
                     <div className="w-12 h-12 rounded-[8px] bg-white/5 overflow-hidden border border-white/10">
                       <img
@@ -377,7 +378,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                         @{member.username}
                       </h4>
                       <p
-                        className="text-[#BFF367] text-[9px] font-black uppercase tracking-widest mt-0.5"
+                        className="text-primary text-[9px] font-black uppercase tracking-widest mt-0.5"
                         style={{ fontFamily: "'Inter', sans-serif" }}
                       >
                         {member.role}

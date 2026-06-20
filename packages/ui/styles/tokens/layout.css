@@ -1,0 +1,75 @@
+/* ── Strict Spacing System (Industry Standard) ────────────────── */
+:root {
+  /* Fluid Spacing Scale */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.5rem;   /* 24px */
+  --space-6: 2rem;     /* 32px */
+  --space-8: 3rem;     /* 48px */
+  --space-10: 4rem;    /* 64px */
+  --space-12: 6rem;    /* 96px */
+  
+  /* Container Widths */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+}
+
+/* Base Wrapper Classes */
+.layout-container {
+  width: 100%;
+  max-width: var(--container-xl);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-5);
+}
+
+@layer components {
+  /* === Reusable Glassmorphism Effects === */
+  .glass-overlay {
+    @apply bg-black/60 backdrop-blur-md;
+  }
+  
+  .glass-panel {
+    @apply bg-black/80 backdrop-blur-2xl border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)];
+  }
+
+  .glass-header {
+    @apply bg-black/50 backdrop-blur-xl border-white/5;
+  }
+
+  .sidebar-glass {
+    @apply bg-black/40 backdrop-blur-[100px];
+  }
+}
+
+@layer utilities {
+  /* Hide default browser password reveal icons */
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-ms-clear {
+    display: none;
+  }
+}

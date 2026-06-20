@@ -24,7 +24,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { fetchStates, fetchCities } from "@utils/locationService";
-import { useSocket } from "@context/SocketContext";
+import { useSocket } from "@context/SocketContext";import { Button, Input, Select } from "@kridaz/ui";
+
 import {
   useCreateMatchRequestMutation,
   useGetUserOnDemandBookingsQuery,
@@ -446,13 +447,13 @@ export default function FindProfessionals() {
             className="relative mb-6"
             ref={filterMenuRef}
           >
-            <div className="flex items-center rounded-full border border-white/10 bg-[#262626] shadow-lg transition-colors focus-within:border-[#BFF367]/70 hover:bg-[#303030]">
+            <div className="flex items-center rounded-full border border-white/10 bg-[#262626] shadow-lg transition-colors focus-within:border-primary/70 hover:bg-[#303030]">
               <div className="relative min-w-0 flex-1">
                 <Search
                   className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/50"
                   size={17}
                 />
-                <input
+                <Input
                   type="search"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -464,7 +465,7 @@ export default function FindProfessionals() {
 
               <div className="hidden h-7 w-px bg-white/10 sm:block" />
 
-              <button
+              <Button
                 type="button"
                 onClick={() => setShowMoreFilters((isOpen) => !isOpen)}
                 className="flex h-[38px] shrink-0 items-center justify-center gap-2 rounded-r-full px-3 text-[10px] font-black text-white transition-colors hover:bg-white/5 focus:outline-none sm:px-4"
@@ -473,7 +474,7 @@ export default function FindProfessionals() {
               >
                 <Filter size={13} className="text-white/70" />
                 <span className="hidden sm:inline">More Filters</span>
-              </button>
+              </Button>
             </div>
 
             {showMoreFilters && (
@@ -491,18 +492,18 @@ export default function FindProfessionals() {
                         className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/55"
                         size={15}
                       />
-                      <select
+                      <Select
                         value={selectedRole}
                         onChange={(e) => setSelectedRole(e.target.value)}
                         aria-label="Role filter"
-                        className="h-[46px] w-full appearance-none rounded-full border border-white/10 bg-[#262626] pl-11 pr-10 text-[13px] font-bold text-white outline-none transition-colors hover:bg-[#303030] focus:border-[#BFF367]/70"
+                        className="h-[46px] w-full appearance-none rounded-full border border-white/10 bg-[#262626] pl-11 pr-10 text-[13px] font-bold text-white outline-none transition-colors hover:bg-[#303030] focus:border-primary/70"
                       >
                         {roles.map((role) => (
                           <option key={role} value={role}>
                             {role === "All" ? "All Roles" : role}
                           </option>
                         ))}
-                      </select>
+                      </Select>
                       <ChevronDown
                         className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/55"
                         size={16}
@@ -519,18 +520,18 @@ export default function FindProfessionals() {
                         className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/55"
                         size={15}
                       />
-                      <select
+                      <Select
                         value={selectedSport}
                         onChange={(e) => setSelectedSport(e.target.value)}
                         aria-label="Sports filter"
-                        className="h-[46px] w-full appearance-none rounded-full border border-white/10 bg-[#262626] pl-11 pr-10 text-[13px] font-bold text-white outline-none transition-colors hover:bg-[#303030] focus:border-[#BFF367]/70"
+                        className="h-[46px] w-full appearance-none rounded-full border border-white/10 bg-[#262626] pl-11 pr-10 text-[13px] font-bold text-white outline-none transition-colors hover:bg-[#303030] focus:border-primary/70"
                       >
                         {sports.map((sport) => (
                           <option key={sport} value={sport}>
                             {sport === "ALL SPORTS" ? "All Sports" : sport}
                           </option>
                         ))}
-                      </select>
+                      </Select>
                       <ChevronDown
                         className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/55"
                         size={16}
@@ -544,14 +545,14 @@ export default function FindProfessionals() {
 
           {/* Ads Space */}
           <div className="px-1 md:px-0">
-            <div className="w-full h-[180px] sm:h-[240px] rounded-[16px] overflow-hidden mb-6 relative cursor-pointer group bg-[#111] shadow-[0px_8px_24px_rgba(179,220,38,0.15)] border border-[rgba(255,255,255,0.08)]">
+            <div className="w-full h-[180px] sm:h-[240px] rounded-[16px] overflow-hidden mb-6 relative cursor-pointer group bg-card shadow-[0px_8px_24px_rgba(179,220,38,0.15)] border border-[rgba(255,255,255,0.08)]">
               <img
                 src="/pro-banner.png"
                 alt="Pro Training"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#000000]/90 via-[#000000]/40 to-transparent flex flex-col justify-end p-6">
-                <span className="text-[#BFF367] text-[10px] font-black uppercase tracking-[0.2em] mb-1">
+              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent flex flex-col justify-end p-6">
+                <span className="text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-1">
                   Elite Training
                 </span>
                 <h3
@@ -575,14 +576,14 @@ export default function FindProfessionals() {
               ))}
             </div>
           ) : professionals.length === 0 ? (
-            <div className="mx-1 md:mx-0 text-center py-12 px-2 border border-[rgba(255,255,255,0.08)] rounded-[16px] bg-[#111] relative overflow-hidden shadow-2xl">
+            <div className="mx-1 md:mx-0 text-center py-12 px-2 border border-[rgba(255,255,255,0.08)] rounded-[16px] bg-card relative overflow-hidden shadow-2xl">
               <div className="relative z-10 flex flex-col items-center">
                 <img
                   src="/empty-pros.png"
                   alt="No Professionals Found"
                   className="w-full max-w-[200px] h-[140px] object-cover mb-6 border border-white/5 rounded-2xl"
                 />
-                <h3 className="text-lg font-black uppercase tracking-[0.1em] text-[#BFF367] mb-2">
+                <h3 className="text-lg font-black uppercase tracking-[0.1em] text-primary mb-2">
                   Your Next Coach is Waiting
                 </h3>
                 <p className="text-white/50 text-[13px] max-w-[280px] leading-relaxed">
@@ -601,7 +602,7 @@ export default function FindProfessionals() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.25 }}
                   key={pro.id || pro._id}
-                  className="relative rounded-[16px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] overflow-hidden transition-all duration-500 group hover:border-[#B3DC26]/50 hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)] h-80 cursor-pointer"
+                  className="relative rounded-[16px] border border-[rgba(255,255,255,0.08)] bg-card overflow-hidden transition-all duration-500 group hover:border-primary/50 hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)] h-80 cursor-pointer"
                   onClick={() =>
                     navigate(`/profile/${pro.userId || pro.id || pro._id}`)
                   }
@@ -619,22 +620,22 @@ export default function FindProfessionals() {
                     />
                   ) : null}
                   <div
-                    className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-[#000000]"
+                    className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-card to-background"
                     style={{
                       display:
                         pro.image || pro.profilePicture ? "none" : "flex",
                     }}
                   >
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] font-inter font-[700] text-4xl opacity-50">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary font-inter font-[700] text-4xl opacity-50">
                       {getInitials(pro.name)}
                     </span>
                   </div>
 
                   {/* Gradient Overlay for text readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-[#000000]/60 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
 
                   {/* Role Badge - Top Right */}
-                  <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full text-[9px] font-[700] font-inter text-[#000000] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] z-10 uppercase shadow-lg">
+                  <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full text-[9px] font-[700] font-inter text-background bg-gradient-to-r from-secondary to-primary z-10 uppercase shadow-lg">
                     {pro.role}
                   </div>
 
@@ -642,11 +643,11 @@ export default function FindProfessionals() {
                   <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col z-10">
                     {/* Player Name and Rating Row */}
                     <div className="flex items-start justify-between gap-2 mb-0.5">
-                      <h3 className="text-[#FFFFFF] text-[14px] font-[600] leading-[20px] line-clamp-1 font-inter">
+                      <h3 className="text-foreground text-[14px] font-[600] leading-[20px] line-clamp-1 font-inter">
                         {pro.name || "Anonymous"}
                       </h3>
-                      <div className="flex items-center text-[#B3DC26] text-[9px] font-black gap-0.5 shadow-lg bg-[#1B1B1B]/80 backdrop-blur-md border border-[rgba(255,255,255,0.08)] px-1.5 py-0.5 rounded-full shrink-0">
-                        <Star size={8} className="fill-[#B3DC26]" />
+                      <div className="flex items-center text-primary text-[9px] font-black gap-0.5 shadow-lg bg-card/80 backdrop-blur-md border border-[rgba(255,255,255,0.08)] px-1.5 py-0.5 rounded-full shrink-0">
+                        <Star size={8} className="fill-primary" />
                         {pro.rating?.toFixed(1) || "5.0"}
                       </div>
                     </div>
@@ -667,7 +668,7 @@ export default function FindProfessionals() {
 
       {/* ── Floating Request Match CTA Button ────────────────────────── */}
       {!showMatchModal && (
-        <button
+        <Button
           onClick={() => {
             if (!isLoggedIn) {
               toast.error("Please login to request matchmaking");
@@ -676,11 +677,11 @@ export default function FindProfessionals() {
             }
             setShowMatchModal(true);
           }}
-          className="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black font-black text-[10px] uppercase tracking-widest shadow-[0_8px_32px_rgba(85,222,232,0.3)] hover:shadow-[0_8px_40px_rgba(85,222,232,0.5)] hover:scale-105 active:scale-95 transition-all duration-300 group"
+          className="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-gradient-to-r from-primary to-primary text-black font-black text-[10px] uppercase tracking-widest shadow-[0_8px_32px_rgba(85,222,232,0.3)] hover:shadow-[0_8px_40px_rgba(85,222,232,0.5)] hover:scale-105 active:scale-95 transition-all duration-300 group"
         >
           <Zap size={14} className="group-hover:animate-pulse" />
           Find Pro's
-        </button>
+        </Button>
       )}
 
       {/* ── Match Request Modal ──────────────────────────────────────── */}
@@ -719,21 +720,21 @@ export default function FindProfessionals() {
                   </p>
                 </div>
               </div>
-              <button
+              <Button
                 onClick={() => !isCreatingRequest && setShowMatchModal(false)}
                 className="p-2 rounded-lg hover:bg-white/5 text-white/40 hover:text-white transition-colors bg-white/5"
               >
                 <X size={18} />
-              </button>
+              </Button>
             </div>
 
             {/* Modal Body */}
             {isCreatingRequest ? (
               <div className="p-10 sm:p-16 flex flex-col items-center justify-center space-y-8 min-h-[400px]">
                 <div className="relative flex items-center justify-center w-32 h-32">
-                  <div className="absolute inset-0 border-[3px] border-[#BFF367] rounded-full animate-ping opacity-75"></div>
+                  <div className="absolute inset-0 border-[3px] border-primary rounded-full animate-ping opacity-75"></div>
                   <div
-                    className="absolute inset-2 border-[3px] border-[#BFF367] rounded-full animate-ping opacity-60"
+                    className="absolute inset-2 border-[3px] border-primary rounded-full animate-ping opacity-60"
                     style={{ animationDelay: "0.2s" }}
                   ></div>
                   <div
@@ -743,7 +744,7 @@ export default function FindProfessionals() {
                   <div className="relative bg-[#0d0d0e] rounded-full p-5 border border-white/10 z-10 shadow-[0_0_40px_rgba(191,243,103,0.4)]">
                     <Search
                       size={40}
-                      className="text-[#BFF367] animate-pulse"
+                      className="text-primary animate-pulse"
                     />
                   </div>
                 </div>
@@ -780,19 +781,19 @@ export default function FindProfessionals() {
                     ].map((roleVal) => {
                       const isSelected = selectedRoles.includes(roleVal);
                       return (
-                        <button
+                        <Button
                           key={roleVal}
                           type="button"
                           onClick={() => handleToggleRole(roleVal)}
                           className={`px-4 py-2 shrink-0 rounded-[8px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                             isSelected
-                              ? "bg-[#BFF367]/15 border border-[#BFF367] text-[#BFF367]"
+                              ? "bg-primary/15 border border-primary text-primary"
                               : "bg-white/5 border border-white/10 text-white/50 hover:border-white/25 hover:text-white/70"
                           }`}
                         >
                           {isSelected && <Check size={10} strokeWidth={3} />}
                           {roleVal}
-                        </button>
+                        </Button>
                       );
                     })}
                   </div>
@@ -804,7 +805,7 @@ export default function FindProfessionals() {
                     Venue / Location
                   </label>
                   <div className="space-y-3 relative">
-                    <select
+                    <Select
                       value={selectedGroundId}
                       onChange={(e) => {
                         const val = e.target.value;
@@ -819,7 +820,7 @@ export default function FindProfessionals() {
                           setShowLocationSearchModal(true);
                         }
                       }}
-                      className="w-full bg-black border border-white/10 rounded-lg p-3 pr-24 text-xs font-bold text-white focus:border-[#BFF367] outline-none appearance-none"
+                      className="w-full bg-black border border-white/10 rounded-lg p-3 pr-24 text-xs font-bold text-white focus:border-primary outline-none appearance-none"
                     >
                       <option value="">-- Choose Venue/Ground --</option>
                       {grounds.map((g) => (
@@ -832,21 +833,21 @@ export default function FindProfessionals() {
                           ? `📍 ${customLocation.address.substring(0, 45)}${customLocation.address.length > 45 ? "..." : ""}`
                           : "📍 Search by Location"}
                       </option>
-                    </select>
+                    </Select>
 
                     <div className="absolute right-3 top-0 bottom-0 flex items-center pointer-events-none">
                       {selectedGroundId === "custom" &&
                       customLocation.address ? (
-                        <button
+                        <Button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             setShowLocationSearchModal(true);
                           }}
-                          className="text-[9px] font-bold text-[#BFF367] hover:text-white px-3 py-1.5 rounded bg-[#BFF367]/10 hover:bg-[#BFF367]/20 transition-colors pointer-events-auto mr-3"
+                          className="text-[9px] font-bold text-primary hover:text-white px-3 py-1.5 rounded bg-primary/10 hover:bg-primary/20 transition-colors pointer-events-auto mr-3"
                         >
                           CHANGE
-                        </button>
+                        </Button>
                       ) : null}
                       <ChevronDown size={16} className="text-white/50" />
                     </div>
@@ -854,14 +855,14 @@ export default function FindProfessionals() {
                     {selectedGroundId === "custom" &&
                       !customLocation.address && (
                         <div className="p-4 rounded-lg bg-black border border-white/5 space-y-3 animate-in fade-in duration-200">
-                          <button
+                          <Button
                             type="button"
                             onClick={() => setShowLocationSearchModal(true)}
                             className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs font-bold text-white transition-colors flex items-center justify-center gap-2"
                           >
-                            <MapPin size={14} className="text-[#BFF367]" />
+                            <MapPin size={14} className="text-primary" />
                             Open Location Search
-                          </button>
+                          </Button>
                         </div>
                       )}
                   </div>
@@ -872,15 +873,15 @@ export default function FindProfessionals() {
                   <label className="text-[10px] font-black uppercase text-white/50 tracking-wider block mb-2">
                     Match Schedule
                   </label>
-                  <div className="flex items-center bg-[#111] border border-white/10 rounded-lg divide-x divide-white/10 overflow-hidden">
+                  <div className="flex items-center bg-card border border-white/10 rounded-lg divide-x divide-white/10 overflow-hidden">
                     <div className="flex-[1.2] p-2.5 relative group hover:bg-white/5 transition-colors">
-                      <span className="text-[8px] text-[#BFF367] font-bold uppercase mb-1 flex items-center gap-1">
+                      <span className="text-[8px] text-primary font-bold uppercase mb-1 flex items-center gap-1">
                         <Calendar size={10} /> Date
                       </span>
-                      <div className="text-[11px] sm:text-xs font-bold text-white group-hover:text-[#BFF367] transition-colors truncate">
+                      <div className="text-[11px] sm:text-xs font-bold text-white group-hover:text-primary transition-colors truncate">
                         {formatDisplayDate(matchDate)}
                       </div>
-                      <input
+                      <Input
                         type="date"
                         value={matchDate}
                         onChange={(e) => setMatchDate(e.target.value)}
@@ -898,7 +899,7 @@ export default function FindProfessionals() {
                       <div className="text-[11px] sm:text-xs font-bold text-white truncate">
                         {formatDisplayTime(matchStartTime)}
                       </div>
-                      <input
+                      <Input
                         type="time"
                         value={matchStartTime}
                         onChange={(e) => setMatchStartTime(e.target.value)}
@@ -916,7 +917,7 @@ export default function FindProfessionals() {
                       <div className="text-[11px] sm:text-xs font-bold text-white truncate">
                         {formatDisplayTime(matchEndTime)}
                       </div>
-                      <input
+                      <Input
                         type="time"
                         value={matchEndTime}
                         onChange={(e) => setMatchEndTime(e.target.value)}
@@ -936,7 +937,7 @@ export default function FindProfessionals() {
                     <label className="text-[10px] font-black uppercase text-white/50 tracking-wider">
                       Budget (₹)
                     </label>
-                    <span className="text-xs font-bold text-[#BFF367]">
+                    <span className="text-xs font-bold text-primary">
                       ₹{budget}
                     </span>
                   </div>
@@ -946,14 +947,14 @@ export default function FindProfessionals() {
                         Max
                       </span>
                       <div className="flex-1 relative">
-                        <input
+                        <Input
                           type="range"
                           min={500}
                           max={10000}
                           step={100}
                           value={budget}
                           onChange={(e) => setBudget(parseInt(e.target.value))}
-                          className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#BFF367] [&::-webkit-slider-thumb]:shadow-[0_0_8px_rgba(191,243,103,0.4)] [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#BFF367] [&::-moz-range-thumb]:border-0"
+                          className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-[0_0_8px_rgba(191,243,103,0.4)] [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-0"
                         />
                       </div>
                     </div>
@@ -961,10 +962,10 @@ export default function FindProfessionals() {
                 </div>
 
                 {/* Submit Button */}
-                <button
+                <Button
                   type="submit"
                   disabled={isCreatingRequest}
-                  className="w-full py-4 rounded-lg bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black font-black text-xs uppercase tracking-widest hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(191,243,103,0.2)] hover:shadow-[0_4px_25px_rgba(191,243,103,0.4)]"
+                  className="w-full py-4 rounded-lg bg-gradient-to-r from-primary to-primary text-black font-black text-xs uppercase tracking-widest hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(191,243,103,0.2)] hover:shadow-[0_4px_25px_rgba(191,243,103,0.4)]"
                 >
                   {isCreatingRequest ? (
                     <>
@@ -974,7 +975,7 @@ export default function FindProfessionals() {
                   ) : (
                     "⚡ FIND PRO'S"
                   )}
-                </button>
+                </Button>
 
                 {/* Info Footer */}
                 <p className="text-[9px] text-white/30 text-center leading-relaxed">
@@ -982,7 +983,7 @@ export default function FindProfessionals() {
                   After a match is confirmed, check your{" "}
                   <Link
                     to="/booking-history?subTab=professionals"
-                    className="text-[#BFF367] underline hover:text-[#BFF367]/80"
+                    className="text-primary underline hover:text-primary/80"
                   >
                     Booking History
                   </Link>{" "}
@@ -1001,44 +1002,44 @@ export default function FindProfessionals() {
             className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             onClick={() => setShowLocationSearchModal(false)}
           />
-          <div className="relative w-full max-w-md bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-md bg-background border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Header */}
             <div className="p-4 border-b border-white/5 flex items-center justify-between bg-black">
               <div className="flex items-center gap-2">
-                <MapPin size={16} className="text-[#BFF367]" />
+                <MapPin size={16} className="text-primary" />
                 <h3 className="text-sm font-bold text-white uppercase tracking-wider">
                   Search Location
                 </h3>
               </div>
-              <button
+              <Button
                 onClick={() => setShowLocationSearchModal(false)}
                 className="p-1.5 rounded-full hover:bg-white/10 text-white/50 hover:text-white transition-colors"
               >
                 <X size={16} />
-              </button>
+              </Button>
             </div>
 
             {/* Content */}
             <div className="p-4 flex flex-col min-h-[300px]">
               <div ref={locationSearchRef} className="relative">
                 <div className="flex justify-end mb-3">
-                  <button
+                  <Button
                     type="button"
                     onClick={() => {
                       handleDetectLocation();
                     }}
-                    className="px-3 py-1.5 bg-[#BFF367]/10 hover:bg-[#BFF367]/20 text-[10px] font-bold text-[#BFF367] border border-[#BFF367]/20 rounded flex items-center gap-1.5 transition-all"
+                    className="px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-[10px] font-bold text-primary border border-primary/20 rounded flex items-center gap-1.5 transition-all"
                   >
                     <Navigation size={12} />
                     Detect My GPS Location
-                  </button>
+                  </Button>
                 </div>
                 <div className="relative z-10">
                   <MapPin
                     size={16}
                     className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30"
                   />
-                  <input
+                  <Input
                     type="text"
                     placeholder="Search for a place, city, or area..."
                     value={locationQuery}
@@ -1047,27 +1048,27 @@ export default function FindProfessionals() {
                       locationResults.length > 0 &&
                       setShowLocationDropdown(true)
                     }
-                    className="w-full bg-neutral-900 border border-white/10 rounded-xl pl-10 pr-10 py-3.5 text-sm text-white outline-none focus:border-[#BFF367] transition-colors placeholder-white/30 shadow-inner"
+                    className="w-full bg-neutral-900 border border-white/10 rounded-xl pl-10 pr-10 py-3.5 text-sm text-white outline-none focus:border-primary transition-colors placeholder-white/30 shadow-inner"
                     autoComplete="off"
                     autoFocus
                   />
                   {locationSearching && (
                     <Loader2
                       size={16}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#BFF367] animate-spin"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-primary animate-spin"
                     />
                   )}
                 </div>
 
                 {/* Search Results Dropdown inside Modal */}
                 {showLocationDropdown && locationResults.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-[#111] border border-white/10 rounded-xl shadow-[0_16px_48px_rgba(0,0,0,0.6)] overflow-hidden max-h-60 overflow-y-auto">
+                  <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-card border border-white/10 rounded-xl shadow-[0_16px_48px_rgba(0,0,0,0.6)] overflow-hidden max-h-60 overflow-y-auto">
                     {locationResults.map((place, idx) => {
                       const parts = place.display_name.split(", ");
                       const primary = parts[0];
                       const secondary = parts.slice(1, 3).join(", ");
                       return (
-                        <button
+                        <Button
                           key={place.place_id || idx}
                           type="button"
                           onClick={() => handleSelectLocation(place)}
@@ -1075,17 +1076,17 @@ export default function FindProfessionals() {
                         >
                           <MapPin
                             size={16}
-                            className="text-[#BFF367]/60 mt-0.5 shrink-0 group-hover:text-[#BFF367]"
+                            className="text-primary/60 mt-0.5 shrink-0 group-hover:text-primary"
                           />
                           <div className="min-w-0 flex-1">
-                            <p className="text-sm font-bold text-white truncate group-hover:text-[#BFF367] transition-colors">
+                            <p className="text-sm font-bold text-white truncate group-hover:text-primary transition-colors">
                               {primary}
                             </p>
                             <p className="text-[11px] text-white/40 truncate mt-0.5">
                               {secondary}
                             </p>
                           </div>
-                        </button>
+                        </Button>
                       );
                     })}
                   </div>

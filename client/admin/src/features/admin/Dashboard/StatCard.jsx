@@ -11,19 +11,19 @@ const StatCard = ({
   trendValue,
 }) => (
   <div
-    className={`relative overflow-hidden group p-3 md:p-6 rounded-[8px] md:rounded-[8px] transition-all duration-500 hover:scale-[1.02] border border-white/5 bg-[#0A0A0A] ${className}`}
+    className={`relative overflow-hidden group p-3 md:p-6 rounded-[8px] md:rounded-[8px] transition-all duration-500 hover:scale-[1.02] border border-white/5 bg-background ${className}`}
   >
     {/* Subtle Background Glow */}
     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[80px] group-hover:bg-primary/10 transition-all duration-700" />
 
     <div className="relative z-10 flex justify-between items-start mb-4">
       <div className="space-y-1">
-        <p className="text-[8px] md:text-xs font-bold text-gray-500 uppercase tracking-widest group-hover:text-[#55DEE8] transition-colors">
+        <p className="text-[8px] md:text-xs font-bold text-gray-500 uppercase tracking-widest group-hover:text-secondary transition-colors">
           {title}
         </p>
         <div className="flex items-baseline gap-1">
           {prefix && (
-            <span className="text-xl font-bold text-[#55DEE8]">{prefix}</span>
+            <span className="text-xl font-bold text-secondary">{prefix}</span>
           )}
           <div className="text-lg md:text-4xl font-bold tracking-tight text-white leading-none">
             <CountUp end={value || 0} duration={2.5} separator="," />
@@ -32,9 +32,9 @@ const StatCard = ({
       </div>
 
       {Icon && (
-        <div className="w-8 h-8 md:w-12 md:h-12 flex items-center justify-center bg-white/5 rounded-lg md:rounded-[8px] border border-white/5 group-hover:border-[#55DEE8]/30 transition-all">
+        <div className="w-8 h-8 md:w-12 md:h-12 flex items-center justify-center bg-white/5 rounded-lg md:rounded-[8px] border border-white/5 group-hover:border-secondary/30 transition-all">
           <Icon
-            className="text-[#55DEE8] group-hover:scale-110 transition-transform"
+            className="text-secondary group-hover:scale-110 transition-transform"
             size={16}
             md:size={20}
           />
@@ -44,7 +44,7 @@ const StatCard = ({
 
     {trend && (
       <div
-        className={`flex items-center gap-2 mb-4 text-[10px] font-bold uppercase tracking-[0.2em] ${trend === "up" ? "text-[#55DEE8]" : "text-red-500"}`}
+        className={`flex items-center gap-2 mb-4 text-[10px] font-bold uppercase tracking-[0.2em] ${trend === "up" ? "text-secondary" : "text-red-500"}`}
       >
         <div
           className={`flex items-center ${trend === "up" ? "rotate-0" : "rotate-180"}`}

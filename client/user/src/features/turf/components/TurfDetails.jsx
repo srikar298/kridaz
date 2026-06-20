@@ -18,7 +18,8 @@ import useSimilarRecommendations from "@hooks/useSimilarRecommendations";
 import TurfCard from "./TurfCard.jsx";
 import { useGetSavedTurfsQuery, useToggleTurfLikeMutation } from "@redux/api/turfApi";
 import toast from "react-hot-toast";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button } from "@kridaz/ui";
+
 import {
   MapPin,
   Clock,
@@ -280,14 +281,14 @@ const TurfDetails = () => {
   if (!turf) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
-        <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] p-8 rounded-[8px] text-center max-w-md w-full">
+        <div className="bg-card border border-[rgba(255,255,255,0.08)] p-8 rounded-[8px] text-center max-w-md w-full">
           <Info className="w-16 h-16 text-[rgba(255,255,255,0.70)] mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-white mb-2">
             Venue Not Found
           </h2>
           <Link
             to="/venues"
-            className="inline-flex items-center gap-2 bg-[#B3DC26] text-black px-6 py-3 rounded-[6px] font-bold"
+            className="inline-flex items-center gap-2 bg-primary text-black px-6 py-3 rounded-[6px] font-bold"
           >
             <ChevronLeft className="w-5 h-5" /> Back to Discovery
           </Link>
@@ -305,7 +306,7 @@ const TurfDetails = () => {
   };
 
   const bookingSelectorContent = (
-    <div className="w-full bg-[#121212] rounded-[8px] border border-[rgba(255,255,255,0.08)] p-4 md:p-6 flex flex-col shadow-2xl overflow-hidden h-auto max-h-[600px] lg:max-h-[800px]">
+    <div className="w-full bg-card rounded-[8px] border border-[rgba(255,255,255,0.08)] p-4 md:p-6 flex flex-col shadow-2xl overflow-hidden h-auto max-h-[600px] lg:max-h-[800px]">
       {/* Select Date */}
       <div className="space-y-4 shrink-0">
         <h3 className="text-[16px] font-medium text-white tracking-wide">
@@ -321,12 +322,12 @@ const TurfDetails = () => {
             return (
               <div
                 key={dateStr}
-                className={`flex-none rounded-[12px] p-[2px] transition-all duration-300 ${isActive ? "bg-gradient-to-r from-[#B3DC26] to-[#B3DC26] shadow-[0_0_15px_rgba(85,222,232,0.2)]" : "bg-transparent"}`}
+                className={`flex-none rounded-[12px] p-[2px] transition-all duration-300 ${isActive ? "bg-gradient-to-r from-primary to-primary shadow-[0_0_15px_rgba(85,222,232,0.2)]" : "bg-transparent"}`}
                 style={{ width: "68px", height: "85px" }}
               >
-                <button
+                <Button
                   onClick={() => handleDateChange(date)}
-                  className={`w-full h-full flex flex-col items-center justify-center gap-1 rounded-[10px] ${isActive ? "bg-[#1C1C1C]" : "bg-[#2A2A2A] hover:bg-[#333333]"}`}
+                  className={`w-full h-full flex flex-col items-center justify-center gap-1 rounded-[10px] ${isActive ? "bg-[#1C1C1C]" : "bg-border hover:bg-[#333333]"}`}
                 >
                   <span
                     className={`text-[28px] font-bold leading-none tracking-tight ${isActive ? "text-white" : "text-zinc-200"}`}
@@ -334,11 +335,11 @@ const TurfDetails = () => {
                     {String(date.getDate()).padStart(2, "0")}
                   </span>
                   <span
-                    className={`text-[13px] font-medium ${isActive ? "text-[#B3DC26]" : "text-[rgba(255,255,255,0.70)]"}`}
+                    className={`text-[13px] font-medium ${isActive ? "text-primary" : "text-[rgba(255,255,255,0.70)]"}`}
                   >
                     {date.toLocaleDateString("en-US", { weekday: "short" })}
                   </span>
-                </button>
+                </Button>
               </div>
             );
           })}
@@ -376,20 +377,20 @@ const TurfDetails = () => {
               return (
                 <div
                   key={idx}
-                  className={`rounded-[8px] p-[1.5px] transition-all duration-300 ${isSelected ? "bg-gradient-to-r from-[#B3DC26] to-[#B3DC26] shadow-[0_0_10px_rgba(85,222,232,0.2)]" : "bg-transparent"}`}
+                  className={`rounded-[8px] p-[1.5px] transition-all duration-300 ${isSelected ? "bg-gradient-to-r from-primary to-primary shadow-[0_0_10px_rgba(85,222,232,0.2)]" : "bg-transparent"}`}
                 >
-                  <button
+                  <Button
                     disabled={!isAvailable}
                     onClick={() => handleTimeSelection(time)}
-                    className={`w-full h-full py-[8.5px] px-2 rounded-[6.5px] text-[13px] font-[600] tracking-wide transition-all duration-300 font-inter ${isSelected ? "bg-[#1C1C1C] text-white" : isAvailable ? "bg-[#2A2A2A] text-zinc-300 hover:bg-[#333333]" : "bg-[#1A1A1A] text-[rgba(255,255,255,0.70)] cursor-not-allowed opacity-50"}`}
+                    className={`w-full h-full py-[8.5px] px-2 rounded-[6.5px] text-[13px] font-[600] tracking-wide transition-all duration-300 font-inter ${isSelected ? "bg-[#1C1C1C] text-white" : isAvailable ? "bg-border text-zinc-300 hover:bg-[#333333]" : "bg-card text-[rgba(255,255,255,0.70)] cursor-not-allowed opacity-50"}`}
                   >
                     {displayTime}
-                  </button>
+                  </Button>
                 </div>
               );
             })
           ) : (
-            <div className="col-span-3 py-10 text-center bg-[#1A1A1A] rounded-[8px] border border-[rgba(255,255,255,0.08)]">
+            <div className="col-span-3 py-10 text-center bg-card rounded-[8px] border border-[rgba(255,255,255,0.08)]">
               <Clock className="w-8 h-8 text-[rgba(255,255,255,0.70)] mx-auto mb-2" />
               <p className="text-[13px] font-medium text-[rgba(255,255,255,0.70)]">
                 No Slots Available
@@ -409,23 +410,23 @@ const TurfDetails = () => {
             ₹{totalPrice || turf.pricePerHour}
           </p>
         </div>
-        <button
+        <Button
           onClick={handleReservation}
           disabled={bookingLoading || !selectedStartTime}
-          className="bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] w-full md:w-[340px] h-[58px] rounded-[16px] font-inter text-[18px] font-[700] leading-[28px] shadow-[0px_8px_24px_rgba(179,220,38,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none"
+          className="bg-gradient-to-r from-secondary to-primary text-background w-full md:w-[340px] h-[58px] rounded-[16px] font-inter text-[18px] font-[700] leading-[28px] shadow-[0px_8px_24px_rgba(179,220,38,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none"
         >
           {bookingLoading
             ? "..."
             : searchParams.get("returnTo")
               ? "Add to host game"
               : "Proceed"}
-        </button>
+        </Button>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white pt-2 pb-24 font-inter">
+    <div className="min-h-screen bg-background text-white pt-2 pb-24 font-inter">
       <AnimatePresence>
         {isPoliciesModalOpen && (
           <PoliciesModal
@@ -439,8 +440,8 @@ const TurfDetails = () => {
       <div className="max-w-[1400px] mx-auto md:px-4 px-0 mt-0 md:mt-4">
         <svg width="0" height="0" className="absolute">
           <linearGradient id="theme-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop stopColor="#55DEE8" offset="0%" />
-            <stop stopColor="#B3DC26" offset="100%" />
+            <stop stopColor="var(--secondary)" offset="0%" />
+            <stop stopColor="var(--primary)" offset="100%" />
           </linearGradient>
         </svg>
 
@@ -454,7 +455,7 @@ const TurfDetails = () => {
             <GlobalBackButton />
 
             {/* Venue Big Heading */}
-            <h1 className="text-[28px] md:text-[32px] font-[700] leading-tight text-[#FFFFFF] px-4 md:px-2 font-inter">
+            <h1 className="text-[28px] md:text-[32px] font-[700] leading-tight text-foreground px-4 md:px-2 font-inter">
               {turf.name}
             </h1>
 
@@ -468,7 +469,7 @@ const TurfDetails = () => {
                     fill: "url(#theme-gradient)",
                   }}
                 />
-                <span className="text-[#B3DC26] font-[700]">
+                <span className="text-primary font-[700]">
                   {averageRating ? averageRating.toFixed(1) : "5.0"}
                 </span>
                 <span>({reviews?.length || 0} REVIEWS)</span>
@@ -493,7 +494,7 @@ const TurfDetails = () => {
                   className="w-4 h-4"
                   style={{ stroke: "url(#theme-gradient)" }}
                 />
-                <span className="text-[rgba(255,255,255,0.70)] group-hover:text-[#B3DC26] transition-colors font-medium">
+                <span className="text-[rgba(255,255,255,0.70)] group-hover:text-primary transition-colors font-medium">
                   View Policies
                 </span>
               </div>
@@ -504,7 +505,7 @@ const TurfDetails = () => {
               {/* Left Column: Media */}
               <div className="space-y-6 w-full">
                 {/* Hero Image */}
-                <div className="relative w-full aspect-[16/9] overflow-hidden border-y border-x-0 md:border-x border-[rgba(255,255,255,0.08)] shadow-2xl bg-[#121212] group md:rounded-[15px] rounded-none">
+                <div className="relative w-full aspect-[16/9] overflow-hidden border-y border-x-0 md:border-x border-[rgba(255,255,255,0.08)] shadow-2xl bg-card group md:rounded-[15px] rounded-none">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={activeImageIndex}
@@ -544,18 +545,18 @@ const TurfDetails = () => {
                   {/* Navigation Arrows */}
                   {mediaItems.length > 1 && (
                     <>
-                      <button
+                      <Button
                         onClick={handlePrev}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-[#B3DC26] hover:text-black z-30"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:text-black z-30"
                       >
                         <ChevronLeft size={20} />
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={handleNext}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-[#B3DC26] hover:text-black z-30"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:text-black z-30"
                       >
                         <ChevronRight size={20} />
-                      </button>
+                      </Button>
                     </>
                   )}
 
@@ -563,20 +564,20 @@ const TurfDetails = () => {
 
                   {/* Like and Share Actions */}
                   <div className="absolute top-4 right-4 z-40 flex items-center gap-3">
-                    <button
+                    <Button
                       onClick={toggleFavorite}
-                      className={`p-3 rounded-[8px] bg-black/40 backdrop-blur-md border ${isFavorite ? "border-[#B3DC26] text-[#B3DC26]" : "border-white/10 text-white"} hover:bg-[#B3DC26] hover:text-black hover:border-transparent transition-all shadow-lg`}
+                      className={`p-3 rounded-[8px] bg-black/40 backdrop-blur-md border ${isFavorite ? "border-primary text-primary" : "border-white/10 text-white"} hover:bg-primary hover:text-black hover:border-transparent transition-all shadow-lg`}
                     >
                       <Heart
                         className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`}
                       />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={handleShare}
-                      className="p-3 rounded-[8px] bg-black/40 backdrop-blur-md border border-white/10 text-white hover:bg-[#B3DC26] hover:text-black hover:border-transparent transition-all shadow-lg"
+                      className="p-3 rounded-[8px] bg-black/40 backdrop-blur-md border border-white/10 text-white hover:bg-primary hover:text-black hover:border-transparent transition-all shadow-lg"
                     >
                       <Share2 className="w-5 h-5" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
@@ -584,10 +585,10 @@ const TurfDetails = () => {
                 {mediaItems.length > 1 && (
                   <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x px-4 md:px-0">
                     {mediaItems.map((item, idx) => (
-                      <button
+                      <Button
                         key={idx}
                         onClick={() => setActiveImageIndex(idx)}
-                        className={`relative flex-none w-20 h-14 md:w-24 md:h-16 rounded-[8px] overflow-hidden border-[2px] transition-all snap-start ${activeImageIndex === idx ? "border-[#B3DC26]" : "border-transparent opacity-50 hover:opacity-100"}`}
+                        className={`relative flex-none w-20 h-14 md:w-24 md:h-16 rounded-[8px] overflow-hidden border-[2px] transition-all snap-start ${activeImageIndex === idx ? "border-primary" : "border-transparent opacity-50 hover:opacity-100"}`}
                       >
                         {item.type === "youtube" ? (
                           <img
@@ -607,14 +608,14 @@ const TurfDetails = () => {
                             className="w-full h-full object-cover"
                           />
                         )}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 )}
                 {/* Desktop Map Section */}
                 <div className="hidden lg:block pt-4 w-full">
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-[16px] font-[600] leading-[24px] text-[#FFFFFF] font-inter">
+                    <h2 className="text-[16px] font-[600] leading-[24px] text-foreground font-inter">
                       Location & Directions
                     </h2>
                     <div className="flex items-center gap-2 font-black text-[rgba(255,255,255,0.70)]">
@@ -632,27 +633,27 @@ const TurfDetails = () => {
               </div>
 
               {/* Right Column: Venue Details */}
-              <div className="bg-[#121212] rounded-none md:rounded-[8px] border-y md:border border-[rgba(255,255,255,0.08)] p-6 md:p-8 space-y-8 font-inter h-full">
+              <div className="bg-card rounded-none md:rounded-[8px] border-y md:border border-[rgba(255,255,255,0.08)] p-6 md:p-8 space-y-8 font-inter h-full">
                 <div className="flex flex-wrap items-start gap-10">
                   {/* Sports Available */}
                   <div className="space-y-4">
-                    <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-[#FFFFFF] font-inter">
+                    <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-inter">
                       SPORTS AVAILABLE
                     </h2>
                     <div className="flex flex-wrap gap-2">
                       {turf.sportTypes?.map((sport, i) => (
                         <div
                           key={i}
-                          className="px-4 py-1.5 rounded-[6px] bg-[#121212]/50 border border-[rgba(255,255,255,0.08)] flex items-center gap-2 text-white group hover:border-[#B3DC26] transition-all duration-300"
+                          className="px-4 py-1.5 rounded-[6px] bg-card/50 border border-[rgba(255,255,255,0.08)] flex items-center gap-2 text-white group hover:border-primary transition-all duration-300"
                         >
-                          <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-[#B3DC26] to-[#B3DC26]" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-primary to-primary" />
                           <span className="text-[10px] font-bold uppercase tracking-wider font-inter">
                             {sport}
                           </span>
                         </div>
                       ))}
                       {!turf.sportTypes?.length && (
-                        <div className="px-4 py-1.5 rounded-[6px] bg-[#121212]/50 border border-[rgba(255,255,255,0.08)] flex items-center gap-2 text-[rgba(255,255,255,0.70)]">
+                        <div className="px-4 py-1.5 rounded-[6px] bg-card/50 border border-[rgba(255,255,255,0.08)] flex items-center gap-2 text-[rgba(255,255,255,0.70)]">
                           <Activity className="w-3 h-3" />
                           <span className="text-[10px] font-bold uppercase tracking-wider font-inter">
                             Multisport
@@ -664,11 +665,11 @@ const TurfDetails = () => {
 
                   {/* Ground Composition */}
                   <div className="space-y-4">
-                    <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-[#FFFFFF] font-inter">
+                    <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-inter">
                       GROUND COMPOSITION
                     </h2>
                     <div className="flex flex-wrap gap-3">
-                      <div className="px-4 py-1.5 rounded-[6px] bg-[#121212] border border-[rgba(255,255,255,0.08)] flex items-center justify-center">
+                      <div className="px-4 py-1.5 rounded-[6px] bg-card border border-[rgba(255,255,255,0.08)] flex items-center justify-center">
                         <span className="text-[10px] font-black uppercase tracking-widest text-white font-inter">
                           {turf.turfType || "Natural Grass"}
                         </span>
@@ -680,15 +681,15 @@ const TurfDetails = () => {
                 {/* Personnel & Support Section */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-1 h-5 bg-gradient-to-b from-[#B3DC26] to-[#B3DC26] rounded-full" />
-                    <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-[#FFFFFF] font-inter">
+                    <div className="w-1 h-5 bg-gradient-to-b from-primary to-primary rounded-full" />
+                    <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-inter">
                       PERSONNEL & SUPPORT
                     </h2>
                   </div>
 
                   {/* Venue Managers */}
                   <div className="w-full max-w-sm">
-                    <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] border-dashed rounded-[12px] p-3.5 flex items-center justify-between">
+                    <div className="bg-card border border-[rgba(255,255,255,0.08)] border-dashed rounded-[12px] p-3.5 flex items-center justify-between">
                       <div className="space-y-0.5">
                         <p className="text-[12px] font-black text-white uppercase font-inter">
                           {turf.name?.split(" ")[0] || "Princess"}
@@ -697,16 +698,16 @@ const TurfDetails = () => {
                           7896541230
                         </p>
                       </div>
-                      <button className="w-9 h-9 rounded-[8px] bg-gradient-to-br from-[#B3DC26] to-[#B3DC26] flex items-center justify-center text-black hover:brightness-110 transition-all shadow-[0_0_15px_rgba(85,222,232,0.2)]">
+                      <Button className="w-9 h-9 rounded-[8px] bg-gradient-to-br from-primary to-primary flex items-center justify-center text-black hover:brightness-110 transition-all shadow-[0_0_15px_rgba(85,222,232,0.2)]">
                         <Phone size={16} fill="currentColor" />
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
 
                 {/* Facilities */}
                 <div className="space-y-4">
-                  <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-[#FFFFFF] font-inter">
+                  <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-inter">
                     FACILITIES
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -715,7 +716,7 @@ const TurfDetails = () => {
                         key={index}
                         className="flex items-center gap-3 group"
                       >
-                        <div className="w-5 h-5 rounded-full bg-gradient-to-r from-[#B3DC26] to-[#B3DC26] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(85,222,232,0.3)]">
+                        <div className="w-5 h-5 rounded-full bg-gradient-to-r from-primary to-primary flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(85,222,232,0.3)]">
                           <Check
                             className="w-3 h-3 text-black"
                             strokeWidth={4}
@@ -731,7 +732,7 @@ const TurfDetails = () => {
 
                 {/* About Venue */}
                 <div className="space-y-4">
-                  <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-[#FFFFFF] font-inter">
+                  <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-inter">
                     ABOUT VENUE
                   </h2>
                   <div
@@ -741,12 +742,12 @@ const TurfDetails = () => {
                       "No description available for this venue."}
                   </div>
                   {turf.description && turf.description.length > 150 && (
-                    <button
+                    <Button
                       onClick={() => setIsDescExpanded(!isDescExpanded)}
-                      className="text-[#B3DC26] hover:brightness-110 text-xs font-bold uppercase tracking-widest transition-colors mt-2"
+                      className="text-primary hover:brightness-110 text-xs font-bold uppercase tracking-widest transition-colors mt-2"
                     >
                       {isDescExpanded ? "Read Less" : "Read More"}
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -755,7 +756,7 @@ const TurfDetails = () => {
             {/* Map Section Before Reviews */}
             <div className="lg:hidden pt-8 px-4 md:px-0 border-t border-[rgba(255,255,255,0.08)] mt-8 w-full">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-[16px] font-[600] leading-[24px] text-[#FFFFFF] font-inter">
+                <h2 className="text-[16px] font-[600] leading-[24px] text-foreground font-inter">
                   Location & Directions
                 </h2>
                 <div className="flex items-center gap-2 font-black text-[rgba(255,255,255,0.70)]">
@@ -776,10 +777,10 @@ const TurfDetails = () => {
               <div className="pt-8 px-4 md:px-0 border-t border-[rgba(255,255,255,0.08)] animate-fade-in">
                 <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                   <div className="relative">
-                    <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-[#B3DC26] rounded-full shadow-[0_0_20px_rgba(179,220,38,0.4)] hidden md:block"></div>
+                    <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-primary rounded-full shadow-[0_0_20px_rgba(179,220,38,0.4)] hidden md:block"></div>
                     <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter leading-none font-inter">
                       SIMILAR{" "}
-                      <span className="text-[#B3DC26]">ARENAS NEARBY</span>
+                      <span className="text-primary">ARENAS NEARBY</span>
                     </h3>
                     <p className="text-[10px] md:text-xs font-bold text-white/40 uppercase tracking-[0.3em] mt-2 font-inter">
                       ML Proximity Recommendations • Similar Surface & Sports
@@ -792,7 +793,7 @@ const TurfDetails = () => {
                     {[...Array(2)].map((_, i) => (
                       <div
                         key={i}
-                        className="rounded-[8px] border border-white/5 bg-[#0d0d0d] animate-pulse h-[300px] relative overflow-hidden"
+                        className="rounded-[8px] border border-white/5 bg-background animate-pulse h-[300px] relative overflow-hidden"
                       >
                         <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent h-[60%]" />
                         <div className="absolute bottom-0 left-0 right-0 p-6 space-y-3">
@@ -827,7 +828,7 @@ const TurfDetails = () => {
             {/* Reviews Section */}
             <div className="pt-8 border-t border-[rgba(255,255,255,0.08)] mt-8">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-[16px] font-[600] leading-[24px] text-[#FFFFFF] font-inter">
+                <h2 className="text-[16px] font-[600] leading-[24px] text-foreground font-inter">
                   Athlete Reviews
                 </h2>
                 <div className="flex items-center gap-2 font-black">
@@ -838,7 +839,7 @@ const TurfDetails = () => {
                       fill: "url(#theme-gradient)",
                     }}
                   />
-                  <span className="bg-gradient-to-r from-[#B3DC26] to-[#B3DC26] inline-block text-transparent bg-clip-text text-xl md:text-2xl">
+                  <span className="bg-gradient-to-r from-primary to-primary inline-block text-transparent bg-clip-text text-xl md:text-2xl">
                     {averageRating ? averageRating.toFixed(1) : "5.0"}
                   </span>
                   <span className="text-[rgba(255,255,255,0.70)] text-base md:text-lg">
@@ -854,12 +855,12 @@ const TurfDetails = () => {
 
       {/* Sticky Book Button for Mobile & Desktop */}
       <div className="fixed bottom-20 lg:bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent z-50 pointer-events-none flex justify-center pb-6">
-        <button
+        <Button
           onClick={() => setIsBookingModalOpen(true)}
-          className="pointer-events-auto bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] w-full max-w-md h-[56px] rounded-[16px] font-inter text-[18px] font-[700] leading-[28px] shadow-[0px_8px_24px_rgba(179,220,38,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+          className="pointer-events-auto bg-gradient-to-r from-secondary to-primary text-background w-full max-w-md h-[56px] rounded-[16px] font-inter text-[18px] font-[700] leading-[28px] shadow-[0px_8px_24px_rgba(179,220,38,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
         >
           Book Venue
-        </button>
+        </Button>
       </div>
 
       {/* Booking Modal */}
@@ -880,17 +881,17 @@ const TurfDetails = () => {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="relative w-full max-w-md lg:max-w-xl z-10"
             >
-              <div className="relative bg-[#121212] rounded-t-[20px] md:rounded-[8px] shadow-2xl w-full flex flex-col max-h-[90vh]">
+              <div className="relative bg-card rounded-t-[20px] md:rounded-[8px] shadow-2xl w-full flex flex-col max-h-[90vh]">
                 <div className="flex items-center justify-between p-4 border-b border-[rgba(255,255,255,0.08)] shrink-0">
                   <h2 className="text-[18px] font-[700] text-white">
                     Book Slot
                   </h2>
-                  <button
+                  <Button
                     onClick={() => setIsBookingModalOpen(false)}
                     className="text-[rgba(255,255,255,0.70)] hover:text-white bg-white/5 rounded-full p-2 transition-colors"
                   >
                     <X className="w-5 h-5" />
-                  </button>
+                  </Button>
                 </div>
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-0">
                   {bookingSelectorContent}
@@ -948,7 +949,7 @@ const VenueMap = ({ turf }) => {
         className="pointer-events-none"
       />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#B3DC26] to-[#B3DC26] flex items-center justify-center shadow-[0_0_30px_rgba(85,222,232,0.6)] animate-bounce">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-primary to-primary flex items-center justify-center shadow-[0_0_30px_rgba(85,222,232,0.6)] animate-bounce">
           <MapPin className="w-6 h-6 text-black" />
         </div>
       </div>
@@ -956,7 +957,7 @@ const VenueMap = ({ turf }) => {
       {/* Click for Directions Overlay */}
       <div className="absolute inset-0 bg-black/20 group-hover/map:bg-black/40 transition-all flex items-end justify-center pb-4 opacity-0 group-hover/map:opacity-100">
         <div className="bg-black/80 backdrop-blur-md px-4 py-2 rounded-[6px] border border-white/10 flex items-center gap-2">
-          <Navigation size={14} className="text-[#B3DC26]" />
+          <Navigation size={14} className="text-primary" />
           <span className="text-[10px] font-bold text-white uppercase tracking-widest">
             Get Directions
           </span>
@@ -983,28 +984,28 @@ const PoliciesModal = ({ isOpen, onClose, rules, turfName }) => {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-xl bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-8 shadow-2xl z-10"
+            className="relative w-full max-w-xl bg-card border border-[rgba(255,255,255,0.08)] rounded-[8px] p-8 shadow-2xl z-10"
           >
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#B3DC26]/10 flex items-center justify-center border border-[#B3DC26]/20">
-                  <ShieldCheck className="w-6 h-6 text-[#B3DC26]" />
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+                  <ShieldCheck className="w-6 h-6 text-primary" />
                 </div>
-                <h2 className="text-[16px] font-[600] leading-[24px] text-[#FFFFFF] font-inter">
+                <h2 className="text-[16px] font-[600] leading-[24px] text-foreground font-inter">
                   Venue Policies
                 </h2>
               </div>
-              <button
+              <Button
                 onClick={onClose}
-                className="w-10 h-10 rounded-full bg-[#121212] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[rgba(255,255,255,0.70)] hover:text-white transition-colors"
+                className="w-10 h-10 rounded-full bg-card border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[rgba(255,255,255,0.70)] hover:text-white transition-colors"
               >
                 <Check className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
 
             <div className="space-y-6">
-              <div className="p-4 bg-[#121212]/50 rounded-[12px] border border-[rgba(255,255,255,0.08)]">
-                <p className="text-[10px] font-black text-[#B3DC26] uppercase tracking-[0.2em] mb-2">
+              <div className="p-4 bg-card/50 rounded-[12px] border border-[rgba(255,255,255,0.08)]">
+                <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2">
                   Venue
                 </p>
                 <p className="text-sm font-bold text-white uppercase">
@@ -1019,12 +1020,12 @@ const PoliciesModal = ({ isOpen, onClose, rules, turfName }) => {
                 </div>
               </div>
 
-              <button
+              <Button
                 onClick={onClose}
-                className="bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] w-full h-[58px] rounded-[16px] font-inter text-[18px] font-[700] leading-[28px] shadow-[0px_8px_24px_rgba(179,220,38,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-none cursor-pointer"
+                className="bg-gradient-to-r from-secondary to-primary text-background w-full h-[58px] rounded-[16px] font-inter text-[18px] font-[700] leading-[28px] shadow-[0px_8px_24px_rgba(179,220,38,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-none cursor-pointer"
               >
                 I Understand
-              </button>
+              </Button>
             </div>
           </motion.div>
         </div>

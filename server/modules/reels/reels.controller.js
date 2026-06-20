@@ -336,13 +336,19 @@ export const interactWithReel = async (req, res) => {
     // Support Unliking a Reel
     if (normalizedType === "unlike") {
       // 1. Delete matching like interaction in DB
-      await prisma.reelInteraction.deleteMany({
+      const deleted = await prisma.reelInteraction.deleteMany({
         where: {
           userId,
           reelId,
           type: "like",
         },
       });
+
+      if (deleted.count === 0) {
+        return res
+          .status(200)
+          .json({ success: true, message: "Reel was not liked" });
+      }
 
       // 2. Remove like from Bloom filter
       await removeReelInteractionFromBloom(userId, reelId, "like");

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "@hooks/useAxiosInstance";
-import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";import { Button, Input, Select } from "@kridaz/ui";
+
 import {
   Plus,
   Trash2,
@@ -125,13 +126,13 @@ export const CouponManagement = () => {
             Create and manage discount codes for the platform.
           </p>
         </div>
-        <button
+        <Button
           onClick={handleOpenModal}
           className="inline-flex items-center gap-2 bg-yellow-500 text-black px-4 py-2 rounded-[6px] font-bold hover:bg-yellow-400 transition-colors"
         >
           <Plus size={18} />
           Create Coupon
-        </button>
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -145,7 +146,7 @@ export const CouponManagement = () => {
           return (
             <div
               key={coupon.id}
-              className={`group relative flex flex-col rounded-[8px] border border-white/10 bg-[#1A1A1A] p-5 transition-all hover:border-yellow-500/50 ${!isUsable ? "opacity-70" : ""}`}
+              className={`group relative flex flex-col rounded-[8px] border border-white/10 bg-card p-5 transition-all hover:border-yellow-500/50 ${!isUsable ? "opacity-70" : ""}`}
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
@@ -168,7 +169,7 @@ export const CouponManagement = () => {
                   </div>
                 </div>
 
-                <button
+                <Button
                   onClick={() => handleToggleStatus(coupon.id, coupon.isActive)}
                   className={`px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-[6px] flex items-center gap-1 ${coupon.isActive ? "bg-green-500/10 text-green-500 border border-green-500/20" : "bg-red-500/10 text-red-500 border border-red-500/20"}`}
                 >
@@ -178,7 +179,7 @@ export const CouponManagement = () => {
                     <XCircle size={10} />
                   )}
                   {coupon.isActive ? "Active" : "Disabled"}
-                </button>
+                </Button>
               </div>
 
               <div className="space-y-3 mb-6">
@@ -208,13 +209,13 @@ export const CouponManagement = () => {
               </div>
 
               <div className="mt-auto pt-4 border-t border-white/5">
-                <button
+                <Button
                   onClick={() => handleDelete(coupon.id)}
                   className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-red-500/10 text-red-500 font-bold hover:bg-red-500 hover:text-white transition-all text-xs"
                 >
                   <Trash2 size={16} />
                   Delete Coupon
-                </button>
+                </Button>
               </div>
             </div>
           );
@@ -233,17 +234,17 @@ export const CouponManagement = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-[#111] border border-white/10 rounded-[8px] overflow-hidden shadow-2xl">
+          <div className="w-full max-w-md bg-card border border-white/10 rounded-[8px] overflow-hidden shadow-2xl">
             <div className="p-6 border-b border-white/10 flex items-center justify-between">
               <h2 className="text-xl font-bold font-bebas tracking-wider text-white">
                 CREATE COUPON
               </h2>
-              <button
+              <Button
                 onClick={() => setIsModalOpen(false)}
                 className="text-gray-400 hover:text-white"
               >
                 <X size={20} />
-              </button>
+              </Button>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
@@ -251,7 +252,7 @@ export const CouponManagement = () => {
                 <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
                   Coupon Code
                 </label>
-                <input
+                <Input
                   type="text"
                   required
                   value={formData.code}
@@ -271,26 +272,26 @@ export const CouponManagement = () => {
                   <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
                     Discount Type
                   </label>
-                  <select
+                  <Select
                     value={formData.discountType}
                     onChange={(e) =>
                       setFormData({ ...formData, discountType: e.target.value })
                     }
                     className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-yellow-500 transition-colors text-sm"
                   >
-                    <option value="PERCENTAGE" className="bg-[#111]">
+                    <option value="PERCENTAGE" className="bg-card">
                       Percentage (%)
                     </option>
-                    <option value="FIXED" className="bg-[#111]">
+                    <option value="FIXED" className="bg-card">
                       Fixed Amount
                     </option>
-                  </select>
+                  </Select>
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
                     Value
                   </label>
-                  <input
+                  <Input
                     type="number"
                     required
                     min="1"
@@ -315,7 +316,7 @@ export const CouponManagement = () => {
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Clock size={14} className="text-gray-500" />
                   </div>
-                  <input
+                  <Input
                     type="date"
                     required
                     value={formData.validUntil}
@@ -331,7 +332,7 @@ export const CouponManagement = () => {
                 <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
                   Usage Limit (0 = Unlimited)
                 </label>
-                <input
+                <Input
                   type="number"
                   min="0"
                   value={formData.usageLimit}
@@ -344,19 +345,19 @@ export const CouponManagement = () => {
               </div>
 
               <div className="pt-6 border-t border-white/10 flex gap-4">
-                <button
+                <Button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
                   className="flex-1 py-3 rounded-[8px] border border-white/10 text-white font-bold hover:bg-white/5 transition-all"
                 >
                   CANCEL
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
                   className="flex-1 py-3 rounded-[8px] bg-yellow-500 text-black font-bold hover:bg-yellow-400 transition-all shadow-[0_0_20px_rgba(234,179,8,0.3)]"
                 >
                   CREATE COUPON
-                </button>
+                </Button>
               </div>
             </form>
           </div>

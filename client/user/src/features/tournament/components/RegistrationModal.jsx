@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import { X, Check, Users, IndianRupee, AlertCircle } from "lucide-react";
 import { useGetMyTeamsQuery } from "../../../redux/api/teamApi";
 import { useRegisterForTournamentMutation } from "../../../redux/api/tournamentApi";
-import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";import { Button } from "@kridaz/ui";
+
 
 const RegistrationModal = ({ tournament, onClose }) => {
   const { data: teamsRes, isLoading: isLoadingTeams } = useGetMyTeamsQuery();
@@ -51,7 +52,7 @@ const RegistrationModal = ({ tournament, onClose }) => {
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="relative w-full max-w-lg bg-[#111] border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+        className="relative w-full max-w-lg bg-card border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
       >
         <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10">
           <div>
@@ -60,12 +61,12 @@ const RegistrationModal = ({ tournament, onClose }) => {
             </h2>
             <p className="text-xs text-white/50">{tournament.name}</p>
           </div>
-          <button
+          <Button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-white hover:bg-white/10 transition-colors"
           >
             <X size={16} />
-          </button>
+          </Button>
         </div>
 
         <div className="p-4 md:p-6 overflow-y-auto custom-scrollbar flex-1 space-y-6">
@@ -77,7 +78,7 @@ const RegistrationModal = ({ tournament, onClose }) => {
 
             {isLoadingTeams ? (
               <div className="h-24 flex items-center justify-center border border-white/5 bg-white/5 rounded-xl">
-                <div className="w-5 h-5 border-2 border-[#BFF367] border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
             ) : myTeams.length === 0 ? (
               <div className="p-4 text-center border border-white/5 bg-white/5 rounded-xl">
@@ -86,7 +87,7 @@ const RegistrationModal = ({ tournament, onClose }) => {
                 </p>
                 <a
                   href="/teams"
-                  className="text-xs text-[#BFF367] hover:underline font-bold"
+                  className="text-xs text-primary hover:underline font-bold"
                 >
                   Create a Team First
                 </a>
@@ -104,20 +105,20 @@ const RegistrationModal = ({ tournament, onClose }) => {
                   const isDisabled = isWrongSport || isAlreadyRegistered;
 
                   return (
-                    <button
+                    <Button
                       key={team.id}
                       disabled={isDisabled}
                       onClick={() => setSelectedTeam(team)}
                       className={`w-full flex items-center justify-between p-3 rounded-xl border text-left transition-colors ${
                         selectedTeam?.id === team.id
-                          ? "border-[#BFF367] bg-[#BFF367]/10"
+                          ? "border-primary bg-primary/10"
                           : isDisabled
                             ? "border-white/5 bg-white/5 opacity-50 cursor-not-allowed"
-                            : "border-white/10 bg-[#1a1a1a] hover:bg-white/5"
+                            : "border-white/10 bg-card hover:bg-white/5"
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center overflow-hidden">
+                        <div className="w-10 h-10 rounded-full bg-card flex items-center justify-center overflow-hidden">
                           {team.logo ? (
                             <img
                               src={team.logo}
@@ -140,7 +141,7 @@ const RegistrationModal = ({ tournament, onClose }) => {
                       </div>
 
                       {selectedTeam?.id === team.id && (
-                        <div className="w-5 h-5 rounded-full bg-[#BFF367] flex items-center justify-center">
+                        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
                           <Check size={12} className="text-black" />
                         </div>
                       )}
@@ -150,7 +151,7 @@ const RegistrationModal = ({ tournament, onClose }) => {
                           {isAlreadyRegistered ? "Registered" : "Wrong Sport"}
                         </span>
                       )}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -164,12 +165,12 @@ const RegistrationModal = ({ tournament, onClose }) => {
                 2. Payment Plan
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button
+                <Button
                   onClick={() => setPaymentType("FULL")}
                   className={`p-4 rounded-xl border text-left transition-colors ${
                     paymentType === "FULL"
-                      ? "border-[#BFF367] bg-[#BFF367]/10"
-                      : "border-white/10 bg-[#1a1a1a] hover:bg-white/5"
+                      ? "border-primary bg-primary/10"
+                      : "border-white/10 bg-card hover:bg-white/5"
                   }`}
                 >
                   <div className="flex justify-between items-start mb-2">
@@ -177,7 +178,7 @@ const RegistrationModal = ({ tournament, onClose }) => {
                       Pay Full
                     </span>
                     {paymentType === "FULL" && (
-                      <Check size={14} className="text-[#BFF367]" />
+                      <Check size={14} className="text-primary" />
                     )}
                   </div>
                   <div className="flex items-baseline gap-1">
@@ -186,15 +187,15 @@ const RegistrationModal = ({ tournament, onClose }) => {
                       {entryFee}
                     </span>
                   </div>
-                </button>
+                </Button>
 
                 {isAdvanceAllowed && (
-                  <button
+                  <Button
                     onClick={() => setPaymentType("ADVANCE")}
                     className={`p-4 rounded-xl border text-left transition-colors ${
                       paymentType === "ADVANCE"
-                        ? "border-[#BFF367] bg-[#BFF367]/10"
-                        : "border-white/10 bg-[#1a1a1a] hover:bg-white/5"
+                        ? "border-primary bg-primary/10"
+                        : "border-white/10 bg-card hover:bg-white/5"
                     }`}
                   >
                     <div className="flex justify-between items-start mb-2">
@@ -202,7 +203,7 @@ const RegistrationModal = ({ tournament, onClose }) => {
                         Pay Advance
                       </span>
                       {paymentType === "ADVANCE" && (
-                        <Check size={14} className="text-[#BFF367]" />
+                        <Check size={14} className="text-primary" />
                       )}
                     </div>
                     <div className="flex items-baseline gap-1">
@@ -214,7 +215,7 @@ const RegistrationModal = ({ tournament, onClose }) => {
                     <p className="text-[10px] text-white/50 mt-1">
                       Pay â‚¹{entryFee - advanceFee} later
                     </p>
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
@@ -222,12 +223,12 @@ const RegistrationModal = ({ tournament, onClose }) => {
 
           {/* Wallet Warning */}
           {selectedTeam && entryFee > 0 && (
-            <div className="bg-[#BFF367]/10 border border-[#BFF367]/20 p-3 rounded-lg flex gap-3 items-start">
+            <div className="bg-primary/10 border border-primary/20 p-3 rounded-lg flex gap-3 items-start">
               <AlertCircle
                 size={16}
-                className="text-[#BFF367] mt-0.5 shrink-0"
+                className="text-primary mt-0.5 shrink-0"
               />
-              <p className="text-xs text-[#BFF367]/80 leading-relaxed">
+              <p className="text-xs text-primary/80 leading-relaxed">
                 The amount will be deducted from your KRIDAZ wallet. Ensure you
                 have sufficient balance before proceeding.
               </p>
@@ -236,10 +237,10 @@ const RegistrationModal = ({ tournament, onClose }) => {
         </div>
 
         <div className="p-4 md:p-6 border-t border-white/10 bg-black/50">
-          <button
+          <Button
             disabled={!selectedTeam || isRegistering}
             onClick={handleRegister}
-            className="w-full bg-[#BFF367] text-black font-black py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-sm flex items-center justify-center gap-2"
+            className="w-full bg-primary text-black font-black py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-sm flex items-center justify-center gap-2"
           >
             {isRegistering ? (
               <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
@@ -248,7 +249,7 @@ const RegistrationModal = ({ tournament, onClose }) => {
             ) : (
               `Pay ₹${paymentType === "ADVANCE" ? advanceFee : entryFee} & Register`
             )}
-          </button>
+          </Button>
         </div>
       </motion.div>
     </div>

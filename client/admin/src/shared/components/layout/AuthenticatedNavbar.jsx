@@ -140,7 +140,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
             <Menu size={24} />
           </button>
           <Link to="/" className="flex items-center gap-4 group">
-            <div className="w-20 h-10 sm:w-32 sm:h-12 bg-transparent flex items-center justify-center overflow-hidden">
+            <div className="w-16 h-8 sm:w-24 sm:h-10 bg-transparent flex items-center justify-center overflow-hidden">
               <img
                 src="/logo.png"
                 alt="Kridaz Logo"

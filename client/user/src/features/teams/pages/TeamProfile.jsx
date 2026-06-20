@@ -38,9 +38,10 @@ import {
 import toast from "react-hot-toast";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
 import { StartScoringModal, ScoringMatchCard } from "@features/scoring";
-import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";
+import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";import { Button } from "@kridaz/ui";
 
-const PRI = "#BFF367";
+
+const PRI = "var(--primary)";
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
 const SUBHEADING_STYLE = {
   fontFamily: "'Inter 28pt Light', sans-serif",
@@ -143,7 +144,7 @@ const TeamProfile = () => {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-10 h-10 text-[#BFF367] animate-spin" />
+          <Loader2 className="w-10 h-10 text-primary animate-spin" />
           <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">
             Assembling...
           </p>
@@ -162,12 +163,12 @@ const TeamProfile = () => {
         >
           Team Not Found
         </h2>
-        <button
+        <Button
           onClick={() => navigate("/players")}
-          className="px-6 py-2.5 bg-[#BFF367] text-black rounded-[8px] font-black uppercase text-[10px] tracking-widest hover:brightness-110 transition-all"
+          className="px-6 py-2.5 bg-primary text-black rounded-[8px] font-black uppercase text-[10px] tracking-widest hover:brightness-110 transition-all"
         >
           Back to Discovery
-        </button>
+        </Button>
       </div>
     );
   }
@@ -255,7 +256,7 @@ const TeamProfile = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Main Hero Container */}
           <div className="lg:col-span-9 relative">
-            <div className="relative bg-[#0A0A0A] border border-white/5 rounded-[8px] overflow-hidden p-4 md:p-5 min-h-[380px] flex flex-col">
+            <div className="relative bg-background border border-white/5 rounded-[8px] overflow-hidden p-4 md:p-5 min-h-[380px] flex flex-col">
               {/* Stadium Background */}
               <div className="absolute inset-0 z-0">
                 <img
@@ -269,8 +270,8 @@ const TeamProfile = () => {
 
               {/* Top Row: Logo & Info */}
               <div className="relative z-10 flex flex-col md:flex-row gap-6 items-start mb-auto">
-                <div className="w-32 h-32 md:w-36 md:h-36 rounded-[8px] bg-black border-2 border-[#BFF367] p-2 flex items-center justify-center shadow-[0_0_30px_rgba(191,243,103,0.1)] relative overflow-hidden group shrink-0">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#BFF367]/20 to-transparent" />
+                <div className="w-32 h-32 md:w-36 md:h-36 rounded-[8px] bg-black border-2 border-primary p-2 flex items-center justify-center shadow-[0_0_30px_rgba(191,243,103,0.1)] relative overflow-hidden group shrink-0">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent" />
                   {team.logo ? (
                     <img
                       src={team.logo}
@@ -278,13 +279,13 @@ const TeamProfile = () => {
                       className="w-full h-full object-cover rounded-[8px]"
                     />
                   ) : (
-                    <Trophy size={40} className="text-[#BFF367]/20" />
+                    <Trophy size={40} className="text-primary/20" />
                   )}
                 </div>
 
                 <div className="flex-1 space-y-3">
                   <div className="flex items-center gap-2">
-                    <span className="px-3 py-1 bg-[#BFF367]/10 text-[#BFF367] text-[8px] font-black uppercase tracking-widest rounded-full border border-[#BFF367]/20">
+                    <span className="px-3 py-1 bg-primary/10 text-primary text-[8px] font-black uppercase tracking-widest rounded-full border border-primary/20">
                       {team.sportType || "Cricket"}
                     </span>
                     <span className="px-3 py-1 bg-white/5 border border-white/10 text-white/30 text-[8px] font-black uppercase tracking-widest rounded-full">
@@ -300,7 +301,7 @@ const TeamProfile = () => {
                       >
                         {team.name}
                       </h1>
-                      <div className="w-5 h-5 bg-[#BFF367] rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(191,243,103,0.3)]">
+                      <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(191,243,103,0.3)]">
                         <CheckCircle2 size={12} className="text-black" />
                       </div>
                     </div>
@@ -315,13 +316,13 @@ const TeamProfile = () => {
                       <p className="text-[8px] font-black text-gray-700 uppercase tracking-widest">
                         Team ID
                       </p>
-                      <button
+                      <Button
                         onClick={copyId}
-                        className="flex items-center gap-1.5 text-[#BFF367] font-black text-[10px] hover:brightness-110"
+                        className="flex items-center gap-1.5 text-primary font-black text-[10px] hover:brightness-110"
                       >
                         {team.teamCode}{" "}
                         <Copy size={10} className="opacity-30" />
-                      </button>
+                      </Button>
                     </div>
                     <div className="w-px h-6 bg-white/10 hidden md:block" />
                     <div className="space-y-0.5">
@@ -329,7 +330,7 @@ const TeamProfile = () => {
                         Captain
                       </p>
                       <div className="flex items-center gap-1.5 text-white font-black text-[10px] uppercase">
-                        <Users size={12} className="text-[#BFF367]" />
+                        <Users size={12} className="text-primary" />
                         {team.owner?.name || "Prasenjeet Yadav"}
                       </div>
                     </div>
@@ -339,7 +340,7 @@ const TeamProfile = () => {
                         Location
                       </p>
                       <div className="flex items-center gap-1.5 text-white font-black text-[10px] uppercase">
-                        <MapPin size={12} className="text-[#BFF367]" />
+                        <MapPin size={12} className="text-primary" />
                         {team.city || "Hyderabad"}, TS
                       </div>
                     </div>
@@ -349,7 +350,7 @@ const TeamProfile = () => {
                         Created
                       </p>
                       <div className="flex items-center gap-1.5 text-white font-black text-[10px] uppercase">
-                        <Calendar size={12} className="text-[#BFF367]" />
+                        <Calendar size={12} className="text-primary" />
                         {new Date(team.createdAt).toLocaleDateString("en-US", {
                           month: "short",
                           year: "numeric",
@@ -373,14 +374,14 @@ const TeamProfile = () => {
                       label: "Streak",
                       value: "6W",
                       icon: Zap,
-                      color: "#BFF367",
+                      color: "var(--primary)",
                     },
                   ].map((stat, i) => (
                     <div
                       key={i}
                       className="flex flex-col items-start gap-1 group relative"
                     >
-                      <div className="flex items-center gap-1.5 text-gray-700 group-hover:text-[#BFF367] transition-colors">
+                      <div className="flex items-center gap-1.5 text-gray-700 group-hover:text-primary transition-colors">
                         <stat.icon size={10} />
                         <span className="text-[6px] font-black uppercase tracking-widest">
                           {stat.label}
@@ -404,7 +405,7 @@ const TeamProfile = () => {
 
           {/* Sidebar */}
           <div className="lg:col-span-3">
-            <div className="bg-[#0A0A0A] border border-white/5 rounded-[8px] p-5 space-y-4 h-full flex flex-col">
+            <div className="bg-background border border-white/5 rounded-[8px] p-5 space-y-4 h-full flex flex-col">
               <div className="space-y-0.5">
                 <h3
                   className="text-md font-black uppercase tracking-tight"
@@ -437,18 +438,18 @@ const TeamProfile = () => {
               <div className="space-y-2 pt-2">
                 <div className="grid grid-cols-2 gap-2">
                   {isMember ? (
-                    <button
+                    <Button
                       onClick={() => toast.success("Left the team.")}
                       className="py-3 bg-red-500/10 text-red-500 border border-red-500/20 rounded-[8px] font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 hover:bg-red-500/20 transition-all"
                     >
                       <UserPlus size={14} className="rotate-45" />
                       Leave Team
-                    </button>
+                    </Button>
                   ) : (
-                    <button
+                    <Button
                       onClick={handleJoinRequest}
                       disabled={isJoining || isPendingMember || isOwner}
-                      className={`py-3 rounded-[8px] font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 transition-all ${isPendingMember || isOwner ? "bg-white/5 text-white/20 border border-white/10" : "bg-[#BFF367] text-black hover:brightness-110 shadow-[0_5px_15px_rgba(191,243,103,0.2)]"}`}
+                      className={`py-3 rounded-[8px] font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 transition-all ${isPendingMember || isOwner ? "bg-white/5 text-white/20 border border-white/10" : "bg-primary text-black hover:brightness-110 shadow-[0_5px_15px_rgba(191,243,103,0.2)]"}`}
                     >
                       {isJoining ? (
                         <Loader2 size={12} className="animate-spin" />
@@ -458,32 +459,32 @@ const TeamProfile = () => {
                           {isPendingMember ? "Request Sent" : "Join"}
                         </>
                       )}
-                    </button>
+                    </Button>
                   )}
-                  <button
+                  <Button
                     onClick={() => setShowChallengeModal(true)}
-                    className="py-3 border-2 border-[#BFF367] text-[#BFF367] rounded-[8px] font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 hover:bg-[#BFF367] hover:text-black transition-all"
+                    className="py-3 border-2 border-primary text-primary rounded-[8px] font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 hover:bg-primary hover:text-black transition-all"
                   >
                     <Swords size={14} />
                     Challenge
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="space-y-2">
-                  <button
+                  <Button
                     onClick={() => navigate(`/messages?teamId=${id}`)}
                     className="w-full py-2.5 bg-white/5 border border-white/10 rounded-[8px] text-white font-black uppercase tracking-widest text-[8px] flex items-center justify-center gap-2 hover:bg-white/10"
                   >
                     <MessageCircle size={12} /> Chat with Team
-                  </button>
+                  </Button>
 
                   {/* Digital Pass QR Card */}
-                  <div className="bg-gradient-to-br from-[#BFF367]/10 to-transparent border border-white/5 rounded-[8px] p-4 flex flex-col items-center gap-3 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-16 h-16 bg-[#BFF367]/5 blur-xl rounded-full" />
+                  <div className="bg-gradient-to-br from-primary/10 to-transparent border border-white/5 rounded-[8px] p-4 flex flex-col items-center gap-3 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 blur-xl rounded-full" />
 
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center gap-1.5 text-gray-400">
-                        <Ticket size={12} className="text-[#BFF367]" />
+                        <Ticket size={12} className="text-primary" />
                         <span className="text-[7px] font-black uppercase tracking-widest">
                           Digital Team Pass
                         </span>
@@ -508,35 +509,35 @@ const TeamProfile = () => {
                       )}
                     </div>
 
-                    <button
+                    <Button
                       onClick={() => navigate(`/team-pass/${id}`)}
-                      className="w-full py-2 bg-[#BFF367]/10 hover:bg-[#BFF367] hover:text-black border border-[#BFF367]/20 rounded-[8px] text-[#BFF367] font-black uppercase tracking-widest text-[8px] flex items-center justify-center gap-1.5 transition-all"
+                      className="w-full py-2 bg-primary/10 hover:bg-primary hover:text-black border border-primary/20 rounded-[8px] text-primary font-black uppercase tracking-widest text-[8px] flex items-center justify-center gap-1.5 transition-all"
                     >
                       View Full Pass
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
-                <button
+                <Button
                   onClick={() => setShowScoringModal(true)}
-                  className="w-full mt-2 py-3 bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black font-black uppercase tracking-widest text-[9px] rounded-[8px] flex items-center justify-center gap-2 hover:brightness-110 shadow-lg shadow-[#BFF367]/10"
+                  className="w-full mt-2 py-3 bg-gradient-to-r from-primary to-primary text-black font-black uppercase tracking-widest text-[9px] rounded-[8px] flex items-center justify-center gap-2 hover:brightness-110 shadow-lg shadow-[var(--primary)]/10"
                 >
                   <Play size={14} className="fill-black" />
                   Start Scoring Match
-                </button>
+                </Button>
 
-                <button
+                <Button
                   onClick={() => setShowShareModal(true)}
                   className="w-full py-3 bg-white/5 border border-white/10 rounded-[8px] text-white font-black uppercase tracking-widest text-[8px] flex items-center justify-center gap-2 hover:bg-white/10"
                 >
                   <Share2 size={12} /> Share Team
-                </button>
+                </Button>
               </div>
 
               <div className="mt-auto pt-4 text-center">
                 <Link
                   to="/my-teams"
-                  className="flex items-center justify-center gap-2 text-[#BFF367] text-[8px] font-black uppercase tracking-widest hover:underline group"
+                  className="flex items-center justify-center gap-2 text-primary text-[8px] font-black uppercase tracking-widest hover:underline group"
                 >
                   Dashboard{" "}
                   <ArrowRight
@@ -553,7 +554,7 @@ const TeamProfile = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div className="lg:col-span-8 space-y-4">
             {/* Active Squad */}
-            <div className="bg-[#0A0A0A] border border-white/5 rounded-[8px] p-6 space-y-4">
+            <div className="bg-background border border-white/5 rounded-[8px] p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h2
                   className="text-lg font-black uppercase tracking-tight flex items-center gap-2"
@@ -564,22 +565,22 @@ const TeamProfile = () => {
                     ({displayMembers.length})
                   </span>
                 </h2>
-                <button
+                <Button
                   onClick={() => setShowSquadModal(true)}
-                  className="text-[8px] font-black text-[#BFF367] uppercase tracking-widest bg-[#BFF367]/10 px-3 py-1.5 rounded-lg border border-[#BFF367]/20"
+                  className="text-[8px] font-black text-primary uppercase tracking-widest bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/20"
                 >
                   View All
-                </button>
+                </Button>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                 {displayMembers.slice(0, 5).map((member, i) => (
                   <div
                     key={i}
-                    className="bg-white/[0.01] border border-white/5 rounded-[8px] p-3 flex flex-col items-center gap-2 group hover:border-[#BFF367]/20 transition-all text-center"
+                    className="bg-white/[0.01] border border-white/5 rounded-[8px] p-3 flex flex-col items-center gap-2 group hover:border-primary/20 transition-all text-center"
                   >
                     <div className="relative">
-                      <div className="w-14 h-14 rounded-full border-2 border-[#BFF367] p-0.5 overflow-hidden">
+                      <div className="w-14 h-14 rounded-full border-2 border-primary p-0.5 overflow-hidden">
                         <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
                           {member.user?.profilePicture ? (
                             <img
@@ -593,7 +594,7 @@ const TeamProfile = () => {
                         </div>
                       </div>
                       {member.role === "CAPTAIN" && (
-                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#BFF367] rounded-full border-2 border-black flex items-center justify-center shadow-lg">
+                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full border-2 border-black flex items-center justify-center shadow-lg">
                           <Crown size={10} className="text-black" />
                         </div>
                       )}
@@ -613,7 +614,7 @@ const TeamProfile = () => {
 
             {/* Active Scoring Matches */}
             {teamMatches && teamMatches.length > 0 && (
-              <div className="bg-[#0A0A0A] border border-white/5 rounded-[8px] p-6 space-y-4">
+              <div className="bg-background border border-white/5 rounded-[8px] p-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <h2
@@ -621,7 +622,7 @@ const TeamProfile = () => {
                       style={HEADING_STYLE}
                     >
                       Active Scoring Matches{" "}
-                      <span className="inline-block w-2 h-2 rounded-full bg-red-500 shadow-[0_0_10px_#EF4444] animate-pulse" />
+                      <span className="inline-block w-2 h-2 rounded-full bg-red-500 shadow-[0_0_10px_var(--destructive)] animate-pulse" />
                     </h2>
                     <p className="text-[7px] font-black text-gray-700 uppercase tracking-widest">
                       Real-time live scored matches
@@ -666,7 +667,7 @@ const TeamProfile = () => {
             )}
 
             {/* Match History */}
-            <div className="bg-[#0A0A0A] border border-white/5 rounded-[8px] p-6 space-y-4">
+            <div className="bg-background border border-white/5 rounded-[8px] p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h2
                   className="text-lg font-black uppercase tracking-tight"
@@ -674,9 +675,9 @@ const TeamProfile = () => {
                 >
                   Match History
                 </h2>
-                <button className="text-[8px] font-black text-[#BFF367] uppercase tracking-widest bg-[#BFF367]/10 px-3 py-1.5 rounded-lg border border-[#BFF367]/20">
+                <Button className="text-[8px] font-black text-primary uppercase tracking-widest bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/20">
                   Full History
-                </button>
+                </Button>
               </div>
 
               <div className="overflow-hidden">
@@ -731,7 +732,7 @@ const TeamProfile = () => {
                         </td>
                         <td className="py-3 text-center">
                           <span
-                            className={`text-[9px] font-black ${m.lost ? "text-red-500" : "text-[#BFF367]"}`}
+                            className={`text-[9px] font-black ${m.lost ? "text-red-500" : "text-primary"}`}
                           >
                             {m.res}
                           </span>
@@ -743,7 +744,7 @@ const TeamProfile = () => {
                           <Play
                             size={8}
                             fill="currentColor"
-                            className="text-white/20 group-hover:text-[#BFF367]"
+                            className="text-white/20 group-hover:text-primary"
                           />
                         </td>
                       </tr>
@@ -756,9 +757,9 @@ const TeamProfile = () => {
 
           <div className="lg:col-span-4 space-y-4">
             {/* Promo */}
-            <div className="bg-gradient-to-br from-[#BFF367]/10 to-transparent border border-white/5 rounded-[8px] p-6 relative overflow-hidden group">
+            <div className="bg-gradient-to-br from-primary/10 to-transparent border border-white/5 rounded-[8px] p-6 relative overflow-hidden group">
               <div className="relative z-10 space-y-4">
-                <Zap size={32} className="text-[#BFF367]" />
+                <Zap size={32} className="text-primary" />
                 <div>
                   <h3
                     className="text-2xl font-black uppercase tracking-tighter leading-none mb-2"
@@ -770,15 +771,15 @@ const TeamProfile = () => {
                     Upgrade to pro for advanced analytics and live streaming.
                   </p>
                 </div>
-                <button className="w-full py-3 bg-white text-black rounded-[8px] font-black uppercase text-[9px] flex items-center justify-between px-6 hover:brightness-110">
+                <Button className="w-full py-3 bg-white text-black rounded-[8px] font-black uppercase text-[9px] flex items-center justify-between px-6 hover:brightness-110">
                   Upgrade <ArrowRight size={14} strokeWidth={3} />
-                </button>
+                </Button>
               </div>
-              <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#BFF367]/5 blur-[60px] rounded-full" />
+              <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/5 blur-[60px] rounded-full" />
             </div>
 
             {/* Rivals */}
-            <div className="bg-[#0A0A0A] border border-white/5 rounded-[8px] p-6 space-y-4">
+            <div className="bg-background border border-white/5 rounded-[8px] p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h2
                   className="text-lg font-black uppercase tracking-tight"
@@ -786,9 +787,9 @@ const TeamProfile = () => {
                 >
                   Rivals
                 </h2>
-                <button className="text-[8px] font-black text-[#BFF367] uppercase tracking-widest bg-[#BFF367]/10 px-2.5 py-1.5 rounded-lg border border-[#BFF367]/20">
+                <Button className="text-[8px] font-black text-primary uppercase tracking-widest bg-primary/10 px-2.5 py-1.5 rounded-lg border border-primary/20">
                   All
-                </button>
+                </Button>
               </div>
               <div className="space-y-3">
                 {[
@@ -800,19 +801,19 @@ const TeamProfile = () => {
                     className="flex items-center gap-3 bg-white/[0.01] p-3 rounded-[8px] border border-white/5"
                   >
                     <div className="w-8 h-8 rounded-lg bg-black border border-white/10 flex items-center justify-center shrink-0">
-                      <Shield size={16} className="text-[#BFF367]/20" />
+                      <Shield size={16} className="text-primary/20" />
                     </div>
                     <div className="flex-1">
                       <h4 className="font-black text-[10px] text-white uppercase">
                         {r.name}
                       </h4>
-                      <p className="text-[7px] font-black text-[#BFF367] uppercase">
+                      <p className="text-[7px] font-black text-primary uppercase">
                         Score: {r.score}
                       </p>
                     </div>
-                    <button className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-[#BFF367]">
+                    <Button className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-primary">
                       <Swords size={12} />
-                    </button>
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -836,9 +837,9 @@ const TeamProfile = () => {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl bg-[#0A0A0A] border border-white/10 rounded-[8px] overflow-hidden shadow-2xl flex flex-col max-h-[80vh]"
+              className="relative w-full max-w-2xl bg-background border border-white/10 rounded-[8px] overflow-hidden shadow-2xl flex flex-col max-h-[80vh]"
             >
-              <div className="p-6 border-b border-white/5 flex items-center justify-between sticky top-0 bg-[#0A0A0A] z-10">
+              <div className="p-6 border-b border-white/5 flex items-center justify-between sticky top-0 bg-background z-10">
                 <div>
                   <h2
                     className="text-xl font-black text-white uppercase tracking-tighter"
@@ -846,16 +847,16 @@ const TeamProfile = () => {
                   >
                     Full Squad Roster
                   </h2>
-                  <p className="text-[9px] text-[#BFF367] font-black uppercase tracking-widest mt-1">
+                  <p className="text-[9px] text-primary font-black uppercase tracking-widest mt-1">
                     {displayMembers.length} Official Members
                   </p>
                 </div>
-                <button
+                <Button
                   onClick={() => setShowSquadModal(false)}
                   className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white transition-colors"
                 >
                   <X size={20} />
-                </button>
+                </Button>
               </div>
 
               <div className="p-6 overflow-y-auto custom-scrollbar">
@@ -863,10 +864,10 @@ const TeamProfile = () => {
                   {displayMembers.map((member, i) => (
                     <div
                       key={i}
-                      className="bg-white/[0.02] border border-white/5 rounded-[8px] p-4 flex flex-col items-center gap-3 hover:border-[#BFF367]/20 transition-all text-center"
+                      className="bg-white/[0.02] border border-white/5 rounded-[8px] p-4 flex flex-col items-center gap-3 hover:border-primary/20 transition-all text-center"
                     >
                       <div className="relative">
-                        <div className="w-16 h-16 rounded-full border-2 border-[#BFF367] p-0.5 overflow-hidden">
+                        <div className="w-16 h-16 rounded-full border-2 border-primary p-0.5 overflow-hidden">
                           <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
                             {member.user?.profilePicture ? (
                               <img
@@ -879,7 +880,7 @@ const TeamProfile = () => {
                           </div>
                         </div>
                         {member.role === "CAPTAIN" && (
-                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#BFF367] rounded-full border-2 border-black flex items-center justify-center">
+                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full border-2 border-black flex items-center justify-center">
                             <Crown size={10} className="text-black" />
                           </div>
                         )}
@@ -914,7 +915,7 @@ const TeamProfile = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="relative w-full max-w-sm bg-[#0A0A0A] border border-white/10 rounded-[8px] p-6"
+              className="relative w-full max-w-sm bg-background border border-white/10 rounded-[8px] p-6"
             >
               <h2 className="text-xl font-black text-white uppercase tracking-tighter mb-4">
                 Challenge Squad
@@ -923,29 +924,29 @@ const TeamProfile = () => {
                 {myTeamsData?.teams
                   ?.filter((t) => t.sportType === team.sportType)
                   ?.map((t) => (
-                    <button
+                    <Button
                       key={t._id}
                       onClick={() => setSelectedMyTeam(t._id)}
-                      className={`w-full p-3 rounded-[8px] border transition-all flex items-center gap-3 text-left ${selectedMyTeam === t._id ? "bg-[#BFF367]/10 border-[#BFF367]" : "bg-white/5 border-white/5"}`}
+                      className={`w-full p-3 rounded-[8px] border transition-all flex items-center gap-3 text-left ${selectedMyTeam === t._id ? "bg-primary/10 border-primary" : "bg-white/5 border-white/5"}`}
                     >
                       <p className="font-black uppercase text-[10px] text-white">
                         {t.name}
                       </p>
-                    </button>
+                    </Button>
                   ))}
                 <div className="flex gap-3 pt-4">
-                  <button
+                  <Button
                     onClick={() => setShowChallengeModal(false)}
                     className="flex-1 py-3 bg-white/5 rounded-[8px] text-white font-black uppercase text-[9px]"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={handleChallenge}
-                    className="flex-1 py-3 bg-[#BFF367] rounded-[8px] text-black font-black uppercase text-[9px]"
+                    className="flex-1 py-3 bg-primary rounded-[8px] text-black font-black uppercase text-[9px]"
                   >
                     Send
-                  </button>
+                  </Button>
                 </div>
               </div>
             </motion.div>
@@ -966,10 +967,10 @@ const TeamProfile = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="relative w-full max-w-sm bg-[#0A0A0A] border border-white/10 rounded-[8px] p-6 text-center"
+              className="relative w-full max-w-sm bg-background border border-white/10 rounded-[8px] p-6 text-center"
             >
               <div className="w-16 h-16 mx-auto bg-white/5 border border-white/10 rounded-[8px] flex items-center justify-center mb-4">
-                <Share2 size={24} className="text-[#BFF367]" />
+                <Share2 size={24} className="text-primary" />
               </div>
               <h2 className="text-xl font-black text-white uppercase tracking-tighter mb-2">
                 Share Team
@@ -979,13 +980,13 @@ const TeamProfile = () => {
               </p>
 
               <div className="space-y-3">
-                <button
+                <Button
                   onClick={handleShare}
                   className="w-full py-3 bg-white/5 hover:bg-white/10 rounded-[8px] text-white font-black uppercase text-[10px] flex items-center justify-center gap-2 border border-white/5 transition-colors"
                 >
                   <Share2 size={14} /> Native Share
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => {
                     navigator.clipboard.writeText(window.location.href);
                     toast.success("Link copied to clipboard!");
@@ -994,26 +995,26 @@ const TeamProfile = () => {
                   className="w-full py-3 bg-white/5 hover:bg-white/10 rounded-[8px] text-white font-black uppercase text-[10px] flex items-center justify-center gap-2 border border-white/5 transition-colors"
                 >
                   <Copy size={14} /> Copy Link
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => {
                     const text = `Hey, join my team ${team.name}!\n\nLink: ${window.location.href}`;
                     navigate(
                       `/community?createPost=true&text=${encodeURIComponent(text)}`
                     );
                   }}
-                  className="w-full py-3 bg-[#BFF367] hover:brightness-110 rounded-[8px] text-black font-black uppercase text-[10px] flex items-center justify-center gap-2 transition-colors shadow-[0_0_15px_rgba(191,243,103,0.2)]"
+                  className="w-full py-3 bg-primary hover:brightness-110 rounded-[8px] text-black font-black uppercase text-[10px] flex items-center justify-center gap-2 transition-colors shadow-[0_0_15px_rgba(191,243,103,0.2)]"
                 >
                   <Users size={14} /> Post to Community
-                </button>
+                </Button>
               </div>
 
-              <button
+              <Button
                 onClick={() => setShowShareModal(false)}
                 className="mt-6 text-[10px] font-black text-white/40 uppercase tracking-widest hover:text-white transition-colors"
               >
                 Cancel
-              </button>
+              </Button>
             </motion.div>
           </div>
         )}

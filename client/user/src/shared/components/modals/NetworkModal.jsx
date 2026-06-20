@@ -5,7 +5,8 @@ import axiosInstance from "@hooks/useAxiosInstance";
 import { useSelector, useDispatch } from "react-redux";
 import { followUser, unfollowUser } from "@redux/slices/authSlice";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
+
 
 const NetworkModal = ({ isOpen, onClose, userId, type, initialCount }) => {
   const dispatch = useDispatch();
@@ -94,34 +95,34 @@ const NetworkModal = ({ isOpen, onClose, userId, type, initialCount }) => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-[#000000] border border-[#2D2D2D] w-full max-w-md rounded-[8px] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
-        <div className="flex items-center justify-between p-4 border-b border-[#2D2D2D]">
+      <div className="bg-background border border-border w-full max-w-md rounded-[8px] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
             {type === "followers" ? "Followers" : "Following"}
-            <span className="text-[#BFF367] bg-[#BFF367]/10 px-2 py-0.5 rounded-full text-[10px]">
+            <span className="text-primary bg-primary/10 px-2 py-0.5 rounded-full text-[10px]">
               {initialCount}
             </span>
           </h2>
-          <button
+          <Button
             onClick={onClose}
-            className="p-2 hover:bg-[#000000] rounded-full transition-colors text-white/40 hover:text-white"
+            className="p-2 hover:bg-background rounded-full transition-colors text-white/40 hover:text-white"
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
-        <div className="p-4 border-b border-[#2D2D2D]">
+        <div className="p-4 border-b border-border">
           <div className="relative">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20"
               size={16}
             />
-            <input
+            <Input
               type="text"
               placeholder="SEARCH..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#000000] border border-[#2D2D2D] rounded-[6px] py-2.5 pl-10 pr-4 text-xs text-white placeholder:text-white/20 outline-none focus:border-[#BFF367]/50 transition-all uppercase tracking-widest"
+              className="w-full bg-background border border-border rounded-[6px] py-2.5 pl-10 pr-4 text-xs text-white placeholder:text-white/20 outline-none focus:border-primary/50 transition-all uppercase tracking-widest"
             />
           </div>
         </div>
@@ -129,7 +130,7 @@ const NetworkModal = ({ isOpen, onClose, userId, type, initialCount }) => {
         <div className="h-[400px] overflow-y-auto no-scrollbar p-2">
           {loading ? (
             <div className="h-full flex items-center justify-center">
-              <Loader2 className="animate-spin text-[#BFF367]" size={32} />
+              <Loader2 className="animate-spin text-primary" size={32} />
             </div>
           ) : sortedUsers.length > 0 ? (
             <div className="space-y-1">
@@ -141,13 +142,13 @@ const NetworkModal = ({ isOpen, onClose, userId, type, initialCount }) => {
                 return (
                   <div
                     key={userId}
-                    className="flex items-center justify-between p-3 hover:bg-[#000000] rounded-[8px] transition-colors group"
+                    className="flex items-center justify-between p-3 hover:bg-background rounded-[8px] transition-colors group"
                   >
                     <div className="flex items-center gap-3 overflow-hidden">
                       <Link
                         to={`/profile/${userId}`}
                         onClick={onClose}
-                        className="shrink-0 w-10 h-10 rounded-[6px] overflow-hidden bg-[#000000] border border-[#2D2D2D]"
+                        className="shrink-0 w-10 h-10 rounded-[6px] overflow-hidden bg-background border border-border"
                       >
                         {user.profilePicture ? (
                           <img
@@ -162,12 +163,12 @@ const NetworkModal = ({ isOpen, onClose, userId, type, initialCount }) => {
                           />
                         ) : null}
                         <div
-                          className="w-full h-full flex items-center justify-center bg-[#BFF367]/10"
+                          className="w-full h-full flex items-center justify-center bg-primary/10"
                           style={{
                             display: user.profilePicture ? "none" : "flex",
                           }}
                         >
-                          <span className="text-[#BFF367] font-black text-[10px]">
+                          <span className="text-primary font-black text-[10px]">
                             {user.name
                               ?.split(" ")
                               .map((w) => w[0])
@@ -181,7 +182,7 @@ const NetworkModal = ({ isOpen, onClose, userId, type, initialCount }) => {
                         <Link
                           to={`/profile/${user.id || user._id}`}
                           onClick={onClose}
-                          className="block font-bold text-xs text-white hover:text-[#BFF367] transition-colors truncate"
+                          className="block font-bold text-xs text-white hover:text-primary transition-colors truncate"
                         >
                           {user.name}
                         </Link>
@@ -195,7 +196,7 @@ const NetworkModal = ({ isOpen, onClose, userId, type, initialCount }) => {
                           {isFollowing && (
                             <>
                               <span className="text-white/20">ΓÇó</span>
-                              <span className="text-[#BFF367]/60">
+                              <span className="text-primary/60">
                                 Following
                               </span>
                             </>
@@ -205,12 +206,12 @@ const NetworkModal = ({ isOpen, onClose, userId, type, initialCount }) => {
                     </div>
 
                     {!isSelf && (
-                      <button
+                      <Button
                         onClick={() => handleFollowToggle(user)}
-                        className={`shrink-0 px-3 py-1.5 rounded-[6px] text-[9px] font-bold uppercase tracking-widest transition-all ${isFollowing ? "bg-[#000000] text-white/40 border border-[#2D2D2D] hover:bg-white/10" : "bg-[#BFF367] text-black hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(85,222,232,0.15)]"}`}
+                        className={`shrink-0 px-3 py-1.5 rounded-[6px] text-[9px] font-bold uppercase tracking-widest transition-all ${isFollowing ? "bg-background text-white/40 border border-border hover:bg-white/10" : "bg-primary text-black hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(85,222,232,0.15)]"}`}
                       >
                         {isFollowing ? "Following" : "Follow"}
-                      </button>
+                      </Button>
                     )}
                   </div>
                 );

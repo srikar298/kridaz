@@ -22,7 +22,8 @@ import ScheduleTab from "../components/dashboard/ScheduleTab";
 import MarketingTab from "../components/dashboard/MarketingTab";
 import OfficialsTab from "../components/dashboard/OfficialsTab";
 import FinancesTab from "../components/dashboard/FinancesTab";
-import SettingsTab from "../components/dashboard/SettingsTab";
+import SettingsTab from "../components/dashboard/SettingsTab";import { Button } from "@kridaz/ui";
+
 
 const TABS = [
   { id: "overview", label: "Overview", icon: <Trophy size={16} /> },
@@ -79,7 +80,7 @@ const TournamentDashboard = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#BFF367] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -88,12 +89,12 @@ const TournamentDashboard = () => {
     return (
       <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center text-white">
         <h2 className="text-xl font-bold mb-4">Tournament Not Found</h2>
-        <button
+        <Button
           onClick={() => navigate(-1)}
-          className="text-[#BFF367] underline"
+          className="text-primary underline"
         >
           Go Back
-        </button>
+        </Button>
       </div>
     );
   }
@@ -114,12 +115,12 @@ const TournamentDashboard = () => {
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto px-4 pt-4">
-          <button
+          <Button
             onClick={() => navigate("/my-hosted-games")}
             className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-white transition-colors mb-6"
           >
             <ArrowLeft size={20} />
-          </button>
+          </Button>
 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="flex items-center gap-6">
@@ -131,15 +132,15 @@ const TournamentDashboard = () => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-[#1a1a1a]">
-                    <Trophy size={32} className="text-[#BFF367]" />
+                  <div className="w-full h-full flex items-center justify-center bg-card">
+                    <Trophy size={32} className="text-primary" />
                   </div>
                 )}
               </div>
 
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#BFF367]/10 border border-[#BFF367]/20 text-[#BFF367] text-[10px] font-black uppercase tracking-wider mb-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#BFF367] animate-pulse" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-wider mb-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                   {tournament.status || "PUBLISHED"}
                 </div>
                 <h1 className="text-3xl md:text-4xl font-black uppercase tracking-wide leading-tight mb-2">
@@ -152,28 +153,28 @@ const TournamentDashboard = () => {
             </div>
 
             <div className="flex gap-3">
-              <button
+              <Button
                 onClick={() => setShowShareModal(true)}
-                className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-[#BFF367] text-black px-6 py-3 rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-colors"
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-primary text-black px-6 py-3 rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-colors"
               >
                 <Share2 size={16} /> Share Link
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
       {/* Tabs Navigation */}
-      <div className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl border-y border-white/5">
+      <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-y border-white/5">
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex overflow-x-auto hide-scrollbar">
             {TABS.map((tab) => (
-              <button
+              <Button
                 key={tab.id}
                 onClick={() => setTab(tab.id)}
                 className={`flex items-center gap-2 py-4 px-4 whitespace-nowrap transition-colors relative ${
                   currentTab === tab.id
-                    ? "text-[#BFF367]"
+                    ? "text-primary"
                     : "text-white/50 hover:text-white"
                 }`}
               >
@@ -184,10 +185,10 @@ const TournamentDashboard = () => {
                 {currentTab === tab.id && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#BFF367]"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
                   />
                 )}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -211,15 +212,15 @@ const TournamentDashboard = () => {
       {/* Share Modal */}
       {showShareModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#111] border border-white/10 rounded-3xl p-8 max-w-sm w-full relative text-center">
-            <button
+          <div className="bg-card border border-white/10 rounded-3xl p-8 max-w-sm w-full relative text-center">
+            <Button
               onClick={() => setShowShareModal(false)}
               className="absolute top-4 right-4 text-white/50 hover:text-white"
             >
               x
-            </button>
-            <div className="w-16 h-16 bg-[#BFF367]/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <QrCode size={32} className="text-[#BFF367]" />
+            </Button>
+            <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <QrCode size={32} className="text-primary" />
             </div>
             <h3 className="text-lg font-black uppercase tracking-widest mb-2">
               Share Registration Link
@@ -236,20 +237,20 @@ const TournamentDashboard = () => {
               </div>
             </div>
 
-            <button className="w-full bg-[#25D366] text-white font-bold py-3 rounded-full flex items-center justify-center gap-2 mb-3">
+            <Button className="w-full bg-[#25D366] text-white font-bold py-3 rounded-full flex items-center justify-center gap-2 mb-3">
               Share on WhatsApp
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => {
                 navigator.clipboard.writeText(
                   `https://kridaz.com/t/${tournament.id}`
                 );
                 setShowShareModal(false);
               }}
-              className="w-full bg-[#1a1a1a] text-white font-bold py-3 rounded-full flex items-center justify-center gap-2 hover:bg-white/10"
+              className="w-full bg-card text-white font-bold py-3 rounded-full flex items-center justify-center gap-2 hover:bg-white/10"
             >
               Copy Link
-            </button>
+            </Button>
           </div>
         </div>
       )}

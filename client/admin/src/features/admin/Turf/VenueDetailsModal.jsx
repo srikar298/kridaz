@@ -13,7 +13,8 @@ import {
   Globe,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { format } from "date-fns";
+import { format } from "date-fns";import { Button } from "@kridaz/ui";
+
 
 const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
   if (!isOpen || !turf) return null;
@@ -37,7 +38,7 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="relative w-full h-full max-w-6xl bg-[#0a0a0a] border-x md:border border-[#2D2D2D] md:rounded-[8px] shadow-2xl overflow-hidden flex flex-col"
+            className="relative w-full h-full max-w-6xl bg-background border-x md:border border-border md:rounded-[8px] shadow-2xl overflow-hidden flex flex-col"
           >
             {/* Header / Hero Section */}
             <div className="relative h-[40vh] min-h-[300px] shrink-0">
@@ -50,18 +51,18 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
                   e.target.src = "/banner-2.png";
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
 
-              <button
+              <Button
                 onClick={onClose}
                 className="absolute top-6 right-6 p-3 bg-black/50 backdrop-blur-md border border-white/10 text-white rounded-[8px] hover:bg-white/10 transition-all z-20"
               >
                 <X size={24} />
-              </button>
+              </Button>
 
               <div className="absolute bottom-0 left-0 w-full p-8 lg:p-12 space-y-4">
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="px-4 py-1.5 bg-[#CCFF00] text-black text-[10px] font-black uppercase tracking-widest rounded-full">
+                  <span className="px-4 py-1.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-full">
                     Venue Verification
                   </span>
                   <span
@@ -83,7 +84,7 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
                 <div className="lg:col-span-2 space-y-12">
                   {/* Description */}
                   <section className="space-y-4">
-                    <div className="flex items-center gap-2 text-[#CCFF00] text-xs font-black uppercase tracking-[0.2em]">
+                    <div className="flex items-center gap-2 text-primary text-xs font-black uppercase tracking-[0.2em]">
                       <Info size={14} />
                       <span>The Proposition</span>
                     </div>
@@ -96,7 +97,7 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
                   {/* Visuals Grid */}
                   {turf.images && turf.images.length > 0 && (
                     <section className="space-y-6">
-                      <div className="flex items-center gap-2 text-[#CCFF00] text-xs font-black uppercase tracking-[0.2em]">
+                      <div className="flex items-center gap-2 text-primary text-xs font-black uppercase tracking-[0.2em]">
                         <Globe size={14} />
                         <span>Venue Gallery</span>
                       </div>
@@ -104,7 +105,7 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
                         {turf.images.map((img, i) => (
                           <div
                             key={i}
-                            className="aspect-video rounded-[8px] overflow-hidden border border-[#2D2D2D]"
+                            className="aspect-video rounded-[8px] overflow-hidden border border-border"
                           >
                             <img
                               src={img}
@@ -119,7 +120,7 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
 
                   {/* Facilities */}
                   <section className="space-y-6">
-                    <div className="flex items-center gap-2 text-[#CCFF00] text-xs font-black uppercase tracking-[0.2em]">
+                    <div className="flex items-center gap-2 text-primary text-xs font-black uppercase tracking-[0.2em]">
                       <Shield size={14} />
                       <span>Amenities & Hardware</span>
                     </div>
@@ -127,7 +128,7 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
                       {turf.facilities?.map((facility, i) => (
                         <div
                           key={i}
-                          className="p-4 bg-white/5 border border-white/5 rounded-[8px] flex flex-col items-center gap-3 text-center group hover:border-[#CCFF00]/30 transition-all"
+                          className="p-4 bg-white/5 border border-white/5 rounded-[8px] flex flex-col items-center gap-3 text-center group hover:border-primary/30 transition-all"
                         >
                           <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                             {facility}
@@ -141,7 +142,7 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
                 {/* Right Column: Metadata & Operations */}
                 <div className="space-y-8">
                   {/* Pricing Card */}
-                  <div className="p-8 bg-[#CCFF00] rounded-[8px] space-y-1 shadow-2xl shadow-[#CCFF00]/10">
+                  <div className="p-8 bg-primary rounded-[8px] space-y-1 shadow-2xl shadow-[var(--primary)]/10">
                     <p className="text-black/60 text-[10px] font-black uppercase tracking-widest">
                       Base Hourly Rate
                     </p>
@@ -206,7 +207,7 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
                           </div>
                           <a
                             href={`tel:${contact.phone}`}
-                            className="p-2 bg-[#CCFF00]/10 text-[#CCFF00] rounded-full"
+                            className="p-2 bg-primary/10 text-primary rounded-full"
                           >
                             <Phone size={14} />
                           </a>
@@ -220,22 +221,22 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
 
             {/* Footer Actions */}
             {turf.status === "pending" && (
-              <div className="p-8 lg:p-12 bg-black border-t border-[#2D2D2D] shrink-0 relative z-10">
+              <div className="p-8 lg:p-12 bg-black border-t border-border shrink-0 relative z-10">
                 <div className="flex gap-6">
-                  <button
+                  <Button
                     onClick={() => onReject(turf._id)}
                     className="flex-1 py-5 border border-red-500/50 text-red-500 font-black uppercase tracking-widest text-xs rounded-[8px] hover:bg-red-500/10 transition-all flex items-center justify-center gap-3"
                   >
                     <XIcon size={16} />
                     Decline Venue
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => onApprove(turf._id)}
-                    className="flex-1 py-5 bg-[#CCFF00] text-black font-black uppercase tracking-widest text-xs rounded-[8px] hover:bg-[#CCFF00]/80 transition-all flex items-center justify-center gap-3 shadow-xl shadow-[#CCFF00]/20"
+                    className="flex-1 py-5 bg-primary text-black font-black uppercase tracking-widest text-xs rounded-[8px] hover:bg-primary/80 transition-all flex items-center justify-center gap-3 shadow-xl shadow-[var(--primary)]/20"
                   >
                     <Check size={16} />
                     Verify & Approve
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
@@ -249,7 +250,7 @@ const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {
 const MetaItem = ({ icon: Icon, label, val }) => (
   <div className="space-y-2">
     <div className="flex items-center gap-2 text-gray-500">
-      <Icon size={12} className="text-[#CCFF00]" />
+      <Icon size={12} className="text-primary" />
       <span className="text-[10px] font-black uppercase tracking-widest">
         {label}
       </span>

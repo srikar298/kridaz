@@ -12,7 +12,8 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
-import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
+
 
 const SlotPickerPopup = ({ isOpen, onClose, onSelect, gameId, slotId }) => {
   const [activeTab, setActiveTab] = useState("followers"); // 'followers' | 'email' | 'teams'
@@ -153,34 +154,34 @@ const SlotPickerPopup = ({ isOpen, onClose, onSelect, gameId, slotId }) => {
                   Choose a player or invite someone new
                 </p>
               </div>
-              <button
+              <Button
                 onClick={onClose}
                 className="p-3 bg-neutral-800 rounded-[8px] text-neutral-400 hover:text-white transition-colors"
               >
                 <X size={20} />
-              </button>
+              </Button>
             </div>
 
             {/* Tabs */}
             <div className="flex p-2 bg-black/40 mx-8 mt-6 rounded-[8px] border border-white/5">
-              <button
+              <Button
                 onClick={() => setActiveTab("followers")}
                 className={`flex-1 py-3 rounded-[8px] flex items-center justify-center gap-2 text-[10px] font-black transition-all ${activeTab === "followers" ? "bg-yellow-500 text-black" : "text-neutral-500 hover:text-white"}`}
               >
                 <Users size={14} /> Network
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setActiveTab("teams")}
                 className={`flex-1 py-3 rounded-[8px] flex items-center justify-center gap-2 text-[10px] font-black transition-all ${activeTab === "teams" ? "bg-yellow-500 text-black" : "text-neutral-500 hover:text-white"}`}
               >
                 <ShieldCheck size={14} /> My Teams
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setActiveTab("email")}
                 className={`flex-1 py-3 rounded-[8px] flex items-center justify-center gap-2 text-[10px] font-black transition-all ${activeTab === "email" ? "bg-yellow-500 text-black" : "text-neutral-500 hover:text-white"}`}
               >
                 <Mail size={14} /> Email
-              </button>
+              </Button>
             </div>
 
             <div className="p-8 min-h-[400px]">
@@ -191,7 +192,7 @@ const SlotPickerPopup = ({ isOpen, onClose, onSelect, gameId, slotId }) => {
                       className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500"
                       size={18}
                     />
-                    <input
+                    <Input
                       type="text"
                       placeholder="Search network..."
                       value={searchTerm}
@@ -204,7 +205,7 @@ const SlotPickerPopup = ({ isOpen, onClose, onSelect, gameId, slotId }) => {
                     {loading ? (
                       <div className="flex flex-col items-center justify-center py-12 gap-4">
                         <Loader2
-                          className="animate-spin text-transparent bg-clip-text bg-gradient-to-r from-[#BFF367] to-[#BFF367]"
+                          className="animate-spin text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary"
                           size={32}
                         />
                         <p className="text-sm text-neutral-500 font-black uppercase tracking-widest">
@@ -226,7 +227,7 @@ const SlotPickerPopup = ({ isOpen, onClose, onSelect, gameId, slotId }) => {
                                   className="w-full h-full object-cover"
                                 />
                               ) : (
-                                <span className="text-lg font-black text-[#BFF367] uppercase">
+                                <span className="text-lg font-black text-primary uppercase">
                                   {follower.name
                                     ? follower.name.charAt(0)
                                     : "?"}
@@ -242,13 +243,13 @@ const SlotPickerPopup = ({ isOpen, onClose, onSelect, gameId, slotId }) => {
                               </p>
                             </div>
                           </div>
-                          <button
+                          <Button
                             disabled={sending}
                             onClick={() => handleInvitePlayer(follower)}
                             className="p-3 bg-yellow-500 text-black rounded-[8px] hover:bg-yellow-400 transition-all disabled:opacity-50"
                           >
                             <Gift size={18} />
-                          </button>
+                          </Button>
                         </div>
                       ))
                     ) : (
@@ -304,7 +305,7 @@ const SlotPickerPopup = ({ isOpen, onClose, onSelect, gameId, slotId }) => {
                                     </p>
                                   </div>
                                 </div>
-                                <button
+                                <Button
                                   disabled={sending}
                                   onClick={() =>
                                     handleInvitePlayer(
@@ -315,10 +316,10 @@ const SlotPickerPopup = ({ isOpen, onClose, onSelect, gameId, slotId }) => {
                                       }
                                     )
                                   }
-                                  className="p-2 bg-gradient-to-r from-[#BFF367]/10 to-[#BFF367]/10 text-transparent bg-clip-text bg-gradient-to-r from-[#BFF367] to-[#BFF367] rounded-lg hover:bg-gradient-to-r from-[#BFF367] to-[#BFF367] hover:text-black transition-all disabled:opacity-50"
+                                  className="p-2 bg-gradient-to-r from-primary/10 to-primary/10 text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary rounded-lg hover:bg-gradient-to-r from-primary to-primary hover:text-black transition-all disabled:opacity-50"
                                 >
                                   <Check size={16} />
-                                </button>
+                                </Button>
                               </div>
                             ))}
                           </div>
@@ -364,7 +365,7 @@ const SlotPickerPopup = ({ isOpen, onClose, onSelect, gameId, slotId }) => {
                         className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500"
                         size={18}
                       />
-                      <input
+                      <Input
                         type="email"
                         placeholder="player@example.com"
                         value={email}
@@ -374,7 +375,7 @@ const SlotPickerPopup = ({ isOpen, onClose, onSelect, gameId, slotId }) => {
                     </div>
                   </div>
 
-                  <button
+                  <Button
                     disabled={sending || !email}
                     onClick={handleEmailInvite}
                     className="w-full py-5 bg-yellow-500 text-black font-black rounded-[8px] hover:bg-yellow-400 transition-all shadow-[0_10px_30px_rgba(234,179,8,0.2)] flex items-center justify-center gap-3 disabled:opacity-50"
@@ -385,7 +386,7 @@ const SlotPickerPopup = ({ isOpen, onClose, onSelect, gameId, slotId }) => {
                       <Send size={20} />
                     )}
                     SEND MAGIC INVITE
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>

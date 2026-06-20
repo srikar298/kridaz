@@ -15,7 +15,7 @@ import {
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import NotificationService from "../../services/notification.service.js";
-import cloudinary, { uploadToCloudinary } from "../../utils/cloudinary.js";
+import { uploadToR2 } from "../../utils/r2Upload.js";
 import { getIO } from "../../config/socket.js";
 import { redisClient } from "../../config/redis.js";
 import { prisma } from "../../config/prisma.js";
@@ -2123,7 +2123,7 @@ export const upgradeRequest = asyncHandler(async (req, res) => {
   if (req.files && req.files.length > 0) {
     const uploadPromises = req.files.map(async (file) => {
       try {
-        const url = await uploadToCloudinary(
+        const url = await uploadToR2(
           file.buffer,
           "kridaz/verification"
         );
@@ -2318,20 +2318,11 @@ export const updateProfilePicture = asyncHandler(async (req, res) => {
     });
   }
 
-  // Upload to Cloudinary
-  const uploadResult = await new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder: `kridaz/profiles/${user.role}`,
-      },
-      (error, result) => {
-        if (error) reject(error);
-        else resolve(result);
-      }
-    );
-    uploadStream.end(req.file.buffer);
-  });
-  const profilePictureUrl = uploadResult.secure_url;
+  // Upload to R2
+  const profilePictureUrl = await uploadToR2(
+    req.file.buffer,
+    `kridaz/profiles/${user.role}`
+  );
 
   // Unified update: always update User and OwnerProfile
   await prisma.user.update({
@@ -2391,7 +2382,7 @@ export const updateBannerPicture = asyncHandler(async (req, res) => {
     });
   }
 
-  const bannerPictureUrl = await uploadToCloudinary(
+  const bannerPictureUrl = await uploadToR2(
     req.file.buffer,
     `kridaz/banners/${user.role}`
   );

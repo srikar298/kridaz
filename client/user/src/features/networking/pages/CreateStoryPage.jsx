@@ -17,7 +17,8 @@ import {
 import { startUpload } from "@redux/slices/mediaUploadSlice";
 import { uploadFileToR2 } from "@utils/mediaUpload";
 import toast from "react-hot-toast";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
 const SUBHEADING_STYLE = {
@@ -165,7 +166,7 @@ const CreateStoryPage = () => {
   return (
     <div className="fixed inset-0 z-[100] w-full min-h-[100dvh] bg-black/95 flex items-center justify-center md:p-6 overflow-hidden">
       <div className="w-full h-[100dvh] md:h-full md:max-h-[800px] md:max-w-[500px] bg-[#050505] md:rounded-[32px] md:border md:border-white/10 shadow-2xl flex flex-col font-sans overflow-hidden relative">
-        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#BFF367]/10 to-transparent pointer-events-none" />
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none" />
 
         {/* Header */}
         <div className="relative px-5 py-4 border-b border-white/5 flex items-center justify-between gap-4 bg-black/40 backdrop-blur-md z-10">
@@ -209,12 +210,12 @@ const CreateStoryPage = () => {
           className="relative px-5 pb-5 pt-3 flex flex-col flex-1 min-h-0 z-10 space-y-4"
         >
           <div className="relative group/content w-full">
-            <textarea
+            <Textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Share a quick moment, match update, highlight, or announcement..."
               style={SUBHEADING_STYLE}
-              className="w-full bg-white/[0.02] border border-white/5 focus:border-[#BFF367]/30 focus:bg-white/[0.04] rounded-xl min-h-[100px] p-4 text-white text-base outline-none transition-all duration-300 resize-none placeholder:text-white/30"
+              className="w-full bg-white/[0.02] border border-white/5 focus:border-primary/30 focus:bg-white/[0.04] rounded-xl min-h-[100px] p-4 text-white text-base outline-none transition-all duration-300 resize-none placeholder:text-white/30"
             />
           </div>
 
@@ -226,8 +227,8 @@ const CreateStoryPage = () => {
               Expiry Duration
             </span>
             <div className="relative">
-              <select
-                className="border border-transparent rounded-[8px] py-2 pl-3 pr-8 text-black text-xs font-bold focus:outline-none transition-all appearance-none cursor-pointer bg-[#BFF367]"
+              <Select
+                className="border border-transparent rounded-[8px] py-2 pl-3 pr-8 text-black text-xs font-bold focus:outline-none transition-all appearance-none cursor-pointer bg-primary"
                 style={{
                   fontFamily: "'Inter', sans-serif",
                 }}
@@ -243,7 +244,7 @@ const CreateStoryPage = () => {
                     {d} {d === 1 ? "Day" : "Days"}
                   </option>
                 ))}
-              </select>
+              </Select>
               <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-black/50">
                 <ChevronDown size={14} />
               </div>
@@ -284,7 +285,7 @@ const CreateStoryPage = () => {
                 </div>
                 <motion.button
                   type="button"
-                  whileHover={{ scale: 1.08, backgroundColor: "#ef4444" }}
+                  whileHover={{ scale: 1.08, backgroundColor: "var(--destructive)" }}
                   whileTap={{ scale: 0.92 }}
                   onClick={() => {
                     setMediaFiles([]);
@@ -312,15 +313,15 @@ const CreateStoryPage = () => {
                     scale: 1.05,
                     backgroundColor: "rgba(85,222,232,0.08)",
                     border: "1px solid rgba(85,222,232,0.2)",
-                    color: "#BFF367",
+                    color: "var(--primary)",
                   }}
                   whileTap={{ scale: 0.95 }}
-                  className="p-3 bg-white/5 border border-white/10 rounded-xl text-neutral-400 hover:text-[#BFF367] transition-all flex items-center justify-center cursor-pointer"
+                  className="p-3 bg-white/5 border border-white/10 rounded-xl text-neutral-400 hover:text-primary transition-all flex items-center justify-center cursor-pointer"
                   title="Upload Photo/Video"
                 >
                   <ImageIcon size={20} />
                 </motion.button>
-                <input
+                <Input
                   type="file"
                   multiple
                   onChange={handleStoryMediaChange}
@@ -331,14 +332,14 @@ const CreateStoryPage = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <button
+              <Button
                 type="submit"
                 disabled={
                   isPublishing ||
                   (!content.trim() && mediaPreviews.length === 0)
                 }
                 style={SUBHEADING_STYLE}
-                className="bg-[#BFF367] text-black px-6 py-3 rounded-xl font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm cursor-pointer hover:bg-[#a5db4b]"
+                className="bg-primary text-black px-6 py-3 rounded-xl font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm cursor-pointer hover:bg-[#a5db4b]"
               >
                 {isPublishing ? (
                   <Loader2 size={16} className="animate-spin" />
@@ -346,7 +347,7 @@ const CreateStoryPage = () => {
                   <Plus size={16} />
                 )}
                 {isPublishing ? "Posting..." : "POST STORY"}
-              </button>
+              </Button>
             </div>
           </div>
         </form>

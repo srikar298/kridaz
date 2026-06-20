@@ -1,8 +1,9 @@
-import { cn } from "../../lib/utils.js";
+import { cn } from "../../lib/utils.js";import { Button } from "@kridaz/ui";
+
 
 const Button = ({ children, loading, className, ...props }) => {
   return (
-    <button
+    <Button
       className={cn("btn relative", className)}
       disabled={loading}
       {...props}
@@ -13,7 +14,7 @@ const Button = ({ children, loading, className, ...props }) => {
         </span>
       ) : null}
       <span className={loading ? "invisible" : ""}>{children}</span>
-    </button>
+    </Button>
   );
 };
 

@@ -1,7 +1,8 @@
 import * as Sentry from "@sentry/react";
 import React, { useState, useEffect } from "react";
 import { Clock, Phone, Mail, X } from "lucide-react";
-import axiosInstance from "@hooks/useAxiosInstance";
+import axiosInstance from "@hooks/useAxiosInstance";import { Button, Select } from "@kridaz/ui";
+
 
 const OccupancyHeatmap = () => {
   const [data, setData] = useState([]);
@@ -57,7 +58,7 @@ const OccupancyHeatmap = () => {
   };
 
   return (
-    <div className="bg-[#121212] p-6 rounded-[16px] border border-white/10 hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)] transition-shadow">
+    <div className="bg-card p-6 rounded-[16px] border border-white/10 hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)] transition-shadow">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-6">
         <div>
           <h2 className="text-[14px] lg:text-[16px] font-bold text-white tracking-tighter font-inter">
@@ -68,10 +69,10 @@ const OccupancyHeatmap = () => {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-          <select
+          <Select
             value={selectedTurf}
             onChange={(e) => setSelectedTurf(e.target.value)}
-            className="bg-[#121212] border border-white/10 text-white text-[11px] font-bold tracking-widest rounded-[12px] px-3 py-1.5 focus:outline-none focus:border-[#55DEE8] transition-all cursor-pointer max-w-full"
+            className="bg-card border border-white/10 text-white text-[11px] font-bold tracking-widest rounded-[12px] px-3 py-1.5 focus:outline-none focus:border-secondary transition-all cursor-pointer max-w-full"
           >
             <option value="" disabled>
               Select Facility
@@ -81,18 +82,18 @@ const OccupancyHeatmap = () => {
                 {turf.name}
               </option>
             ))}
-          </select>
+          </Select>
 
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-[4px] bg-[#1B1B1B]" />
-              <span className="text-[10px] text-[#999999] font-medium uppercase tracking-wider">
+              <div className="w-3 h-3 rounded-[4px] bg-card" />
+              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
                 Empty
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-[4px] bg-[#B3DC26]" />
-              <span className="text-[10px] text-[#999999] font-medium uppercase tracking-wider">
+              <div className="w-3 h-3 rounded-[4px] bg-primary" />
+              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
                 Booked
               </span>
             </div>
@@ -107,7 +108,7 @@ const OccupancyHeatmap = () => {
             {Array.from({ length: 24 }).map((_, i) => (
               <div
                 key={i}
-                className="flex-1 text-center text-[7px] font-medium text-[#999999] uppercase tracking-tighter"
+                className="flex-1 text-center text-[7px] font-medium text-muted-foreground uppercase tracking-tighter"
               >
                 {i === 0
                   ? "12 AM"
@@ -157,7 +158,7 @@ const OccupancyHeatmap = () => {
       {/* Detail Modal */}
       {selectedSlot && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-[#1B1B1B] border border-white/10 rounded-[16px] w-full max-w-lg overflow-hidden shadow-[0px_4px_16px_rgba(0,0,0,0.4)]">
+          <div className="bg-card border border-white/10 rounded-[16px] w-full max-w-lg overflow-hidden shadow-[0px_4px_16px_rgba(0,0,0,0.4)]">
             <div className="p-6 border-b border-white/10 flex items-center justify-between">
               <div>
                 <h3 className="text-xl font-bold font-inter text-white tracking-tight">
@@ -170,16 +171,16 @@ const OccupancyHeatmap = () => {
                         ? "12 PM"
                         : `${selectedSlot.hour - 12} PM`}
                 </h3>
-                <p className="text-sm text-[#B3DC26] font-medium tracking-widest mt-1">
+                <p className="text-sm text-primary font-medium tracking-widest mt-1">
                   {selectedSlot.count} ACTIVE BOOKINGS
                 </p>
               </div>
-              <button
+              <Button
                 onClick={() => setSelectedSlot(null)}
-                className="p-2 hover:bg-[#121212] rounded-full text-white/70 hover:text-white transition-all"
+                className="p-2 hover:bg-card rounded-full text-white/70 hover:text-white transition-all"
               >
                 <X size={20} />
-              </button>
+              </Button>
             </div>
 
             <div className="max-h-[60vh] overflow-y-auto p-6 space-y-4 no-scrollbar">
@@ -187,15 +188,15 @@ const OccupancyHeatmap = () => {
                 selectedSlot.details.map((b, idx) => (
                   <div
                     key={idx}
-                    className="bg-[#121212] p-5 rounded-[16px] border border-white/10 hover:border-[#55DEE8]/50 transition-all group"
+                    className="bg-card p-5 rounded-[16px] border border-white/10 hover:border-secondary/50 transition-all group"
                   >
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-[16px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none flex items-center justify-center text-black font-bold text-lg">
+                        <div className="w-10 h-10 rounded-[16px] bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none flex items-center justify-center text-black font-bold text-lg">
                           {b.user?.[0] || "G"}
                         </div>
                         <div>
-                          <h4 className="text-white font-bold tracking-tight group-hover:text-[#55DEE8] transition-colors">
+                          <h4 className="text-white font-bold tracking-tight group-hover:text-secondary transition-colors">
                             {b.user || "Guest"}
                           </h4>
                           <p className="text-[12px] text-white/70 tracking-widest">
@@ -213,22 +214,22 @@ const OccupancyHeatmap = () => {
 
                     <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
                       <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-[#999999]">
-                          <Phone size={12} className="text-[#B3DC26]" />
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Phone size={12} className="text-primary" />
                           <span className="text-[11px] font-medium">
                             {b.phone || "N/A"}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 text-[#999999]">
-                          <Mail size={12} className="text-[#B3DC26]" />
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Mail size={12} className="text-primary" />
                           <span className="text-[11px] font-medium truncate">
                             {b.email || "N/A"}
                           </span>
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-[#999999]">
-                          <Clock size={12} className="text-[#B3DC26]" />
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Clock size={12} className="text-primary" />
                           <span className="text-[11px] font-medium">
                             {b.time}
                           </span>
@@ -239,14 +240,14 @@ const OccupancyHeatmap = () => {
                 ))
               ) : (
                 <div className="text-center py-12 flex flex-col items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-[#1B1B1B] flex items-center justify-center text-[#999999]">
+                  <div className="w-16 h-16 rounded-full bg-card flex items-center justify-center text-muted-foreground">
                     <Clock size={32} />
                   </div>
                   <div>
                     <p className="text-white font-bold uppercase tracking-widest">
                       No Bookings
                     </p>
-                    <p className="text-sm text-[#999999] mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       This slot is currently available for booking.
                     </p>
                   </div>

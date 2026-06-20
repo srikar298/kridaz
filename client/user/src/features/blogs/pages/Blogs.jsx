@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, Eye, ThumbsUp, ArrowLeft, Search } from "lucide-react";
-import axios from "axios";
+import axios from "axios";import { Button, Input } from "@kridaz/ui";
 
-const PRI = "#BFF367";
-const BDR = "#2A2A2A";
+
+const PRI = "var(--primary)";
+const BDR = "var(--border)";
 const SUBHEADING_STYLE = {
   fontFamily: "'Inter 28pt Light', sans-serif",
   fontWeight: 300,
@@ -107,7 +108,7 @@ const Blogs = () => {
               className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors"
               size={18}
             />
-            <input
+            <Input
               type="text"
               placeholder="SEARCH ARTICLES..."
               value={searchTerm}
@@ -123,12 +124,12 @@ const Blogs = () => {
             <p className="text-white/20 font-display text-4xl uppercase italic">
               No articles found
             </p>
-            <button
+            <Button
               onClick={() => setSearchTerm("")}
               className="mt-6 text-primary font-bold uppercase tracking-widest text-xs hover:underline"
             >
               Clear Search
-            </button>
+            </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -173,7 +174,7 @@ const Blogs = () => {
                           <Eye size={14} style={{ color: PRI }} />
                           {blog.views}
                         </div>
-                        <button
+                        <Button
                           onClick={(e) => handleLike(e, blog.id || blog._id)}
                           className="flex items-center gap-2 text-xs font-mono text-white/40 hover:text-white transition-colors group/btn"
                         >
@@ -183,7 +184,7 @@ const Blogs = () => {
                             className="group-hover/btn:scale-110 transition-transform"
                           />
                           {blog.likes}
-                        </button>
+                        </Button>
                       </div>
                       <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-primary opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
                         Read More <ChevronRight size={14} />

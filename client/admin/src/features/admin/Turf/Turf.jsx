@@ -1,7 +1,8 @@
 import React from "react";
 import { MapPin, Clock, Star, Calendar, Check, X } from "lucide-react";
 import { format } from "date-fns";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";import { Button } from "@kridaz/ui";
+
 
 const Turf = ({
   turf,
@@ -58,7 +59,7 @@ const Turf = ({
   return (
     <div
       onClick={() => navigate(`/admin/turfs/${turf._id}`)}
-      className="bms-card group flex flex-col relative cursor-pointer hover:border-[#CCFF00]/40 transition-all duration-500 overflow-hidden"
+      className="bms-card group flex flex-col relative cursor-pointer hover:border-primary/40 transition-all duration-500 overflow-hidden"
     >
       {/* ── Image ─────────────────────────────────────────────────── */}
       <div className="relative overflow-hidden" style={{ height: "220px" }}>
@@ -76,7 +77,7 @@ const Turf = ({
 
         {/* Price badge */}
         <div className="absolute top-4 left-4">
-          <span className="bg-[#CCFF00] text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
+          <span className="bg-primary text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
             Rs {turf.pricePerHour}/hr
           </span>
         </div>
@@ -93,11 +94,11 @@ const Turf = ({
       {/* ── Body ──────────────────────────────────────────────────── */}
       <div className="flex flex-col flex-1 p-6 gap-4">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-black text-[#CCFF00] uppercase tracking-[0.2em]">
+          <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">
             Arena
           </span>
           <div className="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded-[6px] border border-white/5">
-            <Star size={10} className="text-[#CCFF00] fill-[#CCFF00]" />
+            <Star size={10} className="text-primary fill-primary" />
             <span className="text-white text-[10px] font-bold tracking-tighter">
               {turf.avgRating || "NEW"}
             </span>
@@ -105,11 +106,11 @@ const Turf = ({
         </div>
 
         <div className="space-y-1">
-          <h3 className="font-display text-xl uppercase tracking-tighter text-white group-hover:text-[#CCFF00] transition-colors leading-none line-clamp-2">
+          <h3 className="font-display text-xl uppercase tracking-tighter text-white group-hover:text-primary transition-colors leading-none line-clamp-2">
             {turf.name}
           </h3>
           <div className="flex items-center gap-1.5 text-gray-500 text-[10px] font-bold uppercase tracking-widest">
-            <MapPin size={10} className="text-[#CCFF00]" />
+            <MapPin size={10} className="text-primary" />
             <span className="truncate">{turf.location}</span>
           </div>
         </div>
@@ -128,7 +129,7 @@ const Turf = ({
         <div className="grid grid-cols-2 gap-3 mt-2 pt-5 border-t border-white/5">
           {turf.status === "pending" ? (
             <>
-              <button
+              <Button
                 onClick={(e) => {
                   e.stopPropagation();
                   onApprove(turf._id);
@@ -137,8 +138,8 @@ const Turf = ({
               >
                 <Check size={12} />
                 Approve
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={(e) => {
                   e.stopPropagation();
                   onReject(turf._id);
@@ -147,11 +148,11 @@ const Turf = ({
               >
                 <X size={12} />
                 Reject
-              </button>
+              </Button>
             </>
           ) : turf.status !== "deleted" ? (
             <>
-              <button
+              <Button
                 onClick={(e) => {
                   e.stopPropagation();
                   onDecommission(turf._id);
@@ -160,8 +161,8 @@ const Turf = ({
               >
                 <Clock size={12} />
                 Decommission
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={(e) => {
                   e.stopPropagation();
                   onDelete(turf._id);
@@ -170,10 +171,10 @@ const Turf = ({
               >
                 <X size={12} />
                 Soft Delete
-              </button>
+              </Button>
             </>
           ) : (
-            <button
+            <Button
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(turf._id, true); // True for hard delete
@@ -182,7 +183,7 @@ const Turf = ({
             >
               <X size={12} />
               Permanently Delete
-            </button>
+            </Button>
           )}
         </div>
       </div>

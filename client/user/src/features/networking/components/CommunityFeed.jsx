@@ -45,7 +45,7 @@ const CustomDropdown = ({
   return (
     <div className="relative flex-1 md:min-w-[120px]" ref={dropdownRef}>
       <div
-        className="w-full bg-[#111]/80 backdrop-blur-md border border-white/5 rounded-md py-1.5 px-2.5 text-white/90 text-[11px] sm:text-[12px] font-medium focus:outline-none hover:border-[#BFF367]/40 hover:text-white transition-all cursor-pointer hover:bg-[#1A1A1A] flex items-center justify-between gap-2 shadow-sm"
+        className="w-full bg-card/80 backdrop-blur-md border border-white/5 rounded-md py-1.5 px-2.5 text-white/90 text-[11px] sm:text-[12px] font-medium focus:outline-none hover:border-primary/40 hover:text-white transition-all cursor-pointer hover:bg-card flex items-center justify-between gap-2 shadow-sm"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="truncate">{selectedOption.label}</span>
@@ -62,14 +62,14 @@ const CustomDropdown = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-[calc(100%+4px)] left-0 w-full min-w-[120px] bg-[#121212]/95 backdrop-blur-xl border border-white/10 rounded-md shadow-2xl overflow-hidden z-50 py-1"
+            className="absolute top-[calc(100%+4px)] left-0 w-full min-w-[120px] bg-card/95 backdrop-blur-xl border border-white/10 rounded-md shadow-2xl overflow-hidden z-50 py-1"
           >
             {options.map((opt) => (
               <div
                 key={opt.value}
                 className={`px-3 py-1.5 text-[11px] sm:text-[12px] font-medium cursor-pointer transition-colors ${
                   value === opt.value
-                    ? "bg-[#BFF367]/10 text-[#BFF367]"
+                    ? "bg-primary/10 text-primary"
                     : "text-white/60 hover:bg-white/5 hover:text-white"
                 }`}
                 onClick={() => {
@@ -491,13 +491,13 @@ const CommunityFeed = ({
         <div className="flex flex-col gap-3 py-4">
           <div className="flex items-center justify-between mb-1 px-2 md:px-0">
             <h3
-              className="text-xs font-black uppercase tracking-widest text-[#BFF367]"
+              className="text-xs font-black uppercase tracking-widest text-primary"
               style={HEADING_STYLE}
             >
               PLAYERS MATCHING "{debouncedSearchQuery}"
             </h3>
             {playersLoading && (
-              <Loader2 size={16} className="text-[#BFF367] animate-spin" />
+              <Loader2 size={16} className="text-primary animate-spin" />
             )}
           </div>
 
@@ -520,9 +520,9 @@ const CommunityFeed = ({
                   onClick={() =>
                     navigate(`/profile/${player.id || player._id}`)
                   }
-                  className="flex items-center gap-3 bg-neutral-900/50 hover:bg-neutral-900 border border-white/5 hover:border-[#BFF367]/30 p-3 rounded-[8px] cursor-pointer transition-all min-w-[220px] max-w-[280px] group shrink-0"
+                  className="flex items-center gap-3 bg-neutral-900/50 hover:bg-neutral-900 border border-white/5 hover:border-primary/30 p-3 rounded-[8px] cursor-pointer transition-all min-w-[220px] max-w-[280px] group shrink-0"
                 >
-                  <div className="w-[42px] h-[42px] rounded-full bg-[#111] border border-white/10 overflow-hidden shrink-0">
+                  <div className="w-[42px] h-[42px] rounded-full bg-card border border-white/10 overflow-hidden shrink-0">
                     <img
                       src={
                         player.profilePicture ||
@@ -533,7 +533,7 @@ const CommunityFeed = ({
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13px] font-bold text-white group-hover:text-[#BFF367] transition-colors truncate">
+                    <div className="text-[13px] font-bold text-white group-hover:text-primary transition-colors truncate">
                       {player.name}
                     </div>
                     <div className="text-[11px] font-medium text-white/40 truncate">
@@ -542,7 +542,7 @@ const CommunityFeed = ({
                         player.name.toLowerCase().replace(/\s+/g, "")}
                     </div>
                     {(player.city || player.state) && (
-                      <div className="text-[9px] font-semibold text-[#BFF367] mt-0.5 uppercase tracking-wider truncate">
+                      <div className="text-[9px] font-semibold text-primary mt-0.5 uppercase tracking-wider truncate">
                         {player.city}
                         {player.city && player.state ? ", " : ""}
                         {player.state}
@@ -553,7 +553,7 @@ const CommunityFeed = ({
               ))}
               {hasMorePlayers && playersLoading && (
                 <div className="flex items-center justify-center px-6 shrink-0 h-full">
-                  <Loader2 size={24} className="text-[#BFF367] animate-spin" />
+                  <Loader2 size={24} className="text-primary animate-spin" />
                 </div>
               )}
             </div>
@@ -565,7 +565,7 @@ const CommunityFeed = ({
       {debouncedSearchQuery.trim() !== "" && (
         <div className="pt-2">
           <h3
-            className="text-xs font-black uppercase tracking-widest text-[#BFF367]"
+            className="text-xs font-black uppercase tracking-widest text-primary"
             style={HEADING_STYLE}
           >
             POSTS MATCHING "{debouncedSearchQuery}"
@@ -576,10 +576,10 @@ const CommunityFeed = ({
       {/* Feed list */}
       {postsLoading && loadedPosts.length === 0 ? (
         <div className="py-20 flex flex-col items-center justify-center gap-4">
-          <Loader2 size={32} className="text-[#BFF367] animate-spin" />
+          <Loader2 size={32} className="text-primary animate-spin" />
         </div>
       ) : loadedPosts.length === 0 ? (
-        <div className="bg-[#0A0A0A] border border-white/5 rounded-[8px] p-16 text-center text-white/30 font-bold uppercase tracking-widest text-sm">
+        <div className="bg-background border border-white/5 rounded-[8px] p-16 text-center text-white/30 font-bold uppercase tracking-widest text-sm">
           No posts found
         </div>
       ) : (
@@ -599,7 +599,7 @@ const CommunityFeed = ({
           ))}
           {hasMorePosts && postsLoading && (
             <div className="py-6 flex justify-center">
-              <Loader2 size={24} className="text-[#BFF367] animate-spin" />
+              <Loader2 size={24} className="text-primary animate-spin" />
             </div>
           )}
         </div>

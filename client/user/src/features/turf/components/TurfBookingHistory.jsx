@@ -35,15 +35,16 @@ import {
   useGetUserOnDemandBookingsQuery,
   useCreateMatchRequestMutation,
 } from "@redux/api/professionalApi";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button, Textarea } from "@kridaz/ui";
+
 
 // ── Design tokens (exact match to OwnerDashboard) ──────────────────────────
-const BG = "#000000";
-const CARD = "#000000";
-const BORDER = "#2D2D2D";
-const ACCENT = "#B3DC26";
-const MUTED = "#878C9F";
-const MUTED2 = "#999999";
+const BG = "var(--background)";
+const CARD = "var(--background)";
+const BORDER = "var(--border)";
+const ACCENT = "var(--primary)";
+const MUTED = "var(--muted-foreground)";
+const MUTED2 = "var(--muted-foreground)";
 
 // ── Status badge config ────────────────────────────────────────────────────
 const STATUS_META = {
@@ -55,15 +56,15 @@ const STATUS_META = {
   },
   CANCELLED: {
     label: "Cancelled",
-    color: "#EF4444",
-    bg: "#EF444415",
-    border: "#EF444430",
+    color: "var(--destructive)",
+    bg: "var(--destructive)15",
+    border: "var(--destructive)30",
   },
   COMPLETED: {
     label: "Completed",
-    color: "#10B981",
-    bg: "#10B98115",
-    border: "#10B98130",
+    color: "var(--success)",
+    bg: "var(--success)15",
+    border: "var(--success)30",
   },
   DISPUTED: {
     label: "Under Review",
@@ -275,24 +276,24 @@ const TurfBookingHistory = () => {
           </div>
 
           <div className="flex flex-nowrap overflow-x-auto scrollbar-hide gap-2 pb-1 max-w-full shrink-0">
-            <button
+            <Button
               onClick={() => setBookingSubTab("venues")}
-              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${bookingSubTab === "venues" ? "bg-[#CCFF00] text-black border-[#CCFF00] shadow-[0_4px_12px_rgba(204,255,0,0.2)]" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
+              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${bookingSubTab === "venues" ? "bg-primary text-black border-primary shadow-[0_4px_12px_rgba(204,255,0,0.2)]" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
             >
               Venue Bookings
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setBookingSubTab("games")}
-              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${bookingSubTab === "games" ? "bg-[#CCFF00] text-black border-[#CCFF00] shadow-[0_4px_12px_rgba(204,255,0,0.2)]" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
+              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${bookingSubTab === "games" ? "bg-primary text-black border-primary shadow-[0_4px_12px_rgba(204,255,0,0.2)]" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
             >
               Joined Games
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setBookingSubTab("professionals")}
-              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${bookingSubTab === "professionals" ? "bg-[#CCFF00] text-black border-[#CCFF00] shadow-[0_4px_12px_rgba(204,255,0,0.2)]" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
+              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${bookingSubTab === "professionals" ? "bg-primary text-black border-primary shadow-[0_4px_12px_rgba(204,255,0,0.2)]" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
             >
               Hired Professionals
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -302,8 +303,8 @@ const TurfBookingHistory = () => {
               {/* ── Bookings Feed ───────────────────────────────────────────── */}
               <div className="space-y-4">
                 {bookings.length === 0 ? (
-                  <div className="bg-[#111111] p-20 rounded-[8px] border border-white/5 text-center flex flex-col items-center justify-center">
-                    <div className="w-16 h-16 mx-auto rounded-full bg-[#222] flex items-center justify-center text-gray-500 mb-4">
+                  <div className="bg-card p-20 rounded-[8px] border border-white/5 text-center flex flex-col items-center justify-center">
+                    <div className="w-16 h-16 mx-auto rounded-full bg-card flex items-center justify-center text-gray-500 mb-4">
                       <Calendar size={24} />
                     </div>
                     <h2 className="text-xl font-black text-white uppercase tracking-tight">
@@ -314,7 +315,7 @@ const TurfBookingHistory = () => {
                     </p>
                     <Link
                       to="/"
-                      className="mt-6 px-6 py-3 rounded-[6px] bg-[#CCFF00] text-black text-[10px] font-black uppercase tracking-widest hover:bg-[#b3ff00] transition-colors"
+                      className="mt-6 px-6 py-3 rounded-[6px] bg-primary text-black text-[10px] font-black uppercase tracking-widest hover:bg-[#b3ff00] transition-colors"
                     >
                       Explore Venues
                     </Link>
@@ -329,12 +330,12 @@ const TurfBookingHistory = () => {
                     return (
                       <div
                         key={booking.id || booking._id}
-                        className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-4 hover:shadow-[0px_8px_24px_rgba(179,220,38,0.15)] transition-all font-inter"
+                        className="bg-card border border-[rgba(255,255,255,0.08)] rounded-[16px] p-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-4 hover:shadow-[0px_8px_24px_rgba(179,220,38,0.15)] transition-all font-inter"
                       >
                         {/* 1. Venue & Header */}
                         <div className="flex flex-col gap-1.5 md:w-[35%]">
                           <div className="flex items-center justify-between md:justify-start gap-2">
-                            <span className="px-1.5 py-0.5 bg-[#B3DC26] text-[#000000] rounded-[4px] text-[8px] font-black uppercase tracking-widest">
+                            <span className="px-1.5 py-0.5 bg-primary text-background rounded-[4px] text-[8px] font-black uppercase tracking-widest">
                               {booking.turf?.sportType || "FOOTBALL"}
                             </span>
                             <span className="text-[9px] font-bold text-[rgba(255,255,255,0.40)] uppercase tracking-widest">
@@ -345,11 +346,11 @@ const TurfBookingHistory = () => {
                             </span>
                           </div>
                           <div>
-                            <h2 className="text-[14px] font-black text-[#FFFFFF] uppercase tracking-tight truncate">
+                            <h2 className="text-[14px] font-black text-foreground uppercase tracking-tight truncate">
                               {booking.turf?.name || "Decathlon Sports Arena"}
                             </h2>
                             <div className="flex items-center gap-1 text-[10px] font-bold text-[rgba(255,255,255,0.70)] uppercase tracking-widest mt-0.5">
-                              <MapPin size={10} className="text-[#B3DC26]" />
+                              <MapPin size={10} className="text-primary" />
                               <span className="truncate">
                                 {booking.turf?.city || "Location"}
                               </span>
@@ -364,7 +365,7 @@ const TurfBookingHistory = () => {
                         <div className="flex justify-between items-end md:items-center md:flex-1">
                           {/* Date & Time */}
                           <div className="flex flex-col justify-center gap-1">
-                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#FFFFFF] uppercase tracking-widest">
+                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-foreground uppercase tracking-widest">
                               <Calendar
                                 size={12}
                                 className="text-[rgba(255,255,255,0.70)]"
@@ -383,7 +384,7 @@ const TurfBookingHistory = () => {
 
                           {/* Price & Status */}
                           <div className="flex flex-col justify-center items-end gap-1 md:pr-4">
-                            <div className="text-[14px] font-black text-[#B3DC26]">
+                            <div className="text-[14px] font-black text-primary">
                               ₹
                               {Number(booking.advanceAmount) ||
                                 Number(booking.totalPrice) ||
@@ -407,16 +408,16 @@ const TurfBookingHistory = () => {
                         <div className="mt-1 pt-3 border-t border-white/5 md:border-t-0 md:pt-0 md:mt-0 shrink-0 flex flex-col md:flex-row gap-2">
                           {(booking.status === "confirmed" ||
                             booking.status === "completed") && (
-                            <button
+                            <Button
                               onClick={() => setSelectedDisputeBooking(booking)}
                               className="w-full md:w-auto h-[36px] px-4 rounded-[8px] border border-red-500/50 text-red-500 hover:bg-red-500/10 text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-1.5"
                             >
                               <AlertOctagon size={14} /> Report Issue
-                            </button>
+                            </Button>
                           )}
                           <Link
                             to={`/booking-pass/${booking.id || booking._id}`}
-                            className="w-full md:w-auto h-[36px] px-6 rounded-[8px] bg-[#B3DC26] text-[#000000] text-[11px] font-black uppercase tracking-widest hover:bg-[#a2c921] transition-all flex items-center justify-center gap-2"
+                            className="w-full md:w-auto h-[36px] px-6 rounded-[8px] bg-primary text-background text-[11px] font-black uppercase tracking-widest hover:bg-[#a2c921] transition-all flex items-center justify-center gap-2"
                           >
                             <Ticket size={14} /> View Pass
                           </Link>
@@ -433,7 +434,7 @@ const TurfBookingHistory = () => {
                   (similarTurfs && similarTurfs.length > 0)) && (
                   <div className="mt-16 pt-10 border-t border-white/5 space-y-6">
                     <div className="space-y-1">
-                      <h3 className="text-lg font-black uppercase text-[#CCFF00] tracking-tight flex items-center gap-2">
+                      <h3 className="text-lg font-black uppercase text-primary tracking-tight flex items-center gap-2">
                         Recommended Arenas Near You
                       </h3>
                       <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest font-inter">
@@ -446,7 +447,7 @@ const TurfBookingHistory = () => {
                         {[...Array(4)].map((_, i) => (
                           <div
                             key={i}
-                            className="h-[280px] rounded-[8px] bg-[#111] border border-white/5 animate-pulse relative overflow-hidden"
+                            className="h-[280px] rounded-[8px] bg-card border border-white/5 animate-pulse relative overflow-hidden"
                           >
                             <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent h-[50%]" />
                             <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2">
@@ -480,7 +481,7 @@ const TurfBookingHistory = () => {
                   (recommendations && recommendations.length > 0)) && (
                   <div className="mt-16 pt-10 border-t border-white/5 space-y-6">
                     <div className="space-y-1 text-center md:text-left">
-                      <h3 className="text-lg font-black uppercase text-[#CCFF00] tracking-tight flex items-center gap-2 justify-center md:justify-start">
+                      <h3 className="text-lg font-black uppercase text-primary tracking-tight flex items-center gap-2 justify-center md:justify-start">
                         Trending Arenas Near You
                       </h3>
                       <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest font-inter">
@@ -494,7 +495,7 @@ const TurfBookingHistory = () => {
                         {[...Array(4)].map((_, i) => (
                           <div
                             key={i}
-                            className="h-[280px] rounded-[8px] bg-[#111] border border-white/5 animate-pulse relative overflow-hidden"
+                            className="h-[280px] rounded-[8px] bg-card border border-white/5 animate-pulse relative overflow-hidden"
                           >
                             <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent h-[50%]" />
                             <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2">
@@ -527,15 +528,15 @@ const TurfBookingHistory = () => {
           {bookingSubTab === "games" && (
             <div className="space-y-4">
               {loadingJoinedGames ? (
-                <div className="text-center py-12 bg-[#0a0a0a] rounded-[8px] border border-white/5">
-                  <Loader2 className="w-8 h-8 text-[#CCFF00] animate-spin mx-auto mb-2" />
+                <div className="text-center py-12 bg-background rounded-[8px] border border-white/5">
+                  <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto mb-2" />
                   <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
                     Loading Joined Games...
                   </p>
                 </div>
               ) : joinedGames.length === 0 ? (
-                <div className="bg-[#111111] p-16 rounded-[8px] border border-white/5 text-center flex flex-col items-center justify-center">
-                  <div className="w-14 h-14 rounded-full bg-[#222] flex items-center justify-center text-gray-500 mb-4">
+                <div className="bg-card p-16 rounded-[8px] border border-white/5 text-center flex flex-col items-center justify-center">
+                  <div className="w-14 h-14 rounded-full bg-card flex items-center justify-center text-gray-500 mb-4">
                     <Zap size={24} />
                   </div>
                   <h2 className="text-lg font-black text-white uppercase tracking-tight">
@@ -550,7 +551,7 @@ const TurfBookingHistory = () => {
                 joinedGames.map((game) => {
                   const statusColors = {
                     JOINED:
-                      "text-[#CCFF00] bg-[#CCFF00]/10 border-[#CCFF00]/20",
+                      "text-primary bg-primary/10 border-primary/20",
                     PENDING:
                       "text-yellow-500 bg-yellow-500/10 border-yellow-500/20",
                     CANCELLED: "text-red-500 bg-red-500/10 border-red-500/20",
@@ -565,10 +566,10 @@ const TurfBookingHistory = () => {
                       key={game._id}
                       className="group relative rounded-[8px] p-[1px] transition-all duration-300 cursor-pointer overflow-hidden"
                     >
-                      <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#CCFF00] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[8px]" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[8px]" />
                       <div className="absolute inset-0 border border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[8px]" />
 
-                      <div className="relative bg-[#0d0d0d] rounded-[8px] p-4 flex flex-col md:flex-row gap-6 w-full">
+                      <div className="relative bg-background rounded-[8px] p-4 flex flex-col md:flex-row gap-6 w-full">
                         <div className="w-full md:w-48 h-32 shrink-0 rounded-[8px] overflow-hidden bg-white/5 flex items-center justify-center relative">
                           {game.turf?.images?.[0] ? (
                             <img
@@ -578,7 +579,7 @@ const TurfBookingHistory = () => {
                             />
                           ) : (
                             <div className="flex flex-col items-center gap-2">
-                              <Zap className="w-8 h-8 text-[#CCFF00]" />
+                              <Zap className="w-8 h-8 text-primary" />
                               <span className="text-[8px] font-black uppercase text-gray-600 tracking-widest">
                                 {game.gameType || "CRICKET"}
                               </span>
@@ -589,7 +590,7 @@ const TurfBookingHistory = () => {
                         <div className="flex-1 flex flex-col justify-between py-1">
                           <div>
                             <div className="flex items-center gap-2 mb-2">
-                              <span className="px-1.5 py-0.5 bg-[#CCFF00]/10 text-[#CCFF00] rounded text-[8px] font-black uppercase tracking-widest border border-[#CCFF00]/20">
+                              <span className="px-1.5 py-0.5 bg-primary/10 text-primary rounded text-[8px] font-black uppercase tracking-widest border border-primary/20">
                                 {game.gameType || "CRICKET"}
                               </span>
                               {game.format && (
@@ -606,20 +607,20 @@ const TurfBookingHistory = () => {
                             </h3>
                             <div className="flex flex-wrap items-center gap-4 text-[9px] font-black text-gray-500 uppercase tracking-widest">
                               <div className="flex items-center gap-1.5">
-                                <Clock size={12} className="text-[#CCFF00]" />{" "}
+                                <Clock size={12} className="text-primary" />{" "}
                                 {game.time}
                               </div>
                               <div className="flex items-center gap-1.5">
                                 <Calendar
                                   size={12}
-                                  className="text-[#CCFF00]"
+                                  className="text-primary"
                                 />{" "}
                                 {new Date(game.date).toLocaleDateString(
                                   "en-GB"
                                 )}
                               </div>
                               <div className="flex items-center gap-1.5">
-                                <MapPin size={12} className="text-[#CCFF00]" />{" "}
+                                <MapPin size={12} className="text-primary" />{" "}
                                 {game.turf?.name ||
                                   game.customVenue ||
                                   "Local Ground"}
@@ -665,8 +666,8 @@ const TurfBookingHistory = () => {
           {bookingSubTab === "professionals" && (
             <div className="space-y-6 animate-in fade-in duration-300">
               {loadingProBookings || loadingOnDemand ? (
-                <div className="text-center py-12 bg-[#0a0a0a] rounded-[8px] border border-white/5">
-                  <Loader2 className="w-8 h-8 text-[#CCFF00] animate-spin mx-auto mb-2" />
+                <div className="text-center py-12 bg-background rounded-[8px] border border-white/5">
+                  <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto mb-2" />
                   <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
                     Loading Hired Professionals...
                   </p>
@@ -675,8 +676,8 @@ const TurfBookingHistory = () => {
                 onDemandBookings.length === 0 &&
                 professionalBookings.length === 0 &&
                 failedRequests.length === 0 ? (
-                <div className="bg-[#111111] p-16 rounded-[8px] border border-white/5 text-center flex flex-col items-center justify-center">
-                  <div className="w-14 h-14 rounded-full bg-[#222] flex items-center justify-center text-gray-500 mb-4">
+                <div className="bg-card p-16 rounded-[8px] border border-white/5 text-center flex flex-col items-center justify-center">
+                  <div className="w-14 h-14 rounded-full bg-card flex items-center justify-center text-gray-500 mb-4">
                     <User size={24} />
                   </div>
                   <h2 className="text-lg font-black text-white uppercase tracking-tight">
@@ -692,10 +693,10 @@ const TurfBookingHistory = () => {
                   {/* Section 1: Active Match Requests */}
                   {activeRequests.length > 0 && (
                     <div className="space-y-3">
-                      <h4 className="text-[10px] font-black uppercase text-[#BFF367] tracking-widest flex items-center gap-2">
+                      <h4 className="text-[10px] font-black uppercase text-primary tracking-widest flex items-center gap-2">
                         <span className="flex h-2 w-2 relative">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#BFF367] opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#BFF367]"></span>
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                         </span>
                         Live Match Search ({activeRequests.length})
                       </h4>
@@ -703,7 +704,7 @@ const TurfBookingHistory = () => {
                         {activeRequests.map((req) => (
                           <div
                             key={req.id}
-                            className="bg-[#111] border border-[#BFF367]/20 rounded-lg p-5 relative overflow-hidden"
+                            className="bg-card border border-primary/20 rounded-lg p-5 relative overflow-hidden"
                           >
                             <div className="space-y-3 font-sans">
                               <div>
@@ -737,7 +738,7 @@ const TurfBookingHistory = () => {
                                   <span className="text-[8px] uppercase tracking-wider text-white/40 block">
                                     Budget Scope
                                   </span>
-                                  <span className="text-xs font-bold text-[#CCFF00]">
+                                  <span className="text-xs font-bold text-primary">
                                     ₹{req.minBudget} - ₹{req.maxBudget}
                                   </span>
                                 </div>
@@ -746,12 +747,12 @@ const TurfBookingHistory = () => {
                                 <div className="flex items-center gap-1.5 text-[10px] text-gray-500 uppercase font-bold tracking-widest">
                                   <Calendar
                                     size={10}
-                                    className="text-[#BFF367]"
+                                    className="text-primary"
                                   />{" "}
                                   {req.matchDate || "Flexible"}
                                   <Clock
                                     size={10}
-                                    className="text-[#BFF367] ml-2"
+                                    className="text-primary ml-2"
                                   />{" "}
                                   {req.matchStartTime || "TBD"} -{" "}
                                   {req.matchEndTime || "TBD"}
@@ -776,7 +777,7 @@ const TurfBookingHistory = () => {
                         {failedRequests.map((req) => (
                           <div
                             key={req.id}
-                            className="bg-[#111] border border-red-500/20 rounded-lg p-5 relative overflow-hidden transition-all duration-300 hover:border-red-500/40"
+                            className="bg-card border border-red-500/20 rounded-lg p-5 relative overflow-hidden transition-all duration-300 hover:border-red-500/40"
                           >
                             {/* Subtle overlay accent */}
                             <div className="absolute top-0 right-0 bg-red-500/10 text-red-500 px-3 py-1 rounded-bl-lg text-[8px] font-black uppercase tracking-wider border-l border-b border-red-500/20">
@@ -850,12 +851,12 @@ const TurfBookingHistory = () => {
                                   )}
                                 </span>
 
-                                <button
+                                <Button
                                   onClick={() => handleRetryMatch(req)}
-                                  className="px-3 py-1.5 bg-[#CCFF00]/10 hover:bg-[#CCFF00] hover:text-black border border-[#CCFF00]/20 text-[#CCFF00] text-[8px] font-black uppercase tracking-widest rounded-[6px] transition-all flex items-center gap-1.5 active:scale-95"
+                                  className="px-3 py-1.5 bg-primary/10 hover:bg-primary hover:text-black border border-primary/20 text-primary text-[8px] font-black uppercase tracking-widest rounded-[6px] transition-all flex items-center gap-1.5 active:scale-95"
                                 >
                                   <RefreshCw size={10} /> Retry Search
-                                </button>
+                                </Button>
                               </div>
                             </div>
                           </div>
@@ -867,7 +868,7 @@ const TurfBookingHistory = () => {
                   {/* Section 2: On-Demand Matches (Verified/Assigned) */}
                   {onDemandBookings.length > 0 && (
                     <div className="space-y-3">
-                      <h4 className="text-[10px] font-black uppercase text-[#CCFF00] tracking-widest flex items-center gap-2">
+                      <h4 className="text-[10px] font-black uppercase text-primary tracking-widest flex items-center gap-2">
                         <Zap size={12} />
                         On-Demand Matching ({onDemandBookings.length})
                       </h4>
@@ -886,7 +887,7 @@ const TurfBookingHistory = () => {
                           return (
                             <div
                               key={booking.id}
-                              className="bg-[#111] border border-white/5 rounded-lg p-5"
+                              className="bg-card border border-white/5 rounded-lg p-5"
                             >
                               <div className="flex items-start justify-between mb-4">
                                 <div className="flex items-center gap-3">
@@ -907,7 +908,7 @@ const TurfBookingHistory = () => {
                                     <h3 className="text-xs font-bold text-white capitalize">
                                       {booking.professional?.name?.toLowerCase()}
                                     </h3>
-                                    <span className="px-1.5 py-0.5 rounded bg-[#BFF367]/10 text-[#BFF367] border border-[#BFF367]/20 text-[8px] font-black uppercase tracking-wider block mt-1 w-max">
+                                    <span className="px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[8px] font-black uppercase tracking-wider block mt-1 w-max">
                                       {booking.role}
                                     </span>
                                   </div>
@@ -941,7 +942,7 @@ const TurfBookingHistory = () => {
                                   <span className="text-white/40">
                                     Allocated Budget:
                                   </span>
-                                  <span className="text-[#CCFF00] font-black">
+                                  <span className="text-primary font-black">
                                     ₹{booking.hourlyRate}
                                   </span>
                                 </div>
@@ -968,7 +969,7 @@ const TurfBookingHistory = () => {
                               </div>
 
                               {booking.status === "ASSIGNED" && (
-                                <div className="bg-[#050505] border border-[#CCFF00]/30 text-[#CCFF00] rounded-lg p-3 text-center mt-4">
+                                <div className="bg-[#050505] border border-primary/30 text-primary rounded-lg p-3 text-center mt-4">
                                   <span className="text-[9px] uppercase tracking-wider block text-white/50 mb-0.5">
                                     Check-In OTP Code
                                   </span>
@@ -987,7 +988,7 @@ const TurfBookingHistory = () => {
                               {/* Action Buttons: Rate & Dispute */}
                               <div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-white/5">
                                 {booking.status === "COMPLETED" && (
-                                  <button
+                                  <Button
                                     onClick={() =>
                                       openProReviewModal(
                                         booking.professional?.id ||
@@ -997,14 +998,14 @@ const TurfBookingHistory = () => {
                                           "Professional"
                                       )
                                     }
-                                    className="px-4 py-2 rounded-[6px] bg-[#CCFF00]/10 border border-[#CCFF00]/20 hover:bg-[#CCFF00] hover:text-black text-[#CCFF00] text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 active:scale-95"
+                                    className="px-4 py-2 rounded-[6px] bg-primary/10 border border-primary/20 hover:bg-primary hover:text-black text-primary text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 active:scale-95"
                                   >
                                     <Star size={12} /> Rate Professional
-                                  </button>
+                                  </Button>
                                 )}
                                 {booking.status !== "CANCELLED" &&
                                   booking.status !== "DISPUTED" && (
-                                    <button
+                                    <Button
                                       onClick={() =>
                                         setProDisputeBooking({
                                           ...booking,
@@ -1019,7 +1020,7 @@ const TurfBookingHistory = () => {
                                       className="px-4 py-2 rounded-[6px] bg-white/5 border border-white/10 hover:border-red-500/50 hover:text-red-500 text-gray-400 text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 active:scale-95"
                                     >
                                       <ShieldAlert size={12} /> Raise Dispute
-                                    </button>
+                                    </Button>
                                   )}
                               </div>
                             </div>
@@ -1040,13 +1041,13 @@ const TurfBookingHistory = () => {
                         {professionalBookings.map((booking) => {
                           const statusColors = {
                             APPROVED:
-                              "text-[#CCFF00] bg-[#CCFF00]/10 border-[#CCFF00]/20",
+                              "text-primary bg-primary/10 border-primary/20",
                             PENDING:
                               "text-yellow-500 bg-yellow-500/10 border-yellow-500/20",
                             REJECTED:
                               "text-red-500 bg-red-500/10 border-red-500/20",
                             COMPLETED:
-                              "text-[#BFF367] bg-[#BFF367]/10 border-[#BFF367]/20",
+                              "text-primary bg-primary/10 border-primary/20",
                           };
                           const statusClass =
                             statusColors[booking.status] ||
@@ -1076,10 +1077,10 @@ const TurfBookingHistory = () => {
                               key={booking.id}
                               className="group relative rounded-[8px] p-[1px] transition-all duration-300 cursor-pointer overflow-hidden"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#CCFF00] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[8px]" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[8px]" />
                               <div className="absolute inset-0 border border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[8px]" />
 
-                              <div className="relative bg-[#0d0d0d] rounded-[8px] p-4 flex flex-col md:flex-row gap-6 w-full">
+                              <div className="relative bg-background rounded-[8px] p-4 flex flex-col md:flex-row gap-6 w-full">
                                 <div className="w-full md:w-32 h-32 shrink-0 rounded-[8px] overflow-hidden bg-white/5 flex items-center justify-center border border-white/5 relative">
                                   {profPic ? (
                                     <img
@@ -1095,7 +1096,7 @@ const TurfBookingHistory = () => {
                                 <div className="flex-1 flex flex-col justify-between py-1">
                                   <div>
                                     <div className="flex items-center gap-2 mb-2">
-                                      <span className="px-1.5 py-0.5 bg-[#BFF367]/10 text-[#BFF367] rounded text-[8px] font-black uppercase tracking-widest border border-[#BFF367]/20">
+                                      <span className="px-1.5 py-0.5 bg-primary/10 text-primary rounded text-[8px] font-black uppercase tracking-widest border border-primary/20">
                                         {booking.bookingType || "PROFESSIONAL"}
                                       </span>
                                       <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">
@@ -1110,14 +1111,14 @@ const TurfBookingHistory = () => {
                                       <div className="flex items-center gap-1.5">
                                         <Clock
                                           size={12}
-                                          className="text-[#CCFF00]"
+                                          className="text-primary"
                                         />{" "}
                                         {slotsStr}
                                       </div>
                                       <div className="flex items-center gap-1.5">
                                         <Calendar
                                           size={12}
-                                          className="text-[#CCFF00]"
+                                          className="text-primary"
                                         />{" "}
                                         {booking.date}
                                       </div>
@@ -1132,7 +1133,7 @@ const TurfBookingHistory = () => {
                                   {/* Action Buttons: Rate & Dispute */}
                                   <div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-white/5">
                                     {booking.status === "COMPLETED" && (
-                                      <button
+                                      <Button
                                         onClick={() =>
                                           openProReviewModal(
                                             booking.professional?.id ||
@@ -1140,15 +1141,15 @@ const TurfBookingHistory = () => {
                                             profName
                                           )
                                         }
-                                        className="px-4 py-2 rounded-[6px] bg-[#CCFF00]/10 border border-[#CCFF00]/20 hover:bg-[#CCFF00] hover:text-black text-[#CCFF00] text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 active:scale-95"
+                                        className="px-4 py-2 rounded-[6px] bg-primary/10 border border-primary/20 hover:bg-primary hover:text-black text-primary text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 active:scale-95"
                                       >
                                         <Star size={12} /> Rate Professional
-                                      </button>
+                                      </Button>
                                     )}
                                     {booking.status !== "CANCELLED" &&
                                       booking.status !== "DISPUTED" &&
                                       booking.status !== "REJECTED" && (
-                                        <button
+                                        <Button
                                           onClick={() =>
                                             setProDisputeBooking({
                                               ...booking,
@@ -1159,7 +1160,7 @@ const TurfBookingHistory = () => {
                                         >
                                           <ShieldAlert size={12} /> Raise
                                           Dispute
-                                        </button>
+                                        </Button>
                                       )}
                                   </div>
                                 </div>
@@ -1225,17 +1226,17 @@ const TurfBookingHistory = () => {
         {/* Professional Review Modal */}
         {proReviewModal.open && (
           <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[100] backdrop-blur-sm animate-fade-in">
-            <div className="bg-zinc-950 border border-[#2D2D2D] rounded-[8px] p-8 w-full max-w-md shadow-2xl relative">
-              <button
+            <div className="bg-zinc-950 border border-border rounded-[8px] p-8 w-full max-w-md shadow-2xl relative">
+              <Button
                 onClick={closeProReviewModal}
                 className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
               >
                 <X size={20} />
-              </button>
+              </Button>
               <h2 className="text-2xl font-black uppercase tracking-tighter text-white mb-1">
                 Rate Professional
               </h2>
-              <p className="text-[10px] font-bold text-[#CCFF00] uppercase tracking-widest mb-6">
+              <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-6">
                 {proReviewModal.professionalName}
               </p>
               <div className="mb-6">
@@ -1248,7 +1249,7 @@ const TurfBookingHistory = () => {
                       key={star}
                       className={`w-8 h-8 cursor-pointer transition-all duration-200 hover:scale-110 ${
                         star <= proReviewRating
-                          ? "text-[#CCFF00] fill-[#CCFF00]"
+                          ? "text-primary fill-primary"
                           : "text-zinc-800 hover:text-zinc-600"
                       }`}
                       onClick={() => setProReviewRating(star)}
@@ -1265,30 +1266,30 @@ const TurfBookingHistory = () => {
                 <label className="block text-xs font-black uppercase tracking-widest text-zinc-500 mb-3">
                   Your Review
                 </label>
-                <textarea
+                <Textarea
                   rows="4"
-                  className="w-full bg-[#000000] border border-[#2D2D2D] rounded-[8px] p-4 text-white placeholder-zinc-600 focus:outline-none focus:border-[#CCFF00]/50 transition-colors resize-none text-sm"
+                  className="w-full bg-background border border-border rounded-[8px] p-4 text-white placeholder-zinc-600 focus:outline-none focus:border-primary/50 transition-colors resize-none text-sm"
                   value={proReviewContent}
                   onChange={(e) => setProReviewContent(e.target.value)}
                   placeholder="Share your experience working with this professional..."
                 />
               </div>
               <div className="flex justify-end gap-3">
-                <button
+                <Button
                   type="button"
                   className="px-6 py-3 rounded-[8px] font-black uppercase text-xs tracking-widest text-zinc-400 hover:text-white hover:bg-white/5 transition-all"
                   onClick={closeProReviewModal}
                   disabled={proReviewSubmitting}
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={submitProReview}
                   disabled={proReviewSubmitting || proReviewRating === 0}
-                  className="px-6 py-3 rounded-[8px] bg-[#CCFF00] text-black font-black uppercase text-xs tracking-widest hover:bg-[#b3e600] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(204,255,0,0.15)]"
+                  className="px-6 py-3 rounded-[8px] bg-primary text-black font-black uppercase text-xs tracking-widest hover:bg-[#b3e600] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(204,255,0,0.15)]"
                 >
                   {proReviewSubmitting ? "Submitting..." : "Submit Review"}
-                </button>
+                </Button>
               </div>
             </div>
           </div>

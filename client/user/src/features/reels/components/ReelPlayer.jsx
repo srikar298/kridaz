@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Play, Volume2, VolumeX } from "lucide-react";
 import { useTrackHeartbeatMutation } from "@redux/api/reelsApi";
-import Hls from "hls.js";
+import Hls from "hls.js";import { Button } from "@kridaz/ui";
+
 
 const ReelPlayer = ({ reelId, hlsUrl, isVisible, poster }) => {
   const videoRef = useRef(null);
@@ -158,12 +159,12 @@ const ReelPlayer = ({ reelId, hlsUrl, isVisible, poster }) => {
       )}
 
       {/* Mute/Unmute Button */}
-      <button
+      <Button
         onClick={toggleMute}
         className="absolute bottom-10 right-4 p-2 bg-black/40 rounded-[8px] text-white backdrop-blur-sm z-10"
       >
         {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-      </button>
+      </Button>
 
       {/* Loading Spinner */}
       {!isLoaded && (

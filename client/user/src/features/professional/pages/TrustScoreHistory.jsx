@@ -52,7 +52,7 @@ const TrustScoreHistory = () => {
       return <ShieldAlert className="text-red-500" size={18} />;
     if (type === "INACTIVITY_DECAY")
       return <AlertTriangle className="text-yellow-500" size={18} />;
-    if (delta > 0) return <CheckCircle className="text-[#CCFF00]" size={18} />;
+    if (delta > 0) return <CheckCircle className="text-primary" size={18} />;
     return <AlertTriangle className="text-red-500" size={18} />;
   };
 
@@ -72,8 +72,8 @@ const TrustScoreHistory = () => {
         </div>
 
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 bg-[#111] rounded-2xl border border-white/5">
-            <Loader2 className="w-8 h-8 text-[#CCFF00] animate-spin mb-3" />
+          <div className="flex flex-col items-center justify-center py-20 bg-card rounded-2xl border border-white/5">
+            <Loader2 className="w-8 h-8 text-primary animate-spin mb-3" />
             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
               Loading Trust ledger...
             </p>
@@ -92,8 +92,8 @@ const TrustScoreHistory = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Left Column: Big Score Card & Stats */}
             <div className="space-y-6">
-              <div className="p-6 bg-[#141414] border border-[#2D2D2D] rounded-2xl flex flex-col items-center text-center relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-blue-500/10 text-blue-400 px-3 py-1 rounded-bl-xl text-[8px] font-black uppercase tracking-wider border-l border-b border-[#2D2D2D]">
+              <div className="p-6 bg-[#141414] border border-border rounded-2xl flex flex-col items-center text-center relative overflow-hidden">
+                <div className="absolute top-0 right-0 bg-blue-500/10 text-blue-400 px-3 py-1 rounded-bl-xl text-[8px] font-black uppercase tracking-wider border-l border-b border-border">
                   Level status
                 </div>
 
@@ -105,29 +105,29 @@ const TrustScoreHistory = () => {
                 <div className="relative w-36 h-36 flex items-center justify-center mb-6">
                   {/* Outer Glow Ring */}
                   <div className="absolute inset-0 rounded-full border border-dashed border-white/10 animate-[spin_20s_linear_infinite]" />
-                  <div className="absolute w-28 h-28 rounded-full bg-black flex flex-col items-center justify-center shadow-[inset_0_2px_12px_rgba(204,255,0,0.15)] border border-[#2D2D2D]">
+                  <div className="absolute w-28 h-28 rounded-full bg-black flex flex-col items-center justify-center shadow-[inset_0_2px_12px_rgba(204,255,0,0.15)] border border-border">
                     <span className="text-4xl font-black text-white">
                       {Number(trustScore).toFixed(1)}
                     </span>
-                    <span className="text-[9px] font-bold text-[#CCFF00] uppercase tracking-widest mt-1">
+                    <span className="text-[9px] font-bold text-primary uppercase tracking-widest mt-1">
                       Points
                     </span>
                   </div>
                 </div>
 
-                <p className="text-xs text-[#878C9F] px-2">
+                <p className="text-xs text-muted-foreground px-2">
                   Your score determines your matchmaking priority and overall
                   reputation. Keep it high!
                 </p>
               </div>
 
               {/* Analytics summary */}
-              <div className="p-5 bg-[#141414] border border-[#2D2D2D] rounded-2xl space-y-4">
+              <div className="p-5 bg-[#141414] border border-border rounded-2xl space-y-4">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-white">
                   Event Summaries
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-black/40 border border-[#2D2D2D] rounded-xl p-3.5">
+                  <div className="bg-black/40 border border-border rounded-xl p-3.5">
                     <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block">
                       Positive Events
                     </span>
@@ -135,7 +135,7 @@ const TrustScoreHistory = () => {
                       {positiveEvents}
                     </span>
                   </div>
-                  <div className="bg-black/40 border border-[#2D2D2D] rounded-xl p-3.5">
+                  <div className="bg-black/40 border border-border rounded-xl p-3.5">
                     <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block">
                       Deductions
                     </span>
@@ -148,13 +148,13 @@ const TrustScoreHistory = () => {
             </div>
 
             {/* Right Column: Ledger / Timeline */}
-            <div className="md:col-span-2 p-6 bg-[#141414] border border-[#2D2D2D] rounded-2xl space-y-6">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-[#CCFF00] flex items-center gap-2">
+            <div className="md:col-span-2 p-6 bg-[#141414] border border-border rounded-2xl space-y-6">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
                 <Award size={16} /> Points Transaction History
               </h3>
 
               {events.length === 0 ? (
-                <div className="bg-black/30 border border-[#2D2D2D] rounded-xl p-12 text-center flex flex-col items-center justify-center">
+                <div className="bg-black/30 border border-border rounded-xl p-12 text-center flex flex-col items-center justify-center">
                   <Shield className="w-12 h-12 text-gray-600 mb-3" />
                   <h4 className="text-sm font-bold text-white uppercase">
                     No Transactions Found
@@ -170,7 +170,7 @@ const TrustScoreHistory = () => {
                     return (
                       <div
                         key={event.id}
-                        className="bg-black/30 border border-[#2D2D2D] rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-white/10 transition-colors"
+                        className="bg-black/30 border border-border rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-white/10 transition-colors"
                       >
                         <div className="flex items-start gap-3">
                           <div className="mt-0.5 shrink-0">

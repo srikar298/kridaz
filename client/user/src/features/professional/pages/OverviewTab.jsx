@@ -79,7 +79,8 @@ import {
 } from "../../../redux/api/professionalApi";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "@redux/slices/authSlice.js";
-import { useSocket } from "@context/SocketContext";
+import { useSocket } from "@context/SocketContext";import { Button, Input, Select } from "@kridaz/ui";
+
 
 const OverviewTab = ({ role, profile }) => {
   const user = useSelector((state) => state.auth?.user);
@@ -314,16 +315,16 @@ const OverviewTab = ({ role, profile }) => {
       {/* Analytics Dashboard Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
         {/* Bookings */}
-        <div className="col-span-2 lg:col-span-2 p-4 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-28 relative">
+        <div className="col-span-2 lg:col-span-2 p-4 rounded-2xl bg-[#141414] border border-border flex flex-col justify-between h-28 relative">
           <div className="flex justify-between items-start">
-            <span className="text-xs text-[#878C9F] font-semibold uppercase tracking-wider">
+            <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
               Bookings
             </span>
             <div className="relative inline-flex items-center">
-              <select
+              <Select
                 value={bookingsTimeline}
                 onChange={(e) => setBookingsTimeline(e.target.value)}
-                className="appearance-none bg-transparent text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider pr-4 outline-none cursor-pointer hover:text-white transition-colors z-10 text-right"
+                className="appearance-none bg-transparent text-[11px] text-muted-foreground font-semibold uppercase tracking-wider pr-4 outline-none cursor-pointer hover:text-white transition-colors z-10 text-right"
               >
                 <option className="bg-[#141414] text-white" value="Today">
                   Today
@@ -337,10 +338,10 @@ const OverviewTab = ({ role, profile }) => {
                 <option className="bg-[#141414] text-white" value="All Time">
                   All Time
                 </option>
-              </select>
+              </Select>
               <ChevronDown
                 size={12}
-                className="text-[#878C9F] absolute right-0 pointer-events-none"
+                className="text-muted-foreground absolute right-0 pointer-events-none"
               />
             </div>
           </div>
@@ -353,16 +354,16 @@ const OverviewTab = ({ role, profile }) => {
                 {statsData?.stats?.bookings?.completed || 0}
               </h3>
             </div>
-            <div className="w-px h-8 bg-[#2D2D2D]"></div>
+            <div className="w-px h-8 bg-border"></div>
             <div>
-              <p className="text-[10px] text-[#BFF367] uppercase font-bold mb-0.5">
+              <p className="text-[10px] text-primary uppercase font-bold mb-0.5">
                 Assigned
               </p>
               <h3 className="text-base font-bold text-white" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
                 {statsData?.stats?.bookings?.assigned || 0}
               </h3>
             </div>
-            <div className="w-px h-8 bg-[#2D2D2D]"></div>
+            <div className="w-px h-8 bg-border"></div>
             <div>
               <p className="text-[10px] text-green-400 uppercase font-bold mb-0.5">
                 In Progress
@@ -375,24 +376,24 @@ const OverviewTab = ({ role, profile }) => {
         </div>
 
         {/* Earnings */}
-        <div className="p-4 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-28 relative">
+        <div className="p-4 rounded-2xl bg-[#141414] border border-border flex flex-col justify-between h-28 relative">
           <div className="flex justify-between items-start">
-            <span className="text-xs text-[#878C9F] font-semibold uppercase tracking-wider">
+            <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
               Earnings
             </span>
-            <IndianRupee size={14} className="text-[#BFF367] absolute top-4 right-4" />
+            <IndianRupee size={14} className="text-primary absolute top-4 right-4" />
           </div>
           <div className="mt-1">
-            <h3 className="text-xl font-bold text-[#BFF367]" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
+            <h3 className="text-xl font-bold text-primary" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
               ₹{getEarningsValue()}
             </h3>
           </div>
-          <div className="mt-2 flex items-center border-t border-[#2D2D2D] pt-2">
+          <div className="mt-2 flex items-center border-t border-border pt-2">
             <div className="relative inline-flex items-center w-full">
-              <select
+              <Select
                 value={earningsTimeline}
                 onChange={(e) => setEarningsTimeline(e.target.value)}
-                className="appearance-none bg-transparent text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider pr-4 outline-none cursor-pointer hover:text-white transition-colors z-10 w-full"
+                className="appearance-none bg-transparent text-[11px] text-muted-foreground font-semibold uppercase tracking-wider pr-4 outline-none cursor-pointer hover:text-white transition-colors z-10 w-full"
               >
                 <option className="bg-[#141414] text-white" value="Today">
                   Today
@@ -406,24 +407,24 @@ const OverviewTab = ({ role, profile }) => {
                 <option className="bg-[#141414] text-white" value="All Time">
                   All Time
                 </option>
-              </select>
+              </Select>
               <ChevronDown
                 size={12}
-                className="text-[#878C9F] absolute right-0 pointer-events-none"
+                className="text-muted-foreground absolute right-0 pointer-events-none"
               />
             </div>
           </div>
         </div>
 
         {/* Daily Avg Time */}
-        <div className="p-4 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-28 relative">
+        <div className="p-4 rounded-2xl bg-[#141414] border border-border flex flex-col justify-between h-28 relative">
           <div className="flex justify-between items-start">
-            <span className="text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider leading-tight">
+            <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider leading-tight">
               Daily Avg
               <br />
               Time
             </span>
-            <Clock size={14} className="text-[#BFF367] absolute top-4 right-4" />
+            <Clock size={14} className="text-primary absolute top-4 right-4" />
           </div>
           <div className="mt-1">
             <h3 className="text-lg font-bold text-white" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
@@ -431,17 +432,17 @@ const OverviewTab = ({ role, profile }) => {
               <span className="text-xs font-normal text-gray-400" style={{ fontFamily: "'Inter', sans-serif" }}>active</span>
             </h3>
           </div>
-          <div className="mt-2 flex items-center border-t border-[#2D2D2D] pt-2">
-            <span className="text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider">
+          <div className="mt-2 flex items-center border-t border-border pt-2">
+            <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">
               30 Days
             </span>
           </div>
         </div>
 
         {/* Rating */}
-        <div className="p-4 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-28 relative">
+        <div className="p-4 rounded-2xl bg-[#141414] border border-border flex flex-col justify-between h-28 relative">
           <div className="flex justify-between items-start">
-            <span className="text-xs text-[#878C9F] font-semibold uppercase tracking-wider">
+            <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
               Rating
             </span>
             <Star size={14} className="text-yellow-400 absolute top-4 right-4" />
@@ -452,12 +453,12 @@ const OverviewTab = ({ role, profile }) => {
             </h3>
             <Star size={16} className="text-yellow-400 fill-yellow-400" />
           </div>
-          <div className="mt-2 flex items-center border-t border-[#2D2D2D] pt-2">
+          <div className="mt-2 flex items-center border-t border-border pt-2">
             <div className="relative inline-flex items-center w-full">
-              <select
+              <Select
                 value={ratingTimeline}
                 onChange={(e) => setRatingTimeline(e.target.value)}
-                className="appearance-none bg-transparent text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider pr-4 outline-none cursor-pointer hover:text-white transition-colors z-10 w-full"
+                className="appearance-none bg-transparent text-[11px] text-muted-foreground font-semibold uppercase tracking-wider pr-4 outline-none cursor-pointer hover:text-white transition-colors z-10 w-full"
               >
                 <option className="bg-[#141414] text-white" value="Today">
                   Today
@@ -471,19 +472,19 @@ const OverviewTab = ({ role, profile }) => {
                 <option className="bg-[#141414] text-white" value="All Time">
                   All Time
                 </option>
-              </select>
+              </Select>
               <ChevronDown
                 size={12}
-                className="text-[#878C9F] absolute right-0 pointer-events-none"
+                className="text-muted-foreground absolute right-0 pointer-events-none"
               />
             </div>
           </div>
         </div>
 
         {/* Conflict Balance */}
-        <div className="p-4 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-28 relative">
+        <div className="p-4 rounded-2xl bg-[#141414] border border-border flex flex-col justify-between h-28 relative">
           <div className="flex justify-between items-start">
-            <span className="text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider leading-tight">
+            <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider leading-tight">
               Conflict
               <br />
               Balance
@@ -495,17 +496,17 @@ const OverviewTab = ({ role, profile }) => {
               ₹{profile?.disputeBalance || 0}
             </h3>
           </div>
-          <div className="mt-2 flex items-center border-t border-[#2D2D2D] pt-2">
-            <span className="text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider">
+          <div className="mt-2 flex items-center border-t border-border pt-2">
+            <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">
               Funds on Hold
             </span>
           </div>
         </div>
 
         {/* Requests & Acceptance */}
-        <div className="col-span-2 lg:col-span-1 p-4 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col justify-between h-28 relative">
+        <div className="col-span-2 lg:col-span-1 p-4 rounded-2xl bg-[#141414] border border-border flex flex-col justify-between h-28 relative">
           <div className="flex justify-between items-start">
-            <span className="text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider leading-tight">
+            <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider leading-tight">
               Match Requests
             </span>
           </div>
@@ -518,7 +519,7 @@ const OverviewTab = ({ role, profile }) => {
                 {statsData?.stats?.acceptedRequests ?? pastBookingsCount}
               </h3>
             </div>
-            <div className="w-px h-6 bg-[#2D2D2D]"></div>
+            <div className="w-px h-6 bg-border"></div>
             <div>
               <p className="text-[10px] text-gray-500 uppercase font-bold mb-0.5">
                 Rejected
@@ -527,9 +528,9 @@ const OverviewTab = ({ role, profile }) => {
                 {statsData?.stats?.rejectedRequests ?? 0}
               </h3>
             </div>
-            <div className="w-px h-6 bg-[#2D2D2D]"></div>
+            <div className="w-px h-6 bg-border"></div>
             <div>
-              <p className="text-[10px] text-[#BFF367] uppercase font-bold mb-0.5">
+              <p className="text-[10px] text-primary uppercase font-bold mb-0.5">
                 Rate
               </p>
               <h3 className="text-base font-bold text-white" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
@@ -537,8 +538,8 @@ const OverviewTab = ({ role, profile }) => {
               </h3>
             </div>
           </div>
-          <div className="mt-2 flex items-center border-t border-[#2D2D2D] pt-2">
-            <span className="text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider">
+          <div className="mt-2 flex items-center border-t border-border pt-2">
+            <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">
               30 Days
             </span>
           </div>
@@ -550,16 +551,16 @@ const OverviewTab = ({ role, profile }) => {
         <div className="lg:col-span-2 space-y-6">
           {/* Active Assigned Booking Card */}
           {activeBooking ? (
-            <div className="p-6 rounded-2xl bg-gradient-to-br from-[#1A1A1A] to-[#121212] border border-[#BFF367]/40 shadow-lg shadow-[#BFF367]/5 space-y-6">
-              <div className="flex justify-between items-center border-b border-[#2D2D2D] pb-4">
+            <div className="p-6 rounded-2xl bg-gradient-to-br from-card to-card border border-primary/40 shadow-lg shadow-[var(--primary)]/5 space-y-6">
+              <div className="flex justify-between items-center border-b border-border pb-4">
                 <div className="flex items-center gap-3">
-                  <span className="animate-ping w-2.5 h-2.5 rounded-full bg-[#BFF367]" />
+                  <span className="animate-ping w-2.5 h-2.5 rounded-full bg-primary" />
                   <h2 className="text-lg font-bold tracking-tight uppercase" style={{ fontFamily: "'Open Sans', sans-serif" }}>
                     Active Match Assignment
                   </h2>
                 </div>
                 <span
-                  className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${activeBooking.status === "IN_PROGRESS" ? "bg-green-500/10 text-green-400 border border-green-500/20" : "bg-[#BFF367]/10 text-[#BFF367] border border-[#BFF367]/20"}`}
+                  className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${activeBooking.status === "IN_PROGRESS" ? "bg-green-500/10 text-green-400 border border-green-500/20" : "bg-primary/10 text-primary border border-primary/20"}`}
                 >
                   {activeBooking.status === "IN_PROGRESS"
                     ? "In Progress"
@@ -569,7 +570,7 @@ const OverviewTab = ({ role, profile }) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <span className="text-xs text-[#878C9F] uppercase tracking-wider">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider">
                     Client details
                   </span>
                   <div className="flex items-center gap-2 mt-1">
@@ -588,30 +589,30 @@ const OverviewTab = ({ role, profile }) => {
                       <h4 className="text-sm font-semibold">
                         {activeBooking.user?.name || "Client"}
                       </h4>
-                      <p className="text-xs text-[#878C9F]">
+                      <p className="text-xs text-muted-foreground">
                         {activeBooking.user?.phone ||
                           activeBooking.user?.email ||
                           ""}
                       </p>
                     </div>
-                    <button
+                    <Button
                       onClick={() =>
                         navigate(`/messages?userId=${activeBooking.user?.id}`)
                       }
-                      className="flex items-center justify-center p-2 rounded-lg bg-[#BFF367]/10 text-[#BFF367] hover:bg-[#BFF367]/20 transition-colors"
+                      className="flex items-center justify-center p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                       title="Chat with Customer"
                     >
                       <MessageCircle size={18} />
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <span className="text-xs text-[#878C9F] uppercase tracking-wider">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider">
                     Location / Ground
                   </span>
                   <div className="flex items-center gap-2 mt-1">
-                    <MapPin size={16} className="text-[#BFF367]" />
+                    <MapPin size={16} className="text-primary" />
                     <span className="text-sm font-medium">
                       {activeBooking.ground?.name ||
                         activeBooking.customLocation?.address ||
@@ -623,20 +624,20 @@ const OverviewTab = ({ role, profile }) => {
 
               {/* OTP Validation Form - show if not started */}
               {activeBooking.status === "ASSIGNED" ? (
-                <div className="p-5 rounded-xl bg-[#222222] border border-[#2D2D2D] space-y-4">
+                <div className="p-5 rounded-xl bg-card border border-border space-y-4">
                   <div className="flex items-center gap-2 text-yellow-400">
                     <Clock size={16} />
                     <span className="text-xs font-semibold uppercase tracking-wider">
                       Arrival OTP Verification
                     </span>
                   </div>
-                  <p className="text-xs text-[#878C9F]">
+                  <p className="text-xs text-muted-foreground">
                     Ask the organizer for the 6-digit OTP code to verify your
                     arrival and activate the booking session.
                   </p>
 
                   <div className="flex gap-2">
-                    <input
+                    <Input
                       type="text"
                       maxLength={6}
                       placeholder="Enter 6-Digit OTP"
@@ -644,15 +645,15 @@ const OverviewTab = ({ role, profile }) => {
                       onChange={(e) =>
                         setOtp(e.target.value.replace(/\D/g, ""))
                       }
-                      className="flex-1 bg-black border border-[#2D2D2D] rounded-xl px-4 py-2.5 text-center font-mono tracking-widest text-lg focus:outline-none focus:border-[#BFF367] transition-colors"
+                      className="flex-1 bg-black border border-border rounded-xl px-4 py-2.5 text-center font-mono tracking-widest text-lg focus:outline-none focus:border-primary transition-colors"
                     />
-                    <button
+                    <Button
                       onClick={() => handleVerifyOtp(activeBooking.id)}
                       disabled={isVerifying}
-                      className="bg-[#BFF367] hover:bg-[#44cdd7] text-black font-semibold rounded-xl px-6 py-2.5 transition-colors text-sm"
+                      className="bg-primary hover:bg-[#44cdd7] text-black font-semibold rounded-xl px-6 py-2.5 transition-colors text-sm"
                     >
                       Verify
-                    </button>
+                    </Button>
                   </div>
 
                   {errorMsg && (
@@ -673,7 +674,7 @@ const OverviewTab = ({ role, profile }) => {
                     <h5 className="text-sm font-semibold text-green-400">
                       Check-in Verified
                     </h5>
-                    <p className="text-xs text-[#878C9F] mt-0.5">
+                    <p className="text-xs text-muted-foreground mt-0.5">
                       Session actively in progress. Complete the service to
                       record matches.
                     </p>
@@ -682,16 +683,16 @@ const OverviewTab = ({ role, profile }) => {
               )}
             </div>
           ) : isOnline ? (
-            <div className="p-6 rounded-2xl bg-[#141414] border border-[#2D2D2D] space-y-4">
+            <div className="p-6 rounded-2xl bg-[#141414] border border-border space-y-4">
               <h3 className="text-lg font-bold text-white uppercase tracking-wide" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bookings Pending</h3>
 
               <div className="space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[#BFF367]">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-primary">
                   Skipped Requests
                 </h4>
                 {!statsData?.stats?.skippedRequests ||
                 statsData.stats.skippedRequests.length === 0 ? (
-                  <p className="text-xs text-[#878C9F]">
+                  <p className="text-xs text-muted-foreground">
                     No skipped booking requests.
                   </p>
                 ) : (
@@ -699,7 +700,7 @@ const OverviewTab = ({ role, profile }) => {
                     {statsData.stats.skippedRequests.map((request, index) => (
                       <div
                         key={request.id || index}
-                        className="rounded-xl border border-[#BFF367]/40 bg-black/20 p-4 transition-all hover:border-[#BFF367]/60 hover:bg-[#BFF367]/[0.03]"
+                        className="rounded-xl border border-primary/40 bg-black/20 p-4 transition-all hover:border-primary/60 hover:bg-primary/[0.03]"
                       >
                         <div className="space-y-2">
                           <h5 className="text-sm font-bold text-white">
@@ -707,10 +708,10 @@ const OverviewTab = ({ role, profile }) => {
                           </h5>
                           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium text-[#B8BCC8]">
                             <span className="inline-flex items-center gap-1.5">
-                              <Clock size={13} className="text-[#878C9F]" />
+                              <Clock size={13} className="text-muted-foreground" />
                               {request.dateTime}
                             </span>
-                            <span className="text-[#2D2D2D]">|</span>
+                            <span className="text-border">|</span>
                             <span className="font-bold text-white">
                               {request.pay}
                             </span>
@@ -719,21 +720,21 @@ const OverviewTab = ({ role, profile }) => {
 
                         <div className="mt-4 flex items-end justify-between gap-3">
                           <div>
-                            <p className="text-[11px] text-[#878C9F]">Status</p>
+                            <p className="text-[11px] text-muted-foreground">Status</p>
                             <p className="text-xs font-black uppercase tracking-wider text-yellow-400">
                               Skipped
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="mb-1 text-[11px] text-[#878C9F]">
+                            <p className="mb-1 text-[11px] text-muted-foreground">
                               Action
                             </p>
-                            <button
+                            <Button
                               disabled
                               className="rounded-full bg-gray-700 px-4 py-2 text-[11px] font-black uppercase tracking-wide text-gray-400 cursor-not-allowed"
                             >
                               Skipped
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       </div>
@@ -743,13 +744,13 @@ const OverviewTab = ({ role, profile }) => {
               </div>
             </div>
           ) : (
-            <div className="p-10 rounded-2xl bg-[#141414] border border-[#2D2D2D] text-center space-y-4">
+            <div className="p-10 rounded-2xl bg-[#141414] border border-border text-center space-y-4">
               <div className="mx-auto w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
                 <MapPin size={24} />
               </div>
               <div>
                 <h3 className="text-lg font-bold uppercase tracking-wide" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bookings Pending</h3>
-                <p className="text-[#878C9F] text-sm mt-1 max-w-md mx-auto">
+                <p className="text-muted-foreground text-sm mt-1 max-w-md mx-auto">
                   You are offline. Go online using the toggle above to start
                   receiving match booking offers.
                 </p>
@@ -758,16 +759,16 @@ const OverviewTab = ({ role, profile }) => {
           )}
 
           {/* Bookings vs Income Graph */}
-          <div className="p-6 rounded-2xl bg-[#141414] border border-[#2D2D2D] space-y-4">
+          <div className="p-6 rounded-2xl bg-[#141414] border border-border space-y-4">
             <div className="flex justify-between items-center relative z-20">
               <h3 className="text-lg font-bold text-white uppercase tracking-wide" style={{ fontFamily: "'Open Sans', sans-serif" }}>
                 Bookings vs Income
               </h3>
               <div className="relative inline-flex items-center">
-                <select
+                <Select
                   value={graphTimeline}
                   onChange={(e) => setGraphTimeline(e.target.value)}
-                  className="appearance-none bg-transparent text-[11px] text-[#878C9F] font-semibold uppercase tracking-wider pr-4 outline-none cursor-pointer hover:text-white transition-colors z-10"
+                  className="appearance-none bg-transparent text-[11px] text-muted-foreground font-semibold uppercase tracking-wider pr-4 outline-none cursor-pointer hover:text-white transition-colors z-10"
                 >
                   <option className="bg-[#141414] text-white" value="Today">
                     Today
@@ -784,10 +785,10 @@ const OverviewTab = ({ role, profile }) => {
                   <option className="bg-[#141414] text-white" value="All Time">
                     All Time
                   </option>
-                </select>
+                </Select>
                 <ChevronDown
                   size={12}
-                  className="text-[#878C9F] absolute right-0 pointer-events-none"
+                  className="text-muted-foreground absolute right-0 pointer-events-none"
                 />
               </div>
             </div>
@@ -809,8 +810,8 @@ const OverviewTab = ({ role, profile }) => {
                       x2="0"
                       y2="1"
                     >
-                      <stop offset="5%" stopColor="#BFF367" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#BFF367" stopOpacity={0} />
+                      <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient
                       id="colorBookings"
@@ -819,8 +820,8 @@ const OverviewTab = ({ role, profile }) => {
                       x2="0"
                       y2="1"
                     >
-                      <stop offset="5%" stopColor="#BFF367" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#BFF367" stopOpacity={0} />
+                      <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid
@@ -867,7 +868,7 @@ const OverviewTab = ({ role, profile }) => {
                     type="monotone"
                     dataKey="bookings"
                     name="Bookings"
-                    stroke="#BFF367"
+                    stroke="var(--primary)"
                     fillOpacity={1}
                     fill="url(#colorBookings)"
                     strokeWidth={2}
@@ -877,7 +878,7 @@ const OverviewTab = ({ role, profile }) => {
                     type="monotone"
                     dataKey="income"
                     name="Income (₹)"
-                    stroke="#BFF367"
+                    stroke="var(--primary)"
                     fillOpacity={1}
                     fill="url(#colorIncome)"
                     strokeWidth={2}
@@ -890,7 +891,7 @@ const OverviewTab = ({ role, profile }) => {
 
         {/* Info / Instructions Panel */}
         <div className="hidden space-y-6 lg:block">
-          <div className="p-6 rounded-2xl bg-[#141414] border border-[#2D2D2D] flex flex-col items-center">
+          <div className="p-6 rounded-2xl bg-[#141414] border border-border flex flex-col items-center">
             <h3 className="text-lg font-bold text-white w-full text-left mb-6">
               Kridaz Points
             </h3>
@@ -906,7 +907,7 @@ const OverviewTab = ({ role, profile }) => {
                   cy="50"
                   r="46"
                   fill="transparent"
-                  stroke="#BFF367"
+                  stroke="var(--primary)"
                   strokeWidth="8"
                   strokeDasharray="289"
                   strokeDashoffset={
@@ -922,7 +923,7 @@ const OverviewTab = ({ role, profile }) => {
                 />
               </svg>
               <div className="text-center z-10 flex items-center justify-center h-full">
-                <span className="text-4xl font-bold text-[#BFF367]">
+                <span className="text-4xl font-bold text-primary">
                   {statsData?.stats?.trustScore || 100}
                 </span>
               </div>
@@ -931,7 +932,7 @@ const OverviewTab = ({ role, profile }) => {
             {/* Guidelines */}
             <div className="space-y-3 w-full">
               <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-[#BFF367]/10 text-[#BFF367] flex shrink-0 items-center justify-center text-[10px] font-bold mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex shrink-0 items-center justify-center text-[10px] font-bold mt-0.5">
                   1
                 </div>
                 <p className="text-xs text-gray-300">
@@ -939,7 +940,7 @@ const OverviewTab = ({ role, profile }) => {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-[#BFF367]/10 text-[#BFF367] flex shrink-0 items-center justify-center text-[10px] font-bold mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex shrink-0 items-center justify-center text-[10px] font-bold mt-0.5">
                   2
                 </div>
                 <p className="text-xs text-gray-300">
@@ -948,7 +949,7 @@ const OverviewTab = ({ role, profile }) => {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-[#BFF367]/10 text-[#BFF367] flex shrink-0 items-center justify-center text-[10px] font-bold mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex shrink-0 items-center justify-center text-[10px] font-bold mt-0.5">
                   3
                 </div>
                 <p className="text-xs text-gray-300">
@@ -964,8 +965,8 @@ const OverviewTab = ({ role, profile }) => {
       {visibleOffer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/85 p-4 backdrop-blur-md">
           <div className="w-full max-w-xl animate-in zoom-in-95 duration-200">
-            <div className="relative overflow-hidden rounded-[22px] border border-[#BFF367]/80 bg-[#061413]/95 p-4 shadow-[0_0_36px_rgba(85,222,232,0.28),0_0_30px_rgba(191,243,103,0.14)]">
-              <div className="absolute inset-y-0 right-0 w-1/2 bg-[#BFF367]/[0.06] blur-3xl" />
+            <div className="relative overflow-hidden rounded-[22px] border border-primary/80 bg-[#061413]/95 p-4 shadow-[0_0_36px_rgba(85,222,232,0.28),0_0_30px_rgba(191,243,103,0.14)]">
+              <div className="absolute inset-y-0 right-0 w-1/2 bg-primary/[0.06] blur-3xl" />
               <div className="relative grid grid-cols-1 items-center gap-5 md:grid-cols-[180px_1fr]">
                 <div className="mx-auto space-y-3">
                   <div className="relative flex h-32 w-32 items-center justify-center rounded-full bg-black/30">
@@ -986,7 +987,7 @@ const OverviewTab = ({ role, profile }) => {
                         cy="50"
                         r="42"
                         fill="none"
-                        stroke="#BFF367"
+                        stroke="var(--primary)"
                         strokeWidth="7"
                         strokeLinecap="round"
                         strokeDasharray={offerStrokeLength}
@@ -998,7 +999,7 @@ const OverviewTab = ({ role, profile }) => {
                       <p className="text-[11px] font-medium text-white/80">
                         {visibleOfferCountdown}/{offerDuration}
                       </p>
-                      <p className="text-4xl font-black leading-none text-[#BFF367]">
+                      <p className="text-4xl font-black leading-none text-primary">
                         {visibleOfferCountdown}s
                       </p>
                       <p className="mt-1 text-xs text-white/75">Remaining</p>
@@ -1020,7 +1021,7 @@ const OverviewTab = ({ role, profile }) => {
                     </p>
                     <p className="text-lg text-white/80">
                       Pay:{" "}
-                      <span className="font-black text-[#BFF367]">
+                      <span className="font-black text-primary">
                         ₹{visibleOffer.budget}
                       </span>
                     </p>
@@ -1029,7 +1030,7 @@ const OverviewTab = ({ role, profile }) => {
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 p-3">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#BFF367] text-base font-black uppercase text-black shadow-[0_0_18px_rgba(85,222,232,0.32)]">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-base font-black uppercase text-black shadow-[0_0_18px_rgba(85,222,232,0.32)]">
                       {(
                         visibleOffer.userName ||
                         visibleOffer.user?.name ||
@@ -1054,7 +1055,7 @@ const OverviewTab = ({ role, profile }) => {
                   </div>
 
                   <div>
-                    <div className="mb-2 flex items-center gap-2 text-[#BFF367]">
+                    <div className="mb-2 flex items-center gap-2 text-primary">
                       <Bell size={16} className="animate-bounce" />
                       <p className="text-sm font-medium uppercase tracking-[0.16em] text-white/70">
                         Active Booking Request
@@ -1070,16 +1071,16 @@ const OverviewTab = ({ role, profile }) => {
                   </div>
 
                   <div className="flex flex-wrap gap-3 pt-1">
-                    <button
+                    <Button
                       onClick={() =>
                         activeOffer && handleAcceptOffer(activeOffer.offerId)
                       }
-                      className="inline-flex items-center gap-2 rounded-xl bg-[#BFF367] px-5 py-3 text-sm font-black uppercase tracking-wide text-black shadow-[0_0_18px_rgba(191,243,103,0.55)] transition-all hover:bg-[#CCFF00]"
+                      className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-black uppercase tracking-wide text-black shadow-[0_0_18px_rgba(191,243,103,0.55)] transition-all hover:bg-primary"
                     >
                       <CheckCircle size={17} fill="currentColor" />
                       Accept Booking
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() =>
                         activeOffer && handleRejectOffer(activeOffer.offerId)
                       }
@@ -1087,7 +1088,7 @@ const OverviewTab = ({ role, profile }) => {
                     >
                       <X size={17} />
                       Decline
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>

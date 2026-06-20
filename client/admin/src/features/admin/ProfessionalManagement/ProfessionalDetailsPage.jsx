@@ -18,7 +18,8 @@ import {
 import useProfessionals from "@hooks/admin/useProfessionals";
 import ConfirmationModal from "@components/shared/ConfirmationModal";
 
-import axiosInstance from "@hooks/useAxiosInstance";
+import axiosInstance from "@hooks/useAxiosInstance";import { Button } from "@kridaz/ui";
+
 
 const ProfessionalDetailsPage = () => {
   const { id } = useParams();
@@ -52,8 +53,8 @@ const ProfessionalDetailsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#000000] flex flex-col items-center justify-center space-y-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#CCFF00]"></div>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         <p className="text-gray-400 font-medium tracking-wide">
           Loading detailed profile...
         </p>
@@ -63,7 +64,7 @@ const ProfessionalDetailsPage = () => {
 
   if (!details) {
     return (
-      <div className="min-h-screen bg-[#000000] flex flex-col items-center justify-center p-6 text-center space-y-4">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center space-y-4">
         <div className="text-red-500 mb-4">
           <Shield size={48} />
         </div>
@@ -74,12 +75,12 @@ const ProfessionalDetailsPage = () => {
           The requested professional could not be found or you don&apos;t have
           access.
         </p>
-        <button
+        <Button
           onClick={() => navigate(-1)}
-          className="mt-6 px-6 py-2 bg-[#CCFF00] text-black font-bold uppercase rounded-[6px] hover:bg-[#65a30d] transition-colors"
+          className="mt-6 px-6 py-2 bg-primary text-black font-bold uppercase rounded-[6px] hover:bg-[#65a30d] transition-colors"
         >
           Go Back
-        </button>
+        </Button>
       </div>
     );
   }
@@ -95,26 +96,26 @@ const ProfessionalDetailsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white p-6 lg:p-10 relative overflow-hidden">
+    <div className="min-h-screen bg-background text-white p-6 lg:p-10 relative overflow-hidden">
       {/* Background Glow Effect */}
-      <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[80%] h-64 bg-[#CCFF00]/5 blur-[150px] pointer-events-none"></div>
+      <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[80%] h-64 bg-primary/5 blur-[150px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Navigation / Header */}
-        <button
+        <Button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8 uppercase text-sm font-bold tracking-wider"
         >
           <ArrowLeft size={16} /> Back to Professionals
-        </button>
+        </Button>
 
-        <div className="bg-[#000000] border border-[#2D2D2D] rounded-[8px] shadow-2xl flex flex-col overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#CCFF00]/5 blur-[80px] pointer-events-none" />
+        <div className="bg-background border border-border rounded-[8px] shadow-2xl flex flex-col overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] pointer-events-none" />
 
           {/* Profile Header */}
-          <div className="p-8 pb-0 flex flex-col sm:flex-row gap-8 items-start sm:items-end justify-between border-b border-[#2D2D2D]">
+          <div className="p-8 pb-0 flex flex-col sm:flex-row gap-8 items-start sm:items-end justify-between border-b border-border">
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 pb-8 text-center sm:text-left">
-              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-[8px] bg-[#CCFF00]/10 flex items-center justify-center text-[#CCFF00] font-black text-4xl sm:text-5xl uppercase border-2 border-[#CCFF00]/20 shadow-[0_0_40px_rgba(204,255,0,0.15)] overflow-hidden shrink-0">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-[8px] bg-primary/10 flex items-center justify-center text-primary font-black text-4xl sm:text-5xl uppercase border-2 border-primary/20 shadow-[0_0_40px_rgba(204,255,0,0.15)] overflow-hidden shrink-0">
                 {profile?.profilePicture ? (
                   <img
                     src={profile.profilePicture}
@@ -130,13 +131,13 @@ const ProfessionalDetailsPage = () => {
                   <h1 className="text-3xl sm:text-4xl font-bold text-white uppercase tracking-wide">
                     {profile?.name}
                   </h1>
-                  <span className="px-3 py-1 bg-[#CCFF00]/20 text-[#CCFF00] rounded-full text-xs sm:text-sm font-bold tracking-wider border border-[#CCFF00]/20 uppercase">
+                  <span className="px-3 py-1 bg-primary/20 text-primary rounded-full text-xs sm:text-sm font-bold tracking-wider border border-primary/20 uppercase">
                     ACTIVE {profile?.role}
                   </span>
                 </div>
                 <div className="flex flex-wrap justify-center sm:justify-start gap-4 text-sm text-gray-400">
                   <div className="flex items-center gap-1.5">
-                    <Star size={16} className="text-[#CCFF00]" />
+                    <Star size={16} className="text-primary" />
                     <span>
                       {profile?.rating || "N/A"} ({profile?.numReviews || 0}{" "}
                       reviews)
@@ -159,12 +160,12 @@ const ProfessionalDetailsPage = () => {
 
               {/* Action Buttons */}
               <div className="flex gap-3 mb-8 sm:mb-0">
-                <button
+                <Button
                   onClick={() => setShowDeleteModal(true)}
                   className="px-6 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 font-black text-xs uppercase tracking-[0.15em] rounded-[8px] hover:bg-red-500/20 transition-all flex items-center gap-2"
                 >
                   <Trash2 size={16} /> Delete Record
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -183,7 +184,7 @@ const ProfessionalDetailsPage = () => {
                 <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">
                   Match Rate
                 </p>
-                <p className="text-2xl font-bold text-[#CCFF00]">
+                <p className="text-2xl font-bold text-primary">
                   ₹{profile?.price || 0}
                 </p>
               </div>
@@ -191,18 +192,18 @@ const ProfessionalDetailsPage = () => {
           </div>
 
           {/* Tabs */}
-          <div className="flex overflow-x-auto border-b border-[#2D2D2D] bg-[#0d0d0d]/50 custom-scrollbar">
+          <div className="flex overflow-x-auto border-b border-border bg-background/50 custom-scrollbar">
             {["overview", "finances", "matches"].map((tab) => (
-              <button
+              <Button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-8 py-5 text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300 relative whitespace-nowrap ${activeTab === tab ? "text-[#CCFF00]" : "text-white/40 hover:text-white"}`}
+                className={`px-8 py-5 text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300 relative whitespace-nowrap ${activeTab === tab ? "text-primary" : "text-white/40 hover:text-white"}`}
               >
                 {tab}
                 {activeTab === tab && (
-                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#CCFF00] shadow-[0_0_15px_rgba(204,255,0,0.5)]"></div>
+                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary shadow-[0_0_15px_rgba(204,255,0,0.5)]"></div>
                 )}
-              </button>
+              </Button>
             ))}
           </div>
 
@@ -214,7 +215,7 @@ const ProfessionalDetailsPage = () => {
                 {/* Contact Info */}
                 <div className="space-y-6">
                   <h3 className="text-xl font-bold text-white uppercase tracking-wider flex items-center gap-3">
-                    <Mail className="text-[#CCFF00]" size={24} /> Contact
+                    <Mail className="text-primary" size={24} /> Contact
                     Details
                   </h3>
                   <div className="bg-white/5 border border-white/10 rounded-[8px] p-6 space-y-5">
@@ -250,7 +251,7 @@ const ProfessionalDetailsPage = () => {
                 {/* Professional Background */}
                 <div className="space-y-6">
                   <h3 className="text-xl font-bold text-white uppercase tracking-wider flex items-center gap-3">
-                    <Briefcase className="text-[#CCFF00]" size={24} />{" "}
+                    <Briefcase className="text-primary" size={24} />{" "}
                     Professional Background
                   </h3>
                   <div className="bg-white/5 border border-white/10 rounded-[8px] p-6 space-y-5">
@@ -270,7 +271,7 @@ const ProfessionalDetailsPage = () => {
                     </div>
                     <div className="flex justify-between items-center border-b border-white/5 pb-4">
                       <span className="text-gray-500 text-sm">Match Rate</span>
-                      <span className="text-[#CCFF00] font-bold text-lg">
+                      <span className="text-primary font-bold text-lg">
                         ₹{profile?.price || 0}
                       </span>
                     </div>
@@ -297,7 +298,7 @@ const ProfessionalDetailsPage = () => {
                 {/* Certifications */}
                 <div className="space-y-6 lg:col-span-2 mt-4">
                   <h3 className="text-xl font-bold text-white uppercase tracking-wider flex items-center gap-3">
-                    <Award className="text-[#CCFF00]" size={24} />{" "}
+                    <Award className="text-primary" size={24} />{" "}
                     Certifications
                   </h3>
                   {profile?.certifications?.length > 0 ? (
@@ -305,9 +306,9 @@ const ProfessionalDetailsPage = () => {
                       {profile.certifications.map((cert, idx) => (
                         <div
                           key={idx}
-                          className="bg-[#1a1a1a] border border-[#CCFF00]/30 text-gray-200 px-5 py-3 rounded-[6px] text-sm flex items-center gap-3 shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+                          className="bg-card border border-primary/30 text-gray-200 px-5 py-3 rounded-[6px] text-sm flex items-center gap-3 shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
                         >
-                          <Shield size={18} className="text-[#CCFF00]" />
+                          <Shield size={18} className="text-primary" />
                           <span className="font-medium tracking-wide">
                             {cert}
                           </span>
@@ -329,18 +330,18 @@ const ProfessionalDetailsPage = () => {
               <div className="space-y-10">
                 {/* Financial Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="bg-gradient-to-br from-[#CCFF00]/20 to-transparent border border-[#CCFF00]/40 rounded-[8px] p-6 relative overflow-hidden shadow-[0_0_30px_rgba(132,204,22,0.1)]">
-                    <div className="absolute -right-4 -bottom-4 opacity-20 text-[#CCFF00]">
+                  <div className="bg-gradient-to-br from-primary/20 to-transparent border border-primary/40 rounded-[8px] p-6 relative overflow-hidden shadow-[0_0_30px_rgba(132,204,22,0.1)]">
+                    <div className="absolute -right-4 -bottom-4 opacity-20 text-primary">
                       <IndianRupee size={100} />
                     </div>
                     <p className="text-white/80 text-xs uppercase tracking-widest font-bold mb-3 relative z-10">
                       Usable Balance
                     </p>
-                    <p className="text-4xl font-bold text-[#CCFF00] relative z-10">
+                    <p className="text-4xl font-bold text-primary relative z-10">
                       ₹{profile?.walletBalance?.toFixed(2) || "0.00"}
                     </p>
                   </div>
-                  <div className="bg-[#1a1a1a] border border-white/10 rounded-[8px] p-6">
+                  <div className="bg-card border border-white/10 rounded-[8px] p-6">
                     <p className="text-gray-400 text-xs uppercase tracking-widest font-bold mb-3">
                       In Progress
                     </p>
@@ -348,7 +349,7 @@ const ProfessionalDetailsPage = () => {
                       ₹{profile?.inProgressBalance?.toFixed(2) || "0.00"}
                     </p>
                   </div>
-                  <div className="bg-[#1a1a1a] border border-white/10 rounded-[8px] p-6">
+                  <div className="bg-card border border-white/10 rounded-[8px] p-6">
                     <p className="text-gray-400 text-xs uppercase tracking-widest font-bold mb-3">
                       Pending
                     </p>
@@ -356,7 +357,7 @@ const ProfessionalDetailsPage = () => {
                       ₹{profile?.pendingBalance?.toFixed(2) || "0.00"}
                     </p>
                   </div>
-                  <div className="bg-[#1a1a1a] border border-white/10 rounded-[8px] p-6">
+                  <div className="bg-card border border-white/10 rounded-[8px] p-6">
                     <p className="text-gray-400 text-xs uppercase tracking-widest font-bold mb-3">
                       Total Withdrawn
                     </p>
@@ -369,7 +370,7 @@ const ProfessionalDetailsPage = () => {
                 {/* Banking Details */}
                 <div className="space-y-6">
                   <h3 className="text-xl font-bold text-white uppercase tracking-wider flex items-center gap-3">
-                    <CreditCard className="text-[#CCFF00]" size={24} /> Banking
+                    <CreditCard className="text-primary" size={24} /> Banking
                     & KYC
                   </h3>
                   <div className="bg-white/5 border border-white/10 rounded-[8px] p-8">
@@ -396,7 +397,7 @@ const ProfessionalDetailsPage = () => {
                     </div>
 
                     {profile?.bankingDetails?.payoutMode === "UPI" ? (
-                      <div className="bg-[#111] p-6 rounded-[8px] border border-white/5 flex justify-between items-center">
+                      <div className="bg-card p-6 rounded-[8px] border border-white/5 flex justify-between items-center">
                         <span className="text-gray-400 uppercase tracking-widest text-sm font-bold">
                           UPI ID
                         </span>
@@ -406,7 +407,7 @@ const ProfessionalDetailsPage = () => {
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                        <div className="bg-[#111] p-5 rounded-[8px] border border-white/5">
+                        <div className="bg-card p-5 rounded-[8px] border border-white/5">
                           <p className="text-gray-500 text-xs uppercase tracking-widest font-bold mb-2">
                             Account Name
                           </p>
@@ -414,7 +415,7 @@ const ProfessionalDetailsPage = () => {
                             {profile?.bankingDetails?.accountName || "N/A"}
                           </p>
                         </div>
-                        <div className="bg-[#111] p-5 rounded-[8px] border border-white/5">
+                        <div className="bg-card p-5 rounded-[8px] border border-white/5">
                           <p className="text-gray-500 text-xs uppercase tracking-widest font-bold mb-2">
                             Bank Name
                           </p>
@@ -422,7 +423,7 @@ const ProfessionalDetailsPage = () => {
                             {profile?.bankingDetails?.bankName || "N/A"}
                           </p>
                         </div>
-                        <div className="bg-[#111] p-5 rounded-[8px] border border-white/5">
+                        <div className="bg-card p-5 rounded-[8px] border border-white/5">
                           <p className="text-gray-500 text-xs uppercase tracking-widest font-bold mb-2">
                             Account Number
                           </p>
@@ -430,7 +431,7 @@ const ProfessionalDetailsPage = () => {
                             {profile?.bankingDetails?.accountNumber || "N/A"}
                           </p>
                         </div>
-                        <div className="bg-[#111] p-5 rounded-[8px] border border-white/5">
+                        <div className="bg-card p-5 rounded-[8px] border border-white/5">
                           <p className="text-gray-500 text-xs uppercase tracking-widest font-bold mb-2">
                             IFSC Code
                           </p>
@@ -450,7 +451,7 @@ const ProfessionalDetailsPage = () => {
               <div className="space-y-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-xl font-bold text-white uppercase tracking-wider flex items-center gap-3">
-                    <Activity className="text-[#CCFF00]" size={24} /> Match
+                    <Activity className="text-primary" size={24} /> Match
                     History
                   </h3>
                   <span className="px-4 py-1.5 bg-white/10 rounded-full text-white font-bold text-sm">
@@ -476,7 +477,7 @@ const ProfessionalDetailsPage = () => {
                     {matches?.map((match) => (
                       <div
                         key={match._id}
-                        className="bg-[#1a1a1a] border border-white/10 rounded-[8px] p-6 hover:border-[#CCFF00]/50 hover:bg-white/5 transition-all duration-300 relative group"
+                        className="bg-card border border-white/10 rounded-[8px] p-6 hover:border-primary/50 hover:bg-white/5 transition-all duration-300 relative group"
                       >
                         {/* Status Indicator */}
                         <div
@@ -489,7 +490,7 @@ const ProfessionalDetailsPage = () => {
                           >
                             {match.status}
                           </span>
-                          <span className="text-[#CCFF00] text-sm font-bold uppercase tracking-wider">
+                          <span className="text-primary text-sm font-bold uppercase tracking-wider">
                             {match.gameType}
                           </span>
                         </div>
@@ -526,7 +527,7 @@ const ProfessionalDetailsPage = () => {
                             <p className="text-gray-500 text-xs uppercase tracking-widest mb-1">
                               Fee
                             </p>
-                            <div className="text-[#CCFF00] font-bold text-xl">
+                            <div className="text-primary font-bold text-xl">
                               ₹{match.umpireCost || 0}
                             </div>
                           </div>

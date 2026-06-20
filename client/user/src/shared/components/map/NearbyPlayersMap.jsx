@@ -12,7 +12,8 @@ import L from "leaflet";
 import { Navigation } from "lucide-react";
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";import { Button } from "@kridaz/ui";
+
 
 // Fix default icon issue in Leaflet with Vite
 delete L.Icon.Default.prototype._getIconUrl;
@@ -26,7 +27,7 @@ const mapStyles = `
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: #BFF367;
+    background: var(--primary);
     border: 3px solid white;
     box-shadow: 0 0 0 4px rgba(85,222,232,0.3);
     animation: pulse 2s infinite;
@@ -48,7 +49,7 @@ const mapStyles = `
   .leaflet-container {
     width: 100%;
     height: 100%;
-    background: #0a0a0a !important;
+    background: var(--background) !important;
   }
   .premium-map-popup .leaflet-popup-content-wrapper {
     background: rgba(10, 10, 10, 0.9) !important;
@@ -101,7 +102,7 @@ const MapController = ({ userLocation, radiusKm }) => {
       }
       circleRef.current = L.circle([userLocation.lat, userLocation.lng], {
         radius: radiusKm * 1000,
-        color: "#BFF367",
+        color: "var(--primary)",
         fillOpacity: 0.05,
         strokeOpacity: 0.3,
         weight: 1,
@@ -127,7 +128,7 @@ const createClusterIcon = (count, previews) => {
     .map(
       (p) =>
         `<img src="${getValidAvatar(p.profilePicture)}" 
-          style="width:14px;height:14px;border-radius:50%;object-fit:cover;border:1px solid #BFF367" 
+          style="width:14px;height:14px;border-radius:50%;object-fit:cover;border:1px solid var(--primary)" 
           onerror="this.src='https://pngimg.com/d/cricket_PNG102.png'; this.onerror=null;" />`
     )
     .join("");
@@ -138,7 +139,7 @@ const createClusterIcon = (count, previews) => {
         width: 56px; height: 56px;
         border-radius: 50%;
         background: rgba(0,0,0,0.85);
-        border: 2.5px solid #BFF367;
+        border: 2.5px solid var(--primary);
         display: flex; align-items: center; justify-content: center;
         flex-wrap: wrap; gap: 2px; padding: 4px;
         box-shadow: 0 0 0 3px rgba(85,222,232,0.2);
@@ -146,7 +147,7 @@ const createClusterIcon = (count, previews) => {
         ${avatarsHtml}
         <div style="
           position:absolute; top:-6px; right:-6px;
-          background:#BFF367; color:black;
+          background:var(--primary); color:black;
           border-radius:99px; padding:1px 5px;
           font-size:10px; font-weight:900;
         ">${count}</div>
@@ -180,10 +181,10 @@ const createPlayerIcon = (player) => {
     : false;
   const timeAgoText = getTimeAgo(player.lastSeen) || "";
 
-  const markerBorderColor = isOnline ? "#BFF367" : "rgba(255,255,255,0.4)";
+  const markerBorderColor = isOnline ? "var(--primary)" : "rgba(255,255,255,0.4)";
 
   const onlineDot = isOnline
-    ? `<div style="position:absolute; bottom:12px; right:-2px; width:12px; height:12px; background:#22c55e; border-radius:50%; border:2px solid #0a0a0a; box-shadow: 0 0 5px rgba(34,197,94,0.5); z-index:10;"></div>`
+    ? `<div style="position:absolute; bottom:12px; right:-2px; width:12px; height:12px; background:var(--success); border-radius:50%; border:2px solid var(--background); box-shadow: 0 0 5px rgba(34,197,94,0.5); z-index:10;"></div>`
     : ``;
 
   const inactiveText =
@@ -200,7 +201,7 @@ const createPlayerIcon = (player) => {
         border: 2.5px solid ${markerBorderColor};
         overflow: hidden;
         box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-        background: #0a0a0a;
+        background: var(--background);
         position: relative;
       ">
         <img src="${getValidAvatar(player.profilePicture)}" 
@@ -303,7 +304,7 @@ const MapInner = ({
       {/* Relocate Button */}
       {userLocation && (
         <div className="absolute bottom-[60px] right-4 z-[1000]">
-          <button
+          <Button
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
@@ -311,11 +312,11 @@ const MapInner = ({
                 duration: 1.5,
               });
             }}
-            className="w-10 h-10 bg-black/80 backdrop-blur-xl border border-white/10 rounded-full flex items-center justify-center text-[#BFF367] hover:bg-[#BFF367]/20 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.5)] cursor-pointer"
+            className="w-10 h-10 bg-black/80 backdrop-blur-xl border border-white/10 rounded-full flex items-center justify-center text-primary hover:bg-primary/20 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.5)] cursor-pointer"
             title="Locate me"
           >
             <Navigation size={18} className="-ml-0.5 mt-0.5" />
-          </button>
+          </Button>
         </div>
       )}
 

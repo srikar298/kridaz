@@ -11,7 +11,8 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Navigation } from "lucide-react";
+import { Navigation } from "lucide-react";import { Button } from "@kridaz/ui";
+
 
 // Fix Leaflet default icon issues
 delete L.Icon.Default.prototype._getIconUrl;
@@ -41,14 +42,14 @@ const createMarkerIcon = (item, type) => {
     item.logo ||
     item.image ||
     "https://bms-common-bucket.s3.ap-south-1.amazonaws.com/default-avatar.png";
-  const mainColor = type === "players" ? "#BFF367" : "#3B82F6";
+  const mainColor = type === "players" ? "var(--primary)" : "#3B82F6";
   const shadowColor =
     type === "players" ? "rgba(85,222,232,0.3)" : "rgba(59,130,246,0.3)";
 
   const iconHtml = `
     <div class="relative flex items-center justify-center w-10 h-10">
       <div class="absolute inset-0 rounded-full blur-sm animate-pulse" style="background-color: ${mainColor}33"></div>
-      <div class="relative bg-[#0A0A0A] rounded-full p-0.5 shadow-[0_0_15px_${shadowColor}] overflow-hidden flex items-center justify-center w-9 h-9" style="border: 2px solid ${mainColor}">
+      <div class="relative bg-background rounded-full p-0.5 shadow-[0_0_15px_${shadowColor}] overflow-hidden flex items-center justify-center w-9 h-9" style="border: 2px solid ${mainColor}">
         <img src="${pic}" class="w-full h-full object-cover" style="border-radius: 50%;" alt="" />
       </div>
       <div class="absolute -bottom-1 w-2 h-2 rounded-full border border-black shadow-[0_0_5px_${mainColor}]" style="background-color: ${mainColor}"></div>
@@ -88,9 +89,9 @@ const PlayerMap = ({
       L.divIcon({
         html: `
       <div class="relative flex items-center justify-center w-12 h-12">
-        <div class="absolute inset-0 bg-[#BFF367]/20 rounded-full animate-ping opacity-20"></div>
-        <div class="absolute inset-2 bg-[#BFF367]/40 rounded-full animate-pulse"></div>
-        <div class="relative w-4 h-4 bg-[#BFF367] rounded-full border-2 border-black shadow-[0_0_15px_#BFF367]"></div>
+        <div class="absolute inset-0 bg-primary/20 rounded-full animate-ping opacity-20"></div>
+        <div class="absolute inset-2 bg-primary/40 rounded-full animate-pulse"></div>
+        <div class="relative w-4 h-4 bg-primary rounded-full border-2 border-black shadow-[0_0_15px_var(--primary)]"></div>
       </div>
     `,
         className: "current-user-marker",
@@ -120,11 +121,11 @@ const PlayerMap = ({
   }, [userLocation]);
 
   return (
-    <div className="w-full h-full relative bg-[#0a0a0a]">
+    <div className="w-full h-full relative bg-background">
       <MapContainer
         center={mapCenter}
         zoom={14}
-        style={{ height: "100%", width: "100%", background: "#0a0a0a" }}
+        style={{ height: "100%", width: "100%", background: "var(--background)" }}
         zoomControl={false}
       >
         <TileLayer
@@ -150,9 +151,9 @@ const PlayerMap = ({
               center={mapCenter}
               radius={selectedRadius * 1000}
               pathOptions={{
-                fillColor: "#BFF367",
+                fillColor: "var(--primary)",
                 fillOpacity: 0.05,
-                color: "#BFF367",
+                color: "var(--primary)",
                 weight: 1,
                 dashArray: "5, 10",
               }}
@@ -180,7 +181,7 @@ const PlayerMap = ({
                 <div className="flex flex-col gap-3 p-1 min-w-[160px] bg-black text-white">
                   <div className="flex items-center gap-2.5">
                     <div
-                      className={`w-10 h-10 rounded-full border-2 border-${itemType === "players" ? "[#BFF367]" : "[#3B82F6]"} overflow-hidden bg-black flex-shrink-0 shadow-[0_0_10px_rgba(0,0,0,0.5)]`}
+                      className={`w-10 h-10 rounded-full border-2 border-${itemType === "players" ? "[var(--primary)]" : "[#3B82F6]"} overflow-hidden bg-black flex-shrink-0 shadow-[0_0_10px_rgba(0,0,0,0.5)]`}
                     >
                       <img
                         src={
@@ -211,7 +212,7 @@ const PlayerMap = ({
                       item.sportTypes?.slice(0, 2).map((s) => (
                         <span
                           key={s}
-                          className="text-[8px] bg-[#BFF367]/10 text-[#BFF367] px-2 py-0.5 rounded-md border border-[#BFF367]/20 font-black uppercase tracking-widest"
+                          className="text-[8px] bg-primary/10 text-primary px-2 py-0.5 rounded-md border border-primary/20 font-black uppercase tracking-widest"
                         >
                           {s}
                         </span>
@@ -228,12 +229,12 @@ const PlayerMap = ({
                     )}
                   </div>
 
-                  <button
+                  <Button
                     onClick={() => onItemClick?.(item._id)}
-                    className={`w-full bg-${itemType === "players" ? "[#BFF367]" : "[#3B82F6]"} text-black text-[10px] font-black py-2 rounded-lg mt-1 transition-all uppercase tracking-[0.1em] shadow-lg`}
+                    className={`w-full bg-${itemType === "players" ? "[var(--primary)]" : "[#3B82F6]"} text-black text-[10px] font-black py-2 rounded-lg mt-1 transition-all uppercase tracking-[0.1em] shadow-lg`}
                   >
                     {itemType === "players" ? "VIEW IN LIST" : "VIEW TEAM"}
-                  </button>
+                  </Button>
                 </div>
               </Popup>
             </Marker>
@@ -245,13 +246,13 @@ const PlayerMap = ({
 
       {/* Custom Map Controls Overlay */}
       <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2">
-        <button
+        <Button
           onClick={handleRecenter}
-          className="w-10 h-10 bg-black/80 backdrop-blur-md border border-[#BFF367]/30 rounded-[8px] flex items-center justify-center text-[#BFF367] hover:bg-[#BFF367] hover:text-black transition-all shadow-2xl"
+          className="w-10 h-10 bg-black/80 backdrop-blur-md border border-primary/30 rounded-[8px] flex items-center justify-center text-primary hover:bg-primary hover:text-black transition-all shadow-2xl"
           title="Recenter Map"
         >
           <Navigation size={18} />
-        </button>
+        </Button>
       </div>
     </div>
   );

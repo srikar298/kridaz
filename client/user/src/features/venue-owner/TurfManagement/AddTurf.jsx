@@ -9,7 +9,8 @@ import {
 } from "@utils/locationService";
 import { Search, Plus } from "lucide-react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 
 const AddTurf = () => {
   const navigate = useNavigate();
@@ -233,7 +234,7 @@ const AddTurf = () => {
 
   return (
     <div
-      className="h-full custom-scrollbar bg-[#000000] text-white"
+      className="h-full custom-scrollbar bg-background text-white"
       onClick={() => setShowLocationSuggestions(false)}
     >
       <div className="px-1 lg:px-3 lg:pt-2 lg:pb-3 space-y-4 md:space-y-8 animate-fade-in pt-0 pb-4 h-full relative">
@@ -242,7 +243,7 @@ const AddTurf = () => {
             <div className="flex items-center gap-3">
               <h2 className="text-[20px] sm:text-[24px] lg:text-[32px] mt-2 sm:mt-0 font-black font-['Open_Sans'] tracking-tight text-white uppercase whitespace-nowrap">
                 ADD NEW{" "}
-                <span className="text-[#B3DC26]">
+                <span className="text-primary">
                   {watchedFacilityCategory.toUpperCase()}
                 </span>
               </h2>
@@ -261,7 +262,7 @@ const AddTurf = () => {
               className={`flex-1 flex flex-col items-center gap-2 relative ${currentStep === step ? "opacity-100" : "opacity-50"}`}
             >
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm z-10 ${currentStep === step ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black shadow-[0_0_15px_rgba(204,255,0,0.5)]" : "bg-[#121212]  -white/10 text-white"}`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm z-10 ${currentStep === step ? "bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black shadow-[0_0_15px_rgba(204,255,0,0.5)]" : "bg-card  -white/10 text-white"}`}
               >
                 {step}
               </div>
@@ -274,7 +275,7 @@ const AddTurf = () => {
               </span>
               {step < 3 && (
                 <div
-                  className={`absolute top-5 left-[50%] w-full h-[2px] ${currentStep > step ? "bg-[#B3DC26]" : "bg-[#1B1B1B]"}`}
+                  className={`absolute top-5 left-[50%] w-full h-[2px] ${currentStep > step ? "bg-primary" : "bg-card"}`}
                 />
               )}
             </div>
@@ -318,15 +319,15 @@ const AddTurf = () => {
               toast.error("Please fill all required fields correctly.");
             }
           })}
-          className="grid grid-cols-1 gap-6 md:gap-12 bg-[#000000] px-2 py-4 md:p-8 rounded-[16px] border-none md:border md:border-white/10 md:shadow-[var(--shadow-2)] relative overflow-hidden"
+          className="grid grid-cols-1 gap-6 md:gap-12 bg-background px-2 py-4 md:p-8 rounded-[16px] border-none md:border md:border-white/10 md:shadow-[var(--shadow-2)] relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#B3DC26]/5 blur-[100px] pointer-events-none" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] pointer-events-none" />
 
           {/* Hidden fields for coords to still take GPS data */}
-          <input type="hidden" {...register("latitude")} />
-          <input type="hidden" {...register("longitude")} />
-          <input type="hidden" {...register("state")} />
-          <input type="hidden" {...register("city")} />
+          <Input type="hidden" {...register("latitude")} />
+          <Input type="hidden" {...register("longitude")} />
+          <Input type="hidden" {...register("state")} />
+          <Input type="hidden" {...register("city")} />
 
           {/* STEP 1: General Information */}
           {currentStep === 1 && (
@@ -337,14 +338,14 @@ const AddTurf = () => {
                     {watchedFacilityCategory} Name
                   </span>
                 </label>
-                <input
+                <Input
                   type="text"
                   placeholder={`${watchedFacilityCategory} Name`}
                   {...register("name")}
-                  className={`w-full bg-[#121212] border ${errors.name ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all`}
+                  className={`w-full bg-card border ${errors.name ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all`}
                 />
                 {errors.name && (
-                  <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
+                  <span className="text-primary text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
                     {errors.name.message}
                   </span>
                 )}
@@ -356,8 +357,8 @@ const AddTurf = () => {
                     Sport Arsenal
                   </span>
                 </label>
-                <select
-                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none"
+                <Select
+                  className="w-full bg-card border border-white/10 text-white focus:border-primary/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none"
                   onChange={(e) => addSportType(e.target.value)}
                   value=""
                 >
@@ -369,21 +370,21 @@ const AddTurf = () => {
                       {o}
                     </option>
                   ))}
-                </select>
+                </Select>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {sportTypes.map((type, index) => (
                     <span
                       key={index}
-                      className="px-2 md:px-3 py-1 md:py-1.5 bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold rounded-[16px] md:rounded-[16px] text-[8px] md:text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                      className="px-2 md:px-3 py-1 md:py-1.5 bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold rounded-[16px] md:rounded-[16px] text-[8px] md:text-[10px] flex items-center gap-2 uppercase tracking-widest"
                     >
                       {type}{" "}
-                      <button
+                      <Button
                         type="button"
                         onClick={() => removeSportType(type)}
                         className="hover:text-white transition-colors"
                       >
                         <Plus size={12} className="rotate-45" />
-                      </button>
+                      </Button>
                     </span>
                   ))}
                 </div>
@@ -395,18 +396,18 @@ const AddTurf = () => {
                     Facility Category
                   </span>
                 </label>
-                <select
+                <Select
                   {...register("facilityCategory", {
                     required: "Please select a category",
                   })}
-                  className={`w-full bg-[#121212] border ${errors.facilityCategory ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none`}
+                  className={`w-full bg-card border ${errors.facilityCategory ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none`}
                 >
                   <option value="">Select Category</option>
                   <option value="Turf">Venue</option>
                   <option value="Ground">Ground</option>
                   <option value="Court">Court</option>
                   <option value="Stadium">Stadium</option>
-                </select>
+                </Select>
               </div>
 
               <div className="form-control col-span-1">
@@ -415,8 +416,8 @@ const AddTurf = () => {
                     Ground Composition
                   </span>
                 </label>
-                <select
-                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none"
+                <Select
+                  className="w-full bg-card border border-white/10 text-white focus:border-primary/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none"
                   onChange={(e) => addGroundType(e.target.value)}
                   value=""
                 >
@@ -432,21 +433,21 @@ const AddTurf = () => {
                       {o}
                     </option>
                   ))}
-                </select>
+                </Select>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {groundTypes.map((type, index) => (
                     <span
                       key={index}
-                      className="px-2 md:px-3 py-1 md:py-1.5 bg-[#1B1B1B] border border-white/10 text-white font-bold rounded-[16px] md:rounded-[16px] text-[8px] md:text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                      className="px-2 md:px-3 py-1 md:py-1.5 bg-card border border-white/10 text-white font-bold rounded-[16px] md:rounded-[16px] text-[8px] md:text-[10px] flex items-center gap-2 uppercase tracking-widest"
                     >
                       {type}{" "}
-                      <button
+                      <Button
                         type="button"
                         onClick={() => removeGroundType(type)}
-                        className="hover:text-[#B3DC26] transition-colors"
+                        className="hover:text-primary transition-colors"
                       >
                         <Plus size={12} className="rotate-45" />
-                      </button>
+                      </Button>
                     </span>
                   ))}
                 </div>
@@ -458,10 +459,10 @@ const AddTurf = () => {
                     Facility Description
                   </span>
                 </label>
-                <textarea
+                <Textarea
                   {...register("description")}
-                  className={`w-full bg-[#121212] border ${errors.description ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-24 md:h-32 rounded-[16px] md:rounded-[16px] p-3 md:p-4 transition-all`}
-                ></textarea>
+                  className={`w-full bg-card border ${errors.description ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-[10px] md:text-sm h-24 md:h-32 rounded-[16px] md:rounded-[16px] p-3 md:p-4 transition-all`}
+                ></Textarea>
               </div>
 
               <div className="form-control md:col-span-1">
@@ -470,15 +471,15 @@ const AddTurf = () => {
                     Facility Images (Up to 10)
                   </span>
                 </label>
-                <input
+                <Input
                   type="file"
                   multiple
                   accept="image/*"
-                  className="w-full bg-[#121212] border border-white/10 text-white/70 text-[6px] md:text-sm file:bg-[#1B1B1B] file:text-white file:border-none file:px-2 md:file:px-6 file:h-7 md:file:h-12 file:mr-1 md:file:mr-4 file:font-bold file:uppercase file:text-[6px] md:file:text-[10px] file:tracking-widest rounded-[16px] md:rounded-[16px] h-7 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer"
+                  className="w-full bg-card border border-white/10 text-white/70 text-[6px] md:text-sm file:bg-card file:text-white file:border-none file:px-2 md:file:px-6 file:h-7 md:file:h-12 file:mr-1 md:file:mr-4 file:font-bold file:uppercase file:text-[6px] md:file:text-[10px] file:tracking-widest rounded-[16px] md:rounded-[16px] h-7 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer"
                   onChange={(e) => setValue("images", e.target.files)}
                 />
                 {errors.images && (
-                  <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
+                  <span className="text-primary text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
                     {errors.images.message}
                   </span>
                 )}
@@ -503,8 +504,8 @@ const AddTurf = () => {
                     Facilities
                   </span>
                 </label>
-                <select
-                  className="w-full bg-[#121212] border border-white/10 text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none"
+                <Select
+                  className="w-full bg-card border border-white/10 text-white focus:border-primary/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none"
                   onChange={(e) => addFacility(e.target.value)}
                   value=""
                 >
@@ -516,21 +517,21 @@ const AddTurf = () => {
                       {o}
                     </option>
                   ))}
-                </select>
+                </Select>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {facilities.map((type, index) => (
                     <span
                       key={index}
-                      className="px-2 md:px-3 py-1 md:py-1.5 bg-[#1B1B1B] border border-white/10 text-[#B3DC26] font-bold rounded-[16px] md:rounded-[16px] text-[8px] md:text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                      className="px-2 md:px-3 py-1 md:py-1.5 bg-card border border-white/10 text-primary font-bold rounded-[16px] md:rounded-[16px] text-[8px] md:text-[10px] flex items-center gap-2 uppercase tracking-widest"
                     >
                       {type}{" "}
-                      <button
+                      <Button
                         type="button"
                         onClick={() => removeFacility(type)}
                         className="hover:text-white transition-colors"
                       >
                         <Plus size={12} className="rotate-45" />
-                      </button>
+                      </Button>
                     </span>
                   ))}
                 </div>
@@ -547,10 +548,10 @@ const AddTurf = () => {
                     className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70"
                     size={16}
                   />
-                  <input
+                  <Input
                     type="text"
                     placeholder="Type to search location..."
-                    className={`w-full bg-[#121212] border ${errors.location ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] pl-[30px] md:pl-12 pr-4 transition-all`}
+                    className={`w-full bg-card border ${errors.location ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] pl-[30px] md:pl-12 pr-4 transition-all`}
                     value={locationSearchQuery}
                     onChange={(e) => {
                       const val = e.target.value;
@@ -575,11 +576,11 @@ const AddTurf = () => {
                   {/* Autocomplete dropdown */}
                   {showLocationSuggestions &&
                     locationSuggestions.length > 0 && (
-                      <div className="absolute z-50 top-[52px] left-0 right-0 bg-[#121212] border border-white/10 rounded-[16px] shadow-2xl overflow-hidden max-h-[300px] overflow-y-auto custom-scrollbar">
+                      <div className="absolute z-50 top-[52px] left-0 right-0 bg-card border border-white/10 rounded-[16px] shadow-2xl overflow-hidden max-h-[300px] overflow-y-auto custom-scrollbar">
                         {locationSuggestions.map((loc, i) => (
                           <div
                             key={i}
-                            className="p-4 border-b border-white/10 last:border-b-0 hover:bg-[#1B1B1B] cursor-pointer transition-colors"
+                            className="p-4 border-b border-white/10 last:border-b-0 hover:bg-card cursor-pointer transition-colors"
                             onClick={() => handleLocationSelect(loc)}
                           >
                             <p className="text-sm text-white font-medium truncate">
@@ -598,7 +599,7 @@ const AddTurf = () => {
                     )}
                 </div>
                 {errors.location && (
-                  <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
+                  <span className="text-primary text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
                     {errors.location.message}
                   </span>
                 )}
@@ -610,14 +611,14 @@ const AddTurf = () => {
                     YouTube Video URL
                   </span>
                 </label>
-                <input
+                <Input
                   type="text"
                   placeholder="https://www.youtube.com/watch?v=..."
                   {...register("youtubeUrl")}
-                  className={`w-full bg-[#121212] border ${errors.youtubeUrl ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all`}
+                  className={`w-full bg-card border ${errors.youtubeUrl ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all`}
                 />
                 {errors.youtubeUrl && (
-                  <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
+                  <span className="text-primary text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
                     {errors.youtubeUrl.message}
                   </span>
                 )}
@@ -629,14 +630,14 @@ const AddTurf = () => {
                     Google Maps URL
                   </span>
                 </label>
-                <input
+                <Input
                   type="text"
                   placeholder="https://maps.app.goo.gl/..."
                   {...register("mapUrl")}
-                  className={`w-full bg-[#121212] border ${errors.mapUrl ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all`}
+                  className={`w-full bg-card border ${errors.mapUrl ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all`}
                 />
                 {errors.mapUrl && (
-                  <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
+                  <span className="text-primary text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
                     {errors.mapUrl.message}
                   </span>
                 )}
@@ -675,7 +676,7 @@ const AddTurf = () => {
           {currentStep === 2 && (
             <div className="col-span-1 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 relative z-10 animate-fade-in">
               <div className="space-y-4 md:space-y-8">
-                <h3 className="text-[14px] font-bold text-[#B3DC26] border-b border-white/10 pb-3 mb-8 uppercase tracking-[3px]">
+                <h3 className="text-[14px] font-bold text-primary border-b border-white/10 pb-3 mb-8 uppercase tracking-[3px]">
                   Legal Documents
                 </h3>
 
@@ -703,10 +704,10 @@ const AddTurf = () => {
                             {doc.label}
                           </span>
                         </label>
-                        <input
+                        <Input
                           type="file"
                           accept=".pdf,image/*"
-                          className={`w-full bg-[#121212] border ${errors[doc.name] ? "border-red-500" : "border-white/10"} text-white/70 text-[6px] md:text-sm file:bg-[#1B1B1B] file:text-white file:border-none file:px-2 md:file:px-6 file:h-7 md:file:h-12 file:mr-1 md:file:mr-4 file:font-bold file:uppercase file:text-[6px] md:file:text-[10px] file:tracking-widest rounded-[16px] md:rounded-[16px] h-7 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer`}
+                          className={`w-full bg-card border ${errors[doc.name] ? "border-red-500" : "border-white/10"} text-white/70 text-[6px] md:text-sm file:bg-card file:text-white file:border-none file:px-2 md:file:px-6 file:h-7 md:file:h-12 file:mr-1 md:file:mr-4 file:font-bold file:uppercase file:text-[6px] md:file:text-[10px] file:tracking-widest rounded-[16px] md:rounded-[16px] h-7 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer`}
                           onChange={(e) =>
                             setValue(doc.name, e.target.files, {
                               shouldValidate: true,
@@ -714,7 +715,7 @@ const AddTurf = () => {
                           }
                         />
                         {hasFile && (
-                          <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold mt-2 block ml-1 truncate">
+                          <span className="text-primary text-[8px] md:text-[10px] font-bold mt-2 block ml-1 truncate">
                             ✅ Selected: {selectedFiles[0].name}
                           </span>
                         )}
@@ -729,7 +730,7 @@ const AddTurf = () => {
                 </div>
               </div>
               <div className="space-y-4 md:space-y-8">
-                <h3 className="text-[14px] font-bold text-[#B3DC26] border-b border-white/10 pb-3 mb-8 uppercase tracking-[3px]">
+                <h3 className="text-[14px] font-bold text-primary border-b border-white/10 pb-3 mb-8 uppercase tracking-[3px]">
                   Management & Policies
                 </h3>
 
@@ -740,33 +741,33 @@ const AddTurf = () => {
                     </span>
                   </label>
                   <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-4">
-                    <input
+                    <Input
                       type="text"
                       placeholder="Manager Name"
                       value={newManagerName}
                       onChange={(e) => setNewManagerName(e.target.value)}
-                      className="w-full bg-[#121212] border border-white/10 text-white text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 focus:outline-none focus:border-[#B3DC26]/60"
+                      className="w-full bg-card border border-white/10 text-white text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 focus:outline-none focus:border-primary/60"
                     />
-                    <input
+                    <Input
                       type="text"
                       placeholder="Phone"
                       value={newManagerPhone}
                       onChange={(e) => setNewManagerPhone(e.target.value)}
-                      className="w-full bg-[#121212] border border-white/10 text-white text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 focus:outline-none focus:border-[#B3DC26]/60"
+                      className="w-full bg-card border border-white/10 text-white text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 focus:outline-none focus:border-primary/60"
                     />
-                    <button
+                    <Button
                       type="button"
                       onClick={addManagerContact}
-                      className="w-full md:w-auto px-8 h-12 rounded-[16px] bg-[#1B1B1B] text-white hover:bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none  transition-all text-[11px] font-bold uppercase tracking-widest"
+                      className="w-full md:w-auto px-8 h-12 rounded-[16px] bg-card text-white hover:bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none  transition-all text-[11px] font-bold uppercase tracking-widest"
                     >
                       Add
-                    </button>
+                    </Button>
                   </div>
                   <div className="space-y-3 max-h-[150px] overflow-y-auto custom-scrollbar pr-2">
                     {managerContacts.map((manager, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between bg-[#121212] p-4 rounded-[16px] border border-white/10"
+                        className="flex items-center justify-between bg-card p-4 rounded-[16px] border border-white/10"
                       >
                         <div className="flex flex-col">
                           <span className="text-white text-[13px] font-bold uppercase tracking-tight">
@@ -776,13 +777,13 @@ const AddTurf = () => {
                             {manager.phone}
                           </span>
                         </div>
-                        <button
+                        <Button
                           type="button"
                           onClick={() => removeManagerContact(index)}
-                          className="text-[#444] hover:text-[#B3DC26] transition-colors uppercase text-[10px] font-bold tracking-widest"
+                          className="text-[#444] hover:text-primary transition-colors uppercase text-[10px] font-bold tracking-widest"
                         >
                           Remove
-                        </button>
+                        </Button>
                       </div>
                     ))}
                   </div>
@@ -794,11 +795,11 @@ const AddTurf = () => {
                       Venue Policies and Rules
                     </span>
                   </label>
-                  <textarea
+                  <Textarea
                     {...register("policies")}
                     maxLength={1000}
-                    className={`w-full bg-[#121212] border ${errors.policies ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-32 md:h-48 rounded-[16px] md:rounded-[16px] p-3 md:p-4 transition-all`}
-                  ></textarea>
+                    className={`w-full bg-card border ${errors.policies ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-[10px] md:text-sm h-32 md:h-48 rounded-[16px] md:rounded-[16px] p-3 md:p-4 transition-all`}
+                  ></Textarea>
                 </div>
               </div>
             </div>
@@ -815,16 +816,16 @@ const AddTurf = () => {
                         Slot Duration
                       </span>
                     </label>
-                    <select
+                    <Select
                       {...register("slotDuration")}
-                      className={`w-full bg-[#121212] border ${errors.slotDuration ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none`}
+                      className={`w-full bg-card border ${errors.slotDuration ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none`}
                     >
                       <option value={30}>30 Minutes</option>
                       <option value={60}>60 Minutes</option>
                       <option value={90}>90 Minutes</option>
                       <option value={120}>120 Minutes</option>
                       <option value={210}>210 Minutes</option>
-                    </select>
+                    </Select>
                   </div>
                   <div className="form-control">
                     <label className="label mb-2">
@@ -832,15 +833,15 @@ const AddTurf = () => {
                         Break Time
                       </span>
                     </label>
-                    <select
+                    <Select
                       {...register("breakTime")}
-                      className={`w-full bg-[#121212] border ${errors.breakTime ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none`}
+                      className={`w-full bg-card border ${errors.breakTime ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all appearance-none`}
                     >
                       <option value={0}>No Break</option>
                       <option value={10}>10 Minutes</option>
                       <option value={15}>15 Minutes</option>
                       <option value={30}>30 Minutes</option>
-                    </select>
+                    </Select>
                   </div>
                   <div className="form-control">
                     <label className="label mb-2">
@@ -848,10 +849,10 @@ const AddTurf = () => {
                         Opening Time
                       </span>
                     </label>
-                    <input
+                    <Input
                       type="time"
                       {...register("openTime")}
-                      className={`w-full bg-[#121212] border ${errors.openTime ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all [color-scheme:dark]`}
+                      className={`w-full bg-card border ${errors.openTime ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all [color-scheme:dark]`}
                     />
                   </div>
                   <div className="form-control">
@@ -860,11 +861,11 @@ const AddTurf = () => {
                         Closing Time
                       </span>
                     </label>
-                    <input
+                    <Input
                       type="time"
                       {...register("closeTime")}
                       disabled={!openTime}
-                      className={`w-full bg-[#121212] border ${errors.closeTime ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all disabled:opacity-50 [color-scheme:dark]`}
+                      className={`w-full bg-card border ${errors.closeTime ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all disabled:opacity-50 [color-scheme:dark]`}
                     />
                   </div>
                 </div>
@@ -875,14 +876,14 @@ const AddTurf = () => {
                       Hourly Rate (INR)
                     </span>
                   </label>
-                  <input
+                  <Input
                     type="number"
                     placeholder="Hourly Rate (INR)"
                     {...register("pricePerHour")}
-                    className={`w-full bg-[#121212] border ${errors.pricePerHour ? "border-red-500" : "border-white/10"} text-white focus:border-[#B3DC26]/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all`}
+                    className={`w-full bg-card border ${errors.pricePerHour ? "border-red-500" : "border-white/10"} text-white focus:border-primary/60 focus:outline-none text-[10px] md:text-sm h-9 md:h-12 rounded-[16px] md:rounded-[16px] px-3 md:px-4 transition-all`}
                   />
                   {errors.pricePerHour && (
-                    <span className="text-[#B3DC26] text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
+                    <span className="text-primary text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
                       {errors.pricePerHour.message}
                     </span>
                   )}
@@ -906,14 +907,14 @@ const AddTurf = () => {
                     ].map((day) => {
                       const isActive = availableDays.includes(day);
                       return (
-                        <button
+                        <Button
                           key={day}
                           type="button"
                           onClick={() => toggleDay(day)}
-                          className={`flex-1 py-2 md:py-3 rounded-[16px] md:rounded-[16px] text-[8px] md:text-[11px] font-black uppercase tracking-wider md:tracking-widest transition-all  ${isActive ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black -[#B3DC26] shadow-[0_5px_15px_rgba(204,255,0,0.2)]" : "bg-[#121212] text-[#444] -white/10 hover:-[#B3DC26]/40"}`}
+                          className={`flex-1 py-2 md:py-3 rounded-[16px] md:rounded-[16px] text-[8px] md:text-[11px] font-black uppercase tracking-wider md:tracking-widest transition-all  ${isActive ? "bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black -[var(--primary)] shadow-[0_5px_15px_rgba(204,255,0,0.2)]" : "bg-card text-[#444] -white/10 hover:-[var(--primary)]/40"}`}
                         >
                           {day.substring(0, 3)}
-                        </button>
+                        </Button>
                       );
                     })}
                   </div>
@@ -921,7 +922,7 @@ const AddTurf = () => {
               </div>
 
               <div className="space-y-4 md:space-y-8">
-                <h3 className="text-[14px] font-bold text-[#B3DC26] border-b border-white/10 pb-3 mb-6 uppercase tracking-[3px]">
+                <h3 className="text-[14px] font-bold text-primary border-b border-white/10 pb-3 mb-6 uppercase tracking-[3px]">
                   Slot Review
                 </h3>
                 {generatedSlots.length > 0 ? (
@@ -931,13 +932,13 @@ const AddTurf = () => {
                         key={index}
                         className={`group p-4 md:p-5 rounded-[16px] border transition-all duration-300 relative overflow-hidden flex flex-col justify-between ${
                           slot.isActive
-                            ? "bg-[#121212] border-[#B3DC26]/40 shadow-[0_4px_20px_-4px_rgba(191,243,103,0.1)] hover:border-[#B3DC26]/80"
-                            : "bg-[#121212] border-white/10 opacity-60 hover:opacity-100 hover:border-white/20"
+                            ? "bg-card border-primary/40 shadow-[0_4px_20px_-4px_rgba(191,243,103,0.1)] hover:border-primary/80"
+                            : "bg-card border-white/10 opacity-60 hover:opacity-100 hover:border-white/20"
                         }`}
                       >
                         {/* Ambient Glow */}
                         {slot.isActive && (
-                          <div className="absolute top-0 right-0 w-24 h-24 bg-[#B3DC26]/10 blur-[24px] rounded-full -mr-10 -mt-10 pointer-events-none transition-all duration-500 group-hover:bg-[#B3DC26]/20" />
+                          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 blur-[24px] rounded-full -mr-10 -mt-10 pointer-events-none transition-all duration-500 group-hover:bg-primary/20" />
                         )}
 
                         <div className="flex justify-between items-center mb-5 relative z-10">
@@ -952,23 +953,23 @@ const AddTurf = () => {
                               {slot.endTime}
                             </span>
                           </div>
-                          <input
+                          <Input
                             type="checkbox"
-                            className="toggle toggle-sm bg-[#1B1B1B] border-none checked:bg-[#B3DC26] hover:bg-[#2A2A2A] transition-all cursor-pointer"
+                            className="toggle toggle-sm bg-card border-none checked:bg-primary hover:bg-border transition-all cursor-pointer"
                             checked={slot.isActive}
                             onChange={() => toggleSlotActive(index)}
                           />
                         </div>
 
                         <div
-                          className={`flex items-center gap-2 rounded-[16px] p-2.5 border transition-all duration-300 relative z-10 ${slot.isActive ? "bg-[#1B1B1B] border-white/10 focus-within:border-[#B3DC26]/50 focus-within:bg-[#121212]" : "bg-[#121212] border-transparent"}`}
+                          className={`flex items-center gap-2 rounded-[16px] p-2.5 border transition-all duration-300 relative z-10 ${slot.isActive ? "bg-card border-white/10 focus-within:border-primary/50 focus-within:bg-card" : "bg-card border-transparent"}`}
                         >
                           <span
                             className={`text-[12px] md:text-[14px] font-black ${slot.isActive ? "text-white/40" : "text-[#444]"}`}
                           >
                             ₹
                           </span>
-                          <input
+                          <Input
                             type="number"
                             value={slot.price}
                             onChange={(e) =>
@@ -976,7 +977,7 @@ const AddTurf = () => {
                             }
                             disabled={!slot.isActive}
                             placeholder="0"
-                            className={`w-full bg-transparent text-[15px] md:text-[18px] font-black focus:outline-none font-mono tracking-wide [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none transition-colors ${slot.isActive ? "text-[#B3DC26]" : "text-[#444]"}`}
+                            className={`w-full bg-transparent text-[15px] md:text-[18px] font-black focus:outline-none font-mono tracking-wide [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none transition-colors ${slot.isActive ? "text-primary" : "text-[#444]"}`}
                           />
                           {slot.isActive && (
                             <span className="text-[9px] uppercase font-bold tracking-widest text-white/70 ml-auto">
@@ -988,7 +989,7 @@ const AddTurf = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border border-dashed border-white/10 rounded-[16px] bg-[#121212]">
+                  <div className="text-center py-12 border border-dashed border-white/10 rounded-[16px] bg-card">
                     <span className="text-[#444] text-[11px] font-bold uppercase tracking-[4px]">
                       Set times to generate slots
                     </span>
@@ -1003,46 +1004,46 @@ const AddTurf = () => {
             className={`col-span-1 flex items-center mt-6 md:mt-8 pt-4 md:pt-6 border-t border-white/10 relative z-10 ${currentStep === 1 ? "justify-between" : "justify-end"}`}
           >
             {currentStep === 1 && (
-              <button
+              <Button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="px-6 md:px-8 py-2 md:py-3 rounded-[16px] font-bold text-xs md:text-sm text-white bg-[#1B1B1B] border border-white/10 hover:bg-[#2A2A2A] uppercase tracking-wider transition-all duration-300"
+                className="px-6 md:px-8 py-2 md:py-3 rounded-[16px] font-bold text-xs md:text-sm text-white bg-card border border-white/10 hover:bg-border uppercase tracking-wider transition-all duration-300"
               >
                 Cancel
-              </button>
+              </Button>
             )}
 
             <div className="flex items-center gap-3 md:gap-4">
-              <button
+              <Button
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
                   setCurrentStep((prev) => Math.max(1, prev - 1));
                 }}
-                className={`px-6 md:px-8 py-2 md:py-3 rounded-[16px] font-bold text-xs md:text-sm uppercase tracking-wider transition-all duration-300 ${currentStep === 1 ? "hidden" : "bg-[#1B1B1B] text-white border border-white/10 hover:bg-[#2A2A2A]"}`}
+                className={`px-6 md:px-8 py-2 md:py-3 rounded-[16px] font-bold text-xs md:text-sm uppercase tracking-wider transition-all duration-300 ${currentStep === 1 ? "hidden" : "bg-card text-white border border-white/10 hover:bg-border"}`}
               >
                 Back
-              </button>
+              </Button>
 
               {currentStep < 3 ? (
-                <button
+                <Button
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
                     setCurrentStep((prev) => Math.min(4, prev + 1));
                   }}
-                  className="px-8 md:px-10 py-2 md:py-3 rounded-[16px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-black font-bold text-xs md:text-sm uppercase tracking-wider hover:opacity-90 transition-all duration-300 shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none"
+                  className="px-8 md:px-10 py-2 md:py-3 rounded-[16px] bg-gradient-to-r from-secondary to-primary text-black font-bold text-xs md:text-sm uppercase tracking-wider hover:opacity-90 transition-all duration-300 shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none"
                 >
                   Next Step
-                </button>
+                </Button>
               ) : (
-                <button
+                <Button
                   type="submit"
                   disabled={loading}
-                  className={`px-8 md:px-12 py-2 md:py-3 rounded-[16px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-black font-bold text-xs md:text-sm uppercase tracking-wider transition-all duration-300 flex items-center gap-2 shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none ${loading ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"}`}
+                  className={`px-8 md:px-12 py-2 md:py-3 rounded-[16px] bg-gradient-to-r from-secondary to-primary text-black font-bold text-xs md:text-sm uppercase tracking-wider transition-all duration-300 flex items-center gap-2 shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none ${loading ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"}`}
                 >
                   {loading ? "Submitting..." : "Submit Venue"}
-                </button>
+                </Button>
               )}
             </div>
           </div>

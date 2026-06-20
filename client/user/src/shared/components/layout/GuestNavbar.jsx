@@ -13,7 +13,8 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@redux/slices/authSlice.js";
 import { useNavigate } from "react-router-dom";
-import { useScrollDirection } from "@hooks/useScrollDirection.js";
+import { useScrollDirection } from "@hooks/useScrollDirection.js";import { Button } from "@kridaz/ui";
+
 
 const GuestNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,7 +51,7 @@ const GuestNavbar = () => {
           <div className="dropdown dropdown-hover group">
             <div
               tabIndex={0}
-              className={`flex items-center gap-1 text-sm font-medium transition-all cursor-pointer ${location.pathname.startsWith("/business") || location.pathname === "/venue-owners" ? "text-[#BFF367]" : "text-white/60 hover:text-white"}`}
+              className={`flex items-center gap-1 text-sm font-medium transition-all cursor-pointer ${location.pathname.startsWith("/business") || location.pathname === "/venue-owners" ? "text-primary" : "text-white/60 hover:text-white"}`}
             >
               Business{" "}
               <ChevronDown
@@ -58,12 +59,12 @@ const GuestNavbar = () => {
                 className="group-hover:rotate-180 transition-transform duration-300"
               />
               <span
-                className={`absolute -bottom-1 left-0 h-[2px] bg-[#BFF367] transition-all duration-300 ${location.pathname.startsWith("/business") || location.pathname === "/venue-owners" ? "w-full" : "w-0 group-hover:w-full"}`}
+                className={`absolute -bottom-1 left-0 h-[2px] bg-primary transition-all duration-300 ${location.pathname.startsWith("/business") || location.pathname === "/venue-owners" ? "w-full" : "w-0 group-hover:w-full"}`}
               />
             </div>
             <ul
               tabIndex={0}
-              className="dropdown-content z-[1] menu p-2 shadow-2xl bg-[#0d0d0d] border border-white/5 rounded-[8px] w-52 mt-0"
+              className="dropdown-content z-[1] menu p-2 shadow-2xl bg-background border border-white/5 rounded-[8px] w-52 mt-0"
             >
               <li>
                 <Link
@@ -95,11 +96,11 @@ const GuestNavbar = () => {
 
           <Link
             to="/players"
-            className={`text-sm font-medium transition-all relative group ${location.pathname === "/players" ? "text-[#BFF367]" : "text-white/60 hover:text-white"}`}
+            className={`text-sm font-medium transition-all relative group ${location.pathname === "/players" ? "text-primary" : "text-white/60 hover:text-white"}`}
           >
             Find Players
             <span
-              className={`absolute -bottom-1 left-0 h-[2px] bg-[#BFF367] transition-all duration-300 ${location.pathname === "/players" ? "w-full" : "w-0 group-hover:w-full"}`}
+              className={`absolute -bottom-1 left-0 h-[2px] bg-primary transition-all duration-300 ${location.pathname === "/players" ? "w-full" : "w-0 group-hover:w-full"}`}
             />
           </Link>
         </div>
@@ -110,7 +111,7 @@ const GuestNavbar = () => {
             <>
               <Link
                 to="/login"
-                className="hidden sm:flex items-center gap-2 text-sm font-medium text-white/60 hover:text-[#BFF367] transition-all"
+                className="hidden sm:flex items-center gap-2 text-sm font-medium text-white/60 hover:text-primary transition-all"
               >
                 <ShieldCheck size={16} className="opacity-50" />
                 Login
@@ -122,7 +123,7 @@ const GuestNavbar = () => {
                 <span className="text-[10px] text-white/40 uppercase tracking-wider">
                   Account Type
                 </span>
-                <span className="text-sm font-bold text-[#BFF367]">
+                <span className="text-sm font-bold text-primary">
                   {role === "VENUE_OWNER" ||
                   role === "venue_owner" ||
                   role === "partner" ||
@@ -135,16 +136,16 @@ const GuestNavbar = () => {
               <div className="dropdown dropdown-end">
                 <label
                   tabIndex={0}
-                  className="w-10 h-10 border border-white/10 flex items-center justify-center bg-white/5 hover:border-[#BFF367]/50 rounded-full transition-all cursor-pointer group"
+                  className="w-10 h-10 border border-white/10 flex items-center justify-center bg-white/5 hover:border-primary/50 rounded-full transition-all cursor-pointer group"
                 >
                   <User
                     size={20}
-                    className="text-white/60 group-hover:text-[#BFF367] transition-colors"
+                    className="text-white/60 group-hover:text-primary transition-colors"
                   />
                 </label>
                 <ul
                   tabIndex={0}
-                  className="dropdown-content mt-4 p-2 shadow-2xl bg-[#121212] border border-white/10 rounded-[8px] w-56 overflow-hidden backdrop-blur-xl animate-fade-in"
+                  className="dropdown-content mt-4 p-2 shadow-2xl bg-card border border-white/10 rounded-[8px] w-56 overflow-hidden backdrop-blur-xl animate-fade-in"
                 >
                   <li>
                     <Link
@@ -160,7 +161,7 @@ const GuestNavbar = () => {
                             ? "/admin"
                             : `/${role?.toLowerCase()}`
                       }
-                      className="flex items-center gap-3 p-3 text-sm text-[#BFF367] hover:text-white hover:bg-white/5 rounded-lg transition-all font-bold"
+                      className="flex items-center gap-3 p-3 text-sm text-primary hover:text-white hover:bg-white/5 rounded-lg transition-all font-bold"
                     >
                       <LayoutDashboard size={16} /> Dashboard
                     </Link>
@@ -174,12 +175,12 @@ const GuestNavbar = () => {
                     </Link>
                   </li>
                   <li className="mt-1 pt-1 border-t border-white/5">
-                    <button
+                    <Button
                       onClick={handleLogout}
                       className="w-full flex items-center gap-3 p-3 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 rounded-lg transition-all"
                     >
                       <LogOut size={16} /> Logout
-                    </button>
+                    </Button>
                   </li>
                 </ul>
               </div>
@@ -187,12 +188,12 @@ const GuestNavbar = () => {
           )}
 
           {/* Mobile Menu Trigger */}
-          <button
+          <Button
             onClick={() => setIsOpen(!isOpen)}
             className="lg:hidden text-white/60 hover:text-white transition-colors"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -206,7 +207,7 @@ const GuestNavbar = () => {
               <a
                 key={link.name}
                 href={link.path}
-                className="text-4xl font-bold text-white/30 hover:text-[#BFF367] transition-colors"
+                className="text-4xl font-bold text-white/30 hover:text-primary transition-colors"
               >
                 {link.name}
               </a>
@@ -215,7 +216,7 @@ const GuestNavbar = () => {
                 key={link.name}
                 to={link.path}
                 onClick={() => setIsOpen(false)}
-                className="text-4xl font-bold text-white/30 hover:text-[#BFF367] transition-colors"
+                className="text-4xl font-bold text-white/30 hover:text-primary transition-colors"
               >
                 {link.name}
               </Link>
@@ -228,7 +229,7 @@ const GuestNavbar = () => {
               <Link
                 to="/login"
                 onClick={() => setIsOpen(false)}
-                className="text-sm font-bold text-[#BFF367] border border-[#BFF367]/30 px-6 py-2 rounded-lg"
+                className="text-sm font-bold text-primary border border-primary/30 px-6 py-2 rounded-lg"
               >
                 Login
               </Link>

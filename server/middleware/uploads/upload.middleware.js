@@ -4,7 +4,7 @@ import { BadRequestError } from "@kridaz/common";
 // Use memory storage instead of disk storage.
 // Render's filesystem is ephemeral and files written to disk
 // will be lost on restarts/redeploys. Files are immediately
-// streamed to Cloudinary so no disk persistence is needed.
+// streamed to R2 so no disk persistence is needed.
 
 // Allowed MIME types — keeps the upload surface to media + PDFs the app
 // actually consumes (profile pics, reels, story media, document uploads).

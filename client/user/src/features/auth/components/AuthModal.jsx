@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useAuthModal } from "../../../context/AuthModalContext";
 import Login from "../pages/Login";
-import SignUp from "../pages/SignUp";
+import SignUp from "../pages/SignUp";import { Button } from "@kridaz/ui";
+
 
 const AuthModal = () => {
   const { isOpen, closeAuthModal, initialView, toggleView } = useAuthModal();
@@ -49,15 +50,15 @@ const AuthModal = () => {
     >
       {/* Modal Container */}
       <div
-        className={`relative w-full max-w-[956px] h-[100dvh] sm:h-[821px] sm:max-h-[95vh] bg-[#0d0d0d] rounded-none sm:rounded-2xl overflow-hidden flex shadow-2xl sm:border border-white/10 transition-all duration-500 ease-in-out transform ${showHiddenState ? "translate-y-full opacity-0 scale-95" : "translate-y-0 opacity-100 scale-100"}`}
+        className={`relative w-full max-w-[956px] h-[100dvh] sm:h-[821px] sm:max-h-[95vh] bg-background rounded-none sm:rounded-2xl overflow-hidden flex shadow-2xl sm:border border-white/10 transition-all duration-500 ease-in-out transform ${showHiddenState ? "translate-y-full opacity-0 scale-95" : "translate-y-0 opacity-100 scale-100"}`}
       >
         {/* Close Button */}
-        <button
+        <Button
           onClick={handleClose}
           className="absolute top-4 right-4 z-50 p-2 bg-black/40 hover:bg-white/10 rounded-full text-white/60 hover:text-white transition-colors"
         >
           <X size={20} />
-        </button>
+        </Button>
 
         {/* Left Side: Image Holder */}
         <div className="hidden md:block w-1/2 relative bg-black">

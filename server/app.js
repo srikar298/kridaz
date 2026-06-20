@@ -31,7 +31,7 @@ const MIN_CLIENT_VERSION = process.env.MIN_CLIENT_VERSION || "0.0.0";
 const app = express();
 // CORP "cross-origin" lets the Flutter web prod build pull any assets we
 // serve over `<img>`/`<link>` without bumping into the default "same-origin"
-// policy helmet ships with. The real assets are Cloudinary, but anything we
+// policy helmet ships with. The real assets are R2, but anything we
 // host directly (PDFs, QR codes) would otherwise block.
 app.use(
   helmet({
@@ -41,7 +41,7 @@ app.use(
 
 // Gzip responses above 1 KB. Big win on metered mobile connections (JSON
 // payloads compress 70–85%). Below 1 KB the CPU cost outweighs the bytes
-// saved. Cloudinary URLs are served from Cloudinary directly so we don't
+// saved. R2 URLs are served from R2 directly so we don't
 // double-compress.
 app.use(compression({ threshold: 1024 }));
 

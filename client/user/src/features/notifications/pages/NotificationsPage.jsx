@@ -24,8 +24,9 @@ import {
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useSocket } from "@context/SocketContext";
 import { formatDistanceToNow } from "date-fns";
-import useNotifications from "@hooks/shared/useNotifications";
-const PRI = "#B3DC26";
+import useNotifications from "@hooks/shared/useNotifications";import { Button } from "@kridaz/ui";
+
+const PRI = "var(--primary)";
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
 const SUBHEADING_STYLE = {
   fontFamily: "'Inter 28pt Light', sans-serif",
@@ -39,7 +40,7 @@ const SUBHEADING_STYLE = {
 const NOTIF_CONFIG = {
   FOLLOW: {
     icon: Users,
-    color: "#B3DC26",
+    color: "var(--primary)",
     bgColor: "rgba(191,243,103,0.08)",
     getRoute: (notif) => `/profile/${notif.metadata?.senderId || ""}`,
   },
@@ -51,14 +52,14 @@ const NOTIF_CONFIG = {
   },
   BOOKING: {
     icon: Calendar,
-    color: "#B3DC26",
+    color: "var(--primary)",
     bgColor: "rgba(85,222,232,0.08)",
     getRoute: (notif) =>
       notif.link || `/booking-pass/${notif.metadata?.bookingId || ""}`,
   },
   LIKE: {
     icon: Heart,
-    color: "#EF4444",
+    color: "var(--destructive)",
     bgColor: "rgba(239,68,68,0.08)",
     getRoute: (notif) => notif.link || "/community",
   },
@@ -70,13 +71,13 @@ const NOTIF_CONFIG = {
   },
   PAYMENT: {
     icon: CreditCard,
-    color: "#10B981",
+    color: "var(--success)",
     bgColor: "rgba(16,185,129,0.08)",
     getRoute: (notif) => notif.link || "/wallet",
   },
   REVIEW: {
     icon: Star,
-    color: "#B3DC26",
+    color: "var(--primary)",
     bgColor: "rgba(251,191,36,0.08)",
     getRoute: (notif) => notif.link || "/profile",
   },
@@ -94,31 +95,31 @@ const NOTIF_CONFIG = {
   },
   GAME_JOIN_REQUEST: {
     icon: Zap,
-    color: "#B3DC26",
+    color: "var(--primary)",
     bgColor: "rgba(191,243,103,0.08)",
     getRoute: (notif) => notif.link || "/booking-history?subTab=games",
   },
   TEAM_INVITE: {
     icon: Users,
-    color: "#B3DC26",
+    color: "var(--primary)",
     bgColor: "rgba(85,222,232,0.08)",
     getRoute: (notif) => notif.link || "/profile?tab=connections",
   },
   TEAM_JOIN_REQUEST: {
     icon: Users,
-    color: "#B3DC26",
+    color: "var(--primary)",
     bgColor: "rgba(85,222,232,0.08)",
     getRoute: (notif) => notif.link || "/profile?tab=connections",
   },
   TEAM_JOIN_ACCEPTED: {
     icon: ShieldCheck,
-    color: "#B3DC26",
+    color: "var(--primary)",
     bgColor: "rgba(191,243,103,0.08)",
     getRoute: (notif) => notif.link || "/profile?tab=connections",
   },
   TEAM_JOIN_REJECTED: {
     icon: X,
-    color: "#EF4444",
+    color: "var(--destructive)",
     bgColor: "rgba(239,68,68,0.08)",
     getRoute: (notif) => notif.link || "/profile?tab=connections",
   },
@@ -130,7 +131,7 @@ const NOTIF_CONFIG = {
   },
   OPPONENT_ACCEPTED: {
     icon: Trophy,
-    color: "#B3DC26",
+    color: "var(--primary)",
     bgColor: "rgba(191,243,103,0.08)",
     getRoute: (notif) => notif.link || "/profile?tab=connections",
   },
@@ -144,7 +145,7 @@ const NOTIF_CONFIG = {
 
 const DEFAULT_CONFIG = {
   icon: Bell,
-  color: "#B3DC26",
+  color: "var(--primary)",
   bgColor: "rgba(191,243,103,0.08)",
   getRoute: (notif) => notif.link || "/",
 };
@@ -215,22 +216,22 @@ const NotificationsPage = () => {
           {/* Action Buttons */}
           <div className="flex items-center gap-2">
             {unreadCount > 0 && (
-              <button
+              <Button
                 onClick={markAllRead}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-[16px] bg-[#B3DC26]/10 border border-[#B3DC26]/20 text-[#B3DC26] text-[10px] font-black uppercase tracking-widest hover:bg-[#B3DC26]/20 transition-all"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-[16px] bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all"
               >
                 <CheckCheck size={14} />
                 <span className="hidden sm:inline">Read All</span>
-              </button>
+              </Button>
             )}
             {notifications.length > 0 && (
-              <button
+              <Button
                 onClick={clearAll}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-[16px] bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all"
               >
                 <Trash2 size={14} />
                 <span className="hidden sm:inline">Clear</span>
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -238,20 +239,20 @@ const NotificationsPage = () => {
         {/* ── Filters ─────────────────────────────────────────────── */}
         <div className="flex items-center gap-2 mb-4">
           {["all", "unread"].map((filter) => (
-            <button
+            <Button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`px-4 py-2 rounded-[16px] text-[10px] font-black uppercase tracking-widest transition-all border ${activeFilter === filter ? "bg-[#B3DC26]/10 border-[#B3DC26]/30 text-[#B3DC26]" : "bg-white/[0.02] border-white/5 text-white/40 hover:text-white/60 hover:border-white/10"}`}
+              className={`px-4 py-2 rounded-[16px] text-[10px] font-black uppercase tracking-widest transition-all border ${activeFilter === filter ? "bg-primary/10 border-primary/30 text-primary" : "bg-white/[0.02] border-white/5 text-white/40 hover:text-white/60 hover:border-white/10"}`}
             >
               {filter === "all" ? "All" : `Unread (${unreadCount})`}
-            </button>
+            </Button>
           ))}
         </div>
 
         {/* ── Notification List ────────────────────────────────────── */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 gap-4">
-            <Loader2 size={36} className="text-[#B3DC26] animate-spin" />
+            <Loader2 size={36} className="text-primary animate-spin" />
             <p className="text-[10px] font-black text-white/20 uppercase tracking-widest">
               Loading notifications…
             </p>
@@ -294,11 +295,11 @@ const NotificationsPage = () => {
                     exit={{ opacity: 0, x: -40 }}
                     transition={{ duration: 0.2, delay: index * 0.03 }}
                     onClick={() => handleNotificationClick(notif)}
-                    className={`group relative flex items-start gap-4 p-3 sm:p-4 rounded-[16px] border cursor-pointer transition-all duration-300 ${notif.isRead ? "bg-[#000000] border-white/5 hover:bg-[#1B1B1B]/50" : "bg-[#121212] border-white/10 hover:border-white/20"}`}
+                    className={`group relative flex items-start gap-4 p-3 sm:p-4 rounded-[16px] border cursor-pointer transition-all duration-300 ${notif.isRead ? "bg-background border-white/5 hover:bg-card/50" : "bg-card border-white/10 hover:border-white/20"}`}
                   >
                     {/* Unread indicator */}
                     {!notif.isRead && (
-                      <div className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-[#B3DC26] shadow-[0_0_8px_rgba(179,220,38,0.5)]" />
+                      <div className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_rgba(179,220,38,0.5)]" />
                     )}
 
                     {/* Icon */}
@@ -320,7 +321,7 @@ const NotificationsPage = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-3">
                         <h4
-                          className={`text-[13px] font-bold leading-tight transition-colors ${notif.isRead ? "text-white/40" : "text-white group-hover:text-[#B3DC26]"}`}
+                          className={`text-[13px] font-bold leading-tight transition-colors ${notif.isRead ? "text-white/40" : "text-white group-hover:text-primary"}`}
                           style={SUBHEADING_STYLE}
                         >
                           {notif.title}

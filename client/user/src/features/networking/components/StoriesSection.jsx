@@ -119,7 +119,7 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
             className={`w-[72px] h-[72px] rounded-full p-[2px] relative ${
               myStoryGroup && hasSeenGroup(myStoryGroup)
                 ? "bg-white/20"
-                : "bg-gradient-to-r from-[#BFF367] to-[#BFF367]"
+                : "bg-gradient-to-r from-primary to-primary"
             }`}
           >
             <div
@@ -130,9 +130,9 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
                   gateInteraction(() => navigate("/create-story"));
                 }
               }}
-              className="w-full h-full rounded-full bg-[#0A0A0A] p-[2px] cursor-pointer"
+              className="w-full h-full rounded-full bg-background p-[2px] cursor-pointer"
             >
-              <div className="w-full h-full rounded-full flex items-center justify-center overflow-hidden bg-[#111]">
+              <div className="w-full h-full rounded-full flex items-center justify-center overflow-hidden bg-card">
                 {myStoryGroup && getStoryThumb(myStoryGroup.stories[0]) ? (
                   <img
                     src={getStoryThumb(myStoryGroup.stories[0])}
@@ -148,14 +148,14 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
                   />
                 ) : myStoryGroup &&
                   myStoryGroup.stories[0].mediaType === "video" ? (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#111] to-[#1a1a1a]">
-                    <Video size={24} className="text-[#BFF367] mb-1" />
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-card to-card">
+                    <Video size={24} className="text-primary mb-1" />
                     <span className="text-[7px] font-bold text-white/40 uppercase tracking-wider">
                       Video
                     </span>
                   </div>
                 ) : myStoryGroup && myStoryGroup.stories[0].content ? (
-                  <div className="w-full h-full flex items-center justify-center text-[7px] p-2 text-center text-[#BFF367] font-bold bg-[#111]">
+                  <div className="w-full h-full flex items-center justify-center text-[7px] p-2 text-center text-primary font-bold bg-card">
                     {myStoryGroup.stories[0].content?.slice(0, 15)}
                   </div>
                 ) : user?.profilePicture || user?.profileImage ? (
@@ -170,12 +170,12 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
                           "flex";
                       }}
                     />
-                    <div className="hidden w-full h-full items-center justify-center bg-[#111]">
+                    <div className="hidden w-full h-full items-center justify-center bg-card">
                       <User size={32} className="text-gray-600" />
                     </div>
                   </>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-[#111]">
+                  <div className="w-full h-full flex items-center justify-center bg-card">
                     <User size={32} className="text-gray-600" />
                   </div>
                 )}
@@ -186,12 +186,12 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
                 e.stopPropagation();
                 gateInteraction(() => navigate("/create-story"));
               }}
-              className="absolute bottom-0 right-0 w-[24px] h-[24px] bg-gradient-to-r from-[#BFF367] to-[#BFF367] rounded-full flex items-center justify-center border-2 border-[#0A0A0A] cursor-pointer hover:scale-110 transition-transform z-10 shadow-lg"
+              className="absolute bottom-0 right-0 w-[24px] h-[24px] bg-gradient-to-r from-primary to-primary rounded-full flex items-center justify-center border-2 border-background cursor-pointer hover:scale-110 transition-transform z-10 shadow-lg"
             >
               <Plus size={14} strokeWidth={3} className="text-black" />
             </div>
           </div>
-          <span className="text-[10px] font-bold text-white/80 group-hover:text-[#BFF367] transition-colors truncate max-w-[68px]">
+          <span className="text-[10px] font-bold text-white/80 group-hover:text-primary transition-colors truncate max-w-[68px]">
             Your Story
           </span>
         </div>
@@ -204,10 +204,10 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
             className="flex flex-col items-center gap-2.5 shrink-0 cursor-pointer group"
           >
             <div
-              className={`w-[72px] h-[72px] rounded-full p-[2px] relative ${hasSeenGroup(group) ? "bg-white/20" : "bg-gradient-to-r from-[#BFF367] to-[#BFF367]"}`}
+              className={`w-[72px] h-[72px] rounded-full p-[2px] relative ${hasSeenGroup(group) ? "bg-white/20" : "bg-gradient-to-r from-primary to-primary"}`}
             >
-              <div className="w-full h-full rounded-full bg-[#0A0A0A] p-[2px]">
-                <div className="w-full h-full rounded-full overflow-hidden bg-[#111]">
+              <div className="w-full h-full rounded-full bg-background p-[2px]">
+                <div className="w-full h-full rounded-full overflow-hidden bg-card">
                   {getStoryThumb(group.stories[0]) ? (
                     <img
                       src={getStoryThumb(group.stories[0])}
@@ -222,21 +222,21 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
                       }`}
                     />
                   ) : group.stories[0].mediaType === "video" ? (
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#111] to-[#1a1a1a]">
-                      <Video size={24} className="text-[#BFF367] mb-1" />
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-card to-card">
+                      <Video size={24} className="text-primary mb-1" />
                       <span className="text-[7px] font-bold text-white/40 uppercase tracking-wider">
                         Video
                       </span>
                     </div>
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[7px] p-2 text-center text-[#BFF367] font-bold bg-[#111]">
+                    <div className="w-full h-full flex items-center justify-center text-[7px] p-2 text-center text-primary font-bold bg-card">
                       {group.stories[0].content?.slice(0, 15)}
                     </div>
                   )}
                 </div>
               </div>
             </div>
-            <span className="text-[10px] font-bold text-white/80 group-hover:text-[#BFF367] transition-colors truncate max-w-[68px]">
+            <span className="text-[10px] font-bold text-white/80 group-hover:text-primary transition-colors truncate max-w-[68px]">
               {group.user?.name?.split(" ")[0] || "Player"}
             </span>
           </div>

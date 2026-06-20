@@ -12,7 +12,8 @@ import {
   isSameDay,
   addDays,
 } from "date-fns";
-import { ChevronLeft, ChevronRight, Calendar, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar, Clock } from "lucide-react";import { Button } from "@kridaz/ui";
+
 
 const MaterialDateTimePicker = ({
   isOpen,
@@ -135,21 +136,21 @@ const MaterialDateTimePicker = ({
         </div>
 
         <div className="flex justify-between items-center mb-4 px-2">
-          <button
+          <Button
             onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
             className="p-1 text-neutral-400 hover:text-white transition-colors"
           >
             <ChevronLeft size={20} />
-          </button>
+          </Button>
           <span className="text-sm font-bold text-white">
             {format(currentMonth, "MMMM yyyy")}
           </span>
-          <button
+          <Button
             onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
             className="p-1 text-neutral-400 hover:text-white transition-colors"
           >
             <ChevronRight size={20} />
-          </button>
+          </Button>
         </div>
 
         <div className="flex justify-between w-full mb-2 px-2">
@@ -199,7 +200,7 @@ const MaterialDateTimePicker = ({
             </span>
           </div>
           <div className="flex gap-4 mt-3">
-            <button
+            <Button
               onClick={() => {
                 setAmPm("AM");
                 if (selectedHour >= 12) setSelectedHour(selectedHour - 12);
@@ -207,8 +208,8 @@ const MaterialDateTimePicker = ({
               className={`text-xs font-black px-3 py-1 rounded-full transition-colors ${amPm === "AM" ? "bg-gradient-to-r from-cyan-400 to-lime-400 text-black" : "text-neutral-400"}`}
             >
               AM
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => {
                 setAmPm("PM");
                 if (selectedHour < 12) setSelectedHour(selectedHour + 12);
@@ -216,7 +217,7 @@ const MaterialDateTimePicker = ({
               className={`text-xs font-black px-3 py-1 rounded-full transition-colors ${amPm === "PM" ? "bg-gradient-to-r from-cyan-400 to-lime-400 text-black" : "text-neutral-400"}`}
             >
               PM
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -311,33 +312,33 @@ const MaterialDateTimePicker = ({
 
         <div className="flex justify-between items-center mt-6 pt-4 border-t border-neutral-800">
           <div className="flex gap-2">
-            <button
+            <Button
               onClick={() => setStep("DATE")}
               className={`p-2 rounded-lg transition-colors ${step === "DATE" ? "text-lime-400 bg-lime-400/10" : "text-neutral-500 hover:text-white hover:bg-neutral-800"}`}
             >
               <Calendar size={18} />
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setStep("TIME")}
               className={`p-2 rounded-lg transition-colors ${step === "TIME" ? "text-lime-400 bg-lime-400/10" : "text-neutral-500 hover:text-white hover:bg-neutral-800"}`}
             >
               <Clock size={18} />
-            </button>
+            </Button>
           </div>
 
           <div className="flex gap-2 text-sm font-bold">
-            <button
+            <Button
               onClick={onClose}
               className="px-4 py-2 text-neutral-400 hover:text-white transition-colors"
             >
               CANCEL
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleConfirm}
               className="px-4 py-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-lime-400 hover:opacity-80 transition-opacity uppercase tracking-widest"
             >
               OK
-            </button>
+            </Button>
           </div>
         </div>
       </motion.div>

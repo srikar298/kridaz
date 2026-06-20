@@ -7,7 +7,8 @@ import {
   User,
   Users,
 } from "lucide-react";
-import useGameDisputes from "@hooks/admin/useGameDisputes";
+import useGameDisputes from "@hooks/admin/useGameDisputes";import { Button, Input } from "@kridaz/ui";
+
 
 const GameDisputeManager = () => {
   const { disputedGames, loading, processingId, resolveDispute } =
@@ -71,7 +72,7 @@ const GameDisputeManager = () => {
               size={18}
               className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
             />
-            <input
+            <Input
               type="text"
               placeholder="Search games or host..."
               value={searchTerm}
@@ -105,7 +106,7 @@ const GameDisputeManager = () => {
                 </div>
               ) : (
                 filteredGames.map((game) => (
-                  <button
+                  <Button
                     key={game.id}
                     onClick={() => {
                       setSelectedGame(game);
@@ -133,7 +134,7 @@ const GameDisputeManager = () => {
                       <span>Host: {game.host?.name}</span>
                       <span>â‚¹{game.perPlayerCharge} / slot</span>
                     </div>
-                  </button>
+                  </Button>
                 ))
               )}
             </div>
@@ -159,12 +160,12 @@ const GameDisputeManager = () => {
                         </span>
                       </div>
                     </div>
-                    <button
+                    <Button
                       onClick={() => setSelectedGame(null)}
                       className="lg:hidden p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
                     >
                       <ShieldAlert size={20} className="text-white" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
@@ -180,7 +181,7 @@ const GameDisputeManager = () => {
                         {selectedGame.disputes?.map((d) => (
                           <div
                             key={d.id}
-                            className="p-4 bg-[#0a0a0a] rounded-[8px] border border-white/5"
+                            className="p-4 bg-background rounded-[8px] border border-white/5"
                           >
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-sm font-bold text-white">
@@ -203,7 +204,7 @@ const GameDisputeManager = () => {
                         {selectedGame.slots?.map((slot) => (
                           <div
                             key={slot.id}
-                            className="p-4 bg-[#0a0a0a] rounded-[8px] border border-white/5"
+                            className="p-4 bg-background rounded-[8px] border border-white/5"
                           >
                             <div className="flex justify-between items-center">
                               <div className="flex items-center gap-3">
@@ -222,7 +223,7 @@ const GameDisputeManager = () => {
                                   <span className="text-xs font-bold text-gray-400">
                                     Refund:
                                   </span>
-                                  <input
+                                  <Input
                                     type="number"
                                     min="0"
                                     max={selectedGame.perPlayerCharge}
@@ -251,7 +252,7 @@ const GameDisputeManager = () => {
                       </h3>
 
                       <div className="space-y-3">
-                        <button
+                        <Button
                           onClick={() => setDecision("TRANSFER_TO_HOST")}
                           className={`w-full flex items-center justify-between p-4 rounded-[8px] border transition-all ${decision === "TRANSFER_TO_HOST" ? "bg-orange-500/10 border-orange-500" : "bg-white/5 border-white/10 hover:bg-white/10"}`}
                         >
@@ -266,9 +267,9 @@ const GameDisputeManager = () => {
                               className="text-orange-500"
                             />
                           )}
-                        </button>
+                        </Button>
 
-                        <button
+                        <Button
                           onClick={() => setDecision("REFUND_SELECTED")}
                           className={`w-full flex items-center justify-between p-4 rounded-[8px] border transition-all ${decision === "REFUND_SELECTED" ? "bg-orange-500/10 border-orange-500" : "bg-white/5 border-white/10 hover:bg-white/10"}`}
                         >
@@ -283,11 +284,11 @@ const GameDisputeManager = () => {
                               className="text-orange-500"
                             />
                           )}
-                        </button>
+                        </Button>
                       </div>
 
                       <div className="mt-8 pt-8 border-t border-white/5">
-                        <button
+                        <Button
                           onClick={handleConfirmResolve}
                           disabled={
                             processingId === selectedGame.id ||
@@ -299,7 +300,7 @@ const GameDisputeManager = () => {
                           {processingId === selectedGame.id
                             ? "Processing..."
                             : "Confirm Resolution"}
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </div>

@@ -15,7 +15,7 @@ const router = express.Router();
  * @swagger
  * /upload:
  *   post:
- *     summary: Upload a file to Cloudinary
+ *     summary: Upload a file to R2
  *     description: Generic endpoint for uploading images, documents, or videos.
  *     tags: [Upload]
  *     security:

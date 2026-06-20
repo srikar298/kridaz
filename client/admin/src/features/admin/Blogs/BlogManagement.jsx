@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@hooks/useAxiosInstance";
-import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 import {
   Plus,
   Trash2,
@@ -53,9 +54,9 @@ const ImageUploadZone = ({ value, onChange, onFileSelect }) => {
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
-        className={`relative flex flex-col items-center justify-center w-full h-36 rounded-[8px] border-2 border-dashed cursor-pointer transition-all ${dragging ? "border-[#84CC16] bg-[#84CC16]/10 scale-[1.01]" : value ? "border-[#84CC16]/40 bg-[#84CC16]/5 hover:border-[#84CC16]/60" : "border-white/10 bg-white/2 hover:bg-white/5 hover:border-white/20"}`}
+        className={`relative flex flex-col items-center justify-center w-full h-36 rounded-[8px] border-2 border-dashed cursor-pointer transition-all ${dragging ? "border-primary bg-primary/10 scale-[1.01]" : value ? "border-primary/40 bg-primary/5 hover:border-primary/60" : "border-white/10 bg-white/2 hover:bg-white/5 hover:border-white/20"}`}
       >
-        <input
+        <Input
           ref={inputRef}
           type="file"
           accept="image/*"
@@ -64,8 +65,8 @@ const ImageUploadZone = ({ value, onChange, onFileSelect }) => {
         />
         {value ? (
           <>
-            <CheckCircle2 size={28} className="text-[#84CC16] mb-2" />
-            <p className="text-[11px] font-bold text-[#84CC16] uppercase tracking-widest">
+            <CheckCircle2 size={28} className="text-primary mb-2" />
+            <p className="text-[11px] font-bold text-primary uppercase tracking-widest">
               Image Ready
             </p>
             <p className="text-[10px] text-gray-600 mt-1 uppercase tracking-wider">
@@ -76,7 +77,7 @@ const ImageUploadZone = ({ value, onChange, onFileSelect }) => {
           <>
             <UploadCloud
               size={32}
-              className={`mb-2 transition-colors ${dragging ? "text-[#84CC16]" : "text-gray-500"}`}
+              className={`mb-2 transition-colors ${dragging ? "text-primary" : "text-gray-500"}`}
             />
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
               {dragging ? "Drop to Upload" : "Click or Drag & Drop"}
@@ -97,7 +98,7 @@ const ImageUploadZone = ({ value, onChange, onFileSelect }) => {
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/0 group-hover/preview:bg-black/40 transition-all flex items-center justify-center">
-            <button
+            <Button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -107,7 +108,7 @@ const ImageUploadZone = ({ value, onChange, onFileSelect }) => {
               className="opacity-0 group-hover/preview:opacity-100 transition-opacity w-10 h-10 flex items-center justify-center rounded-full bg-red-500 text-white shadow-lg"
             >
               <X size={18} />
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -289,20 +290,20 @@ export const BlogManagement = () => {
             Manage insights, stories, and deep dives from the sports world.
           </p>
         </div>
-        <button
+        <Button
           onClick={() => handleOpenModal()}
           className="inline-flex items-center gap-2 bg-lime-500 text-black px-4 py-2 rounded-[6px] font-bold hover:bg-lime-400 transition-colors"
         >
           <Plus size={18} />
           Create New Article
-        </button>
+        </Button>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {blogs.map((blog, index) => (
           <div
             key={blog.id || blog._id}
-            className="group relative flex flex-col rounded-[8px] border border-white/10 bg-[#1A1A1A] overflow-hidden transition-all hover:border-lime-500/50"
+            className="group relative flex flex-col rounded-[8px] border border-white/10 bg-card overflow-hidden transition-all hover:border-lime-500/50"
           >
             <div className="aspect-[4/3] w-full bg-black overflow-hidden relative">
               <img
@@ -344,19 +345,19 @@ export const BlogManagement = () => {
               </div>
 
               <div className="mt-auto flex items-center gap-2 pt-4 border-t border-white/5">
-                <button
+                <Button
                   onClick={() => handleOpenModal(blog)}
                   className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-[8px] bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition-all text-xs font-bold uppercase tracking-widest"
                 >
                   <Edit2 size={14} />
                   Edit
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => handleDelete(blog.id || blog._id)}
                   className="w-11 h-11 flex items-center justify-center rounded-[8px] bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"
                 >
                   <Trash2 size={18} />
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -380,7 +381,7 @@ export const BlogManagement = () => {
       {/* ── Modal ─────────────────────────────────────────────────────────── */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-          <div className="w-full max-w-2xl bg-[#0A0A0A] border border-white/10 rounded-[8px] overflow-hidden shadow-2xl relative">
+          <div className="w-full max-w-2xl bg-background border border-white/10 rounded-[8px] overflow-hidden shadow-2xl relative">
             {/* Modal Header */}
             <div className="p-8 border-b border-white/10 flex items-center justify-between bg-black/40">
               <div>
@@ -388,18 +389,18 @@ export const BlogManagement = () => {
                   {editingItem ? "Edit Article" : "Create Article"}
                 </h2>
                 <div className="flex items-center gap-2 mt-1">
-                  <div className="w-2 h-2 rounded-full bg-[#84CC16] animate-pulse" />
-                  <span className="text-[10px] font-bold text-[#84CC16] uppercase tracking-widest">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  <span className="text-[10px] font-bold text-primary uppercase tracking-widest">
                     System Ready
                   </span>
                 </div>
               </div>
-              <button
+              <Button
                 onClick={() => setIsModalOpen(false)}
                 className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all"
               >
                 <X size={20} />
-              </button>
+              </Button>
             </div>
 
             {/* Modal Form */}
@@ -413,7 +414,7 @@ export const BlogManagement = () => {
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">
                     Headline
                   </label>
-                  <input
+                  <Input
                     type="text"
                     required
                     value={formData.title}
@@ -430,7 +431,7 @@ export const BlogManagement = () => {
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">
                     Lead / Subtitle
                   </label>
-                  <input
+                  <Input
                     type="text"
                     value={formData.subtitle}
                     onChange={(e) =>
@@ -463,7 +464,7 @@ export const BlogManagement = () => {
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">
                     Category
                   </label>
-                  <select
+                  <Select
                     value={formData.category}
                     onChange={(e) =>
                       setFormData({ ...formData, category: e.target.value })
@@ -476,7 +477,7 @@ export const BlogManagement = () => {
                     <option value="Tennis">TENNIS</option>
                     <option value="Badminton">BADMINTON</option>
                     <option value="Insights">INSIGHTS</option>
-                  </select>
+                  </Select>
                 </div>
 
                 {/* Read Time */}
@@ -484,7 +485,7 @@ export const BlogManagement = () => {
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">
                     Read Time
                   </label>
-                  <input
+                  <Input
                     type="text"
                     value={formData.readTime}
                     onChange={(e) =>
@@ -500,7 +501,7 @@ export const BlogManagement = () => {
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">
                     Date String
                   </label>
-                  <input
+                  <Input
                     type="text"
                     value={formData.date}
                     onChange={(e) =>
@@ -516,7 +517,7 @@ export const BlogManagement = () => {
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">
                     Order
                   </label>
-                  <input
+                  <Input
                     type="number"
                     value={formData.order}
                     onChange={(e) =>
@@ -534,7 +535,7 @@ export const BlogManagement = () => {
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">
                     Article Content (Markdown/HTML)
                   </label>
-                  <textarea
+                  <Textarea
                     required
                     rows={8}
                     value={formData.content}
@@ -549,14 +550,14 @@ export const BlogManagement = () => {
 
               {/* Footer Buttons */}
               <div className="pt-8 border-t border-white/10 flex gap-4">
-                <button
+                <Button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
                   className="flex-1 py-4 rounded-[8px] border border-white/10 text-white font-bold hover:bg-white/5 transition-all uppercase tracking-widest text-xs"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
                   disabled={submitting}
                   className="flex-1 py-4 rounded-[8px] bg-lime-500 text-black font-bold hover:bg-lime-400 transition-all shadow-[0_0_30px_rgba(132,204,22,0.4)] uppercase tracking-widest text-xs disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -569,7 +570,7 @@ export const BlogManagement = () => {
                   ) : (
                     "Save Article"
                   )}
-                </button>
+                </Button>
               </div>
             </form>
           </div>

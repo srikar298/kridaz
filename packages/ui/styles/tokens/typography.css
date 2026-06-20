@@ -1,0 +1,178 @@
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Dancing+Script:wght@700&family=Inter:wght@400;500;600;700;800;900&family=Space+Mono&family=Bayon&family=Open+Sans:wght@300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+@font-face {
+  font-family: "Inter 28pt Light";
+  src: url("/inter-28pt-light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Heading Overrides ──────────────────────────────────────────── */
+h1 {
+  font-family: "Open Sans", sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 32px !important;
+  line-height: 115% !important;
+  letter-spacing: 0% !important;
+}
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 60.21px !important;
+  }
+}
+
+h2, h3, .font-display {
+  font-family: "Bebas Neue", sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Typography Utility Tokens ──────────────────────────────────────────── */
+.global-subheading {
+  font-family: "Inter 28pt Light", sans-serif !important;
+  font-weight: 300 !important;
+  font-size: 13px !important;
+  line-height: 119% !important;
+  letter-spacing: 1.5% !important;
+  opacity: 0.7;
+}
+
+@media (min-width: 768px) {
+  .global-subheading {
+    font-size: 20.04px !important;
+  }
+}
+
+/* ── Font Family Classes ──────────────────────────────────────────── */
+.font-open-sans { font-family: "Open Sans" !important; }
+.font-script {
+  font-family: "Dancing Script", cursive !important;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.font-secondary { font-family: "Bayon" !important; }
+.font-mono { font-family: "Space Mono", monospace !important; }
+.font-inter { font-family: "Inter" !important; }
+.font-poppins { font-family: "Poppins", sans-serif !important; }
+
+/* ── Admin Scoped Fonts ──────────────────────────────────────────── */
+.admin-panel h1, .admin-panel h2, .admin-panel h3, .admin-panel h4, .admin-panel h5, .admin-panel h6 {
+  font-family: "Open Sans" !important;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+.admin-panel .admin-subheading {
+  font-family: "Inter 28pt Light", sans-serif !important;
+  font-weight: 300 !important;
+  font-size: 20px !important;
+  letter-spacing: -0.01em;
+}
+.admin-panel .subtitle { font-family: "Inter" !important; }
+
+/* ── Chat/Messages Fonts ──────────────────────────────────────────── */
+.messages-page h1, .messages-page h2, .messages-page h3, .messages-page .chat-heading {
+  font-family: "Open Sans" !important;
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+.messages-page .chat-subheading {
+  font-family: "Inter" !important;
+  font-size: 20px !important;
+  line-height: 1.45;
+  letter-spacing: 0;
+}
+.messages-page .chat-preview {
+  font-family: "Inter" !important;
+  font-size: 13px !important;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+.messages-page .chat-header-status {
+  font-family: "Inter" !important;
+  font-size: 14px !important;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+.messages-page .community-copy {
+  font-family: "Inter" !important;
+  font-size: 14px !important;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+/* ── Strict Typography System (Industry Standard) ────────────────── */
+
+/* Headings */
+.text-heading-1 {
+  font-family: "Open Sans", sans-serif;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.text-heading-2 {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.text-heading-3 {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Body Text */
+.text-body-lg {
+  font-family: "Inter", sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.text-body-md {
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.text-body-sm {
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* Descriptions & Labels */
+.text-description-1 {
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.4;
+  color: var(--muted-foreground);
+}
+
+.text-label {
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

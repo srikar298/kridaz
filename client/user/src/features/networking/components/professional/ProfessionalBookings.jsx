@@ -3,17 +3,18 @@ import { useSelector } from "react-redux";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { Check, X, User, Phone, Mail, Loader2, Calendar } from "lucide-react";
 import toast from "react-hot-toast";
-import { format } from "date-fns";
+import { format } from "date-fns";import { Button } from "@kridaz/ui";
+
 
 /**
  * ProfessionalBookings ΓÇö Rebranded for the Scorer Portal.
- * Enforces Teal Green (#BFF367) and Inter typography.
+ * Enforces Teal Green (var(--primary)) and Inter typography.
  */
 
 export default function ProfessionalBookings() {
   const { role } = useSelector((state) => state.auth);
   const isScorer = role?.toLowerCase().includes("scorer");
-  const themeColor = isScorer ? "#BFF367" : "#BFF367";
+  const themeColor = isScorer ? "var(--primary)" : "var(--primary)";
 
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -77,7 +78,7 @@ export default function ProfessionalBookings() {
               {isScorer ? "Scorer" : "Coach"}{" "}
               <span style={{ color: themeColor }}>Schedule</span>
             </h1>
-            <p className="text-[#878C9F] text-[10px] font-black uppercase tracking-[0.2em] font-inter mt-1.5">
+            <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.2em] font-inter mt-1.5">
               Upcoming assignments and availability
             </p>
           </div>
@@ -144,7 +145,7 @@ export default function ProfessionalBookings() {
 
                   <div className="flex flex-col md:items-end gap-3">
                     <div
-                      className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border font-inter ${booking.status === "PENDING" ? "bg-orange-500/10 border-orange-500/20 text-orange-500" : booking.status === "ACCEPTED" ? "bg-[#BFF367]/10 border-[#BFF367]/20" : "bg-red-500/10 border-red-500/20 text-red-500"}`}
+                      className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border font-inter ${booking.status === "PENDING" ? "bg-orange-500/10 border-orange-500/20 text-orange-500" : booking.status === "ACCEPTED" ? "bg-primary/10 border-primary/20" : "bg-red-500/10 border-red-500/20 text-red-500"}`}
                       style={{
                         color:
                           booking.status === "ACCEPTED"
@@ -209,7 +210,7 @@ export default function ProfessionalBookings() {
 
                 {booking.status === "PENDING" && (
                   <div className="mt-10 flex gap-4">
-                    <button
+                    <Button
                       onClick={() => handleAction(booking._id, "ACCEPTED")}
                       disabled={actionLoading === booking._id}
                       className="flex-1 h-14 text-black rounded-lg font-black uppercase text-[12px] tracking-[0.2em] transition-all transform active:scale-95 flex items-center justify-center gap-3 font-inter shadow-xl"
@@ -224,8 +225,8 @@ export default function ProfessionalBookings() {
                         <Check size={20} />
                       )}{" "}
                       Confirm Slot
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => handleAction(booking._id, "REJECTED")}
                       disabled={actionLoading === booking._id}
                       className="flex-1 h-14 bg-white/5 text-neutral-500 hover:text-white border border-white/10 rounded-[8px] font-black uppercase text-[12px] tracking-[0.2em] hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 transition-all transform active:scale-95 flex items-center justify-center gap-3 font-inter"
@@ -236,7 +237,7 @@ export default function ProfessionalBookings() {
                         <X size={20} />
                       )}{" "}
                       Decline
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>

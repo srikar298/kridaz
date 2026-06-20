@@ -16,7 +16,8 @@ import {
 import axiosInstance from "@hooks/useAxiosInstance";
 import HostedGamesSkeleton from "./HostedGamesSkeleton";
 import { useNavigate } from "react-router-dom";
-import ConfirmationModal from "@components/shared/ConfirmationModal";
+import ConfirmationModal from "@components/shared/ConfirmationModal";import { Button, Input, Select } from "@kridaz/ui";
+
 
 const HostedGamesPage = () => {
   const [games, setGames] = useState([]);
@@ -143,16 +144,16 @@ const HostedGamesPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white p-6 lg:p-10 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-96 h-96 bg-[#CCFF00]/5 blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-background text-white p-6 lg:p-10 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto space-y-10 relative z-10">
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-white/5 pb-10">
           <div>
             <h1 className="text-4xl font-black text-white uppercase tracking-tight flex items-center gap-4">
-              <Trophy className="text-[#CCFF00]" size={36} />
-              Hosted Games <span className="text-[#CCFF00]">Management</span>
+              <Trophy className="text-primary" size={36} />
+              Hosted Games <span className="text-primary">Management</span>
             </h1>
             <p className="text-gray-500 mt-2 font-medium tracking-wide uppercase text-xs">
               Monitor, moderate and manage all community-organized match records
@@ -160,13 +161,13 @@ const HostedGamesPage = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <button
+            <Button
               onClick={fetchGames}
-              className="p-3 bg-white/5 border border-white/10 rounded-[8px] text-white/60 hover:text-[#CCFF00] hover:border-[#CCFF00]/40 transition-all"
+              className="p-3 bg-white/5 border border-white/10 rounded-[8px] text-white/60 hover:text-primary hover:border-primary/40 transition-all"
             >
               <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
-            </button>
-            <div className="bg-[#CCFF00]/10 border border-[#CCFF00]/20 text-[#CCFF00] px-4 py-2 rounded-[8px] font-black text-sm uppercase tracking-tighter">
+            </Button>
+            <div className="bg-primary/10 border border-primary/20 text-primary px-4 py-2 rounded-[8px] font-black text-sm uppercase tracking-tighter">
               {games.length} Total Games
             </div>
           </div>
@@ -174,44 +175,44 @@ const HostedGamesPage = () => {
 
         {/* Bulk Actions Bar */}
         {selectedIds.length > 0 && (
-          <div className="sticky top-6 z-[40] bg-[#0d0d0d] border border-[#CCFF00]/30 rounded-[8px] p-4 shadow-2xl flex items-center justify-between animate-in slide-in-from-top-4 duration-500">
+          <div className="sticky top-6 z-[40] bg-background border border-primary/30 rounded-[8px] p-4 shadow-2xl flex items-center justify-between animate-in slide-in-from-top-4 duration-500">
             <div className="flex items-center gap-6 pl-4">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded bg-[#CCFF00] flex items-center justify-center text-black font-black text-xs">
+                <div className="w-6 h-6 rounded bg-primary flex items-center justify-center text-black font-black text-xs">
                   {selectedIds.length}
                 </div>
-                <span className="text-xs font-black uppercase tracking-widest text-[#CCFF00]">
+                <span className="text-xs font-black uppercase tracking-widest text-primary">
                   Selected
                 </span>
               </div>
-              <button
+              <Button
                 onClick={() => setSelectedIds([])}
                 className="text-white/40 hover:text-white transition-colors"
               >
                 <X size={18} />
-              </button>
+              </Button>
             </div>
 
             <div className="flex items-center gap-3">
-              <button
+              <Button
                 onClick={() => handleBatchStatusUpdate("CANCELLED")}
                 className="px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-400 font-black text-[10px] uppercase tracking-widest hover:bg-red-500/20 transition-all flex items-center gap-2"
               >
                 <Ban size={14} /> Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => handleBatchStatusUpdate("ACTIVE")}
                 className="px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-[8px] text-green-400 font-black text-[10px] uppercase tracking-widest hover:bg-green-500/20 transition-all flex items-center gap-2"
               >
                 <CheckCircle size={14} /> Reactivate
-              </button>
+              </Button>
               <div className="w-px h-6 bg-white/10 mx-2" />
-              <button
+              <Button
                 onClick={openBatchDeleteModal}
                 className="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-[8px] text-red-400 font-black text-[10px] uppercase tracking-widest hover:bg-red-500/20 transition-all flex items-center gap-2"
               >
                 <Trash2 size={14} /> Delete
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -224,12 +225,12 @@ const HostedGamesPage = () => {
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"
                 size={20}
               />
-              <input
+              <Input
                 type="text"
                 placeholder="Search by game type, host name or ground..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-[8px] py-4 pl-12 pr-6 text-white focus:outline-none focus:border-[#CCFF00]/40 transition-all font-medium"
+                className="w-full bg-white/5 border border-white/10 rounded-[8px] py-4 pl-12 pr-6 text-white focus:outline-none focus:border-primary/40 transition-all font-medium"
               />
             </div>
             <div className="md:col-span-4 flex gap-2">
@@ -238,17 +239,17 @@ const HostedGamesPage = () => {
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"
                   size={18}
                 />
-                <select
+                <Select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-[8px] py-4 pl-12 pr-6 text-white appearance-none focus:outline-none focus:border-[#CCFF00]/40 transition-all font-bold text-xs uppercase tracking-widest"
+                  className="w-full bg-white/5 border border-white/10 rounded-[8px] py-4 pl-12 pr-6 text-white appearance-none focus:outline-none focus:border-primary/40 transition-all font-bold text-xs uppercase tracking-widest"
                 >
                   <option value="ALL">All Status</option>
                   <option value="ACTIVE">Active</option>
                   <option value="PENDING">Pending</option>
                   <option value="COMPLETED">Completed</option>
                   <option value="CANCELLED">Cancelled</option>
-                </select>
+                </Select>
               </div>
             </div>
           </div>
@@ -270,16 +271,16 @@ const HostedGamesPage = () => {
         ) : (
           <div className="space-y-4">
             {/* Table Header */}
-            <div className="hidden lg:grid grid-cols-12 gap-4 px-8 py-4 bg-[#0d0d0d] border border-white/5 rounded-[8px] text-[10px] font-black text-gray-500 uppercase tracking-widest items-center">
+            <div className="hidden lg:grid grid-cols-12 gap-4 px-8 py-4 bg-background border border-white/5 rounded-[8px] text-[10px] font-black text-gray-500 uppercase tracking-widest items-center">
               <div className="col-span-1 flex justify-center">
-                <input
+                <Input
                   type="checkbox"
                   checked={
                     filteredGames.length > 0 &&
                     selectedIds.length === filteredGames.length
                   }
                   onChange={handleSelectAll}
-                  className="w-5 h-5 rounded border-white/10 bg-white/5 text-[#CCFF00] focus:ring-[#CCFF00]/50"
+                  className="w-5 h-5 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/50"
                 />
               </div>
               <div className="col-span-3">Game Type / ID</div>
@@ -293,33 +294,33 @@ const HostedGamesPage = () => {
               <div
                 key={game._id}
                 onClick={() => handleSelect(game._id)}
-                className={`group relative bg-[#0d0d0d] border transition-all duration-500 rounded-[8px] p-6 overflow-hidden cursor-pointer ${selectedIds.includes(game._id) ? "border-[#CCFF00] bg-[#CCFF00]/5" : "border-white/5 hover:border-[#CCFF00]/40"}`}
+                className={`group relative bg-background border transition-all duration-500 rounded-[8px] p-6 overflow-hidden cursor-pointer ${selectedIds.includes(game._id) ? "border-primary bg-primary/5" : "border-white/5 hover:border-primary/40"}`}
               >
                 <div
-                  className={`absolute inset-y-0 left-0 w-1 bg-[#CCFF00] transition-transform duration-500 ${selectedIds.includes(game._id) ? "scale-y-100" : "scale-y-0 group-hover:scale-y-100"}`}
+                  className={`absolute inset-y-0 left-0 w-1 bg-primary transition-transform duration-500 ${selectedIds.includes(game._id) ? "scale-y-100" : "scale-y-0 group-hover:scale-y-100"}`}
                 />
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center relative z-10">
                   {/* Selection Checkbox */}
                   <div className="lg:col-span-1 flex items-center justify-center">
-                    <input
+                    <Input
                       type="checkbox"
                       checked={selectedIds.includes(game._id)}
                       onChange={(e) => {
                         e.stopPropagation();
                         handleSelect(game._id);
                       }}
-                      className="w-5 h-5 rounded border-white/10 bg-white/5 text-[#CCFF00] focus:ring-[#CCFF00]/50"
+                      className="w-5 h-5 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/50"
                     />
                   </div>
 
                   {/* Match Info */}
                   <div className="lg:col-span-3 flex items-center gap-5">
-                    <div className="w-12 h-12 rounded-[8px] bg-[#CCFF00]/10 flex items-center justify-center text-[#CCFF00] border border-[#CCFF00]/20">
+                    <div className="w-12 h-12 rounded-[8px] bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
                       <Activity size={24} />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-[15px] font-black text-white uppercase tracking-tight group-hover:text-[#CCFF00] transition-colors truncate">
+                      <h3 className="text-[15px] font-black text-white uppercase tracking-tight group-hover:text-primary transition-colors truncate">
                         {game.gameType}
                       </h3>
                       <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em] mt-1">
@@ -377,16 +378,16 @@ const HostedGamesPage = () => {
 
                   {/* Actions */}
                   <div className="lg:col-span-2 flex justify-end gap-2">
-                    <button
+                    <Button
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/match/${game._id}`);
                       }}
-                      className="p-2 rounded-[8px] bg-white/5 border border-white/10 text-white/40 hover:bg-[#CCFF00] hover:text-black hover:border-[#CCFF00] transition-all"
+                      className="p-2 rounded-[8px] bg-white/5 border border-white/10 text-white/40 hover:bg-primary hover:text-black hover:border-primary transition-all"
                     >
                       <Eye size={18} />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={(e) => {
                         e.stopPropagation();
                         openDeleteModal(game);
@@ -394,7 +395,7 @@ const HostedGamesPage = () => {
                       className="p-2 rounded-[8px] bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all"
                     >
                       <Trash2 size={18} />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>

@@ -186,19 +186,19 @@ const MobileBottomNav = () => {
               <div className="absolute bottom-[8px] flex justify-center items-center">
                 <button
                   onClick={handleToggle}
-                  className={`relative flex items-center justify-center w-[44px] h-[44px] rounded-full text-black transition-all duration-500 border-[3px] border-[#050505] ${
+                  className={`relative flex items-center justify-center w-[44px] h-[44px] rounded-full text-black transition-all duration-500 border-[3px] border-[#050505] overflow-hidden ${
                     isMenuOpen ? "bg-[#aade55]" : "bg-[#BFF367]"
                   }`}
                 >
                   <Plus
                     size={22}
                     strokeWidth={3.5}
-                    className={`absolute transition-all duration-300 ease-in-out ${isMenuOpen ? "opacity-0 scale-50 rotate-90" : "opacity-100 scale-100 rotate-0"}`}
+                    className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-in-out ${isMenuOpen ? "opacity-0 scale-50 rotate-90" : "opacity-100 scale-100 rotate-0"}`}
                   />
                   <Search
                     size={20}
                     strokeWidth={3}
-                    className={`absolute transition-all duration-300 ease-in-out ${isMenuOpen ? "opacity-100 scale-100 rotate-0" : "opacity-0 scale-50 -rotate-90"}`}
+                    className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-in-out ${isMenuOpen ? "opacity-100 scale-100 rotate-0" : "opacity-0 scale-50 -rotate-90"}`}
                   />
                 </button>
               </div>

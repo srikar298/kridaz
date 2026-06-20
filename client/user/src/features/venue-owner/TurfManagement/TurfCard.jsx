@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Edit2, Trash2, Tag, Star, Eye, EyeOff } from "lucide-react";
+import { Edit2, Trash2, Tag, Star, Eye, EyeOff } from "lucide-react";import { Button } from "@kridaz/ui";
+
 
 const TurfCard = ({ turf, onEdit, onDelete, onToggleVisibility }) => {
   const mediaItems =
@@ -19,7 +20,7 @@ const TurfCard = ({ turf, onEdit, onDelete, onToggleVisibility }) => {
     url && typeof url === "string" && url.match(/\.(mp4|webm|ogg)$/i);
 
   return (
-    <div className="bg-[#121212] border border-white/10 rounded-[16px] overflow-hidden group hover:border-[#B3DC26]/30 transition-all duration-500 h-full flex flex-col shadow-[var(--shadow-2)] relative">
+    <div className="bg-card border border-white/10 rounded-[16px] overflow-hidden group hover:border-primary/30 transition-all duration-500 h-full flex flex-col shadow-[var(--shadow-2)] relative">
       <Link
         to={`/venue-owner/turf/${turf._id}`}
         className="block aspect-video relative overflow-hidden group/media"
@@ -79,12 +80,12 @@ const TurfCard = ({ turf, onEdit, onDelete, onToggleVisibility }) => {
         >
           <div className="flex justify-between items-start mb-2">
             <div className="space-y-1">
-              <h2 className="text-[11px] md:text-[13px] font-bold text-white uppercase tracking-widest group-hover/title:text-[#B3DC26] transition-colors font-open-sans">
+              <h2 className="text-[11px] md:text-[13px] font-bold text-white uppercase tracking-widest group-hover/title:text-primary transition-colors font-open-sans">
                 {turf.name}
               </h2>
               <div className="flex items-center gap-1.5">
                 <div
-                  className={`px-1.5 py-0.5 rounded-[16px] text-[8px] font-bold uppercase tracking-widest border ${turf.status === "approved" ? "bg-[#B3DC26]/10 border-[#B3DC26]/20 text-[#B3DC26]" : turf.status === "rejected" ? "bg-red-500/10 border-red-500/20 text-red-500" : turf.status === "decommissioned" ? "bg-orange-500/10 border-orange-500/20 text-orange-500" : turf.status === "deleted" ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-[#1B1B1B] border-white/10 text-yellow-500"}`}
+                  className={`px-1.5 py-0.5 rounded-[16px] text-[8px] font-bold uppercase tracking-widest border ${turf.status === "approved" ? "bg-primary/10 border-primary/20 text-primary" : turf.status === "rejected" ? "bg-red-500/10 border-red-500/20 text-red-500" : turf.status === "decommissioned" ? "bg-orange-500/10 border-orange-500/20 text-orange-500" : turf.status === "deleted" ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-card border-white/10 text-yellow-500"}`}
                 >
                   {turf.status}
                 </div>
@@ -103,8 +104,8 @@ const TurfCard = ({ turf, onEdit, onDelete, onToggleVisibility }) => {
               </div>
             </div>
 
-            <div className="flex items-center bg-[#111] px-1.5 py-0.5 rounded-[16px] border border-white/10 mt-0.5">
-              <Star size={8} className="text-[#B3DC26] mr-1 fill-[#BFF367]" />
+            <div className="flex items-center bg-card px-1.5 py-0.5 rounded-[16px] border border-white/10 mt-0.5">
+              <Star size={8} className="text-primary mr-1 fill-primary" />
               <span className="text-[8px] font-bold text-white font-open-sans">
                 {turf.avgRating ? turf.avgRating.toFixed(1) : "NEW"}
               </span>
@@ -118,32 +119,32 @@ const TurfCard = ({ turf, onEdit, onDelete, onToggleVisibility }) => {
 
         <div className="mt-auto space-y-3">
           <div className="flex items-center justify-between">
-            <button className="flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1 bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none hover:bg-white text-black rounded-[16px] text-[7px] md:text-[8px] font-black uppercase tracking-widest transition-all shadow-[0_5px_15px_rgba(204,255,0,0.1)]">
+            <Button className="flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1 bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none hover:bg-white text-black rounded-[16px] text-[7px] md:text-[8px] font-black uppercase tracking-widest transition-all shadow-[0_5px_15px_rgba(204,255,0,0.1)]">
               <Tag size={10} />
               Promotion
-            </button>
+            </Button>
 
             <div className="flex items-center gap-1.5">
-              <button
+              <Button
                 onClick={onEdit}
-                className="w-6 h-6 md:w-7 md:h-7 bg-[#111] border border-white/10 hover:border-[#B3DC26]/40 text-white/70 hover:text-[#B3DC26] rounded-[16px] transition-all flex items-center justify-center group/btn"
+                className="w-6 h-6 md:w-7 md:h-7 bg-card border border-white/10 hover:border-primary/40 text-white/70 hover:text-primary rounded-[16px] transition-all flex items-center justify-center group/btn"
               >
                 <Edit2 size={11} />
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={onToggleVisibility}
-                className={`w-6 h-6 md:w-7 md:h-7 rounded-[16px] transition-all flex items-center justify-center border ${turf.isActive ? "bg-[#B3DC26]/5 border-[#B3DC26]/20 text-[#B3DC26] hover:bg-[#B3DC26]/10" : "bg-black border-white/10 text-[#444] hover:text-white"}`}
+                className={`w-6 h-6 md:w-7 md:h-7 rounded-[16px] transition-all flex items-center justify-center border ${turf.isActive ? "bg-primary/5 border-primary/20 text-primary hover:bg-primary/10" : "bg-black border-white/10 text-[#444] hover:text-white"}`}
               >
                 {turf.isActive ? <Eye size={11} /> : <EyeOff size={11} />}
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={onDelete}
-                className="w-6 h-6 md:w-7 md:h-7 bg-[#111] border border-white/10 hover:border-red-500/40 text-white/70 hover:text-red-500 rounded-[16px] transition-all flex items-center justify-center"
+                className="w-6 h-6 md:w-7 md:h-7 bg-card border border-white/10 hover:border-red-500/40 text-white/70 hover:text-red-500 rounded-[16px] transition-all flex items-center justify-center"
               >
                 <Trash2 size={11} />
-              </button>
+              </Button>
             </div>
           </div>
         </div>

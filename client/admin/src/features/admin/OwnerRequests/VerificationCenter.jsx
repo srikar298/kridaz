@@ -12,7 +12,8 @@ import {
   Filter,
   ChevronDown,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
+
 
 const VerificationCenter = () => {
   const {
@@ -76,18 +77,18 @@ const VerificationCenter = () => {
   const displayRequests = activeTab === "pending" ? requests : rejectedRequests;
 
   return (
-    <div className="bg-[#000000]">
+    <div className="bg-background">
       <div className="p-4 lg:px-10 lg:pt-8 lg:pb-12 space-y-8 lg:space-y-10 animate-fade-in pt-0 pb-24 relative">
         {/* Background Glows */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#CCFF00]/5 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#CCFF00]/5 blur-[120px] pointer-events-none" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 blur-[120px] pointer-events-none" />
 
         <div className="space-y-8 lg:space-y-10 relative z-10">
           {/* Role Header */}
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic text-white">
-                PARTNER <span className="text-[#CCFF00]">MISSION CONTROL</span>
+                PARTNER <span className="text-primary">MISSION CONTROL</span>
               </h1>
               <p className="text-gray-500 font-medium tracking-wider uppercase text-[10px] mt-2">
                 Unified Governance • Compliance Oversight • Role Verification
@@ -98,11 +99,11 @@ const VerificationCenter = () => {
                 <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
                   Pending
                 </p>
-                <p className="text-2xl font-black text-[#CCFF00] italic">
+                <p className="text-2xl font-black text-primary italic">
                   {requests.length}
                 </p>
               </div>
-              <div className="w-[1px] h-10 bg-[#2D2D2D]" />
+              <div className="w-[1px] h-10 bg-border" />
               <div className="text-right">
                 <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
                   Archived
@@ -115,20 +116,20 @@ const VerificationCenter = () => {
           </div>
 
           {/* Control Center: Tabs, Role Filters & Search */}
-          <div className="bg-[#000000] p-6 rounded-[8px] border border-[#2D2D2D] shadow-[var(--shadow-2)]">
+          <div className="bg-background p-6 rounded-[8px] border border-border shadow-[var(--shadow-2)]">
             <div className="flex flex-col gap-6">
               {/* Header Row */}
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div>
                   <div className="flex items-center gap-3 mb-1">
-                    <div className="p-1.5 bg-[#CCFF00]/10 text-[#CCFF00] rounded-[4px] border border-[#CCFF00]/20">
+                    <div className="p-1.5 bg-primary/10 text-primary rounded-[4px] border border-primary/20">
                       <ShieldCheck size={16} />
                     </div>
                     <h2 className="text-xl font-semibold text-white uppercase tracking-tight">
                       Verification Center
                     </h2>
                   </div>
-                  <p className="text-[10px] font-normal text-[#999999] uppercase tracking-widest">
+                  <p className="text-[10px] font-normal text-muted-foreground uppercase tracking-widest">
                     {activeTab === "pending"
                       ? "Orchestrating Global Partner Onboarding"
                       : "Reviewing Denied Verification Dossiers"}
@@ -136,26 +137,26 @@ const VerificationCenter = () => {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-4">
-                  <div className="flex items-center gap-2 bg-[#1A1A1A] p-1 rounded-[6px] border border-[#2D2D2D]">
+                  <div className="flex items-center gap-2 bg-card p-1 rounded-[6px] border border-border">
                     {["pending", "rejected"].map((tab) => (
-                      <button
+                      <Button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`px-4 py-1.5 rounded-[4px] text-[11px] font-semibold uppercase tracking-wider transition-all ${activeTab === tab ? "bg-[#CCFF00] text-black" : "text-[#878C9F] hover:text-white"}`}
+                        className={`px-4 py-1.5 rounded-[4px] text-[11px] font-semibold uppercase tracking-wider transition-all ${activeTab === tab ? "bg-primary text-black" : "text-muted-foreground hover:text-white"}`}
                       >
                         {tab}
-                      </button>
+                      </Button>
                     ))}
                   </div>
 
                   {/* Roles Dropdown */}
                   <div className="relative">
-                    <button
+                    <Button
                       onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-                      className="h-9 px-4 bg-[#0F0F0F] border border-[#2D2D2D] text-white rounded-[6px] flex items-center gap-3 hover:border-[#CCFF00]/50 transition-all min-w-[160px] justify-between group"
+                      className="h-9 px-4 bg-[#0F0F0F] border border-border text-white rounded-[6px] flex items-center gap-3 hover:border-primary/50 transition-all min-w-[160px] justify-between group"
                     >
                       <div className="flex items-center gap-2">
-                        <Users size={14} className="text-[#CCFF00]" />
+                        <Users size={14} className="text-primary" />
                         <span className="text-[10px] font-black uppercase tracking-[0.2em]">
                           {roleOptions.find((r) => r.id === roleFilter)
                             ?.label || "ROLES"}
@@ -163,9 +164,9 @@ const VerificationCenter = () => {
                       </div>
                       <ChevronDown
                         size={12}
-                        className={`text-gray-500 transition-transform ${isRoleDropdownOpen ? "rotate-180 text-[#CCFF00]" : ""}`}
+                        className={`text-gray-500 transition-transform ${isRoleDropdownOpen ? "rotate-180 text-primary" : ""}`}
                       />
-                    </button>
+                    </Button>
 
                     {isRoleDropdownOpen && (
                       <>
@@ -173,21 +174,21 @@ const VerificationCenter = () => {
                           className="fixed inset-0 z-40"
                           onClick={() => setIsRoleDropdownOpen(false)}
                         />
-                        <div className="absolute top-full right-0 mt-2 w-full bg-[#0F0F0F] border border-[#2D2D2D] rounded-[6px] shadow-2xl overflow-hidden z-50 animate-scale-in">
+                        <div className="absolute top-full right-0 mt-2 w-full bg-[#0F0F0F] border border-border rounded-[6px] shadow-2xl overflow-hidden z-50 animate-scale-in">
                           {roleOptions.map((role) => (
-                            <button
+                            <Button
                               key={role.id}
                               onClick={() => {
                                 handleRoleFilter(role.id);
                                 setIsRoleDropdownOpen(false);
                               }}
-                              className={`w-full px-4 py-3 text-left text-[9px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-between ${roleFilter === role.id ? "bg-[#CCFF00]/10 text-[#CCFF00]" : "text-gray-400 hover:bg-white/[0.03] hover:text-white"}`}
+                              className={`w-full px-4 py-3 text-left text-[9px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-between ${roleFilter === role.id ? "bg-primary/10 text-primary" : "text-gray-400 hover:bg-white/[0.03] hover:text-white"}`}
                             >
                               {role.label}
                               {roleFilter === role.id && (
-                                <Zap size={10} className="text-[#CCFF00]" />
+                                <Zap size={10} className="text-primary" />
                               )}
-                            </button>
+                            </Button>
                           ))}
                         </div>
                       </>
@@ -204,10 +205,10 @@ const VerificationCenter = () => {
 
           {/* Main List Area */}
           {displayRequests.length === 0 ? (
-            <div className="bg-[#000000] p-20 rounded-[8px] border border-[#2D2D2D] text-center relative overflow-hidden group min-h-[400px] flex items-center justify-center">
-              <div className="absolute inset-0 bg-[#CCFF00]/5 opacity-0 group-hover:opacity-100 transition-opacity blur-[80px]" />
+            <div className="bg-background p-20 rounded-[8px] border border-border text-center relative overflow-hidden group min-h-[400px] flex items-center justify-center">
+              <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity blur-[80px]" />
               <div className="relative z-10 space-y-4">
-                <div className="w-16 h-16 mx-auto rounded-full bg-[#2D2D2D] flex items-center justify-center text-gray-500 border border-[#404040]">
+                <div className="w-16 h-16 mx-auto rounded-full bg-border flex items-center justify-center text-gray-500 border border-[#404040]">
                   {activeTab === "pending" ? (
                     <Clock size={24} />
                   ) : (
@@ -220,7 +221,7 @@ const VerificationCenter = () => {
                       ? "Queue Optimized"
                       : "No Rejections Found"}
                   </h2>
-                  <p className="text-[12px] font-normal text-[#999999] uppercase tracking-widest mt-1">
+                  <p className="text-[12px] font-normal text-muted-foreground uppercase tracking-widest mt-1">
                     {activeTab === "pending"
                       ? "All verification pipelines are currently clear."
                       : "Your rejection history is currently empty."}
@@ -273,14 +274,14 @@ const VerificationCenter = () => {
                 className="absolute inset-0 bg-black/80 backdrop-blur-sm"
                 onClick={() => setShowApprovalModal(false)}
               />
-              <div className="relative w-full max-w-md bg-[#0D0D0D] border border-[#2D2D2D] rounded-[8px] p-8 space-y-6 shadow-2xl animate-scale-in">
+              <div className="relative w-full max-w-md bg-background border border-border rounded-[8px] p-8 space-y-6 shadow-2xl animate-scale-in">
                 <div className="space-y-2">
                   <h3 className="text-xl font-display uppercase tracking-tight text-white">
                     Partner Authorization
                   </h3>
                   <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
                     Confirming credentials for{" "}
-                    <span className="text-[#CCFF00]">
+                    <span className="text-primary">
                       {selectedRequest?.name}
                     </span>
                   </p>
@@ -291,21 +292,21 @@ const VerificationCenter = () => {
                     <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest px-1">
                       Admin Name
                     </label>
-                    <input
+                    <Input
                       type="text"
                       value={adminInfo.name}
                       onChange={(e) =>
                         setAdminInfo({ ...adminInfo, name: e.target.value })
                       }
                       placeholder="ENTER FULL NAME"
-                      className="w-full bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-sm text-white placeholder:text-white/10 focus:outline-none focus:border-[#CCFF00]/50 transition-colors uppercase font-bold"
+                      className="w-full bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-sm text-white placeholder:text-white/10 focus:outline-none focus:border-primary/50 transition-colors uppercase font-bold"
                     />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest px-1">
                       Designation
                     </label>
-                    <input
+                    <Input
                       type="text"
                       value={adminInfo.designation}
                       onChange={(e) =>
@@ -315,34 +316,34 @@ const VerificationCenter = () => {
                         })
                       }
                       placeholder="E.G. OPERATIONS HEAD"
-                      className="w-full bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-sm text-white placeholder:text-white/10 focus:outline-none focus:border-[#CCFF00]/50 transition-colors uppercase font-bold"
+                      className="w-full bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-sm text-white placeholder:text-white/10 focus:outline-none focus:border-primary/50 transition-colors uppercase font-bold"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 pt-4">
-                  <button
+                  <Button
                     onClick={() => setShowApprovalModal(false)}
                     className="py-4 rounded-[8px] text-[10px] font-black uppercase tracking-widest text-gray-500 bg-white/5 hover:bg-white/10 transition-colors"
                   >
                     Abort
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={confirmApproval}
                     disabled={!adminInfo.name || !adminInfo.designation}
-                    className="py-4 rounded-[8px] text-[10px] font-black uppercase tracking-widest text-black bg-[#CCFF00] hover:bg-[#b8e600] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(204,255,0,0.2)]"
+                    className="py-4 rounded-[8px] text-[10px] font-black uppercase tracking-widest text-black bg-primary hover:bg-[#b8e600] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(204,255,0,0.2)]"
                   >
                     Authorize Partner
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
           )}
 
           {/* Footer Metrics */}
-          <div className="pt-8 border-t border-[#2D2D2D] flex flex-col sm:flex-row gap-4 justify-between items-center pb-8 opacity-40">
+          <div className="pt-8 border-t border-border flex flex-col sm:flex-row gap-4 justify-between items-center pb-8 opacity-40">
             <div className="flex items-center gap-4">
-              <span className="text-[10px] font-medium uppercase tracking-widest text-[#999999]">
+              <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
                 Unified Verification Hub v3.0
               </span>
             </div>

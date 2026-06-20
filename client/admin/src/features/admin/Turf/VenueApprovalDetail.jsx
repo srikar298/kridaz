@@ -24,7 +24,8 @@ import { format } from "date-fns";
 import toast from "react-hot-toast";
 import useTurfData from "@hooks/admin/useTurf";
 import ConfirmationPopup from "./ConfirmationPopup";
-import TurfSkeleton from "./TurfSkeleton";
+import TurfSkeleton from "./TurfSkeleton";import { Button } from "@kridaz/ui";
+
 
 const VenueApprovalDetail = () => {
   const { id } = useParams();
@@ -60,27 +61,27 @@ const VenueApprovalDetail = () => {
 
   if (loading || !turf) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] p-10">
+      <div className="min-h-screen bg-background p-10">
         <TurfSkeleton />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className="min-h-screen bg-background text-white">
       {/* Top Navigation Bar */}
-      <div className="sticky top-0 z-50 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-[#2D2D2D] px-6 py-4 flex items-center justify-between">
-        <button
+      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border px-6 py-4 flex items-center justify-between">
+        <Button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-400 hover:text-[#CCFF00] transition-colors font-bold uppercase text-[10px] tracking-widest"
+          className="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors font-bold uppercase text-[10px] tracking-widest"
         >
           <ArrowLeft size={16} />
           Return to Queue
-        </button>
+        </Button>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1 bg-[#CCFF00]/10 rounded-[6px] border border-[#CCFF00]/20">
-            <Activity size={12} className="text-[#CCFF00] animate-pulse" />
-            <span className="text-[9px] font-black text-[#CCFF00] uppercase tracking-widest">
+          <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-[6px] border border-primary/20">
+            <Activity size={12} className="text-primary animate-pulse" />
+            <span className="text-[9px] font-black text-primary uppercase tracking-widest">
               Active Verification Session
             </span>
           </div>
@@ -89,7 +90,7 @@ const VenueApprovalDetail = () => {
 
       <div className="max-w-7xl mx-auto p-6 lg:p-12 space-y-12">
         {/* Hero Section */}
-        <div className="relative h-[50vh] rounded-[8px] overflow-hidden border border-[#2D2D2D] shadow-2xl">
+        <div className="relative h-[50vh] rounded-[8px] overflow-hidden border border-border shadow-2xl">
           <img
             src={turf.image}
             alt={turf.name}
@@ -99,11 +100,11 @@ const VenueApprovalDetail = () => {
               e.target.src = "/banner-2.png";
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
 
           <div className="absolute bottom-0 left-0 w-full p-10 lg:p-16 space-y-4">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="px-4 py-1.5 bg-[#CCFF00] text-black text-[10px] font-black uppercase tracking-widest rounded-full">
+              <span className="px-4 py-1.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-full">
                 Venue Verification
               </span>
               <span
@@ -117,7 +118,7 @@ const VenueApprovalDetail = () => {
             </h1>
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2 text-gray-400 font-bold">
-                <MapPin size={18} className="text-[#CCFF00]" />
+                <MapPin size={18} className="text-primary" />
                 <span className="text-lg">
                   {[turf.location, turf.city, turf.state]
                     .filter(Boolean)
@@ -133,7 +134,7 @@ const VenueApprovalDetail = () => {
                 }
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-4 py-1.5 bg-[#CCFF00]/10 border border-[#CCFF00]/30 text-[#CCFF00] text-[10px] font-black uppercase tracking-widest rounded-[6px] hover:bg-[#CCFF00]/20 transition-all"
+                className="flex items-center gap-1.5 px-4 py-1.5 bg-primary/10 border border-primary/30 text-primary text-[10px] font-black uppercase tracking-widest rounded-[6px] hover:bg-primary/20 transition-all"
               >
                 <Navigation size={10} />
                 Get Directions
@@ -148,8 +149,8 @@ const VenueApprovalDetail = () => {
           <div className="lg:col-span-2 space-y-16">
             {/* Description Section */}
             <section className="space-y-6">
-              <div className="flex items-center gap-3 text-[#CCFF00]">
-                <div className="w-8 h-8 rounded-lg bg-[#CCFF00]/10 flex items-center justify-center border border-[#CCFF00]/20">
+              <div className="flex items-center gap-3 text-primary">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                   <Info size={16} />
                 </div>
                 <h2 className="text-xs font-black uppercase tracking-[0.2em]">
@@ -167,12 +168,12 @@ const VenueApprovalDetail = () => {
                 </p>
                 {(turf.description || "No description provided for this venue.")
                   ?.length > 150 && (
-                  <button
+                  <Button
                     onClick={() => setIsDescExpanded(!isDescExpanded)}
-                    className="text-[#CCFF00] text-xs font-bold uppercase tracking-wider mt-3 hover:underline"
+                    className="text-primary text-xs font-bold uppercase tracking-wider mt-3 hover:underline"
                   >
                     {isDescExpanded ? "Show Less" : "Read More"}
-                  </button>
+                  </Button>
                 )}
               </div>
             </section>
@@ -180,8 +181,8 @@ const VenueApprovalDetail = () => {
             {/* Gallery Section */}
             {turf.images && turf.images.length > 0 && (
               <section className="space-y-8">
-                <div className="flex items-center gap-3 text-[#CCFF00]">
-                  <div className="w-8 h-8 rounded-lg bg-[#CCFF00]/10 flex items-center justify-center border border-[#CCFF00]/20">
+                <div className="flex items-center gap-3 text-primary">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                     <Globe size={16} />
                   </div>
                   <h2 className="text-xs font-black uppercase tracking-[0.2em]">
@@ -192,7 +193,7 @@ const VenueApprovalDetail = () => {
                   {turf.images.map((img, i) => (
                     <div
                       key={i}
-                      className="group relative aspect-video rounded-[8px] overflow-hidden border border-[#2D2D2D] hover:border-[#CCFF00]/50 transition-all cursor-zoom-in"
+                      className="group relative aspect-video rounded-[8px] overflow-hidden border border-border hover:border-primary/50 transition-all cursor-zoom-in"
                     >
                       <img
                         src={img}
@@ -200,7 +201,7 @@ const VenueApprovalDetail = () => {
                         alt={`Gallery ${i}`}
                       />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="text-[10px] font-black uppercase tracking-widest px-4 py-2 bg-[#CCFF00] text-black rounded-full">
+                        <span className="text-[10px] font-black uppercase tracking-widest px-4 py-2 bg-primary text-black rounded-full">
                           Expand Intelligence
                         </span>
                       </div>
@@ -212,8 +213,8 @@ const VenueApprovalDetail = () => {
 
             {/* Hardware Section */}
             <section className="space-y-8">
-              <div className="flex items-center gap-3 text-[#CCFF00]">
-                <div className="w-8 h-8 rounded-lg bg-[#CCFF00]/10 flex items-center justify-center border border-[#CCFF00]/20">
+              <div className="flex items-center gap-3 text-primary">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                   <Shield size={16} />
                 </div>
                 <h2 className="text-xs font-black uppercase tracking-[0.2em]">
@@ -224,9 +225,9 @@ const VenueApprovalDetail = () => {
                 {turf.facilities?.map((facility, i) => (
                   <div
                     key={i}
-                    className="p-6 bg-white/[0.02] border border-white/5 rounded-[8px] flex flex-col items-center gap-4 text-center group hover:bg-[#CCFF00]/5 hover:border-[#CCFF00]/30 transition-all"
+                    className="p-6 bg-white/[0.02] border border-white/5 rounded-[8px] flex flex-col items-center gap-4 text-center group hover:bg-primary/5 hover:border-primary/30 transition-all"
                   >
-                    <div className="w-12 h-12 rounded-[8px] bg-white/5 flex items-center justify-center text-[#CCFF00] group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-[8px] bg-white/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                       <Activity size={20} />
                     </div>
                     <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest group-hover:text-white transition-colors">
@@ -239,8 +240,8 @@ const VenueApprovalDetail = () => {
 
             {/* Venue Policy Section */}
             <section className="space-y-6">
-              <div className="flex items-center gap-3 text-[#CCFF00]">
-                <div className="w-8 h-8 rounded-lg bg-[#CCFF00]/10 flex items-center justify-center border border-[#CCFF00]/20">
+              <div className="flex items-center gap-3 text-primary">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                   <FileText size={16} />
                 </div>
                 <h2 className="text-xs font-black uppercase tracking-[0.2em]">
@@ -255,12 +256,12 @@ const VenueApprovalDetail = () => {
                     {turf.policies}
                   </p>
                   {turf.policies?.length > 150 && (
-                    <button
+                    <Button
                       onClick={() => setIsPolicyExpanded(!isPolicyExpanded)}
-                      className="text-[#CCFF00] text-xs font-bold uppercase tracking-wider mt-2 hover:underline"
+                      className="text-primary text-xs font-bold uppercase tracking-wider mt-2 hover:underline"
                     >
                       {isPolicyExpanded ? "Show Less" : "Read More"}
-                    </button>
+                    </Button>
                   )}
                 </div>
               ) : (
@@ -277,8 +278,8 @@ const VenueApprovalDetail = () => {
             {/* Per-Slot Pricing Section */}
             {turf.generatedSlots && turf.generatedSlots.length > 0 && (
               <section className="space-y-6">
-                <div className="flex items-center gap-3 text-[#CCFF00]">
-                  <div className="w-8 h-8 rounded-lg bg-[#CCFF00]/10 flex items-center justify-center border border-[#CCFF00]/20">
+                <div className="flex items-center gap-3 text-primary">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                     <DollarSign size={16} />
                   </div>
                   <h2 className="text-xs font-black uppercase tracking-[0.2em]">
@@ -292,7 +293,7 @@ const VenueApprovalDetail = () => {
                   {turf.generatedSlots.map((slot, i) => (
                     <div
                       key={i}
-                      className={`p-4 rounded-[8px] border flex flex-col gap-1 ${slot.isActive !== false ? "bg-white/[0.02] border-white/5 hover:border-[#CCFF00]/20" : "bg-transparent border-dashed border-white/5 opacity-40"} transition-colors`}
+                      className={`p-4 rounded-[8px] border flex flex-col gap-1 ${slot.isActive !== false ? "bg-white/[0.02] border-white/5 hover:border-primary/20" : "bg-transparent border-dashed border-white/5 opacity-40"} transition-colors`}
                     >
                       <span className="text-white text-[10px] font-black">
                         {slot.startTime}
@@ -300,7 +301,7 @@ const VenueApprovalDetail = () => {
                       <span className="text-gray-600 text-[9px] font-bold">
                         → {slot.endTime}
                       </span>
-                      <span className="text-[#CCFF00] text-sm font-black mt-1">
+                      <span className="text-primary text-sm font-black mt-1">
                         Rs {slot.price ?? turf.pricePerHour}
                       </span>
                     </div>
@@ -314,8 +315,8 @@ const VenueApprovalDetail = () => {
           <div className="space-y-10">
             {/* Action Center */}
             {turf.status === "pending" && (
-              <div className="p-8 bg-[#0a0a0a] border border-[#CCFF00]/30 rounded-[8px] space-y-6 shadow-2xl shadow-[#CCFF00]/5 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#CCFF00]/10 blur-[60px] pointer-events-none" />
+              <div className="p-8 bg-background border border-primary/30 rounded-[8px] space-y-6 shadow-2xl shadow-[var(--primary)]/5 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[60px] pointer-events-none" />
                 <div className="relative z-10 space-y-6">
                   <div className="space-y-2">
                     <h3 className="text-lg font-black uppercase tracking-tighter">
@@ -326,16 +327,16 @@ const VenueApprovalDetail = () => {
                     </p>
                   </div>
                   <div className="flex flex-col gap-4">
-                    <button
+                    <Button
                       onClick={() =>
                         setConfirmModal({ isOpen: true, type: "approve" })
                       }
-                      className="w-full py-5 bg-[#CCFF00] text-black font-black uppercase tracking-[0.2em] text-xs rounded-[8px] hover:bg-[#CCFF00]/80 transition-all flex items-center justify-center gap-3 shadow-xl shadow-[#CCFF00]/20"
+                      className="w-full py-5 bg-primary text-black font-black uppercase tracking-[0.2em] text-xs rounded-[8px] hover:bg-primary/80 transition-all flex items-center justify-center gap-3 shadow-xl shadow-[var(--primary)]/20"
                     >
                       <Check size={18} />
                       Authorize Venue
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() =>
                         setConfirmModal({ isOpen: true, type: "reject" })
                       }
@@ -343,7 +344,7 @@ const VenueApprovalDetail = () => {
                     >
                       <X size={18} />
                       Decline Request
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -359,7 +360,7 @@ const VenueApprovalDetail = () => {
                   <span className="text-5xl font-black text-white tracking-tighter">
                     Rs {turf.pricePerHour}
                   </span>
-                  <span className="text-[#CCFF00] font-black text-sm uppercase">
+                  <span className="text-primary font-black text-sm uppercase">
                     / Hour
                   </span>
                 </div>
@@ -388,7 +389,7 @@ const VenueApprovalDetail = () => {
                 )}
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 text-gray-500">
-                    <Navigation size={14} className="text-[#CCFF00]" />
+                    <Navigation size={14} className="text-primary" />
                     <span className="text-[10px] font-black uppercase tracking-widest">
                       DIRECTIONS
                     </span>
@@ -402,7 +403,7 @@ const VenueApprovalDetail = () => {
                     }
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-3 bg-[#CCFF00]/10 border border-[#CCFF00]/20 rounded-[8px] text-[#CCFF00] text-[10px] font-black uppercase tracking-widest hover:bg-[#CCFF00]/20 transition-all group"
+                    className="flex items-center gap-2 px-4 py-3 bg-primary/10 border border-primary/20 rounded-[8px] text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all group"
                   >
                     <Navigation
                       size={12}
@@ -461,7 +462,7 @@ const VenueApprovalDetail = () => {
                       </div>
                       <a
                         href={`tel:${contact.phone}`}
-                        className="p-3 bg-[#CCFF00]/10 text-[#CCFF00] rounded-[8px] group-hover:bg-[#CCFF00] group-hover:text-black transition-all"
+                        className="p-3 bg-primary/10 text-primary rounded-[8px] group-hover:bg-primary group-hover:text-black transition-all"
                       >
                         <Phone size={16} />
                       </a>
@@ -474,17 +475,17 @@ const VenueApprovalDetail = () => {
             {/* Owner Intelligence Card */}
             <div className="p-8 bg-white/[0.02] border border-white/5 rounded-[8px] space-y-6">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 rounded-lg bg-[#CCFF00]/10 flex items-center justify-center border border-[#CCFF00]/20">
-                  <User size={16} className="text-[#CCFF00]" />
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+                  <User size={16} className="text-primary" />
                 </div>
-                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-[#CCFF00]">
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-primary">
                   Owner Intelligence
                 </h2>
               </div>
 
               {/* Avatar + name row */}
               <div className="flex items-center gap-5">
-                <div className="w-16 h-16 rounded-[8px] bg-[#1A1A1A] border border-[#2D2D2D] overflow-hidden shrink-0 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-[8px] bg-card border border-border overflow-hidden shrink-0 flex items-center justify-center">
                   {turf.owner?.profileImage ? (
                     <img
                       src={turf.owner.profileImage}
@@ -492,14 +493,14 @@ const VenueApprovalDetail = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <User size={28} className="text-[#CCFF00]/40" />
+                    <User size={28} className="text-primary/40" />
                   )}
                 </div>
                 <div className="min-w-0">
                   <p className="text-white font-black text-xl uppercase tracking-tight truncate">
                     {turf.owner?.name || "Unknown Owner"}
                   </p>
-                  <span className="text-[9px] font-black px-2 py-0.5 bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20 rounded-full uppercase tracking-widest">
+                  <span className="text-[9px] font-black px-2 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded-full uppercase tracking-widest">
                     {turf.owner?.role?.replace(/_/g, " ") || "Venue Owner"}
                   </span>
                 </div>
@@ -510,10 +511,10 @@ const VenueApprovalDetail = () => {
                 {turf.owner?.email && (
                   <a
                     href={`mailto:${turf.owner.email}`}
-                    className="flex items-center gap-3 p-3 bg-white/[0.02] rounded-[8px] border border-white/5 hover:border-[#CCFF00]/30 hover:bg-[#CCFF00]/5 transition-all group"
+                    className="flex items-center gap-3 p-3 bg-white/[0.02] rounded-[8px] border border-white/5 hover:border-primary/30 hover:bg-primary/5 transition-all group"
                   >
                     <div className="w-8 h-8 rounded-[8px] bg-white/5 flex items-center justify-center shrink-0">
-                      <Mail size={14} className="text-[#CCFF00]" />
+                      <Mail size={14} className="text-primary" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-[9px] text-gray-500 font-black uppercase tracking-widest">
@@ -525,7 +526,7 @@ const VenueApprovalDetail = () => {
                     </div>
                     <ExternalLink
                       size={12}
-                      className="text-gray-600 group-hover:text-[#CCFF00] shrink-0"
+                      className="text-gray-600 group-hover:text-primary shrink-0"
                     />
                   </a>
                 )}
@@ -534,10 +535,10 @@ const VenueApprovalDetail = () => {
                 {turf.owner?.phoneNumber && (
                   <a
                     href={`tel:${turf.owner.phoneNumber}`}
-                    className="flex items-center gap-3 p-3 bg-white/[0.02] rounded-[8px] border border-white/5 hover:border-[#CCFF00]/30 hover:bg-[#CCFF00]/5 transition-all group"
+                    className="flex items-center gap-3 p-3 bg-white/[0.02] rounded-[8px] border border-white/5 hover:border-primary/30 hover:bg-primary/5 transition-all group"
                   >
                     <div className="w-8 h-8 rounded-[8px] bg-white/5 flex items-center justify-center shrink-0">
-                      <Phone size={14} className="text-[#CCFF00]" />
+                      <Phone size={14} className="text-primary" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-[9px] text-gray-500 font-black uppercase tracking-widest">
@@ -549,7 +550,7 @@ const VenueApprovalDetail = () => {
                     </div>
                     <ExternalLink
                       size={12}
-                      className="text-gray-600 group-hover:text-[#CCFF00] shrink-0"
+                      className="text-gray-600 group-hover:text-primary shrink-0"
                     />
                   </a>
                 )}
@@ -558,7 +559,7 @@ const VenueApprovalDetail = () => {
                 {turf.owner?.createdAt && (
                   <div className="flex items-center gap-3 p-3 bg-white/[0.02] rounded-[8px] border border-white/5">
                     <div className="w-8 h-8 rounded-[8px] bg-white/5 flex items-center justify-center shrink-0">
-                      <Calendar size={14} className="text-[#CCFF00]" />
+                      <Calendar size={14} className="text-primary" />
                     </div>
                     <div>
                       <p className="text-[9px] text-gray-500 font-black uppercase tracking-widest">
@@ -578,7 +579,7 @@ const VenueApprovalDetail = () => {
                 {turf.owner?.rating !== undefined && (
                   <div className="flex items-center gap-3 p-3 bg-white/[0.02] rounded-[8px] border border-white/5">
                     <div className="w-8 h-8 rounded-[8px] bg-white/5 flex items-center justify-center shrink-0">
-                      <Star size={14} className="text-[#CCFF00]" />
+                      <Star size={14} className="text-primary" />
                     </div>
                     <div>
                       <p className="text-[9px] text-gray-500 font-black uppercase tracking-widest">
@@ -598,7 +599,7 @@ const VenueApprovalDetail = () => {
                   <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">
                     Total Venues Owned
                   </span>
-                  <span className="text-2xl font-black text-[#CCFF00]">
+                  <span className="text-2xl font-black text-primary">
                     {turf.owner.totalVenues}
                   </span>
                 </div>
@@ -635,7 +636,7 @@ const VenueApprovalDetail = () => {
 const DetailRow = ({ icon: Icon, label, val }) => (
   <div className="space-y-3">
     <div className="flex items-center gap-3 text-gray-500">
-      <Icon size={14} className="text-[#CCFF00]" />
+      <Icon size={14} className="text-primary" />
       <span className="text-[10px] font-black uppercase tracking-widest">
         {label}
       </span>

@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { gsap } from "gsap";
+import { gsap } from "gsap";import { Button } from "@kridaz/ui";
+
 
 import "./Masonry.css";
 
@@ -278,7 +279,7 @@ const Masonry = ({
               className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl animate-in zoom-in duration-300"
               onClick={(e) => e.stopPropagation()}
             />
-            <button
+            <Button
               className="absolute top-6 right-6 text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors"
               onClick={() => setSelectedImg(null)}
             >
@@ -296,7 +297,7 @@ const Masonry = ({
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
-            </button>
+            </Button>
           </div>,
           document.body
         )}

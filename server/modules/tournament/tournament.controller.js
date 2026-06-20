@@ -175,7 +175,7 @@ export const uploadPoster = async (req, res, next) => {
       throw new ForbiddenError("Not authorized");
     }
 
-    // req.file.path comes from the multer upload middleware (cloudinary/s3)
+    // req.file.path comes from the multer upload middleware (R2/S3)
     const posterUrl = req.file.path;
 
     const updatedTournament = await prisma.tournament.update({

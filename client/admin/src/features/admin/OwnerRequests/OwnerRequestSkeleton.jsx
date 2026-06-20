@@ -1,6 +1,6 @@
 const OwnerRequestsSkeleton = () => {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] p-6 lg:p-10">
+    <div className="min-h-screen bg-background p-6 lg:p-10">
       <div className="space-y-12">
         <div className="relative">
           <div className="absolute -left-4 top-0 w-1 h-12 bg-gray-800 rounded-full"></div>
@@ -12,7 +12,7 @@ const OwnerRequestsSkeleton = () => {
           {[...Array(6)].map((_, index) => (
             <div
               key={index}
-              className="bg-[#111] rounded-[8px] border border-white/5 p-6 space-y-6 animate-pulse"
+              className="bg-card rounded-[8px] border border-white/5 p-6 space-y-6 animate-pulse"
             >
               <div className="space-y-4">
                 <div className="h-4 w-24 bg-gray-800 rounded"></div>

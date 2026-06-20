@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@hooks/useAxiosInstance";
-import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 import {
   Send,
   Users,
@@ -135,7 +136,7 @@ export const PushComposer = () => {
   return (
     <div className="grid gap-8 lg:grid-cols-12 items-start">
       {/* Composer Form - Left */}
-      <div className="lg:col-span-7 bg-[#111] border border-white/5 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+      <div className="lg:col-span-7 bg-card border border-white/5 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
         {/* Glow effect */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-lime-500/5 rounded-full blur-[80px] pointer-events-none" />
 
@@ -161,7 +162,7 @@ export const PushComposer = () => {
               Target Audience
             </label>
             <div className="grid grid-cols-2 gap-3">
-              <button
+              <Button
                 type="button"
                 onClick={() => {
                   setTargetType("ALL");
@@ -176,8 +177,8 @@ export const PushComposer = () => {
               >
                 <Users size={16} />
                 All Users (Broadcast)
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => setTargetType("SINGLE")}
                 className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 transition-all font-semibold text-xs uppercase tracking-wider ${
@@ -188,7 +189,7 @@ export const PushComposer = () => {
               >
                 <User size={16} />
                 Specific User
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -203,7 +204,7 @@ export const PushComposer = () => {
                   className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"
                   size={16}
                 />
-                <input
+                <Input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => {
@@ -227,7 +228,7 @@ export const PushComposer = () => {
               {showDropdown && users.length > 0 && (
                 <div className="absolute z-30 left-0 right-0 mt-1.5 bg-[#161616] border border-white/10 rounded-xl overflow-hidden shadow-2xl max-h-56 overflow-y-auto custom-scrollbar">
                   {users.map((user) => (
-                    <button
+                    <Button
                       key={user.id}
                       type="button"
                       onClick={() => handleSelectUser(user)}
@@ -239,7 +240,7 @@ export const PushComposer = () => {
                       <span className="text-xs text-gray-500">
                         {user.email} • {user.phone || "No phone"}
                       </span>
-                    </button>
+                    </Button>
                   ))}
                 </div>
               )}
@@ -258,7 +259,7 @@ export const PushComposer = () => {
               <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">
                 Notification Title
               </label>
-              <input
+              <Input
                 type="text"
                 required
                 value={formData.title}
@@ -275,7 +276,7 @@ export const PushComposer = () => {
               <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">
                 Notification Message
               </label>
-              <textarea
+              <Textarea
                 required
                 rows={3}
                 value={formData.message}
@@ -296,7 +297,7 @@ export const PushComposer = () => {
                 <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">
                   Notification Type
                 </label>
-                <select
+                <Select
                   value={formData.type}
                   onChange={(e) =>
                     setFormData({ ...formData, type: e.target.value })
@@ -307,14 +308,14 @@ export const PushComposer = () => {
                   <option value="BOOKING">Booking Announcement</option>
                   <option value="PAYMENT">Cashback / Offer</option>
                   <option value="SUPPORT">Support Ticket</option>
-                </select>
+                </Select>
               </div>
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">
                   Deep Link / Navigation Path
                 </label>
-                <input
+                <Input
                   type="text"
                   value={formData.link}
                   onChange={(e) =>
@@ -329,7 +330,7 @@ export const PushComposer = () => {
 
           {/* Submit Button */}
           <div className="pt-4">
-            <button
+            <Button
               type="submit"
               disabled={sending}
               className="w-full py-3.5 rounded-xl bg-lime-500 text-black font-bold hover:bg-lime-400 transition-all shadow-[0_0_25px_rgba(132,204,22,0.25)] flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none"
@@ -345,18 +346,18 @@ export const PushComposer = () => {
                   SEND PUSH NOTIFICATION
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </form>
       </div>
 
       {/* Device Mockup Preview - Right */}
       <div className="lg:col-span-5 flex justify-center lg:sticky lg:top-24">
-        <div className="w-[280px] h-[560px] bg-black border-[6px] border-[#222] rounded-[40px] shadow-2xl relative overflow-hidden flex flex-col">
+        <div className="w-[280px] h-[560px] bg-black border-[6px] border-card rounded-[40px] shadow-2xl relative overflow-hidden flex flex-col">
           {/* Speaker & camera slot */}
           <div className="absolute top-3 left-1/2 -translate-x-1/2 w-28 h-4 bg-black rounded-full z-20 flex items-center justify-center">
-            <div className="w-1.5 h-1.5 bg-[#111] rounded-full mr-2" />
-            <div className="w-12 h-1 bg-[#111] rounded-full" />
+            <div className="w-1.5 h-1.5 bg-card rounded-full mr-2" />
+            <div className="w-12 h-1 bg-card rounded-full" />
           </div>
 
           {/* High Fidelity Wallpaper */}

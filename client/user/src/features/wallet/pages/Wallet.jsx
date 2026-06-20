@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { updateUser } from "@redux/slices/authSlice";
-import { loadRazorpay } from "@infrastructure/razorpay";
+import { loadRazorpay } from "@infrastructure/razorpay";import { Button, Input } from "@kridaz/ui";
+
 
 const SUBHEADING_STYLE = {
   fontFamily: "'Inter 28pt Light', sans-serif",
@@ -164,7 +165,7 @@ const WalletPage = () => {
           email: user?.email || "",
         },
         theme: {
-          color: "#BFF367",
+          color: "var(--primary)",
         },
       };
 
@@ -185,7 +186,7 @@ const WalletPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <Loader2 className="w-10 h-10 text-[#BFF367] animate-spin" />
+        <Loader2 className="w-10 h-10 text-primary animate-spin" />
       </div>
     );
   }
@@ -215,8 +216,8 @@ const WalletPage = () => {
               </div>
               <div className="relative z-10 space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-[#1B1B1B] rounded-[12px] backdrop-blur-sm">
-                    <Zap className="w-5 h-5 text-[#BFF367]" />
+                  <div className="p-2 bg-card rounded-[12px] backdrop-blur-sm">
+                    <Zap className="w-5 h-5 text-primary" />
                   </div>
                   <span className="font-inter text-[20px] font-black uppercase text-white/70 tracking-wider text-[11px]">
                     Available Coins
@@ -229,13 +230,13 @@ const WalletPage = () => {
                     </span>
                     <IndianRupee className="w-8 h-8 text-white/50 mt-4" />
                   </div>
-                  <p className="font-inter text-[12px] font-bold text-[#BFF367] uppercase">
+                  <p className="font-inter text-[12px] font-bold text-primary uppercase">
                     Spendable Coins Right Now
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-2 bg-[#1B1B1B] rounded-[16px] backdrop-blur-sm">
+                  <div className="p-2 bg-card rounded-[16px] backdrop-blur-sm">
                     <p className="font-inter text-xs font-black uppercase text-white/70 mb-1 tracking-widest">
                       Total
                     </p>
@@ -243,7 +244,7 @@ const WalletPage = () => {
                       {balance}
                     </p>
                   </div>
-                  <div className="p-2 bg-[#1B1B1B] rounded-[16px] backdrop-blur-sm">
+                  <div className="p-2 bg-card rounded-[16px] backdrop-blur-sm">
                     <p className="font-inter text-xs font-black uppercase text-white/70 mb-1 tracking-widest">
                       Reserved
                     </p>
@@ -263,59 +264,59 @@ const WalletPage = () => {
             {/* Top-up Form */}
             <div className="bg-black p-4 rounded-[16px] space-y-4">
               <h2 className="text-lg font-bold uppercase tracking-tight flex items-center gap-3 font-open-sans">
-                <Plus className="w-5 h-5 text-[#BFF367]" />
+                <Plus className="w-5 h-5 text-primary" />
                 Top-up Wallet
               </h2>
               <div className="space-y-4 font-inter">
                 <div className="relative">
                   <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-                  <input
+                  <Input
                     type="number"
                     value={topupAmount}
                     onChange={(e) => setTopupAmount(e.target.value)}
                     placeholder="Enter amount (e.g. 500)"
-                    className="w-full bg-[#000000] border border-white/10 rounded-[16px] py-2 pl-9 pr-3 text-sm font-bold focus:border-[#BFF367] focus:ring-1 focus:ring-[#BFF367] transition-all outline-none text-white font-inter"
+                    className="w-full bg-background border border-white/10 rounded-[16px] py-2 pl-9 pr-3 text-sm font-bold focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none text-white font-inter"
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-2 font-inter">
                   {[500, 1000, 2000].map((amt) => (
-                    <button
+                    <Button
                       key={amt}
                       onClick={() => setTopupAmount(amt.toString())}
-                      className="py-2 rounded-[16px] bg-[#1B1B1B] border border-white/10 hover:border-[#55DEE8] hover:text-[#55DEE8] font-bold text-xs uppercase transition-all"
+                      className="py-2 rounded-[16px] bg-card border border-white/10 hover:border-secondary hover:text-secondary font-bold text-xs uppercase transition-all"
                     >
                       +{amt}
-                    </button>
+                    </Button>
                   ))}
                 </div>
                 <div className="relative">
-                  <input
+                  <Input
                     type="text"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
                     placeholder="Have a coupon code?"
-                    className="w-full bg-[#000000] border border-white/10 rounded-[16px] py-2 pl-4 pr-24 text-sm font-bold focus:border-[#BFF367] focus:ring-1 focus:ring-[#BFF367] transition-all outline-none text-white font-inter"
+                    className="w-full bg-background border border-white/10 rounded-[16px] py-2 pl-4 pr-24 text-sm font-bold focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none text-white font-inter"
                   />
-                  <button
+                  <Button
                     onClick={handleValidateCoupon}
                     disabled={isValidatingCoupon || !couponCode}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#1B1B1B] text-[#BFF367] px-3 py-1 rounded-[12px] text-xs font-bold uppercase disabled:opacity-50"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-card text-primary px-3 py-1 rounded-[12px] text-xs font-bold uppercase disabled:opacity-50"
                   >
                     {isValidatingCoupon ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
                       "Apply"
                     )}
-                  </button>
+                  </Button>
                 </div>
 
                 {isCouponValid && (
-                  <div className="bg-[#1B1B1B] p-3 rounded-[12px] text-xs font-inter space-y-1">
+                  <div className="bg-card p-3 rounded-[12px] text-xs font-inter space-y-1">
                     <div className="flex justify-between text-white/70">
                       <span>Top-up Amount</span>
                       <span>₹{topupAmount}</span>
                     </div>
-                    <div className="flex justify-between text-[#BFF367]">
+                    <div className="flex justify-between text-primary">
                       <span>Discount</span>
                       <span>-₹{discountAmount}</span>
                     </div>
@@ -326,10 +327,10 @@ const WalletPage = () => {
                   </div>
                 )}
 
-                <button
+                <Button
                   onClick={handleTopup}
                   disabled={isProcessing}
-                  className="w-full bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] h-[40px] rounded-[16px] font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale font-open-sans shadow-[0_10px_25px_rgba(85,222,232,0.25)]"
+                  className="w-full bg-gradient-to-r from-secondary to-primary text-background h-[40px] rounded-[16px] font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale font-open-sans shadow-[0_10px_25px_rgba(85,222,232,0.25)]"
                 >
                   {isProcessing ? (
                     <Loader2 className="w-6 h-6 animate-spin" />
@@ -339,7 +340,7 @@ const WalletPage = () => {
                       <ArrowUpRight className="w-5 h-5" />
                     </>
                   )}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -348,7 +349,7 @@ const WalletPage = () => {
           <div className="md:col-span-7 bg-black rounded-[16px] overflow-hidden flex flex-col font-inter">
             <div className="p-4 border-b border-white/10 flex items-center justify-between">
               <h2 className="text-lg font-bold uppercase tracking-tight flex items-center gap-3 font-open-sans">
-                <History className="w-5 h-5 text-[#BFF367]" />
+                <History className="w-5 h-5 text-primary" />
                 Coin Activity
               </h2>
               <span className="font-inter text-xs font-bold text-white/50 uppercase tracking-widest">
@@ -378,7 +379,7 @@ const WalletPage = () => {
                     return (
                       <div
                         key={tx._id || tx.id}
-                        className="p-4 flex items-center justify-between hover:bg-[#1B1B1B]/50 transition-colors"
+                        className="p-4 flex items-center justify-between hover:bg-card/50 transition-colors"
                       >
                         <div className="flex items-center gap-3">
                           <div
@@ -396,7 +397,7 @@ const WalletPage = () => {
                               {tx.description
                                 ?.toLowerCase()
                                 .includes("bonus") && (
-                                <span className="ml-2 px-2 py-0.5 bg-gradient-to-r from-[#BFF367]/10 to-[#BFF367]/10 text-transparent bg-clip-text bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-[8px] font-black uppercase rounded-md border border-[#BFF367]/20 font-inter">
+                                <span className="ml-2 px-2 py-0.5 bg-gradient-to-r from-primary/10 to-primary/10 text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary text-[8px] font-black uppercase rounded-md border border-primary/20 font-inter">
                                   Platform Offer
                                 </span>
                               )}
@@ -419,13 +420,13 @@ const WalletPage = () => {
                           </p>
                           <div className="flex flex-col items-end gap-1 font-inter">
                             <span
-                              className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full font-inter ${tx.status === "SUCCESS" ? "bg-[#BFF367]/10 text-[#BFF367]" : tx.status === "PENDING" ? "bg-amber-500/10 text-amber-500" : "bg-rose-500/10 text-rose-500"}`}
+                              className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full font-inter ${tx.status === "SUCCESS" ? "bg-primary/10 text-primary" : tx.status === "PENDING" ? "bg-amber-500/10 text-amber-500" : "bg-rose-500/10 text-rose-500"}`}
                             >
                               {tx.status}
                             </span>
                             {tx.status === "PENDING" && tx.type === "TOPUP" && (
                               <div className="flex gap-2 font-inter">
-                                <button
+                                <Button
                                   onClick={async () => {
                                     try {
                                       const { data } = await axiosInstance.get(
@@ -441,14 +442,14 @@ const WalletPage = () => {
                                       toast.error("Failed to check status");
                                     }
                                   }}
-                                  className="text-[8px] font-bold text-[#BFF367] hover:underline uppercase"
+                                  className="text-[8px] font-bold text-primary hover:underline uppercase"
                                 >
                                   Check Status
-                                </button>
+                                </Button>
                                 <span className="text-[8px] text-zinc-600">
                                   |
                                 </span>
-                                <button
+                                <Button
                                   onClick={() => {
                                     setTopupAmount(tx.amount.toString());
                                     handleTopup();
@@ -456,7 +457,7 @@ const WalletPage = () => {
                                   className="text-[8px] font-bold text-zinc-400 hover:underline uppercase"
                                 >
                                   Retry
-                                </button>
+                                </Button>
                               </div>
                             )}
                           </div>

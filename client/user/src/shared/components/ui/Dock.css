@@ -44,8 +44,8 @@
 
 .dock-item:hover,
 .dock-item:focus {
-  background-color: rgba(191, 243, 103, 0.15); /* #BFF367 tint */
-  color: #bff367;
+  background-color: rgba(191, 243, 103, 0.15); /* var(--primary) tint */
+  color: var(--primary);
   border-color: rgba(191, 243, 103, 0.3);
 }
 

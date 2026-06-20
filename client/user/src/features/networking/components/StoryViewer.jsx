@@ -6,7 +6,8 @@ import React, {
   useCallback,
 } from "react";
 import { X, Trash2, Eye, Calendar, User as UserIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";import { Button } from "@kridaz/ui";
+
 
 const StoryVideoPlayer = ({ src, onDurationReady }) => {
   const videoRef = useRef(null);
@@ -195,12 +196,12 @@ const StoryViewer = ({
         onTouchEnd={onTouchEnd}
       >
         {/* Close Button */}
-        <button
+        <Button
           onClick={onClose}
           className="absolute top-6 right-6 z-[210] p-2 bg-black/40 hover:bg-black/60 text-white rounded-[8px] transition-all backdrop-blur-md"
         >
           <X size={24} />
-        </button>
+        </Button>
 
         {/* Progress Bars */}
         <div className="absolute top-4 left-6 right-6 z-[210] flex gap-1">
@@ -210,7 +211,7 @@ const StoryViewer = ({
               className="h-1 flex-1 bg-white/20 rounded-full overflow-hidden"
             >
               <div
-                className={`h-full bg-[#BFF367] transition-all duration-300 ${idx < currentStoryIndex ? "w-full" : idx === currentStoryIndex ? "w-full animate-progress" : "w-0"}`}
+                className={`h-full bg-primary transition-all duration-300 ${idx < currentStoryIndex ? "w-full" : idx === currentStoryIndex ? "w-full animate-progress" : "w-0"}`}
                 style={{ animationDuration: `${storyDuration}s` }}
               />
             </div>
@@ -283,7 +284,7 @@ const StoryViewer = ({
         <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent flex items-center gap-4 z-[210]">
           <Link
             to={`/profile/${storyGroup.user.id || storyGroup.user._id}`}
-            className="w-10 h-10 rounded-full border-2 border-[#BFF367] overflow-hidden hover:opacity-80 transition-opacity shrink-0"
+            className="w-10 h-10 rounded-full border-2 border-primary overflow-hidden hover:opacity-80 transition-opacity shrink-0"
             onClick={(e) => e.stopPropagation()}
           >
             <img
@@ -301,7 +302,7 @@ const StoryViewer = ({
               <p className="text-xs font-bold uppercase tracking-wider text-white truncate">
                 {storyGroup.user.name}
               </p>
-              <p className="text-[10px] text-[#BFF367] font-bold uppercase tracking-widest truncate">
+              <p className="text-[10px] text-primary font-bold uppercase tracking-widest truncate">
                 @{storyGroup.user.username}
               </p>
             </Link>
@@ -318,22 +319,22 @@ const StoryViewer = ({
                     )}
                   </span>
                 </div>
-                <button
+                <Button
                   onClick={(e) => {
                     e.stopPropagation();
                     setShowViewers(true);
                   }}
                   className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-[6px] transition-all group"
                 >
-                  <Eye size={12} className="text-[#BFF367]" />
-                  <span className="text-[10px] font-black text-white group-hover:text-[#BFF367]">
+                  <Eye size={12} className="text-primary" />
+                  <span className="text-[10px] font-black text-white group-hover:text-primary">
                     {currentStory.viewers?.length || 0} Views
                   </span>
-                </button>
+                </Button>
               </div>
 
               {(isAdmin || isOwner) && onDelete && (
-                <button
+                <Button
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete(currentStory._id);
@@ -341,7 +342,7 @@ const StoryViewer = ({
                   className="p-3 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-[8px] transition-all shrink-0 border border-red-500/20"
                 >
                   <Trash2 size={18} />
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -355,8 +356,8 @@ const StoryViewer = ({
           >
             <div className="p-6 border-b border-white/10 flex items-center justify-between bg-black/40">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[#BFF367]/10 flex items-center justify-center">
-                  <Eye size={16} className="text-[#BFF367]" />
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Eye size={16} className="text-primary" />
                 </div>
                 <div>
                   <h3 className="text-sm font-black uppercase tracking-tighter text-white">
@@ -367,12 +368,12 @@ const StoryViewer = ({
                   </p>
                 </div>
               </div>
-              <button
+              <Button
                 onClick={() => setShowViewers(false)}
                 className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/60 hover:text-white"
               >
                 <X size={20} />
-              </button>
+              </Button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
@@ -386,27 +387,27 @@ const StoryViewer = ({
                       className="flex items-center gap-4 p-3 rounded-[8px] hover:bg-white/5 transition-all group border border-transparent hover:border-white/5"
                     >
                       <div className="relative">
-                        <div className="w-12 h-12 rounded-full border-2 border-[#2D2D2D] group-hover:border-[#BFF367] overflow-hidden transition-colors">
+                        <div className="w-12 h-12 rounded-full border-2 border-border group-hover:border-primary overflow-hidden transition-colors">
                           <img
                             src={viewer.profilePicture || "/default-avatar.png"}
                             alt=""
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#111] border border-white/10 rounded-full flex items-center justify-center">
-                          <UserIcon size={10} className="text-[#BFF367]" />
+                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-card border border-white/10 rounded-full flex items-center justify-center">
+                          <UserIcon size={10} className="text-primary" />
                         </div>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-white truncate group-hover:text-[#BFF367] transition-colors">
+                        <p className="text-sm font-bold text-white truncate group-hover:text-primary transition-colors">
                           {viewer.name}
                         </p>
                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest truncate">
                           @{viewer.username}
                         </p>
                       </div>
-                      <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-[#BFF367]/20 transition-all opacity-0 group-hover:opacity-100">
-                        <Eye size={14} className="text-[#BFF367]" />
+                      <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-all opacity-0 group-hover:opacity-100">
+                        <Eye size={14} className="text-primary" />
                       </div>
                     </Link>
                   ))}

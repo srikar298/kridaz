@@ -23,10 +23,11 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axiosInstance from "@hooks/useAxiosInstance.js";
 import ScrollToTop from "@components/common/ScrollToTop";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
 
-const GRADIENT = "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)";
-const GRADIENT_START = "#BFF367";
+
+const GRADIENT = "linear-gradient(90deg, var(--primary) 0%, var(--primary) 100%)";
+const GRADIENT_START = "var(--primary)";
 
 const benefits = [
   {
@@ -224,8 +225,8 @@ export default function ProfessionalLanding() {
             x2="100%"
             y2="0%"
           >
-            <stop offset="0%" stopColor="#BFF367" />
-            <stop offset="100%" stopColor="#BFF367" />
+            <stop offset="0%" stopColor="var(--primary)" />
+            <stop offset="100%" stopColor="var(--primary)" />
           </linearGradient>
         </defs>
       </svg>
@@ -310,26 +311,26 @@ export default function ProfessionalLanding() {
             </p>
             {hasExistingRole ? (
               <div className="w-full max-w-md">
-                <div className="w-full bg-white/5 border border-[#BFF367]/20 backdrop-blur-sm rounded-[10px] p-5 md:p-6 text-center md:text-left">
+                <div className="w-full bg-white/5 border border-primary/20 backdrop-blur-sm rounded-[10px] p-5 md:p-6 text-center md:text-left">
                   <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                    <CheckCircle className="w-5 h-5 text-[#BFF367]" />
+                    <CheckCircle className="w-5 h-5 text-primary" />
                     <span className="text-white font-black uppercase tracking-wider text-sm md:text-base">
                       Already a Professional
                     </span>
                   </div>
                   <p className="text-white/60 text-xs mb-3 leading-relaxed">
                     You already have an active role as{" "}
-                    <span className="text-[#BFF367] font-bold">
+                    <span className="text-primary font-bold">
                       {user?.role}
                     </span>
                     .
                   </p>
-                  <button
+                  <Button
                     onClick={() => navigate(getDashboardPath())}
-                    className="bg-[#BFF367] text-black font-black uppercase tracking-widest rounded-[8px] hover:brightness-110 transition-all flex items-center justify-center gap-2 mx-auto md:mx-0 px-6 py-2.5 text-xs md:text-sm"
+                    className="bg-primary text-black font-black uppercase tracking-widest rounded-[8px] hover:brightness-110 transition-all flex items-center justify-center gap-2 mx-auto md:mx-0 px-6 py-2.5 text-xs md:text-sm"
                   >
                     Go to Dashboard <ArrowRight size={16} />
-                  </button>
+                  </Button>
                 </div>
               </div>
             ) : hasPendingApplication ? (
@@ -352,13 +353,13 @@ export default function ProfessionalLanding() {
                 </div>
               </div>
             ) : (
-              <button
+              <Button
                 onClick={() => setModalStep(1)}
                 className="inline-flex items-center gap-3 font-bold text-black rounded-[6px] px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest text-sm md:text-base"
                 style={{ background: GRADIENT }}
               >
                 Join as a Professional <ArrowRight size={20} />
-              </button>
+              </Button>
             )}
           </div>
 
@@ -429,9 +430,9 @@ export default function ProfessionalLanding() {
             ].map((step, i) => (
               <div
                 key={i}
-                className="p-6 md:p-8 bg-white/5 backdrop-blur-sm rounded-[8px] md:rounded-[8px] border border-white/10 hover:border-[#BFF367]/30 transition-all group"
+                className="p-6 md:p-8 bg-white/5 backdrop-blur-sm rounded-[8px] md:rounded-[8px] border border-white/10 hover:border-primary/30 transition-all group"
               >
-                <div className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 mx-auto mb-4 md:mb-6 rounded-[8px] md:rounded-[8px] bg-white/10 group-hover:bg-[#BFF367]/20 transition-colors">
+                <div className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 mx-auto mb-4 md:mb-6 rounded-[8px] md:rounded-[8px] bg-white/10 group-hover:bg-primary/20 transition-colors">
                   <step.icon
                     className="w-6 h-6 md:w-7 md:h-7 text-white transition-colors"
                     stroke="currentColor"
@@ -520,7 +521,7 @@ export default function ProfessionalLanding() {
 
       {/* ── Modals ── */}
       {modalStep === 1 && (
-        <div className="fixed inset-0 z-[100] bg-[#111] flex flex-col p-6 animate-fadeInUp overflow-y-auto no-scrollbar">
+        <div className="fixed inset-0 z-[100] bg-card flex flex-col p-6 animate-fadeInUp overflow-y-auto no-scrollbar">
           <div className="w-full max-w-lg mx-auto relative flex-1 flex flex-col pt-4 pb-8 justify-center">
             {user?.ownerProfile ||
             [
@@ -542,7 +543,7 @@ export default function ProfessionalLanding() {
                     backgroundColor: "rgba(191,243,103,0.1)",
                   }}
                 >
-                  <CheckCircle size={28} className="text-[#BFF367]" />
+                  <CheckCircle size={28} className="text-primary" />
                 </div>
                 <h2
                   className="text-lg font-bold mb-3 tracking-wider text-white normal-case"
@@ -554,7 +555,7 @@ export default function ProfessionalLanding() {
                   You already have an active professional role ({user?.role}).
                   You can manage your professional profile from your dashboard.
                 </p>
-                <button
+                <Button
                   onClick={() => {
                     setModalStep(0);
                     navigate(getDashboardPath());
@@ -564,7 +565,7 @@ export default function ProfessionalLanding() {
                 >
                   Go to Dashboard{" "}
                   <ArrowRight size={18} className="inline ml-2" />
-                </button>
+                </Button>
               </div>
             ) : user?.applicationStatus === "pending" ? (
               <div className="text-center py-6 mt-4">
@@ -575,7 +576,7 @@ export default function ProfessionalLanding() {
                     backgroundColor: "rgba(85,222,232,0.1)",
                   }}
                 >
-                  <Loader2 size={28} className="text-[#BFF367] animate-spin" />
+                  <Loader2 size={28} className="text-primary animate-spin" />
                 </div>
                 <h2
                   className="text-lg font-bold mb-3 tracking-wider text-white normal-case"
@@ -585,29 +586,29 @@ export default function ProfessionalLanding() {
                 </h2>
                 <p className="text-gray-400 text-xs mb-5 leading-relaxed">
                   You have applied for{" "}
-                  <span className="text-[#BFF367] font-bold">
+                  <span className="text-primary font-bold">
                     {user?.applicationRole || "a professional role"}
                   </span>
                   . Please wait for our team to review it. We will notify you
                   once a decision is made.
                 </p>
-                <button
+                <Button
                   onClick={() => setModalStep(0)}
                   className="w-full py-3 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all text-sm"
                   style={{ background: GRADIENT, fontFamily: "'Inter'" }}
                 >
                   Close
-                </button>
+                </Button>
               </div>
             ) : (
               <>
                 <div className="flex items-start justify-start mb-6 -ml-2 gap-1.5">
-                  <button
+                  <Button
                     onClick={() => setModalStep(0)}
                     className="text-gray-400 hover:text-white transition-colors p-1 mt-0.5"
                   >
                     <ChevronLeft size={28} />
-                  </button>
+                  </Button>
                   <div className="flex flex-col text-left">
                     <h2
                       className="text-xl font-bold text-white tracking-normal normal-case mb-1"
@@ -625,30 +626,30 @@ export default function ProfessionalLanding() {
                   {availableRoles.map((role) => {
                     const isSelected = selectedRoles.includes(role.id);
                     return (
-                      <button
+                      <Button
                         key={role.id}
                         onClick={() => toggleRole(role.id)}
-                        className={`flex flex-col items-center justify-center p-3.5 border rounded-[10px] transition-all ${isSelected ? "border-[#BFF367] bg-[#BFF367]/10 text-white shadow-[0_0_15px_rgba(191,243,103,0.15)]" : "border-white/10 bg-white/5 text-gray-400 hover:border-white/30 hover:bg-white/10"}`}
+                        className={`flex flex-col items-center justify-center p-3.5 border rounded-[10px] transition-all ${isSelected ? "border-primary bg-primary/10 text-white shadow-[0_0_15px_rgba(191,243,103,0.15)]" : "border-white/10 bg-white/5 text-gray-400 hover:border-white/30 hover:bg-white/10"}`}
                       >
                         <role.icon
                           size={24}
-                          className={`mb-2 ${isSelected ? "text-[#BFF367]" : ""}`}
+                          className={`mb-2 ${isSelected ? "text-primary" : ""}`}
                         />
                         <span className="font-bold uppercase tracking-wider text-[10px]">
                           {role.label}
                         </span>
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
 
-                <button
+                <Button
                   onClick={handleRoleContinue}
                   className="w-full py-3.5 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all text-sm"
                   style={{ background: GRADIENT, fontFamily: "'Inter'" }}
                 >
                   Continue <ArrowRight size={18} className="inline ml-2" />
-                </button>
+                </Button>
               </>
             )}
           </div>
@@ -656,14 +657,14 @@ export default function ProfessionalLanding() {
       )}
 
       {modalStep === 2 && (
-        <div className="fixed inset-0 z-[100] bg-[#111] flex flex-col p-6 animate-fadeInUp overflow-y-auto no-scrollbar">
+        <div className="fixed inset-0 z-[100] bg-card flex flex-col p-6 animate-fadeInUp overflow-y-auto no-scrollbar">
           <div className="w-full max-w-lg mx-auto relative flex-1 flex flex-col pt-12 pb-8 justify-center">
-            <button
+            <Button
               onClick={() => setModalStep(1)}
               className="absolute top-2 left-0 text-gray-400 hover:text-white transition-colors flex items-center"
             >
               <ChevronLeft size={32} />
-            </button>
+            </Button>
             <h2
               className="text-3xl font-bold mb-8 text-white text-center"
               style={{ fontFamily: "'Open Sans'" }}
@@ -684,11 +685,11 @@ export default function ProfessionalLanding() {
                     AADHAAR CARD <br /> FRONT
                   </span>
                   <div
-                    className={`relative w-full h-[110px] md:h-[130px] bg-[#E8E8E8] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharFront ? "ring-2 ring-[#BFF367]" : "group-hover:ring-2 group-hover:ring-[#BFF367]"}`}
+                    className={`relative w-full h-[110px] md:h-[130px] bg-[#E8E8E8] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharFront ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}
                   >
                     {aadharFront ? (
                       <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
-                        <FileCheck className="text-[#BFF367] mb-2" size={32} />
+                        <FileCheck className="text-primary mb-2" size={32} />
                         <span
                           className="text-white font-bold tracking-wider uppercase text-center text-xs"
                           style={{ fontFamily: "'Inter'" }}
@@ -724,7 +725,7 @@ export default function ProfessionalLanding() {
                       </div>
                     </div>
                   </div>
-                  <input
+                  <Input
                     type="file"
                     accept="image/*"
                     className="hidden"
@@ -743,11 +744,11 @@ export default function ProfessionalLanding() {
                     AADHAAR CARD <br /> BACK
                   </span>
                   <div
-                    className={`relative w-full h-[110px] md:h-[130px] bg-[#E8E8E8] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharBack ? "ring-2 ring-[#BFF367]" : "group-hover:ring-2 group-hover:ring-[#BFF367]"}`}
+                    className={`relative w-full h-[110px] md:h-[130px] bg-[#E8E8E8] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharBack ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}
                   >
                     {aadharBack ? (
                       <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
-                        <FileCheck className="text-[#BFF367] mb-2" size={32} />
+                        <FileCheck className="text-primary mb-2" size={32} />
                         <span
                           className="text-white font-bold tracking-wider uppercase text-center text-xs"
                           style={{ fontFamily: "'Inter'" }}
@@ -773,7 +774,7 @@ export default function ProfessionalLanding() {
                       <div className="w-3/4 h-1.5 bg-gray-500 rounded-full"></div>
                     </div>
                   </div>
-                  <input
+                  <Input
                     type="file"
                     accept="image/*"
                     className="hidden"
@@ -792,11 +793,11 @@ export default function ProfessionalLanding() {
                     PAN CARD
                   </span>
                   <div
-                    className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${panFront ? "ring-2 ring-[#BFF367]" : "group-hover:ring-2 group-hover:ring-[#BFF367]"}`}
+                    className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${panFront ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}
                   >
                     {panFront ? (
                       <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
-                        <FileCheck className="text-[#BFF367] mb-2" size={32} />
+                        <FileCheck className="text-primary mb-2" size={32} />
                         <span
                           className="text-white font-bold tracking-wider uppercase text-center text-xs"
                           style={{ fontFamily: "'Inter'" }}
@@ -844,7 +845,7 @@ export default function ProfessionalLanding() {
                       </div>
                     </div>
                   </div>
-                  <input
+                  <Input
                     type="file"
                     accept="image/*"
                     className="hidden"
@@ -854,7 +855,7 @@ export default function ProfessionalLanding() {
               </div>
 
               <div className="flex justify-center mt-6">
-                <button
+                <Button
                   type="submit"
                   disabled={isSubmitting}
                   className="w-full max-w-[240px] py-3 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
@@ -867,7 +868,7 @@ export default function ProfessionalLanding() {
                   ) : (
                     "Submit & Register"
                   )}
-                </button>
+                </Button>
               </div>
             </form>
           </div>

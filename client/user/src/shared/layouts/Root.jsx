@@ -202,9 +202,9 @@ const Root = () => {
             {/* "Experience the app live!" Decorative Text */}
             <div className="hidden xl:flex absolute top-1/2 -translate-y-[50%] right-[100%] mr-2 md:mr-6 flex-col items-center pointer-events-none opacity-90 z-50 whitespace-nowrap">
               <div className="font-['Caveat',cursive] text-base md:text-lg font-bold text-center leading-snug tracking-wider -rotate-6">
-                <div className="text-[#BFF367]">Experience</div>
+                <div className="text-primary">Experience</div>
                 <div className="text-white/90">the app</div>
-                <div className="text-[#BFF367]">live!</div>
+                <div className="text-primary">live!</div>
               </div>
               <svg
                 width="35"
@@ -216,14 +216,14 @@ const Root = () => {
               >
                 <path
                   d="M5 5 C 15 25, 25 35, 45 40"
-                  stroke="#BFF367"
+                  stroke="var(--primary)"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   fill="none"
                 />
                 <path
                   d="M35 30 L 46 41 L 32 45"
-                  stroke="#BFF367"
+                  stroke="var(--primary)"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -272,7 +272,7 @@ const Root = () => {
           <Suspense
             fallback={
               <div className="w-full h-full flex justify-center items-center bg-[#050505]">
-                <div className="w-8 h-8 border-4 border-[#BFF367] border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
               </div>
             }
           >

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 const BALL_STYLES = {
   wicket: { bg: "#e11d48", color: "#fff" },
-  boundary: { bg: "#10b981", color: "#fff" },
+  boundary: { bg: "var(--success)", color: "#fff" },
   six: { bg: "#8b5cf6", color: "#fff" },
   four: { bg: "#3b82f6", color: "#fff" },
   wide: { bg: "#f59e0b", color: "#000" },
@@ -731,7 +731,7 @@ export default function SportsNetworkTicker({ score, connected, badge }) {
               style={{
                 width: 10,
                 height: 10,
-                background: connected ? "#10b981" : "#e11d48",
+                background: connected ? "var(--success)" : "#e11d48",
                 clipPath: "polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)",
               }}
             />

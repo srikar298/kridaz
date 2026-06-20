@@ -1,5 +1,6 @@
 import React from "react";
-import { Settings, Save, Trash2, AlertTriangle } from "lucide-react";
+import { Settings, Save, Trash2, AlertTriangle } from "lucide-react";import { Button, Input, Textarea } from "@kridaz/ui";
+
 
 const SettingsTab = ({ tournament }) => {
   return (
@@ -19,15 +20,15 @@ const SettingsTab = ({ tournament }) => {
       </div>
 
       {/* Edit Form Mockup */}
-      <div className="bg-[#111] border border-white/5 rounded-2xl p-6 space-y-6">
+      <div className="bg-card border border-white/5 rounded-2xl p-6 space-y-6">
         <div className="flex items-center justify-between border-b border-white/5 pb-4">
           <h3 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
-            <Settings size={16} className="text-[#55DEE8]" />
+            <Settings size={16} className="text-secondary" />
             Tournament Settings
           </h3>
-          <button className="flex items-center gap-2 bg-[#BFF367] text-black px-6 py-2 rounded-full text-xs font-bold hover:bg-white transition-colors">
+          <Button className="flex items-center gap-2 bg-primary text-black px-6 py-2 rounded-full text-xs font-bold hover:bg-white transition-colors">
             <Save size={14} /> Save Changes
-          </button>
+          </Button>
         </div>
 
         <div className="space-y-4">
@@ -35,10 +36,10 @@ const SettingsTab = ({ tournament }) => {
             <label className="text-xs text-white/50 block mb-2">
               Tournament Name
             </label>
-            <input
+            <Input
               type="text"
               defaultValue={tournament.name}
-              className="w-full bg-[#1a1a1a] border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-[#55DEE8] transition-colors"
+              className="w-full bg-card border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-secondary transition-colors"
             />
           </div>
 
@@ -46,9 +47,9 @@ const SettingsTab = ({ tournament }) => {
             <label className="text-xs text-white/50 block mb-2">
               About Tournament
             </label>
-            <textarea
+            <Textarea
               defaultValue={tournament.details?.about || ""}
-              className="w-full bg-[#1a1a1a] border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#55DEE8] transition-colors min-h-[100px]"
+              className="w-full bg-card border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-secondary transition-colors min-h-[100px]"
             />
           </div>
 
@@ -57,20 +58,20 @@ const SettingsTab = ({ tournament }) => {
               <label className="text-xs text-white/50 block mb-2">
                 Entry Fee (â‚¹)
               </label>
-              <input
+              <Input
                 type="number"
                 defaultValue={tournament.entryFee}
-                className="w-full bg-[#1a1a1a] border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-[#55DEE8] transition-colors"
+                className="w-full bg-card border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-secondary transition-colors"
               />
             </div>
             <div>
               <label className="text-xs text-white/50 block mb-2">
                 Prize Pool (â‚¹)
               </label>
-              <input
+              <Input
                 type="number"
                 defaultValue={tournament.prizePool}
-                className="w-full bg-[#1a1a1a] border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-[#55DEE8] transition-colors"
+                className="w-full bg-card border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-secondary transition-colors"
               />
             </div>
           </div>
@@ -91,9 +92,9 @@ const SettingsTab = ({ tournament }) => {
               cannot be undone.
             </p>
           </div>
-          <button className="flex items-center gap-2 bg-red-500/10 text-red-500 border border-red-500/20 px-6 py-3 rounded-full text-xs font-bold hover:bg-red-500 hover:text-white transition-colors">
+          <Button className="flex items-center gap-2 bg-red-500/10 text-red-500 border border-red-500/20 px-6 py-3 rounded-full text-xs font-bold hover:bg-red-500 hover:text-white transition-colors">
             <Trash2 size={16} /> Cancel Tournament
-          </button>
+          </Button>
         </div>
       </div>
     </div>

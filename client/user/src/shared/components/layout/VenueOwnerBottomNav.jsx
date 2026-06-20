@@ -28,7 +28,7 @@ const VenueOwnerBottomNav = () => {
   ];
 
   return (
-    <div className={`lg:hidden fixed bottom-0 left-0 right-0 z-[100] bg-[#000000] border-t border-[#2D2D2D] shadow-[0_-5px_20px_rgba(0,0,0,0.5)] transition-transform duration-500 ${scrollDirection === "down" ? "translate-y-full" : "translate-y-0"}`}>
+    <div className={`lg:hidden fixed bottom-0 left-0 right-0 z-[100] bg-background border-t border-border shadow-[0_-5px_20px_rgba(0,0,0,0.5)] transition-transform duration-500 ${scrollDirection === "down" ? "translate-y-full" : "translate-y-0"}`}>
       <div className="flex overflow-x-auto no-scrollbar items-center justify-start px-2 py-2 gap-1 pb-safe">
         {mainNavItems.map((item) => {
           const isActive = location.pathname === item.to;
@@ -39,7 +39,7 @@ const VenueOwnerBottomNav = () => {
               key={item.label}
               to={item.to}
               className={`flex flex-col items-center justify-center min-w-[70px] w-auto h-12 rounded-lg transition-all duration-300 gap-1
-                ${isActive ? "text-[#BFF367]" : "text-[#878C9F] hover:text-white"}`}
+                ${isActive ? "text-primary" : "text-muted-foreground hover:text-white"}`}
             >
               <div
                 className={`relative flex items-center justify-center transition-all duration-300 ${isActive ? "scale-110" : ""}`}

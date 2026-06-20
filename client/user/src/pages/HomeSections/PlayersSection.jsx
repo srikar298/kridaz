@@ -3,8 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Users, MapPin, Check, MessageCircle } from "lucide-react";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
 
-const GRAD = "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)";
-const BDR = "#2A2A2A";
+
 
 export default function PlayersSection({
   loading,
@@ -26,20 +25,14 @@ export default function PlayersSection({
               style={{ fontFamily: "'Open Sans', sans-serif" }}
             >
               Find Players{" "}
-              <span
-                style={{
-                  background: GRAD,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
+              <span className="text-primary">
                 Near You
               </span>
             </h2>
           </div>
           <Link
             to="/players"
-            className="flex items-center gap-1 font-semibold text-[10px] md:text-[15px] transition-all hover:text-[#BFF367] text-[#888] whitespace-nowrap"
+            className="flex items-center gap-1 font-semibold text-[10px] md:text-[15px] transition-all hover:text-primary text-[#888] whitespace-nowrap"
           >
             View More <span className="hidden md:inline">Players</span>
           </Link>
@@ -51,8 +44,7 @@ export default function PlayersSection({
             {[...Array(10)].map((_, i) => (
               <div
                 key={i}
-                className="shrink-0 w-[44vw] sm:w-[155px] md:w-[175px] snap-start rounded-[12px] border border-white/5 animate-pulse bg-white/5"
-                style={{ height: 190 }}
+                className="shrink-0 w-[44vw] sm:w-[155px] md:w-[175px] h-[220px] snap-start rounded-[16px] border border-white/5 animate-pulse bg-white/5"
               />
             ))}
           </div>
@@ -63,10 +55,7 @@ export default function PlayersSection({
             <p className="text-sm mt-1">Be the first to join the community!</p>
             <Link
               to="/login"
-              className="inline-flex items-center gap-2 mt-4 font-bold text-black px-6 py-2.5 rounded-full"
-              style={{
-                background: "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)",
-              }}
+              className="inline-flex items-center gap-2 mt-4 font-bold text-black px-6 py-2.5 rounded-full bg-primary hover:brightness-110 transition-all"
             >
               Join Now
             </Link>
@@ -97,7 +86,7 @@ export default function PlayersSection({
                 <div
                   key={playerId}
                   onClick={() => navigate(`/profile/${playerId}`)}
-                  className="shrink-0 w-[44vw] sm:w-[155px] md:w-[175px] h-[190px] snap-start relative rounded-[12px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] overflow-hidden transition-all duration-500 group hover:border-[#B3DC26]/50 hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)] cursor-pointer"
+                  className="shrink-0 w-[44vw] sm:w-[155px] md:w-[175px] h-[220px] snap-start relative rounded-[16px] border border-white/5 bg-card overflow-hidden transition-all duration-300 group hover:border-primary/30 cursor-pointer"
                 >
                   {/* Background Image or Initials */}
                   {p.profilePicture || p.profileImage ? (
@@ -112,18 +101,17 @@ export default function PlayersSection({
                     />
                   ) : null}
                   <div
-                    className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-[#000000]"
+                    className="absolute inset-0 flex items-center justify-center bg-white/5"
                     style={{
                       display:
                         p.profilePicture || p.profileImage ? "none" : "flex",
                     }}
                   >
-                    <span
-                      className="text-transparent bg-clip-text bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] font-[700] text-2xl opacity-50"
-                      style={{ fontFamily: "'Inter', sans-serif" }}
-                    >
-                      {initials}
-                    </span>
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 mb-10">
+                      <span className="text-primary font-bold text-xl tracking-wider">
+                        {initials}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Gradient Overlay for text readability */}
@@ -131,7 +119,7 @@ export default function PlayersSection({
 
                   {/* Primary Sport badge - Top Right */}
                   <div
-                    className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full text-[7px] font-[700] text-[#000000] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] z-10"
+                    className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-bold text-primary bg-black/60 backdrop-blur-md border border-primary/20 z-10"
                     style={{ fontFamily: "'Inter', sans-serif" }}
                   >
                     {primarySport}
@@ -141,7 +129,7 @@ export default function PlayersSection({
                   <div className="absolute bottom-0 left-0 right-0 p-2 flex flex-col z-10">
                     {/* Player Name */}
                     <h3
-                      className="text-[#FFFFFF] text-[10px] font-[600] leading-[14px] line-clamp-1 mb-0.5"
+                      className="text-white text-sm font-bold line-clamp-1 mb-0.5"
                       style={{ fontFamily: "'Inter', sans-serif" }}
                     >
                       {p.name || "Anonymous"}
@@ -149,23 +137,23 @@ export default function PlayersSection({
 
                     {/* Location: City */}
                     <p
-                      className="text-[rgba(255,255,255,0.70)] text-[8px] font-[400] leading-[10px] line-clamp-1 mb-2"
+                      className="text-white/60 text-xs font-medium line-clamp-1 mb-3"
                       style={{ fontFamily: "'Inter', sans-serif" }}
                     >
                       {locationText}
                     </p>
 
                     {/* Follow / Message Row */}
-                    <div className="w-full flex items-center gap-1.5">
+                    <div className="w-full flex items-center gap-2">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleFollowToggle(playerId);
                         }}
-                        className={`flex-1 h-5 rounded-[4px] text-[8px] font-[600] leading-[10px] transition-all active:scale-[0.98] text-center ${
+                        className={`flex-1 h-8 rounded-lg text-xs font-bold transition-all active:scale-95 flex items-center justify-center ${
                           isFollowing
-                            ? "text-[#FFFFFF] bg-[#1B1B1B]/80 backdrop-blur-md border border-[rgba(255,255,255,0.08)] hover:brightness-110"
-                            : "text-[#000000] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0px_8px_24px_rgba(179,220,38,0.15)] hover:scale-[1.02] border-none"
+                            ? "text-white bg-white/10 border border-white/10 hover:bg-white/20"
+                            : "text-background bg-primary hover:brightness-110"
                         }`}
                         style={{ fontFamily: "'Inter', sans-serif" }}
                       >
@@ -179,10 +167,10 @@ export default function PlayersSection({
                             navigate(`/messages?userId=${playerId}`)
                           );
                         }}
-                        className="w-5 h-5 rounded-[4px] text-[#FFFFFF] bg-[#1B1B1B]/80 backdrop-blur-md border border-[rgba(255,255,255,0.08)] hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center shrink-0"
+                        className="w-8 h-8 rounded-lg text-white bg-white/10 border border-white/10 hover:bg-white/20 active:scale-95 transition-all flex items-center justify-center shrink-0"
                         title="Message"
                       >
-                        <MessageCircle size={9} className="shrink-0" />
+                        <MessageCircle size={14} className="shrink-0" />
                       </button>
                     </div>
                   </div>

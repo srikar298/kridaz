@@ -1,5 +1,6 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
+import { gsap } from "gsap";import { Button } from "@kridaz/ui";
+
 import "./StaggeredMenu.css";
 
 export const StaggeredMenu = ({
@@ -428,7 +429,7 @@ export const StaggeredMenu = ({
               {headerExtra}
             </div>
           )}
-          <button
+          <Button
             ref={toggleBtnRef}
             className="sm-toggle"
             aria-label={open ? "Close menu" : "Open menu"}
@@ -454,7 +455,7 @@ export const StaggeredMenu = ({
               <span ref={plusHRef} className="sm-icon-line" />
               <span ref={plusVRef} className="sm-icon-line sm-icon-line-v" />
             </span>
-          </button>
+          </Button>
         </div>
       </header>
 

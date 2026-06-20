@@ -4,37 +4,37 @@ import { motion, AnimatePresence } from "framer-motion";
 const THEME_STYLES = {
   neon_classic: {
     bg: "rgba(15, 23, 42, 0.9)",
-    border: "2px solid #a3e635",
-    text: "#a3e635",
+    border: "2px solid var(--primary)",
+    text: "var(--primary)",
     textMuted: "#94a3b8",
     font: "'Orbitron', sans-serif",
   },
   premium_glass: {
     bg: "rgba(255,255,255,0.1)",
     border: "1px solid rgba(255,255,255,0.2)",
-    text: "#ffffff",
+    text: "var(--foreground)",
     textMuted: "rgba(255,255,255,0.6)",
     backdropFilter: "blur(10px)",
     font: "'Montserrat', sans-serif",
   },
   retro_arcade: {
-    bg: "#000000",
+    bg: "var(--background)",
     border: "4px solid #ff00ff",
     text: "#ff00ff",
     textMuted: "#00ffff",
     font: "'Press Start 2P', monospace",
   },
   sports_network: {
-    bg: "#ffffff",
-    border: "4px solid #dc2626",
+    bg: "var(--foreground)",
+    border: "4px solid var(--destructive)",
     text: "#1e3a8a",
     textMuted: "#64748b",
     font: "'Roboto Condensed', sans-serif",
   },
   cyber_pulse: {
     bg: "#050505",
-    border: "2px solid #00f3ff",
-    text: "#00f3ff",
+    border: "2px solid var(--secondary)",
+    text: "var(--secondary)",
     textMuted: "#94a3b8",
     font: "'Rajdhani', sans-serif",
   },
@@ -91,7 +91,7 @@ const EndOfOverCard = ({ score, style }) => {
               borderRadius: "50%",
               background:
                 b.type === "wicket"
-                  ? "#ef4444"
+                  ? "var(--destructive)"
                   : b.type === "boundary"
                     ? "#3b82f6"
                     : "rgba(255,255,255,0.1)",

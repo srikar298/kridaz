@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Moon, Sun } from "lucide-react";
 import { setTheme } from "@redux/slices/themeSlice";
+import { Button } from "@kridaz/ui";
 
 const ThemeSwitcher = () => {
   const theme = useSelector((state) => state.theme.current);
@@ -17,9 +18,9 @@ const ThemeSwitcher = () => {
   };
 
   return (
-    <button className="btn btn-ghost btn-circle me-1" onClick={toggleTheme}>
+    <Button className="btn btn-ghost btn-circle me-1" onClick={toggleTheme}>
       {theme === "light" ? <Moon /> : <Sun />}
-    </button>
+    </Button>
   );
 };
 
