@@ -44,7 +44,7 @@ const ReelAnalytics = () => {
           icon={<ThumbsUp size={20} />}
           label="Likes"
           value={stats.likes}
-          color="#BFF367"
+          color="var(--primary)"
         />
         <StatCard
           icon={<MessageCircle size={20} />}
@@ -63,7 +63,7 @@ const ReelAnalytics = () => {
       <div className="bg-white/5 rounded-[8px] p-6 mb-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold">Recent Reels</h2>
-          <TrendingUp size={20} className="text-[#BFF367]" />
+          <TrendingUp size={20} className="text-primary" />
         </div>
 
         <div className="flex flex-col gap-4">
@@ -87,7 +87,7 @@ const ReelAnalytics = () => {
                   {new Date(reel.createdAt).toLocaleDateString()}
                 </p>
               </div>
-              <div className="flex items-center gap-2 text-xs font-bold text-[#BFF367]">
+              <div className="flex items-center gap-2 text-xs font-bold text-primary">
                 <Play size={12} />
                 {reel.stats?.views || 0}
               </div>

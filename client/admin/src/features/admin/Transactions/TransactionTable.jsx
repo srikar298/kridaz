@@ -1,6 +1,7 @@
 import React from "react";
 import Avatar from "react-avatar";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronUp, ChevronDown } from "lucide-react";import { Button } from "@kridaz/ui";
+
 
 const TransactionTable = ({
   transactions,
@@ -17,18 +18,18 @@ const TransactionTable = ({
               User
             </th>
             <th className="p-4 text-xs font-bold uppercase tracking-widest text-gray-500 border-b border-white/5">
-              <button
-                className="flex items-center group transition-colors hover:text-[#55DEE8]"
+              <Button
+                className="flex items-center group transition-colors hover:text-secondary"
                 onClick={() => onSort("createdAt")}
               >
                 Date
                 {sortField === "createdAt" &&
                   (sortDirection === "asc" ? (
-                    <ChevronUp className="ml-2 h-3 w-3 text-[#55DEE8]" />
+                    <ChevronUp className="ml-2 h-3 w-3 text-secondary" />
                   ) : (
-                    <ChevronDown className="ml-2 h-3 w-3 text-[#55DEE8]" />
+                    <ChevronDown className="ml-2 h-3 w-3 text-secondary" />
                   ))}
-              </button>
+              </Button>
             </th>
             <th className="p-4 text-xs font-bold uppercase tracking-widest text-gray-500 border-b border-white/5">
               Venue
@@ -40,18 +41,18 @@ const TransactionTable = ({
               Payment ID
             </th>
             <th className="p-4 text-xs font-bold uppercase tracking-widest text-gray-500 border-b border-white/5 text-right">
-              <button
-                className="flex items-center justify-end w-full group transition-colors hover:text-[#55DEE8]"
+              <Button
+                className="flex items-center justify-end w-full group transition-colors hover:text-secondary"
                 onClick={() => onSort("totalPrice")}
               >
                 Amount
                 {sortField === "totalPrice" &&
                   (sortDirection === "asc" ? (
-                    <ChevronUp className="ml-2 h-3 w-3 text-[#55DEE8]" />
+                    <ChevronUp className="ml-2 h-3 w-3 text-secondary" />
                   ) : (
-                    <ChevronDown className="ml-2 h-3 w-3 text-[#55DEE8]" />
+                    <ChevronDown className="ml-2 h-3 w-3 text-secondary" />
                   ))}
-              </button>
+              </Button>
             </th>
           </tr>
         </thead>
@@ -63,7 +64,7 @@ const TransactionTable = ({
             >
               <td className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-1 rounded-full bg-white/5 group-hover:bg-[#55DEE8]/20 transition-colors">
+                  <div className="p-1 rounded-full bg-white/5 group-hover:bg-secondary/20 transition-colors">
                     <Avatar
                       name={transaction.user?.name || "Unknown"}
                       size="32"
@@ -79,7 +80,7 @@ const TransactionTable = ({
                 {new Date(transaction.createdAt).toLocaleDateString()}
               </td>
               <td className="p-4">
-                <span className="text-xs font-bold uppercase tracking-widest text-[#55DEE8]">
+                <span className="text-xs font-bold uppercase tracking-widest text-secondary">
                   {transaction.turf?.name || "Unknown"}
                 </span>
               </td>
@@ -90,7 +91,7 @@ const TransactionTable = ({
                 {transaction.payment?.paymentId || "N/A"}
               </td>
               <td className="p-4 text-right">
-                <span className="font-bold text-sm text-[#55DEE8] tracking-tight">
+                <span className="font-bold text-sm text-secondary tracking-tight">
                   Rs {transaction.totalPrice}
                 </span>
               </td>

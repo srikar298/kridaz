@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, Zap, X, ChevronRight } from "lucide-react";
+import { Users, Zap, X, ChevronRight } from "lucide-react";import { Button } from "@kridaz/ui";
+
 
 /**
  * InningsSetupModal
@@ -99,7 +100,7 @@ const InningsSetupModal = ({
     (p) => p.userId !== currentStep.excludeId
   );
 
-  const stepColors = ["#EAB308", "#22D3EE", "#A78BFA", "#10B981"];
+  const stepColors = ["#EAB308", "#22D3EE", "#A78BFA", "var(--success)"];
 
   return (
     <AnimatePresence>
@@ -118,7 +119,7 @@ const InningsSetupModal = ({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: "100%", opacity: 0 }}
           transition={{ type: "spring", damping: 24 }}
-          className="relative w-full max-w-md bg-[#000] rounded-[12px] border border-white/5 overflow-hidden z-10 shadow-2xl"
+          className="relative w-full max-w-md bg-background rounded-[12px] border border-white/5 overflow-hidden z-10 shadow-2xl"
         >
           {/* Header */}
           <div className="px-6 pt-6 pb-4 border-b border-white/10">
@@ -127,12 +128,12 @@ const InningsSetupModal = ({
                 {inningsLabel}
               </span>
               {onClose && (
-                <button
+                <Button
                   onClick={onClose}
                   className="p-1 rounded-full hover:bg-white/10 text-neutral-500 hover:text-white transition-colors"
                 >
                   <X size={16} />
-                </button>
+                </Button>
               )}
             </div>
             <h2 className="font-inter text-[24px] font-semibold tracking-tight uppercase text-white leading-tight">
@@ -180,7 +181,7 @@ const InningsSetupModal = ({
               </p>
             )}
             {pool.map((player) => (
-              <button
+              <Button
                 key={player.userId}
                 onClick={() => handleSelect(player)}
                 className="w-full flex items-center gap-4 px-4 py-3.5 rounded-[8px] bg-white/5 hover:bg-yellow-500/10 transition-all group text-left"
@@ -196,7 +197,7 @@ const InningsSetupModal = ({
                   size={16}
                   className="text-neutral-600 group-hover:text-yellow-500 transition-colors"
                 />
-              </button>
+              </Button>
             ))}
           </div>
 

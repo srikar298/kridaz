@@ -27,7 +27,10 @@ import insightsMobile from "../../../assets/insights-mobile.png";
 import financesDesktop from "../../../assets/finances-desktop.png";
 import financesMobile from "../../../assets/finances-mobile.png";
 import reachDesktop from "../../../assets/reach-desktop.png";
-import reachMobile from "../../../assets/reach-mobile.png";
+import reachMobile from "../../../assets/reach-mobile.png";import { Button, Input } from "@kridaz/ui";
+
+
+const GRADIENT = "linear-gradient(90deg, var(--primary) 0%, var(--primary) 100%)";
 
 const benefits = [
   {
@@ -114,10 +117,10 @@ export default function VenueOwnerLanding() {
           className={`flex flex-col items-center gap-3 ${isHero ? "w-full max-w-md" : "w-full max-w-sm"}`}
         >
           <div
-            className={`w-full bg-white/5 border border-[#BFF367]/20 backdrop-blur-sm rounded-[10px] ${isHero ? "p-4 md:p-5" : "p-3 md:p-4"} text-center`}
+            className={`w-full bg-white/5 border border-primary/20 backdrop-blur-sm rounded-[10px] ${isHero ? "p-4 md:p-5" : "p-3 md:p-4"} text-center`}
           >
             <div className="flex items-center justify-center gap-2 mb-2">
-              <CheckCircle className="w-5 h-5 text-[#BFF367]" />
+              <CheckCircle className="w-5 h-5 text-primary" />
               <span
                 className={`text-white font-black uppercase tracking-wider ${isHero ? "text-sm md:text-base" : "text-xs md:text-sm"}`}
               >
@@ -126,14 +129,14 @@ export default function VenueOwnerLanding() {
             </div>
             <p className="text-white/60 text-[10px] md:text-xs mb-3 leading-relaxed">
               You already have an active role as{" "}
-              <span className="text-[#BFF367] font-bold">{user?.role}</span>.
+              <span className="text-primary font-bold">{user?.role}</span>.
             </p>
-            <button
+            <Button
               onClick={() => navigate(getDashboardPath())}
-              className={`bg-[#BFF367] text-black font-black uppercase tracking-widest rounded-[8px] hover:brightness-110 transition-all flex items-center justify-center gap-2 mx-auto ${isHero ? "px-6 py-2.5 text-xs md:text-sm" : "px-5 py-2 text-[10px] md:text-xs"}`}
+              className={`bg-primary text-black font-black uppercase tracking-widest rounded-[8px] hover:brightness-110 transition-all flex items-center justify-center gap-2 mx-auto ${isHero ? "px-6 py-2.5 text-xs md:text-sm" : "px-5 py-2 text-[10px] md:text-xs"}`}
             >
               Go to Dashboard <ArrowRight size={16} />
-            </button>
+            </Button>
           </div>
         </div>
       );
@@ -169,12 +172,12 @@ export default function VenueOwnerLanding() {
     }
 
     return (
-      <button
+      <Button
         onClick={handleRegisterClick}
-        className={`text-center bg-[#BFF367] text-black font-black rounded-[8px] hover:scale-105 transition-transform shadow-[0_0_20px_rgba(191,243,103,0.25)] whitespace-nowrap ${isHero ? "px-6 py-3 md:px-8 md:py-3.5 text-[11px] sm:text-sm md:text-base" : "px-6 py-3 md:px-8 md:py-3.5 text-[11px] md:text-sm"}`}
+        className={`text-center bg-primary text-black font-black rounded-[8px] hover:scale-105 transition-transform shadow-[0_0_20px_rgba(191,243,103,0.25)] whitespace-nowrap ${isHero ? "px-6 py-3 md:px-8 md:py-3.5 text-[11px] sm:text-sm md:text-base" : "px-6 py-3 md:px-8 md:py-3.5 text-[11px] md:text-sm"}`}
       >
         Register Your Venue
-      </button>
+      </Button>
     );
   };
 
@@ -271,7 +274,7 @@ export default function VenueOwnerLanding() {
       <ScrollToTop />
 
       {/* ── Hero Section ── */}
-      <section className="relative w-full min-h-[100vh] flex flex-col justify-start md:justify-center pt-0 md:pt-8 pb-16 md:pb-24 overflow-hidden bg-[#0A0A0A]">
+      <section className="relative w-full min-h-[100vh] flex flex-col justify-start md:justify-center pt-0 md:pt-8 pb-16 md:pb-24 overflow-hidden bg-background">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img
@@ -291,7 +294,7 @@ export default function VenueOwnerLanding() {
             <div className="w-full md:w-[55%] lg:w-[50%] xl:w-[45%] text-center md:text-left flex flex-col justify-center items-center md:items-start">
               <h1 className="text-[32px] md:text-[60px] lg:text-[80px] font-black tracking-tight leading-[1.05] font-poppins font-medium normal-case text-white mb-6 md:mb-8 drop-shadow-2xl">
                 Digitize Your Sports Club <br className="hidden lg:block" />
-                at <span className="text-[#BFF367]">0% Commission</span>
+                at <span className="text-primary">0% Commission</span>
               </h1>
               <div className="flex justify-center md:justify-start w-full mt-2">
                 {renderActionButton("hero")}
@@ -356,7 +359,7 @@ export default function VenueOwnerLanding() {
         </div>
 
         {/* Feature 3 */}
-        <div className="sticky top-0 w-full min-h-[100vh] bg-[#0a0a0a] flex items-center overflow-hidden z-[3] border-t border-white/5 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] rounded-t-[35px] relative">
+        <div className="sticky top-0 w-full min-h-[100vh] bg-background flex items-center overflow-hidden z-[3] border-t border-white/5 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] rounded-t-[35px] relative">
           <img
             src={financesDesktop}
             alt="Automated Finances Desktop"
@@ -380,7 +383,7 @@ export default function VenueOwnerLanding() {
         </div>
 
         {/* Feature 4 */}
-        <div className="sticky top-0 w-full min-h-[100vh] bg-[#0d0d0d] flex items-center overflow-hidden z-[4] border-t border-white/5 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] rounded-t-[35px] relative">
+        <div className="sticky top-0 w-full min-h-[100vh] bg-background flex items-center overflow-hidden z-[4] border-t border-white/5 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] rounded-t-[35px] relative">
           <img
             src={reachDesktop}
             alt="Expand Your Reach Desktop"
@@ -405,11 +408,11 @@ export default function VenueOwnerLanding() {
       </section>
 
       {/* ── Empower Your Business Grid ── */}
-      <section className="py-16 md:py-24 bg-[#0A0A0A] border-t border-white/5">
+      <section className="py-16 md:py-24 bg-background border-t border-white/5">
         <div className="w-full px-2 md:px-4 lg:px-8">
           <h2 className="text-[20px] md:text-4xl font-black tracking-tight leading-[1.05] font-poppins font-medium normal-case text-white text-center mb-16 md:mb-20">
             Empower Your Business
-            <span className="text-[#BFF367] block mt-2 md:mt-4">
+            <span className="text-primary block mt-2 md:mt-4">
               with Kridaz
             </span>
           </h2>
@@ -417,10 +420,10 @@ export default function VenueOwnerLanding() {
           {/* Horizontal Slider Container */}
           <div className="flex overflow-x-auto gap-6 pb-12 snap-x scrollbar-hide -mx-4 px-4 md:-mx-8 md:px-8">
             {/* Card 1 */}
-            <div className="flex-none w-[280px] md:w-[350px] h-[450px] rounded-[24px] overflow-hidden flex flex-col group snap-center cursor-pointer border border-white/10 hover:border-[#BFF367]/30 transition-colors">
-              <div className="flex-1 bg-[#111] p-8 flex flex-col justify-between relative">
+            <div className="flex-none w-[280px] md:w-[350px] h-[450px] rounded-[24px] overflow-hidden flex flex-col group snap-center cursor-pointer border border-white/10 hover:border-primary/30 transition-colors">
+              <div className="flex-1 bg-card p-8 flex flex-col justify-between relative">
                 <div>
-                  <span className="text-[#BFF367] text-[10px] font-bold tracking-widest uppercase mb-4 block">
+                  <span className="text-primary text-[10px] font-bold tracking-widest uppercase mb-4 block">
                     FINANCE
                   </span>
                   <h3 className="text-white text-2xl md:text-3xl font-poppins font-medium leading-[1.2]">
@@ -442,10 +445,10 @@ export default function VenueOwnerLanding() {
             </div>
 
             {/* Card 2 */}
-            <div className="flex-none w-[280px] md:w-[350px] h-[450px] rounded-[24px] overflow-hidden flex flex-col group snap-center cursor-pointer border border-white/10 hover:border-[#BFF367]/30 transition-colors">
-              <div className="flex-1 bg-[#111] p-8 flex flex-col justify-between relative">
+            <div className="flex-none w-[280px] md:w-[350px] h-[450px] rounded-[24px] overflow-hidden flex flex-col group snap-center cursor-pointer border border-white/10 hover:border-primary/30 transition-colors">
+              <div className="flex-1 bg-card p-8 flex flex-col justify-between relative">
                 <div>
-                  <span className="text-[#BFF367] text-[10px] font-bold tracking-widest uppercase mb-4 block">
+                  <span className="text-primary text-[10px] font-bold tracking-widest uppercase mb-4 block">
                     OPERATIONS
                   </span>
                   <h3 className="text-white text-2xl md:text-3xl font-poppins font-medium leading-[1.2]">
@@ -467,10 +470,10 @@ export default function VenueOwnerLanding() {
             </div>
 
             {/* Card 3 */}
-            <div className="flex-none w-[280px] md:w-[350px] h-[450px] rounded-[24px] overflow-hidden flex flex-col group snap-center cursor-pointer border border-white/10 hover:border-[#BFF367]/30 transition-colors">
-              <div className="flex-1 bg-[#111] p-8 flex flex-col justify-between relative">
+            <div className="flex-none w-[280px] md:w-[350px] h-[450px] rounded-[24px] overflow-hidden flex flex-col group snap-center cursor-pointer border border-white/10 hover:border-primary/30 transition-colors">
+              <div className="flex-1 bg-card p-8 flex flex-col justify-between relative">
                 <div>
-                  <span className="text-[#BFF367] text-[10px] font-bold tracking-widest uppercase mb-4 block">
+                  <span className="text-primary text-[10px] font-bold tracking-widest uppercase mb-4 block">
                     MANAGEMENT
                   </span>
                   <h3 className="text-white text-2xl md:text-3xl font-poppins font-medium leading-[1.2]">
@@ -492,10 +495,10 @@ export default function VenueOwnerLanding() {
             </div>
 
             {/* Card 4 */}
-            <div className="flex-none w-[280px] md:w-[350px] h-[450px] rounded-[24px] overflow-hidden flex flex-col group snap-center cursor-pointer border border-white/10 hover:border-[#BFF367]/30 transition-colors">
-              <div className="flex-1 bg-[#111] p-8 flex flex-col justify-between relative">
+            <div className="flex-none w-[280px] md:w-[350px] h-[450px] rounded-[24px] overflow-hidden flex flex-col group snap-center cursor-pointer border border-white/10 hover:border-primary/30 transition-colors">
+              <div className="flex-1 bg-card p-8 flex flex-col justify-between relative">
                 <div>
-                  <span className="text-[#BFF367] text-[10px] font-bold tracking-widest uppercase mb-4 block">
+                  <span className="text-primary text-[10px] font-bold tracking-widest uppercase mb-4 block">
                     TECHNOLOGY
                   </span>
                   <h3 className="text-white text-2xl md:text-3xl font-poppins font-medium leading-[1.2]">
@@ -517,10 +520,10 @@ export default function VenueOwnerLanding() {
             </div>
 
             {/* Card 5 */}
-            <div className="flex-none w-[280px] md:w-[350px] h-[450px] rounded-[24px] overflow-hidden flex flex-col group snap-center cursor-pointer border border-white/10 hover:border-[#BFF367]/30 transition-colors">
-              <div className="flex-1 bg-[#111] p-8 flex flex-col justify-between relative">
+            <div className="flex-none w-[280px] md:w-[350px] h-[450px] rounded-[24px] overflow-hidden flex flex-col group snap-center cursor-pointer border border-white/10 hover:border-primary/30 transition-colors">
+              <div className="flex-1 bg-card p-8 flex flex-col justify-between relative">
                 <div>
-                  <span className="text-[#BFF367] text-[10px] font-bold tracking-widest uppercase mb-4 block">
+                  <span className="text-primary text-[10px] font-bold tracking-widest uppercase mb-4 block">
                     PAYMENTS
                   </span>
                   <h3 className="text-white text-2xl md:text-3xl font-poppins font-medium leading-[1.2]">
@@ -542,10 +545,10 @@ export default function VenueOwnerLanding() {
             </div>
 
             {/* Card 6 */}
-            <div className="flex-none w-[280px] md:w-[350px] h-[450px] rounded-[24px] overflow-hidden flex flex-col group snap-center cursor-pointer border border-white/10 hover:border-[#BFF367]/30 transition-colors">
-              <div className="flex-1 bg-[#111] p-8 flex flex-col justify-between relative">
+            <div className="flex-none w-[280px] md:w-[350px] h-[450px] rounded-[24px] overflow-hidden flex flex-col group snap-center cursor-pointer border border-white/10 hover:border-primary/30 transition-colors">
+              <div className="flex-1 bg-card p-8 flex flex-col justify-between relative">
                 <div>
-                  <span className="text-[#BFF367] text-[10px] font-bold tracking-widest uppercase mb-4 block">
+                  <span className="text-primary text-[10px] font-bold tracking-widest uppercase mb-4 block">
                     DATA
                   </span>
                   <h3 className="text-white text-2xl md:text-3xl font-poppins font-medium leading-[1.2]">
@@ -580,7 +583,7 @@ export default function VenueOwnerLanding() {
 
           <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
             {/* Card 1 */}
-            <div className="bg-[#111] p-8 rounded-2xl border border-white/5 break-inside-avoid mb-6">
+            <div className="bg-card p-8 rounded-2xl border border-white/5 break-inside-avoid mb-6">
               <div className="flex gap-1 mb-6">
                 {[...Array(5)].map((_, i) => (
                   <svg
@@ -615,7 +618,7 @@ export default function VenueOwnerLanding() {
             </div>
 
             {/* Card 2 */}
-            <div className="bg-[#111] p-8 rounded-2xl border border-white/5 break-inside-avoid mb-6">
+            <div className="bg-card p-8 rounded-2xl border border-white/5 break-inside-avoid mb-6">
               <div className="flex gap-1 mb-6">
                 {[...Array(5)].map((_, i) => (
                   <svg
@@ -648,7 +651,7 @@ export default function VenueOwnerLanding() {
             </div>
 
             {/* Card 3 */}
-            <div className="bg-[#111] p-8 rounded-2xl border border-white/5 break-inside-avoid mb-6">
+            <div className="bg-card p-8 rounded-2xl border border-white/5 break-inside-avoid mb-6">
               <div className="flex gap-1 mb-6">
                 {[...Array(5)].map((_, i) => (
                   <svg
@@ -682,7 +685,7 @@ export default function VenueOwnerLanding() {
             </div>
 
             {/* Card 4 */}
-            <div className="bg-[#111] p-8 rounded-2xl border border-white/5 break-inside-avoid mb-6 hidden md:block">
+            <div className="bg-card p-8 rounded-2xl border border-white/5 break-inside-avoid mb-6 hidden md:block">
               <div className="flex gap-1 mb-6">
                 {[...Array(5)].map((_, i) => (
                   <svg
@@ -715,7 +718,7 @@ export default function VenueOwnerLanding() {
             </div>
 
             {/* Card 5 */}
-            <div className="bg-[#111] p-8 rounded-2xl border border-white/5 break-inside-avoid mb-6 hidden lg:block">
+            <div className="bg-card p-8 rounded-2xl border border-white/5 break-inside-avoid mb-6 hidden lg:block">
               <div className="flex gap-1 mb-6">
                 {[...Array(5)].map((_, i) => (
                   <svg
@@ -750,7 +753,7 @@ export default function VenueOwnerLanding() {
             </div>
 
             {/* Card 6 */}
-            <div className="bg-[#111] p-8 rounded-2xl border border-white/5 break-inside-avoid mb-6 hidden lg:block">
+            <div className="bg-card p-8 rounded-2xl border border-white/5 break-inside-avoid mb-6 hidden lg:block">
               <div className="flex gap-1 mb-6">
                 {[...Array(5)].map((_, i) => (
                   <svg
@@ -787,13 +790,13 @@ export default function VenueOwnerLanding() {
       {/* ── Document Verification Modal ── */}
       {showDocumentModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#111] border border-white/10 rounded-[10px] p-6 md:p-8 w-full max-w-lg relative animate-fadeInUp">
-            <button
+          <div className="bg-card border border-white/10 rounded-[10px] p-6 md:p-8 w-full max-w-lg relative animate-fadeInUp">
+            <Button
               onClick={() => setShowDocumentModal(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
             >
               <X size={24} />
-            </button>
+            </Button>
             <h2 className="text-[20px] md:text-4xl font-black tracking-tight leading-[1.05] font-poppins font-medium normal-case text-white text-center mb-8">
               Document Verification
             </h2>
@@ -801,28 +804,28 @@ export default function VenueOwnerLanding() {
             <form className="space-y-6 mt-4" onSubmit={handleDocumentSubmit}>
               {/* Custom Tabs */}
               <div className="flex bg-[#1A1D1D] rounded-lg p-1 w-full max-w-[300px] mx-auto mb-6">
-                <button
+                <Button
                   type="button"
                   onClick={() => setActiveTab("aadhaar")}
                   className={`flex-1 py-2 px-4 rounded-md text-xs md:text-sm font-bold tracking-widest uppercase transition-all ${
                     activeTab === "aadhaar"
-                      ? "bg-[#BFF367] text-black shadow-sm"
+                      ? "bg-primary text-black shadow-sm"
                       : "text-white/60 hover:text-white"
                   }`}
                 >
                   Aadhaar
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
                   onClick={() => setActiveTab("pan")}
                   className={`flex-1 py-2 px-4 rounded-md text-xs md:text-sm font-bold tracking-widest uppercase transition-all ${
                     activeTab === "pan"
-                      ? "bg-[#BFF367] text-black shadow-sm"
+                      ? "bg-primary text-black shadow-sm"
                       : "text-white/60 hover:text-white"
                   }`}
                 >
                   PAN
-                </button>
+                </Button>
               </div>
 
               {activeTab === "aadhaar" && (
@@ -838,12 +841,12 @@ export default function VenueOwnerLanding() {
                       FRONT
                     </span>
                     <div
-                      className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] p-2 md:p-3 overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharFront ? "ring-2 ring-[#BFF367]" : "group-hover:ring-2 group-hover:ring-[#BFF367]"}`}
+                      className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] p-2 md:p-3 overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharFront ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}
                     >
                       {aadharFront ? (
                         <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
                           <FileCheck
-                            className="text-[#BFF367] mb-2"
+                            className="text-primary mb-2"
                             size={32}
                           />
                           <span
@@ -886,7 +889,7 @@ export default function VenueOwnerLanding() {
                         </div>
                       </div>
                     </div>
-                    <input
+                    <Input
                       type="file"
                       accept="image/*"
                       className="hidden"
@@ -905,12 +908,12 @@ export default function VenueOwnerLanding() {
                       BACK
                     </span>
                     <div
-                      className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] p-2 md:p-3 overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharBack ? "ring-2 ring-[#BFF367]" : "group-hover:ring-2 group-hover:ring-[#BFF367]"}`}
+                      className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] p-2 md:p-3 overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharBack ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}
                     >
                       {aadharBack ? (
                         <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
                           <FileCheck
-                            className="text-[#BFF367] mb-2"
+                            className="text-primary mb-2"
                             size={32}
                           />
                           <span
@@ -945,7 +948,7 @@ export default function VenueOwnerLanding() {
                         </div>
                       </div>
                     </div>
-                    <input
+                    <Input
                       type="file"
                       accept="image/*"
                       className="hidden"
@@ -968,12 +971,12 @@ export default function VenueOwnerLanding() {
                       FRONT
                     </span>
                     <div
-                      className={`relative w-full h-[130px] md:h-[150px] bg-[#D9D9D9] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${panFront ? "ring-2 ring-[#BFF367]" : "group-hover:ring-2 group-hover:ring-[#BFF367]"}`}
+                      className={`relative w-full h-[130px] md:h-[150px] bg-[#D9D9D9] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${panFront ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}
                     >
                       {panFront ? (
                         <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
                           <FileCheck
-                            className="text-[#BFF367] mb-2"
+                            className="text-primary mb-2"
                             size={32}
                           />
                           <span
@@ -1025,7 +1028,7 @@ export default function VenueOwnerLanding() {
                         </div>
                       </div>
                     </div>
-                    <input
+                    <Input
                       type="file"
                       accept="image/*"
                       className="hidden"
@@ -1036,7 +1039,7 @@ export default function VenueOwnerLanding() {
               )}
 
               <div className="flex justify-center mt-6">
-                <button
+                <Button
                   type="submit"
                   disabled={isSubmitting}
                   className="w-full max-w-[240px] py-3 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
@@ -1049,7 +1052,7 @@ export default function VenueOwnerLanding() {
                   ) : (
                     "Submit & Register"
                   )}
-                </button>
+                </Button>
               </div>
             </form>
           </div>

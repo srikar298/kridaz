@@ -21,18 +21,19 @@ import useVenueOwnerRevenue from "@hooks/venue-owner/useVenueOwnerRevenue";
 import useOwnerWallet from "@hooks/venue-owner/useOwnerWallet";
 import DashboardSkeleton from "../Dashboard/DashboardSkeleton";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";import { Button, Input } from "@kridaz/ui";
+
 
 /**
  * VenueOwnerRevenue Rs � Financial intelligence and earnings portal.
- * Fully rebranded for the Scorer Portal with Teal Green (#BFF367) and Inter font.
+ * Fully rebranded for the Scorer Portal with Teal Green (var(--primary)) and Inter font.
  * Layout optimized: 6 cards in one line.
  */
 
 export default function VenueOwnerRevenue() {
   const { role } = useSelector((state) => state.auth);
   const isScorer = role?.toLowerCase().includes("scorer");
-  const themeColor = isScorer ? "#BFF367" : "#BFF367";
+  const themeColor = isScorer ? "var(--primary)" : "var(--primary)";
   const portalTitle = isScorer ? "Earnings Dossier" : "Revenue Engine";
 
   const { revenueData, loading: revenueLoading } = useVenueOwnerRevenue();
@@ -86,7 +87,7 @@ export default function VenueOwnerRevenue() {
     revenueData || {};
 
   return (
-    <div className="h-full custom-scrollbar bg-[#000000] text-white font-inter pb-4">
+    <div className="h-full custom-scrollbar bg-background text-white font-inter pb-4">
       <div className="px-1 lg:px-3 lg:pt-3 lg:pb-3 space-y-6 md:space-y-12 animate-fade-in relative">
         {/* Header Section */}
         <div className="flex flex-row justify-between items-center gap-2 relative z-10 pb-4 md:pb-6 border-b border-white/10">
@@ -105,20 +106,20 @@ export default function VenueOwnerRevenue() {
           </div>
 
           <div className="flex flex-row items-center shrink-0">
-            <button className="flex items-center justify-center p-2 md:p-3 bg-[#121212] hover:bg-white/[0.05] border border-white/10 rounded-[16px] md:rounded-[16px] transition-all shadow-xl text-neutral-400 hover:text-white group">
+            <Button className="flex items-center justify-center p-2 md:p-3 bg-card hover:bg-white/[0.05] border border-white/10 rounded-[16px] md:rounded-[16px] transition-all shadow-xl text-neutral-400 hover:text-white group">
               <Download
                 size={14}
                 className="shrink-0 md:w-5 md:h-5 group-hover:scale-110 transition-transform"
               />
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Financial Matrix (4 Cards) */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
-          <div className="bg-[#121212] border border-white/10 rounded-[16px] md:rounded-[16px] p-2 md:p-5 flex flex-col relative overflow-hidden transition-all duration-500 shadow-2xl group hover:border-white/10">
+          <div className="bg-card border border-white/10 rounded-[16px] md:rounded-[16px] p-2 md:p-5 flex flex-col relative overflow-hidden transition-all duration-500 shadow-2xl group hover:border-white/10">
             <div
-              className="w-5 h-5 md:w-10 md:h-10 rounded-[16px] md:rounded-[16px] flex items-center justify-center mb-1.5 md:mb-5 border border-white/10 bg-white/[0.05] group-hover:border-[#B3DC26]/30 transition-all shadow-inner"
+              className="w-5 h-5 md:w-10 md:h-10 rounded-[16px] md:rounded-[16px] flex items-center justify-center mb-1.5 md:mb-5 border border-white/10 bg-white/[0.05] group-hover:border-primary/30 transition-all shadow-inner"
               style={{ color: themeColor }}
             >
               <CheckCircle2 className="w-2.5 h-2.5 md:w-[18px] md:h-[18px]" />
@@ -137,7 +138,7 @@ export default function VenueOwnerRevenue() {
             </p>
           </div>
 
-          <div className="bg-[#121212] border border-white/10 rounded-[16px] md:rounded-[16px] p-2 md:p-5 flex flex-col relative overflow-hidden shadow-2xl hover:border-red-500/20 transition-all duration-500 group">
+          <div className="bg-card border border-white/10 rounded-[16px] md:rounded-[16px] p-2 md:p-5 flex flex-col relative overflow-hidden shadow-2xl hover:border-red-500/20 transition-all duration-500 group">
             <div className="w-5 h-5 md:w-10 md:h-10 bg-red-500/10 rounded-[16px] md:rounded-[16px] flex items-center justify-center mb-1.5 md:mb-5 border border-white/10 group-hover:border-red-500/30 transition-all text-red-500 shadow-inner">
               <AlertOctagon className="w-2.5 h-2.5 md:w-[18px] md:h-[18px]" />
             </div>
@@ -152,7 +153,7 @@ export default function VenueOwnerRevenue() {
             </p>
           </div>
 
-          <div className="bg-[#121212] border border-white/10 rounded-[16px] md:rounded-[16px] p-2 md:p-5 flex flex-col relative overflow-hidden shadow-2xl transition-all duration-500 hover:border-white/10 group">
+          <div className="bg-card border border-white/10 rounded-[16px] md:rounded-[16px] p-2 md:p-5 flex flex-col relative overflow-hidden shadow-2xl transition-all duration-500 hover:border-white/10 group">
             <div className="w-5 h-5 md:w-10 md:h-10 bg-white/5 rounded-[16px] md:rounded-[16px] flex items-center justify-center mb-1.5 md:mb-5 border border-white/10 group-hover:border-white/20 transition-all text-neutral-500 shadow-inner">
               <TrendingUp className="w-2.5 h-2.5 md:w-[18px] md:h-[18px]" />
             </div>
@@ -167,7 +168,7 @@ export default function VenueOwnerRevenue() {
             </p>
           </div>
 
-          <div className="bg-[#121212] border border-white/10 rounded-[16px] md:rounded-[16px] p-2 md:p-5 flex flex-col relative overflow-hidden shadow-2xl transition-all duration-500 hover:border-white/10 group">
+          <div className="bg-card border border-white/10 rounded-[16px] md:rounded-[16px] p-2 md:p-5 flex flex-col relative overflow-hidden shadow-2xl transition-all duration-500 hover:border-white/10 group">
             <div className="w-5 h-5 md:w-10 md:h-10 bg-white/5 rounded-[16px] md:rounded-[16px] flex items-center justify-center mb-1.5 md:mb-5 border border-white/10 group-hover:border-white/20 transition-all text-neutral-500 shadow-inner">
               <Landmark className="w-2.5 h-2.5 md:w-[18px] md:h-[18px]" />
             </div>
@@ -185,7 +186,7 @@ export default function VenueOwnerRevenue() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-12 relative z-10 mt-6 lg:mt-10">
           {/* Review Pipeline List */}
-          <div className="bg-[#121212] border border-white/10 rounded-[16px] md:rounded-[16px] p-4 lg:p-10 shadow-2xl flex flex-col max-h-[400px] md:max-h-[600px] group overflow-hidden relative">
+          <div className="bg-card border border-white/10 rounded-[16px] md:rounded-[16px] p-4 lg:p-10 shadow-2xl flex flex-col max-h-[400px] md:max-h-[600px] group overflow-hidden relative">
             <div className="flex justify-between items-center mb-4 md:mb-8 border-b border-white/10 pb-3 md:pb-6 relative z-10">
               <div className="flex items-center gap-2 md:gap-4">
                 <h2 className="text-[10px] md:text-[12px] font-black font-inter text-white uppercase tracking-[0.2em] flex items-center gap-3">
@@ -203,7 +204,7 @@ export default function VenueOwnerRevenue() {
                   inProgressBookings.map((booking) => (
                     <div
                       key={booking._id}
-                      className="p-3 md:p-6 bg-[#121212] rounded-[16px] md:rounded-[16px] border border-white/10 flex items-center justify-between hover:border-amber-500/20 transition-all shadow-lg group/item"
+                      className="p-3 md:p-6 bg-card rounded-[16px] md:rounded-[16px] border border-white/10 flex items-center justify-between hover:border-amber-500/20 transition-all shadow-lg group/item"
                     >
                       <div className="space-y-1 md:space-y-1.5">
                         <p className="text-[11px] md:text-[14px] font-black text-white uppercase tracking-tight">
@@ -244,7 +245,7 @@ export default function VenueOwnerRevenue() {
           </div>
 
           {/* Transaction History */}
-          <div className="bg-[#121212] border border-white/10 rounded-[16px] md:rounded-[16px] p-4 lg:p-10 shadow-2xl flex flex-col max-h-[400px] md:max-h-[600px] group overflow-hidden relative">
+          <div className="bg-card border border-white/10 rounded-[16px] md:rounded-[16px] p-4 lg:p-10 shadow-2xl flex flex-col max-h-[400px] md:max-h-[600px] group overflow-hidden relative">
             <div className="flex justify-between items-center mb-4 md:mb-8 border-b border-white/10 pb-3 md:pb-6 relative z-10">
               <div className="flex items-center gap-2 md:gap-4">
                 <h2 className="text-[10px] md:text-[12px] font-black font-inter text-white uppercase tracking-[0.2em] flex items-center gap-3">
@@ -291,7 +292,7 @@ export default function VenueOwnerRevenue() {
                     return (
                       <div
                         key={tx._id}
-                        className="p-3 md:p-6 bg-[#121212] rounded-[16px] md:rounded-[16px] border border-white/10 flex items-center justify-between hover:border-white/10 transition-all shadow-lg"
+                        className="p-3 md:p-6 bg-card rounded-[16px] md:rounded-[16px] border border-white/10 flex items-center justify-between hover:border-white/10 transition-all shadow-lg"
                       >
                         <div className="space-y-1 md:space-y-1.5">
                           <div className="flex items-center gap-1.5 md:gap-2">
@@ -338,7 +339,7 @@ export default function VenueOwnerRevenue() {
         {/* Withdrawal Control Modal */}
         {showWithdrawModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-black/90 backdrop-blur-xl animate-fade-in">
-            <div className="bg-[#121212] border border-white/10 rounded-[16px] w-full max-w-lg overflow-hidden shadow-2xl animate-scale-in relative">
+            <div className="bg-card border border-white/10 rounded-[16px] w-full max-w-lg overflow-hidden shadow-2xl animate-scale-in relative">
               <div className="p-4 md:p-8 border-b border-white/10 flex justify-between items-center relative z-10">
                 <div className="flex items-center gap-3 md:gap-4">
                   <div
@@ -349,12 +350,12 @@ export default function VenueOwnerRevenue() {
                     Fund Withdrawal
                   </h3>
                 </div>
-                <button
+                <Button
                   onClick={() => setShowWithdrawModal(false)}
                   className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-[16px] text-neutral-500 hover:text-white transition-all"
                 >
                   <X className="w-4 h-4 md:w-5 md:h-5" />
-                </button>
+                </Button>
               </div>
 
               <form
@@ -362,7 +363,7 @@ export default function VenueOwnerRevenue() {
                 className="p-4 md:p-8 space-y-3 md:space-y-8 relative z-10 h-auto max-h-[90vh] md:h-[500px] overflow-y-auto no-scrollbar pb-4 md:pb-10"
               >
                 <div
-                  className="rounded-[16px] p-3 md:p-6 flex items-center gap-3 md:gap-5 border border-white/10 bg-[#121212]"
+                  className="rounded-[16px] p-3 md:p-6 flex items-center gap-3 md:gap-5 border border-white/10 bg-card"
                   style={{ borderColor: `${themeColor}20` }}
                 >
                   <div
@@ -402,21 +403,21 @@ export default function VenueOwnerRevenue() {
                       Withdrawal Quantum
                     </label>
                     <div className="relative group">
-                      <IndianRupee className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 text-neutral-700 group-focus-within:text-[#B3DC26] transition-colors w-4 h-4 md:w-5 md:h-5" />
-                      <input
+                      <IndianRupee className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 text-neutral-700 group-focus-within:text-primary transition-colors w-4 h-4 md:w-5 md:h-5" />
+                      <Input
                         type="number"
                         required
                         min="500"
                         max={balances?.usable || 0}
                         value={withdrawAmount}
                         onChange={(e) => setWithdrawAmount(e.target.value)}
-                        className="w-full bg-[#121212] border border-white/10 rounded-[16px] pl-10 md:pl-14 pr-4 md:pr-6 py-2 md:py-5 text-white focus:outline-none focus:border-[#B3DC26]/30 transition-all font-black text-lg md:text-3xl placeholder-neutral-800 shadow-inner"
+                        className="w-full bg-card border border-white/10 rounded-[16px] pl-10 md:pl-14 pr-4 md:pr-6 py-2 md:py-5 text-white focus:outline-none focus:border-primary/30 transition-all font-black text-lg md:text-3xl placeholder-neutral-800 shadow-inner"
                         placeholder="0.00"
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-2 md:space-y-6 bg-[#121212] p-3 md:p-6 rounded-[16px] border border-white/10">
+                  <div className="space-y-2 md:space-y-6 bg-card p-3 md:p-6 rounded-[16px] border border-white/10">
                     <p className="text-[8px] md:text-[9px] font-black text-neutral-600 uppercase tracking-widest mb-1 md:mb-4 text-center">
                       Settlement Credentials
                     </p>
@@ -425,7 +426,7 @@ export default function VenueOwnerRevenue() {
                       <label className="text-[8px] md:text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">
                         Account Holder
                       </label>
-                      <input
+                      <Input
                         type="text"
                         required
                         value={bankDetails.accountName}
@@ -435,7 +436,7 @@ export default function VenueOwnerRevenue() {
                             accountName: e.target.value,
                           })
                         }
-                        className="w-full bg-black border border-white/10 rounded-[16px] px-3 md:px-5 py-2 md:py-4 text-[11px] md:text-[13px] text-white focus:outline-none focus:border-[#B3DC26]/30 transition-all font-black placeholder-neutral-800"
+                        className="w-full bg-black border border-white/10 rounded-[16px] px-3 md:px-5 py-2 md:py-4 text-[11px] md:text-[13px] text-white focus:outline-none focus:border-primary/30 transition-all font-black placeholder-neutral-800"
                         placeholder="Full Legal Name"
                       />
                     </div>
@@ -444,7 +445,7 @@ export default function VenueOwnerRevenue() {
                       <label className="text-[8px] md:text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">
                         Account Sequence
                       </label>
-                      <input
+                      <Input
                         type="text"
                         required
                         value={bankDetails.accountNumber}
@@ -454,7 +455,7 @@ export default function VenueOwnerRevenue() {
                             accountNumber: e.target.value,
                           })
                         }
-                        className="w-full bg-black border border-white/10 rounded-[16px] px-3 md:px-5 py-2 md:py-4 text-[11px] md:text-[13px] text-white focus:outline-none focus:border-[#B3DC26]/30 transition-all font-black placeholder-neutral-800"
+                        className="w-full bg-black border border-white/10 rounded-[16px] px-3 md:px-5 py-2 md:py-4 text-[11px] md:text-[13px] text-white focus:outline-none focus:border-primary/30 transition-all font-black placeholder-neutral-800"
                         placeholder="Primary Account Number"
                       />
                     </div>
@@ -464,7 +465,7 @@ export default function VenueOwnerRevenue() {
                         <label className="text-[8px] md:text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">
                           IFSC Vector
                         </label>
-                        <input
+                        <Input
                           type="text"
                           required
                           value={bankDetails.ifscCode}
@@ -474,7 +475,7 @@ export default function VenueOwnerRevenue() {
                               ifscCode: e.target.value,
                             })
                           }
-                          className="w-full bg-black border border-white/10 rounded-[16px] px-3 md:px-5 py-2 md:py-4 text-[11px] md:text-[13px] text-white focus:outline-none focus:border-[#B3DC26]/30 transition-all font-black uppercase placeholder-neutral-800"
+                          className="w-full bg-black border border-white/10 rounded-[16px] px-3 md:px-5 py-2 md:py-4 text-[11px] md:text-[13px] text-white focus:outline-none focus:border-primary/30 transition-all font-black uppercase placeholder-neutral-800"
                           placeholder="IFSC CODE"
                         />
                       </div>
@@ -482,7 +483,7 @@ export default function VenueOwnerRevenue() {
                         <label className="text-[8px] md:text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">
                           Institution
                         </label>
-                        <input
+                        <Input
                           type="text"
                           required
                           value={bankDetails.bankName}
@@ -492,7 +493,7 @@ export default function VenueOwnerRevenue() {
                               bankName: e.target.value,
                             })
                           }
-                          className="w-full bg-black border border-white/10 rounded-[16px] px-3 md:px-5 py-2 md:py-4 text-[11px] md:text-[13px] text-white focus:outline-none focus:border-[#B3DC26]/30 transition-all font-black placeholder-neutral-800"
+                          className="w-full bg-black border border-white/10 rounded-[16px] px-3 md:px-5 py-2 md:py-4 text-[11px] md:text-[13px] text-white focus:outline-none focus:border-primary/30 transition-all font-black placeholder-neutral-800"
                           placeholder="Bank Name"
                         />
                       </div>
@@ -500,8 +501,8 @@ export default function VenueOwnerRevenue() {
                   </div>
                 </div>
 
-                <div className="sticky bottom-0 left-0 right-0 pt-2 md:pt-6 bg-[#121212]">
-                  <button
+                <div className="sticky bottom-0 left-0 right-0 pt-2 md:pt-6 bg-card">
+                  <Button
                     type="submit"
                     disabled={
                       submitting ||
@@ -517,7 +518,7 @@ export default function VenueOwnerRevenue() {
                     {submitting
                       ? "Authenticating Audit..."
                       : "Execute Settlement"}
-                  </button>
+                  </Button>
                 </div>
               </form>
             </div>

@@ -14,7 +14,8 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { restoreAuth, logout } from "@redux/slices/authSlice";
 import toast from "react-hot-toast";
-import { format, parseISO } from "date-fns";
+import { format, parseISO } from "date-fns";import { Button, Input } from "@kridaz/ui";
+
 
 const ManualBookingModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
@@ -159,42 +160,42 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-2xl bg-[#121212] border border-white/10 rounded-[16px] overflow-hidden shadow-[var(--shadow-2)] relative">
+      <div className="w-full max-w-2xl bg-card border border-white/10 rounded-[16px] overflow-hidden shadow-[var(--shadow-2)] relative">
         {/* Header */}
-        <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between bg-[#000000]">
+        <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between bg-background">
           <div className="flex items-center gap-3">
-            <div className="w-1 h-6 bg-[#B3DC26] rounded-full" />
+            <div className="w-1 h-6 bg-primary rounded-full" />
             <div>
               <h2 className="text-[20px] font-bold uppercase tracking-tight text-white font-open-sans">
-                Manual <span className="text-[#B3DC26]">Booking</span>
+                Manual <span className="text-primary">Booking</span>
               </h2>
               <p className="text-[10px] font-medium text-white/70 uppercase tracking-[0.2em] mt-0.5 font-inter">
                 Console Step {step} of 3
               </p>
             </div>
           </div>
-          <button
+          <Button
             onClick={onClose}
-            className="p-2 hover:bg-[#1B1B1B] rounded-[16px] transition-all text-white/70 hover:text-white border border-transparent hover:border-white/10"
+            className="p-2 hover:bg-card rounded-[16px] transition-all text-white/70 hover:text-white border border-transparent hover:border-white/10"
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         {/* Content */}
-        <div className="p-6 max-h-[60vh] overflow-y-auto no-scrollbar bg-[#000000]">
+        <div className="p-6 max-h-[60vh] overflow-y-auto no-scrollbar bg-background">
           {step === 1 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {turfs.map((turf) => (
-                <button
+                <Button
                   key={turf._id}
                   onClick={() => {
                     setSelectedTurf(turf);
                     setStep(2);
                   }}
-                  className={`flex items-start gap-4 p-4 rounded-[16px] border transition-all text-left group ${selectedTurf?._id === turf._id ? "bg-[#B3DC26]/5 border-[#B3DC26]" : "bg-[#000000] border-white/10 hover:border-[#B3DC26]/30"}`}
+                  className={`flex items-start gap-4 p-4 rounded-[16px] border transition-all text-left group ${selectedTurf?._id === turf._id ? "bg-primary/5 border-primary" : "bg-background border-white/10 hover:border-primary/30"}`}
                 >
-                  <div className="w-14 h-14 rounded-[16px] bg-[#1B1B1B] overflow-hidden flex-shrink-0 border border-white/10">
+                  <div className="w-14 h-14 rounded-[16px] bg-card overflow-hidden flex-shrink-0 border border-white/10">
                     <img
                       src={turf.images[0]}
                       alt={turf.name}
@@ -206,14 +207,14 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
                       {turf.name}
                     </h3>
                     <p className="text-[9px] text-white/70 flex items-center gap-1 mt-1 uppercase font-bold tracking-widest">
-                      <MapPin size={10} className="text-[#B3DC26]" />{" "}
+                      <MapPin size={10} className="text-primary" />{" "}
                       {turf.location}
                     </p>
-                    <p className="text-[12px] font-black text-[#B3DC26] mt-2 tracking-widest font-inter">
+                    <p className="text-[12px] font-black text-primary mt-2 tracking-widest font-inter">
                       Rs {turf.pricePerHour}
                     </p>
                   </div>
-                </button>
+                </Button>
               ))}
             </div>
           )}
@@ -227,13 +228,13 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
                   </label>
                   <div className="relative">
                     <Calendar
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B3DC26]"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-primary"
                       size={16}
                     />
-                    <input
+                    <Input
                       type="date"
                       min={format(new Date(), "yyyy-MM-dd")}
-                      className="w-full bg-[#1B1B1B] border border-white/10 rounded-[16px] py-3 pl-11 pr-4 text-[13px] focus:outline-none focus:border-[#B3DC26] font-bold text-white font-inter appearance-none"
+                      className="w-full bg-card border border-white/10 rounded-[16px] py-3 pl-11 pr-4 text-[13px] focus:outline-none focus:border-primary font-bold text-white font-inter appearance-none"
                       value={selectedDate}
                       onChange={(e) => setSelectedDate(e.target.value)}
                     />
@@ -243,16 +244,16 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
                   <label className="text-[11px] font-bold text-white/70 uppercase tracking-[0.15em] ml-1 font-inter">
                     Active Facility
                   </label>
-                  <div className="w-full bg-[#1B1B1B] border border-white/10 rounded-[16px] py-3 px-4 text-[13px] font-bold flex justify-between items-center text-white font-inter">
+                  <div className="w-full bg-card border border-white/10 rounded-[16px] py-3 px-4 text-[13px] font-bold flex justify-between items-center text-white font-inter">
                     <span className="uppercase truncate max-w-[120px]">
                       {selectedTurf?.name}
                     </span>
-                    <button
+                    <Button
                       onClick={() => setStep(1)}
-                      className="text-[#B3DC26] text-[10px] hover:underline font-black tracking-widest"
+                      className="text-primary text-[10px] hover:underline font-black tracking-widest"
                     >
                       SWITCH
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -268,11 +269,11 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
                 ) : (
                   <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
                     {availableSlots.map((slot, i) => (
-                      <button
+                      <Button
                         key={i}
                         disabled={slot.isBooked}
                         onClick={() => setSelectedSlot(slot)}
-                        className={`flex flex-col items-center justify-center min-h-[38px] rounded-[16px] transition-all font-inter ${selectedSlot === slot ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black" : slot.isBooked ? "bg-red-500/10 border border-red-500/20 text-red-500 cursor-not-allowed opacity-50" : "bg-[#1B1B1B] border border-white/10 hover:border-[#B3DC26]/50 text-white/70"}`}
+                        className={`flex flex-col items-center justify-center min-h-[38px] rounded-[16px] transition-all font-inter ${selectedSlot === slot ? "bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black" : slot.isBooked ? "bg-red-500/10 border border-red-500/20 text-red-500 cursor-not-allowed opacity-50" : "bg-card border border-white/10 hover:border-primary/50 text-white/70"}`}
                       >
                         <span className="text-[10px] font-black tracking-tighter">
                           {slot.startTime}
@@ -282,7 +283,7 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
                             Rs {selectedTurf?.pricePerHour}
                           </span>
                         )}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 )}
@@ -302,9 +303,9 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
                       className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70"
                       size={16}
                     />
-                    <input
+                    <Input
                       type="text"
-                      className="w-full bg-[#1B1B1B] border border-white/10 rounded-[16px] py-3 pl-11 pr-4 text-[13px] focus:outline-none focus:border-[#B3DC26] font-bold text-white font-inter"
+                      className="w-full bg-card border border-white/10 rounded-[16px] py-3 pl-11 pr-4 text-[13px] focus:outline-none focus:border-primary font-bold text-white font-inter"
                       placeholder="ENTER FULL NAME"
                       value={customerData.name}
                       onChange={(e) =>
@@ -325,9 +326,9 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
                       className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70"
                       size={16}
                     />
-                    <input
+                    <Input
                       type="tel"
-                      className="w-full bg-[#1B1B1B] border border-white/10 rounded-[16px] py-3 pl-11 pr-4 text-[13px] focus:outline-none focus:border-[#B3DC26] font-bold text-white font-inter"
+                      className="w-full bg-card border border-white/10 rounded-[16px] py-3 pl-11 pr-4 text-[13px] focus:outline-none focus:border-primary font-bold text-white font-inter"
                       placeholder="+91 XXXXX XXXXX"
                       value={customerData.phone}
                       onChange={(e) =>
@@ -348,9 +349,9 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
                       className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70"
                       size={16}
                     />
-                    <input
+                    <Input
                       type="email"
-                      className="w-full bg-[#1B1B1B] border border-white/10 rounded-[16px] py-3 pl-11 pr-4 text-[13px] focus:outline-none focus:border-[#B3DC26] font-bold text-white font-inter"
+                      className="w-full bg-card border border-white/10 rounded-[16px] py-3 pl-11 pr-4 text-[13px] focus:outline-none focus:border-primary font-bold text-white font-inter"
                       placeholder="PLAYER@EXAMPLE.COM"
                       value={customerData.email}
                       onChange={(e) =>
@@ -369,20 +370,20 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
                   Settlement Method
                 </label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button
+                  <Button
                     onClick={() =>
                       setCustomerData({
                         ...customerData,
                         paymentMethod: "CASH",
                       })
                     }
-                    className={`flex items-center gap-3 p-3 rounded-[16px] border transition-all ${customerData.paymentMethod === "CASH" ? "bg-[#B3DC26]/5 border-[#B3DC26]" : "bg-[#1B1B1B] border-white/10 hover:border-[#B3DC26]/30"}`}
+                    className={`flex items-center gap-3 p-3 rounded-[16px] border transition-all ${customerData.paymentMethod === "CASH" ? "bg-primary/5 border-primary" : "bg-card border-white/10 hover:border-primary/30"}`}
                   >
                     <Banknote
                       size={18}
                       className={
                         customerData.paymentMethod === "CASH"
-                          ? "text-[#B3DC26]"
+                          ? "text-primary"
                           : "text-white/70"
                       }
                     />
@@ -391,21 +392,21 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
                         CASH / OFFLINE
                       </p>
                     </div>
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() =>
                       setCustomerData({
                         ...customerData,
                         paymentMethod: "ONLINE",
                       })
                     }
-                    className={`flex items-center gap-3 p-3 rounded-[16px] border transition-all ${customerData.paymentMethod === "ONLINE" ? "bg-[#B3DC26]/5 border-[#B3DC26]" : "bg-[#1B1B1B] border-white/10 hover:border-[#B3DC26]/30"}`}
+                    className={`flex items-center gap-3 p-3 rounded-[16px] border transition-all ${customerData.paymentMethod === "ONLINE" ? "bg-primary/5 border-primary" : "bg-card border-white/10 hover:border-primary/30"}`}
                   >
                     <CreditCard
                       size={18}
                       className={
                         customerData.paymentMethod === "ONLINE"
-                          ? "text-[#B3DC26]"
+                          ? "text-primary"
                           : "text-white/70"
                       }
                     />
@@ -414,7 +415,7 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
                         ONLINE / UPI
                       </p>
                     </div>
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -422,14 +423,14 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-5 border-t border-white/10 bg-[#000000] flex items-center justify-between">
+        <div className="px-6 py-5 border-t border-white/10 bg-background flex items-center justify-between">
           <div className="hidden sm:block">
             {selectedTurf && (
               <div className="space-y-0.5">
                 <p className="text-[9px] font-bold text-white/70 uppercase tracking-[0.2em] font-inter">
                   Total Settlement
                 </p>
-                <p className="text-[20px] font-bold text-[#B3DC26] font-open-sans">
+                <p className="text-[20px] font-bold text-primary font-open-sans">
                   Rs {selectedTurf.pricePerHour}
                 </p>
               </div>
@@ -438,29 +439,29 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
 
           <div className="flex gap-2 w-full sm:w-auto">
             {step > 1 && (
-              <button
+              <Button
                 onClick={() => setStep(step - 1)}
-                className="flex-1 sm:flex-none px-6 py-2.5 rounded-[16px] bg-[#1B1B1B] text-white font-bold uppercase tracking-widest text-[11px] hover:bg-[#1B1B1B] transition-all border border-white/10 font-inter"
+                className="flex-1 sm:flex-none px-6 py-2.5 rounded-[16px] bg-card text-white font-bold uppercase tracking-widest text-[11px] hover:bg-card transition-all border border-white/10 font-inter"
               >
                 Back
-              </button>
+              </Button>
             )}
             {step < 3 ? (
-              <button
+              <Button
                 disabled={!selectedTurf || (step === 2 && !selectedSlot)}
                 onClick={() => setStep(step + 1)}
-                className="flex-1 sm:flex-none px-6 py-2.5 rounded-[16px] bg-white text-black font-bold uppercase tracking-widest text-[11px] hover:bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none transition-all disabled:opacity-20 font-inter"
+                className="flex-1 sm:flex-none px-6 py-2.5 rounded-[16px] bg-white text-black font-bold uppercase tracking-widest text-[11px] hover:bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none transition-all disabled:opacity-20 font-inter"
               >
                 Continue
-              </button>
+              </Button>
             ) : (
-              <button
+              <Button
                 disabled={loading || !customerData.name}
                 onClick={handleSubmit}
-                className="flex-1 sm:flex-none px-6 py-2.5 rounded-[16px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold uppercase tracking-widest text-[11px] hover:opacity-90 transition-all shadow-[0_0_20px_rgba(204,255,0,0.15)] disabled:opacity-50 font-inter"
+                className="flex-1 sm:flex-none px-6 py-2.5 rounded-[16px] bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold uppercase tracking-widest text-[11px] hover:opacity-90 transition-all shadow-[0_0_20px_rgba(204,255,0,0.15)] disabled:opacity-50 font-inter"
               >
                 {loading ? "Processing..." : "Confirm Booking"}
-              </button>
+              </Button>
             )}
           </div>
         </div>

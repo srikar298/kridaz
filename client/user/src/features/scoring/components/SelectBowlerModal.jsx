@@ -1,6 +1,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Zap, ChevronRight } from "lucide-react";
+import { Zap, ChevronRight } from "lucide-react";import { Button } from "@kridaz/ui";
+
 
 /**
  * SelectBowlerModal
@@ -31,12 +32,12 @@ const SelectBowlerModal = ({ pool = [], currentBowlerId, onConfirm }) => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           transition={{ type: "spring", damping: 22 }}
-          className="relative w-full max-w-md bg-[#111] rounded-[8px] border border-white/10 overflow-hidden z-10"
+          className="relative w-full max-w-md bg-card rounded-[8px] border border-white/10 overflow-hidden z-10"
         >
           {/* Header */}
           <div className="px-6 pt-6 pb-4 border-b border-white/10">
             <h2 className="text-xl font-black tracking-tight text-white flex items-center gap-2">
-              <Zap size={20} className="text-[#00C187]" />
+              <Zap size={20} className="text-success" />
               Select Next Bowler
             </h2>
           </div>
@@ -49,12 +50,12 @@ const SelectBowlerModal = ({ pool = [], currentBowlerId, onConfirm }) => {
               </p>
             )}
             {availableBowlers.map((player) => (
-              <button
+              <Button
                 key={player.userId}
                 onClick={() => onConfirm(player.userId)}
-                className="w-full flex items-center gap-4 px-4 py-3.5 rounded-[8px] border border-white/8 bg-white/4 hover:border-[#00C187]/50 hover:bg-[#00C187]/8 transition-all group text-left"
+                className="w-full flex items-center gap-4 px-4 py-3.5 rounded-[8px] border border-white/8 bg-white/4 hover:border-success/50 hover:bg-success/8 transition-all group text-left"
               >
-                <div className="w-10 h-10 rounded-[8px] bg-neutral-800 flex items-center justify-center text-sm font-black text-[#00C187] shrink-0">
+                <div className="w-10 h-10 rounded-[8px] bg-neutral-800 flex items-center justify-center text-sm font-black text-success shrink-0">
                   {player.name?.charAt(0)?.toUpperCase() || "?"}
                 </div>
                 <span className="flex-1 font-bold text-white text-sm">
@@ -62,9 +63,9 @@ const SelectBowlerModal = ({ pool = [], currentBowlerId, onConfirm }) => {
                 </span>
                 <ChevronRight
                   size={16}
-                  className="text-neutral-600 group-hover:text-[#00C187] transition-colors"
+                  className="text-neutral-600 group-hover:text-success transition-colors"
                 />
-              </button>
+              </Button>
             ))}
           </div>
         </motion.div>

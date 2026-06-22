@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ThumbsUp, MessageCircle, Send, MoreVertical, ShieldCheck, Video, Trash2, AlertTriangle, Eye, Calendar, User as UserIcon, Loader2 } from "lucide-react";
+import { MoreVertical, ShieldCheck, Video } from "lucide-react";
+import CommentIcon from "../../../assets/icons/comment_icon.png";
+import ShareIcon from "../../../assets/icons/share_icon.png";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   useLikePostMutation,
   useAddPostCommentMutation,
 } from "@redux/api/communityApi";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
+
 
 const getPostId = (post) => post?._id || post?.id;
 
@@ -201,7 +204,7 @@ const PostItem = React.memo(
       post.authorId === currentUserId;
 
     return (
-      <div className="bg-[#0A0A0A] border border-white/5 rounded-[12px] overflow-hidden flex flex-col max-w-[470px] mx-auto w-full">
+      <div className="bg-background border border-white/5 rounded-[12px] overflow-hidden flex flex-col max-w-[470px] mx-auto w-full">
         {/* Post Header */}
         <div className="flex items-center justify-between p-4 pb-2">
           <Link
@@ -210,7 +213,7 @@ const PostItem = React.memo(
           >
             <img
               src={post.adminId?.profilePicture || "/default-avatar.png"}
-              className="w-10 h-10 rounded-full object-cover border border-white/10 group-hover:border-[#BFF367]/50 transition-colors"
+              className="w-10 h-10 rounded-full object-cover border border-white/10 group-hover:border-[var(--primary)]/50 transition-colors"
               alt=""
             />
             <div>
@@ -218,9 +221,9 @@ const PostItem = React.memo(
                 <span className="text-[13px] font-bold text-white transition-colors">
                   {post.adminId?.name || post.author?.name || "Player"}
                 </span>
-                <ShieldCheck size={14} className="text-[#BFF367]" />
+                <ShieldCheck size={14} className="text-primary" />
               </div>
-              <div className="text-[11px] font-bold text-white/40 mt-0.5">
+              <div className="text-[11px] font-bold text-muted-foreground mt-0.5">
                 {getFormattedTime(post.createdAt)}
               </div>
             </div>
@@ -229,7 +232,7 @@ const PostItem = React.memo(
             <div className="relative">
               <button
                 onClick={() => setActiveDropdown(!activeDropdown)}
-                className="text-white/40 hover:text-white transition-colors p-2"
+                className="text-muted-foreground hover:text-white transition-colors p-2"
               >
                 <MoreVertical size={18} />
               </button>
@@ -241,7 +244,7 @@ const PostItem = React.memo(
                         setActiveDropdown(false);
                         onDeletePost(postId);
                       }}
-                      className="w-full text-left px-4 py-2 text-[12px] font-bold text-red-500 hover:bg-white/5 transition-colors"
+                      className="w-full text-left px-4 py-2 text-[12px] font-bold text-red-500 hover:bg-card transition-colors"
                     >
                       Delete
                     </button>
@@ -251,7 +254,7 @@ const PostItem = React.memo(
                         setActiveDropdown(false);
                         onReportPost(postId);
                       }}
-                      className="w-full text-left px-4 py-2 text-[12px] font-bold text-white hover:bg-white/5 transition-colors"
+                      className="w-full text-left px-4 py-2 text-[12px] font-bold text-white hover:bg-card transition-colors"
                     >
                       Report
                     </button>
@@ -322,7 +325,7 @@ const PostItem = React.memo(
                       cx="48"
                       cy="48"
                       r="40"
-                      stroke="#BFF367"
+                      stroke="var(--primary)"
                       strokeWidth="6"
                       fill="transparent"
                       strokeDasharray={2 * Math.PI * 40}
@@ -342,15 +345,15 @@ const PostItem = React.memo(
                   </div>
                 </div>
                 <div className="mt-4 flex flex-col items-center gap-1">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#BFF367] animate-pulse">
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary animate-pulse">
                     {post.status === "processing"
                       ? "Optimizing Media"
                       : "Preparing Upload"}
                   </span>
                   <div className="flex gap-1">
-                    <span className="w-1 h-1 bg-gradient-to-r from-[#BFF367] to-[#BFF367] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                    <span className="w-1 h-1 bg-gradient-to-r from-[#BFF367] to-[#BFF367] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                    <span className="w-1 h-1 bg-gradient-to-r from-[#BFF367] to-[#BFF367] rounded-full animate-bounce"></span>
+                    <span className="w-1 h-1 bg-gradient-to-r from-[var(--primary)] to-[var(--primary)] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                    <span className="w-1 h-1 bg-gradient-to-r from-[var(--primary)] to-[var(--primary)] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                    <span className="w-1 h-1 bg-gradient-to-r from-[var(--primary)] to-[var(--primary)] rounded-full animate-bounce"></span>
                   </div>
                 </div>
               </div>
@@ -364,8 +367,8 @@ const PostItem = React.memo(
                     key={i}
                     className={`rounded-full transition-all duration-300 ${
                       i === activeMediaIndex
-                        ? "w-2 h-2 bg-[#BFF367]"
-                        : "w-1.5 h-1.5 bg-white/50"
+                        ? "w-2 h-2 bg-primary"
+                        : "w-1.5 h-1.5 bg-card0"
                     }`}
                   />
                 ))}
@@ -407,7 +410,7 @@ const PostItem = React.memo(
                       cx="48"
                       cy="48"
                       r="40"
-                      stroke="#BFF367"
+                      stroke="var(--primary)"
                       strokeWidth="6"
                       fill="transparent"
                       strokeDasharray={2 * Math.PI * 40}
@@ -427,15 +430,15 @@ const PostItem = React.memo(
                   </div>
                 </div>
                 <div className="mt-4 flex flex-col items-center gap-1">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#BFF367] animate-pulse">
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary animate-pulse">
                     {post.status === "processing"
                       ? "Optimizing Media"
                       : "Preparing Upload"}
                   </span>
                   <div className="flex gap-1">
-                    <span className="w-1 h-1 bg-gradient-to-r from-[#BFF367] to-[#BFF367] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                    <span className="w-1 h-1 bg-gradient-to-r from-[#BFF367] to-[#BFF367] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                    <span className="w-1 h-1 bg-gradient-to-r from-[#BFF367] to-[#BFF367] rounded-full animate-bounce"></span>
+                    <span className="w-1 h-1 bg-gradient-to-r from-[var(--primary)] to-[var(--primary)] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                    <span className="w-1 h-1 bg-gradient-to-r from-[var(--primary)] to-[var(--primary)] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                    <span className="w-1 h-1 bg-gradient-to-r from-[var(--primary)] to-[var(--primary)] rounded-full animate-bounce"></span>
                   </div>
                 </div>
               </div>
@@ -457,11 +460,11 @@ const PostItem = React.memo(
               {post.likes.slice(0, 3).map((likeUser, i) => (
                 <div
                   key={likeUser.id || likeUser._id || i}
-                  className="w-5 h-5 rounded-full bg-zinc-800 border border-[#0A0A0A] overflow-hidden flex items-center justify-center shrink-0"
+                  className="w-5 h-5 rounded-full bg-zinc-800 border border-background overflow-hidden flex items-center justify-center shrink-0"
                 >
-                  {likeUser.profilePicture ? (
+                  {likeUser.profilePicture || likeUser.profileImage ? (
                     <img
-                      src={likeUser.profilePicture}
+                      src={likeUser.profilePicture || likeUser.profileImage}
                       className="w-full h-full object-cover"
                       alt=""
                     />
@@ -518,7 +521,7 @@ const PostItem = React.memo(
         )}
 
         {/* Action Bar */}
-        <div className="flex items-center justify-between border-t border-white/10 bg-[#0A0A0A] px-2 py-1">
+        <div className="flex items-center justify-between border-t border-white/10 bg-background px-2 py-1">
           <button
             onClick={handleLike}
             className="flex-1 flex items-center justify-center gap-2 py-2 transition-colors group"
@@ -536,8 +539,8 @@ const PostItem = React.memo(
                   x2="100%"
                   y2="100%"
                 >
-                  <stop offset="0%" stopColor="#BFF367" />
-                  <stop offset="100%" stopColor="#55dee8" />
+                  <stop offset="0%" stopColor="var(--primary)" />
+                  <stop offset="100%" stopColor="var(--secondary)" />
                 </linearGradient>
               </defs>
               <path
@@ -552,7 +555,7 @@ const PostItem = React.memo(
               />
             </svg>
             {post.likes?.length > 0 && (
-              <span className="text-[13px] font-bold text-white/80 group-hover:text-white transition-colors">
+              <span className="text-[13px] font-bold text-foreground group-hover:text-white transition-colors">
                 {post.likes.length}
               </span>
             )}
@@ -567,7 +570,7 @@ const PostItem = React.memo(
               className="w-[18px] h-[18px] object-contain transition-all duration-200 opacity-70 group-hover:opacity-100 brightness-0 invert"
             />
             {(post.totalComments > 0 || post.comments?.length > 0) && (
-              <span className="text-[13px] font-bold text-white/80 group-hover:text-white transition-colors">
+              <span className="text-[13px] font-bold text-foreground group-hover:text-white transition-colors">
                 {post.totalComments || post.comments.length}
               </span>
             )}
@@ -595,7 +598,7 @@ const PostItem = React.memo(
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="overflow-hidden bg-[#0A0A0A]"
+              className="overflow-hidden bg-background"
             >
               <div className="space-y-3 pt-3 px-4 pb-4 border-t border-white/5">
                 {post.comments && post.comments.length > 0 && (
@@ -609,20 +612,20 @@ const PostItem = React.memo(
                         >
                           <Link
                             to={`/profile/${commentUser?.id || commentUser?._id}`}
-                            className="font-bold text-white hover:text-[#BFF367] transition-colors shrink-0"
+                            className="font-bold text-white hover:text-primary transition-colors shrink-0"
                           >
                             {commentUser?.name ||
                               commentUser?.username ||
                               "Player"}
                           </Link>
-                          <span className="text-white/80 break-words">
+                          <span className="text-foreground break-words">
                             {comment.text}
                           </span>
                         </div>
                       );
                     })}
                     {post.comments.length > 4 && (
-                      <button className="text-[11px] text-[#BFF367] font-bold hover:underline">
+                      <button className="text-[11px] text-primary font-bold hover:underline">
                         View all {post.comments.length} comments
                       </button>
                     )}
@@ -641,10 +644,10 @@ const PostItem = React.memo(
                     className="w-7 h-7 rounded-full object-cover border border-white/10 shrink-0"
                     alt=""
                   />
-                  <input
+                  <Input
                     type="text"
                     placeholder="Add a comment..."
-                    className="flex-1 bg-transparent text-[12px] font-medium outline-none text-white placeholder:text-white/40"
+                    className="flex-1 bg-transparent text-[12px] font-medium outline-none text-white placeholder:text-muted-foreground"
                     value={commentInput}
                     onChange={(e) => setCommentInput(e.target.value)}
                     onKeyDown={(e) => {
@@ -656,8 +659,8 @@ const PostItem = React.memo(
                     disabled={!commentInput.trim()}
                     className={`text-[12px] font-bold px-3 py-1.5 rounded-full transition-all ${
                       commentInput.trim()
-                        ? "bg-[#BFF367] text-black hover:bg-[#BFF367]/80 cursor-pointer"
-                        : "bg-white/5 text-white/20 cursor-not-allowed"
+                        ? "bg-primary text-black hover:bg-primary/80 cursor-pointer"
+                        : "bg-card text-muted-foreground cursor-not-allowed"
                     }`}
                   >
                     Post

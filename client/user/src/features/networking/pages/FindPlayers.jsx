@@ -71,13 +71,9 @@ const PlayerCard = ({
     "Athlete";
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.25 }}
+    <div
       onClick={() => navigate(`/profile/${playerId}`)}
-      className="relative rounded-[16px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] overflow-hidden transition-all duration-500 group hover:border-[#B3DC26]/50 hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)] h-56 cursor-pointer"
+      className="shrink-0 w-full h-[220px] snap-start relative rounded-[16px] border border-white/5 bg-card overflow-hidden transition-all duration-300 group hover:border-primary/30 cursor-pointer"
     >
       {/* Background Image or Initials */}
       {player.profilePicture || player.profileImage ? (
@@ -92,49 +88,60 @@ const PlayerCard = ({
         />
       ) : null}
       <div
-        className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-[#000000]"
+        className="absolute inset-0 flex items-center justify-center bg-white/5"
         style={{
-          display:
-            player.profilePicture || player.profileImage ? "none" : "flex",
+          display: player.profilePicture || player.profileImage ? "none" : "flex",
         }}
       >
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] font-inter font-[700] text-4xl opacity-50">
-          {initials}
-        </span>
+        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 mb-10">
+          <span className="text-primary font-bold text-xl tracking-wider">
+            {initials}
+          </span>
+        </div>
       </div>
 
       {/* Gradient Overlay for text readability */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-[#000000]/60 to-transparent" />
 
       {/* Primary Sport badge - Top Right */}
-      <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full text-[9px] font-[700] font-inter text-[#000000] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] z-10">
+      <div
+        className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-bold text-primary bg-black/60 backdrop-blur-md border border-primary/20 z-10"
+        style={{ fontFamily: "'Inter', sans-serif" }}
+      >
         {primarySport}
       </div>
 
       {/* Bottom Content */}
-      <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col z-10">
+      <div className="absolute bottom-0 left-0 right-0 p-2 flex flex-col z-10">
         {/* Player Name */}
-        <h3 className="text-[#FFFFFF] text-[14px] font-[600] leading-[20px] line-clamp-1 mb-0.5 font-inter">
+        <h3
+          className="text-white text-sm font-bold line-clamp-1 mb-0.5"
+          style={{ fontFamily: "'Inter', sans-serif" }}
+        >
           {player.name || "Anonymous"}
         </h3>
 
         {/* Location: City */}
-        <p className="text-[rgba(255,255,255,0.70)] text-[11px] font-[400] leading-[14px] line-clamp-1 mb-3 font-inter">
+        <p
+          className="text-white/60 text-xs font-medium line-clamp-1 mb-3"
+          style={{ fontFamily: "'Inter', sans-serif" }}
+        >
           {locationText}
         </p>
 
         {/* Follow / Message Row */}
-        <div className="w-full flex items-center gap-1.5">
+        <div className="w-full flex items-center gap-2">
           <button
             onClick={(e) => {
               e.stopPropagation();
               handleFollowToggle(playerId);
             }}
-            className={`flex-1 h-7 rounded-[8px] text-[10px] font-[600] leading-[12px] font-inter transition-all active:scale-[0.98] text-center ${
+            className={`flex-1 h-8 rounded-lg text-xs font-bold transition-all active:scale-95 flex items-center justify-center ${
               isFollowing
-                ? "text-[#FFFFFF] bg-[#1B1B1B]/80 backdrop-blur-md border border-[rgba(255,255,255,0.08)] hover:brightness-110"
-                : "text-[#000000] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0px_8px_24px_rgba(179,220,38,0.15)] hover:scale-[1.02] border-none"
+                ? "text-white bg-white/10 border border-white/10 hover:bg-white/20"
+                : "text-background bg-primary hover:brightness-110"
             }`}
+            style={{ fontFamily: "'Inter', sans-serif" }}
           >
             {isFollowing ? "Following" : "Follow"}
           </button>
@@ -144,139 +151,114 @@ const PlayerCard = ({
               e.stopPropagation();
               gateInteraction(() => navigate(`/messages?userId=${playerId}`));
             }}
-            className="w-7 h-7 rounded-[8px] text-[#FFFFFF] bg-[#1B1B1B]/80 backdrop-blur-md border border-[rgba(255,255,255,0.08)] hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center shrink-0"
+            className="w-8 h-8 rounded-lg text-white bg-white/10 border border-white/10 hover:bg-white/20 active:scale-95 transition-all flex items-center justify-center shrink-0"
             title="Message"
           >
-            <MessageCircle size={12} className="shrink-0" />
+            <MessageCircle size={14} className="shrink-0" />
           </button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
 const TeamCard = ({ team, navigate }) => {
   const sportBanners = {
-    Cricket:
-      "https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067&auto=format&fit=crop",
-    Football:
-      "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2076&auto=format&fit=crop",
-    Basketball:
-      "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=2090&auto=format&fit=crop",
-    default:
-      "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2070&auto=format&fit=crop",
+    Cricket: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067&auto=format&fit=crop",
+    Football: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2076&auto=format&fit=crop",
+    Basketball: "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=2090&auto=format&fit=crop",
+    default: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2070&auto=format&fit=crop",
   };
   const banner = sportBanners[team.sportType] || sportBanners.default;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
+    <div
       onClick={() => navigate(`/team/${team._id}`)}
-      className="relative bg-[#121212] rounded-[16px] border border-[rgba(255,255,255,0.08)] overflow-hidden flex flex-col cursor-pointer group hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)] transition-shadow duration-500"
+      className="shrink-0 w-full h-[220px] snap-start relative rounded-[16px] border border-white/5 bg-card overflow-hidden transition-all duration-300 group hover:border-primary/30 cursor-pointer"
     >
-      {/* ── Banner ── */}
-      <div className="h-16 relative overflow-hidden">
-        <img
-          src={banner}
-          alt=""
-          className="w-full h-full object-cover scale-105 group-hover:scale-110 transition-transform duration-700 grayscale-[40%] group-hover:grayscale-0"
-        />
+      {/* Banner */}
+      <img
+        src={banner}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale-[20%] group-hover:grayscale-0"
+      />
 
-        {/* Sport chip – top-left */}
-        <div
-          className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[9px] font-[700] font-inter text-[#000000]"
-          style={{ background: GRAD }}
-        >
-          {team.sportType || "Sport"}
-        </div>
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-[#000000]/60 to-[#000000]/10" />
+
+      {/* Sport chip - Top Left */}
+      <div
+        className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold text-primary bg-black/60 backdrop-blur-md border border-primary/20 z-10"
+        style={{ fontFamily: "'Inter', sans-serif" }}
+      >
+        {team.sportType || "Team"}
       </div>
 
-      {/* ── Avatar row ── */}
-      <div className="relative px-3 -mt-5 flex items-end mb-2">
-        {/* Avatar */}
-        <div className="relative">
-          <div
-            className="w-10 h-10 rounded-full border border-[#121212] overflow-hidden bg-[#1B1B1B] flex items-center justify-center"
-            style={{
-              boxShadow: "0 0 0 2px #B3DC26, 0 0 16px rgba(179,220,38,0.35)",
-            }}
-          >
+      {/* Bottom Content */}
+      <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col z-10">
+        <div className="flex items-center gap-3 mb-2">
+          {/* Avatar */}
+          <div className="w-12 h-12 rounded-full border border-primary/20 overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
             {team.logo ? (
-              <img
-                src={team.logo}
-                alt=""
-                className="w-full h-full object-cover"
-              />
+              <img src={team.logo} alt="" className="w-full h-full object-cover" />
             ) : (
-              <span className="text-[#B3DC26] font-inter font-[700] text-sm leading-none">
+              <span className="text-primary font-bold text-lg">
                 {team.name?.charAt(0).toUpperCase()}
               </span>
             )}
           </div>
-        </div>
-      </div>
-
-      {/* ── Body ── */}
-      <div className="flex-1 px-3 pb-3 flex flex-col gap-2.5">
-        {/* Name + Location */}
-        <div>
-          <h3 className="text-[#FFFFFF] text-[13px] font-[600] leading-[18px] font-inter line-clamp-1">
-            {team.name}
-          </h3>
-          <p className="text-[rgba(255,255,255,0.70)] text-[11px] font-[400] leading-[14px] font-inter mt-0.5 flex items-center gap-1">
-            <MapPin size={10} className="text-[#B3DC26]" />
-            {team.city || "N/A"}
-          </p>
+          
+          <div className="flex-1 min-w-0">
+            <h3
+              className="text-white text-sm font-bold line-clamp-1 mb-0.5"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              {team.name}
+            </h3>
+            <p
+              className="text-white/60 text-xs font-medium line-clamp-1 flex items-center gap-1"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              <MapPin size={10} className="text-primary" />
+              {team.city || "N/A"}
+            </p>
+          </div>
         </div>
 
         {/* Stats inline row */}
-        <div className="flex items-center gap-1.5 text-[10px] font-[500] text-[rgba(255,255,255,0.60)] font-inter">
-          <span>
-            <span className="text-[#FFFFFF] font-[600]">
-              {team.memberCount || 1}
-            </span>{" "}
-            Members
-          </span>
-          <span className="text-white/15">·</span>
-          <span>
-            <span className="text-[#FFFFFF] font-[600]">
-              {team.matchesPlayed || 0}
-            </span>{" "}
-            Matches
-          </span>
+        <div className="flex items-center gap-2 text-[10px] font-medium text-white/60 mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <span><span className="text-white font-bold">{team.memberCount || 1}</span> Members</span>
+          <span className="text-white/20">•</span>
+          <span><span className="text-white font-bold">{team.matchesPlayed || 0}</span> Matches</span>
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-1.5 mt-auto">
-          <Link
-            to={`/team/${team._id}`}
-            onClick={(e) => e.stopPropagation()}
-            className="h-6 rounded-[6px] font-inter text-[9px] font-[600] leading-[12px] text-[#000000] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0px_8px_24px_rgba(179,220,38,0.15)] flex items-center justify-center gap-1 active:scale-[0.98] hover:scale-[1.02] transition-all"
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/team/${team._id}`);
+            }}
+            className="h-8 rounded-lg text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5 text-background bg-primary hover:brightness-110"
+            style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            <UserPlus size={10} strokeWidth={2} />
+            <UserPlus size={12} strokeWidth={2.5} />
             Join
-          </Link>
-          <Link
-            to={`/team/${team._id}`}
-            onClick={(e) => e.stopPropagation()}
-            className="h-6 rounded-[6px] font-inter text-[9px] font-[600] leading-[12px] bg-[#1B1B1B] text-[#FFFFFF] border border-[rgba(255,255,255,0.08)] flex items-center justify-center gap-1 hover:brightness-110 active:scale-[0.98] transition-all"
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/team/${team._id}`);
+            }}
+            className="h-8 rounded-lg text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5 text-white bg-white/10 border border-white/10 hover:bg-white/20"
+            style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            <Swords size={10} />
+            <Swords size={12} />
             Challenge
-          </Link>
+          </button>
         </div>
       </div>
-
-      {/* Subtle glow border on hover */}
-      <div
-        className="absolute inset-0 rounded-[16px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-        style={{ boxShadow: "inset 0 0 0 1px rgba(179,220,38,0.2)" }}
-      />
-    </motion.div>
+    </div>
   );
 };
 

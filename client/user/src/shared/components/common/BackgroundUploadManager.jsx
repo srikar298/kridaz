@@ -20,7 +20,8 @@ import {
   useConfirmStoryUploadMutation,
 } from "@redux/api/communityApi";
 import { uploadFileToR2 } from "@utils/mediaUpload";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button } from "@kridaz/ui";
+
 
 const BackgroundUploadManager = () => {
   const dispatch = useDispatch();
@@ -154,7 +155,7 @@ const BackgroundUploadManager = () => {
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 50, opacity: 0 }}
-          className="bg-[#111] border border-white/10 rounded-[8px] p-2 shadow-2xl max-w-sm mx-auto pointer-events-auto flex items-center gap-3"
+          className="bg-card border border-white/10 rounded-[8px] p-2 shadow-2xl max-w-sm mx-auto pointer-events-auto flex items-center gap-3"
         >
           {/* Preview Thumbnail (Optimistic) */}
           <div className="w-8 h-10 bg-white/5 rounded-md overflow-hidden flex-shrink-0 border border-white/5">
@@ -188,7 +189,7 @@ const BackgroundUploadManager = () => {
             {/* Progress Bar */}
             <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
               <motion.div
-                className={`h-full ${status === "error" ? "bg-red-500" : "bg-[#BFF367]"}`}
+                className={`h-full ${status === "error" ? "bg-red-500" : "bg-primary"}`}
                 initial={{ width: 0 }}
                 animate={{ width: `${status === "error" ? 100 : progress}%` }}
                 transition={{ duration: 0.3 }}
@@ -196,7 +197,7 @@ const BackgroundUploadManager = () => {
             </div>
 
             {status !== "success" && status !== "error" && (
-              <p className="text-[9px] text-transparent bg-clip-text bg-gradient-to-r from-[#BFF367] to-[#BFF367] mt-1 flex items-center gap-1">
+              <p className="text-[9px] text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary mt-1 flex items-center gap-1">
                 <AlertTriangle size={8} />
                 Do not close or refresh the app
               </p>
@@ -209,13 +210,13 @@ const BackgroundUploadManager = () => {
 
           <div className="flex-shrink-0 pr-1">
             {status === "uploading" || status === "finalizing" ? (
-              <Loader2 size={16} className="animate-spin text-[#BFF367]" />
+              <Loader2 size={16} className="animate-spin text-primary" />
             ) : status === "success" ? (
-              <CheckCircle size={16} className="text-[#BFF367]" />
+              <CheckCircle size={16} className="text-primary" />
             ) : (
-              <button onClick={() => dispatch(clearUpload())}>
+              <Button onClick={() => dispatch(clearUpload())}>
                 <XCircle size={16} className="text-red-500" />
-              </button>
+              </Button>
             )}
           </div>
         </motion.div>

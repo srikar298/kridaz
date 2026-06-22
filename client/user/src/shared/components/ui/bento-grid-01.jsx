@@ -163,7 +163,7 @@ export default function BentoGrid01() {
       <div className="grid grid-cols-1 md:grid-cols-6 gap-4 auto-rows-[200px]">
         {/* 1. Typography - Tall (2x2) */}
         <motion.div
-          className="md:col-span-2 md:row-span-2 bg-[#0A0A0A]/80 backdrop-blur-md border border-white/10 rounded-xl p-8 flex flex-col hover:border-white/20 transition-colors cursor-pointer overflow-hidden"
+          className="md:col-span-2 md:row-span-2 bg-background/80 backdrop-blur-md border border-white/10 rounded-xl p-8 flex flex-col hover:border-white/20 transition-colors cursor-pointer overflow-hidden"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -184,7 +184,7 @@ export default function BentoGrid01() {
 
         {/* 2. Layouts - Standard (2x2) */}
         <motion.div
-          className="md:col-span-2 md:row-span-2 bg-[#0A0A0A]/80 backdrop-blur-md border border-white/10 rounded-xl p-8 flex flex-col hover:border-white/20 transition-colors cursor-pointer overflow-hidden"
+          className="md:col-span-2 md:row-span-2 bg-background/80 backdrop-blur-md border border-white/10 rounded-xl p-8 flex flex-col hover:border-white/20 transition-colors cursor-pointer overflow-hidden"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -206,7 +206,7 @@ export default function BentoGrid01() {
 
         {/* 3. Global Network - Tall (2x2) */}
         <motion.div
-          className="md:col-span-2 md:row-span-2 bg-[#0A0A0A]/80 backdrop-blur-md border border-white/10 rounded-xl p-6 flex flex-col hover:border-white/20 transition-colors cursor-pointer overflow-hidden"
+          className="md:col-span-2 md:row-span-2 bg-background/80 backdrop-blur-md border border-white/10 rounded-xl p-6 flex flex-col hover:border-white/20 transition-colors cursor-pointer overflow-hidden"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -221,7 +221,7 @@ export default function BentoGrid01() {
               <GlobalNetwork />
             </div>
           </div>
-          <div className="mt-auto relative z-20 bg-[#0A0A0A]/50 backdrop-blur-sm rounded-lg p-2">
+          <div className="mt-auto relative z-20 bg-background/50 backdrop-blur-sm rounded-lg p-2">
             <h3 className="font-poppins font-semibold tracking-tight leading-[1.05] text-xl text-white normal-case">
               Networking
             </h3>
@@ -233,7 +233,7 @@ export default function BentoGrid01() {
 
         {/* 5. Security - Wide (3x1) */}
         <motion.div
-          className="md:col-span-3 bg-[#0A0A0A]/80 backdrop-blur-md border border-white/10 rounded-xl p-8 flex flex-col hover:border-white/20 transition-colors cursor-pointer overflow-hidden"
+          className="md:col-span-3 bg-background/80 backdrop-blur-md border border-white/10 rounded-xl p-8 flex flex-col hover:border-white/20 transition-colors cursor-pointer overflow-hidden"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -255,7 +255,7 @@ export default function BentoGrid01() {
 
         {/* 6. Mobile Responsive - Wide (3x1) */}
         <motion.div
-          className="md:col-span-3 bg-[#0A0A0A]/80 backdrop-blur-md border border-white/10 rounded-xl p-8 flex flex-col hover:border-white/20 transition-colors cursor-pointer overflow-hidden"
+          className="md:col-span-3 bg-background/80 backdrop-blur-md border border-white/10 rounded-xl p-8 flex flex-col hover:border-white/20 transition-colors cursor-pointer overflow-hidden"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}

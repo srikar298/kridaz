@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { Search, Loader2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
+import { setUserLocation, setLocationStatus } from "@redux/slices/uiSlice";
 
 import StoriesSection from "../components/StoriesSection";
 import CommunityFeed from "../components/CommunityFeed";
-import ReelsView from "../components/ReelsView";
+import ReelsView from "../components/ReelsView";import { Button, Input } from "@kridaz/ui";
+
 
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
 
@@ -16,6 +18,7 @@ const Community = ({ children, onSearchActive }) => {
   const { user, role, isLoggedIn } = useSelector((state) => state.auth);
   const { gateInteraction } = useLoginOnDemand();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const isAdmin = role === "admin" || role === "BMSP_ADMIN";
   const location = useLocation();
 
@@ -105,11 +108,14 @@ const Community = ({ children, onSearchActive }) => {
   useEffect(() => {
     if (activeFilter === "Reels") {
       document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     };
   }, [activeFilter]);
 
@@ -181,12 +187,12 @@ const Community = ({ children, onSearchActive }) => {
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ y: -20, opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="w-full max-w-2xl bg-[#0A0A0A] border border-white/10 rounded-[8px] overflow-hidden shadow-2xl mx-4"
+              className="w-full max-w-2xl bg-background border border-white/10 rounded-[8px] overflow-hidden shadow-2xl mx-4"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center gap-3 p-5 border-b border-white/5 bg-[#111]">
-                <Search size={20} className="text-[#BFF367]" />
-                <input
+              <div className="flex items-center gap-3 p-5 border-b border-white/5 bg-card">
+                <Search size={20} className="text-primary" />
+                <Input
                   type="text"
                   autoFocus
                   placeholder="Search players..."
@@ -194,12 +200,12 @@ const Community = ({ children, onSearchActive }) => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <button
+                <Button
                   onClick={() => setShowGlobalSearch(false)}
                   className="text-white/50 hover:text-white transition-colors bg-white/5 p-1.5 rounded-lg"
                 >
                   <X size={16} />
-                </button>
+                </Button>
               </div>
 
               <div className="max-h-[50vh] overflow-y-auto no-scrollbar">
@@ -207,7 +213,7 @@ const Community = ({ children, onSearchActive }) => {
                   <div className="flex justify-center p-12">
                     <Loader2
                       size={32}
-                      className="text-[#BFF367] animate-spin"
+                      className="text-primary animate-spin"
                     />
                   </div>
                 ) : searchResults.length > 0 ? (
@@ -221,7 +227,7 @@ const Community = ({ children, onSearchActive }) => {
                         }}
                         className="flex items-center gap-4 p-3 hover:bg-white/5 rounded-[8px] cursor-pointer transition-all group"
                       >
-                        <div className="w-[46px] h-[46px] rounded-full bg-[#111] border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
+                        <div className="w-[46px] h-[46px] rounded-full bg-card border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
                           <img
                             src={
                               player.profilePicture ||
@@ -232,7 +238,7 @@ const Community = ({ children, onSearchActive }) => {
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-[14px] font-bold text-white group-hover:text-[#BFF367] transition-colors truncate">
+                          <div className="text-[14px] font-bold text-white group-hover:text-primary transition-colors truncate">
                             {player.name}
                           </div>
                           <div className="text-[12px] font-medium text-white/40 truncate">
@@ -241,7 +247,7 @@ const Community = ({ children, onSearchActive }) => {
                               player.name.toLowerCase().replace(/\s+/g, "")}
                           </div>
                         </div>
-                        <div className="px-3 py-1.5 rounded-full border border-white/10 text-[10px] font-bold text-white/50 group-hover:border-[#BFF367] group-hover:text-[#BFF367] transition-all">
+                        <div className="px-3 py-1.5 rounded-full border border-white/10 text-[10px] font-bold text-white/50 group-hover:border-primary group-hover:text-primary transition-all">
                           View Profile
                         </div>
                       </div>

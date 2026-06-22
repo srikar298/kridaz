@@ -2,8 +2,7 @@
 export { default as ThemeSwitcher } from "./ThemeSwitcher.jsx";
 
 // Common Components
-export { default as FormField } from "../ui/FormField.jsx";
-export { default as Button } from "../ui/Button.jsx";
+export { FormField, Button } from "@kridaz/ui";
 
 // Footer
 export { default as Footer } from "./Footer.jsx";

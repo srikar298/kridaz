@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";import { Button } from "@kridaz/ui";
+
 
 const MobileMasonrySlider = ({ items }) => {
   const chunks = [];
@@ -42,7 +43,7 @@ const MobileMasonrySlider = ({ items }) => {
           >
             {chunk[0] && (
               <div
-                className="col-span-2 rounded-2xl overflow-hidden h-[200px] bg-[#111] border border-white/10"
+                className="col-span-2 rounded-2xl overflow-hidden h-[200px] bg-card border border-white/10"
                 onClick={() => setSelectedImg(chunk[0].img)}
               >
                 <img
@@ -53,7 +54,7 @@ const MobileMasonrySlider = ({ items }) => {
             )}
             {chunk[1] && (
               <div
-                className="rounded-2xl overflow-hidden h-[192px] bg-[#111] border border-white/10"
+                className="rounded-2xl overflow-hidden h-[192px] bg-card border border-white/10"
                 onClick={() => setSelectedImg(chunk[1].img)}
               >
                 <img
@@ -64,7 +65,7 @@ const MobileMasonrySlider = ({ items }) => {
             )}
             {chunk[2] && (
               <div
-                className="rounded-2xl overflow-hidden h-[192px] bg-[#111] border border-white/10"
+                className="rounded-2xl overflow-hidden h-[192px] bg-card border border-white/10"
                 onClick={() => setSelectedImg(chunk[2].img)}
               >
                 <img
@@ -89,7 +90,7 @@ const MobileMasonrySlider = ({ items }) => {
               initial={false}
               animate={{
                 backgroundColor: isActive
-                  ? "#2A2A2A"
+                  ? "var(--border)"
                   : "rgba(255, 255, 255, 0.2)",
               }}
               transition={{
@@ -135,7 +136,7 @@ const MobileMasonrySlider = ({ items }) => {
               className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl animate-in zoom-in duration-300"
               onClick={(e) => e.stopPropagation()}
             />
-            <button
+            <Button
               className="absolute top-6 right-6 text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors"
               onClick={() => setSelectedImg(null)}
             >
@@ -153,7 +154,7 @@ const MobileMasonrySlider = ({ items }) => {
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
-            </button>
+            </Button>
           </div>,
           document.body
         )}

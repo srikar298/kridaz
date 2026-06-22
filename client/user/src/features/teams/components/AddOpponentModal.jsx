@@ -13,7 +13,8 @@ import {
   useLazyFindTeamByCodeQuery,
   useRequestOpponentMutation,
 } from "@redux/api/teamApi";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button, Input, Select } from "@kridaz/ui";
+
 
 const AddOpponentModal = ({ isOpen, onClose, myTeams }) => {
   const [teamCode, setTeamCode] = useState("");
@@ -93,7 +94,7 @@ const AddOpponentModal = ({ isOpen, onClose, myTeams }) => {
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="relative w-full max-w-md bg-[#1a1a1a] border border-white/10 rounded-[8px] overflow-hidden shadow-2xl"
+        className="relative w-full max-w-md bg-card border border-white/10 rounded-[8px] overflow-hidden shadow-2xl"
       >
         {/* Header */}
         <div className="p-6 border-b border-white/5 flex items-center justify-between">
@@ -111,12 +112,12 @@ const AddOpponentModal = ({ isOpen, onClose, myTeams }) => {
               Search by Team ID
             </p>
           </div>
-          <button
+          <Button
             onClick={onClose}
             className="p-2 hover:bg-white/5 rounded-[8px] transition-colors"
           >
             <X size={20} className="text-white/40" />
-          </button>
+          </Button>
         </div>
 
         <div className="p-6 space-y-6">
@@ -134,27 +135,27 @@ const AddOpponentModal = ({ isOpen, onClose, myTeams }) => {
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"
                   size={16}
                 />
-                <input
+                <Input
                   type="text"
                   placeholder="EX: KRIDAZ1234"
                   style={{ fontFamily: "'Inter', sans-serif" }}
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 pl-12 pr-4 text-white text-sm font-black tracking-[0.2em] focus:outline-none focus:border-[#BFF367]/30 uppercase transition-all"
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 pl-12 pr-4 text-white text-sm font-black tracking-[0.2em] focus:outline-none focus:border-primary/30 uppercase transition-all"
                   value={teamCode}
                   onChange={(e) => setTeamCode(e.target.value.toUpperCase())}
                   maxLength={10}
                 />
               </div>
-              <button
+              <Button
                 onClick={handleSearch}
                 disabled={isFinding}
                 className="px-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-[8px] transition-all flex items-center justify-center"
               >
                 {isFinding ? (
-                  <Loader2 size={18} className="animate-spin text-[#BFF367]" />
+                  <Loader2 size={18} className="animate-spin text-primary" />
                 ) : (
-                  <Search size={18} className="text-[#BFF367]" />
+                  <Search size={18} className="text-primary" />
                 )}
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -167,7 +168,7 @@ const AddOpponentModal = ({ isOpen, onClose, myTeams }) => {
                 className="space-y-6"
               >
                 {/* Team Found Card */}
-                <div className="bg-[#BFF367]/5 border border-[#BFF367]/20 rounded-[8px] p-4 flex items-center gap-4">
+                <div className="bg-primary/5 border border-primary/20 rounded-[8px] p-4 flex items-center gap-4">
                   <div className="w-14 h-14 rounded-[8px] bg-black border border-white/10 flex items-center justify-center shrink-0">
                     {foundTeam.logo ? (
                       <img
@@ -176,7 +177,7 @@ const AddOpponentModal = ({ isOpen, onClose, myTeams }) => {
                         className="w-full h-full object-cover rounded-[8px]"
                       />
                     ) : (
-                      <Users className="text-[#BFF367]" size={24} />
+                      <Users className="text-primary" size={24} />
                     )}
                   </div>
                   <div className="flex-1 overflow-hidden">
@@ -188,7 +189,7 @@ const AddOpponentModal = ({ isOpen, onClose, myTeams }) => {
                     </h3>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span
-                        className="text-[10px] text-[#BFF367] font-black uppercase tracking-widest"
+                        className="text-[10px] text-primary font-black uppercase tracking-widest"
                         style={{ fontFamily: "'Inter', sans-serif" }}
                       >
                         {foundTeam.sportType}
@@ -202,7 +203,7 @@ const AddOpponentModal = ({ isOpen, onClose, myTeams }) => {
                       </span>
                     </div>
                   </div>
-                  <div className="bg-[#BFF367] text-black p-1.5 rounded-[8px]">
+                  <div className="bg-primary text-black p-1.5 rounded-[8px]">
                     <CheckCircle2 size={16} />
                   </div>
                 </div>
@@ -215,32 +216,32 @@ const AddOpponentModal = ({ isOpen, onClose, myTeams }) => {
                   >
                     Challenge With Your Team
                   </label>
-                  <select
+                  <Select
                     style={{ fontFamily: "'Inter', sans-serif" }}
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 px-4 text-white text-sm font-bold focus:outline-none focus:border-[#BFF367]/30 outline-none appearance-none"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 px-4 text-white text-sm font-bold focus:outline-none focus:border-primary/30 outline-none appearance-none"
                     value={selectedMyTeam}
                     onChange={(e) => setSelectedMyTeam(e.target.value)}
                   >
-                    <option value="" className="bg-[#1a1a1a]">
+                    <option value="" className="bg-card">
                       Select Your Team...
                     </option>
                     {myTeams.map((t) => (
                       <option
                         key={t._id}
                         value={t._id}
-                        className="bg-[#1a1a1a]"
+                        className="bg-card"
                       >
                         {t.name} ({t.sportType})
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
 
-                <button
+                <Button
                   onClick={handleSendRequest}
                   disabled={isRequesting}
                   style={{ fontFamily: "'Inter', sans-serif" }}
-                  className="w-full py-4 bg-gradient-to-r from-[#BFF367] to-[#BFF367] hover:brightness-[1.04] disabled:bg-white/10 disabled:text-white/20 text-black font-black uppercase tracking-[0.2em] rounded-[8px] shadow-lg shadow-[#BFF367]/10 hover:shadow-[#BFF367]/15 transition-all flex items-center justify-center gap-3 duration-300"
+                  className="w-full py-4 bg-gradient-to-r from-primary to-primary hover:brightness-[1.04] disabled:bg-white/10 disabled:text-white/20 text-black font-black uppercase tracking-[0.2em] rounded-[8px] shadow-lg shadow-[var(--primary)]/10 hover:shadow-[var(--primary)]/15 transition-all flex items-center justify-center gap-3 duration-300"
                 >
                   {isRequesting ? (
                     <Loader2 size={20} className="animate-spin" />
@@ -250,7 +251,7 @@ const AddOpponentModal = ({ isOpen, onClose, myTeams }) => {
                       Send Opponent Request
                     </>
                   )}
-                </button>
+                </Button>
               </motion.div>
             ) : (
               !isFinding &&

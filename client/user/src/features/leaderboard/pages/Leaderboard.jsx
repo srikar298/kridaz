@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Trophy, LayoutGrid } from "lucide-react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";import { Button, Select } from "@kridaz/ui";
 
-const PRI = "#BFF367";
-const GRAD = "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)";
+
+const PRI = "var(--primary)";
+const GRAD = "linear-gradient(90deg, var(--primary) 0%, var(--primary) 100%)";
 
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
 const SUBHEADING_STYLE = {
@@ -59,7 +60,7 @@ const Leaderboard = () => {
   const getRankIcon = (rank) => {
     if (rank === 1)
       return (
-        <div className="w-8 h-10 bg-gradient-to-b from-[#BFF367] to-[#BFF367] rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(85,222,232,0.4)] border border-[#BFF367]/30 text-black font-black">
+        <div className="w-8 h-10 bg-gradient-to-b from-primary to-primary rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(85,222,232,0.4)] border border-primary/30 text-black font-black">
           1
         </div>
       );
@@ -71,7 +72,7 @@ const Leaderboard = () => {
       );
     if (rank === 3)
       return (
-        <div className="w-8 h-10 bg-gradient-to-b from-[#BFF367] to-[#BFF367] rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(180,83,9,0.4)] border border-[#BFF367]/30 text-black font-black">
+        <div className="w-8 h-10 bg-gradient-to-b from-primary to-primary rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(180,83,9,0.4)] border border-primary/30 text-black font-black">
           3
         </div>
       );
@@ -98,7 +99,7 @@ const Leaderboard = () => {
           <div className="flex flex-col items-center mb-12">
             <Trophy
               size={40}
-              className="text-[#BFF367] mb-4 drop-shadow-[0_0_10px_rgba(85,222,232,0.5)]"
+              className="text-primary mb-4 drop-shadow-[0_0_10px_rgba(85,222,232,0.5)]"
             />
             <h1
               className="text-5xl font-black tracking-tighter uppercase mb-2"
@@ -132,28 +133,28 @@ const Leaderboard = () => {
           <div className="flex flex-col w-full mb-8">
             <div className="flex justify-center gap-3 mb-6">
               {sportCategories[selectedSport].map((cat) => (
-                <button
+                <Button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  className={`px-6 py-2 rounded-full text-[13px] font-medium capitalize transition-all ${category === cat ? "bg-[#BFF367] text-black" : "bg-[#111] text-gray-400 hover:bg-[#1a1a1a]"}`}
+                  className={`px-6 py-2 rounded-full text-[13px] font-medium capitalize transition-all ${category === cat ? "bg-primary text-black" : "bg-card text-gray-400 hover:bg-card"}`}
                 >
                   {cat.replace("_", " ")}
-                </button>
+                </Button>
               ))}
             </div>
 
             <div className="flex items-center justify-end mb-4 px-2">
               <div className="flex gap-2">
-                <select className="bg-transparent text-gray-500 text-xs outline-none cursor-pointer">
+                <Select className="bg-transparent text-gray-500 text-xs outline-none cursor-pointer">
                   <option>All Time</option>
                   <option>Monthly</option>
                   <option>Weekly</option>
-                </select>
-                <select className="bg-transparent text-gray-500 text-xs outline-none cursor-pointer">
+                </Select>
+                <Select className="bg-transparent text-gray-500 text-xs outline-none cursor-pointer">
                   <option>Worldwide</option>
                   <option>National</option>
                   <option>Regional</option>
-                </select>
+                </Select>
               </div>
             </div>
           </div>
@@ -167,7 +168,7 @@ const Leaderboard = () => {
                   <div
                     className="w-10 h-10 border-2 border-t-transparent rounded-full animate-spin mb-4"
                     style={{
-                      borderColor: "#BFF367",
+                      borderColor: "var(--primary)",
                       borderTopColor: "transparent",
                       background: "none",
                     }}
@@ -199,7 +200,7 @@ const Leaderboard = () => {
                           className="w-full h-full object-cover rounded-full border border-white/10"
                         />
                         {player.isPro && (
-                          <span className="absolute -top-1 -right-2 bg-[#BFF367] text-black text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+                          <span className="absolute -top-1 -right-2 bg-primary text-black text-[9px] font-bold px-1.5 py-0.5 rounded-full">
                             PRO
                           </span>
                         )}

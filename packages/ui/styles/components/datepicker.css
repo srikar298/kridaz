@@ -1,0 +1,32 @@
+/* ── React DatePicker Dark Theme ─────────────────────────────────── */
+.datepicker-dark .react-datepicker-popper { z-index: 9999 !important; }
+.datepicker-dark .react-datepicker {
+  background-color: #111111 !important; border: 1px solid var(--border) !important;
+  border-radius: 8px !important; font-family: "Inter" !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important; overflow: hidden !important;
+}
+.datepicker-dark .react-datepicker__header {
+  background-color: #1a1a1a !important; border-bottom: 1px solid var(--border) !important; padding: 10px 0 !important;
+}
+.datepicker-dark .react-datepicker__time-container {
+  background-color: #111111 !important; border-left: 1px solid var(--border) !important; width: 100px !important;
+}
+.datepicker-dark .react-datepicker__time { background-color: #111111 !important; }
+.datepicker-dark .react-datepicker__time-box { width: 100% !important; margin: 0 !important; }
+.datepicker-dark .react-datepicker__time-list { background-color: #111111 !important; padding: 0 !important; }
+.datepicker-dark .react-datepicker__time-list-item {
+  background-color: transparent !important; color: var(--muted-foreground) !important;
+  font-size: 11px !important; font-weight: 600 !important; text-transform: uppercase !important;
+  padding: 12px 0 !important; transition: all 0.2s ease !important; border-bottom: 1px solid #222 !important;
+}
+.datepicker-dark .react-datepicker__time-list-item:hover { background-color: var(--primary) !important; color: black !important; }
+.datepicker-dark .react-datepicker__time-list-item--selected { background-color: var(--primary) !important; color: black !important; }
+.datepicker-dark .react-datepicker__navigation--next--with-time:not(.react-datepicker__navigation--next--with-today-button) {
+  right: 105px !important;
+}
+.datepicker-dark .react-datepicker__current-month, .datepicker-dark .react-datepicker-time__header {
+  color: var(--primary) !important; font-size: 11px !important; font-weight: 800 !important;
+  text-transform: uppercase !important; letter-spacing: 2px !important;
+}
+.datepicker-dark .react-datepicker__time-list::-webkit-scrollbar { width: 4px !important; }
+.datepicker-dark .react-datepicker__time-list::-webkit-scrollbar-thumb { background: #333 !important; }

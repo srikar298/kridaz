@@ -17,10 +17,7 @@ import {
   Users,
   AlertCircle,
   Loader2,
-  Check,
   CheckCheck,
-  X,
-  Globe,
   MoreVertical,
   Pin,
   PinOff,
@@ -32,7 +29,8 @@ import {
 } from "lucide-react";
 import ConfirmModal from "@components/modals/ConfirmModal";
 import AddGroupToCommunityModal from "./AddGroupToCommunityModal";
-import ManageCommunityAdminsModal from "./ManageCommunityAdminsModal";
+import ManageCommunityAdminsModal from "./ManageCommunityAdminsModal";import { Button, Input } from "@kridaz/ui";
+
 
 const ChatSidebar = ({
   onSelectChat,
@@ -296,7 +294,7 @@ const ChatSidebar = ({
       const groupImg = chat.groupImage;
       return (
         <div className="relative">
-          <div className="w-10 h-10 rounded-full border border-white/5 bg-[#BFF367]/10 flex items-center justify-center overflow-hidden shadow-lg">
+          <div className="w-10 h-10 rounded-full border border-white/5 bg-primary/10 flex items-center justify-center overflow-hidden shadow-lg">
             {groupImg ? (
               <img
                 src={groupImg}
@@ -309,10 +307,10 @@ const ChatSidebar = ({
               />
             ) : null}
             <div
-              className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#BFF367]/20 to-[#BFF367]/5"
+              className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5"
               style={{ display: groupImg ? "none" : "flex" }}
             >
-              <Users size={19} className="text-[#BFF367] opacity-80" />
+              <Users size={19} className="text-primary opacity-80" />
             </div>
           </div>
         </div>
@@ -323,7 +321,7 @@ const ChatSidebar = ({
 
     return (
       <div className="relative">
-        <div className="w-10 h-10 rounded-full border border-white/5 bg-white/5 flex items-center justify-center overflow-hidden shadow-lg group-hover/chat:border-[#BFF367]/30 transition-all">
+        <div className="w-10 h-10 rounded-full border border-white/5 bg-white/5 flex items-center justify-center overflow-hidden shadow-lg group-hover/chat:border-primary/30 transition-all">
           {imageUrl ? (
             <img
               src={imageUrl}
@@ -339,14 +337,14 @@ const ChatSidebar = ({
             className="w-full h-full flex items-center justify-center bg-gradient-to-br from-white/10 to-white/5"
             style={{ display: imageUrl ? "none" : "flex" }}
           >
-            <span className="text-[#BFF367] font-bold text-xs tracking-tighter">
+            <span className="text-primary font-bold text-xs tracking-tighter">
               {getInitials(otherUser?.name)}
             </span>
           </div>
         </div>
         {/* Online dot */}
         {online && (
-          <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#BFF367] rounded-full border-[3px] border-[#1A1A1A] shadow-sm animate-pulse" />
+          <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-primary rounded-full border-[3px] border-card shadow-sm animate-pulse" />
         )}
       </div>
     );
@@ -384,7 +382,7 @@ const ChatSidebar = ({
   if (isLoading) {
     return (
       <div className="w-full md:w-[340px] h-full border-r border-white/5 bg-black flex flex-col items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#BFF367] animate-spin mb-4 opacity-20" />
+        <Loader2 className="w-8 h-8 text-primary animate-spin mb-4 opacity-20" />
         <p className="chat-subheading text-white/20 font-bold uppercase">
           Loading Chats
         </p>
@@ -402,12 +400,12 @@ const ChatSidebar = ({
         <p className="chat-subheading text-white/40 mb-6">
           We couldn't load your conversations. Please try again.
         </p>
-        <button
+        <Button
           onClick={() => window.location.reload()}
           className="px-6 py-2 bg-white/5 hover:bg-white/10 text-white rounded-[8px] text-xs font-bold transition-all"
         >
           Retry
-        </button>
+        </Button>
       </div>
     );
   }
@@ -417,34 +415,34 @@ const ChatSidebar = ({
 
   return (
     <div className="w-full md:w-[340px] h-full border-r border-white/5 bg-black flex flex-col overflow-hidden">
-      <div className="p-3 border-b border-white/5 flex justify-between items-center bg-[#0A0A0A]">
+      <div className="p-3 border-b border-white/5 flex justify-between items-center bg-background">
         <div>
           <h2 className="text-xs font-bold text-white/50 tracking-widest uppercase font-sans">
             Messages
           </h2>
         </div>
         <div className="relative" ref={addMenuRef}>
-          <button
+          <Button
             onClick={() => setIsAddMenuOpen(!isAddMenuOpen)}
-            className={`w-10 h-10 ${isAddMenuOpen ? "bg-[#BFF367] text-black" : "bg-[#BFF367]/10 text-[#BFF367]"} hover:bg-[#BFF367] hover:text-black rounded-[8px] transition-all flex items-center justify-center group`}
+            className={`w-10 h-10 ${isAddMenuOpen ? "bg-primary text-black" : "bg-primary/10 text-primary"} hover:bg-primary hover:text-black rounded-[8px] transition-all flex items-center justify-center group`}
             title="Add New"
           >
             <Plus
               size={20}
               className={`${isAddMenuOpen ? "rotate-45" : ""} transition-transform duration-300`}
             />
-          </button>
+          </Button>
 
           {isAddMenuOpen && (
-            <div className="absolute right-0 top-12 w-56 bg-[#121212] border border-white/5 rounded-[8px] shadow-2xl py-2 z-50 animate-scale-up overflow-hidden">
-              <button
+            <div className="absolute right-0 top-12 w-56 bg-card border border-white/5 rounded-[8px] shadow-2xl py-2 z-50 animate-scale-up overflow-hidden">
+              <Button
                 onClick={() => {
                   setIsAddMenuOpen(false);
                   onCreateGroup();
                 }}
                 className="w-full px-4 py-3 text-left text-sm text-white hover:bg-white/[0.04] flex items-center gap-3 transition-colors group/menu"
               >
-                <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/5 flex items-center justify-center text-[#BFF367] group-hover/menu:border-[#BFF367]/40">
+                <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/5 flex items-center justify-center text-primary group-hover/menu:border-primary/40">
                   <Users size={16} />
                 </div>
                 <div className="flex flex-col">
@@ -453,9 +451,9 @@ const ChatSidebar = ({
                     Chat with multiple people
                   </span>
                 </div>
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={() => {
                   setIsAddMenuOpen(false);
                   // Trigger community creation
@@ -464,7 +462,7 @@ const ChatSidebar = ({
                 }}
                 className="w-full px-4 py-3 text-left text-sm text-white hover:bg-white/[0.04] flex items-center gap-3 transition-colors group/menu"
               >
-                <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/5 flex items-center justify-center text-[#BFF367] group-hover/menu:border-[#BFF367]/40">
+                <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/5 flex items-center justify-center text-primary group-hover/menu:border-primary/40">
                   <MessageSquare size={16} />
                 </div>
                 <div className="flex flex-col">
@@ -473,24 +471,24 @@ const ChatSidebar = ({
                     Organize related groups
                   </span>
                 </div>
-              </button>
+              </Button>
             </div>
           )}
         </div>
       </div>
 
-      <div className="p-3 border-b border-white/5 bg-[#0A0A0A]">
+      <div className="p-3 border-b border-white/5 bg-background">
         <div className="relative">
           <Search
             size={16}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
           />
-          <input
+          <Input
             type="text"
             placeholder="Search members to message..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-[8px] pl-9 pr-4 py-2 text-sm text-white focus:outline-none focus:border-[#BFF367]/50 transition-all"
+            className="w-full bg-white/5 border border-white/10 rounded-[8px] pl-9 pr-4 py-2 text-sm text-white focus:outline-none focus:border-primary/50 transition-all"
           />
         </div>
       </div>
@@ -503,11 +501,11 @@ const ChatSidebar = ({
             </h3>
             {isSearching ? (
               <div className="flex items-center justify-center py-4">
-                <Loader2 className="w-5 h-5 text-[#BFF367] animate-spin" />
+                <Loader2 className="w-5 h-5 text-primary animate-spin" />
               </div>
             ) : searchData?.players?.length > 0 ? (
               searchData.players.map((player) => (
-                <button
+                <Button
                   key={player._id || player.id}
                   onClick={() =>
                     handleSearchResultClick(player._id || player.id)
@@ -530,7 +528,7 @@ const ChatSidebar = ({
                       @{player.username}
                     </p>
                   </div>
-                </button>
+                </Button>
               ))
             ) : (
               <div className="text-center py-4 text-white/40 text-sm">
@@ -573,18 +571,18 @@ const ChatSidebar = ({
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <button
+                      <Button
                         onClick={() => handleRespond(chat._id, "accepted")}
-                        className="flex-1 h-9 bg-[#BFF367] text-black text-[10px] font-bold uppercase tracking-widest rounded-[8px] hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        className="flex-1 h-9 bg-primary text-black text-[10px] font-bold uppercase tracking-widest rounded-[8px] hover:scale-[1.02] active:scale-[0.98] transition-all"
                       >
                         Accept
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() => handleRespond(chat._id, "rejected")}
                         className="flex-1 h-9 bg-white/5 text-white text-[10px] font-bold uppercase tracking-widest rounded-[8px] hover:bg-white/10 transition-all"
                       >
                         Decline
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -633,7 +631,7 @@ const ChatSidebar = ({
                   return (
                     <div key={chat._id} className="relative group/chat">
                       <div className="relative">
-                        <button
+                        <Button
                           onClick={() => {
                             if (chat.isCommunity) {
                               const announcementGroup = chats.find(
@@ -652,16 +650,16 @@ const ChatSidebar = ({
                               onSelectChat(chat);
                             }
                           }}
-                          className={`w-full flex items-center gap-3 px-3 py-3 rounded-[8px] transition-all ${chat.isCommunity ? "pr-20" : "pr-12"} ${isSelected || (chat.isCommunity && isChildSelected) ? "bg-[#BFF367]/10 border border-[#BFF367]/20" : "hover:bg-white/[0.03] border border-transparent"}`}
+                          className={`w-full flex items-center gap-3 px-3 py-3 rounded-[8px] transition-all ${chat.isCommunity ? "pr-20" : "pr-12"} ${isSelected || (chat.isCommunity && isChildSelected) ? "bg-primary/10 border border-primary/20" : "hover:bg-white/[0.03] border border-transparent"}`}
                         >
                           <div className="relative shrink-0">
                             {renderAvatar(chat)}
                             {chat.isCommunity ? (
-                              <div className="absolute -bottom-1 -right-1 bg-[#BFF367] text-black text-[6px] px-1 py-0.5 rounded font-bold uppercase">
+                              <div className="absolute -bottom-1 -right-1 bg-primary text-black text-[6px] px-1 py-0.5 rounded font-bold uppercase">
                                 Com
                               </div>
                             ) : chat.isGroupChat ? (
-                              <div className="absolute -bottom-1 -right-1 bg-[#BFF367] text-black text-[6px] px-1 py-0.5 rounded font-bold uppercase">
+                              <div className="absolute -bottom-1 -right-1 bg-primary text-black text-[6px] px-1 py-0.5 rounded font-bold uppercase">
                                 Grp
                               </div>
                             ) : null}
@@ -670,19 +668,19 @@ const ChatSidebar = ({
                             <div className="flex justify-between items-center mb-0.5">
                               <div className="flex items-center gap-1.5 min-w-0">
                                 <p
-                                  className={`font-bold truncate text-sm transition-colors ${isSelected || (chat.isCommunity && isChildSelected) ? "text-[#BFF367]" : unreadCount > 0 ? "text-white" : "text-white/80 group-hover/chat:text-white"}`}
+                                  className={`font-bold truncate text-sm transition-colors ${isSelected || (chat.isCommunity && isChildSelected) ? "text-primary" : unreadCount > 0 ? "text-white" : "text-white/80 group-hover/chat:text-white"}`}
                                 >
                                   {isPinned && (
                                     <Pin
                                       size={10}
-                                      className="inline mr-1 text-[#BFF367]"
+                                      className="inline mr-1 text-primary"
                                     />
                                   )}
                                   {getChatName(chat)}
                                 </p>
                               </div>
                               <span
-                                className={`text-[10px] font-medium shrink-0 ml-2 ${unreadCount > 0 ? "text-[#BFF367]" : "text-white/20"}`}
+                                className={`text-[10px] font-medium shrink-0 ml-2 ${unreadCount > 0 ? "text-primary" : "text-white/20"}`}
                               >
                                 {chat.latestMessage
                                   ? formatTime(chat.latestMessage.createdAt)
@@ -694,11 +692,11 @@ const ChatSidebar = ({
                                 {isMySentMessage && !isTypingInChat && (
                                   <CheckCheck
                                     size={14}
-                                    className="text-[#BFF367]/40 shrink-0"
+                                    className="text-primary/40 shrink-0"
                                   />
                                 )}
                                 <p
-                                  className={`text-xs truncate ${isTypingInChat ? "text-[#BFF367] font-medium italic" : isSelected ? "text-[#BFF367]/60" : unreadCount > 0 ? "text-white/70 font-medium" : "text-white/40 group-hover:text-white/60"}`}
+                                  className={`text-xs truncate ${isTypingInChat ? "text-primary font-medium italic" : isSelected ? "text-primary/60" : unreadCount > 0 ? "text-white/70 font-medium" : "text-white/40 group-hover:text-white/60"}`}
                                 >
                                   {isTypingInChat
                                     ? "typing..."
@@ -710,18 +708,18 @@ const ChatSidebar = ({
                                 </p>
                               </div>
                               {unreadCount > 0 && (
-                                <div className="shrink-0 min-w-[20px] h-5 bg-[#BFF367] text-black text-[10px] font-bold rounded-full flex items-center justify-center px-1.5">
+                                <div className="shrink-0 min-w-[20px] h-5 bg-primary text-black text-[10px] font-bold rounded-full flex items-center justify-center px-1.5">
                                   {unreadCount > 99 ? "99+" : unreadCount}
                                 </div>
                               )}
                             </div>
                           </div>
-                        </button>
+                        </Button>
 
                         {/* Right Side Controls: Chevron (for Communities) & 3-Dot (always visible) */}
                         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 z-10">
                           {chat.isCommunity && (
-                            <button
+                            <Button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setExpandedCommunities((prev) => ({
@@ -729,16 +727,16 @@ const ChatSidebar = ({
                                   [chat._id]: !prev[chat._id],
                                 }));
                               }}
-                              className="text-white/60 hover:text-[#BFF367] w-7 h-7 rounded-full hover:bg-white/10 transition-all flex items-center justify-center"
+                              className="text-white/60 hover:text-primary w-7 h-7 rounded-full hover:bg-white/10 transition-all flex items-center justify-center"
                               title={isExpanded ? "Collapse" : "Expand"}
                             >
                               <ChevronDown
                                 size={18}
                                 className={`transition-transform duration-200 ${isExpanded ? "rotate-0" : "-rotate-90"}`}
                               />
-                            </button>
+                            </Button>
                           )}
-                          <button
+                          <Button
                             onClick={(e) => {
                               e.stopPropagation();
                               setActiveMenu(
@@ -748,7 +746,7 @@ const ChatSidebar = ({
                             className="text-white/45 hover:text-white w-7 h-7 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center"
                           >
                             <MoreVertical size={16} />
-                          </button>
+                          </Button>
                         </div>
 
                         {/* Dropdown Menu */}
@@ -805,10 +803,10 @@ const ChatSidebar = ({
                             return (
                               <div
                                 ref={menuRef}
-                                className="absolute right-2 top-10 w-44 bg-[#121212] border border-white/5 rounded-[8px] shadow-2xl py-1.5 z-50 animate-scale-up"
+                                className="absolute right-2 top-10 w-44 bg-card border border-white/5 rounded-[8px] shadow-2xl py-1.5 z-50 animate-scale-up"
                               >
                                 {/* Pin / Unpin */}
-                                <button
+                                <Button
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     togglePinChat({ chatId: chat._id });
@@ -822,11 +820,11 @@ const ChatSidebar = ({
                                     <Pin size={14} />
                                   )}
                                   {isPinned ? "Unpin chat" : "Pin chat"}
-                                </button>
+                                </Button>
 
                                 {/* --- 1-on-1 Chat: just Delete --- */}
                                 {!chat.isGroupChat && (
-                                  <button
+                                  <Button
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       setActiveMenu(null);
@@ -839,14 +837,14 @@ const ChatSidebar = ({
                                     className="w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-red-500/10 flex items-center gap-2.5 transition-colors"
                                   >
                                     <Trash2 size={14} /> Delete chat
-                                  </button>
+                                  </Button>
                                 )}
 
                                 {/* --- Group (not community): Leave or Delete --- */}
                                 {chat.isGroupChat && !chat.isCommunity && (
                                   <>
                                     {!(isCreator || isGroupAdmin) ? (
-                                      <button
+                                      <Button
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setActiveMenu(null);
@@ -872,9 +870,9 @@ const ChatSidebar = ({
                                           />
                                         </svg>
                                         Leave group
-                                      </button>
+                                      </Button>
                                     ) : (
-                                      <button
+                                      <Button
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setActiveMenu(null);
@@ -887,7 +885,7 @@ const ChatSidebar = ({
                                         className="w-full px-3 py-2 text-left text-sm text-red-500 font-bold hover:bg-red-500/10 flex items-center gap-2.5 transition-colors"
                                       >
                                         <Trash2 size={14} /> Delete group
-                                      </button>
+                                      </Button>
                                     )}
                                   </>
                                 )}
@@ -896,31 +894,31 @@ const ChatSidebar = ({
                                 {chat.isCommunity && (
                                   <>
                                     {isCommunityAdmin(chat) && (
-                                      <button
+                                      <Button
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setActiveMenu(null);
                                           handleOpenAddGroup(chat._id, e);
                                         }}
-                                        className="w-full px-3 py-2 text-left text-sm text-white/80 hover:bg-[#BFF367] hover:text-black flex items-center gap-2.5 transition-colors font-bold"
+                                        className="w-full px-3 py-2 text-left text-sm text-white/80 hover:bg-primary hover:text-black flex items-center gap-2.5 transition-colors font-bold"
                                       >
                                         <Plus size={14} /> Add group
-                                      </button>
+                                      </Button>
                                     )}
                                     {isCommunityAdmin(chat) && (
-                                      <button
+                                      <Button
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setActiveMenu(null);
                                           handleOpenManageAdmins(chat, e);
                                         }}
-                                        className="w-full px-3 py-2 text-left text-sm text-white/80 hover:bg-[#BFF367] hover:text-black flex items-center gap-2.5 transition-colors font-bold"
+                                        className="w-full px-3 py-2 text-left text-sm text-white/80 hover:bg-primary hover:text-black flex items-center gap-2.5 transition-colors font-bold"
                                       >
                                         <Crown size={14} /> Manage admins
-                                      </button>
+                                      </Button>
                                     )}
                                     {!isCreator ? (
-                                      <button
+                                      <Button
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setActiveMenu(null);
@@ -946,9 +944,9 @@ const ChatSidebar = ({
                                           />
                                         </svg>
                                         Leave community
-                                      </button>
+                                      </Button>
                                     ) : (
-                                      <button
+                                      <Button
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setActiveMenu(null);
@@ -961,7 +959,7 @@ const ChatSidebar = ({
                                         className="w-full px-3 py-2 text-left text-sm text-red-500 font-bold hover:bg-red-500/10 flex items-center gap-2.5 transition-colors"
                                       >
                                         <Trash2 size={14} /> Delete community
-                                      </button>
+                                      </Button>
                                     )}
                                   </>
                                 )}
@@ -983,15 +981,15 @@ const ChatSidebar = ({
                               unreadCounts[group._id] || 0;
 
                             return (
-                              <button
+                              <Button
                                 key={group._id}
                                 onClick={() => onSelectChat(group)}
-                                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-[8px] transition-all ${isGroupSelected ? "bg-[#BFF367]/10 text-[#BFF367] border border-[#BFF367]/20" : "text-white/60 hover:text-white hover:bg-white/[0.03] border border-transparent"}`}
+                                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-[8px] transition-all ${isGroupSelected ? "bg-primary/10 text-primary border border-primary/20" : "text-white/60 hover:text-white hover:bg-white/[0.03] border border-transparent"}`}
                               >
                                 {isAnnouncement ? (
                                   <Megaphone
                                     size={13}
-                                    className="text-[#BFF367] shrink-0"
+                                    className="text-primary shrink-0"
                                   />
                                 ) : (
                                   <Users
@@ -1003,21 +1001,21 @@ const ChatSidebar = ({
                                   {group.chatName}
                                 </span>
                                 {childUnreadCount > 0 && (
-                                  <div className="shrink-0 min-w-[16px] h-4 bg-[#BFF367] text-black text-[9px] font-bold rounded-full flex items-center justify-center px-1">
+                                  <div className="shrink-0 min-w-[16px] h-4 bg-primary text-black text-[9px] font-bold rounded-full flex items-center justify-center px-1">
                                     {childUnreadCount}
                                   </div>
                                 )}
-                              </button>
+                              </Button>
                             );
                           })}
                           {isCommunityAdmin(chat) && (
-                            <button
+                            <Button
                               onClick={(e) => handleOpenAddGroup(chat._id, e)}
-                              className="w-full flex items-center gap-2 px-3 py-2 rounded-[8px] border border-dashed border-white/5 hover:border-[#BFF367]/30 hover:bg-[#BFF367]/5 text-white/40 hover:text-[#BFF367] transition-all text-xs font-bold mt-1"
+                              className="w-full flex items-center gap-2 px-3 py-2 rounded-[8px] border border-dashed border-white/5 hover:border-primary/30 hover:bg-primary/5 text-white/40 hover:text-primary transition-all text-xs font-bold mt-1"
                             >
                               <Plus size={14} className="shrink-0" />
                               <span>Add more group</span>
-                            </button>
+                            </Button>
                           )}
                         </div>
                       )}

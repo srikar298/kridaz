@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/react";
 import React, { useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
@@ -28,7 +27,8 @@ import { TurfCard } from "@features/turf";
 import { toPng } from "html-to-image";
 import toast from "react-hot-toast";
 import ReportIssueFlowModal from "@components/dispute/ReportIssueFlowModal";
-import axiosInstance from "@hooks/useAxiosInstance";
+import axiosInstance from "@hooks/useAxiosInstance";import { Button } from "@kridaz/ui";
+
 
 const BookingPass = () => {
   const { id } = useParams();
@@ -44,7 +44,7 @@ const BookingPass = () => {
       const dataUrl = await toPng(passRef.current, {
         cacheBust: true,
         pixelRatio: 2,
-        backgroundColor: "#0A0A0A",
+        backgroundColor: "var(--background)",
       });
 
       const width = passRef.current.offsetWidth;
@@ -63,7 +63,7 @@ const BookingPass = () => {
 
       toast.success("Pass downloaded successfully!", { id: toastId });
     } catch (error) {
-      Sentry.captureException(error);
+      console.error("Error generating pass:", error);
       toast.dismiss();
       toast.error("Failed to download pass.");
     }
@@ -78,7 +78,7 @@ const BookingPass = () => {
           url: window.location.href,
         });
       } catch (error) {
-        Sentry.captureException(error);
+        console.error("Error sharing:", error);
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
@@ -125,7 +125,7 @@ const BookingPass = () => {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-[#84CC16] border-t-transparent rounded-full animate-spin" />
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
           <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">
             Verifying Entry Pass...
           </p>
@@ -148,7 +148,7 @@ const BookingPass = () => {
           </p>
           <Link
             to="/booking-history"
-            className="inline-flex items-center gap-2 bg-[#84CC16] text-black px-8 py-4 rounded-[8px] font-bold uppercase text-xs hover:scale-105 transition-transform"
+            className="inline-flex items-center gap-2 bg-primary text-black px-8 py-4 rounded-[8px] font-bold uppercase text-xs hover:scale-105 transition-transform"
           >
             <ChevronLeft className="w-4 h-4" />
             My Bookings
@@ -166,7 +166,7 @@ const BookingPass = () => {
     new Date(booking.playEndTime || timeSlot?.endTime) < new Date();
 
   return (
-    <div className="bg-[#000000] text-white pt-1 pb-10 px-0.5 font-inter">
+    <div className="bg-background text-white pt-1 pb-10 px-0.5 font-inter">
       <div className="max-w-6xl mx-auto">
         {/* Header Navigation */}
         <div className="flex justify-between items-center mb-4 px-1">
@@ -180,22 +180,22 @@ const BookingPass = () => {
           <div className="flex items-center gap-2">
             <Link
               to={`/booking-invoice/${booking.id || booking._id}`}
-              className="flex items-center justify-center h-[30px] px-3 bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[8px] text-zinc-400 hover:text-[#B3DC26] transition-all text-[9px] font-black uppercase tracking-widest gap-1.5"
+              className="flex items-center justify-center h-[30px] px-3 bg-card border border-[rgba(255,255,255,0.08)] rounded-[8px] text-zinc-400 hover:text-primary transition-all text-[9px] font-black uppercase tracking-widest gap-1.5"
             >
               <FileText size={12} /> Invoice
             </Link>
-            <button
+            <Button
               onClick={handleDownload}
-              className="flex items-center justify-center w-[30px] h-[30px] bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[8px] text-zinc-400 hover:text-[#B3DC26] transition-all"
+              className="flex items-center justify-center w-[30px] h-[30px] bg-card border border-[rgba(255,255,255,0.08)] rounded-[8px] text-zinc-400 hover:text-primary transition-all"
             >
               <Download size={14} />
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleShare}
-              className="flex items-center justify-center w-[30px] h-[30px] bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[8px] text-zinc-400 hover:text-[#B3DC26] transition-all"
+              className="flex items-center justify-center w-[30px] h-[30px] bg-card border border-[rgba(255,255,255,0.08)] rounded-[8px] text-zinc-400 hover:text-primary transition-all"
             >
               <Share2 size={14} />
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -206,12 +206,12 @@ const BookingPass = () => {
           className="relative"
         >
           {/* Background Glow */}
-          <div className="absolute -inset-4 bg-[#B3DC26]/10 blur-3xl rounded-[8px] pointer-events-none" />
+          <div className="absolute -inset-4 bg-primary/10 blur-3xl rounded-[8px] pointer-events-none" />
 
           {/* Pass Body */}
           <div
             ref={passRef}
-            className="relative bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[12px] overflow-hidden shadow-2xl"
+            className="relative bg-card border border-[rgba(255,255,255,0.08)] rounded-[12px] overflow-hidden shadow-2xl"
           >
             {/* Top Section: Venue Image & Basic Info */}
             <div className="relative h-[80px]">
@@ -221,9 +221,9 @@ const BookingPass = () => {
                 alt={turf.name}
                 crossOrigin="anonymous"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-[#121212]/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
               <div className="absolute bottom-2 left-3 right-3">
-                <div className="flex items-center gap-2 text-[#B3DC26] font-bold text-[8px] uppercase tracking-widest mb-1">
+                <div className="flex items-center gap-2 text-primary font-bold text-[8px] uppercase tracking-widest mb-1">
                   <ShieldCheck size={10} />
                   <span>Verified Entry Pass</span>
                 </div>
@@ -242,7 +242,7 @@ const BookingPass = () => {
                     Scheduled For
                   </p>
                   <div className="flex items-center gap-1.5 text-white font-bold">
-                    <Calendar size={12} className="text-[#B3DC26]" />
+                    <Calendar size={12} className="text-primary" />
                     <span className="text-[11px]">{timeSlot.date}</span>
                   </div>
                 </div>
@@ -251,7 +251,7 @@ const BookingPass = () => {
                     Time Window
                   </p>
                   <div className="flex items-center gap-1.5 text-white font-bold">
-                    <Clock size={12} className="text-[#B3DC26]" />
+                    <Clock size={12} className="text-primary" />
                     <span className="text-[11px]">
                       {timeSlot.formattedStartTime} -{" "}
                       {timeSlot.formattedEndTime}
@@ -265,8 +265,8 @@ const BookingPass = () => {
                 <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">
                   Venue Location
                 </p>
-                <div className="flex items-start gap-2 bg-[#1B1B1B] p-2 rounded-[8px] border border-[rgba(255,255,255,0.08)]">
-                  <div className="p-1.5 bg-[#B3DC26]/10 text-[#B3DC26] rounded-[6px] shrink-0">
+                <div className="flex items-start gap-2 bg-card p-2 rounded-[8px] border border-[rgba(255,255,255,0.08)]">
+                  <div className="p-1.5 bg-primary/10 text-primary rounded-[6px] shrink-0">
                     <MapPin size={12} />
                   </div>
                   <div className="flex-1">
@@ -280,7 +280,7 @@ const BookingPass = () => {
                       }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[#B3DC26] text-[9px] font-black uppercase tracking-wider hover:underline"
+                      className="inline-flex items-center gap-1 text-primary text-[9px] font-black uppercase tracking-wider hover:underline"
                     >
                       <Navigation size={8} />
                       Start Navigation
@@ -290,7 +290,7 @@ const BookingPass = () => {
               </div>
 
               {/* Financial Breakdown Section */}
-              <div className="p-2 bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[8px] space-y-2">
+              <div className="p-2 bg-card border border-[rgba(255,255,255,0.08)] rounded-[8px] space-y-2">
                 <div className="flex justify-between items-start">
                   <div className="space-y-0.5">
                     <p className="text-[7px] font-bold text-zinc-500 uppercase tracking-tight">
@@ -301,7 +301,7 @@ const BookingPass = () => {
                     </p>
                   </div>
                   <div className="space-y-0.5">
-                    <div className="flex items-center gap-0.5 text-[7px] font-bold text-[#B3DC26] uppercase tracking-tighter">
+                    <div className="flex items-center gap-0.5 text-[7px] font-bold text-primary uppercase tracking-tighter">
                       <ShieldCheck size={8} />
                       <span>Advance</span>
                     </div>
@@ -323,7 +323,7 @@ const BookingPass = () => {
                       Status
                     </p>
                     <p
-                      className={`text-[9px] font-black uppercase ${booking.paymentType === "PARTIAL" ? "text-orange-400" : "text-[#B3DC26]"}`}
+                      className={`text-[9px] font-black uppercase ${booking.paymentType === "PARTIAL" ? "text-orange-400" : "text-primary"}`}
                     >
                       {booking.paymentType === "PARTIAL" ? "Partial" : "Paid"}
                     </p>
@@ -361,7 +361,7 @@ const BookingPass = () => {
                 </div>
 
                 {/* Right: Info */}
-                <div className="flex-1 flex flex-col justify-between space-y-1 bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-2">
+                <div className="flex-1 flex flex-col justify-between space-y-1 bg-card border border-[rgba(255,255,255,0.08)] rounded-[8px] p-2">
                   <div className="space-y-1.5">
                     {/* Contacts */}
                     <div className="space-y-0.5">
@@ -373,14 +373,14 @@ const BookingPass = () => {
                         turf.managerContacts.slice(0, 1).map((manager, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center justify-between bg-[#121212] p-1 rounded-[4px]"
+                            className="flex items-center justify-between bg-card p-1 rounded-[4px]"
                           >
                             <span className="text-[8px] font-bold text-white truncate pr-1">
                               {manager.phone}
                             </span>
                             <a
                               href={`tel:${manager.phone}`}
-                              className="text-[#B3DC26] shrink-0"
+                              className="text-primary shrink-0"
                             >
                               <Phone size={8} fill="currentColor" />
                             </a>
@@ -398,13 +398,13 @@ const BookingPass = () => {
                       <p className="text-[6px] font-bold text-zinc-500 uppercase tracking-widest">
                         Correspondence
                       </p>
-                      <div className="flex items-center justify-between bg-[#121212] p-1 rounded-[4px]">
+                      <div className="flex items-center justify-between bg-card p-1 rounded-[4px]">
                         <span className="text-[7px] font-bold text-white truncate pr-1">
                           {turf.owner?.email || "contact@kridaz.com"}
                         </span>
                         <a
                           href={`mailto:${turf.owner?.email || "contact@kridaz.com"}`}
-                          className="text-[#B3DC26] shrink-0"
+                          className="text-primary shrink-0"
                         >
                           <Mail size={8} />
                         </a>
@@ -413,7 +413,7 @@ const BookingPass = () => {
                   </div>
 
                   {/* Payment Info */}
-                  <div className="mt-auto bg-gradient-to-r from-[#55DEE8]/10 to-[#B3DC26]/10 p-1.5 rounded-[4px] border border-[#B3DC26]/20">
+                  <div className="mt-auto bg-gradient-to-r from-secondary/10 to-primary/10 p-1.5 rounded-[4px] border border-primary/20">
                     <div className="flex justify-between items-center mb-0.5">
                       <span className="text-[6px] font-bold text-zinc-400 uppercase">
                         Paid Via
@@ -426,7 +426,7 @@ const BookingPass = () => {
                       <span className="text-[6px] font-bold text-zinc-400 uppercase">
                         Total Paid
                       </span>
-                      <span className="text-[10px] font-black text-[#B3DC26]">
+                      <span className="text-[10px] font-black text-primary">
                         ₹{totalPrice}
                       </span>
                     </div>
@@ -441,7 +441,7 @@ const BookingPass = () => {
         <div className="mt-3 space-y-2 px-1">
           {/* 72-hr policy notice */}
           {status === "CONFIRMED" && hoursUntilSlot < 72 && !isSlotOver && (
-            <div className="w-full flex items-center gap-2 px-3 py-2 rounded-[12px] text-[10px] font-[700] uppercase tracking-widest text-[#EF4444] bg-[#EF4444]/10 border border-[#EF4444]/20">
+            <div className="w-full flex items-center gap-2 px-3 py-2 rounded-[12px] text-[10px] font-[700] uppercase tracking-widest text-destructive bg-destructive/10 border border-destructive/20">
               <AlertOctagon size={14} />
               Can't cancel within 72hrs
             </div>
@@ -449,32 +449,32 @@ const BookingPass = () => {
 
           {/* Cancel button */}
           {status === "CONFIRMED" && hoursUntilSlot >= 72 && !isSlotOver && (
-            <button
+            <Button
               onClick={handleCancel}
               disabled={isCancelling}
-              className="w-full flex items-center justify-center gap-2 h-[42px] rounded-[12px] text-[10px] font-[700] uppercase tracking-widest transition-all disabled:opacity-50 text-[#EF4444] bg-[#EF4444]/10 border border-[#EF4444]/20 hover:bg-[#EF4444]/20"
+              className="w-full flex items-center justify-center gap-2 h-[42px] rounded-[12px] text-[10px] font-[700] uppercase tracking-widest transition-all disabled:opacity-50 text-destructive bg-destructive/10 border border-destructive/20 hover:bg-destructive/20"
             >
               <AlertOctagon size={14} />
               {isCancelling ? "Cancelling..." : "Cancel Booking"}
-            </button>
+            </Button>
           )}
 
           {/* Raise dispute */}
           {status !== "CANCELLED" && status !== "DISPUTED" && (
-            <button
+            <Button
               onClick={() => setShowDisputeModal(true)}
-              className="w-full flex items-center justify-center gap-2 h-[42px] rounded-[12px] text-[10px] font-[700] uppercase tracking-widest transition-all text-zinc-400 bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] hover:text-white"
+              className="w-full flex items-center justify-center gap-2 h-[42px] rounded-[12px] text-[10px] font-[700] uppercase tracking-widest transition-all text-zinc-400 bg-card border border-[rgba(255,255,255,0.08)] hover:text-white"
             >
               <AlertOctagon size={14} />
               Report Issue / Request Help
-            </button>
+            </Button>
           )}
 
           {/* Find Opponent (GBNO) */}
           {status === "CONFIRMED" && !isSlotOver && (
             <Link
               to={`/host-game?requestType=GBNO&bookingId=${booking.id || booking._id}&turfId=${turfId}`}
-              className="w-full flex items-center justify-center gap-2 h-[42px] rounded-[12px] text-[10px] font-[700] uppercase tracking-widest transition-all text-[#000000] bg-gradient-to-r from-[#55DEE8] to-[#BFF367] hover:scale-[1.02]"
+              className="w-full flex items-center justify-center gap-2 h-[42px] rounded-[12px] text-[10px] font-[700] uppercase tracking-widest transition-all text-background bg-gradient-to-r from-secondary to-primary hover:scale-[1.02]"
             >
               <Trophy size={14} />
               Find Opponent / Players
@@ -483,7 +483,7 @@ const BookingPass = () => {
 
           {/* Dispute review state */}
           {status === "DISPUTED" && (
-            <div className="w-full flex items-center justify-center gap-2 h-[42px] rounded-[12px] text-[10px] font-[700] uppercase tracking-widest text-[#000000] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26]">
+            <div className="w-full flex items-center justify-center gap-2 h-[42px] rounded-[12px] text-[10px] font-[700] uppercase tracking-widest text-background bg-gradient-to-r from-secondary to-primary">
               <ShieldCheck size={14} />
               Dispute Under Review
             </div>
@@ -494,7 +494,7 @@ const BookingPass = () => {
         {(similarLoading || (similarTurfs && similarTurfs.length > 0)) && (
           <div className="mt-8 pt-6 border-t border-[rgba(255,255,255,0.08)] space-y-4 px-1">
             <div className="space-y-0.5">
-              <h3 className="text-[12px] font-black uppercase text-[#B3DC26] tracking-[0.1em] flex items-center gap-1.5">
+              <h3 className="text-[12px] font-black uppercase text-primary tracking-[0.1em] flex items-center gap-1.5">
                 <Zap size={12} className="fill-current animate-pulse" /> Keep
                 Playing
               </h3>

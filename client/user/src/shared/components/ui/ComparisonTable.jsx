@@ -14,20 +14,20 @@ const ComparisonTable = () => {
       {/* Header */}
       <div className="mb-6 md:mb-8 w-full text-left">
         <h2 className="text-[36px] font-medium tracking-tight leading-[1.05] font-poppins normal-case text-white">
-          One app. <span className="text-[#BFF367]">Everything you need</span>
+          One app. <span className="text-primary">Everything you need</span>
         </h2>
       </div>
 
       {/* 5-Card Bento Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
         {/* Card 1: Spans 2 columns on desktop */}
-        <BentoItem className="fluid-glass rounded-2xl p-5 md:p-6 md:col-span-2 flex flex-col justify-end min-h-[140px] md:min-h-[160px] border border-white/10 hover:border-[#BFF367]/50 hover:shadow-[0_10px_30px_-10px_rgba(191,243,103,0.15)] group overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-48 h-48 bg-[#BFF367]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 group-hover:bg-[#BFF367]/10 transition-colors duration-500" />
+        <BentoItem className="fluid-glass rounded-2xl p-5 md:p-6 md:col-span-2 flex flex-col justify-end min-h-[140px] md:min-h-[160px] border border-white/10 hover:border-primary/50 hover:shadow-[0_10px_30px_-10px_rgba(191,243,103,0.15)] group overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 group-hover:bg-primary/10 transition-colors duration-500" />
           <div
             className="relative z-10 pointer-events-none"
             style={{ transform: "translateZ(30px)" }}
           >
-            <MapPin className="text-[#BFF367] w-6 h-6 mb-3 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300" />
+            <MapPin className="text-primary w-6 h-6 mb-3 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300" />
             <h3 className="text-lg font-bold text-white mb-1 font-poppins">
               Venue & Ground Booking
             </h3>
@@ -39,13 +39,13 @@ const ComparisonTable = () => {
         </BentoItem>
 
         {/* Card 2: 1 column */}
-        <BentoItem className="fluid-glass rounded-2xl p-5 md:p-6 flex flex-col justify-end min-h-[140px] md:min-h-[160px] border border-white/10 hover:border-[#BFF367]/50 hover:shadow-[0_10px_30px_-10px_rgba(191,243,103,0.15)] group overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#BFF367]/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 group-hover:bg-[#BFF367]/10 transition-colors duration-500" />
+        <BentoItem className="fluid-glass rounded-2xl p-5 md:p-6 flex flex-col justify-end min-h-[140px] md:min-h-[160px] border border-white/10 hover:border-primary/50 hover:shadow-[0_10px_30px_-10px_rgba(191,243,103,0.15)] group overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 group-hover:bg-primary/10 transition-colors duration-500" />
           <div
             className="relative z-10 pointer-events-none"
             style={{ transform: "translateZ(30px)" }}
           >
-            <Activity className="text-[#BFF367] w-6 h-6 mb-3 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300" />
+            <Activity className="text-primary w-6 h-6 mb-3 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300" />
             <h3 className="text-base font-bold text-white mb-1 font-poppins">
               Live Game Scoring
             </h3>
@@ -56,13 +56,13 @@ const ComparisonTable = () => {
         </BentoItem>
 
         {/* Card 3: 1 column */}
-        <BentoItem className="fluid-glass rounded-2xl p-5 md:p-6 flex flex-col justify-end min-h-[140px] md:min-h-[160px] border border-white/10 hover:border-[#BFF367]/50 hover:shadow-[0_10px_30px_-10px_rgba(191,243,103,0.15)] group overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#BFF367]/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 group-hover:bg-[#BFF367]/10 transition-colors duration-500" />
+        <BentoItem className="fluid-glass rounded-2xl p-5 md:p-6 flex flex-col justify-end min-h-[140px] md:min-h-[160px] border border-white/10 hover:border-primary/50 hover:shadow-[0_10px_30px_-10px_rgba(191,243,103,0.15)] group overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 group-hover:bg-primary/10 transition-colors duration-500" />
           <div
             className="relative z-10 pointer-events-none"
             style={{ transform: "translateZ(30px)" }}
           >
-            <MessageSquare className="text-[#BFF367] w-6 h-6 mb-3 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300" />
+            <MessageSquare className="text-primary w-6 h-6 mb-3 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300" />
             <h3 className="text-base font-bold text-white mb-1 font-poppins">
               Community Feed
             </h3>
@@ -73,13 +73,13 @@ const ComparisonTable = () => {
         </BentoItem>
 
         {/* Card 4: 1 column */}
-        <BentoItem className="fluid-glass rounded-2xl p-5 md:p-6 flex flex-col justify-end min-h-[140px] md:min-h-[160px] border border-white/10 hover:border-[#BFF367]/50 hover:shadow-[0_10px_30px_-10px_rgba(191,243,103,0.15)] group overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#BFF367]/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 group-hover:bg-[#BFF367]/10 transition-colors duration-500" />
+        <BentoItem className="fluid-glass rounded-2xl p-5 md:p-6 flex flex-col justify-end min-h-[140px] md:min-h-[160px] border border-white/10 hover:border-primary/50 hover:shadow-[0_10px_30px_-10px_rgba(191,243,103,0.15)] group overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 group-hover:bg-primary/10 transition-colors duration-500" />
           <div
             className="relative z-10 pointer-events-none"
             style={{ transform: "translateZ(30px)" }}
           >
-            <Video className="text-[#BFF367] w-6 h-6 mb-3 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300" />
+            <Video className="text-primary w-6 h-6 mb-3 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300" />
             <h3 className="text-base font-bold text-white mb-1 font-poppins">
               Live Streams
             </h3>
@@ -90,13 +90,13 @@ const ComparisonTable = () => {
         </BentoItem>
 
         {/* Card 5: 1 column */}
-        <BentoItem className="fluid-glass rounded-2xl p-5 md:p-6 flex flex-col justify-end min-h-[140px] md:min-h-[160px] border border-white/10 hover:border-[#BFF367]/50 hover:shadow-[0_10px_30px_-10px_rgba(191,243,103,0.15)] group overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#BFF367]/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 group-hover:bg-[#BFF367]/10 transition-colors duration-500" />
+        <BentoItem className="fluid-glass rounded-2xl p-5 md:p-6 flex flex-col justify-end min-h-[140px] md:min-h-[160px] border border-white/10 hover:border-primary/50 hover:shadow-[0_10px_30px_-10px_rgba(191,243,103,0.15)] group overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 group-hover:bg-primary/10 transition-colors duration-500" />
           <div
             className="relative z-10 pointer-events-none"
             style={{ transform: "translateZ(30px)" }}
           >
-            <MonitorPlay className="text-[#BFF367] w-6 h-6 mb-3 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300" />
+            <MonitorPlay className="text-primary w-6 h-6 mb-3 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300" />
             <h3 className="text-base font-bold text-white mb-1 font-poppins">
               Scoring Tickers
             </h3>

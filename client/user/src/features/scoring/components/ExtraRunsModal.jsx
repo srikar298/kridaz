@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";import { Button, Input } from "@kridaz/ui";
+
 
 /**
  * ExtraRunsModal ΓÇö P1.4 & P1.5
@@ -8,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
  * Lets the umpire specify how many runs were scored off the delivery.
  */
 
-const THEME_COLOR = "#55DEE8";
+const THEME_COLOR = "var(--secondary)";
 
 const EXTRA_META = {
   WIDE: {
@@ -60,7 +61,7 @@ const ExtraRunsModal = ({ extraType = "WIDE", onConfirm, onClose }) => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: "100%", opacity: 0 }}
           transition={{ type: "spring", damping: 24 }}
-          className="relative w-full max-w-sm bg-[#000] rounded-[12px] border border-white/5 overflow-hidden z-10 shadow-2xl"
+          className="relative w-full max-w-sm bg-background rounded-[12px] border border-white/5 overflow-hidden z-10 shadow-2xl"
         >
           {/* Header */}
           <div className="px-6 pt-6 pb-5 flex items-center justify-between border-b border-white/5">
@@ -75,7 +76,7 @@ const ExtraRunsModal = ({ extraType = "WIDE", onConfirm, onClose }) => {
           <div className="px-6 py-6 space-y-6">
             <div className="flex gap-3 justify-between">
               {QUICK_RUNS.map((r) => (
-                <button
+                <Button
                   key={r}
                   onClick={() => setRuns(r)}
                   style={
@@ -90,7 +91,7 @@ const ExtraRunsModal = ({ extraType = "WIDE", onConfirm, onClose }) => {
                   className={`flex-1 h-14 rounded-[8px] text-xl font-black transition-all ${runs === r ? "scale-105" : "bg-white/5 text-neutral-400 border border-white/5 hover:border-white/10"}`}
                 >
                   {r}
-                </button>
+                </Button>
               ))}
             </div>
 
@@ -99,11 +100,11 @@ const ExtraRunsModal = ({ extraType = "WIDE", onConfirm, onClose }) => {
               <label className="text-[10px] font-black text-neutral-500 uppercase tracking-widest ml-1">
                 Overthrows / Manual
               </label>
-              <div className="flex items-center gap-3 bg-neutral-900/50 border border-white/5 rounded-[8px] px-5 py-4 focus-within:border-[#00C187] transition-all">
+              <div className="flex items-center gap-3 bg-neutral-900/50 border border-white/5 rounded-[8px] px-5 py-4 focus-within:border-success transition-all">
                 <span className="text-neutral-500 text-sm font-bold uppercase">
                   Other
                 </span>
-                <input
+                <Input
                   type="number"
                   min={0}
                   max={9}
@@ -131,13 +132,13 @@ const ExtraRunsModal = ({ extraType = "WIDE", onConfirm, onClose }) => {
 
             {/* Actions */}
             <div className="flex gap-4">
-              <button
+              <Button
                 onClick={onClose}
-                className="flex-1 py-5 rounded-[8px] font-black text-neutral-400 text-[11px] uppercase tracking-[0.2em] transition-all bg-[#1a1a1a] hover:bg-[#222] active:scale-95"
+                className="flex-1 py-5 rounded-[8px] font-black text-neutral-400 text-[11px] uppercase tracking-[0.2em] transition-all bg-card hover:bg-card active:scale-95"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => onConfirm(runs)}
                 className="flex-[2] py-5 rounded-[8px] font-black text-black text-[11px] uppercase tracking-[0.2em] transition-all transform active:scale-95 shadow-xl"
                 style={{
@@ -146,7 +147,7 @@ const ExtraRunsModal = ({ extraType = "WIDE", onConfirm, onClose }) => {
                 }}
               >
                 Confirm {meta.label}
-              </button>
+              </Button>
             </div>
           </div>
         </motion.div>

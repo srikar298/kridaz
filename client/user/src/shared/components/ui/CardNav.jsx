@@ -183,7 +183,7 @@ const CardNav = ({
                     aria-label={lnk.ariaLabel}
                   >
                     <GoArrowUpRight
-                      className="nav-card-link-icon text-[#BFF367]"
+                      className="nav-card-link-icon text-primary"
                       aria-hidden="true"
                     />
                     {lnk.label}

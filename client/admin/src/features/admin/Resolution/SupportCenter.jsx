@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { MessageSquare, Clock, CheckCircle, AlertCircle, Search, Filter, Send, User, ChevronRight } from "lucide-react";
-import useSupport from "@hooks/admin/useSupport";
+import { MessageSquare, Search, Send, User, ChevronRight } from "lucide-react";
+import useSupport from "@hooks/admin/useSupport";import { Button, Input } from "@kridaz/ui";
+
 
 const SupportCenter = () => {
   const {
@@ -57,13 +58,13 @@ const SupportCenter = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white p-6 lg:p-10">
+    <div className="min-h-screen bg-background text-white p-6 lg:p-10">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight uppercase">
-              Support <span className="text-[#55DEE8]">Center</span>
+              Support <span className="text-secondary">Center</span>
             </h1>
             <p className="text-gray-400 text-sm mt-2 font-medium tracking-wide">
               Manage customer inquiries and partner issues
@@ -72,10 +73,10 @@ const SupportCenter = () => {
 
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
-            <input
+            <Input
               type="text"
               placeholder="Search tickets..."
-              className="bg-[#111] border border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-sm w-full md:w-80 focus:outline-none focus:border-[#55DEE8] transition-all"
+              className="bg-card border border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-sm w-full md:w-80 focus:outline-none focus:border-secondary transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -87,12 +88,12 @@ const SupportCenter = () => {
           <div
             className={`lg:col-span-4 space-y-4 ${selectedTicket ? "hidden lg:block" : "block"}`}
           >
-            <div className="bg-[#111] border border-white/10 rounded-[8px] overflow-hidden">
+            <div className="bg-card border border-white/10 rounded-[8px] overflow-hidden">
               <div className="px-4 py-3 bg-white/5 border-b border-white/10 flex justify-between items-center">
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
                   All Tickets
                 </p>
-                <span className="text-[10px] bg-[#55DEE8] text-black px-1.5 py-0.5 rounded font-black">
+                <span className="text-[10px] bg-secondary text-black px-1.5 py-0.5 rounded font-black">
                   {filteredTickets.length}
                 </span>
               </div>
@@ -107,10 +108,10 @@ const SupportCenter = () => {
                   </div>
                 ) : (
                   filteredTickets.map((ticket) => (
-                    <button
+                    <Button
                       key={ticket._id}
                       onClick={() => setSelectedTicket(ticket)}
-                      className={`w-full text-left p-4 border-b border-white/5 transition-all hover:bg-white/[0.03] ${selectedTicket?._id === ticket._id ? "bg-[#55DEE8]/5 border-l-4 border-l-[#55DEE8]" : ""}`}
+                      className={`w-full text-left p-4 border-b border-white/5 transition-all hover:bg-white/[0.03] ${selectedTicket?._id === ticket._id ? "bg-secondary/5 border-l-4 border-l-[var(--secondary)]" : ""}`}
                     >
                       <div className="flex justify-between items-start mb-1">
                         <span
@@ -129,7 +130,7 @@ const SupportCenter = () => {
                         <User size={10} />{" "}
                         {ticket.user?.name || ticket.owner?.name}
                       </p>
-                    </button>
+                    </Button>
                   ))
                 )}
               </div>
@@ -139,17 +140,17 @@ const SupportCenter = () => {
           {/* Ticket Detail & Chat */}
           <div className="lg:col-span-8">
             {selectedTicket ? (
-              <div className="bg-[#111] border border-white/10 rounded-[8px] overflow-hidden flex flex-col h-[700px]">
+              <div className="bg-card border border-white/10 rounded-[8px] overflow-hidden flex flex-col h-[700px]">
                 {/* Header */}
                 <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
                   <div>
                     <div className="flex items-center gap-3 mb-2">
-                      <button
+                      <Button
                         onClick={() => setSelectedTicket(null)}
                         className="lg:hidden text-gray-500 hover:text-white mr-2"
                       >
                         <ChevronRight className="rotate-180" size={20} />
-                      </button>
+                      </Button>
                       <h2 className="text-xl font-bold">
                         {selectedTicket.subject}
                       </h2>
@@ -168,50 +169,50 @@ const SupportCenter = () => {
 
                   <div className="flex gap-2">
                     {selectedTicket.status !== "RESOLVED" && (
-                      <button
+                      <Button
                         onClick={() =>
                           handleUpdateStatus(selectedTicket._id, "RESOLVED")
                         }
-                        className="bg-[#55DEE8]/10 text-[#55DEE8] hover:bg-[#55DEE8] hover:text-black px-4 py-2 rounded-[6px] text-xs font-bold transition-all"
+                        className="bg-secondary/10 text-secondary hover:bg-secondary hover:text-black px-4 py-2 rounded-[6px] text-xs font-bold transition-all"
                       >
                         Resolve
-                      </button>
+                      </Button>
                     )}
-                    <button
+                    <Button
                       onClick={() =>
                         handleUpdateStatus(selectedTicket._id, "CLOSED")
                       }
                       className="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white px-4 py-2 rounded-[6px] text-xs font-bold transition-all"
                     >
                       Close
-                    </button>
+                    </Button>
 
                     <div className="flex items-center gap-2 bg-white/5 p-1 rounded-[8px] border border-white/10 ml-2">
-                      <button
+                      <Button
                         onClick={() =>
                           handleToggleAgentStatus(selectedTicket._id, true)
                         }
-                        className={`px-3 py-1.5 rounded-md text-[10px] font-black uppercase tracking-widest transition-all ${selectedTicket.isAgentOnline ? "bg-[#55DEE8] text-black shadow-[0_0_10px_rgba(85, 222, 232,0.4)]" : "text-gray-500 hover:text-white"}`}
+                        className={`px-3 py-1.5 rounded-md text-[10px] font-black uppercase tracking-widest transition-all ${selectedTicket.isAgentOnline ? "bg-secondary text-black shadow-[0_0_10px_rgba(85, 222, 232,0.4)]" : "text-gray-500 hover:text-white"}`}
                       >
                         Online
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() =>
                           handleToggleAgentStatus(selectedTicket._id, false)
                         }
                         className={`px-3 py-1.5 rounded-md text-[10px] font-black uppercase tracking-widest transition-all ${!selectedTicket.isAgentOnline ? "bg-red-500 text-white shadow-[0_0_10px_rgba(239,68,68,0.4)]" : "text-gray-500 hover:text-white"}`}
                       >
                         Offline
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar bg-[#0d0d0d]">
+                <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar bg-background">
                   {/* Initial Message */}
                   <div className="flex flex-col items-start max-w-[80%]">
-                    <div className="bg-[#1a1a1a] p-4 rounded-[8px] rounded-tl-none border border-white/5 shadow-xl">
+                    <div className="bg-card p-4 rounded-[8px] rounded-tl-none border border-white/5 shadow-xl">
                       <p className="text-sm leading-relaxed mb-4">
                         {selectedTicket.message}
                       </p>
@@ -226,7 +227,7 @@ const SupportCenter = () => {
                                 href={img}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="block relative aspect-video rounded-lg overflow-hidden border border-white/10 hover:border-[#55DEE8]/50 transition-colors"
+                                className="block relative aspect-video rounded-lg overflow-hidden border border-white/10 hover:border-secondary/50 transition-colors"
                               >
                                 <img
                                   src={img}
@@ -256,7 +257,7 @@ const SupportCenter = () => {
                       className={`flex flex-col ${reply.sender === "ADMIN" ? "items-end" : "items-start"} max-w-[80%] ${reply.sender === "ADMIN" ? "ml-auto" : ""}`}
                     >
                       <div
-                        className={`p-4 rounded-[8px] border shadow-xl ${reply.sender === "ADMIN" ? "bg-[#55DEE8]/10 border-[#55DEE8]/20 rounded-tr-none" : "bg-[#1a1a1a] border-white/5 rounded-tl-none"}`}
+                        className={`p-4 rounded-[8px] border shadow-xl ${reply.sender === "ADMIN" ? "bg-secondary/10 border-secondary/20 rounded-tr-none" : "bg-card border-white/5 rounded-tl-none"}`}
                       >
                         <p className="text-sm leading-relaxed">
                           {reply.message}
@@ -273,10 +274,10 @@ const SupportCenter = () => {
                 {/* Reply Input */}
                 <div className="p-4 bg-white/[0.02] border-t border-white/10">
                   <div className="relative flex items-center gap-3">
-                    <input
+                    <Input
                       type="text"
                       placeholder="Type your response..."
-                      className="flex-1 bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-sm focus:outline-none focus:border-[#55DEE8] transition-all"
+                      className="flex-1 bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-sm focus:outline-none focus:border-secondary transition-all"
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
                       onKeyPress={(e) =>
@@ -286,7 +287,7 @@ const SupportCenter = () => {
                         )
                       }
                     />
-                    <button
+                    <Button
                       onClick={() =>
                         handleReply(selectedTicket._id, replyText).then(() =>
                           setReplyText("")
@@ -295,15 +296,15 @@ const SupportCenter = () => {
                       disabled={
                         processingId === selectedTicket._id || !replyText.trim()
                       }
-                      className="bg-[#55DEE8] text-black p-3 rounded-[8px] hover:bg-[#b3ff00] transition-all disabled:opacity-50 shadow-[0_0_15px_rgba(85, 222, 232,0.3)]"
+                      className="bg-secondary text-black p-3 rounded-[8px] hover:bg-[#b3ff00] transition-all disabled:opacity-50 shadow-[0_0_15px_rgba(85, 222, 232,0.3)]"
                     >
                       <Send size={18} />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="h-[700px] bg-[#111] border border-white/10 rounded-[8px] flex flex-col items-center justify-center text-center p-10">
+              <div className="h-[700px] bg-card border border-white/10 rounded-[8px] flex flex-col items-center justify-center text-center p-10">
                 <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
                   <MessageSquare className="text-gray-500" size={32} />
                 </div>

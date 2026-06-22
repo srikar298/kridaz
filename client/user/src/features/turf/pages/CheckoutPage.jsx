@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/react";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -29,7 +28,8 @@ import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { handlePayment, createOrder } from "@infrastructure/razorpay";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button, Input } from "@kridaz/ui";
+
 
 const SUBHEADING_STYLE = {
   fontFamily: "'Inter 28pt Light', sans-serif",
@@ -68,7 +68,7 @@ const CheckoutPage = () => {
     location: turfLocation,
   } = bookingData;
 
-  const [paymentPercentage, setPaymentPercentage] = useState(30);
+  const [paymentPercentage, setPaymentPercentage] = useState(100);
   const [paymentMode, setPaymentMode] = useState("WALLET");
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentBalance, setCurrentBalance] = useState(
@@ -88,7 +88,7 @@ const CheckoutPage = () => {
         const response = await axiosInstance.get("/api/settings/payout");
         setSettings(response.data.payoutSettings);
       } catch (err) {
-        Sentry.captureException(err);
+        console.error("Failed to fetch payout settings:", err);
       }
     };
     fetchSettings();
@@ -104,7 +104,7 @@ const CheckoutPage = () => {
           );
         }
       } catch (err) {
-        Sentry.captureException(err);
+        console.error("Failed to fetch wallet data:", err);
       }
     };
     if (user) {
@@ -237,7 +237,7 @@ const CheckoutPage = () => {
 
   if (step === "SUCCESS") {
     return (
-      <div className="bg-[#000000] flex items-center justify-center px-1 pt-24 pb-12">
+      <div className="bg-background flex items-center justify-center px-1 pt-24 pb-12">
         <svg width="0" height="0" className="hidden">
           <defs>
             <linearGradient
@@ -247,22 +247,22 @@ const CheckoutPage = () => {
               x2="100%"
               y2="0%"
             >
-              <stop offset="0%" stopColor="#55DEE8" />
-              <stop offset="100%" stopColor="#B3DC26" />
+              <stop offset="0%" stopColor="var(--secondary)" />
+              <stop offset="100%" stopColor="var(--primary)" />
             </linearGradient>
           </defs>
         </svg>
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-[#121212] border border-[rgba(255,255,255,0.08)] p-3 rounded-[12px] text-center max-w-xl w-full relative overflow-hidden"
+          className="bg-card border border-[rgba(255,255,255,0.08)] p-3 rounded-[12px] text-center max-w-xl w-full relative overflow-hidden"
         >
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#55DEE8] to-[#B3DC26]" />
-          <div className="w-10 h-10 bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] rounded-full flex items-center justify-center mx-auto mb-3 shadow-[0px_8px_24px_rgba(191,243,103,0.15)]">
-            <Check size={20} className="text-[#000000] stroke-[3px]" />
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary to-primary" />
+          <div className="w-10 h-10 bg-gradient-to-r from-secondary to-primary rounded-full flex items-center justify-center mx-auto mb-3 shadow-[0px_8px_24px_rgba(191,243,103,0.15)]">
+            <Check size={20} className="text-background stroke-[3px]" />
           </div>
 
-          <h2 className="text-[16px] font-[700] text-[#FFFFFF] uppercase tracking-tighter mb-1 font-inter">
+          <h2 className="text-[16px] font-[700] text-foreground uppercase tracking-tighter mb-1 font-inter">
             Slot Secured!
           </h2>
           <p className="text-[rgba(255,255,255,0.70)] uppercase text-[10px] tracking-widest mb-4">
@@ -272,14 +272,14 @@ const CheckoutPage = () => {
           <div className="grid grid-cols-1 gap-2">
             <Link
               to={`/booking-pass/${bookingId}`}
-              className="w-full h-[36px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] rounded-[8px] font-[700] text-[12px] flex items-center justify-center gap-2 shadow-[0px_8px_24px_rgba(191,243,103,0.15)] border-none"
+              className="w-full h-[36px] bg-gradient-to-r from-secondary to-primary text-background rounded-[8px] font-[700] text-[12px] flex items-center justify-center gap-2 shadow-[0px_8px_24px_rgba(191,243,103,0.15)] border-none"
             >
               Download Digital Pass
               <ArrowRight size={14} />
             </Link>
             <Link
               to="/booking-history"
-              className="w-full h-[36px] bg-[#1B1B1B] text-[#FFFFFF] border border-[rgba(255,255,255,0.08)] rounded-[8px] font-[700] text-[12px] flex items-center justify-center gap-2"
+              className="w-full h-[36px] bg-card text-foreground border border-[rgba(255,255,255,0.08)] rounded-[8px] font-[700] text-[12px] flex items-center justify-center gap-2"
             >
               View Booking History
             </Link>
@@ -290,13 +290,13 @@ const CheckoutPage = () => {
   }
 
   return (
-    <div className="bg-[#000000] text-white min-h-screen pt-6 pb-12 px-4 md:px-8 font-inter">
+    <div className="bg-background text-white min-h-screen pt-6 pb-12 px-4 md:px-8 font-inter">
       {/* SVG Definitions for global gradient */}
       <svg width="0" height="0" className="hidden">
         <defs>
           <linearGradient id="theme-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#55DEE8" />
-            <stop offset="100%" stopColor="#B3DC26" />
+            <stop offset="0%" stopColor="var(--secondary)" />
+            <stop offset="100%" stopColor="var(--primary)" />
           </linearGradient>
         </defs>
       </svg>
@@ -306,7 +306,7 @@ const CheckoutPage = () => {
         <div className="flex items-center gap-4 mb-6">
           <GlobalBackButton />
           <div>
-            <h1 className="text-[24px] md:text-[28px] font-[800] tracking-tight uppercase font-inter text-[#FFFFFF]">
+            <h1 className="text-[24px] md:text-[28px] font-[800] tracking-tight uppercase font-inter text-foreground">
               Checkout
             </h1>
           </div>
@@ -316,8 +316,8 @@ const CheckoutPage = () => {
           {/* Left Column: Summary */}
           <div className="lg:col-span-7 flex flex-col gap-3">
             {/* Hero Image & Turf Title */}
-            <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[16px] overflow-hidden">
-              <div className="h-[120px] md:h-[160px] w-full bg-[#1B1B1B]">
+            <div className="bg-card border border-[rgba(255,255,255,0.08)] rounded-[16px] overflow-hidden">
+              <div className="h-[120px] md:h-[160px] w-full bg-card">
                 <img
                   src={turf?.images?.[0] || "/banner-1.png"}
                   className="w-full h-full object-cover"
@@ -326,7 +326,7 @@ const CheckoutPage = () => {
               </div>
               <div className="px-4 py-3">
                 <div>
-                  <h2 className="text-[18px] font-[700] text-[#FFFFFF] uppercase tracking-tight font-inter">
+                  <h2 className="text-[18px] font-[700] text-foreground uppercase tracking-tight font-inter">
                     {turfName || turf?.name || "Kridaz Venue"}
                   </h2>
                   <div className="flex items-center gap-3 text-[rgba(255,255,255,0.70)] text-[12px] mt-1.5 font-[600] uppercase tracking-wide">
@@ -347,55 +347,55 @@ const CheckoutPage = () => {
             </div>
 
             {/* Payment Plan Section */}
-            <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[12px] px-4 py-3 flex items-center justify-between">
-              <span className="text-[14px] font-[700] text-[#FFFFFF] uppercase tracking-widest font-inter">
+            <div className="bg-card border border-[rgba(255,255,255,0.08)] rounded-[12px] px-4 py-3 flex items-center justify-between">
+              <span className="text-[14px] font-[700] text-foreground uppercase tracking-widest font-inter">
                 Payment Plan
               </span>
-              <div className="flex bg-[#1B1B1B] rounded-[8px] p-1 border border-[rgba(255,255,255,0.08)]">
+              <div className="flex bg-card rounded-[8px] p-1 border border-[rgba(255,255,255,0.08)]">
                 {[30, 50, 100].map((pct) => (
-                  <button
+                  <Button
                     key={pct}
                     onClick={() => setPaymentPercentage(pct)}
                     className={`px-3 py-1.5 rounded-[6px] text-[12px] font-[700] uppercase tracking-wider transition-all ${
                       paymentPercentage === pct
-                        ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] shadow-[0px_2px_8px_rgba(191,243,103,0.15)]"
-                        : "text-[rgba(255,255,255,0.70)] hover:text-[#FFFFFF]"
+                        ? "bg-gradient-to-r from-secondary to-primary text-background shadow-[0px_2px_8px_rgba(191,243,103,0.15)]"
+                        : "text-[rgba(255,255,255,0.70)] hover:text-foreground"
                     }`}
                   >
                     {pct === 100 ? "FULL" : `${pct}%`}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
 
             {/* Price Details */}
-            <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[12px] px-4 py-3 space-y-2.5">
-              <h3 className="text-[12px] font-[700] text-[#FFFFFF] uppercase tracking-widest font-inter mb-1">
+            <div className="bg-card border border-[rgba(255,255,255,0.08)] rounded-[12px] px-4 py-3 space-y-2.5">
+              <h3 className="text-[12px] font-[700] text-foreground uppercase tracking-widest font-inter mb-1">
                 Price Details
               </h3>
               <div className="flex justify-between text-[14px] text-[rgba(255,255,255,0.70)] font-[400]">
                 <span>Slot Price</span>
-                <span className="text-[#FFFFFF]">₹ {venueCharges}</span>
+                <span className="text-foreground">₹ {venueCharges}</span>
               </div>
               <div className="flex justify-between text-[14px] text-[rgba(255,255,255,0.70)] font-[400]">
                 <span className="flex items-center gap-1.5">
                   Service Charge{" "}
                   <Info className="w-3.5 h-3.5 text-[rgba(255,255,255,0.70)]" />
                 </span>
-                <span className="text-[#FFFFFF]">₹ {serviceCharge}</span>
+                <span className="text-foreground">₹ {serviceCharge}</span>
               </div>
               {appliedCoupon && (
-                <div className="flex justify-between text-[14px] font-[600] text-[#B3DC26]">
+                <div className="flex justify-between text-[14px] font-[600] text-primary">
                   <span>Discount ({appliedCoupon.code})</span>
                   <span>-₹ {discount}</span>
                 </div>
               )}
 
               <div className="pt-2 border-t border-[rgba(255,255,255,0.08)] flex justify-between items-center">
-                <span className="text-[#FFFFFF] font-[700] uppercase text-[14px] tracking-wide font-inter">
+                <span className="text-foreground font-[700] uppercase text-[14px] tracking-wide font-inter">
                   Total Amount
                 </span>
-                <span className="font-[700] text-[20px] tracking-tight text-[#B3DC26]">
+                <span className="font-[700] text-[20px] tracking-tight text-primary">
                   ₹ {amountToPay}
                 </span>
               </div>
@@ -404,7 +404,7 @@ const CheckoutPage = () => {
                   <span className="text-[rgba(255,255,255,0.70)] font-[600] uppercase text-[12px] tracking-wide font-inter">
                     Pay at Venue
                   </span>
-                  <span className="font-[700] text-[16px] tracking-tight text-[#FFFFFF]">
+                  <span className="font-[700] text-[16px] tracking-tight text-foreground">
                     ₹ {balanceAtVenue}
                   </span>
                 </div>
@@ -412,34 +412,34 @@ const CheckoutPage = () => {
             </div>
 
             {/* Coupon Box */}
-            <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[12px] p-3">
+            <div className="bg-card border border-[rgba(255,255,255,0.08)] rounded-[12px] p-3">
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Tag
                     size={16}
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.70)]"
                   />
-                  <input
+                  <Input
                     type="text"
                     placeholder="ENTER COUPON CODE"
                     value={couponCode}
                     onChange={(e) =>
                       setCouponCode(e.target.value.toUpperCase())
                     }
-                    className="w-full bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[8px] py-[10px] pl-[36px] pr-[16px] text-[13px] font-[400] text-[#FFFFFF] outline-none focus:border-[#55DEE8] transition-all placeholder:text-[rgba(255,255,255,0.70)]"
+                    className="w-full bg-card border border-[rgba(255,255,255,0.08)] rounded-[8px] py-[10px] pl-[36px] pr-[16px] text-[13px] font-[400] text-foreground outline-none focus:border-secondary transition-all placeholder:text-[rgba(255,255,255,0.70)]"
                   />
                 </div>
-                <button
+                <Button
                   onClick={handleApplyCoupon}
                   disabled={isValidating || !couponCode}
-                  className="bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] text-[#FFFFFF] px-5 rounded-[8px] text-[12px] font-[700] uppercase tracking-widest disabled:opacity-40"
+                  className="bg-card border border-[rgba(255,255,255,0.08)] text-foreground px-5 rounded-[8px] text-[12px] font-[700] uppercase tracking-widest disabled:opacity-40"
                 >
                   {isValidating ? (
                     <Loader2 size={16} className="animate-spin" />
                   ) : (
                     "APPLY"
                   )}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -447,12 +447,12 @@ const CheckoutPage = () => {
           {/* Right Column: Payment Plan & Payment Method */}
           <div className="lg:col-span-5 space-y-4 pb-4">
             {/* Payment Method */}
-            <div className="bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[16px] p-4 md:p-5">
+            <div className="bg-card border border-[rgba(255,255,255,0.08)] rounded-[16px] p-4 md:p-5">
               <div className="grid grid-cols-2 gap-4">
                 {/* Wallet */}
-                <button
+                <Button
                   onClick={() => setPaymentMode("WALLET")}
-                  className={`relative p-4 rounded-[12px] border transition-all flex flex-col items-center justify-center gap-2 text-center ${paymentMode === "WALLET" ? "bg-[#1B1B1B] border-[#B3DC26]" : "bg-[#1B1B1B] border-[rgba(255,255,255,0.08)]"}`}
+                  className={`relative p-4 rounded-[12px] border transition-all flex flex-col items-center justify-center gap-2 text-center ${paymentMode === "WALLET" ? "bg-card border-primary" : "bg-card border-[rgba(255,255,255,0.08)]"}`}
                 >
                   {paymentMode === "WALLET" && (
                     <div className="absolute top-2 right-2">
@@ -463,13 +463,13 @@ const CheckoutPage = () => {
                     </div>
                   )}
                   <div
-                    className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${paymentMode === "WALLET" ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000]" : "bg-[#121212] border border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)]"}`}
+                    className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${paymentMode === "WALLET" ? "bg-gradient-to-r from-secondary to-primary text-background" : "bg-card border border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)]"}`}
                   >
                     <Wallet className="w-4 h-4" />
                   </div>
                   <div>
                     <div
-                      className={`text-[12px] font-[700] uppercase tracking-wide ${paymentMode === "WALLET" ? "text-[#FFFFFF]" : "text-[rgba(255,255,255,0.70)]"}`}
+                      className={`text-[12px] font-[700] uppercase tracking-wide ${paymentMode === "WALLET" ? "text-foreground" : "text-[rgba(255,255,255,0.70)]"}`}
                     >
                       Wallet
                     </div>
@@ -477,15 +477,15 @@ const CheckoutPage = () => {
                       ₹{currentBalance}
                     </div>
                   </div>
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#B3DC26] text-[#000000] text-[9px] font-[800] px-2 py-0.5 rounded-[4px] uppercase whitespace-nowrap shadow-sm">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-background text-[9px] font-[800] px-2 py-0.5 rounded-[4px] uppercase whitespace-nowrap shadow-sm">
                     {settings?.cashbackPercentage || 5}% BACK
                   </div>
-                </button>
+                </Button>
 
                 {/* UPI */}
-                <button
+                <Button
                   onClick={() => setPaymentMode("UPI")}
-                  className={`relative p-4 rounded-[12px] border transition-all flex flex-col items-center justify-center gap-2 text-center ${paymentMode === "UPI" ? "bg-[#1B1B1B] border-[#B3DC26]" : "bg-[#1B1B1B] border-[rgba(255,255,255,0.08)]"}`}
+                  className={`relative p-4 rounded-[12px] border transition-all flex flex-col items-center justify-center gap-2 text-center ${paymentMode === "UPI" ? "bg-card border-primary" : "bg-card border-[rgba(255,255,255,0.08)]"}`}
                 >
                   {paymentMode === "UPI" && (
                     <div className="absolute top-2 right-2">
@@ -496,13 +496,13 @@ const CheckoutPage = () => {
                     </div>
                   )}
                   <div
-                    className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${paymentMode === "UPI" ? "bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000]" : "bg-[#121212] border border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)]"}`}
+                    className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${paymentMode === "UPI" ? "bg-gradient-to-r from-secondary to-primary text-background" : "bg-card border border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)]"}`}
                   >
                     <Smartphone className="w-4 h-4" />
                   </div>
                   <div>
                     <div
-                      className={`text-[12px] font-[700] uppercase tracking-wide ${paymentMode === "UPI" ? "text-[#FFFFFF]" : "text-[rgba(255,255,255,0.70)]"}`}
+                      className={`text-[12px] font-[700] uppercase tracking-wide ${paymentMode === "UPI" ? "text-foreground" : "text-[rgba(255,255,255,0.70)]"}`}
                     >
                       Instant UPI
                     </div>
@@ -510,14 +510,14 @@ const CheckoutPage = () => {
                       GPay, PhonePe
                     </div>
                   </div>
-                </button>
+                </Button>
               </div>
 
               {/* Error or Pay Now */}
               <div className="pt-6">
                 {paymentMode === "WALLET" && currentBalance < amountToPay ? (
                   <>
-                    <div className="border border-[rgba(255,255,255,0.08)] bg-[#1B1B1B] rounded-[12px] p-4 flex gap-3 items-center mb-4">
+                    <div className="border border-[rgba(255,255,255,0.08)] bg-card rounded-[12px] p-4 flex gap-3 items-center mb-4">
                       <Info className="text-[rgba(255,255,255,0.70)] w-5 h-5 shrink-0" />
                       <p className="text-[12px] text-[rgba(255,255,255,0.70)] font-[400] leading-snug">
                         Your wallet balance is insufficient for this booking.
@@ -525,18 +525,18 @@ const CheckoutPage = () => {
                         Required: ₹{amountToPay}
                       </p>
                     </div>
-                    <button
+                    <Button
                       onClick={() => navigate("/wallet")}
-                      className="w-full h-[48px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] rounded-[12px] flex items-center justify-center px-4 font-[700] text-[14px] md:text-[16px] transition-all gap-2 tracking-wide shadow-[0px_8px_24px_rgba(191,243,103,0.15)] border-none"
+                      className="w-full h-[48px] bg-gradient-to-r from-secondary to-primary text-background rounded-[12px] flex items-center justify-center px-4 font-[700] text-[14px] md:text-[16px] transition-all gap-2 tracking-wide shadow-[0px_8px_24px_rgba(191,243,103,0.15)] border-none"
                     >
                       <PlusCircle className="w-4 h-4" /> RECHARGE WALLET
-                    </button>
+                    </Button>
                   </>
                 ) : (
-                  <button
+                  <Button
                     onClick={handleConfirmPayment}
                     disabled={isProcessing}
-                    className="w-full h-[48px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-[#000000] rounded-[12px] flex items-center justify-between px-5 font-[700] text-[14px] md:text-[16px] transition-all disabled:opacity-40 shadow-[0px_8px_24px_rgba(191,243,103,0.15)] border-none"
+                    className="w-full h-[48px] bg-gradient-to-r from-secondary to-primary text-background rounded-[12px] flex items-center justify-between px-5 font-[700] text-[14px] md:text-[16px] transition-all disabled:opacity-40 shadow-[0px_8px_24px_rgba(191,243,103,0.15)] border-none"
                   >
                     <div className="flex items-center gap-2 tracking-wide">
                       {isProcessing ? (
@@ -547,7 +547,7 @@ const CheckoutPage = () => {
                       {isProcessing ? "PROCESSING..." : "PAY NOW"}
                     </div>
                     <span className="text-[18px]">₹ {amountToPay}</span>
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>

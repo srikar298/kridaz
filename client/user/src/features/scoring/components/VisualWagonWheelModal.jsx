@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";import { Button } from "@kridaz/ui";
+
 
 const POSITIONS = [
   "LONG_OFF", // Top-left sector
@@ -91,19 +92,19 @@ const VisualWagonWheelModal = ({ runs, isBoundary, onConfirm, onClose }) => {
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="relative w-full max-w-sm bg-[#1A1A1A] rounded-[8px] border border-white/5 overflow-hidden z-10 p-6 flex flex-col"
+          className="relative w-full max-w-sm bg-card rounded-[8px] border border-white/5 overflow-hidden z-10 p-6 flex flex-col"
         >
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-lg font-bold text-white">
               Select Shot Direction
             </h2>
-            <button
+            <Button
               onClick={onClose}
               className="text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors"
             >
               Close
-            </button>
+            </Button>
           </div>
 
           {/* SVG Wheel Area */}
@@ -253,12 +254,12 @@ const VisualWagonWheelModal = ({ runs, isBoundary, onConfirm, onClose }) => {
             )}
           </div>
 
-          <button
+          <Button
             onClick={() => onConfirm({ position: null, distance: null })}
             className="mt-6 w-full py-3 rounded-[8px] border border-white/10 text-neutral-400 text-sm font-bold hover:bg-white/5 transition-colors"
           >
             Skip Wagon Wheel
-          </button>
+          </Button>
         </motion.div>
       </div>
     </AnimatePresence>

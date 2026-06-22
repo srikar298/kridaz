@@ -43,7 +43,7 @@ const MyTeams = () => {
 
   return (
     <div
-      className="h-[calc(100dvh-140px)] lg:h-[100dvh] flex bg-[#0a0a0a] overflow-hidden w-full"
+      className="h-[calc(100dvh-140px)] lg:h-[100dvh] flex bg-background overflow-hidden w-full"
       style={{ fontFamily: "'Open Sans', sans-serif" }}
     >
       {/* Sidebar */}

@@ -19,6 +19,7 @@ import { logout } from "@redux/slices/authSlice.js";
 import axiosInstance from "@hooks/useAxiosInstance";
 import useNotifications from "@hooks/shared/useNotifications";
 import { formatDistanceToNow } from "date-fns";
+import { Button, Input } from "@kridaz/ui";
 
 /**
  * AuthenticatedNavbar Rs � Role-aware top navigation.
@@ -133,15 +134,15 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
     <div className="fixed top-0 left-0 right-0 z-50 flex flex-col font-inter">
       <nav className="navbar bg-[#000000] border-b border-[#2D2D2D] px-4 md:px-8 h-16 lg:h-20 shadow-2xl flex items-center justify-between">
         <div className="flex items-center gap-4 lg:min-w-[200px]">
-          <button
+          <Button
             className="p-2 text-white hover:opacity-80 transition-opacity lg:hidden"
             style={{ color: themeColor }}
             onClick={toggleSidebar}
           >
             <Menu size={24} />
-          </button>
+          </Button>
           <Link to="/" className="flex items-center gap-4 group">
-            <div className="w-20 h-10 sm:w-32 sm:h-12 bg-transparent flex items-center justify-center overflow-hidden">
+            <div className="w-16 h-8 sm:w-24 sm:h-10 bg-transparent flex items-center justify-center overflow-hidden">
               <img
                 src="/logo.png"
                 alt="Kridaz Logo"
@@ -159,7 +160,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
             >
               <Search size={18} />
             </div>
-            <input
+            <Input
               type="text"
               placeholder="Search bookings, players, or reports..."
               className="w-full bg-[#0d0d0d] border border-white/5 rounded-lg py-2.5 pl-12 pr-16 text-sm text-white placeholder:text-white/20 focus:outline-none transition-all font-inter shadow-inner"
@@ -182,7 +183,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
 
         <div className="flex items-center gap-3 sm:gap-5 lg:min-w-[200px] justify-end">
           <div className="relative" ref={notificationRef}>
-            <button
+            <Button
               onClick={() => setShowNotifications(!showNotifications)}
               className={`p-2.5 rounded-[8px] transition-all duration-300 relative border ${showNotifications ? "" : "bg-[#0d0d0d] text-[#999999] border-white/5 hover:border-white/10"}`}
               style={{
@@ -195,7 +196,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
               {unreadCount > 0 && (
                 <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-black" />
               )}
-            </button>
+            </Button>
 
             {showNotifications && (
               <div className="absolute right-0 mt-4 w-80 sm:w-96 bg-[#000000] border border-white/10 rounded-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -214,19 +215,19 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
                     )}
                   </div>
                   <div className="flex gap-4">
-                    <button
+                    <Button
                       onClick={markAllRead}
                       className="text-[9px] font-black uppercase tracking-widest hover:opacity-80 transition-all"
                       style={{ color: themeColor }}
                     >
                       Mark All
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={clearAll}
                       className="text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-400 transition-colors"
                     >
                       Clear
-                    </button>
+                    </Button>
                   </div>
                 </div>
                 <div className="max-h-[400px] overflow-y-auto no-scrollbar">
@@ -291,7 +292,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
           <div className="h-8 w-[1px] bg-white/5 mx-1 hidden sm:block" />
 
           <div className="relative" ref={profileRef}>
-            <button
+            <Button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
               className="flex items-center gap-4 p-1.5 pr-5 bg-[#0d0d0d] border border-white/5 rounded-[8px] hover:bg-white/[0.03] hover:border-white/10 transition-all duration-300 group"
             >
@@ -328,12 +329,12 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
                 size={14}
                 className={`text-neutral-500 transition-transform duration-300 ${showProfileMenu ? "rotate-180 text-white" : ""}`}
               />
-            </button>
+            </Button>
 
             {showProfileMenu && (
               <div className="absolute right-0 mt-4 w-52 bg-[#000000] border border-white/10 rounded-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 <div className="py-2">
-                  <button
+                  <Button
                     onClick={() => {
                       setShowProfileMenu(false);
                       handleLogout();
@@ -342,7 +343,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
                   >
                     <LogOut size={16} />
                     Logout
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}

@@ -7,7 +7,8 @@ import {
   Copy,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button } from "@kridaz/ui";
+
 
 const sharePlatforms = [
   { id: "native", name: "More", icon: Share2 },
@@ -132,14 +133,14 @@ const ShareModal = ({ postId, onClose }) => {
               Choose a platform to send this community post.
             </p>
           </div>
-          <button
+          <Button
             type="button"
             onClick={onClose}
             className="rounded-full p-2 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
             aria-label="Close share options"
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         <div className="relative px-5 py-5 sm:px-6">
@@ -152,14 +153,14 @@ const ShareModal = ({ postId, onClose }) => {
                   key={app.id}
                   className="flex min-w-0 flex-col items-center gap-2"
                 >
-                  <button
+                  <Button
                     type="button"
                     onClick={() => handleShareToPlatform(app.id)}
-                    className="flex h-14 w-14 items-center justify-center rounded-full border border-[#BFF367]/25 bg-gradient-to-br from-[#BFF367]/10 to-[#BFF367]/10 text-white/80 shadow-[0_0_18px_rgba(85,222,232,0.08)] transition-all hover:border-[#BFF367]/50 hover:from-[#BFF367]/20 hover:to-[#BFF367]/20 hover:text-[#BFF367] active:scale-95"
+                    className="flex h-14 w-14 items-center justify-center rounded-full border border-primary/25 bg-gradient-to-br from-primary/10 to-primary/10 text-white/80 shadow-[0_0_18px_rgba(85,222,232,0.08)] transition-all hover:border-primary/50 hover:from-primary/20 hover:to-primary/20 hover:text-primary active:scale-95"
                     aria-label={`Share to ${app.name}`}
                   >
                     <Icon size={23} strokeWidth={2.2} />
-                  </button>
+                  </Button>
                   <span className="w-full truncate text-center text-[10px] font-bold text-white/60">
                     {app.name}
                   </span>

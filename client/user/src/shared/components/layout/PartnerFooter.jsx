@@ -6,7 +6,7 @@ const PartnerFooter = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#0a0a0a] text-white relative overflow-hidden border-t border-white/5 pt-20 pb-12 font-sans">
+    <footer className="bg-background text-white relative overflow-hidden border-t border-white/5 pt-20 pb-12 font-sans">
       <div className="container mx-auto px-6 lg:px-12 relative z-10">
         {/* Brand Section */}
         <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-12 mb-16">
@@ -20,7 +20,7 @@ const PartnerFooter = () => {
                 />
               </div>
               <div className="border-l border-white/20 pl-4 h-10 flex flex-col justify-center">
-                <span className="block text-[10px] font-semibold text-[#BFF367] tracking-wider uppercase leading-none mb-1">
+                <span className="block text-[10px] font-semibold text-primary tracking-wider uppercase leading-none mb-1">
                   Venue Owner Portal
                 </span>
                 <span className="block text-xl font-bold text-white tracking-tight leading-none uppercase">
@@ -38,7 +38,7 @@ const PartnerFooter = () => {
                 <Link
                   key={i}
                   to="#"
-                  className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-[#BFF367] hover:bg-white/10 transition-all"
+                  className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-primary hover:bg-white/10 transition-all"
                 >
                   <Icon size={18} />
                 </Link>
@@ -61,7 +61,7 @@ const PartnerFooter = () => {
                   <li key={link}>
                     <Link
                       to="#"
-                      className="text-white/40 hover:text-[#BFF367] transition-colors text-sm"
+                      className="text-white/40 hover:text-primary transition-colors text-sm"
                     >
                       {link}
                     </Link>
@@ -84,7 +84,7 @@ const PartnerFooter = () => {
                   <li key={link.name}>
                     <Link
                       to={link.path}
-                      className="text-white/40 hover:text-[#BFF367] transition-colors text-sm"
+                      className="text-white/40 hover:text-primary transition-colors text-sm"
                     >
                       {link.name}
                     </Link>
@@ -107,7 +107,7 @@ const PartnerFooter = () => {
                   <li key={link}>
                     <Link
                       to="#"
-                      className="text-white/40 hover:text-[#BFF367] transition-colors text-sm"
+                      className="text-white/40 hover:text-primary transition-colors text-sm"
                     >
                       {link}
                     </Link>
@@ -122,7 +122,7 @@ const PartnerFooter = () => {
         <div className="border-t border-white/5 pt-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-[#BFF367]/10 flex items-center justify-center text-[#BFF367]">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                 <Mail size={18} />
               </div>
               <div>
@@ -136,7 +136,7 @@ const PartnerFooter = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-[#BFF367]/10 flex items-center justify-center text-[#BFF367]">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                 <MapPin size={18} />
               </div>
               <div>

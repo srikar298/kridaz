@@ -111,10 +111,15 @@ const ReelItem = ({ reel, isVisible }) => {
 
   const handleLike = async () => {
     if (isLikingRef.current) return;
+    isLikingRef.current = true;
 
-    const wasLiked = isLiked;
-    // Optimistic update
-    setIsLiked(!wasLiked);
+    // We capture the current local state immediately
+    let wasLiked = isLiked;
+    setIsLiked((prev) => {
+      wasLiked = prev;
+      return !prev;
+    });
+    
     setLocalLikeCount((prev) => (wasLiked ? Math.max(0, prev - 1) : prev + 1));
 
     if (!wasLiked) {
@@ -122,7 +127,6 @@ const ReelItem = ({ reel, isVisible }) => {
       setTimeout(() => setShowHeartAnim(false), 800);
     }
 
-    isLikingRef.current = true;
     try {
       await interact({
         reelId: reel.id || reel._id,
@@ -409,14 +413,17 @@ const ReelItem = ({ reel, isVisible }) => {
           >
             <div className="relative">
               <div className="w-10 h-10 rounded-full border-2 border-white overflow-hidden shadow-lg bg-zinc-800">
-                <img
-                  src={
-                    reel.creatorId?.profilePicture ||
-                    `https://api.dicebear.com/7.x/avataaars/svg?seed=${reel.creatorId?.name || reel.creatorId?.username || "user"}`
-                  }
-                  alt={reel.creatorId?.username}
-                  className="w-full h-full object-cover"
-                />
+                {reel.creatorId?.profilePicture || reel.creatorId?.profileImage ? (
+                  <img
+                    src={reel.creatorId.profilePicture || reel.creatorId.profileImage}
+                    alt={reel.creatorId?.username}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-[var(--primary)] text-black font-bold text-[16px]">
+                    {(reel.creatorId?.name || reel.creatorId?.username || "U").substring(0, 2).toUpperCase()}
+                  </div>
+                )}
               </div>
               {/* Follow Plus Button */}
               {!isCreator &&
@@ -472,15 +479,7 @@ const ReelItem = ({ reel, isVisible }) => {
             ))}
           </p>
 
-          {/* Audio track info */}
-          <div className="flex items-center gap-2 bg-black/30 w-fit px-3 py-1 rounded-[6px] backdrop-blur-sm mt-1">
-            <Music size={12} className="text-white animate-spin-slow" />
-            <div className="overflow-hidden w-32">
-              <p className="text-white text-[11px] font-semibold whitespace-nowrap animate-marquee">
-                Original Audio - {reel.creatorId?.name || "Kridaz Audio"}
-              </p>
-            </div>
-          </div>
+
         </div>
       </div>
 
@@ -529,9 +528,9 @@ const ReelItem = ({ reel, isVisible }) => {
                     (localComments ?? serverComments).map((comment) => (
                       <div key={comment.id} className="flex items-start gap-3">
                         <div className="w-8 h-8 rounded-full overflow-hidden bg-white/10 flex-shrink-0">
-                          {comment.user?.profilePicture ? (
+                          {comment.user?.profilePicture || comment.user?.profileImage ? (
                             <img
-                              src={comment.user.profilePicture}
+                              src={comment.user.profilePicture || comment.user.profileImage}
                               alt={comment.user.name}
                               className="w-full h-full object-cover"
                             />

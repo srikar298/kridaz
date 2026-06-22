@@ -15,7 +15,7 @@ import {
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import NotificationService from "../../services/notification.service.js";
-import cloudinary, { uploadToCloudinary } from "../../utils/cloudinary.js";
+import { uploadToR2 } from "../../utils/r2Upload.js";
 import { getIO } from "../../config/socket.js";
 import { redisClient } from "../../config/redis.js";
 import { prisma } from "../../config/prisma.js";
@@ -1438,22 +1438,26 @@ export const googleAuth = asyncHandler(async (req, res) => {
     payload = ticket.getPayload();
   } else if (accessToken) {
     try {
-      const tokenInfo = await client.getTokenInfo(accessToken);
-      const allowedClients = [
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_ANDROID_CLIENT_ID,
-      ].filter(Boolean);
+      const tokenInfoResponse = await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`);
+      if (!tokenInfoResponse.ok) {
+        const errText = await tokenInfoResponse.text();
+        logger.error(`Google tokeninfo fetch failed: ${tokenInfoResponse.status}`, errText);
+        return res.status(401).json({ success: false, message: "Invalid Google access token" });
+      }
+      const tokenInfo = await tokenInfoResponse.json();
+
       if (
         !allowedClients.includes(tokenInfo.aud) &&
         !allowedClients.includes(tokenInfo.azp)
       ) {
+        logger.warn(`Google Auth: Invalid token audience. Expected ${process.env.GOOGLE_CLIENT_ID}, got aud=${tokenInfo.aud}, azp=${tokenInfo.azp}`);
         return res.status(401).json({
           success: false,
           message: "Invalid token audience (Confused Deputy Prevention)",
         });
       }
     } catch (err) {
-      logger.error("Google token info verification failed:", err);
+      logger.error("Google token info verification threw an exception:", err);
       return res
         .status(401)
         .json({ success: false, message: "Invalid Google access token" });
@@ -2119,7 +2123,7 @@ export const upgradeRequest = asyncHandler(async (req, res) => {
   if (req.files && req.files.length > 0) {
     const uploadPromises = req.files.map(async (file) => {
       try {
-        const url = await uploadToCloudinary(
+        const url = await uploadToR2(
           file.buffer,
           "kridaz/verification"
         );
@@ -2314,20 +2318,11 @@ export const updateProfilePicture = asyncHandler(async (req, res) => {
     });
   }
 
-  // Upload to Cloudinary
-  const uploadResult = await new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder: `kridaz/profiles/${user.role}`,
-      },
-      (error, result) => {
-        if (error) reject(error);
-        else resolve(result);
-      }
-    );
-    uploadStream.end(req.file.buffer);
-  });
-  const profilePictureUrl = uploadResult.secure_url;
+  // Upload to R2
+  const profilePictureUrl = await uploadToR2(
+    req.file.buffer,
+    `kridaz/profiles/${user.role}`
+  );
 
   // Unified update: always update User and OwnerProfile
   await prisma.user.update({
@@ -2387,7 +2382,7 @@ export const updateBannerPicture = asyncHandler(async (req, res) => {
     });
   }
 
-  const bannerPictureUrl = await uploadToCloudinary(
+  const bannerPictureUrl = await uploadToR2(
     req.file.buffer,
     `kridaz/banners/${user.role}`
   );
@@ -2478,6 +2473,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
     sportTypes,
     interests,
     password,
+    email,
   } = req.body;
   const decoded = req.user || req.owner;
   if (!decoded) {
@@ -2537,32 +2533,6 @@ export const updateProfile = asyncHandler(async (req, res) => {
     }
   }
 
-  // Check if phone is taken
-  if (phone) {
-    const phoneConditions = [{ phone }];
-    const withoutCountry = phone.replace(/^\+\d{1,3}/, "");
-    if (withoutCountry && withoutCountry !== phone) {
-      phoneConditions.push({ phone: withoutCountry });
-    }
-    if (!phone.startsWith("+")) {
-      phoneConditions.push({ phone: `+91${phone}` });
-    }
-
-    const conflictPhone = await prisma.user.findFirst({
-      where: {
-        OR: phoneConditions,
-        NOT: {
-          id: user.id,
-        },
-      },
-    });
-    if (conflictPhone) {
-      return res.status(400).json({
-        success: false,
-        message: "Phone number already registered to another account",
-      });
-    }
-  }
   const finalInterests = interests || sportTypes || [];
   let hashedPassword;
   if (password) {
@@ -2580,7 +2550,6 @@ export const updateProfile = asyncHandler(async (req, res) => {
   const updateData = cleanObject({
     name,
     username: username?.toLowerCase(),
-    phone,
     bio,
     gender,
     dob: dob ? new Date(dob) : undefined,
@@ -2596,6 +2565,23 @@ export const updateProfile = asyncHandler(async (req, res) => {
       password: hashedPassword,
     }),
   });
+
+  if (email && email.toLowerCase() !== user.email?.toLowerCase()) {
+    const conflictEmail = await prisma.user.findFirst({
+      where: {
+        email: email.toLowerCase(),
+        NOT: { id: user.id }
+      }
+    });
+    if (conflictEmail) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already registered to another account",
+      });
+    }
+    updateData.email = email.toLowerCase();
+    updateData.isEmailVerified = false;
+  }
   const profileData = cleanObject({
     bio: updateData.bio,
     gender: updateData.gender,
@@ -2643,9 +2629,18 @@ export const sendPhoneVerificationOtp = asyncHandler(async (req, res) => {
   }
 
   // Check if phone is already in use by another user
+  const phoneConditions = [{ phone }];
+  const withoutCountry = phone.replace(/^\+\d{1,3}/, "");
+  if (withoutCountry && withoutCountry !== phone) {
+    phoneConditions.push({ phone: withoutCountry });
+  }
+  if (!phone.startsWith("+")) {
+    phoneConditions.push({ phone: `+91${phone}` });
+  }
+
   const conflict = await prisma.user.findFirst({
     where: {
-      phone,
+      OR: phoneConditions,
       NOT: {
         id: userId,
       },
@@ -2780,6 +2775,17 @@ export const verifyPhoneOtp = asyncHandler(async (req, res) => {
       },
     });
   }
+
+  // Update the user's phone number
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      phone: phone,
+    },
+  });
+
   return res.status(200).json({
     success: true,
     message: "Phone number verified successfully",
@@ -3048,6 +3054,25 @@ export const verifyEmailGoogle = asyncHandler(async (req, res) => {
     });
     payload = ticket.getPayload();
   } else if (accessToken) {
+    try {
+      const tokenInfoResponse = await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`);
+      if (!tokenInfoResponse.ok) {
+        const errText = await tokenInfoResponse.text();
+        logger.error(`Google tokeninfo fetch failed: ${tokenInfoResponse.status}`, errText);
+        return res.status(401).json({ success: false, message: "Invalid Google access token" });
+      }
+      const tokenInfo = await tokenInfoResponse.json();
+      if (
+        tokenInfo.aud !== process.env.GOOGLE_CLIENT_ID &&
+        tokenInfo.azp !== process.env.GOOGLE_CLIENT_ID
+      ) {
+        return res.status(401).json({ success: false, message: "Invalid token audience" });
+      }
+    } catch (err) {
+      logger.error("Google token info verification threw an exception:", err);
+      return res.status(401).json({ success: false, message: "Invalid Google access token" });
+    }
+
     const response = await fetch(
       `https://www.googleapis.com/oauth2/v3/userinfo`,
       {
@@ -3120,6 +3145,25 @@ export const updateProfileEmailWithGoogle = asyncHandler(async (req, res) => {
     });
     payload = ticket.getPayload();
   } else if (accessToken) {
+    try {
+      const tokenInfoResponse = await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`);
+      if (!tokenInfoResponse.ok) {
+        const errText = await tokenInfoResponse.text();
+        logger.error(`Google tokeninfo fetch failed: ${tokenInfoResponse.status}`, errText);
+        return res.status(401).json({ success: false, message: "Invalid Google access token" });
+      }
+      const tokenInfo = await tokenInfoResponse.json();
+      if (
+        tokenInfo.aud !== process.env.GOOGLE_CLIENT_ID &&
+        tokenInfo.azp !== process.env.GOOGLE_CLIENT_ID
+      ) {
+        return res.status(401).json({ success: false, message: "Invalid token audience" });
+      }
+    } catch (err) {
+      logger.error("Google token info verification threw an exception:", err);
+      return res.status(401).json({ success: false, message: "Invalid Google access token" });
+    }
+
     const response = await fetch(
       `https://www.googleapis.com/oauth2/v3/userinfo`,
       {

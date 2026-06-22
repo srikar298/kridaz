@@ -16,7 +16,8 @@ import {
   Clock,
   Phone,
 } from "lucide-react";
-import useDisputes from "@hooks/admin/useDisputes";
+import useDisputes from "@hooks/admin/useDisputes";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 
 const ProfessionalDisputeManager = () => {
   const { disputes, loading, processingId, handleResolve, handleReply } =
@@ -80,7 +81,7 @@ const ProfessionalDisputeManager = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white p-6 lg:p-10">
+    <div className="min-h-screen bg-background text-white p-6 lg:p-10">
       <div className="max-w-[1600px] mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -96,16 +97,16 @@ const ProfessionalDisputeManager = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
-              <input
+              <Input
                 type="text"
                 placeholder="Search disputes..."
-                className="bg-[#111] border border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-sm w-full sm:w-64 focus:outline-none focus:border-orange-500 transition-all"
+                className="bg-card border border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-sm w-full sm:w-64 focus:outline-none focus:border-orange-500 transition-all"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <select
-              className="bg-[#111] border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-orange-500"
+            <Select
+              className="bg-card border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-orange-500"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             >
@@ -113,7 +114,7 @@ const ProfessionalDisputeManager = () => {
               <option value="PENDING">Pending</option>
               <option value="INVESTIGATING">Investigating</option>
               <option value="RESOLVED">Resolved</option>
-            </select>
+            </Select>
           </div>
         </div>
 
@@ -122,7 +123,7 @@ const ProfessionalDisputeManager = () => {
           <div
             className={`lg:col-span-4 space-y-4 ${selectedDispute ? "hidden lg:block" : "block"}`}
           >
-            <div className="bg-[#111] border border-white/10 rounded-[8px] overflow-hidden">
+            <div className="bg-card border border-white/10 rounded-[8px] overflow-hidden">
               <div className="px-6 py-4 bg-white/5 border-b border-white/10 flex justify-between items-center">
                 <p className="text-xs font-black uppercase tracking-widest text-gray-400">
                   All Disputes
@@ -142,7 +143,7 @@ const ProfessionalDisputeManager = () => {
                   </div>
                 ) : (
                   filteredDisputes.map((dispute) => (
-                    <button
+                    <Button
                       key={dispute._id}
                       onClick={() => setSelectedDispute(dispute)}
                       className={`w-full text-left p-6 border-b border-white/5 transition-all hover:bg-white/[0.03] relative group ${selectedDispute?._id === dispute._id ? "bg-orange-500/5 border-l-4 border-l-orange-500" : ""}`}
@@ -171,7 +172,7 @@ const ProfessionalDisputeManager = () => {
                           {dispute.onDemandBooking?.professional?.businessName}
                         </div>
                       </div>
-                    </button>
+                    </Button>
                   ))
                 )}
               </div>
@@ -183,18 +184,18 @@ const ProfessionalDisputeManager = () => {
             {selectedDispute ? (
               <div className="space-y-6">
                 {/* Summary Header Card */}
-                <div className="bg-[#111] border border-white/10 rounded-[8px] p-8 relative overflow-hidden">
+                <div className="bg-card border border-white/10 rounded-[8px] p-8 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 blur-[100px] -z-10" />
 
                   <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-3">
-                        <button
+                        <Button
                           onClick={() => setSelectedDispute(null)}
                           className="lg:hidden text-gray-500 hover:text-white mr-2"
                         >
                           <ChevronRight className="rotate-180" size={20} />
-                        </button>
+                        </Button>
                         <h2 className="text-2xl font-bold tracking-tight">
                           {selectedDispute.reason}
                         </h2>
@@ -211,23 +212,23 @@ const ProfessionalDisputeManager = () => {
 
                     <div className="flex flex-wrap gap-2">
                       {selectedDispute.status !== "RESOLVED" && (
-                        <button
+                        <Button
                           onClick={() => setIsResolveModalOpen(true)}
                           className="bg-orange-500 text-black px-6 py-3 rounded-[8px] text-xs font-black uppercase tracking-widest hover:bg-orange-400 transition-all shadow-[0_5px_15px_rgba(249,115,22,0.3)]"
                         >
                           Resolve Case
-                        </button>
+                        </Button>
                       )}
-                      <button className="bg-white/5 border border-white/10 text-white px-5 py-3 rounded-[8px] text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2">
+                      <Button className="bg-white/5 border border-white/10 text-white px-5 py-3 rounded-[8px] text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2">
                         Log <AlertCircle size={14} />
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Customer Card */}
-                  <div className="bg-[#111] border border-white/10 rounded-[8px] p-6 group hover:border-orange-500/20 transition-all">
+                  <div className="bg-card border border-white/10 rounded-[8px] p-6 group hover:border-orange-500/20 transition-all">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-12 h-12 rounded-[8px] bg-orange-500/10 flex items-center justify-center text-orange-500 border border-orange-500/20 group-hover:scale-110 transition-transform">
                         <User size={24} />
@@ -266,7 +267,7 @@ const ProfessionalDisputeManager = () => {
                   </div>
 
                   {/* Professional Card */}
-                  <div className="bg-[#111] border border-white/10 rounded-[8px] p-6 group hover:border-orange-500/20 transition-all">
+                  <div className="bg-card border border-white/10 rounded-[8px] p-6 group hover:border-orange-500/20 transition-all">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-12 h-12 rounded-[8px] bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20 group-hover:scale-110 transition-transform">
                         <Building size={24} />
@@ -307,7 +308,7 @@ const ProfessionalDisputeManager = () => {
                 {/* Booking Details & Evidence Gallery */}
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                   <div className="xl:col-span-1 space-y-6">
-                    <div className="bg-[#111] border border-white/10 rounded-[8px] p-6">
+                    <div className="bg-card border border-white/10 rounded-[8px] p-6">
                       <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-6">
                         Financial Snapshot
                       </h4>
@@ -354,7 +355,7 @@ const ProfessionalDisputeManager = () => {
                   </div>
 
                   {/* Evidence Gallery */}
-                  <div className="xl:col-span-2 bg-[#111] border border-white/10 rounded-[8px] p-6">
+                  <div className="xl:col-span-2 bg-card border border-white/10 rounded-[8px] p-6">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-6 flex items-center gap-2">
                       <ImageIcon size={14} /> Evidence Gallery
                     </h4>
@@ -392,14 +393,14 @@ const ProfessionalDisputeManager = () => {
                 </div>
 
                 {/* Communication Thread */}
-                <div className="bg-[#111] border border-white/10 rounded-[8px] overflow-hidden flex flex-col min-h-[500px]">
+                <div className="bg-card border border-white/10 rounded-[8px] overflow-hidden flex flex-col min-h-[500px]">
                   <div className="px-8 py-4 bg-white/5 border-b border-white/10">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 flex items-center gap-2">
                       <MessageSquare size={14} /> Communication Thread
                     </h4>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto p-8 space-y-6 max-h-[600px] no-scrollbar bg-[#0d0d0d]/50">
+                  <div className="flex-1 overflow-y-auto p-8 space-y-6 max-h-[600px] no-scrollbar bg-background/50">
                     {/* System Entry */}
                     <div className="flex justify-center">
                       <div className="bg-white/5 border border-white/5 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest text-gray-500">
@@ -415,7 +416,7 @@ const ProfessionalDisputeManager = () => {
                           className={`flex flex-col ${reply.sender === "ADMIN" ? "items-end" : "items-start"} max-w-[85%] ${reply.sender === "ADMIN" ? "ml-auto" : ""}`}
                         >
                           <div
-                            className={`p-5 rounded-[8px] border shadow-xl ${reply.sender === "ADMIN" ? "bg-orange-500/10 border-orange-500/20 rounded-tr-none" : "bg-[#1a1a1a] border-white/10 rounded-tl-none"}`}
+                            className={`p-5 rounded-[8px] border shadow-xl ${reply.sender === "ADMIN" ? "bg-orange-500/10 border-orange-500/20 rounded-tr-none" : "bg-card border-white/10 rounded-tl-none"}`}
                           >
                             <p className="text-sm leading-relaxed text-gray-200">
                               {reply.message}
@@ -442,7 +443,7 @@ const ProfessionalDisputeManager = () => {
                   {selectedDispute.status !== "RESOLVED" && (
                     <div className="p-6 bg-white/[0.02] border-t border-white/10">
                       <div className="relative flex items-center gap-4">
-                        <input
+                        <Input
                           type="text"
                           placeholder="Type a message to the user..."
                           className="flex-1 bg-white/5 border border-white/10 rounded-[8px] px-6 py-4 text-sm focus:outline-none focus:border-orange-500 transition-all placeholder:text-gray-600"
@@ -456,7 +457,7 @@ const ProfessionalDisputeManager = () => {
                             )
                           }
                         />
-                        <button
+                        <Button
                           onClick={() =>
                             replyText.trim() &&
                             handleReply(selectedDispute._id, replyText).then(
@@ -467,14 +468,14 @@ const ProfessionalDisputeManager = () => {
                           className="bg-orange-500 text-black p-4 rounded-[8px] hover:bg-orange-400 transition-all disabled:opacity-50 shadow-[0_5px_15px_rgba(249,115,22,0.2)]"
                         >
                           <Send size={20} />
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="h-[800px] bg-[#111] border border-white/10 rounded-[8px] flex flex-col items-center justify-center text-center p-12 relative overflow-hidden group">
+              <div className="h-[800px] bg-card border border-white/10 rounded-[8px] flex flex-col items-center justify-center text-center p-12 relative overflow-hidden group">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-orange-500/5 via-transparent to-transparent opacity-50" />
 
                 <div className="w-24 h-24 bg-white/5 rounded-[8px] flex items-center justify-center mb-8 border border-white/10 group-hover:scale-110 transition-transform duration-700">
@@ -499,7 +500,7 @@ const ProfessionalDisputeManager = () => {
       {/* Resolution Modal */}
       {isResolveModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
-          <div className="bg-[#111] border border-orange-500/30 rounded-[8px] w-full max-w-xl p-10 relative shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+          <div className="bg-card border border-orange-500/30 rounded-[8px] w-full max-w-xl p-10 relative shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
             <div className="flex items-center gap-3 mb-8">
               <div className="w-10 h-10 rounded-[8px] bg-orange-500/20 flex items-center justify-center text-orange-500">
                 <CheckCircle size={20} />
@@ -537,14 +538,14 @@ const ProfessionalDisputeManager = () => {
                       icon: Info,
                     },
                   ].map((action) => (
-                    <button
+                    <Button
                       key={action.id}
                       onClick={() => setDecision(action.id)}
                       className={`flex items-center gap-3 p-4 rounded-[8px] border text-xs font-bold transition-all ${decision === action.id ? "bg-orange-500 border-orange-500 text-black shadow-[0_5px_15px_rgba(249,115,22,0.3)]" : "bg-white/5 border-white/10 text-gray-400 hover:border-white/20"}`}
                     >
                       <action.icon size={16} />
                       {action.label}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -558,12 +559,12 @@ const ProfessionalDisputeManager = () => {
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm">
                       ₹
                     </div>
-                    <input
+                    <Input
                       type="number"
                       value={partialAmount}
                       onChange={(e) => setPartialAmount(e.target.value)}
                       placeholder="Enter amount to refund..."
-                      className="w-full bg-[#0a0a0a] border border-white/10 rounded-[8px] pl-8 pr-4 py-4 text-white focus:outline-none focus:border-orange-500 transition-all font-bold"
+                      className="w-full bg-background border border-white/10 rounded-[8px] pl-8 pr-4 py-4 text-white focus:outline-none focus:border-orange-500 transition-all font-bold"
                     />
                   </div>
                   <p className="text-[9px] text-gray-600 mt-2 font-bold uppercase italic">
@@ -579,22 +580,22 @@ const ProfessionalDisputeManager = () => {
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2 block">
                   Resolution Notes (Internal)
                 </label>
-                <textarea
+                <Textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Summarize the investigation and reason for this outcome..."
-                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-[8px] px-6 py-4 text-white min-h-[120px] resize-none focus:outline-none focus:border-orange-500 transition-all text-sm leading-relaxed"
+                  className="w-full bg-background border border-white/10 rounded-[8px] px-6 py-4 text-white min-h-[120px] resize-none focus:outline-none focus:border-orange-500 transition-all text-sm leading-relaxed"
                 />
               </div>
 
               <div className="flex gap-4 pt-6">
-                <button
+                <Button
                   onClick={() => setIsResolveModalOpen(false)}
                   className="flex-1 py-4 bg-white/5 hover:bg-white/10 text-white rounded-[8px] font-black uppercase tracking-widest transition-all border border-white/10"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={handleConfirmResolve}
                   disabled={
                     !notes ||
@@ -606,7 +607,7 @@ const ProfessionalDisputeManager = () => {
                   {processingId === selectedDispute._id
                     ? "Processing..."
                     : "Confirm Final Decision"}
-                </button>
+                </Button>
               </div>
             </div>
           </div>

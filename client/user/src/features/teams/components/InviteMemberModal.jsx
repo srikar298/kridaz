@@ -18,7 +18,8 @@ import {
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { countryCodes } from "../../../utils/countryCodes";
-import { useEffect } from "react";
+import { useEffect } from "react";import { Button, Input, Select } from "@kridaz/ui";
+
 
 const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
   const [activeTab, setActiveTab] = useState("search"); // 'search' or 'custom'
@@ -178,7 +179,7 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="relative w-full max-w-md bg-[#0d0d0d] border border-white/10 rounded-[8px] overflow-hidden shadow-2xl"
+        className="relative w-full max-w-md bg-background border border-white/10 rounded-[8px] overflow-hidden shadow-2xl"
       >
         {/* Header */}
         <div className="p-6 border-b border-white/5 flex items-center justify-between">
@@ -190,29 +191,29 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
               Grow {teamName || "your"} team squad
             </p>
           </div>
-          <button
+          <Button
             onClick={onClose}
             className="p-2 hover:bg-white/5 rounded-[8px] transition-colors"
           >
             <X size={20} className="text-white/40" />
-          </button>
+          </Button>
         </div>
 
         {/* Tab switch */}
         <div className="p-6 pb-2">
           <div className="flex gap-2 p-1 bg-white/[0.03] border border-white/5 rounded-[8px]">
-            <button
+            <Button
               onClick={() => setActiveTab("search")}
-              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === "search" ? "bg-[#CCFF00] text-black shadow-lg shadow-[#CCFF00]/10" : "text-white/40 hover:text-white"}`}
+              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === "search" ? "bg-primary text-black shadow-lg shadow-[var(--primary)]/10" : "text-white/40 hover:text-white"}`}
             >
               Search Players
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setActiveTab("custom")}
-              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === "custom" ? "bg-[#CCFF00] text-black shadow-lg shadow-[#CCFF00]/10" : "text-white/40 hover:text-white"}`}
+              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === "custom" ? "bg-primary text-black shadow-lg shadow-[var(--primary)]/10" : "text-white/40 hover:text-white"}`}
             >
               Add Custom Player
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -225,10 +226,10 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"
                   size={16}
                 />
-                <input
+                <Input
                   type="text"
                   placeholder="SEARCH USERNAME OR EMAIL..."
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 pl-12 pr-4 text-white text-sm font-bold placeholder-white/20 focus:outline-none focus:border-[#CCFF00]/50 uppercase transition-all"
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 pl-12 pr-4 text-white text-sm font-bold placeholder-white/20 focus:outline-none focus:border-primary/50 uppercase transition-all"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -237,7 +238,7 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
               {/* Results List */}
               <div className="max-h-[30vh] overflow-y-auto space-y-2 custom-scrollbar">
                 {isSearching ? (
-                  <div className="flex items-center justify-center py-8 text-[#CCFF00]">
+                  <div className="flex items-center justify-center py-8 text-primary">
                     <Loader2 className="animate-spin" size={24} />
                   </div>
                 ) : searchResults?.players?.length > 0 ? (
@@ -266,13 +267,13 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
                           </p>
                         </div>
                       </div>
-                      <button
+                      <Button
                         onClick={() => handleInvite(player._id)}
                         disabled={isInviting}
-                        className="p-2.5 bg-[#CCFF00] hover:bg-[#b8e600] disabled:bg-white/5 disabled:text-white/20 text-black rounded-[8px] transition-all"
+                        className="p-2.5 bg-primary hover:bg-[#b8e600] disabled:bg-white/5 disabled:text-white/20 text-black rounded-[8px] transition-all"
                       >
                         <UserPlus size={16} />
-                      </button>
+                      </Button>
                     </div>
                   ))
                 ) : (
@@ -297,7 +298,7 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
                 {customInviteData.phone}).
               </p>
 
-              <button
+              <Button
                 onClick={() => {
                   const myName =
                     currentUser?.name || currentUser?.username || "Someone";
@@ -315,33 +316,33 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
               >
                 <MessageCircle size={18} />
                 Send WhatsApp Invite
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setCustomInviteData(null)}
                 className="w-full py-2 mt-2 text-white/40 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors"
               >
                 Back to form
-              </button>
+              </Button>
             </div>
           ) : (
             <form onSubmit={handleAddCustom} className="space-y-4">
               {supportsContacts && (
-                <button
+                <Button
                   type="button"
                   onClick={handleImportFromContacts}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-[#CCFF00]/10 text-[#CCFF00] rounded-lg font-bold text-[10px] uppercase tracking-widest hover:bg-[#CCFF00]/20 transition-colors mb-2"
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-primary/10 text-primary rounded-lg font-bold text-[10px] uppercase tracking-widest hover:bg-primary/20 transition-colors mb-2"
                 >
                   <Users size={16} /> Add player from your contacts
-                </button>
+                </Button>
               )}
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">
                   Player Name
                 </label>
-                <input
+                <Input
                   type="text"
                   placeholder="EX: RAHUL SHARMA"
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 px-4 text-white text-sm font-bold focus:outline-none focus:border-[#CCFF00]/50 uppercase transition-all"
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 px-4 text-white text-sm font-bold focus:outline-none focus:border-primary/50 uppercase transition-all"
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
                   required
@@ -353,10 +354,10 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
                   Contact Number (Optional)
                 </label>
                 <div className="flex gap-2">
-                  <select
+                  <Select
                     value={customCountryCode}
                     onChange={(e) => setCustomCountryCode(e.target.value)}
-                    className="bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 px-2 text-white text-sm font-bold focus:outline-none focus:border-[#CCFF00]/50 transition-all cursor-pointer w-24 appearance-none text-center"
+                    className="bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 px-2 text-white text-sm font-bold focus:outline-none focus:border-primary/50 transition-all cursor-pointer w-24 appearance-none text-center"
                   >
                     {countryCodes.map((c) => (
                       <option
@@ -367,16 +368,16 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
                         {c.code} (+{c.dial_code})
                       </option>
                     ))}
-                  </select>
+                  </Select>
                   <div className="relative flex-1">
                     <Phone
                       className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"
                       size={16}
                     />
-                    <input
+                    <Input
                       type="tel"
                       placeholder="10-digit number"
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 pl-12 pr-4 text-white text-sm font-bold focus:outline-none focus:border-[#CCFF00]/50 transition-all"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-[8px] py-3.5 pl-12 pr-4 text-white text-sm font-bold focus:outline-none focus:border-primary/50 transition-all"
                       value={customPhone}
                       onChange={(e) =>
                         setCustomPhone(
@@ -389,10 +390,10 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
                 </div>
               </div>
 
-              <button
+              <Button
                 type="submit"
                 disabled={isAddingCustom}
-                className="w-full py-4 bg-[#CCFF00] hover:bg-[#b8e600] disabled:bg-white/5 disabled:text-white/20 text-black font-black uppercase tracking-[0.2em] rounded-[8px] shadow-xl shadow-[#CCFF00]/10 transition-all flex items-center justify-center gap-2 mt-6"
+                className="w-full py-4 bg-primary hover:bg-[#b8e600] disabled:bg-white/5 disabled:text-white/20 text-black font-black uppercase tracking-[0.2em] rounded-[8px] shadow-xl shadow-[var(--primary)]/10 transition-all flex items-center justify-center gap-2 mt-6"
               >
                 {isAddingCustom ? (
                   <Loader2 size={18} className="animate-spin" />
@@ -400,7 +401,7 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
                   <Sparkles size={16} />
                 )}
                 Add Player to Roster
-              </button>
+              </Button>
             </form>
           )}
         </div>

@@ -15,6 +15,8 @@ import axiosInstance from "@hooks/useAxiosInstance";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../../../redux/slices/authSlice";
 import { searchLocations } from "../../utils/locationService";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 
 export default function EditProfileModal({ isOpen, onClose, user }) {
   const [formData, setFormData] = useState({
@@ -32,6 +34,12 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [isSearchingLocation, setIsSearchingLocation] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Phone OTP States
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
   const locationRef = useRef(null);
 
   // Username check states
@@ -45,7 +53,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
       setFormData({
         name: user.name || "",
         username: user.username || "",
-        phone: user.phone || "",
+        phone: user.phone || user.phoneNumber || "",
         bio: user.bio || "",
         gender: user.gender || "",
         location: user.location || user.city || "",
@@ -187,13 +195,13 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const submitProfileUpdate = async (finalPhone = formData.phone) => {
     setLoading(true);
     try {
+      const payload = { ...formData, phone: finalPhone };
       const response = await axiosInstance.put(
         "/api/user/auth/updateProfile",
-        formData
+        payload
       );
       if (response.data.success) {
         dispatch(updateUser(response.data.user));
@@ -205,6 +213,61 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
       toast.error(error.response?.data?.message || "Failed to update profile");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.phone || formData.phone.trim() === "") {
+      toast.error("Contact number is mandatory. Please enter a valid phone number.");
+      return;
+    }
+
+    // Check if phone was changed
+    const phoneChanged = formData.phone !== (user?.phone || "");
+
+    if (phoneChanged && formData.phone) {
+      setSendingOtp(true);
+      try {
+        const res = await axiosInstance.post("/api/user/auth/send-phone-verification-otp", { phone: formData.phone });
+        if (res.data?.success) {
+          toast.success("OTP sent to new phone number!");
+          setShowOtpModal(true);
+        }
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Failed to send OTP");
+      } finally {
+        setSendingOtp(false);
+      }
+      return; // Do not submit the rest of the profile yet
+    }
+
+    submitProfileUpdate();
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otp.length < 6) {
+      toast.error("Please enter a valid 6-digit OTP");
+      return;
+    }
+    setVerifyingOtp(true);
+    try {
+      const res = await axiosInstance.post("/api/user/auth/verify-phone-otp", {
+        phone: formData.phone,
+        otp: otp
+      });
+      if (res.data?.success) {
+        toast.success("Phone verified successfully!");
+        setShowOtpModal(false);
+        setOtp("");
+        // Continue saving the rest of the profile
+        submitProfileUpdate();
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Invalid or expired OTP");
+    } finally {
+      setVerifyingOtp(false);
     }
   };
 
@@ -222,12 +285,12 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
       />
 
       {/* Modal Container */}
-      <div className="relative w-full max-w-xl bg-[#1B1B1B] border border-white/[0.08] rounded-[16px] overflow-hidden shadow-[0px_4px_16px_rgba(0,0,0,0.4)] animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-xl bg-card border border-white/[0.08] rounded-[16px] overflow-hidden shadow-[0px_4px_16px_rgba(0,0,0,0.4)] animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="px-6 py-5 border-b border-white/[0.08] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-[12px] bg-[#121212] border border-white/[0.08] flex items-center justify-center shrink-0">
-              <User size={24} className="text-[#B3DC26]" />
+            <div className="w-12 h-12 rounded-[12px] bg-card border border-white/[0.08] flex items-center justify-center shrink-0">
+              <User size={24} className="text-primary" />
             </div>
             <div>
               <h2 className="text-[18px] font-bold text-white leading-[28px]">
@@ -238,13 +301,13 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
               </p>
             </div>
           </div>
-          <button
+          <Button
             type="button"
             onClick={onClose}
-            className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-[#121212] border border-white/[0.08] text-white/70 hover:text-white transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-card border border-white/[0.08] text-white/70 hover:text-white transition-colors"
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         {/* Content Form */}
@@ -257,7 +320,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
             <label className="text-[14px] font-semibold text-white mb-2">
               Banner Image
             </label>
-            <div className="relative group w-full h-32 md:h-40 rounded-[16px] bg-[#121212] border border-white/[0.08] overflow-hidden flex items-center justify-center hover:border-[#B3DC26] transition-all">
+            <div className="relative group w-full h-32 md:h-40 rounded-[16px] bg-card border border-white/[0.08] overflow-hidden flex items-center justify-center hover:border-primary transition-all">
               {user?.bannerPicture || user?.ownerProfile?.bannerUrl ? (
                 <img
                   src={user.bannerPicture || user.ownerProfile.bannerUrl}
@@ -270,19 +333,19 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                 </span>
               )}
               {bannerUploading && (
-                <div className="absolute inset-0 bg-[#000000]/60 backdrop-blur-sm flex items-center justify-center z-10">
-                  <Loader2 size={24} className="animate-spin text-[#B3DC26]" />
+                <div className="absolute inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center z-10">
+                  <Loader2 size={24} className="animate-spin text-primary" />
                 </div>
               )}
               <label
                 htmlFor="modal-banner-upload"
-                className="absolute inset-0 flex flex-col items-center justify-center bg-[#000000]/60 opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity z-20"
+                className="absolute inset-0 flex flex-col items-center justify-center bg-background/60 opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity z-20"
               >
-                <Camera size={24} className="text-[#B3DC26] mb-2" />
+                <Camera size={24} className="text-primary mb-2" />
                 <span className="text-[14px] font-semibold text-white">
                   Change Banner
                 </span>
-                <input
+                <Input
                   type="file"
                   id="modal-banner-upload"
                   className="hidden"
@@ -302,7 +365,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                 Profile Picture
               </label>
               <div className="relative group w-[100px] h-[100px]">
-                <div className="w-full h-full rounded-[16px] bg-[#121212] border border-white/[0.08] overflow-hidden flex items-center justify-center group-hover:border-[#B3DC26] transition-all">
+                <div className="w-full h-full rounded-[16px] bg-card border border-white/[0.08] overflow-hidden flex items-center justify-center group-hover:border-primary transition-all">
                   {user?.profilePicture ? (
                     <img
                       src={user.profilePicture}
@@ -310,7 +373,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-[#B3DC26] font-bold text-[32px]">
+                    <span className="text-primary font-bold text-[32px]">
                       {user?.name
                         ?.split(" ")
                         .map((w) => w[0])
@@ -321,10 +384,10 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                   )}
 
                   {uploading && (
-                    <div className="absolute inset-0 bg-[#000000]/60 backdrop-blur-sm flex items-center justify-center z-10">
+                    <div className="absolute inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center z-10">
                       <Loader2
                         size={24}
-                        className="animate-spin text-[#B3DC26]"
+                        className="animate-spin text-primary"
                       />
                     </div>
                   )}
@@ -332,10 +395,10 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
 
                 <label
                   htmlFor="modal-profile-upload"
-                  className="absolute -bottom-2 -right-2 w-10 h-10 bg-[#1B1B1B] rounded-[12px] border border-white/[0.08] flex items-center justify-center cursor-pointer hover:border-[#B3DC26] transition-all z-20 shadow-[0px_4px_16px_rgba(0,0,0,0.4)]"
+                  className="absolute -bottom-2 -right-2 w-10 h-10 bg-card rounded-[12px] border border-white/[0.08] flex items-center justify-center cursor-pointer hover:border-primary transition-all z-20 shadow-[0px_4px_16px_rgba(0,0,0,0.4)]"
                 >
-                  <Camera size={18} className="text-[#B3DC26]" />
-                  <input
+                  <Camera size={18} className="text-primary" />
+                  <Input
                     type="file"
                     id="modal-profile-upload"
                     className="hidden"
@@ -356,15 +419,15 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                 </label>
                 <div className="relative group">
                   <User
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-[#55DEE8] transition-colors"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-secondary transition-colors"
                     size={18}
                   />
-                  <input
+                  <Input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full h-[58px] bg-[#121212] border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-4 text-[14px] text-white focus:outline-none focus:border-[#55DEE8] transition-all placeholder-white/70"
+                    className="w-full h-[58px] bg-card border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-4 text-[14px] text-white focus:outline-none focus:border-secondary transition-all placeholder-white/70"
                     placeholder="Enter your name"
                     required
                   />
@@ -379,7 +442,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                   </label>
                   {usernameStatus && (
                     <span
-                      className={`text-[12px] font-semibold ${usernameStatus === "available" ? "text-[#B3DC26]" : usernameStatus === "taken" ? "text-red-500" : usernameStatus === "short" ? "text-orange-500" : "text-white/70"}`}
+                      className={`text-[12px] font-semibold ${usernameStatus === "available" ? "text-primary" : usernameStatus === "taken" ? "text-red-500" : usernameStatus === "short" ? "text-orange-500" : "text-white/70"}`}
                     >
                       {usernameStatus === "checking"
                         ? "Checking..."
@@ -395,16 +458,16 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                 </div>
                 <div className="relative group">
                   <span
-                    className={`absolute left-4 top-1/2 -translate-y-1/2 font-bold text-[14px] transition-colors ${usernameStatus === "available" ? "text-[#B3DC26]" : usernameStatus === "taken" ? "text-red-500" : "text-white/70"}`}
+                    className={`absolute left-4 top-1/2 -translate-y-1/2 font-bold text-[14px] transition-colors ${usernameStatus === "available" ? "text-primary" : usernameStatus === "taken" ? "text-red-500" : "text-white/70"}`}
                   >
                     @
                   </span>
-                  <input
+                  <Input
                     type="text"
                     name="username"
                     value={formData.username}
                     onChange={handleChange}
-                    className={`w-full h-[58px] bg-[#121212] border rounded-[16px] py-4 pl-10 pr-12 text-[14px] text-white focus:outline-none transition-all placeholder-white/70 ${usernameStatus === "available" ? "border-[#B3DC26]/50 focus:border-[#B3DC26]" : usernameStatus === "taken" ? "border-red-500/50 focus:border-red-500" : "border-white/[0.08] focus:border-[#55DEE8]"}`}
+                    className={`w-full h-[58px] bg-card border rounded-[16px] py-4 pl-10 pr-12 text-[14px] text-white focus:outline-none transition-all placeholder-white/70 ${usernameStatus === "available" ? "border-primary/50 focus:border-primary" : usernameStatus === "taken" ? "border-red-500/50 focus:border-red-500" : "border-white/[0.08] focus:border-secondary"}`}
                     placeholder="username"
                     required
                   />
@@ -412,13 +475,13 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                     <div className="absolute right-4 top-1/2 -translate-y-1/2">
                       <Loader2
                         size={16}
-                        className="animate-spin text-[#55DEE8]"
+                        className="animate-spin text-secondary"
                       />
                     </div>
                   )}
                   {!isCheckingUsername && usernameStatus === "available" && (
                     <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                      <Check size={16} className="text-[#B3DC26]" />
+                      <Check size={16} className="text-primary" />
                     </div>
                   )}
                 </div>
@@ -435,15 +498,19 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
               </label>
               <div className="relative group">
                 <Phone
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-[#55DEE8] transition-colors"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-secondary transition-colors"
                   size={18}
                 />
-                <input
+                <Input
                   type="text"
                   name="phone"
                   value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full h-[58px] bg-[#121212] border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-4 text-[14px] text-white focus:outline-none focus:border-[#55DEE8] transition-all placeholder-white/70"
+                  onChange={(e) => {
+                    if (!(user?.phone || user?.phoneNumber)) handleChange(e);
+                  }}
+                  readOnly={!!(user?.phone || user?.phoneNumber)}
+                  className={`w-full h-[58px] bg-card border rounded-[16px] py-4 pl-12 pr-4 text-[14px] text-white focus:outline-none transition-all placeholder-white/70 ${(user?.phone || user?.phoneNumber) ? "border-white/[0.08] opacity-50 cursor-not-allowed" : "border-white/[0.08] focus:border-secondary"
+                    }`}
                   placeholder="Phone number"
                 />
               </div>
@@ -456,31 +523,31 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
               </label>
               <div className="relative group">
                 <User
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-[#55DEE8] transition-colors pointer-events-none"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-secondary transition-colors pointer-events-none"
                   size={18}
                 />
-                <select
+                <Select
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
-                  className="w-full h-[58px] bg-[#121212] border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-10 text-[14px] text-white focus:outline-none focus:border-[#55DEE8] transition-all appearance-none cursor-pointer"
+                  className="w-full h-[58px] bg-card border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-10 text-[14px] text-white focus:outline-none focus:border-secondary transition-all appearance-none cursor-pointer"
                 >
-                  <option value="" className="bg-[#121212]">
+                  <option value="" className="bg-card">
                     Select Gender
                   </option>
-                  <option value="Male" className="bg-[#121212]">
+                  <option value="Male" className="bg-card">
                     Male
                   </option>
-                  <option value="Female" className="bg-[#121212]">
+                  <option value="Female" className="bg-card">
                     Female
                   </option>
-                  <option value="Other" className="bg-[#121212]">
+                  <option value="Other" className="bg-card">
                     Other
                   </option>
-                  <option value="Prefer not to say" className="bg-[#121212]">
+                  <option value="Prefer not to say" className="bg-card">
                     Prefer not to say
                   </option>
-                </select>
+                </Select>
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/70">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -512,15 +579,15 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
             </div>
             <div className="relative group">
               <AlignLeft
-                className="absolute left-4 top-4 text-white/70 group-focus-within:text-[#55DEE8] transition-colors"
+                className="absolute left-4 top-4 text-white/70 group-focus-within:text-secondary transition-colors"
                 size={18}
               />
-              <textarea
+              <Textarea
                 name="bio"
                 maxLength={150}
                 value={formData.bio}
                 onChange={handleChange}
-                className="w-full bg-[#121212] border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-4 text-[14px] text-white focus:outline-none focus:border-[#55DEE8] transition-all min-h-[100px] resize-none placeholder-white/70"
+                className="w-full bg-card border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-4 text-[14px] text-white focus:outline-none focus:border-secondary transition-all min-h-[100px] resize-none placeholder-white/70"
                 placeholder="Tell us about yourself..."
               />
             </div>
@@ -533,10 +600,10 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
             </label>
             <div className="relative group">
               <MapPin
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-[#55DEE8] transition-colors"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-secondary transition-colors"
                 size={18}
               />
-              <input
+              <Input
                 type="text"
                 value={formData.location}
                 onChange={(e) => {
@@ -547,23 +614,23 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                   setShowSuggestions(locationSuggestions.length > 0)
                 }
                 placeholder="e.g. Mumbai, Maharashtra"
-                className="w-full h-[58px] bg-[#121212] border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-12 text-[14px] text-white focus:outline-none focus:border-[#55DEE8] transition-all placeholder-white/70"
+                className="w-full h-[58px] bg-card border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-12 text-[14px] text-white focus:outline-none focus:border-secondary transition-all placeholder-white/70"
               />
               {isSearchingLocation && (
                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                  <Loader2 className="w-4 h-4 text-[#55DEE8] animate-spin" />
+                  <Loader2 className="w-4 h-4 text-secondary animate-spin" />
                 </div>
               )}
 
               {/* Suggestions Dropdown */}
               {showSuggestions && locationSuggestions.length > 0 && (
-                <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-[#1B1B1B] border border-white/[0.08] rounded-[16px] overflow-hidden z-[110] shadow-[0px_4px_16px_rgba(0,0,0,0.4)] max-h-[200px] overflow-y-auto custom-scrollbar">
+                <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-card border border-white/[0.08] rounded-[16px] overflow-hidden z-[110] shadow-[0px_4px_16px_rgba(0,0,0,0.4)] max-h-[200px] overflow-y-auto custom-scrollbar">
                   {locationSuggestions.map((suggestion, idx) => (
-                    <button
+                    <Button
                       type="button"
                       key={idx}
                       onClick={() => handleSelectLocation(suggestion)}
-                      className="w-full px-4 py-3 text-left hover:bg-[#121212] border-b border-white/[0.08] last:border-0 transition-colors flex flex-col gap-1"
+                      className="w-full px-4 py-3 text-left hover:bg-card border-b border-white/[0.08] last:border-0 transition-colors flex flex-col gap-1"
                     >
                       <span className="text-[14px] font-semibold text-white">
                         {suggestion.city ||
@@ -572,7 +639,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                       <span className="text-[12px] font-normal text-white/70 truncate">
                         {suggestion.display_name}
                       </span>
-                    </button>
+                    </Button>
                   ))}
                 </div>
               )}
@@ -589,10 +656,10 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                 {formData.interests.map((interest, idx) => (
                   <span
                     key={idx}
-                    className="px-3 py-1.5 bg-[#B3DC26] rounded-[8px] text-[12px] font-bold text-[#000000] flex items-center gap-1.5"
+                    className="px-3 py-1.5 bg-primary rounded-[8px] text-[12px] font-bold text-background flex items-center gap-1.5"
                   >
                     {interest}
-                    <button
+                    <Button
                       type="button"
                       onClick={() => {
                         setFormData((prev) => ({
@@ -605,17 +672,17 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                       className="hover:bg-black/10 rounded-full p-0.5"
                     >
                       <X size={12} strokeWidth={3} />
-                    </button>
+                    </Button>
                   </span>
                 ))}
               </div>
             )}
             <div className="relative group">
               <Star
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-[#55DEE8] transition-colors pointer-events-none"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-secondary transition-colors pointer-events-none"
                 size={18}
               />
-              <select
+              <Select
                 onChange={(e) => {
                   if (
                     e.target.value &&
@@ -628,9 +695,9 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                   }
                   e.target.value = "";
                 }}
-                className="w-full h-[58px] bg-[#121212] border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-12 text-[14px] text-white focus:outline-none focus:border-[#55DEE8] transition-all appearance-none cursor-pointer"
+                className="w-full h-[58px] bg-card border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-12 text-[14px] text-white focus:outline-none focus:border-secondary transition-all appearance-none cursor-pointer"
               >
-                <option value="" className="bg-[#121212]">
+                <option value="" className="bg-card">
                   Add your sports or interests
                 </option>
                 {[
@@ -647,11 +714,11 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                 ]
                   .filter((s) => !formData.interests.includes(s))
                   .map((sport, idx) => (
-                    <option key={idx} value={sport} className="bg-[#121212]">
+                    <option key={idx} value={sport} className="bg-card">
                       {sport}
                     </option>
                   ))}
-              </select>
+              </Select>
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/70">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -672,35 +739,71 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
 
           {/* Row 6: Action Buttons */}
           <div className="pt-4 flex flex-col md:flex-row gap-4">
-            <button
+            <Button
               type="button"
               onClick={onClose}
-              className="w-full md:flex-1 h-[58px] bg-[#1B1B1B] border border-white/[0.08] rounded-[16px] text-white text-[18px] font-bold hover:bg-[#121212] transition-colors flex items-center justify-center"
+              className="w-full md:flex-1 h-[58px] bg-card border border-white/[0.08] rounded-[16px] text-white text-[18px] font-bold hover:bg-card transition-colors flex items-center justify-center"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={
                 loading ||
                 isCheckingUsername ||
                 usernameStatus === "taken" ||
-                usernameStatus === "short"
+                usernameStatus === "short" ||
+                sendingOtp
               }
-              className="w-full md:flex-[2] h-[58px] bg-[linear-gradient(90deg,#55DEE8_0%,#B3DC26_100%)] rounded-[16px] text-[#000000] text-[18px] font-bold shadow-[0px_8px_24px_rgba(179,220,38,0.15)] hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:scale-100 disabled:shadow-none"
+              className="w-full md:flex-[2] h-[58px] bg-[linear-gradient(90deg,var(--secondary)_0%,var(--primary)_100%)] rounded-[16px] text-background text-[18px] font-bold shadow-[0px_8px_24px_rgba(179,220,38,0.15)] hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:scale-100 disabled:shadow-none"
             >
-              {loading ? (
+              {loading || sendingOtp ? (
                 <>
-                  <Loader2 size={20} className="animate-spin text-[#000000]" />
-                  Updating...
+                  <Loader2 size={20} className="animate-spin text-background" />
+                  {sendingOtp ? "Sending OTP..." : "Updating..."}
                 </>
               ) : (
                 "Save Changes"
               )}
-            </button>
+            </Button>
           </div>
         </form>
       </div>
+
+      {/* OTP Modal Overlay */}
+      {showOtpModal && (
+        <div className="absolute inset-0 z-50 bg-card/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 animate-in fade-in duration-200">
+          <h3 className="text-[20px] font-bold text-white mb-2">Verify Phone Number</h3>
+          <p className="text-[14px] text-white/70 mb-6 text-center">
+            We've sent an OTP to <span className="text-primary">{formData.phone}</span>
+          </p>
+          <Input
+            type="text"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+            placeholder="Enter 6-digit OTP"
+            className="w-full max-w-[250px] h-[58px] bg-card border border-white/[0.08] rounded-[16px] text-center text-[20px] tracking-widest text-white focus:outline-none focus:border-secondary transition-all mb-6"
+            maxLength={6}
+          />
+          <div className="flex gap-4 w-full max-w-[250px]">
+            <Button
+              type="button"
+              onClick={() => setShowOtpModal(false)}
+              className="flex-1 h-[48px] bg-card border border-white/[0.08] rounded-[12px] text-white text-[14px] font-bold hover:bg-card transition-colors"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleVerifyOtp}
+              disabled={verifyingOtp || otp.length < 6}
+              className="flex-1 h-[48px] bg-[linear-gradient(90deg,var(--secondary)_0%,var(--primary)_100%)] rounded-[12px] text-background text-[14px] font-bold hover:opacity-90 transition-all disabled:opacity-40"
+            >
+              {verifyingOtp ? <Loader2 className="w-5 h-5 mx-auto animate-spin" /> : "Verify"}
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

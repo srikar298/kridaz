@@ -1,7 +1,8 @@
 import * as Sentry from "@sentry/react";
 import React, { useState } from "react";
 import { X, Check, Sparkles, Palette, RefreshCw, Circle } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button } from "@kridaz/ui";
+
 const THEMES = [
   {
     id: "neon_classic",
@@ -25,7 +26,7 @@ const THEMES = [
     description:
       "Professional high-density television broadcast design. Bold color block layout optimized for maximum data display.",
     colors: ["#E0C3FC", "#8EC5FC"],
-    previewBg: "bg-zinc-900 border-l-[6px] border-[#00C187] shadow-xl",
+    previewBg: "bg-zinc-900 border-l-[6px] border-success shadow-xl",
     tag: "TV Broadcast",
     glow: "rgba(0, 193, 135, 0.4)",
     features: [
@@ -92,7 +93,7 @@ const TickerThemeStoreModal = ({
         <div className="flex items-center justify-between p-6 md:px-8 border-b border-white/5 bg-white/[0.01]">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#00C187] animate-pulse" />
+              <span className="w-2.5 h-2.5 rounded-full bg-success animate-pulse" />
               <h2 className="text-lg md:text-xl font-black uppercase text-white tracking-tight">
                 Kridaz Ticker Store
               </h2>
@@ -101,12 +102,12 @@ const TickerThemeStoreModal = ({
               Select premium live broadcast overlays
             </p>
           </div>
-          <button
+          <Button
             onClick={onClose}
             className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 border border-white/5 transition-all"
           >
             <X size={18} />
-          </button>
+          </Button>
         </div>
 
         {/* Content Area */}
@@ -123,7 +124,7 @@ const TickerThemeStoreModal = ({
                   onClick={() => setSelectedTheme(theme.id)}
                   onMouseEnter={() => setHoveredTheme(theme.id)}
                   onMouseLeave={() => setHoveredTheme(null)}
-                  className={`group relative flex flex-col justify-between p-6 rounded-[8px] border cursor-pointer transition-all duration-500 overflow-hidden ${isSelected ? "border-[#00C187] bg-white/[0.02] shadow-[0_15px_30px_rgba(0,193,135,0.06)]" : "border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02]"}`}
+                  className={`group relative flex flex-col justify-between p-6 rounded-[8px] border cursor-pointer transition-all duration-500 overflow-hidden ${isSelected ? "border-success bg-white/[0.02] shadow-[0_15px_30px_rgba(0,193,135,0.06)]" : "border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02]"}`}
                 >
                   {/* Dynamic Glowing Accent Background on Hover */}
                   <div
@@ -147,7 +148,7 @@ const TickerThemeStoreModal = ({
 
                       {/* Active Indicator */}
                       {isActive && (
-                        <span className="text-[8px] font-black uppercase tracking-wider text-black bg-[#00C187] px-2.5 py-1 rounded-full shadow-[0_0_15px_rgba(0,193,135,0.4)] animate-pulse">
+                        <span className="text-[8px] font-black uppercase tracking-wider text-black bg-success px-2.5 py-1 rounded-full shadow-[0_0_15px_rgba(0,193,135,0.4)] animate-pulse">
                           Active
                         </span>
                       )}
@@ -202,11 +203,11 @@ const TickerThemeStoreModal = ({
                       )}
 
                       {theme.id === "sports_network" && (
-                        <div className="w-full flex items-center justify-between border-l-[3px] border-[#00C187] pl-2 font-sans font-bold">
+                        <div className="w-full flex items-center justify-between border-l-[3px] border-success pl-2 font-sans font-bold">
                           <span className="text-[10px] uppercase text-white tracking-wide">
                             KRI 168/4
                           </span>
-                          <span className="text-[9px] text-[#00C187] uppercase tracking-wider">
+                          <span className="text-[9px] text-success uppercase tracking-wider">
                             LIVE
                           </span>
                         </div>
@@ -235,7 +236,7 @@ const TickerThemeStoreModal = ({
                           key={i}
                           className="flex items-center gap-2 text-[10px] font-bold text-neutral-400 uppercase tracking-tight"
                         >
-                          <Check size={12} className="text-[#00C187]" />
+                          <Check size={12} className="text-success" />
                           <span>{feat}</span>
                         </li>
                       ))}
@@ -245,11 +246,11 @@ const TickerThemeStoreModal = ({
                       <div className="flex -space-x-1">
                         <div className="w-4 h-4 rounded-full bg-cyan-500/80 border border-black" />
                         <div className="w-4 h-4 rounded-full bg-purple-500/80 border border-black" />
-                        <div className="w-4 h-4 rounded-full bg-[#00C187]/80 border border-black" />
+                        <div className="w-4 h-4 rounded-full bg-success/80 border border-black" />
                       </div>
 
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300 ${isSelected ? "bg-[#00C187]/10 border-[#00C187] text-[#00C187]" : "bg-white/5 border-white/5 text-neutral-600"}`}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300 ${isSelected ? "bg-success/10 border-success text-success" : "bg-white/5 border-white/5 text-neutral-600"}`}
                       >
                         {isSelected ? (
                           <Check size={14} className="stroke-[3]" />
@@ -268,7 +269,7 @@ const TickerThemeStoreModal = ({
         {/* Footer actions */}
         <div className="flex items-center justify-between p-6 md:px-8 border-t border-white/5 bg-white/[0.01]">
           <div className="hidden md:flex items-center gap-3">
-            <Palette size={16} className="text-[#00C187]" />
+            <Palette size={16} className="text-success" />
             <span className="text-[10px] font-black uppercase text-neutral-500 tracking-wider">
               Select a theme above to instantly re-style all active scoring
               streams
@@ -276,16 +277,16 @@ const TickerThemeStoreModal = ({
           </div>
 
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <button
+            <Button
               onClick={onClose}
               className="flex-1 md:flex-none px-6 py-3.5 rounded-[8px] bg-neutral-900 border border-white/5 text-neutral-400 hover:text-white hover:bg-neutral-800 text-[10px] font-black uppercase tracking-widest transition-all"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleApplyTheme}
               disabled={isApplying}
-              className="flex-1 md:flex-none px-8 py-3.5 rounded-[8px] bg-[#00C187] hover:bg-[#00e39e] text-black font-black uppercase text-[10px] tracking-widest transition-all shadow-[0_10px_30px_rgba(0,193,135,0.2)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 md:flex-none px-8 py-3.5 rounded-[8px] bg-success hover:bg-[#00e39e] text-black font-black uppercase text-[10px] tracking-widest transition-all shadow-[0_10px_30px_rgba(0,193,135,0.2)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isApplying ? (
                 <>
@@ -298,7 +299,7 @@ const TickerThemeStoreModal = ({
                   <span>Apply Theme</span>
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

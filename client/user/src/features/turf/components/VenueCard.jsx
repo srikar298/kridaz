@@ -1,14 +1,15 @@
 import React from "react";
-import { Heart, MapPin, Star } from "lucide-react";
+import { Heart, MapPin, Star } from "lucide-react";import { Button } from "@kridaz/ui";
+
 
 const VenueCard = ({ t, onClick }) => {
   return (
     <div
       onClick={onClick}
-      className="block relative w-full h-full rounded-[12px] overflow-hidden group bg-[#111] border-2 border-gray-600/60 hover:border-white/40 transition-all duration-300 shadow-lg cursor-pointer"
+      className="block relative w-full h-full rounded-[12px] overflow-hidden group bg-card border-2 border-gray-600/60 hover:border-white/40 transition-all duration-300 shadow-lg cursor-pointer"
     >
       {/* Normal Card Content */}
-      <div className="absolute inset-0 w-full h-full bg-[#111]">
+      <div className="absolute inset-0 w-full h-full bg-card">
         <img
           src={
             t.images?.[0] ||
@@ -30,12 +31,12 @@ const VenueCard = ({ t, onClick }) => {
 
         {/* Heart Icon top right */}
         <div className="absolute top-4 right-4 z-10">
-          <button
+          <Button
             className="w-6 h-6 rounded-full bg-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
             onClick={(e) => e.preventDefault()}
           >
             <Heart size={12} className="text-gray-800" strokeWidth={2} />
-          </button>
+          </Button>
         </div>
 
         {/* Bottom Details Section */}

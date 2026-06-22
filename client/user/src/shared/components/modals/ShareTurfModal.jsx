@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { X, Search, Check, Send } from "lucide-react";
+import { X, Search, Check, Send } from "lucide-react";import { Button, Input } from "@kridaz/ui";
+
 import {
   useGetFollowersFollowingQuery,
   useBroadcastMessageMutation,
@@ -79,7 +80,7 @@ const ShareTurfModal = ({ isOpen, onClose, turf }) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
       <div
-        className="bg-[#1a1a1a] border border-white/10 rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl flex flex-col animate-scale-up"
+        className="bg-card border border-white/10 rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl flex flex-col animate-scale-up"
         style={{ maxHeight: "80vh" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -87,12 +88,12 @@ const ShareTurfModal = ({ isOpen, onClose, turf }) => {
           <h2 className="text-white font-black tracking-wider uppercase text-lg">
             Share Ground
           </h2>
-          <button
+          <Button
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
           >
             <X size={18} />
-          </button>
+          </Button>
         </div>
 
         <div className="p-4 bg-white/5 flex items-center gap-4 border-b border-white/10">
@@ -117,12 +118,12 @@ const ShareTurfModal = ({ isOpen, onClose, turf }) => {
               className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
               size={18}
             />
-            <input
+            <Input
               type="text"
               placeholder="Search friends..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-[8px] py-2.5 pl-10 pr-4 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#BFF367]/50 transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-[8px] py-2.5 pl-10 pr-4 text-sm text-white placeholder-white/40 focus:outline-none focus:border-primary/50 transition-colors"
             />
           </div>
         </div>
@@ -143,7 +144,7 @@ const ShareTurfModal = ({ isOpen, onClose, turf }) => {
                 <div
                   key={user._id}
                   onClick={() => toggleUser(user._id)}
-                  className={`flex items-center justify-between p-2 rounded-[8px] cursor-pointer transition-all ${isSelected ? "bg-[#BFF367]/10" : "hover:bg-white/5"}`}
+                  className={`flex items-center justify-between p-2 rounded-[8px] cursor-pointer transition-all ${isSelected ? "bg-primary/10" : "hover:bg-white/5"}`}
                 >
                   <div className="flex items-center gap-3">
                     <img
@@ -167,7 +168,7 @@ const ShareTurfModal = ({ isOpen, onClose, turf }) => {
                     </div>
                   </div>
                   <div
-                    className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${isSelected ? "bg-[#BFF367] border-[#BFF367]" : "border-white/20"}`}
+                    className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${isSelected ? "bg-primary border-primary" : "border-white/20"}`}
                   >
                     {isSelected && <Check size={14} className="text-black" />}
                   </div>
@@ -179,16 +180,16 @@ const ShareTurfModal = ({ isOpen, onClose, turf }) => {
 
         {selectedUsers.length > 0 && (
           <div className="p-4 border-t border-white/10 shrink-0 bg-[#141414]">
-            <button
+            <Button
               onClick={handleShare}
               disabled={isSending}
-              className="w-full flex items-center justify-center gap-2 py-3 bg-[#BFF367] text-black font-black uppercase tracking-wider text-sm rounded-[8px] hover:bg-[#95e61a] transition-colors disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 py-3 bg-primary text-black font-black uppercase tracking-wider text-sm rounded-[8px] hover:bg-[#95e61a] transition-colors disabled:opacity-50"
             >
               <Send size={16} />
               {isSending
                 ? "Sharing..."
                 : `Share with ${selectedUsers.length} friend${selectedUsers.length > 1 ? "s" : ""}`}
-            </button>
+            </Button>
           </div>
         )}
       </div>

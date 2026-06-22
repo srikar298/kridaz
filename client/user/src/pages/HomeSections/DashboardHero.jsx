@@ -72,7 +72,7 @@ export default function DashboardHero() {
           className="relative w-full rounded-[12px] overflow-visible force-overflow-visible flex items-center justify-center aspect-square transition-all duration-300 shadow-xl border border-[#EBEBEB]/15 group-hover:scale-[1.02]"
           style={{
             background:
-              "radial-gradient(circle at 80% 50%, #22C55E 0%, #15803D 45%, #032512 100%)",
+              "radial-gradient(circle at 80% 50%, var(--success) 0%, #15803D 45%, #032512 100%)",
           }}
         >
           <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />

@@ -1,5 +1,5 @@
 import { prisma } from "../../config/prisma.js";
-import { uploadToCloudinary } from "../../utils/cloudinary.js";
+import { uploadToR2 } from "../../utils/r2Upload.js";
 import logger from "../../utils/logger.js";
 
 // Helper to generate deterministic views/likes based on UUID
@@ -136,8 +136,8 @@ export const createBlog = async (req, res) => {
 
     // If a file was uploaded via multipart, push it to Cloudinary
     if (req.file) {
-      logger.info("[createBlog]: Uploading file to Cloudinary...");
-      featuredImage = await uploadToCloudinary(req.file.buffer, "kridaz/blogs");
+      logger.info("[createBlog]: Uploading file to R2...");
+      featuredImage = await uploadToR2(req.file.buffer, "kridaz/blogs");
     }
 
     if (!featuredImage) {
@@ -273,8 +273,8 @@ export const updateBlog = async (req, res) => {
 
     // Handle image updates
     if (req.file) {
-      logger.info("[updateBlog]: Uploading new file to Cloudinary...");
-      updates.featuredImage = await uploadToCloudinary(
+      logger.info("[updateBlog]: Uploading new file to R2...");
+      updates.featuredImage = await uploadToR2(
         req.file.buffer,
         "kridaz/blogs"
       );

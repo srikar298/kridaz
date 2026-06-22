@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 const BALL_STYLES = {
-  wicket: { bg: "#dc2626", color: "#fff" },
-  boundary: { bg: "#22c55e", color: "#000" },
+  wicket: { bg: "var(--destructive)", color: "#fff" },
+  boundary: { bg: "var(--success)", color: "#000" },
   six: { bg: "#a855f7", color: "#fff" },
   four: { bg: "#3b82f6", color: "#fff" },
   wide: { bg: "#eab308", color: "#000" },
@@ -66,7 +66,7 @@ const BADGE_CFG = {
   },
   wicket: {
     label: "W!",
-    bg: "linear-gradient(135deg,#991b1b,#dc2626)",
+    bg: "linear-gradient(135deg,#991b1b,var(--destructive))",
     color: "#fff",
     dur: 3200,
     size: 80,
@@ -285,7 +285,7 @@ export default function NeonClassicTicker({ score, connected, badge }) {
           box-shadow: 0 -4px 20px rgba(0,0,0,0.3); z-index: 10;
         }
         .ticker-label {
-          background: #000; color: #a3e635;
+          background: #000; color: var(--primary);
           padding: 0 clamp(6px, 1.2vw, 16px); height: 100%;
           display: flex; alignItems: center;
           font-size: clamp(7px, 0.7vw, 11px); font-weight: 900;
@@ -319,7 +319,7 @@ export default function NeonClassicTicker({ score, connected, badge }) {
           height: "clamp(52px, 8.4vh, 90px)",
           background: "rgba(5,5,5,0.88)",
           backdropFilter: "blur(20px)",
-          borderTop: "2px solid #a3e635",
+          borderTop: "2px solid var(--primary)",
           display: "flex",
           alignItems: "stretch",
           animation: "classicTickerIn 0.6s cubic-bezier(0.16,1,0.3,1) both",
@@ -342,7 +342,7 @@ export default function NeonClassicTicker({ score, connected, badge }) {
             style={{
               fontSize: "clamp(6px, 0.6vw, 9px)",
               fontWeight: 900,
-              color: "#a3e635",
+              color: "var(--primary)",
               letterSpacing: "0.3em",
               textTransform: "uppercase",
               marginBottom: 2,
@@ -394,7 +394,7 @@ export default function NeonClassicTicker({ score, connected, badge }) {
               style={{
                 fontSize: "clamp(14px, 2.2vw, 30px)",
                 fontWeight: 900,
-                color: "#a3e635",
+                color: "var(--primary)",
               }}
             >
               /
@@ -434,7 +434,7 @@ export default function NeonClassicTicker({ score, connected, badge }) {
               <div
                 style={{
                   fontSize: "clamp(7px, 0.6vw, 11px)",
-                  color: "#a3e635",
+                  color: "var(--primary)",
                   fontWeight: 700,
                 }}
               >
@@ -454,7 +454,7 @@ export default function NeonClassicTicker({ score, connected, badge }) {
               <div
                 style={{
                   fontSize: "clamp(6px, 0.55vw, 9px)",
-                  color: "#a3e635",
+                  color: "var(--primary)",
                   fontWeight: 900,
                   textTransform: "uppercase",
                   letterSpacing: "0.15em",
@@ -501,7 +501,7 @@ export default function NeonClassicTicker({ score, connected, badge }) {
                   width: 5,
                   height: 5,
                   borderRadius: "50%",
-                  background: "#a3e635",
+                  background: "var(--primary)",
                   flexShrink: 0,
                 }}
               />
@@ -542,7 +542,7 @@ export default function NeonClassicTicker({ score, connected, badge }) {
               <span
                 style={{
                   fontSize: "clamp(7px, 0.6vw, 10px)",
-                  color: "#a3e635",
+                  color: "var(--primary)",
                   fontWeight: 700,
                   flexShrink: 0,
                 }}
@@ -731,7 +731,7 @@ export default function NeonClassicTicker({ score, connected, badge }) {
               width: 8,
               height: 8,
               borderRadius: "50%",
-              background: connected ? "#22c55e" : "#ef4444",
+              background: connected ? "var(--success)" : "var(--destructive)",
               animation: connected ? "classicPulseRed 2s infinite" : "none",
             }}
           />

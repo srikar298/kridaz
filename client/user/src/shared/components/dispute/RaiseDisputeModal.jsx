@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X, AlertOctagon, UploadCloud, ShieldAlert } from "lucide-react";
-import useDispute from "@hooks/useDispute";
+import useDispute from "@hooks/useDispute";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 
 export default function RaiseDisputeModal({ booking, onClose, onSuccess }) {
   const { raiseDispute, submitting } = useDispute();
@@ -63,10 +64,10 @@ export default function RaiseDisputeModal({ booking, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#000000] border border-red-500/30 rounded-[8px] w-full max-w-lg overflow-hidden shadow-2xl relative">
+      <div className="bg-background border border-red-500/30 rounded-[8px] w-full max-w-lg overflow-hidden shadow-2xl relative">
         <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 blur-[80px] pointer-events-none" />
 
-        <div className="p-6 border-b border-[#2D2D2D] flex justify-between items-center relative z-10">
+        <div className="p-6 border-b border-border flex justify-between items-center relative z-10">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center">
               <ShieldAlert size={24} />
@@ -80,12 +81,12 @@ export default function RaiseDisputeModal({ booking, onClose, onSuccess }) {
               </p>
             </div>
           </div>
-          <button
+          <Button
             onClick={onClose}
             className="text-gray-500 hover:text-white transition-colors"
           >
             <X size={24} />
-          </button>
+          </Button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-6 relative z-10">
@@ -102,11 +103,11 @@ export default function RaiseDisputeModal({ booking, onClose, onSuccess }) {
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
               Select Reason
             </label>
-            <select
+            <Select
               required
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full bg-[#000000] border border-[#2D2D2D] rounded-[6px] px-4 py-3.5 text-white focus:outline-none focus:border-red-500/50 transition-colors text-sm appearance-none"
+              className="w-full bg-background border border-border rounded-[6px] px-4 py-3.5 text-white focus:outline-none focus:border-red-500/50 transition-colors text-sm appearance-none"
             >
               <option value="" disabled>
                 Choose a primary reason
@@ -116,7 +117,7 @@ export default function RaiseDisputeModal({ booking, onClose, onSuccess }) {
                   {r}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
 
           {reason === "Other" && (
@@ -124,13 +125,13 @@ export default function RaiseDisputeModal({ booking, onClose, onSuccess }) {
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                 Specify Reason
               </label>
-              <input
+              <Input
                 required
                 type="text"
                 value={customReason}
                 onChange={(e) => setCustomReason(e.target.value)}
                 placeholder="Briefly state the issue"
-                className="w-full bg-[#000000] border border-[#2D2D2D] rounded-[6px] px-4 py-3.5 text-white focus:outline-none focus:border-red-500/50 transition-colors text-sm"
+                className="w-full bg-background border border-border rounded-[6px] px-4 py-3.5 text-white focus:outline-none focus:border-red-500/50 transition-colors text-sm"
               />
             </div>
           )}
@@ -139,12 +140,12 @@ export default function RaiseDisputeModal({ booking, onClose, onSuccess }) {
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
               Detailed Description
             </label>
-            <textarea
+            <Textarea
               required
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Provide full details of what happened..."
-              className="w-full bg-[#000000] border border-[#2D2D2D] rounded-[6px] px-4 py-3.5 text-white focus:outline-none focus:border-red-500/50 transition-colors text-sm min-h-[100px] resize-none custom-scrollbar"
+              className="w-full bg-background border border-border rounded-[6px] px-4 py-3.5 text-white focus:outline-none focus:border-red-500/50 transition-colors text-sm min-h-[100px] resize-none custom-scrollbar"
             />
           </div>
 
@@ -157,25 +158,25 @@ export default function RaiseDisputeModal({ booking, onClose, onSuccess }) {
               {previews.map((src, idx) => (
                 <div
                   key={idx}
-                  className="relative aspect-square rounded-lg overflow-hidden border border-[#2D2D2D] bg-[#000000]"
+                  className="relative aspect-square rounded-lg overflow-hidden border border-border bg-background"
                 >
                   <img
                     src={src}
                     alt="Preview"
                     className="w-full h-full object-cover"
                   />
-                  <button
+                  <Button
                     type="button"
                     onClick={() => removeImage(idx)}
                     className="absolute top-1 right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white hover:bg-red-600 transition-colors"
                   >
                     <X size={12} />
-                  </button>
+                  </Button>
                 </div>
               ))}
 
               {images.length < 5 && (
-                <label className="aspect-square rounded-lg border-2 border-dashed border-[#2D2D2D] hover:border-red-500/50 flex flex-col items-center justify-center cursor-pointer transition-all bg-[#000000] hover:bg-red-500/5 group">
+                <label className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-red-500/50 flex flex-col items-center justify-center cursor-pointer transition-all bg-background hover:bg-red-500/5 group">
                   <UploadCloud
                     size={20}
                     className="text-gray-500 group-hover:text-red-500 transition-colors"
@@ -183,7 +184,7 @@ export default function RaiseDisputeModal({ booking, onClose, onSuccess }) {
                   <span className="text-[8px] font-bold text-gray-600 group-hover:text-red-500 uppercase mt-1">
                     Upload
                   </span>
-                  <input
+                  <Input
                     type="file"
                     multiple
                     accept="image/*"
@@ -195,7 +196,7 @@ export default function RaiseDisputeModal({ booking, onClose, onSuccess }) {
             </div>
           </div>
 
-          <button
+          <Button
             type="submit"
             disabled={
               submitting ||
@@ -206,7 +207,7 @@ export default function RaiseDisputeModal({ booking, onClose, onSuccess }) {
             className="w-full py-4 bg-red-500 hover:bg-red-600 text-white rounded-[6px] font-bold uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(239,68,68,0.2)]"
           >
             {submitting ? "Submitting..." : "Submit Dispute"}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

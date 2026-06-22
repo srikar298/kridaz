@@ -1,3 +1,4 @@
+import { Button } from "@kridaz/ui";
 import {
   X,
   UserPlus,
@@ -72,7 +73,7 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
               </span>
             </div>
           </div>
-          <span className="text-[10px] font-bold uppercase bg-gradient-to-r from-[#BFF367]/20 to-[#BFF367]/20 text-transparent bg-clip-text bg-gradient-to-r from-[#BFF367] to-[#BFF367] border border-[#BFF367]/30 px-2 py-0.5 rounded">
+          <span className="text-[10px] font-bold uppercase bg-gradient-to-r from-primary/20 to-primary/20 text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary border border-primary/30 px-2 py-0.5 rounded">
             Pending
           </span>
         </div>
@@ -81,7 +82,7 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
 
     // OPEN Spot
     return (
-      <button
+      <Button
         onClick={() => onJoinSlot({ team: teamKey, index, role: slot.role })}
         className="w-full flex items-center justify-between p-3 rounded-[8px] bg-slate-800/40 border border-white/5 text-slate-400 hover:text-violet-400 hover:border-violet-500/40 hover:bg-violet-500/5 transition-all text-left group/slot"
       >
@@ -100,7 +101,7 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
           <span className="text-xs font-semibold">Claim Slot</span>
           <UserPlus className="h-4 w-4" />
         </div>
-      </button>
+      </Button>
     );
   };
 
@@ -120,12 +121,12 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
               {game.ground?.name || "Venue TBD"}
             </h3>
           </div>
-          <button
+          <Button
             onClick={onClose}
             className="p-2 rounded-[8px] bg-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-700 transition-all"
           >
             <X className="h-5 w-5" />
-          </button>
+          </Button>
         </div>
 
         {/* Content */}

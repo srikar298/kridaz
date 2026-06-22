@@ -16,7 +16,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import useRecommendations from "@hooks/useRecommendations";
-import { setFilters } from "@redux/slices/turfSlice";
+import { setFilters } from "@redux/slices/turfSlice";import { Button, Input } from "@kridaz/ui";
+
 
 /**
  * Turf — Venue discovery page.
@@ -130,7 +131,7 @@ const Turf = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#000000] font-sans text-[#FFFFFF] pb-20 overflow-x-hidden">
+    <div className="min-h-screen bg-background font-sans text-foreground pb-20 overflow-x-hidden">
       <div className="max-w-screen-2xl mx-auto px-4 md:px-6 pt-0 relative z-10">
         {/* ── Mobile Search & Filters ── */}
         <div className="block lg:hidden mb-6 mt-6 space-y-3">
@@ -140,52 +141,52 @@ const Turf = () => {
               className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.70)]"
               size={18}
             />
-            <input
+            <Input
               type="text"
               placeholder="Search arenas..."
               value={searchFilters.searchTerm || ""}
               onChange={(e) =>
                 dispatch(setFilters({ searchTerm: e.target.value }))
               }
-              className="w-full bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[16px] py-3.5 pl-11 pr-4 text-[14px] font-[400] text-[#FFFFFF] placeholder:text-[rgba(255,255,255,0.70)] focus:outline-none focus:border-[#55DEE8] transition-all shadow-md"
+              className="w-full bg-card border border-[rgba(255,255,255,0.08)] rounded-[16px] py-3.5 pl-11 pr-4 text-[14px] font-[400] text-foreground placeholder:text-[rgba(255,255,255,0.70)] focus:outline-none focus:border-secondary transition-all shadow-md"
             />
           </div>
 
           {/* Mobile Filter & Sports Buttons */}
           <div className="flex items-center gap-2">
-            <button
+            <Button
               onClick={() => setIsMobileLocationOpen(true)}
-              className="flex-1 bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[16px] py-3 flex items-center justify-center gap-1.5 text-[12px] font-[600] text-[#FFFFFF] hover:bg-[#121212] transition-colors shadow-md"
+              className="flex-1 bg-card border border-[rgba(255,255,255,0.08)] rounded-[16px] py-3 flex items-center justify-center gap-1.5 text-[12px] font-[600] text-foreground hover:bg-card transition-colors shadow-md"
             >
-              <MapPin size={13} className="text-[#BFF367]" />
+              <MapPin size={13} className="text-primary" />
               Location
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setIsMobileFilterOpen(true)}
-              className="flex-1 bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[16px] py-3 flex items-center justify-center gap-1.5 text-[12px] font-[600] text-[#FFFFFF] hover:bg-[#121212] transition-colors shadow-md"
+              className="flex-1 bg-card border border-[rgba(255,255,255,0.08)] rounded-[16px] py-3 flex items-center justify-center gap-1.5 text-[12px] font-[600] text-foreground hover:bg-card transition-colors shadow-md"
             >
-              <Filter size={13} className="text-[#BFF367]" />
+              <Filter size={13} className="text-primary" />
               Filters
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setIsMobileSportsOpen(true)}
-              className="flex-1 bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[16px] py-3 flex items-center justify-center gap-1.5 text-[12px] font-[600] text-[#FFFFFF] hover:bg-[#121212] transition-colors shadow-md"
+              className="flex-1 bg-card border border-[rgba(255,255,255,0.08)] rounded-[16px] py-3 flex items-center justify-center gap-1.5 text-[12px] font-[600] text-foreground hover:bg-card transition-colors shadow-md"
             >
-              <Dribbble size={13} className="text-[#BFF367]" />
+              <Dribbble size={13} className="text-primary" />
               Sports
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* ── Cards Grid ───────────────────────────────────────────── */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
+          <div className="grid grid-cols-1 gap-6 md:gap-8 max-w-md mx-auto lg:mt-[15px]">
             {Array.from({ length: 6 }).map((_, i) => (
               <TurfCardSkeleton key={`skeleton-${i}`} />
             ))}
           </div>
         ) : turfs.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+          <div className="grid grid-cols-1 gap-6 md:gap-8 max-w-md mx-auto lg:mt-[15px]">
             {turfs.map((turf, idx) => (
               <div
                 key={turf._id}
@@ -213,7 +214,7 @@ const Turf = () => {
             <p className="text-gray-600">
               Try adjusting your filters or search keywords.
             </p>
-            <button
+            <Button
               onClick={() =>
                 dispatch(
                   setFilters(
@@ -226,14 +227,14 @@ const Turf = () => {
               className="mt-8 px-10 py-3 border border-white/10 rounded-[6px] text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all"
             >
               Clear All Filters
-            </button>
+            </Button>
 
             {/* Handpicked Alternate Recommendations */}
             {(recsLoading ||
               (recommendations && recommendations.length > 0)) && (
               <div className="mt-24 pt-16 border-t border-white/5 space-y-10 text-left max-w-7xl mx-auto w-full">
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-[#84CC16]">
+                  <div className="flex items-center gap-2 text-primary">
                     <Sparkles
                       size={18}
                       className="fill-current animate-pulse"
@@ -251,13 +252,13 @@ const Turf = () => {
                 </div>
 
                 {recsLoading ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-                    {Array.from({ length: 4 }).map((_, i) => (
+                  <div className="grid grid-cols-1 gap-6 md:gap-8 max-w-md mx-auto">
+                    {Array.from({ length: 3 }).map((_, i) => (
                       <TurfCardSkeleton key={`recs-skeleton-${i}`} />
                     ))}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+                  <div className="grid grid-cols-1 gap-6 md:gap-8 max-w-md mx-auto">
                     {recommendations.map((t) => (
                       <TurfCardMobile
                         key={t.id || t._id}
@@ -292,19 +293,19 @@ const Turf = () => {
 
       {/* Filter Drawer */}
       <div
-        className={`fixed top-0 bottom-0 right-0 w-[85%] max-w-[360px] bg-[#121212] border-l border-[rgba(255,255,255,0.08)] z-[101] transform transition-transform duration-300 ease-in-out ${isMobileFilterOpen ? "translate-x-0" : "translate-x-full"} overflow-y-auto no-scrollbar pb-24`}
+        className={`fixed top-0 bottom-0 right-0 w-[85%] max-w-[360px] bg-card border-l border-[rgba(255,255,255,0.08)] z-[101] transform transition-transform duration-300 ease-in-out ${isMobileFilterOpen ? "translate-x-0" : "translate-x-full"} overflow-y-auto no-scrollbar pb-24`}
       >
-        <div className="sticky top-0 bg-[#121212]/95 backdrop-blur-md p-5 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-card/95 backdrop-blur-md p-5 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between z-10">
           <h3 className="text-[15px] font-black uppercase tracking-wider text-white flex items-center gap-2">
-            <Filter size={16} className="text-[#BFF367]" />
+            <Filter size={16} className="text-primary" />
             Filters
           </h3>
-          <button
+          <Button
             onClick={() => setIsMobileFilterOpen(false)}
             className="p-2 rounded-full hover:bg-white/10 transition-colors"
           >
             <X size={18} className="text-white/60 hover:text-white" />
-          </button>
+          </Button>
         </div>
 
         <div className="p-6 space-y-8">
@@ -315,26 +316,26 @@ const Turf = () => {
             </h5>
             <div className="space-y-3">
               <label className="flex items-center gap-3 cursor-pointer group">
-                <input
+                <Input
                   type="checkbox"
                   checked={searchFilters.onlyAvailable || false}
                   onChange={(e) =>
                     dispatch(setFilters({ onlyAvailable: e.target.checked }))
                   }
-                  className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                  className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                 />
                 <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                   Show Only Available Venues
                 </span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer group">
-                <input
+                <Input
                   type="checkbox"
                   checked={searchFilters.onlyFavorites || false}
                   onChange={(e) =>
                     dispatch(setFilters({ onlyFavorites: e.target.checked }))
                   }
-                  className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                  className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                 />
                 <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                   Show Only Favorites
@@ -350,52 +351,52 @@ const Turf = () => {
             </h5>
             <div className="space-y-3">
               <label className="flex items-center gap-3 cursor-pointer group">
-                <input
+                <Input
                   type="checkbox"
                   checked={searchFilters.timingMorning || false}
                   onChange={(e) =>
                     dispatch(setFilters({ timingMorning: e.target.checked }))
                   }
-                  className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                  className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                 />
                 <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                   Morning (6:00 AM - 11:00 AM)
                 </span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer group">
-                <input
+                <Input
                   type="checkbox"
                   checked={searchFilters.timingAfternoon || false}
                   onChange={(e) =>
                     dispatch(setFilters({ timingAfternoon: e.target.checked }))
                   }
-                  className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                  className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                 />
                 <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                   Afternoon (11:00 AM - 5:00 PM)
                 </span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer group">
-                <input
+                <Input
                   type="checkbox"
                   checked={searchFilters.timingEvening || false}
                   onChange={(e) =>
                     dispatch(setFilters({ timingEvening: e.target.checked }))
                   }
-                  className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                  className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                 />
                 <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                   Evening (5:00 PM - 10:00 PM)
                 </span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer group">
-                <input
+                <Input
                   type="checkbox"
                   checked={searchFilters.timingLateNight || false}
                   onChange={(e) =>
                     dispatch(setFilters({ timingLateNight: e.target.checked }))
                   }
-                  className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                  className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                 />
                 <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                   Late Night (After 10 PM)
@@ -416,7 +417,7 @@ const Turf = () => {
                     Min Rating: {(searchFilters.minRating || 0).toFixed(1)}
                   </span>
                 </div>
-                <input
+                <Input
                   type="range"
                   min="0"
                   max="5"
@@ -428,9 +429,9 @@ const Turf = () => {
                     )
                   }
                   style={{
-                    background: `linear-gradient(to right, #BFF367 ${((searchFilters.minRating || 0) / 5) * 100}%, #1F1F1F ${((searchFilters.minRating || 0) / 5) * 100}%)`,
+                    background: `linear-gradient(to right, var(--primary) ${((searchFilters.minRating || 0) / 5) * 100}%, #1F1F1F ${((searchFilters.minRating || 0) / 5) * 100}%)`,
                   }}
-                  className="w-full h-1.5 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#BFF367]"
+                  className="w-full h-1.5 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
                 />
               </div>
             </div>
@@ -443,7 +444,7 @@ const Turf = () => {
             </h5>
             <div className="space-y-3">
               <label className="flex items-center gap-3 cursor-pointer group">
-                <input
+                <Input
                   type="checkbox"
                   checked={searchFilters.priceLessThan5000 || false}
                   onChange={(e) =>
@@ -451,14 +452,14 @@ const Turf = () => {
                       setFilters({ priceLessThan5000: e.target.checked })
                     )
                   }
-                  className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                  className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                 />
                 <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                   Less than ₹5000
                 </span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer group">
-                <input
+                <Input
                   type="checkbox"
                   checked={searchFilters.price5000AndAbove || false}
                   onChange={(e) =>
@@ -466,7 +467,7 @@ const Turf = () => {
                       setFilters({ price5000AndAbove: e.target.checked })
                     )
                   }
-                  className="accent-[#BFF367] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
+                  className="accent-[var(--primary)] w-4 h-4 rounded border-[#333] bg-transparent cursor-pointer"
                 />
                 <span className="text-[13px] font-medium text-gray-400 group-hover:text-white transition-colors">
                   ₹5000 and above
@@ -475,30 +476,30 @@ const Turf = () => {
             </div>
           </div>
 
-          <button
+          <Button
             onClick={() => setIsMobileFilterOpen(false)}
-            className="w-full mt-6 py-4 bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] font-black uppercase tracking-wider rounded-[16px] hover:opacity-90 transition-opacity"
+            className="w-full mt-6 py-4 bg-gradient-to-r from-secondary to-primary text-background font-black uppercase tracking-wider rounded-[16px] hover:opacity-90 transition-opacity"
           >
             Apply Filters
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Sports Drawer */}
       <div
-        className={`fixed top-0 bottom-0 right-0 w-[85%] max-w-[360px] bg-[#121212] border-l border-[rgba(255,255,255,0.08)] z-[101] transform transition-transform duration-300 ease-in-out ${isMobileSportsOpen ? "translate-x-0" : "translate-x-full"} overflow-y-auto no-scrollbar pb-24`}
+        className={`fixed top-0 bottom-0 right-0 w-[85%] max-w-[360px] bg-card border-l border-[rgba(255,255,255,0.08)] z-[101] transform transition-transform duration-300 ease-in-out ${isMobileSportsOpen ? "translate-x-0" : "translate-x-full"} overflow-y-auto no-scrollbar pb-24`}
       >
-        <div className="sticky top-0 bg-[#121212]/95 backdrop-blur-md p-5 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-card/95 backdrop-blur-md p-5 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between z-10">
           <h3 className="text-[15px] font-black uppercase tracking-wider text-white flex items-center gap-2">
-            <Dribbble size={16} className="text-[#BFF367]" />
+            <Dribbble size={16} className="text-primary" />
             Select Sport
           </h3>
-          <button
+          <Button
             onClick={() => setIsMobileSportsOpen(false)}
             className="p-2 rounded-full hover:bg-white/10 transition-colors"
           >
             <X size={18} className="text-white/60 hover:text-white" />
-          </button>
+          </Button>
         </div>
 
         <div className="p-4 space-y-1">
@@ -516,7 +517,7 @@ const Turf = () => {
           ].map((sport) => {
             const isSelected = searchFilters.sport === sport;
             return (
-              <button
+              <Button
                 key={sport}
                 onClick={() => {
                   dispatch(setFilters({ sport: isSelected ? "" : sport }));
@@ -524,28 +525,28 @@ const Turf = () => {
                 }}
                 className={`w-full flex items-center justify-between p-4 rounded-xl transition-colors group ${
                   isSelected
-                    ? "bg-[#BFF367]/10 border border-[#BFF367]/30"
-                    : "hover:bg-[#111]"
+                    ? "bg-primary/10 border border-primary/30"
+                    : "hover:bg-card"
                 }`}
               >
                 <span
                   className={`text-[14px] font-bold transition-colors ${
                     isSelected
-                      ? "text-[#BFF367]"
-                      : "text-gray-300 group-hover:text-[#BFF367]"
+                      ? "text-primary"
+                      : "text-gray-300 group-hover:text-primary"
                   }`}
                 >
                   {sport}
                 </span>
                 {isSelected ? (
-                  <div className="w-2 h-2 rounded-full bg-[#BFF367]" />
+                  <div className="w-2 h-2 rounded-full bg-primary" />
                 ) : (
                   <ChevronRight
                     size={16}
-                    className="text-white/20 group-hover:text-[#BFF367]"
+                    className="text-white/20 group-hover:text-primary"
                   />
                 )}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -553,19 +554,19 @@ const Turf = () => {
 
       {/* Location Drawer */}
       <div
-        className={`fixed top-0 bottom-0 right-0 w-[85%] max-w-[360px] bg-[#121212] border-l border-[rgba(255,255,255,0.08)] z-[101] transform transition-transform duration-300 ease-in-out ${isMobileLocationOpen ? "translate-x-0" : "translate-x-full"} overflow-y-auto no-scrollbar pb-24`}
+        className={`fixed top-0 bottom-0 right-0 w-[85%] max-w-[360px] bg-card border-l border-[rgba(255,255,255,0.08)] z-[101] transform transition-transform duration-300 ease-in-out ${isMobileLocationOpen ? "translate-x-0" : "translate-x-full"} overflow-y-auto no-scrollbar pb-24`}
       >
-        <div className="sticky top-0 bg-[#121212]/95 backdrop-blur-md p-5 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-card/95 backdrop-blur-md p-5 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between z-10">
           <h3 className="text-[15px] font-black uppercase tracking-wider text-white flex items-center gap-2">
-            <MapPin size={16} className="text-[#BFF367]" />
+            <MapPin size={16} className="text-primary" />
             Select Location
           </h3>
-          <button
+          <Button
             onClick={() => setIsMobileLocationOpen(false)}
             className="p-2 rounded-full hover:bg-white/10 transition-colors"
           >
             <X size={18} className="text-white/60 hover:text-white" />
-          </button>
+          </Button>
         </div>
 
         <div className="p-5 space-y-6">
@@ -575,7 +576,7 @@ const Turf = () => {
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.70)]"
                 size={16}
               />
-              <input
+              <Input
                 type="text"
                 placeholder="Search city or area..."
                 value={locationSearchInput}
@@ -586,11 +587,11 @@ const Turf = () => {
                     setIsMobileLocationOpen(false);
                   }
                 }}
-                className="w-full bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-[16px] py-3.5 pl-11 pr-4 text-[14px] text-[#FFFFFF] placeholder:text-[rgba(255,255,255,0.70)] focus:outline-none focus:border-[#55DEE8] transition-all shadow-md"
+                className="w-full bg-card border border-[rgba(255,255,255,0.08)] rounded-[16px] py-3.5 pl-11 pr-4 text-[14px] text-foreground placeholder:text-[rgba(255,255,255,0.70)] focus:outline-none focus:border-secondary transition-all shadow-md"
               />
             </div>
             {searchFilters.city && (
-              <button
+              <Button
                 onClick={() => {
                   dispatch(setFilters({ city: "" }));
                   setLocationSearchInput("");
@@ -598,7 +599,7 @@ const Turf = () => {
                 className="px-3 py-3.5 bg-red-500/10 text-red-500 rounded-[16px] border border-red-500/20 text-xs font-black uppercase tracking-wider hover:bg-red-500/20 transition-colors shrink-0"
               >
                 Clear
-              </button>
+              </Button>
             )}
           </div>
 
@@ -615,31 +616,31 @@ const Turf = () => {
                 "Pune",
                 "Chennai",
               ].map((city) => (
-                <button
+                <Button
                   key={city}
                   onClick={() => {
                     dispatch(setFilters({ city }));
                     setIsMobileLocationOpen(false);
                   }}
-                  className={`py-2 px-4 rounded-full border flex items-center justify-center text-xs font-bold transition-all ${searchFilters.city === city ? "bg-[#BFF367]/10 border-[#BFF367] text-[#BFF367]" : "bg-[#1B1B1B] border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)] hover:border-[rgba(255,255,255,0.20)]"}`}
+                  className={`py-2 px-4 rounded-full border flex items-center justify-center text-xs font-bold transition-all ${searchFilters.city === city ? "bg-primary/10 border-primary text-primary" : "bg-card border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)] hover:border-[rgba(255,255,255,0.20)]"}`}
                 >
                   {city}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
 
-          <button
+          <Button
             onClick={() => {
               if (locationSearchInput.trim()) {
                 dispatch(setFilters({ city: locationSearchInput.trim() }));
               }
               setIsMobileLocationOpen(false);
             }}
-            className="w-full mt-4 py-4 bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] font-black uppercase tracking-wider rounded-[16px] hover:opacity-90 transition-opacity"
+            className="w-full mt-4 py-4 bg-gradient-to-r from-secondary to-primary text-background font-black uppercase tracking-wider rounded-[16px] hover:opacity-90 transition-opacity"
           >
             Apply Location
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
-import React from "react";
+import React from "react";import { Button } from "@kridaz/ui";
+
 import {
   Megaphone,
   Image as ImageIcon,
@@ -11,7 +12,7 @@ const MarketingTab = ({ tournament }) => {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Sponsors Section */}
-      <div className="bg-[#111] border border-white/5 rounded-2xl p-6">
+      <div className="bg-card border border-white/5 rounded-2xl p-6">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h3 className="text-sm font-black text-white/90 uppercase tracking-widest">
@@ -22,13 +23,13 @@ const MarketingTab = ({ tournament }) => {
               live scoring overlay.
             </p>
           </div>
-          <button className="px-4 py-2 bg-[#1a1a1a] text-white rounded-full text-xs font-bold hover:bg-white/10 transition-colors">
+          <Button className="px-4 py-2 bg-card text-white rounded-full text-xs font-bold hover:bg-white/10 transition-colors">
             Manage Layout
-          </button>
+          </Button>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="aspect-square border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center text-white/30 hover:border-[#BFF367]/50 hover:text-[#BFF367] transition-colors cursor-pointer group">
+          <div className="aspect-square border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center text-white/30 hover:border-primary/50 hover:text-primary transition-colors cursor-pointer group">
             <Upload
               size={24}
               className="mb-2 group-hover:-translate-y-1 transition-transform"
@@ -39,9 +40,9 @@ const MarketingTab = ({ tournament }) => {
           {/* Mock Uploaded Sponsor */}
           <div className="aspect-square bg-white rounded-xl flex items-center justify-center p-4 relative group">
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
-              <button className="text-xs font-bold text-red-500 hover:underline">
+              <Button className="text-xs font-bold text-red-500 hover:underline">
                 Remove
-              </button>
+              </Button>
             </div>
             <span className="text-black font-black text-xl opacity-20">
               LOGO 1
@@ -51,7 +52,7 @@ const MarketingTab = ({ tournament }) => {
       </div>
 
       {/* Promo Graphics Generator */}
-      <div className="bg-[#111] border border-white/5 rounded-2xl p-6">
+      <div className="bg-card border border-white/5 rounded-2xl p-6">
         <h3 className="text-sm font-black text-white/90 uppercase tracking-widest mb-1">
           Promo Graphics
         </h3>
@@ -61,7 +62,7 @@ const MarketingTab = ({ tournament }) => {
 
         <div className="grid sm:grid-cols-3 gap-6">
           <div className="space-y-3">
-            <div className="aspect-[4/5] bg-[#1a1a1a] rounded-xl flex items-center justify-center relative overflow-hidden group">
+            <div className="aspect-[4/5] bg-card rounded-xl flex items-center justify-center relative overflow-hidden group">
               <img
                 src={
                   tournament.posterUrl ||
@@ -72,7 +73,7 @@ const MarketingTab = ({ tournament }) => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
               <div className="absolute bottom-4 left-4 right-4 text-center">
-                <p className="text-[#BFF367] font-black text-xl mb-1 uppercase">
+                <p className="text-primary font-black text-xl mb-1 uppercase">
                   Registration Open
                 </p>
                 <p className="text-white text-xs font-bold">
@@ -80,12 +81,12 @@ const MarketingTab = ({ tournament }) => {
                 </p>
               </div>
               <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3">
-                <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full text-xs font-bold hover:bg-gray-200">
+                <Button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full text-xs font-bold hover:bg-gray-200">
                   <Download size={14} /> Download
-                </button>
-                <button className="flex items-center gap-2 bg-[#25D366] text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-[#25D366]/90">
+                </Button>
+                <Button className="flex items-center gap-2 bg-[#25D366] text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-[#25D366]/90">
                   <Share2 size={14} /> Share WhatsApp
-                </button>
+                </Button>
               </div>
             </div>
             <p className="text-center text-xs font-bold text-white/70">
@@ -94,7 +95,7 @@ const MarketingTab = ({ tournament }) => {
           </div>
 
           <div className="space-y-3">
-            <div className="aspect-[4/5] bg-[#1a1a1a] border border-white/5 rounded-xl flex items-center justify-center text-white/30 text-xs font-bold text-center p-4">
+            <div className="aspect-[4/5] bg-card border border-white/5 rounded-xl flex items-center justify-center text-white/30 text-xs font-bold text-center p-4">
               "Match Day 1" Graphic
               <br />
               (Available when schedule is generated)
@@ -105,7 +106,7 @@ const MarketingTab = ({ tournament }) => {
           </div>
 
           <div className="space-y-3">
-            <div className="aspect-[4/5] bg-[#1a1a1a] border border-white/5 rounded-xl flex items-center justify-center text-white/30 text-xs font-bold text-center p-4">
+            <div className="aspect-[4/5] bg-card border border-white/5 rounded-xl flex items-center justify-center text-white/30 text-xs font-bold text-center p-4">
               "Champions" Graphic
               <br />
               (Available when tournament ends)

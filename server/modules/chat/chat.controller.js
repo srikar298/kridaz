@@ -1,5 +1,5 @@
 import { prisma } from "../../config/prisma.js";
-import { uploadToCloudinary } from "../../utils/cloudinary.js";
+import { uploadToR2 } from "../../utils/r2Upload.js";
 import { getIO } from "../../config/socket.js";
 
 import logger from "../../utils/logger.js";
@@ -669,10 +669,10 @@ export const updateGroup = async (req, res) => {
     // Handle Image Upload
     if (req.file) {
       try {
-        const imageUrl = await uploadToCloudinary(req.file.buffer, "groups");
+        const imageUrl = await uploadToR2(req.file.buffer, "groups");
         updateData.groupImage = imageUrl;
       } catch (err) {
-        logger.error("Cloudinary upload failed:", err);
+        logger.error("R2 upload failed:", err);
       }
     } else if (req.body.groupImage) {
       updateData.groupImage = req.body.groupImage;

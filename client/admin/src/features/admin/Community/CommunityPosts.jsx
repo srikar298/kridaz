@@ -6,7 +6,8 @@ import {
   useGetPostReportsQuery,
   useDeleteAdminPostMutation,
 } from "@redux/api/communityApi";
-import { format } from "date-fns";
+import { format } from "date-fns";import { Button } from "@kridaz/ui";
+
 
 const CommunityPosts = () => {
   const [page, setPage] = useState(1);
@@ -38,7 +39,7 @@ const CommunityPosts = () => {
       {/* Header */}
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-black text-white flex items-center gap-3">
-          <ShieldAlert className="text-[#55DEE8]" size={32} />
+          <ShieldAlert className="text-secondary" size={32} />
           Reported Posts
         </h1>
         <p className="text-white/50 font-medium">
@@ -48,10 +49,10 @@ const CommunityPosts = () => {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="w-8 h-8 rounded-full border-2 border-[#55DEE8] border-t-transparent animate-spin" />
+          <div className="w-8 h-8 rounded-full border-2 border-secondary border-t-transparent animate-spin" />
         </div>
       ) : reports.length === 0 ? (
-        <div className="bg-[#0A0A0A] border border-white/5 rounded-[8px] p-16 text-center">
+        <div className="bg-background border border-white/5 rounded-[8px] p-16 text-center">
           <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
             <ShieldAlert size={28} className="text-white/20" />
           </div>
@@ -69,7 +70,7 @@ const CommunityPosts = () => {
               key={report._id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-[#0A0A0A] border border-white/5 rounded-[8px] overflow-hidden flex flex-col"
+              className="bg-background border border-white/5 rounded-[8px] overflow-hidden flex flex-col"
             >
               {/* Post Preview */}
               <div className="relative h-48 bg-neutral-900 border-b border-white/5 flex items-center justify-center overflow-hidden">
@@ -129,13 +130,13 @@ const CommunityPosts = () => {
                 </div>
 
                 <div className="mt-auto pt-4 flex items-center gap-3 border-t border-white/5">
-                  <button
+                  <Button
                     onClick={() => handleDeletePost(report.post?._id)}
                     className="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 transition-colors py-2 rounded-[6px] text-[12px] font-bold flex items-center justify-center gap-2"
                   >
                     <Trash2 size={14} />
                     Delete Post
-                  </button>
+                  </Button>
                 </div>
               </div>
             </motion.div>
@@ -146,23 +147,23 @@ const CommunityPosts = () => {
       {/* Pagination */}
       {pagination.totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 pt-6">
-          <button
+          <Button
             disabled={page === 1}
             onClick={() => setPage((p) => p - 1)}
-            className="px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-[6px] text-white/60 hover:text-white disabled:opacity-50 text-[12px] font-bold transition-colors"
+            className="px-4 py-2 bg-background border border-white/10 rounded-[6px] text-white/60 hover:text-white disabled:opacity-50 text-[12px] font-bold transition-colors"
           >
             Prev
-          </button>
+          </Button>
           <span className="text-[12px] font-bold text-white/40 px-4">
             Page {page} of {pagination.totalPages}
           </span>
-          <button
+          <Button
             disabled={page === pagination.totalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-[6px] text-white/60 hover:text-white disabled:opacity-50 text-[12px] font-bold transition-colors"
+            className="px-4 py-2 bg-background border border-white/10 rounded-[6px] text-white/60 hover:text-white disabled:opacity-50 text-[12px] font-bold transition-colors"
           >
             Next
-          </button>
+          </Button>
         </div>
       )}
     </div>

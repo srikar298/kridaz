@@ -15,7 +15,7 @@ const ProfessionalLayout = () => {
     <div className="flex flex-col min-h-screen bg-black">
       <AuthenticatedNavbar toggleSidebar={toggleSidebar} />
 
-      <div className="flex flex-1 pt-32 lg:pt-40">
+      <div className="flex flex-1 pt-32 lg:pt-40 min-w-0 w-full">
         <div
           onMouseEnter={() => window.innerWidth >= 1024 && setIsHovered(true)}
           onMouseLeave={() => window.innerWidth >= 1024 && setIsHovered(false)}
@@ -29,7 +29,7 @@ const ProfessionalLayout = () => {
           />
         </div>
         <main
-          className={`flex-1 overflow-x-hidden transition-all duration-300 ease-in-out ${isMinimized ? "lg:ml-20" : "lg:ml-64"}`}
+          className={`flex-1 min-w-0 overflow-x-clip transition-all duration-300 ease-in-out ${isMinimized ? "lg:ml-20" : "lg:ml-64"}`}
         >
           <div className="w-full p-4 pb-24 lg:pb-10">
             <Outlet />

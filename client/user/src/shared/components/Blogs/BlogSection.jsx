@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, Eye, ThumbsUp, Share2 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
-import axios from "axios";
+import axios from "axios";import { Button } from "@kridaz/ui";
 
-const PRI = "#BFF367";
+
+const PRI = "var(--primary)";
 
 const BlogSection = () => {
   const [blogs, setBlogs] = useState([]);
@@ -138,7 +139,7 @@ const BlogSection = () => {
                     <Eye size={14} style={{ color: PRI }} />
                     {blog.views}
                   </div>
-                  <button
+                  <Button
                     onClick={(e) => handleLike(e, blog.id || blog._id)}
                     className="flex items-center gap-1.5 text-xs font-mono text-white/40 hover:text-white transition-colors group/btn"
                   >
@@ -148,11 +149,11 @@ const BlogSection = () => {
                       className="group-hover/btn:scale-110 transition-transform"
                     />
                     {blog.likes}
-                  </button>
+                  </Button>
                 </div>
-                <button className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white transition-all">
+                <Button className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white transition-all">
                   <Share2 size={14} />
-                </button>
+                </Button>
               </div>
             </div>
 

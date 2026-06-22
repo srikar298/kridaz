@@ -10,7 +10,8 @@ import {
   Timer,
   MessageSquareShare,
 } from "lucide-react";
-import axiosInstance from "@hooks/useAxiosInstance";
+import axiosInstance from "@hooks/useAxiosInstance";import { Button } from "@kridaz/ui";
+
 
 const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -96,7 +97,7 @@ const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
       });
     } catch (err) {
       setIsWishlisted(isWishlisted); // Revert state on failure
-      Sentry.captureException(err);
+      console.error("[TELEMETRY] Failed to toggle wishlist like:", err);
     }
   };
 
@@ -115,14 +116,14 @@ const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
         turfId: targetId,
       });
     } catch (err) {
-      Sentry.captureException(err);
+      console.error("[TELEMETRY] Failed to record turf share:", err);
     }
   };
 
   return (
     <div
       onClick={() => navigate(to)}
-      className="group relative h-[280px] md:h-[360px] w-full rounded-[8px] overflow-hidden cursor-pointer bg-[#0d0d0d] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5 hover:border-[#BFF367]/30"
+      className="group relative h-[280px] md:h-[360px] w-full rounded-[8px] overflow-hidden cursor-pointer bg-background transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5 hover:border-primary/30"
     >
       {/* ── Background Image ── */}
       <div className="absolute inset-0 overflow-hidden">
@@ -161,7 +162,7 @@ const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
         <div className="flex flex-wrap items-center gap-1.5 md:gap-2.5 max-w-[70%]">
           {/* Sport Tag */}
           {turf.sportTypes && turf.sportTypes.length > 0 && (
-            <span className="bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black text-[8px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 rounded-[10px] uppercase tracking-widest shadow-2xl">
+            <span className="bg-gradient-to-r from-primary to-primary text-black text-[8px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 rounded-[10px] uppercase tracking-widest shadow-2xl">
               {turf.sportTypes.join(", ")}
             </span>
           )}
@@ -180,7 +181,7 @@ const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
 
           {/* Slots Left Badge */}
           <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-[10px] px-2 md:px-3 py-1 md:py-1.5 flex items-center gap-1 md:gap-2 shadow-2xl">
-            <Timer size={10} className="text-[#BFF367]" />
+            <Timer size={10} className="text-primary" />
             <span className="text-white text-[8px] md:text-[10px] font-black uppercase tracking-tighter">
               {slotsLeft} {window.innerWidth < 768 ? "L" : "Slots Left"}
             </span>
@@ -190,43 +191,43 @@ const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
 
       {/* ── Top Right ── */}
       <div className="absolute top-3 md:top-5 right-3 md:right-5 z-20 flex flex-col gap-2">
-        <button
+        <Button
           onClick={toggleWishlist}
-          className="p-2 md:p-2.5 rounded-[8px] bg-black/40 backdrop-blur-md border border-white/10 hover:bg-gradient-to-r hover:from-[#BFF367] hover:to-[#BFF367] transition-all duration-300 group/heart"
+          className="p-2 md:p-2.5 rounded-[8px] bg-black/40 backdrop-blur-md border border-white/10 hover:bg-gradient-to-r hover:from-primary hover:to-primary transition-all duration-300 group/heart"
         >
           <Heart
             size={14}
             md:size={18}
             className={`transition-all duration-300 ${isWishlisted ? "fill-red-500 text-red-500 scale-110" : "text-white group-hover/heart:scale-110 group-hover/heart:text-black"}`}
           />
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={handleShare}
-          className="p-2 md:p-2.5 rounded-[8px] bg-black/40 backdrop-blur-md border border-white/10 hover:bg-gradient-to-r hover:from-[#BFF367] hover:to-[#BFF367] transition-all duration-300 group/share"
+          className="p-2 md:p-2.5 rounded-[8px] bg-black/40 backdrop-blur-md border border-white/10 hover:bg-gradient-to-r hover:from-primary hover:to-primary transition-all duration-300 group/share"
         >
           <MessageSquareShare
             size={14}
             md:size={18}
             className="text-white transition-all duration-300 group-hover/share:scale-110 group-hover/share:text-black"
           />
-        </button>
+        </Button>
       </div>
 
       {/* ── Carousel Controls ── */}
       {carouselItems.length > 1 && (
         <div className="absolute inset-y-0 inset-x-2 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
-          <button
+          <Button
             onClick={prevImage}
-            className="p-1.5 md:p-2 bg-black/40 hover:bg-[#BFF367] hover:text-black backdrop-blur-sm rounded-[8px] text-white transition-all border border-white/10"
+            className="p-1.5 md:p-2 bg-black/40 hover:bg-primary hover:text-black backdrop-blur-sm rounded-[8px] text-white transition-all border border-white/10"
           >
             <ChevronLeft size={14} md:size={16} />
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={nextImage}
-            className="p-1.5 md:p-2 bg-black/40 hover:bg-[#BFF367] hover:text-black backdrop-blur-sm rounded-[8px] text-white transition-all border border-white/10"
+            className="p-1.5 md:p-2 bg-black/40 hover:bg-primary hover:text-black backdrop-blur-sm rounded-[8px] text-white transition-all border border-white/10"
           >
             <ChevronRight size={14} md:size={16} />
-          </button>
+          </Button>
         </div>
       )}
 
@@ -239,7 +240,7 @@ const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
           <div className="space-y-3 md:space-y-4">
             {/* Name & Location */}
             <div className="space-y-1 md:space-y-1.5">
-              <h3 className="text-base md:text-xl font-bold text-white tracking-tight leading-tight group-hover:text-[#BFF367] transition-colors line-clamp-1 font-inter">
+              <h3 className="text-base md:text-xl font-bold text-white tracking-tight leading-tight group-hover:text-primary transition-colors line-clamp-1 font-inter">
                 {turf.name}
               </h3>
               <div className="flex items-center justify-between gap-2">
@@ -247,7 +248,7 @@ const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
                   <MapPin
                     size={10}
                     md:size={12}
-                    className="text-[#BFF367] shrink-0"
+                    className="text-primary shrink-0"
                   />
                   <p className="text-[10px] md:text-sm font-semibold text-white/60 truncate font-inter">
                     {turf.city || turf.location || "Nearby Venue"}
@@ -263,7 +264,7 @@ const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
                   Starting
                 </span>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-lg md:text-2xl font-black text-[#BFF367]">
+                  <span className="text-lg md:text-2xl font-black text-primary">
                     ₹{price}
                   </span>
                   <span className="text-[8px] md:text-xs font-bold text-white/40 uppercase font-inter">
@@ -273,13 +274,13 @@ const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
               </div>
 
               <div className="flex flex-col items-end gap-0.5 md:gap-1">
-                <div className="flex items-center gap-1 md:gap-1.5 text-[#BFF367]">
+                <div className="flex items-center gap-1 md:gap-1.5 text-primary">
                   <Star size={14} md:size={18} className="fill-current" />
                   <span className="text-sm md:text-lg font-black font-inter">
                     {rating.toFixed(1)}
                   </span>
                 </div>
-                <div className="flex items-center gap-1 text-[7px] md:text-[9px] font-black text-[#BFF367] uppercase tracking-widest font-inter">
+                <div className="flex items-center gap-1 text-[7px] md:text-[9px] font-black text-primary uppercase tracking-widest font-inter">
                   {distance || "1.2km Away"}
                 </div>
               </div>

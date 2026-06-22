@@ -4,15 +4,15 @@ import {
   X,
   LayoutDashboard,
   Activity,
-  Clock,
   User,
   IndianRupee,
   Star,
+  MessageSquare,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@redux/slices/authSlice.js";
-import { getDynamicProfileRoute } from "@utils/routeUtils";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";import { Button } from "@kridaz/ui";
+
 
 const ProfessionalSidebar = ({
   isOpen,
@@ -36,6 +36,7 @@ const ProfessionalSidebar = ({
   const mainNavItems = [
     { to: `/professional/${role}`, label: "Overview", icon: LayoutDashboard },
     { to: `/professional/${role}/profile`, label: "Edit Profile", icon: User },
+    { to: `/professional/${role}/inquiries`, label: "Inquiries", icon: MessageSquare },
     { to: `/professional/${role}/bookings`, label: "Bookings", icon: Activity },
     {
       to: `/professional/${role}/payouts`,
@@ -63,7 +64,7 @@ const ProfessionalSidebar = ({
       <Link
         key={item.to || item.label}
         to={item.to || "#"}
-        className={`flex items-center px-4 py-3 group relative transition-all duration-300 font-inter ${isLogout ? "text-white/40 hover:text-red-500" : isActive ? "text-black" : "text-[#878C9F] hover:text-white"}`}
+        className={`flex items-center px-4 py-3 group relative transition-all duration-300 font-inter ${isLogout ? "text-white/40 hover:text-red-500" : isActive ? "text-black" : "text-muted-foreground hover:text-white"}`}
         onClick={(e) => {
           if (isLogout) {
             e.preventDefault();
@@ -77,12 +78,12 @@ const ProfessionalSidebar = ({
       >
         {/* Active Glow/Background */}
         {isActive && !isLogout && (
-          <div className="absolute inset-x-2 inset-y-1 bg-[#BFF367] rounded-[6px] -z-10 shadow-[var(--shadow-2)] transition-all duration-300" />
+          <div className="absolute inset-x-2 inset-y-1 bg-primary rounded-[6px] -z-10 shadow-[var(--shadow-2)] transition-all duration-300" />
         )}
 
         {/* Hover Background */}
         {!isActive && !isLogout && (
-          <div className="absolute inset-x-2 inset-y-1 bg-[#2D2D2D]/30 border border-[#2D2D2D] rounded-[6px] -z-10 opacity-0 group-hover:opacity-100 transition-all duration-300" />
+          <div className="absolute inset-x-2 inset-y-1 bg-border/30 border border-border rounded-[6px] -z-10 opacity-0 group-hover:opacity-100 transition-all duration-300" />
         )}
 
         {isLogout && (
@@ -92,7 +93,7 @@ const ProfessionalSidebar = ({
         <div className="flex-shrink-0 flex items-center justify-center w-6">
           <Icon
             size={18}
-            className={`transition-colors duration-300 ${isLogout ? "text-white/20 group-hover:text-red-500" : isActive ? "text-black" : "text-[#878C9F] group-hover:text-[#BFF367]"}`}
+            className={`transition-colors duration-300 ${isLogout ? "text-white/20 group-hover:text-red-500" : isActive ? "text-black" : "text-muted-foreground group-hover:text-primary"}`}
           />
         </div>
 
@@ -116,16 +117,16 @@ const ProfessionalSidebar = ({
       )}
 
       <aside
-        className={`fixed left-0 top-16 lg:top-20 h-[calc(100vh-64px)] lg:h-[calc(100vh-80px)] bg-[#000000] border-r border-[#2D2D2D] overflow-x-hidden transition-all duration-300 ease-in-out z-50 flex flex-col font-open-sans ${isMinimized ? "lg:w-20" : "w-64"} ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} ${className || ""}`}
+        className={`fixed left-0 top-16 lg:top-20 h-[calc(100vh-64px)] lg:h-[calc(100vh-80px)] sidebar-glass border-r border-border overflow-x-hidden transition-all duration-300 ease-in-out z-50 flex flex-col font-open-sans ${isMinimized ? "lg:w-20" : "w-64"} ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} ${className || ""}`}
       >
-        <div className="flex flex-col p-4 border-b border-[#2D2D2D] bg-[#000000] gap-4 lg:hidden">
+        <div className="flex flex-col p-4 border-b border-border bg-background gap-4 lg:hidden">
           <div className="flex items-center justify-end">
-            <button
+            <Button
               onClick={toggleSidebar}
-              className="text-white hover:text-[#BFF367] transition-colors"
+              className="text-white hover:text-primary transition-colors"
             >
               <X size={20} />
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -135,7 +136,7 @@ const ProfessionalSidebar = ({
           </nav>
         </div>
 
-        <div className="p-2 border-t border-[#2D2D2D] space-y-1 mb-4">
+        <div className="p-2 border-t border-border space-y-1 mb-4">
           {bottomNavItems.map(renderNavItem)}
         </div>
       </aside>

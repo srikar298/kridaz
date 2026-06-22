@@ -12,17 +12,18 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";import { Button, Textarea } from "@kridaz/ui";
+
 
 /**
  * ProfessionalReviews ΓÇö High-fidelity feedback management.
- * Fully rebranded for the Scorer Portal with Teal Green (#BFF367) and Inter font.
+ * Fully rebranded for the Scorer Portal with Teal Green (var(--primary)) and Inter font.
  */
 
 export default function ProfessionalReviews() {
   const { role, user: authUser } = useSelector((state) => state.auth);
   const isScorer = role?.toLowerCase().includes("scorer");
-  const themeColor = isScorer ? "#BFF367" : "#BFF367";
+  const themeColor = isScorer ? "var(--primary)" : "var(--primary)";
 
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -120,7 +121,7 @@ export default function ProfessionalReviews() {
 
       {reviews.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-32 bg-black rounded-[8px] border-2 border-white/5 border-dashed p-12 text-center shadow-2xl relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#BFF367]/5 to-transparent opacity-50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-50" />
           <MessageSquare
             size={64}
             className="text-neutral-900 mb-6 relative z-10"
@@ -138,9 +139,9 @@ export default function ProfessionalReviews() {
           {reviews.map((review) => (
             <div
               key={review._id}
-              className="bg-black border border-white/5 rounded-[8px] overflow-hidden group hover:border-[#BFF367]/20 transition-all duration-500 shadow-2xl relative"
+              className="bg-black border border-white/5 rounded-[8px] overflow-hidden group hover:border-primary/20 transition-all duration-500 shadow-2xl relative"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#BFF367]/5 blur-3xl pointer-events-none" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl pointer-events-none" />
               <div className="p-8 lg:p-10 relative z-10">
                 <div className="flex flex-col md:flex-row justify-between items-start mb-10 gap-6">
                   <div className="flex gap-5">
@@ -149,7 +150,7 @@ export default function ProfessionalReviews() {
                         review.user?._id &&
                         navigate(`/profile/${review.user._id}`)
                       }
-                      className="w-16 h-16 rounded-[8px] border border-white/5 overflow-hidden cursor-pointer hover:border-[#BFF367]/50 transition-all shadow-xl group-hover:scale-105"
+                      className="w-16 h-16 rounded-[8px] border border-white/5 overflow-hidden cursor-pointer hover:border-primary/50 transition-all shadow-xl group-hover:scale-105"
                     >
                       {review.user?.profilePicture ? (
                         <img
@@ -174,7 +175,7 @@ export default function ProfessionalReviews() {
                         {review.user?.name}
                       </h4>
                       <div className="flex items-center gap-3 mt-2">
-                        <div className="flex items-center gap-1.5 px-3 py-1 bg-[#BFF367]/10 rounded-[6px] border border-[#BFF367]/20">
+                        <div className="flex items-center gap-1.5 px-3 py-1 bg-primary/10 rounded-[6px] border border-primary/20">
                           <BadgeCheck size={12} style={{ color: themeColor }} />
                           <p
                             className="text-[9px] font-black uppercase tracking-[0.1em] font-inter"
@@ -204,7 +205,7 @@ export default function ProfessionalReviews() {
                   </div>
                 </div>
 
-                <div className="relative p-8 bg-white/[0.02] border border-white/5 rounded-[8px] mb-10 group-hover:border-[#BFF367]/10 transition-all">
+                <div className="relative p-8 bg-white/[0.02] border border-white/5 rounded-[8px] mb-10 group-hover:border-primary/10 transition-all">
                   <p className="text-[15px] text-neutral-400 font-inter leading-relaxed italic">
                     "{review.comment}"
                   </p>
@@ -228,21 +229,21 @@ export default function ProfessionalReviews() {
                 ) : replyingTo === review._id ? (
                   <div className="ml-6 md:ml-12 space-y-6 animate-in slide-in-from-top-4 duration-300 relative z-20">
                     <div className="relative">
-                      <textarea
+                      <Textarea
                         placeholder="Draft your official response..."
-                        className="w-full bg-white/[0.03] border border-white/5 rounded-[8px] p-6 text-[14px] text-white focus:border-[#BFF367]/50 outline-none h-32 resize-none font-inter font-medium transition-all"
+                        className="w-full bg-white/[0.03] border border-white/5 rounded-[8px] p-6 text-[14px] text-white focus:border-primary/50 outline-none h-32 resize-none font-inter font-medium transition-all"
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
                       />
-                      <button
+                      <Button
                         onClick={() => setReplyingTo(null)}
                         className="absolute top-4 right-4 p-2 text-neutral-600 hover:text-white transition-colors"
                       >
                         <X size={18} />
-                      </button>
+                      </Button>
                     </div>
                     <div className="flex gap-4">
-                      <button
+                      <Button
                         onClick={() => handleReply(review._id)}
                         disabled={actionLoading}
                         className="flex-[2] h-14 text-black rounded-[8px] font-black uppercase text-[11px] tracking-[0.2em] flex items-center justify-center gap-3 transition-all active:scale-95 shadow-2xl"
@@ -257,23 +258,23 @@ export default function ProfessionalReviews() {
                           <Send size={18} />
                         )}{" "}
                         Dispatch Response
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() => setReplyingTo(null)}
                         className="flex-1 h-14 bg-white/5 text-neutral-500 border border-white/5 rounded-[8px] font-black uppercase text-[11px] tracking-[0.2em] hover:bg-white/10 hover:text-white transition-all"
                       >
                         Cancel
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ) : (
-                  <button
+                  <Button
                     onClick={() => setReplyingTo(review._id)}
-                    className="ml-6 md:ml-12 px-6 py-3 bg-white/[0.03] border border-white/5 rounded-[8px] text-[11px] font-black uppercase tracking-[0.2em] flex items-center gap-3 hover:bg-[#BFF367]/10 hover:border-[#BFF367]/30 transition-all font-inter"
+                    className="ml-6 md:ml-12 px-6 py-3 bg-white/[0.03] border border-white/5 rounded-[8px] text-[11px] font-black uppercase tracking-[0.2em] flex items-center gap-3 hover:bg-primary/10 hover:border-primary/30 transition-all font-inter"
                     style={{ color: themeColor }}
                   >
                     <MessageSquare size={16} /> Lodge Official Reply
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>

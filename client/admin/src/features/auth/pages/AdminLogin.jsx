@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { login } from "../../../redux/slices/authSlice";
 import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
-import { ArrowRight, ShieldCheck, Lock, User, Terminal } from "lucide-react";
+import { ArrowRight, ShieldCheck, Lock, User, Terminal } from "lucide-react";import { Button, Input } from "@kridaz/ui";
+
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -100,7 +101,7 @@ export default function AdminLogin() {
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors">
                     <User size={16} />
                   </div>
-                  <input
+                  <Input
                     {...register("email", {
                       required: "Username/Email is required",
                     })}
@@ -125,7 +126,7 @@ export default function AdminLogin() {
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors">
                     <Lock size={16} />
                   </div>
-                  <input
+                  <Input
                     {...register("password", {
                       required: "Password is required",
                     })}
@@ -142,14 +143,14 @@ export default function AdminLogin() {
               </div>
 
               {/* Submit Action */}
-              <button
+              <Button
                 type="submit"
                 disabled={loading}
                 className="w-full bg-primary hover:bg-[#3cc5ce] text-black h-12 rounded-lg font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all disabled:opacity-50 mt-8"
               >
                 {loading ? "Authenticating Key..." : "Establish Secure Session"}
                 {!loading && <ArrowRight size={16} />}
-              </button>
+              </Button>
             </form>
           </div>
 

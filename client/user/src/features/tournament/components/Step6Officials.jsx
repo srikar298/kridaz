@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ArrowRight, ArrowLeft, ShieldCheck, CreditCard } from "lucide-react";
+import { ArrowRight, ArrowLeft, ShieldCheck, CreditCard } from "lucide-react";import { Button, Input } from "@kridaz/ui";
+
 
 const Step6Officials = ({ formData, onNext, onBack, isLoading }) => {
   const [localData, setLocalData] = useState({
@@ -47,23 +48,23 @@ const Step6Officials = ({ formData, onNext, onBack, isLoading }) => {
     const config = officialsConfig[role];
     return (
       <div
-        className={`p-4 rounded-xl border transition-all ${config.needed ? "bg-[#111] border-[#BFF367]" : "bg-[#0a0a0a] border-white/5 opacity-60"}`}
+        className={`p-4 rounded-xl border transition-all ${config.needed ? "bg-card border-primary" : "bg-background border-white/5 opacity-60"}`}
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center ${config.needed ? "bg-[#BFF367] text-black" : "bg-[#1a1a1a] text-white/50"}`}
+              className={`w-10 h-10 rounded-full flex items-center justify-center ${config.needed ? "bg-primary text-black" : "bg-card text-white/50"}`}
             >
               {icon}
             </div>
             <p className="font-bold text-white text-sm">{role}</p>
           </div>
-          <button
+          <Button
             onClick={() => handleToggle(role)}
             className={`px-4 py-1.5 rounded-full text-xs font-bold ${config.needed ? "bg-red-500/20 text-red-500 hover:bg-red-500/30" : "bg-white/10 text-white hover:bg-white/20"}`}
           >
             {config.needed ? "Remove" : "Require"}
-          </button>
+          </Button>
         </div>
 
         {config.needed && (
@@ -72,22 +73,22 @@ const Step6Officials = ({ formData, onNext, onBack, isLoading }) => {
               Number required per match
             </span>
             <div className="flex items-center gap-3">
-              <button
+              <Button
                 onClick={() => handleCountChange(role, -1)}
-                className="w-6 h-6 rounded-full bg-[#1a1a1a] flex items-center justify-center text-white hover:bg-white/10 disabled:opacity-30"
+                className="w-6 h-6 rounded-full bg-card flex items-center justify-center text-white hover:bg-white/10 disabled:opacity-30"
                 disabled={config.count <= 1}
               >
                 -
-              </button>
+              </Button>
               <span className="text-sm font-black w-4 text-center">
                 {config.count}
               </span>
-              <button
+              <Button
                 onClick={() => handleCountChange(role, 1)}
-                className="w-6 h-6 rounded-full bg-[#1a1a1a] flex items-center justify-center text-white hover:bg-white/10"
+                className="w-6 h-6 rounded-full bg-card flex items-center justify-center text-white hover:bg-white/10"
               >
                 +
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -99,13 +100,13 @@ const Step6Officials = ({ formData, onNext, onBack, isLoading }) => {
     <div className="space-y-8 animate-fade-in pb-20">
       <section className="space-y-4">
         <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
-          <ShieldCheck size={16} className="text-[#55DEE8]" />
+          <ShieldCheck size={16} className="text-secondary" />
           Require KRIDAZ Officials
         </h2>
 
-        <label className="flex items-center gap-3 p-4 bg-[#111] rounded-xl border border-white/5 cursor-pointer hover:border-white/20 transition-colors mb-6">
+        <label className="flex items-center gap-3 p-4 bg-card rounded-xl border border-white/5 cursor-pointer hover:border-white/20 transition-colors mb-6">
           <div className="relative flex items-center justify-center">
-            <input
+            <Input
               type="checkbox"
               checked={localData.details.requireKridazOfficials}
               onChange={(e) =>
@@ -117,7 +118,7 @@ const Step6Officials = ({ formData, onNext, onBack, isLoading }) => {
                   },
                 }))
               }
-              className="peer appearance-none w-5 h-5 border-2 border-white/20 rounded bg-transparent checked:bg-[#55DEE8] checked:border-[#55DEE8] transition-all"
+              className="peer appearance-none w-5 h-5 border-2 border-white/20 rounded bg-transparent checked:bg-secondary checked:border-secondary transition-all"
             />
             <div className="absolute text-black opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
               <svg
@@ -165,14 +166,14 @@ const Step6Officials = ({ formData, onNext, onBack, isLoading }) => {
 
       <section className="space-y-4 pt-4 border-t border-white/5">
         <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
-          <CreditCard size={16} className="text-[#BFF367]" />
+          <CreditCard size={16} className="text-primary" />
           Match Fees
         </h2>
 
         <div className="space-y-3">
           <p className="text-xs text-white/50">Who pays the officials?</p>
           <div className="flex gap-3">
-            <button
+            <Button
               onClick={() =>
                 setLocalData((prev) => ({
                   ...prev,
@@ -181,13 +182,13 @@ const Step6Officials = ({ formData, onNext, onBack, isLoading }) => {
               }
               className={`flex-1 p-4 rounded-xl border text-center transition-all ${
                 localData.details.officialsPayment === "Organizer"
-                  ? "bg-[#BFF367] border-[#BFF367] text-black font-black"
-                  : "bg-[#111] border-white/10 text-white/70 hover:border-white/30 font-bold"
+                  ? "bg-primary border-primary text-black font-black"
+                  : "bg-card border-white/10 text-white/70 hover:border-white/30 font-bold"
               }`}
             >
               Organizer Pays
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() =>
                 setLocalData((prev) => ({
                   ...prev,
@@ -196,34 +197,34 @@ const Step6Officials = ({ formData, onNext, onBack, isLoading }) => {
               }
               className={`flex-1 p-4 rounded-xl border text-center transition-all ${
                 localData.details.officialsPayment === "Teams"
-                  ? "bg-[#BFF367] border-[#BFF367] text-black font-black"
-                  : "bg-[#111] border-white/10 text-white/70 hover:border-white/30 font-bold"
+                  ? "bg-primary border-primary text-black font-black"
+                  : "bg-card border-white/10 text-white/70 hover:border-white/30 font-bold"
               }`}
             >
               Teams Split
-            </button>
+            </Button>
           </div>
         </div>
       </section>
 
       {/* Bottom Fixed Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#000] via-[#000]/90 to-transparent pt-12 pb-6 px-4 z-40">
+      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/90 to-transparent pt-12 pb-6 px-4 z-40">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <button
+          <Button
             onClick={onBack}
             className="flex items-center gap-2 text-white/70 hover:text-white px-4 py-2 font-bold text-xs uppercase tracking-wider transition-colors"
           >
             <ArrowLeft size={16} /> Back
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={submit}
             disabled={isLoading}
-            className="flex items-center gap-2 bg-[#BFF367] text-black font-black px-8 py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-xs"
+            className="flex items-center gap-2 bg-primary text-black font-black px-8 py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-xs"
           >
             {isLoading ? "Saving..." : "Continue"}
             <ArrowRight size={16} />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

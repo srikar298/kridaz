@@ -1,19 +1,17 @@
 import QRCode from "qrcode";
-import cloudinary from "./cloudinary.js";
+import { uploadToR2 } from "./r2Upload.js";
 import logger from "./logger.js";
 
 async function generateQRCode(url) {
   try {
-    // Generate QR code as a data URL for the provided URL
-    const qrCodeDataURL = await QRCode.toDataURL(url);
+    // Generate QR code as a buffer for the provided URL
+    const qrCodeBuffer = await QRCode.toBuffer(url);
 
-    // Upload the QR code to Cloudinary
-    const uploadResponse = await cloudinary.uploader.upload(qrCodeDataURL, {
-      folder: "kridaz/qrcode",
-    });
+    // Upload the QR code to R2
+    const uploadUrl = await uploadToR2(qrCodeBuffer, "kridaz/qrcode", "image/png");
 
     logger.info("QR code URL generated and uploaded successfully!");
-    return uploadResponse.secure_url;
+    return uploadUrl;
   } catch (error) {
     logger.error("Error generating or uploading QR code:", error);
     throw error;

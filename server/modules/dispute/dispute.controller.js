@@ -9,7 +9,7 @@ import {
 } from "@kridaz/common";
 import NotificationService from "../../services/notification.service.js";
 import logger from "../../utils/logger.js";
-import { uploadToCloudinary } from "../../utils/cloudinary.js";
+import { uploadToR2 } from "../../utils/r2Upload.js";
 
 /**
  * USER: Raise a new dispute for a booking in the IN_REVIEW_WINDOW
@@ -29,7 +29,7 @@ export const raiseDispute = async (req, res) => {
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
-        const url = await uploadToCloudinary(file.buffer, "disputes");
+        const url = await uploadToR2(file.buffer, "disputes");
         imageUrls.push(url);
       }
     }

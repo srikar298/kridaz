@@ -7,7 +7,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useSelector } from "react-redux";
-import axios from "axios";
+import axios from "axios";import { Button, Textarea } from "@kridaz/ui";
+
 
 const ReviewsTab = ({ role }) => {
   const user = useSelector((state) => state.auth?.user);
@@ -96,9 +97,9 @@ const ReviewsTab = ({ role }) => {
   return (
     <div className="space-y-6 text-white font-inter">
       {/* Overall Score Card */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-2xl bg-[#141414] border border-[#2D2D2D] items-center">
-        <div className="text-center space-y-2 md:border-r md:border-[#2D2D2D] py-4">
-          <h2 className="text-5xl font-black text-[#BFF367]">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-2xl bg-[#141414] border border-border items-center">
+        <div className="text-center space-y-2 md:border-r md:border-border py-4">
+          <h2 className="text-5xl font-black text-primary">
             {rating.toFixed(1)}
           </h2>
           <div className="flex justify-center gap-1">
@@ -114,7 +115,7 @@ const ReviewsTab = ({ role }) => {
               />
             ))}
           </div>
-          <p className="text-xs text-[#878C9F] font-semibold uppercase tracking-wider">
+          <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
             {numReviews} Reviews total
           </p>
         </div>
@@ -125,17 +126,17 @@ const ReviewsTab = ({ role }) => {
             const percentage = numReviews > 0 ? (count / numReviews) * 100 : 0;
             return (
               <div key={stars} className="flex items-center gap-3 text-xs">
-                <span className="w-3 text-[#878C9F] text-right font-semibold">
+                <span className="w-3 text-muted-foreground text-right font-semibold">
                   {stars}
                 </span>
                 <Star size={12} className="text-yellow-400 fill-yellow-400" />
-                <div className="flex-1 h-2 bg-black rounded-full overflow-hidden border border-[#2D2D2D]">
+                <div className="flex-1 h-2 bg-black rounded-full overflow-hidden border border-border">
                   <div
-                    className="h-full bg-[#BFF367] rounded-full transition-all duration-500"
+                    className="h-full bg-primary rounded-full transition-all duration-500"
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
-                <span className="w-6 text-[#878C9F] text-left font-semibold">
+                <span className="w-6 text-muted-foreground text-left font-semibold">
                   {count}
                 </span>
               </div>
@@ -153,22 +154,22 @@ const ReviewsTab = ({ role }) => {
 
       {/* Reviews List */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-[#878C9F] border-b border-[#2D2D2D] pb-3">
+        <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border pb-3">
           Customer Testimonials
         </h3>
 
         {isLoading ? (
-          <div className="py-12 text-center text-[#878C9F]">
+          <div className="py-12 text-center text-muted-foreground">
             Loading reviews...
           </div>
         ) : reviews.length === 0 ? (
-          <div className="p-12 text-center bg-[#141414] border border-[#2D2D2D] rounded-2xl space-y-4">
+          <div className="p-12 text-center bg-[#141414] border border-border rounded-2xl space-y-4">
             <div className="mx-auto w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-gray-500">
               <MessageSquare size={20} />
             </div>
             <div>
               <h4 className="font-bold">No feedback yet</h4>
-              <p className="text-sm text-[#878C9F] mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Completed bookings and check-ins will accumulate feedback here.
               </p>
             </div>
@@ -178,11 +179,11 @@ const ReviewsTab = ({ role }) => {
             {reviews.map((review) => (
               <div
                 key={review.id}
-                className="p-5 rounded-2xl bg-[#141414] border border-[#2D2D2D] space-y-4"
+                className="p-5 rounded-2xl bg-[#141414] border border-border space-y-4"
               >
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#BFF367]/10 text-[#BFF367] flex items-center justify-center font-bold text-sm uppercase">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm uppercase">
                       {review.user?.name?.charAt(0) || "U"}
                     </div>
                     <div>
@@ -204,7 +205,7 @@ const ReviewsTab = ({ role }) => {
                       </div>
                     </div>
                   </div>
-                  <span className="text-[10px] text-[#878C9F] font-semibold">
+                  <span className="text-[10px] text-muted-foreground font-semibold">
                     {new Date(review.createdAt).toLocaleDateString("en-IN", {
                       dateStyle: "medium",
                     })}
@@ -217,12 +218,12 @@ const ReviewsTab = ({ role }) => {
 
                 {/* Reply section */}
                 {review.reply ? (
-                  <div className="ml-8 p-4 rounded-xl bg-black/40 border border-[#2D2D2D] space-y-2">
-                    <div className="flex items-center gap-2 text-xs text-[#BFF367] font-bold">
+                  <div className="ml-8 p-4 rounded-xl bg-black/40 border border-border space-y-2">
+                    <div className="flex items-center gap-2 text-xs text-primary font-bold">
                       <CornerDownRight size={14} />
                       <span>Your Response</span>
                       {review.replyDate && (
-                        <span className="text-[10px] text-[#878C9F] font-normal">
+                        <span className="text-[10px] text-muted-foreground font-normal">
                           •{" "}
                           {new Date(review.replyDate).toLocaleDateString(
                             "en-IN",
@@ -238,44 +239,44 @@ const ReviewsTab = ({ role }) => {
                 ) : replyingTo === review.id ? (
                   <form
                     onSubmit={(e) => handleReplySubmit(e, review.id)}
-                    className="ml-8 space-y-2 border-l border-[#2D2D2D] pl-4"
+                    className="ml-8 space-y-2 border-l border-border pl-4"
                   >
-                    <textarea
+                    <Textarea
                       required
                       placeholder="Write your response to the user..."
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
-                      className="w-full bg-black border border-[#2D2D2D] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#BFF367] min-h-[80px]"
+                      className="w-full bg-black border border-border rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-primary min-h-[80px]"
                     />
                     <div className="flex gap-2 justify-end">
-                      <button
+                      <Button
                         type="button"
                         onClick={() => setReplyingTo(null)}
-                        className="border border-[#2D2D2D] hover:bg-white/5 text-white font-semibold rounded-lg px-3 py-1.5 text-xs"
+                        className="border border-border hover:bg-white/5 text-white font-semibold rounded-lg px-3 py-1.5 text-xs"
                       >
                         Cancel
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         type="submit"
                         disabled={isSubmittingReply}
-                        className="bg-[#BFF367] hover:bg-[#44cdd7] text-black font-semibold rounded-lg px-4 py-1.5 text-xs"
+                        className="bg-primary hover:bg-[#44cdd7] text-black font-semibold rounded-lg px-4 py-1.5 text-xs"
                       >
                         Submit Response
-                      </button>
+                      </Button>
                     </div>
                   </form>
                 ) : (
                   <div className="flex justify-end pr-2">
-                    <button
+                    <Button
                       onClick={() => {
                         setReplyingTo(review.id);
                         setReplyText("");
                       }}
-                      className="text-xs text-[#BFF367] hover:text-white font-semibold flex items-center gap-1 transition-colors"
+                      className="text-xs text-primary hover:text-white font-semibold flex items-center gap-1 transition-colors"
                     >
                       <span>Reply to testimonial</span>
                       <ArrowRight size={12} />
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>

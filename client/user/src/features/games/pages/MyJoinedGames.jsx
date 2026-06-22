@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 import {
   Users,
   LogOut,
@@ -169,7 +170,7 @@ const MyJoinedGames = () => {
   return (
     <div className="min-h-screen bg-neutral-900 text-white p-4 pb-24">
       <div className="max-w-4xl mx-auto mb-8">
-        <h1 className="text-3xl font-black tracking-tighter font-open-sans text-transparent bg-clip-text bg-gradient-to-r from-[#BFF367] to-[#BFF367] mb-2 uppercase">
+        <h1 className="text-3xl font-black tracking-tighter font-open-sans text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary mb-2 uppercase">
           MY JOINED MATCHES
         </h1>
         <p className="text-neutral-400 text-[20px]" style={SUBHEADING_STYLE}>
@@ -183,25 +184,25 @@ const MyJoinedGames = () => {
             className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500"
             size={20}
           />
-          <input
+          <Input
             type="text"
             placeholder="Search by Host, Team or Match Type..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-neutral-800/50 border border-neutral-800 rounded-[8px] py-3 pl-12 pr-4 text-white focus:outline-none focus:border-[#BFF367] transition-colors placeholder:text-neutral-600 font-inter"
+            className="w-full bg-neutral-800/50 border border-neutral-800 rounded-[8px] py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary transition-colors placeholder:text-neutral-600 font-inter"
           />
         </div>
-        <select
+        <Select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="bg-neutral-800/50 border border-neutral-800 rounded-[8px] py-3 px-4 text-white focus:outline-none focus:border-[#BFF367] transition-colors appearance-none min-w-[150px] font-inter font-bold"
+          className="bg-neutral-800/50 border border-neutral-800 rounded-[8px] py-3 px-4 text-white focus:outline-none focus:border-primary transition-colors appearance-none min-w-[150px] font-inter font-bold"
         >
           <option value="ALL">All Status</option>
           <option value="JOINED">Joined</option>
           <option value="PENDING">Pending Approval</option>
           <option value="COMPLETED">Completed</option>
           <option value="CANCELLED">Cancelled</option>
-        </select>
+        </Select>
       </div>
 
       <div className="max-w-4xl mx-auto space-y-6">
@@ -215,7 +216,7 @@ const MyJoinedGames = () => {
         ) : filteredGames.length === 0 ? (
           <div className="py-20 text-center bg-neutral-800/20 rounded-[8px] border-2 border-dashed border-neutral-800">
             <Trophy size={48} className="mx-auto mb-4 text-neutral-700" />
-            <h3 className="text-2xl md:text-3xl font-black tracking-tighter font-open-sans text-transparent bg-clip-text bg-gradient-to-r from-[#BFF367] to-[#BFF367] mb-2 uppercase">
+            <h3 className="text-2xl md:text-3xl font-black tracking-tighter font-open-sans text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary mb-2 uppercase">
               {joinedGames.length === 0
                 ? "No matches joined yet"
                 : "No matches found"}
@@ -229,12 +230,12 @@ const MyJoinedGames = () => {
                 : "Try adjusting your search filters"}
             </p>
             {joinedGames.length === 0 && (
-              <button
+              <Button
                 onClick={() => (window.location.href = "/join-games")}
-                className="px-8 py-3 bg-[#BFF367] text-black font-bold rounded-[8px]"
+                className="px-8 py-3 bg-primary text-black font-bold rounded-[8px]"
               >
                 Find Games
-              </button>
+              </Button>
             )}
           </div>
         ) : (
@@ -275,21 +276,21 @@ const MyJoinedGames = () => {
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="bg-[#BFF367]/10 text-[#BFF367] text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
+                        <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
                           {game.gameType}
                         </span>
                         {game.shortId && (
-                          <button
+                          <Button
                             onClick={() => {
                               navigator.clipboard?.writeText(game.shortId);
                               toast.success("Game ID copied!");
                             }}
-                            className="bg-neutral-900 border border-neutral-700 text-neutral-400 hover:text-[#BFF367] hover:border-[#BFF367]/40 text-[10px] font-black px-2 py-0.5 rounded-[6px] uppercase tracking-wider transition-all flex items-center gap-1"
+                            className="bg-neutral-900 border border-neutral-700 text-neutral-400 hover:text-primary hover:border-primary/40 text-[10px] font-black px-2 py-0.5 rounded-[6px] uppercase tracking-wider transition-all flex items-center gap-1"
                             title="Click to copy Game ID"
                           >
                             <Info size={10} />
                             ID: {game.shortId}
-                          </button>
+                          </Button>
                         )}
                       </div>
                       <h2 className="text-2xl font-black mt-1 uppercase tracking-tighter font-open-sans">
@@ -317,24 +318,24 @@ const MyJoinedGames = () => {
                         style={SUBHEADING_STYLE}
                       >
                         <div className="flex items-center gap-1 bg-neutral-900 px-3 py-1.5 rounded-[6px]">
-                          <Calendar size={14} className="text-[#BFF367]" />{" "}
+                          <Calendar size={14} className="text-primary" />{" "}
                           {new Date(game.date).toLocaleDateString()}
                         </div>
                         <div className="flex items-center gap-1 bg-neutral-900 px-3 py-1.5 rounded-[6px]">
-                          <Clock size={14} className="text-[#BFF367]" />{" "}
+                          <Clock size={14} className="text-primary" />{" "}
                           {game.time}
                         </div>
                         <div className="flex items-center gap-1 bg-neutral-900 px-3 py-1.5 rounded-[6px]">
                           <MapPin
                             size={14}
-                            className="text-[#BFF367] min-w-[14px]"
+                            className="text-primary min-w-[14px]"
                           />
                           {game.turf?.mapUrl ? (
                             <a
                               href={game.turf.mapUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="hover:text-[#BFF367] hover:underline transition-colors flex items-center gap-1 truncate max-w-[200px]"
+                              className="hover:text-primary hover:underline transition-colors flex items-center gap-1 truncate max-w-[200px]"
                               title={game.turf?.location || game.turf?.name}
                             >
                               {game.turf?.name ||
@@ -377,20 +378,20 @@ const MyJoinedGames = () => {
                           game.coinTransferStatus === "PENDING" && (
                             <>
                               {!game.myVote ? (
-                                <button
+                                <Button
                                   onClick={() => handleVoteStarted(game._id)}
                                   disabled={actionLoading}
                                   className="flex items-center gap-2 px-4 py-1.5 bg-green-500/20 text-green-500 text-[10px] font-black rounded-[6px] hover:bg-green-500 hover:text-white transition-all uppercase tracking-wider disabled:opacity-50"
                                 >
                                   <Trophy size={12} /> Game Started
-                                </button>
+                                </Button>
                               ) : (
                                 <span className="flex items-center gap-2 px-4 py-1.5 bg-green-500/10 border border-green-500/30 text-green-500 text-[10px] font-black rounded-[6px] uppercase tracking-wider">
                                   Voted Started
                                 </span>
                               )}
                               {isWithin24HoursOfStart(game.date, game.time) && (
-                                <button
+                                <Button
                                   onClick={() =>
                                     setDisputeModal({
                                       isOpen: true,
@@ -402,7 +403,7 @@ const MyJoinedGames = () => {
                                   className="flex items-center gap-2 px-4 py-1.5 bg-orange-500/20 text-orange-500 text-[10px] font-black rounded-[6px] hover:bg-orange-500 hover:text-black transition-all uppercase tracking-wider disabled:opacity-50"
                                 >
                                   <Info size={12} /> Raise Dispute
-                                </button>
+                                </Button>
                               )}
                             </>
                           )}
@@ -418,13 +419,13 @@ const MyJoinedGames = () => {
                         )}
 
                         {game.status !== "CANCELLED" && (
-                          <button
+                          <Button
                             onClick={() => handleLeave(game._id)}
                             disabled={actionLoading}
                             className="flex items-center gap-2 px-4 py-1.5 bg-neutral-800 text-neutral-400 text-[10px] font-black rounded-[6px] hover:bg-red-500 hover:text-white transition-all uppercase tracking-wider disabled:opacity-50"
                           >
                             <LogOut size={12} /> Leave Match
-                          </button>
+                          </Button>
                         )}
                       </div>
                     </div>
@@ -434,7 +435,7 @@ const MyJoinedGames = () => {
                         <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-wider mb-1">
                           Slot Collections
                         </p>
-                        <p className="text-xs font-black text-[#BFF367]">
+                        <p className="text-xs font-black text-primary">
                           {collectedCoins} / {totalPossibleCoins} Coins
                         </p>
                         <p className="text-[8px] text-neutral-500 mt-0.5">
@@ -449,7 +450,7 @@ const MyJoinedGames = () => {
                           {game.groundCost || 0} Coins
                         </p>
                         {(game.turf?.name || game.ground?.name) && (
-                          <p className="text-[8px] text-[#BFF367] truncate max-w-full px-2 mt-0.5">
+                          <p className="text-[8px] text-primary truncate max-w-full px-2 mt-0.5">
                             {game.turf?.name || game.ground?.name}
                           </p>
                         )}
@@ -475,7 +476,7 @@ const MyJoinedGames = () => {
                               }
                               className="flex flex-col items-center gap-0.5 group"
                             >
-                              <div className="w-6 h-6 rounded-full overflow-hidden border border-neutral-700 group-hover:border-[#BFF367] transition-colors">
+                              <div className="w-6 h-6 rounded-full overflow-hidden border border-neutral-700 group-hover:border-primary transition-colors">
                                 {game.umpire.profilePicture ? (
                                   <img
                                     src={game.umpire.profilePicture}
@@ -492,7 +493,7 @@ const MyJoinedGames = () => {
                                 )}
                               </div>
                               <span
-                                className="text-[8px] text-neutral-400 group-hover:text-[#BFF367] transition-colors truncate max-w-[40px] text-center"
+                                className="text-[8px] text-neutral-400 group-hover:text-primary transition-colors truncate max-w-[40px] text-center"
                                 title="Umpire"
                               >
                                 {game.umpire.name?.split(" ")[0] || "Umpire"}
@@ -508,7 +509,7 @@ const MyJoinedGames = () => {
                               }
                               className="flex flex-col items-center gap-0.5 group"
                             >
-                              <div className="w-6 h-6 rounded-full overflow-hidden border border-neutral-700 group-hover:border-[#BFF367] transition-colors">
+                              <div className="w-6 h-6 rounded-full overflow-hidden border border-neutral-700 group-hover:border-primary transition-colors">
                                 {game.scorer.profilePicture ? (
                                   <img
                                     src={game.scorer.profilePicture}
@@ -525,7 +526,7 @@ const MyJoinedGames = () => {
                                 )}
                               </div>
                               <span
-                                className="text-[8px] text-neutral-400 group-hover:text-[#BFF367] transition-colors truncate max-w-[40px] text-center"
+                                className="text-[8px] text-neutral-400 group-hover:text-primary transition-colors truncate max-w-[40px] text-center"
                                 title="Scorer"
                               >
                                 {game.scorer.name?.split(" ")[0] || "Scorer"}
@@ -541,7 +542,7 @@ const MyJoinedGames = () => {
                               }
                               className="flex flex-col items-center gap-0.5 group"
                             >
-                              <div className="w-6 h-6 rounded-full overflow-hidden border border-neutral-700 group-hover:border-[#BFF367] transition-colors">
+                              <div className="w-6 h-6 rounded-full overflow-hidden border border-neutral-700 group-hover:border-primary transition-colors">
                                 {game.streamer.profilePicture ? (
                                   <img
                                     src={game.streamer.profilePicture}
@@ -558,7 +559,7 @@ const MyJoinedGames = () => {
                                 )}
                               </div>
                               <span
-                                className="text-[8px] text-neutral-400 group-hover:text-[#BFF367] transition-colors truncate max-w-[40px] text-center"
+                                className="text-[8px] text-neutral-400 group-hover:text-primary transition-colors truncate max-w-[40px] text-center"
                                 title="Streamer"
                               >
                                 {game.streamer.name?.split(" ")[0] ||
@@ -591,7 +592,7 @@ const MyJoinedGames = () => {
                       game.quickSlots &&
                       game.quickSlots.length > 0 && (
                         <div className="space-y-3 mb-6">
-                          <h4 className="text-[10px] font-black text-[#BFF367] uppercase tracking-[0.2em] mb-2 px-2">
+                          <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2 px-2">
                             QUICK MATCH SLOTS
                           </h4>
                           <div className="flex flex-wrap gap-4">
@@ -628,7 +629,7 @@ const MyJoinedGames = () => {
                                 )}
 
                                 <div
-                                  className={`absolute top-0 right-1 w-3 h-3 rounded-full border-2 border-[#121212] ${slot.status === "PENDING" ? "bg-amber-500" : slot.status === "HELD" ? "bg-blue-500" : slot.status === "JOINED" ? "bg-green-500" : "bg-neutral-600"}`}
+                                  className={`absolute top-0 right-1 w-3 h-3 rounded-full border-2 border-card ${slot.status === "PENDING" ? "bg-amber-500" : slot.status === "HELD" ? "bg-blue-500" : slot.status === "JOINED" ? "bg-green-500" : "bg-neutral-600"}`}
                                   title={slot.status}
                                 />
 
@@ -636,7 +637,7 @@ const MyJoinedGames = () => {
                                   {slot.user || slot.userId ? (
                                     <Link
                                       to={`/profile/${slot.user?._id || slot.userId}`}
-                                      className="text-[9px] font-bold text-white hover:text-[#BFF367] transition-colors uppercase tracking-tighter truncate block w-full"
+                                      className="text-[9px] font-bold text-white hover:text-primary transition-colors uppercase tracking-tighter truncate block w-full"
                                     >
                                       {slot.user?.name?.split(" ")[0] || "OPEN"}
                                     </Link>
@@ -655,7 +656,7 @@ const MyJoinedGames = () => {
                     {/* Team A Slots */}
                     {game.gameMode !== "QUICK" && (
                       <div className="space-y-3">
-                        <h4 className="text-[10px] font-black text-[#BFF367] uppercase tracking-[0.2em] mb-2 px-2">
+                        <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2 px-2">
                           {game.teams?.teamA?.name
                             ? `${game.teams.teamA.name} SLOTS`
                             : "HOME TEAM SLOTS"}
@@ -694,7 +695,7 @@ const MyJoinedGames = () => {
                               )}
 
                               <div
-                                className={`absolute top-0 right-1 w-3 h-3 rounded-full border-2 border-[#121212] ${slot.status === "PENDING" ? "bg-amber-500" : slot.status === "HELD" ? "bg-blue-500" : slot.status === "JOINED" ? "bg-green-500" : "bg-neutral-600"}`}
+                                className={`absolute top-0 right-1 w-3 h-3 rounded-full border-2 border-card ${slot.status === "PENDING" ? "bg-amber-500" : slot.status === "HELD" ? "bg-blue-500" : slot.status === "JOINED" ? "bg-green-500" : "bg-neutral-600"}`}
                                 title={slot.status}
                               />
 
@@ -702,7 +703,7 @@ const MyJoinedGames = () => {
                                 {slot.user ? (
                                   <Link
                                     to={`/profile/${slot.user._id || slot.user.id}`}
-                                    className="text-[9px] font-bold text-white hover:text-[#BFF367] transition-colors uppercase tracking-tighter truncate block w-full"
+                                    className="text-[9px] font-bold text-white hover:text-primary transition-colors uppercase tracking-tighter truncate block w-full"
                                   >
                                     {slot.user.name?.split(" ")[0] || "OPEN"}
                                   </Link>
@@ -722,7 +723,7 @@ const MyJoinedGames = () => {
                     {/* Team B Slots */}
                     {game.gameMode !== "QUICK" && (
                       <div className="space-y-3">
-                        <h4 className="text-[10px] font-black text-[#BFF367] uppercase tracking-[0.2em] mb-2 px-2">
+                        <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2 px-2">
                           {game.teams?.teamB?.name
                             ? `${game.teams.teamB.name} SLOTS`
                             : "AWAY TEAM SLOTS"}
@@ -761,7 +762,7 @@ const MyJoinedGames = () => {
                               )}
 
                               <div
-                                className={`absolute top-0 right-1 w-3 h-3 rounded-full border-2 border-[#121212] ${slot.status === "PENDING" ? "bg-amber-500" : slot.status === "HELD" ? "bg-blue-500" : slot.status === "JOINED" ? "bg-green-500" : "bg-neutral-600"}`}
+                                className={`absolute top-0 right-1 w-3 h-3 rounded-full border-2 border-card ${slot.status === "PENDING" ? "bg-amber-500" : slot.status === "HELD" ? "bg-blue-500" : slot.status === "JOINED" ? "bg-green-500" : "bg-neutral-600"}`}
                                 title={slot.status}
                               />
 
@@ -769,7 +770,7 @@ const MyJoinedGames = () => {
                                 {slot.user ? (
                                   <Link
                                     to={`/profile/${slot.user._id || slot.user.id}`}
-                                    className="text-[9px] font-bold text-white hover:text-[#BFF367] transition-colors uppercase tracking-tighter truncate block w-full"
+                                    className="text-[9px] font-bold text-white hover:text-primary transition-colors uppercase tracking-tighter truncate block w-full"
                                   >
                                     {slot.user.name?.split(" ")[0] || "OPEN"}
                                   </Link>
@@ -790,7 +791,7 @@ const MyJoinedGames = () => {
 
                 <div className="p-4 bg-neutral-900/50 flex items-center justify-between border-t border-neutral-800">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-[#BFF367]/10 rounded-full flex items-center justify-center border border-white/10 overflow-hidden shrink-0">
+                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center border border-white/10 overflow-hidden shrink-0">
                       {game.host?.profilePicture ? (
                         <img
                           src={game.host.profilePicture}
@@ -808,7 +809,7 @@ const MyJoinedGames = () => {
                           display: game.host?.profilePicture ? "none" : "flex",
                         }}
                       >
-                        <User size={16} className="text-[#BFF367]" />
+                        <User size={16} className="text-primary" />
                       </div>
                     </div>
                     <div className="text-[10px]">
@@ -830,7 +831,7 @@ const MyJoinedGames = () => {
       {/* Dispute Modal */}
       {disputeModal.isOpen && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#111] border border-neutral-800 p-8 rounded-[8px] w-full max-w-md animate-slide-up shadow-2xl">
+          <div className="bg-card border border-neutral-800 p-8 rounded-[8px] w-full max-w-md animate-slide-up shadow-2xl">
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h2 className="text-2xl font-black italic uppercase tracking-tighter text-white">
@@ -840,21 +841,21 @@ const MyJoinedGames = () => {
                   Team will review your issue
                 </p>
               </div>
-              <button
+              <Button
                 onClick={() =>
                   setDisputeModal({ isOpen: false, gameId: null, reason: "" })
                 }
                 className="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center text-neutral-400 hover:text-white transition-colors"
               >
                 ✕
-              </button>
+              </Button>
             </div>
             <form onSubmit={handleRaiseDispute} className="space-y-6">
               <div>
                 <label className="text-[10px] font-black text-neutral-500 uppercase tracking-widest block mb-2">
                   Reason for Dispute
                 </label>
-                <textarea
+                <Textarea
                   value={disputeModal.reason}
                   onChange={(e) =>
                     setDisputeModal({ ...disputeModal, reason: e.target.value })
@@ -863,13 +864,13 @@ const MyJoinedGames = () => {
                   className="w-full bg-neutral-900 border border-neutral-800 rounded-[8px] p-4 text-white focus:outline-none focus:border-orange-500 transition-colors h-32 resize-none font-medium"
                 />
               </div>
-              <button
+              <Button
                 type="submit"
                 disabled={actionLoading || !disputeModal.reason.trim()}
                 className="w-full py-4 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-black font-black uppercase italic tracking-tighter text-lg rounded-[8px] transition-all shadow-[0_0_20px_rgba(249,115,22,0.3)]"
               >
                 {actionLoading ? "Submitting..." : "Submit Dispute"}
-              </button>
+              </Button>
             </form>
           </div>
         </div>

@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../config/prisma.js";
 import { addDays, parseISO, format } from "date-fns";
-
-const prisma = new PrismaClient();
 
 /**
  * Standard Round-Robin Match Generator for a pool.

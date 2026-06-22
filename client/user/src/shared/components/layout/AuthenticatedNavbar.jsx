@@ -5,9 +5,6 @@ import {
   Bell,
   LogOut,
   Plus,
-  Command,
-  User,
-  ChevronDown,
   CreditCard,
   MessageSquare,
   AlertTriangle,
@@ -30,11 +27,12 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
 import { getDynamicProfileRoute } from "@utils/routeUtils";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button } from "@kridaz/ui";
+
 
 /**
  * AuthenticatedNavbar Rs � Role-aware top navigation.
- * Fully rebranded for Scorer users with Teal Green (#BFF367) and Inter typography.
+ * Fully rebranded for Scorer users with Teal Green (var(--primary)) and Inter typography.
  */
 
 const AuthenticatedNavbar = ({ toggleSidebar }) => {
@@ -51,7 +49,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
   const user = useSelector((state) => state?.auth?.user);
   const role = useSelector((state) => state?.auth?.role);
   const isScorer = role?.toLowerCase().includes("scorer");
-  const themeColor = isScorer ? "#BFF367" : "#BFF367";
+  const themeColor = isScorer ? "var(--primary)" : "var(--primary)";
 
   const { data: statsData } = useGetDashboardStatsQuery(undefined, {
     skip: !isProfessionalDashboard,
@@ -183,6 +181,9 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
   };
 
   const trustScore = statsData?.stats?.trustScore || 100;
+  const cityRank = statsData?.stats?.cityRank;
+  const stateRank = statsData?.stats?.stateRank;
+
   const trustMax = 100;
   const trustPercent = Math.min(
     100,
@@ -228,29 +229,29 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex flex-col font-inter">
       <nav
-        className={`bg-[#000000] border-b border-[#2D2D2D] px-4 md:px-8 pt-2 pb-2 lg:pt-0 h-[56px] lg:h-20 shadow-2xl flex items-center justify-between w-full box-border`}
+        className={`bg-background border-b border-border px-4 md:px-8 pt-2 pb-2 lg:pt-0 h-[56px] lg:h-20 shadow-2xl flex items-center justify-between w-full box-border`}
       >
-        <div className="flex items-center gap-4 lg:min-w-[200px]">
-          <button
+        <div className="flex items-center gap-4 lg:minw-[200px]">
+          <Button
             onClick={() => navigate(-1)}
-            className="p-1.5 transition-all duration-300 relative text-[#999999] hover:text-white bg-[#0d0d0d] border border-white/5 hover:border-[#BFF367]/30 rounded-full hover:bg-[#BFF367]/10 hover:text-[#BFF367] flex items-center justify-center outline-none"
+            className="p-1.5 transition-all duration-300 relative text-muted-foreground hover:text-white bg-background border border-white/5 hover:border-primary/30 rounded-full hover:bg-primary/10 hover:text-primary flex items-center justify-center outline-none"
             title="Go Back"
           >
             <ArrowLeft size={16} strokeWidth={2.5} />
-          </button>
+          </Button>
 
           {!isProfessionalDashboard && !isVenueOwner && (
-            <button
+            <Button
               className="p-2 text-white hover:opacity-80 transition-opacity lg:hidden"
               style={{ color: themeColor }}
               onClick={toggleSidebar}
             >
               <Menu size={24} />
-            </button>
+            </Button>
           )}
         </div>
 
-        <div className="flex items-center gap-3 sm:gap-5 lg:min-w-[200px] justify-end">
+        <div className="flex items-center gap-3 sm:gap-5 lg:minw-[200px] justify-end">
           {[
             "venu_owners",
             "owner",
@@ -259,12 +260,12 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
             "bmsp_owner",
           ].some((r) => role?.toLowerCase()?.includes(r)) && (
             <>
-              <button
+              <Button
                 onClick={() => setIsManualBookingOpen(true)}
                 className="hidden md:flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all shadow-xl active:scale-95"
                 style={{
                   background:
-                    "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)",
+                    "linear-gradient(90deg, var(--primary) 0%, var(--primary) 100%)",
                   color: "#000",
                   boxShadow: `0 5px 15px ${themeColor}33`,
                 }}
@@ -272,7 +273,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
               >
                 <Plus size={14} strokeWidth={3} />
                 <span>Manual Booking</span>
-              </button>
+              </Button>
               <ManualBookingModal
                 isOpen={isManualBookingOpen}
                 onClose={() => setIsManualBookingOpen(false)}
@@ -289,7 +290,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
           ].some((r) => role?.toLowerCase()?.includes(r)) && (
             <Link
               to="/venue-owner/support"
-              className="hidden md:flex p-2.5 rounded-[8px] bg-[#0d0d0d] text-[#999999] border border-white/5 hover:border-white/10 hover:text-white transition-all duration-300"
+              className="hidden md:flex p-2.5 rounded-[8px] bg-background text-muted-foreground border border-white/5 hover:border-white/10 hover:text-white transition-all duration-300"
               title="Docs & Support"
             >
               <HelpCircle size={20} />
@@ -297,18 +298,18 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
           )}
 
           <div className="relative">
-            <button
+            <Button
               onClick={() => {
                 navigate(`${getBasePath()}/notifications`);
                 setShowMobileMenu(false);
               }}
-              className="p-2 transition-all duration-300 relative text-[#999999] hover:text-white bg-transparent outline-none"
+              className="p-2 transition-all duration-300 relative text-muted-foreground hover:text-white bg-transparent outline-none"
             >
               <Bell size={20} />
               {unreadCount > 0 && (
-                <span className="absolute top-1 right-1 w-2 h-2 bg-[#B3DC26] rounded-full border-2 border-black" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full border-2 border-black" />
               )}
-            </button>
+            </Button>
           </div>
 
           <div className="h-8 w-[1px] bg-white/5 mx-1 hidden sm:block" />
@@ -317,7 +318,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
             <div className="flex relative">
               <Link
                 to={`/professional/${role}/support`}
-                className="flex items-center justify-center p-2.5 bg-transparent md:bg-[#0d0d0d] md:border border-white/5 hover:border-[#BFF367]/30 rounded-[8px] hover:bg-[#BFF367]/10 hover:text-[#BFF367] text-[#999999] hover:text-white transition-all duration-300"
+                className="flex items-center justify-center p-2.5 bg-transparent md:bg-background md:border border-white/5 hover:border-primary/30 rounded-[8px] hover:bg-primary/10 hover:text-primary text-muted-foreground hover:text-white transition-all duration-300"
                 title="Docs & Support"
               >
                 <Info size={24} strokeWidth={2.5} className="md:w-5 md:h-5" />
@@ -329,17 +330,17 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
 
       {/* Professional Sub-Bar — visible on ALL screen sizes */}
       {isProfessionalDashboard && user && (
-        <div className="bg-[#0A0A0A] border-b border-[#1a1a1a] px-6 md:px-8 py-3 w-full box-border">
+        <div className="bg-background border-b border-card px-6 md:px-8 py-3 w-full box-border">
           <div className="flex items-center justify-between gap-3">
             {/* Left: Online / Offline Toggle */}
             <div className="flex items-center gap-3 flex-1 min-w-0 pr-4">
-              <button
+              <Button
                 onClick={handleToggleOnline}
                 disabled={isToggling}
                 title={isOnline ? "Go Offline" : "Go Online"}
                 className={`relative w-12 h-6 rounded-full border transition-all duration-300 shrink-0 ${
                   isOnline
-                    ? "border-[#BFF367]/40 bg-[#BFF367]/15"
+                    ? "border-primary/40 bg-primary/15"
                     : "border-white/10 bg-white/5"
                 } ${isToggling ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:opacity-90 active:scale-95"}`}
               >
@@ -354,7 +355,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
                 <span
                   className={`absolute top-0.5 w-5 h-5 rounded-full shadow-md transition-all duration-300 flex items-center justify-center ${
                     isOnline
-                      ? "left-[calc(100%-1.375rem)] bg-[#BFF367]"
+                      ? "left-[calc(100%-1.375rem)] bg-primary"
                       : "left-0.5 bg-[#444]"
                   }`}
                 >
@@ -363,11 +364,11 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
                     className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-black" : "bg-gray-600"}`}
                   />
                 </span>
-              </button>
+              </Button>
               <div className="flex flex-col gap-0.5 flex-1 min-w-0">
                 <span
                   className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest truncate"
-                  style={{ color: isOnline ? "#BFF367" : "#555" }}
+                  style={{ color: isOnline ? "var(--primary)" : "#555" }}
                 >
                   {isOnline ? "Online" : "Offline"} Mode
                 </span>
@@ -379,63 +380,84 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
               </div>
             </div>
 
-            {/* Right: Trust Score Ring (clickable to go to Trust Score ledger) */}
-            <div
-              onClick={() =>
-                navigate(`/professional/${role?.toLowerCase()}/trust-score`)
-              }
-              className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:opacity-80 transition-opacity active:scale-95 duration-200 justify-end shrink-0"
-            >
-              <div className="flex flex-col text-right hidden sm:flex">
-                <span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">
-                  Trust
-                </span>
-                <span className="text-[10px] sm:text-xs font-black text-[#BFF367] uppercase">
-                  {trustScore} XP
-                </span>
-              </div>
+            {/* Right: Rankings & Trust Score */}
+            <div className="flex items-center gap-3 sm:gap-4 shrink-0 justify-end">
+              {/* Rankings */}
+              {(cityRank || stateRank) && (
+                <div className="flex flex-col text-right pr-3 border-r border-white/10">
+                  {cityRank && (
+                    <div className="flex items-center justify-end gap-1.5">
+                      <span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">City Rank</span>
+                      <span className="text-[10px] sm:text-xs font-black text-white">#{cityRank}</span>
+                    </div>
+                  )}
+                  {stateRank && (
+                    <div className="flex items-center justify-end gap-1.5 mt-0.5">
+                      <span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">State Rank</span>
+                      <span className="text-[10px] sm:text-xs font-black text-white">#{stateRank}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Trust Score Ring */}
               <div
-                className="relative flex items-center justify-center"
-                style={{ width: 40, height: 40 }}
+                onClick={() =>
+                  navigate(`/professional/${role?.toLowerCase()}/trust-score`)
+                }
+                className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:opacity-80 transition-opacity active:scale-95 duration-200"
               >
-                {/* SVG Ring */}
-                <svg
-                  width="40"
-                  height="40"
-                  viewBox="0 0 44 44"
-                  className="-rotate-90"
-                >
-                  {/* Background track */}
-                  <circle
-                    cx="22"
-                    cy="22"
-                    r={ringRadius}
-                    fill="transparent"
-                    stroke="#1a1a1a"
-                    strokeWidth="3"
-                  />
-                  {/* Progress arc */}
-                  <circle
-                    cx="22"
-                    cy="22"
-                    r={ringRadius}
-                    fill="transparent"
-                    stroke="#BFF367"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeDasharray={ringCircumference}
-                    strokeDashoffset={ringOffset}
-                    style={{
-                      transition: "stroke-dashoffset 0.8s ease",
-                      filter: "drop-shadow(0 0 4px rgba(191,243,103,0.4))",
-                    }}
-                  />
-                </svg>
-                {/* Center score */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-[10px] font-black text-[#BFF367] leading-none">
-                    {trustScore}
+                <div className="flex flex-col text-right hidden sm:flex">
+                  <span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">
+                    Trust
                   </span>
+                  <span className="text-[10px] sm:text-xs font-black text-primary uppercase">
+                    {trustScore} XP
+                  </span>
+                </div>
+                <div
+                  className="relative flex items-center justify-center"
+                  style={{ width: 40, height: 40 }}
+                >
+                  {/* SVG Ring */}
+                  <svg
+                    width="40"
+                    height="40"
+                    viewBox="0 0 44 44"
+                    className="-rotate-90"
+                  >
+                    {/* Background track */}
+                    <circle
+                      cx="22"
+                      cy="22"
+                      r={ringRadius}
+                      fill="transparent"
+                      stroke="var(--card)"
+                      strokeWidth="3"
+                    />
+                    {/* Progress arc */}
+                    <circle
+                      cx="22"
+                      cy="22"
+                      r={ringRadius}
+                      fill="transparent"
+                      stroke="var(--primary)"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeDasharray={ringCircumference}
+                      strokeDashoffset={ringOffset}
+                      style={{
+                        transition: "stroke-dashoffset 0.8s ease",
+                        filter: "drop-shadow(0 0 4px rgba(191,243,103,0.4))",
+                      }}
+                    />
+                  </svg>
+                  {/* Center score */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-[10px] font-black text-primary leading-none">
+                      {trustScore}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

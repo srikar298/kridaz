@@ -22,7 +22,8 @@ import {
   useLazyGetCommunityUploadUrlQuery,
   useConfirmCommunityPostMutation,
 } from "@redux/api/communityApi";
-import { uploadFileToR2 } from "@utils/mediaUpload";
+import { uploadFileToR2 } from "@utils/mediaUpload";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
 const SUBHEADING_STYLE = {
@@ -192,7 +193,7 @@ const CreatePostPage = () => {
   return (
     <div className="fixed inset-0 z-[100] w-full min-h-[100dvh] bg-black/95 flex items-center justify-center md:p-6 overflow-hidden">
       <div className="w-full h-[100dvh] md:h-full md:max-h-[800px] md:max-w-[500px] bg-[#050505] md:rounded-[32px] md:border md:border-white/10 shadow-2xl flex flex-col font-sans overflow-hidden relative">
-        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#BFF367]/10 to-transparent pointer-events-none" />
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none" />
 
         {/* Header */}
         <div className="relative px-5 py-4 border-b border-white/5 flex items-center justify-between gap-4 bg-black/40 backdrop-blur-md z-10">
@@ -216,8 +217,8 @@ const CreatePostPage = () => {
           <div className="flex items-center gap-3">
             {!editingPost && (
               <div className="relative">
-                <select
-                  className="border border-transparent rounded-[8px] py-2 pl-3 pr-8 text-black text-xs font-bold focus:outline-none transition-all appearance-none cursor-pointer bg-[#BFF367]"
+                <Select
+                  className="border border-transparent rounded-[8px] py-2 pl-3 pr-8 text-black text-xs font-bold focus:outline-none transition-all appearance-none cursor-pointer bg-primary"
                   style={{
                     fontFamily: "'Inter', sans-serif",
                   }}
@@ -243,7 +244,7 @@ const CreatePostPage = () => {
                       {s}
                     </option>
                   ))}
-                </select>
+                </Select>
                 <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-black/50">
                   <ChevronDown size={14} />
                 </div>
@@ -266,7 +267,7 @@ const CreatePostPage = () => {
               {user?.username || user?.name || "Player"}
             </span>
             <div
-              className="flex items-center gap-1 text-[10px] font-bold text-[#BFF367] uppercase tracking-wider mt-1"
+              className="flex items-center gap-1 text-[10px] font-bold text-primary uppercase tracking-wider mt-1"
               style={SUBHEADING_STYLE}
             >
               <Globe size={12} />
@@ -280,7 +281,7 @@ const CreatePostPage = () => {
           className="relative px-5 pb-5 pt-3 flex flex-col flex-1 min-h-0 z-10 space-y-4"
         >
           <div className="relative group/content flex-1 flex flex-col min-h-0 w-full">
-            <textarea
+            <Textarea
               value={content}
               onChange={(e) => {
                 setContent(e.target.value);
@@ -321,7 +322,7 @@ const CreatePostPage = () => {
                   {!editingPost && (
                     <motion.button
                       type="button"
-                      whileHover={{ scale: 1.08, backgroundColor: "#ef4444" }}
+                      whileHover={{ scale: 1.08, backgroundColor: "var(--destructive)" }}
                       whileTap={{ scale: 0.92 }}
                       onClick={() => {
                         const newFiles = [...mediaFiles];
@@ -355,15 +356,15 @@ const CreatePostPage = () => {
                         scale: 1.05,
                         backgroundColor: "rgba(85,222,232,0.08)",
                         border: "1px solid rgba(85,222,232,0.2)",
-                        color: "#BFF367",
+                        color: "var(--primary)",
                       }}
                       whileTap={{ scale: 0.95 }}
-                      className="p-3 bg-white/5 border border-white/10 rounded-xl text-neutral-400 hover:text-[#BFF367] transition-all flex items-center justify-center"
+                      className="p-3 bg-white/5 border border-white/10 rounded-xl text-neutral-400 hover:text-primary transition-all flex items-center justify-center"
                       title="Take Photo"
                     >
                       <Camera size={20} />
                     </motion.div>
-                    <input
+                    <Input
                       type="file"
                       multiple
                       onChange={handlePostImageChange}
@@ -379,15 +380,15 @@ const CreatePostPage = () => {
                         scale: 1.05,
                         backgroundColor: "rgba(85,222,232,0.08)",
                         border: "1px solid rgba(85,222,232,0.2)",
-                        color: "#BFF367",
+                        color: "var(--primary)",
                       }}
                       whileTap={{ scale: 0.95 }}
-                      className="p-3 bg-white/5 border border-white/10 rounded-xl text-neutral-400 hover:text-[#BFF367] transition-all flex items-center justify-center"
+                      className="p-3 bg-white/5 border border-white/10 rounded-xl text-neutral-400 hover:text-primary transition-all flex items-center justify-center"
                       title="Add Image from Gallery"
                     >
                       <ImageIcon size={20} />
                     </motion.div>
-                    <input
+                    <Input
                       type="file"
                       multiple
                       onChange={handlePostImageChange}
@@ -400,12 +401,12 @@ const CreatePostPage = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <button
+              <Button
                 type="submit"
                 disabled={
                   isPublishing || (!content.trim() && mediaFiles.length === 0)
                 }
-                className="bg-[#BFF367] text-black px-6 py-3 rounded-xl font-black uppercase tracking-wider text-sm flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#a5db4b]"
+                className="bg-primary text-black px-6 py-3 rounded-xl font-black uppercase tracking-wider text-sm flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#a5db4b]"
               >
                 {isPublishing ? (
                   <Loader2 size={16} className="animate-spin" />
@@ -413,7 +414,7 @@ const CreatePostPage = () => {
                   <Send size={16} />
                 )}
                 {isPublishing ? "Posting..." : "POST"}
-              </button>
+              </Button>
             </div>
           </div>
         </form>

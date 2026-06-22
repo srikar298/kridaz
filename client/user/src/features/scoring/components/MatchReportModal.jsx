@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { X, FileText, Clock, User, ShieldAlert, Zap } from "lucide-react";
-const THEME_COLOR = "#00C187";
+import { X, FileText, Clock, User, ShieldAlert, Zap } from "lucide-react";import { Button } from "@kridaz/ui";
+
+const THEME_COLOR = "var(--success)";
 export default function MatchReportModal({
   matchId,
   fetchMatchReport,
@@ -35,7 +36,7 @@ export default function MatchReportModal({
         className="absolute inset-0 bg-black/80 backdrop-blur-md"
         onClick={onClose}
       />
-      <div className="relative w-full max-w-3xl max-h-[85vh] bg-[#0A0A0A] border border-white/10 rounded-[8px] p-6 shadow-2xl flex flex-col animate-in zoom-in-95">
+      <div className="relative w-full max-w-3xl max-h-[85vh] bg-background border border-white/10 rounded-[8px] p-6 shadow-2xl flex flex-col animate-in zoom-in-95">
         {/* Header */}
         <div className="flex justify-between items-center mb-6 shrink-0">
           <div className="flex items-center gap-3">
@@ -46,22 +47,22 @@ export default function MatchReportModal({
               <h3 className="text-lg font-black uppercase tracking-widest text-white">
                 Match Report
               </h3>
-              <p className="text-[11px] text-[#00C187] uppercase tracking-[0.2em] font-black">
+              <p className="text-[11px] text-success uppercase tracking-[0.2em] font-black">
                 Detailed Metrics & Timers
               </p>
             </div>
           </div>
-          <button
+          <Button
             onClick={onClose}
             className="p-3 bg-white/5 rounded-[8px] text-neutral-400 hover:text-white transition-all border border-white/5 hover:border-white/20"
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         {loading ? (
           <div className="flex-1 flex items-center justify-center min-h-[300px]">
-            <div className="w-8 h-8 border-4 border-[#00C187] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-4 border-success border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto pr-2 space-y-6 custom-scrollbar">
@@ -94,7 +95,7 @@ export default function MatchReportModal({
                               key={idx}
                               className="bg-white/5 border border-white/10 rounded-[6px] px-2 py-1 flex items-center gap-2"
                             >
-                              <span className="text-[10px] font-black text-[#00C187] uppercase">
+                              <span className="text-[10px] font-black text-success uppercase">
                                 {prof.role}:
                               </span>
                               <span className="text-xs font-bold text-white">
@@ -125,7 +126,7 @@ export default function MatchReportModal({
                 <p className="text-[10px] text-neutral-500 font-black uppercase tracking-widest mb-1">
                   Match Status
                 </p>
-                <p className="text-sm font-black text-[#00C187]">
+                <p className="text-sm font-black text-success">
                   {report?.match?.status}
                 </p>
               </div>
@@ -199,7 +200,7 @@ export default function MatchReportModal({
                       </p>
                       <p className="text-sm font-black text-white">
                         {player.bowling?.wickets || 0}
-                        <span className="text-[#00C187] mx-1">-</span>
+                        <span className="text-success mx-1">-</span>
                         {player.bowling?.runs || 0}
                       </p>
                     </div>

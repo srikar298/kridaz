@@ -66,10 +66,11 @@ import { StoryViewer } from "@features/networking";
 import EditProfileModal from "@components/modals/EditProfileModal";
 import RequestProModal from "../components/RequestProModal";
 import { useSocket } from "@context/SocketContext";
-import { isProfessionalRole, getDynamicProfileRoute } from "@utils/routeUtils";
+import { isProfessionalRole, getDynamicProfileRoute } from "@utils/routeUtils";import { Button, Input, Select } from "@kridaz/ui";
 
-const PRI = "#BFF367"; // New primary lime accent matching the gradient vibrant stop
-const SEC = "#BFF367"; // Secondary cyan accent matching the gradient cool stop
+
+const PRI = "var(--primary)"; // New primary lime accent matching the gradient vibrant stop
+const SEC = "var(--primary)"; // Secondary cyan accent matching the gradient cool stop
 
 // --- STYLE TOKENS ---
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
@@ -91,7 +92,7 @@ const QuickStatCard = ({ icon: Icon, label, value, showDivider }) => (
           {label}
         </span>
       </div>
-      <div className="text-2xl font-black bg-gradient-to-r from-[#BFF367] to-[#BFF367] bg-clip-text text-transparent tracking-tighter leading-none">
+      <div className="text-2xl font-black bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent tracking-tighter leading-none">
         {value}
       </div>
     </div>
@@ -101,19 +102,19 @@ const QuickStatCard = ({ icon: Icon, label, value, showDivider }) => (
 const AchievementCard = ({ icon: Icon, title, rarity, year }) => {
   const rarityColors = {
     platinum: "from-cyan-400 to-blue-400",
-    gold: "from-[#BFF367] to-[#BFF367]",
+    gold: "from-primary to-primary",
     silver: "from-gray-300 to-gray-400",
   };
   return (
     <div className="group relative rounded-[8px] p-[1px] transition-all duration-300 cursor-pointer overflow-hidden">
       {/* Gradient Border Overlay - Only visible on hover */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#BFF367] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[8px]" />
+      <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[8px]" />
 
       {/* Normal Border Overlay - Fades out on hover */}
       <div className="absolute inset-0 border border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[8px] animate-in" />
 
       {/* Card Content Wrapper */}
-      <div className="relative bg-[#0d0d0d] rounded-[8px] p-4 h-full flex flex-col justify-between">
+      <div className="relative bg-background rounded-[8px] p-4 h-full flex flex-col justify-between">
         <div className="relative">
           <div
             className={`w-12 h-12 mx-auto mb-3 rounded-full bg-gradient-to-br ${rarityColors[rarity]} p-[2px]`}
@@ -185,7 +186,7 @@ const MatchDetailModal = ({ isOpen, onClose, match, userId }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div className="relative w-full max-w-2xl bg-[#0a0a0a] border border-white/10 rounded-[8px] p-8 overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-2xl bg-background border border-white/10 rounded-[8px] p-8 overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -197,28 +198,28 @@ const MatchDetailModal = ({ isOpen, onClose, match, userId }) => {
               {new Date(match.date).toLocaleDateString("en-GB")}
             </p>
           </div>
-          <button
+          <Button
             onClick={onClose}
             className="px-3.5 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-[8px] font-black uppercase tracking-wider text-[9px] transition-all"
           >
             Close
-          </button>
+          </Button>
         </div>
 
         {/* Sub-Tabs */}
         <div className="flex border-b border-white/5 mb-6">
-          <button
+          <Button
             onClick={() => setActiveSubTab("impact")}
-            className={`flex-1 py-3 text-center font-black uppercase tracking-widest text-[11px] border-b-2 transition-all ${activeSubTab === "impact" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-400 border-transparent"}`}
+            className={`flex-1 py-3 text-center font-black uppercase tracking-widest text-[11px] border-b-2 transition-all ${activeSubTab === "impact" ? "text-primary border-primary" : "text-gray-400 border-transparent"}`}
           >
             My Impact
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setActiveSubTab("scorecard")}
-            className={`flex-1 py-3 text-center font-black uppercase tracking-widest text-[11px] border-b-2 transition-all ${activeSubTab === "scorecard" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-400 border-transparent"}`}
+            className={`flex-1 py-3 text-center font-black uppercase tracking-widest text-[11px] border-b-2 transition-all ${activeSubTab === "scorecard" ? "text-primary border-primary" : "text-gray-400 border-transparent"}`}
           >
             Match Scorecard
-          </button>
+          </Button>
         </div>
 
         {/* Tab Content */}
@@ -227,7 +228,7 @@ const MatchDetailModal = ({ isOpen, onClose, match, userId }) => {
             <div className="space-y-6">
               {/* Highlight Banner */}
               <div
-                className={`p-6 rounded-[8px] border ${won ? "bg-[#BFF367]/5 border-[#BFF367]/10 text-[#BFF367]" : "bg-red-500/5 border-red-500/10 text-red-400"} flex items-center justify-between`}
+                className={`p-6 rounded-[8px] border ${won ? "bg-primary/5 border-primary/10 text-primary" : "bg-red-500/5 border-red-500/10 text-red-400"} flex items-center justify-between`}
               >
                 <div>
                   <p className="text-[9px] font-bold uppercase tracking-widest opacity-60">
@@ -306,7 +307,7 @@ const MatchDetailModal = ({ isOpen, onClose, match, userId }) => {
                       <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">
                         Strike Rate
                       </p>
-                      <p className="text-lg font-black text-[#BFF367]">
+                      <p className="text-lg font-black text-primary">
                         {playerStat.battingBalls > 0
                           ? (
                               (playerStat.battingRuns /
@@ -357,7 +358,7 @@ const MatchDetailModal = ({ isOpen, onClose, match, userId }) => {
                       <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">
                         Wickets
                       </p>
-                      <p className="text-lg font-black text-[#BFF367]">
+                      <p className="text-lg font-black text-primary">
                         {playerStat.bowlingWickets}
                       </p>
                     </div>
@@ -487,7 +488,7 @@ const ConnectionsModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div className="relative w-full max-w-xl bg-[#0a0a0a] border border-white/10 rounded-[8px] p-8 overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-xl bg-background border border-white/10 rounded-[8px] p-8 overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -501,34 +502,34 @@ const ConnectionsModal = ({
               Network details & mutual links
             </p>
           </div>
-          <button
+          <Button
             onClick={onClose}
             className="px-3.5 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-[8px] font-black uppercase tracking-wider text-[9px] transition-all"
           >
             Close
-          </button>
+          </Button>
         </div>
 
         {/* Tabs */}
         <div className="flex border-b border-white/5 mb-6">
-          <button
+          <Button
             onClick={() => setActiveTab("followers")}
-            className={`flex-1 py-3 text-center font-black uppercase tracking-widest text-[10px] border-b-2 transition-all ${activeTab === "followers" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-400 border-transparent"}`}
+            className={`flex-1 py-3 text-center font-black uppercase tracking-widest text-[10px] border-b-2 transition-all ${activeTab === "followers" ? "text-primary border-primary" : "text-gray-400 border-transparent"}`}
           >
             Followers ({followersList.length})
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setActiveTab("following")}
-            className={`flex-1 py-3 text-center font-black uppercase tracking-widest text-[10px] border-b-2 transition-all ${activeTab === "following" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-400 border-transparent"}`}
+            className={`flex-1 py-3 text-center font-black uppercase tracking-widest text-[10px] border-b-2 transition-all ${activeTab === "following" ? "text-primary border-primary" : "text-gray-400 border-transparent"}`}
           >
             Following ({followingList.length})
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setActiveTab("common")}
-            className={`flex-1 py-3 text-center font-black uppercase tracking-widest text-[10px] border-b-2 transition-all ${activeTab === "common" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-400 border-transparent"}`}
+            className={`flex-1 py-3 text-center font-black uppercase tracking-widest text-[10px] border-b-2 transition-all ${activeTab === "common" ? "text-primary border-primary" : "text-gray-400 border-transparent"}`}
           >
             Common ({commonConnections.length})
-          </button>
+          </Button>
         </div>
 
         {/* List Content */}
@@ -537,7 +538,7 @@ const ConnectionsModal = ({
             list.map((player) => (
               <div
                 key={player.id || player._id}
-                className="flex items-center justify-between p-3 bg-[#0d0d0d] border border-white/5 rounded-[8px] hover:border-white/10 transition-all"
+                className="flex items-center justify-between p-3 bg-background border border-white/5 rounded-[8px] hover:border-white/10 transition-all"
               >
                 <Link
                   to={`/profile/${player.id || player._id}`}
@@ -564,19 +565,19 @@ const ConnectionsModal = ({
 
                 <div className="flex items-center gap-3 shrink-0">
                   {player.sportTypes && player.sportTypes.length > 0 && (
-                    <span className="px-2 py-0.5 bg-[#BFF367]/10 text-[#BFF367] rounded-full border border-[#BFF367]/20 text-[8px] font-black uppercase">
+                    <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-full border border-primary/20 text-[8px] font-black uppercase">
                       {player.sportTypes[0]}
                     </span>
                   )}
                   {player.id !== (currentUser?.id || currentUser?._id) && (
-                    <button
+                    <Button
                       onClick={() => handlePlayerFollowToggle(player)}
-                      className={`px-3 py-1.5 rounded-[12px] font-black uppercase tracking-wider text-[9px] transition-all ${followingIds.includes(player.id) ? "bg-white/10 text-white/40 border border-white/5" : "bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black hover:scale-105 active:scale-95"}`}
+                      className={`px-3 py-1.5 rounded-[12px] font-black uppercase tracking-wider text-[9px] transition-all ${followingIds.includes(player.id) ? "bg-white/10 text-white/40 border border-white/5" : "bg-gradient-to-r from-primary to-primary text-black hover:scale-105 active:scale-95"}`}
                     >
                       {followingIds.includes(player.id)
                         ? "Following"
                         : "Follow"}
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -628,8 +629,10 @@ export default function Profile() {
   const [otpState, setOtpState] = useState("idle");
   const [otpCode, setOtpCode] = useState("");
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [hasRecentInquiry, setHasRecentInquiry] = useState(false);
   const handleEditEmailClick = () => {
     setEditingEmail(true);
+    setOtpState("idle");
     setTempEmail(profileUser?.email || currentUser?.email || "");
   };
 
@@ -643,6 +646,24 @@ export default function Profile() {
     }
     try {
       setSendingVerification(true);
+      if (editingEmail && tempEmail) {
+        try {
+          await axiosInstance.put("/api/user/auth/updateProfile", {
+            email: emailToVerify,
+          });
+          dispatch(updateUser({ email: emailToVerify, isEmailVerified: false }));
+          setProfileUser((prev) => ({
+            ...prev,
+            email: emailToVerify,
+            isEmailVerified: false,
+          }));
+        } catch (error) {
+          toast.error(error.response?.data?.message || "Failed to save email");
+          setSendingVerification(false);
+          return;
+        }
+      }
+      
       const res = await axiosInstance.post("/api/user/auth/send-otp", {
         email: emailToVerify,
       });
@@ -982,6 +1003,17 @@ export default function Profile() {
 
           setProfileUser(profileData);
           if (isOwnProfile) dispatch(updateUser(profileData));
+          
+          if (currentUser && isProfessionalRole(profileData.role)) {
+            axiosInstance.get(`/api/professional/user/inquiries/check/${targetUserId}`)
+              .then(res => {
+                if (res.data.success) {
+                  setHasRecentInquiry(res.data.hasRecentInquiry);
+                }
+              })
+              .catch(err => console.error("Error checking recent inquiry", err));
+          }
+
         }
         if (postsRes.data.success) {
           setUserPosts(postsRes.data.posts || []);
@@ -1122,7 +1154,7 @@ export default function Profile() {
   if (loadingProfile)
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#BFF367] animate-spin" />
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
 
@@ -1140,8 +1172,8 @@ export default function Profile() {
             x2="100%"
             y2="0%"
           >
-            <stop offset="0%" stopColor="#55DEE8" />
-            <stop offset="100%" stopColor="#B3DC26" />
+            <stop offset="0%" stopColor="var(--secondary)" />
+            <stop offset="100%" stopColor="var(--primary)" />
           </linearGradient>
         </defs>
       </svg>
@@ -1179,20 +1211,20 @@ export default function Profile() {
           )}
 
           {/* Back Navigation Button */}
-          <button
+          <Button
             onClick={() => navigate(-1)}
             className="absolute top-6 left-6 z-30 p-2 md:p-3 bg-black/40 backdrop-blur-md border border-white/10 hover:border-white/20 text-white rounded-[8px] hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center justify-center"
           >
             <ChevronLeft size={20} className="text-white" />
-          </button>
+          </Button>
 
           {/* Share button at top right corner */}
-          <button
+          <Button
             onClick={handleShare}
             className="absolute top-6 right-6 p-2 md:p-3 bg-black/40 backdrop-blur-md border border-white/10 hover:border-white/20 text-white rounded-[8px] hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center justify-center z-30"
           >
             <Share2 size={20} className="text-white" />
-          </button>
+          </Button>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 relative z-10 -mt-20 md:-mt-24">
@@ -1200,7 +1232,7 @@ export default function Profile() {
             <div className="relative group/avatar shrink-0 flex flex-col items-start">
               <div className="relative transition-all duration-300 hover:scale-105">
                 <div
-                  className="w-32 h-32 md:w-40 md:h-40 rounded-full border-[5px] border-black bg-gradient-to-br from-[#55DEE8] to-[#B3DC26] p-[2px] shadow-[0_4px_25px_rgba(0,0,0,0.6),0_0_30px_rgba(179,220,38,0.2)] hover:shadow-[0_4px_30px_rgba(0,0,0,0.8),0_0_45px_rgba(179,220,38,0.5)] overflow-hidden cursor-pointer transition-all duration-500 relative"
+                  className="w-32 h-32 md:w-40 md:h-40 rounded-full border-[5px] border-black bg-gradient-to-br from-secondary to-primary p-[2px] shadow-[0_4px_25px_rgba(0,0,0,0.6),0_0_30px_rgba(179,220,38,0.2)] hover:shadow-[0_4px_30px_rgba(0,0,0,0.8),0_0_45px_rgba(179,220,38,0.5)] overflow-hidden cursor-pointer transition-all duration-500 relative"
                   onClick={handleAvatarClick}
                 >
                   {profileUser?.profilePicture || profileUser?.profileImage ? (
@@ -1246,17 +1278,17 @@ export default function Profile() {
                 </div>
 
                 {isOwnProfile && (
-                  <button
+                  <Button
                     onClick={() => setIsEditModalOpen(true)}
-                    className="absolute -top-1 right-2 w-9 h-9 bg-gradient-to-br from-[#55DEE8] to-[#B3DC26] rounded-full border-[4px] border-black flex items-center justify-center text-black hover:scale-110 transition-all shadow-lg z-20"
+                    className="absolute -top-1 right-2 w-9 h-9 bg-gradient-to-br from-secondary to-primary rounded-full border-[4px] border-black flex items-center justify-center text-black hover:scale-110 transition-all shadow-lg z-20"
                   >
                     <Edit2 size={16} strokeWidth={3} />
-                  </button>
+                  </Button>
                 )}
 
                 {isUserOnline(targetUserId) && (
                   <span
-                    className="absolute bottom-2 right-2 h-7 w-7 rounded-full border-[4px] border-black bg-gradient-to-br from-[#BFF367] to-[#BFF367] shadow-[0_0_16px_rgba(191,243,103,0.8)] md:h-8 md:w-8"
+                    className="absolute bottom-2 right-2 h-7 w-7 rounded-full border-[4px] border-black bg-gradient-to-br from-primary to-primary shadow-[0_0_16px_rgba(191,243,103,0.8)] md:h-8 md:w-8"
                     aria-label="Online"
                   />
                 )}
@@ -1275,10 +1307,10 @@ export default function Profile() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-3">
-                  <p className="text-[#BFF367] text-xs md:text-sm font-sans font-bold">
+                  <p className="text-primary text-xs md:text-sm font-sans font-bold">
                     @{profileUser?.username || "not_specified"}
                   </p>
-                  <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-[#BFF367]/30 bg-black/50 text-[#BFF367] text-[9px] font-black tracking-widest uppercase backdrop-blur-md shrink-0">
+                  <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-primary/30 bg-black/50 text-primary text-[9px] font-black tracking-widest uppercase backdrop-blur-md shrink-0">
                     <svg
                       className="w-3 h-3"
                       viewBox="0 0 24 24"
@@ -1304,7 +1336,7 @@ export default function Profile() {
                   </span>
                   {profileUser?.sportTypes &&
                     profileUser.sportTypes.length > 0 && (
-                      <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-[#55DEE8]/30 bg-black/50 text-[#55DEE8] text-[9px] font-black tracking-widest uppercase backdrop-blur-md shrink-0">
+                      <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-secondary/30 bg-black/50 text-secondary text-[9px] font-black tracking-widest uppercase backdrop-blur-md shrink-0">
                         <svg
                           className="w-3 h-3"
                           viewBox="0 0 24 24"
@@ -1321,7 +1353,8 @@ export default function Profile() {
                         {profileUser.sportTypes[0]}
                       </span>
                     )}
-                  {profileUser?.interests?.[0] && (
+                  {profileUser?.interests?.[0] &&
+                    profileUser.interests[0] !== profileUser.sportTypes?.[0] && (
                     <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-white/10 bg-white/[0.05] text-white/90 text-[9px] font-black tracking-widest uppercase backdrop-blur-md shrink-0">
                       <span className="w-1.5 h-1.5 rounded-full bg-red-600 shadow-[0_0_4px_rgba(220,38,38,0.8)]" />
                       {profileUser.interests[0]}
@@ -1330,30 +1363,30 @@ export default function Profile() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-4 text-xs text-white/90 font-sans font-bold mb-5">
-                  <button
+                  <Button
                     onClick={() => {
                       setActiveProfileTab("connections");
                       setConnectionsActiveTab("followers");
                     }}
-                    className="flex items-center gap-1.5 hover:text-[#BFF367] transition-colors focus:outline-none"
+                    className="flex items-center gap-1.5 hover:text-primary transition-colors focus:outline-none"
                   >
-                    <Users size={14} className="text-[#BFF367]" />{" "}
+                    <Users size={14} className="text-primary" />{" "}
                     {profileUser?.followers?.length || 0} Followers
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => {
                       setActiveProfileTab("connections");
                       setConnectionsActiveTab("following");
                     }}
-                    className="flex items-center gap-1.5 hover:text-[#BFF367] transition-colors focus:outline-none"
+                    className="flex items-center gap-1.5 hover:text-primary transition-colors focus:outline-none"
                   >
-                    <UserPlus size={14} className="text-[#BFF367]" />{" "}
+                    <UserPlus size={14} className="text-primary" />{" "}
                     {profileUser?.following?.length || 0} Following
-                  </button>
+                  </Button>
 
                   {!isOwnProfile && (
                     <div className="flex items-center gap-2 ml-2">
-                      <button
+                      <Button
                         onClick={() => gateInteraction(handleFollowToggle)}
                         className={`px-6 py-1.5 text-[10px] md:text-xs font-black uppercase tracking-widest rounded-[14px] transition-all flex items-center justify-center gap-2 ${
                           followingIds.includes(targetUserId)
@@ -1366,16 +1399,16 @@ export default function Profile() {
                         {followingIds.includes(targetUserId)
                           ? "Following"
                           : "Follow"}
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() =>
                           navigate(`/messages?userId=${targetUserId}`)
                         }
-                        className="p-1.5 bg-[#1B1B1B]/80 text-[#FFFFFF] rounded-full border border-white/10 hover:bg-neutral-800 transition-all backdrop-blur-md flex items-center justify-center"
+                        className="p-1.5 bg-card/80 text-foreground rounded-full border border-white/10 hover:bg-neutral-800 transition-all backdrop-blur-md flex items-center justify-center"
                         title="Message"
                       >
                         <MessageCircle size={16} />
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -1398,11 +1431,11 @@ export default function Profile() {
                 )}
                 {isProfessionalRole(profileUser?.role) && (
                   <>
-                    <span className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-[#BFF367]/30 bg-[#BFF367]/10 text-[#BFF367] text-[10px] font-bold">
+                    <span className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-primary/30 bg-primary/10 text-primary text-[10px] font-bold">
                       State Rank:{" "}
                       {pro.stateRank ? `#${pro.stateRank}` : "Unranked"}
                     </span>
-                    <span className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-[#BFF367]/30 bg-[#BFF367]/10 text-[#BFF367] text-[10px] font-bold">
+                    <span className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-primary/30 bg-primary/10 text-primary text-[10px] font-bold">
                       City Rank:{" "}
                       {pro.cityRank ? `#${pro.cityRank}` : "Unranked"}
                     </span>
@@ -1462,12 +1495,12 @@ export default function Profile() {
                     </p>
                     {(pro.bio || profileUser?.bio) &&
                       (pro.bio || profileUser?.bio)?.length > 150 && (
-                        <button
+                        <Button
                           onClick={() => setIsBioExpanded(!isBioExpanded)}
-                          className="mt-2 text-[#BFF367] text-xs font-bold hover:underline transition-colors"
+                          className="mt-2 text-primary text-xs font-bold hover:underline transition-colors"
                         >
                           {isBioExpanded ? "Read less" : "Read more"}
-                        </button>
+                        </Button>
                       )}
                   </div>
 
@@ -1519,17 +1552,21 @@ export default function Profile() {
           {isOwnProfile &&
             profileUser?.email &&
             !profileUser?.isEmailVerified && (
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-4 p-3 bg-[#121212] border border-white/[0.08] rounded-[16px]">
+              <div className="flex flex-col gap-3 mt-4 p-3 bg-card border border-white/[0.08] rounded-[16px]">
+                {/* Email display / edit row */}
                 <div className="flex items-center gap-2.5">
                   <div className="px-2 py-0.5 bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-wider rounded-[6px]">
                     Pending
                   </div>
                   {editingEmail ? (
-                    <input
+                    <Input
                       type="email"
                       value={tempEmail}
-                      onChange={(e) => setTempEmail(e.target.value)}
-                      className="bg-[#000000] border border-white/[0.08] rounded-[8px] px-3 py-1.5 text-xs text-white w-full sm:w-[160px] outline-none focus:border-[#BFF367] transition-all placeholder:text-white/30"
+                      onChange={(e) => {
+                        setTempEmail(e.target.value);
+                        if (otpState !== "idle") setOtpState("idle");
+                      }}
+                      className="bg-background border border-white/[0.08] rounded-[8px] px-3 py-1.5 text-xs text-white w-full sm:w-[200px] outline-none focus:border-primary transition-all placeholder:text-white/30"
                       placeholder="Enter new email"
                       autoFocus
                     />
@@ -1539,32 +1576,46 @@ export default function Profile() {
                     </span>
                   )}
                   {!editingEmail && (
-                    <button
+                    <Button
                       onClick={handleEditEmailClick}
-                      className="text-white/40 hover:text-[#BFF367] transition-colors p-1"
+                      className="text-white/40 hover:text-primary transition-colors p-1"
                       title="Edit Email"
                     >
                       <Edit2 size={12} />
-                    </button>
-                  )}
-                  {editingEmail && (
-                    <button
-                      onClick={() => {
-                        setEditingEmail(false);
-                        setOtpState("idle");
-                      }}
-                      className="text-white/40 hover:text-white transition-colors text-[9px] uppercase font-bold"
-                      title="Cancel"
-                    >
-                      Cancel
-                    </button>
+                    </Button>
                   )}
                 </div>
 
+                {/* Action buttons row */}
                 <div className="flex items-center gap-2 shrink-0">
-                  {otpState === "sent" ? (
+                  {editingEmail && otpState === "idle" ? (
+                    /* Save / Cancel buttons when editing email */
                     <>
-                      <input
+                      <Button
+                        onClick={handleSendOTP}
+                        disabled={
+                          sendingVerification || !tempEmail ||
+                          tempEmail === (profileUser?.email || currentUser?.email || "")
+                        }
+                        className="px-4 py-1.5 bg-gradient-to-r from-secondary to-primary text-background text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:opacity-90 transition-all disabled:opacity-50 shadow-[0_4px_12px_rgba(191,243,103,0.15)]"
+                      >
+                        {sendingVerification ? "Sending..." : "Save"}
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setEditingEmail(false);
+                          setOtpState("idle");
+                          setTempEmail("");
+                        }}
+                        className="px-4 py-1.5 bg-white/[0.05] border border-white/[0.08] text-white/60 text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:bg-white/[0.1] hover:text-white transition-all"
+                      >
+                        Cancel
+                      </Button>
+                    </>
+                  ) : otpState === "sent" ? (
+                    /* OTP input + Verify after Save triggers OTP */
+                    <>
+                      <Input
                         type="text"
                         maxLength={6}
                         value={otpCode}
@@ -1572,25 +1623,33 @@ export default function Profile() {
                           setOtpCode(e.target.value.replace(/\D/g, ""))
                         }
                         placeholder="6-digit OTP"
-                        className="bg-[#000000] border border-white/[0.08] rounded-[8px] px-3 py-1.5 text-xs text-white w-[90px] outline-none focus:border-[#BFF367] text-center tracking-widest font-black transition-all"
+                        className="bg-background border border-white/[0.08] rounded-[8px] px-3 py-1.5 text-xs text-white w-[90px] outline-none focus:border-primary text-center tracking-widest font-black transition-all"
                       />
-                      <button
+                      <Button
                         onClick={handleVerifyOTP}
                         disabled={verifyingEmail || otpCode.length !== 6}
-                        className="px-4 py-1.5 bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:opacity-90 transition-all disabled:opacity-50 shadow-[0_4px_12px_rgba(191,243,103,0.15)]"
+                        className="px-4 py-1.5 bg-gradient-to-r from-secondary to-primary text-background text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:opacity-90 transition-all disabled:opacity-50 shadow-[0_4px_12px_rgba(191,243,103,0.15)]"
                       >
                         {verifyingEmail ? "..." : "Verify"}
-                      </button>
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setEditingEmail(false);
+                          setOtpState("idle");
+                          setOtpCode("");
+                          setTempEmail("");
+                        }}
+                        className="px-3 py-1.5 bg-white/[0.05] border border-white/[0.08] text-white/60 text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:bg-white/[0.1] hover:text-white transition-all"
+                      >
+                        Cancel
+                      </Button>
                     </>
                   ) : (
+                    /* Default: Google verify + Get OTP buttons */
                     <>
-                      <button
+                      <Button
                         onClick={() => verifyWithGoogle()}
-                        disabled={
-                          sendingVerification ||
-                          verifyingEmail ||
-                          (editingEmail && !tempEmail)
-                        }
+                        disabled={sendingVerification || verifyingEmail}
                         className="px-3 py-1.5 bg-white/[0.03] border border-white/[0.08] text-white text-[10px] font-black uppercase tracking-wider rounded-[8px] hover:bg-white/[0.08] transition-all disabled:opacity-50 flex items-center gap-1.5"
                         title="Verify with Google"
                       >
@@ -1614,18 +1673,14 @@ export default function Profile() {
                           <path fill="none" d="M0 0h48v48H0z" />
                         </svg>
                         <span className="hidden sm:inline">Google</span>
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={handleSendOTP}
-                        disabled={
-                          sendingVerification ||
-                          verifyingEmail ||
-                          (editingEmail && !tempEmail)
-                        }
-                        className="px-4 py-1.5 bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:opacity-90 transition-all disabled:opacity-50 shadow-[0_4px_12px_rgba(191,243,103,0.15)]"
+                        disabled={sendingVerification || verifyingEmail}
+                        className="px-4 py-1.5 bg-gradient-to-r from-secondary to-primary text-background text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:opacity-90 transition-all disabled:opacity-50 shadow-[0_4px_12px_rgba(191,243,103,0.15)]"
                       >
                         {sendingVerification ? "..." : "Get OTP"}
-                      </button>
+                      </Button>
                     </>
                   )}
                 </div>
@@ -1649,17 +1704,17 @@ export default function Profile() {
           {/* Main Profile Tabs */}
           <div className="flex border-b border-white/10 mb-8 overflow-x-auto no-scrollbar gap-2 sm:gap-6">
             {profileTabs.map((t) => (
-              <button
+              <Button
                 key={t.id}
                 onClick={() => setActiveProfileTab(t.id)}
                 className={`py-4 px-3 sm:px-4 text-xs sm:text-sm font-black uppercase tracking-widest border-b-2 transition-all duration-300 flex items-center gap-1.5 shrink-0 ${
                   activeProfileTab === t.id
-                    ? "text-[#BFF367] border-[#BFF367]"
+                    ? "text-primary border-primary"
                     : "text-white/40 border-transparent hover:text-white/80"
                 }`}
               >
                 <span>{t.label}</span>
-              </button>
+              </Button>
             ))}
           </div>
 
@@ -1683,7 +1738,7 @@ export default function Profile() {
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 animate-in fade-in duration-300">
                     <div className="lg:col-span-8 space-y-6">
                       {/* Availability, Timeline & General Info */}
-                      <div className="bg-[#1A1A1A] rounded-xl border border-white/5 p-8 grid grid-cols-1 md:grid-cols-2 gap-8 shadow-xl">
+                      <div className="bg-card rounded-xl border border-white/5 p-8 grid grid-cols-1 md:grid-cols-2 gap-8 shadow-xl">
                         <div className="space-y-5">
                           <h3
                             style={HEADING_STYLE}
@@ -1734,9 +1789,9 @@ export default function Profile() {
                             {languagesList.map((lang) => (
                               <span
                                 key={lang}
-                                className="px-3.5 py-1.5 rounded-full bg-[#B3DC26]/10 text-[#B3DC26] border border-[#B3DC26]/20 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
+                                className="px-3.5 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
                               >
-                                <div className="w-1.5 h-1.5 rounded-full bg-[#B3DC26] opacity-80" />
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary opacity-80" />
                                 {lang}
                               </span>
                             ))}
@@ -1756,7 +1811,7 @@ export default function Profile() {
                         pro.role?.toLowerCase().includes("umpire") ||
                         pro.matchesCovered ||
                         pro.matchFormats?.length > 0) && (
-                        <div className="bg-[#1A1A1A] rounded-xl border border-white/5 p-8 space-y-6 shadow-xl">
+                        <div className="bg-card rounded-xl border border-white/5 p-8 space-y-6 shadow-xl">
                           <h3
                             style={HEADING_STYLE}
                             className="font-sans text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2 border-b border-white/5 pb-3"
@@ -1789,7 +1844,7 @@ export default function Profile() {
                                       {pro.matchFormats.map((fmt) => (
                                         <span
                                           key={fmt}
-                                          className="px-2 py-0.5 bg-[#B3DC26]/10 text-[#B3DC26] text-[8px] font-black uppercase tracking-wider rounded border border-[#B3DC26]/20"
+                                          className="px-2 py-0.5 bg-primary/10 text-primary text-[8px] font-black uppercase tracking-wider rounded border border-primary/20"
                                         >
                                           {fmt}
                                         </span>
@@ -1891,7 +1946,7 @@ export default function Profile() {
                                     <span className="text-white/40">
                                       Live Kridaz App Scoring:
                                     </span>
-                                    <span className="font-bold text-[#B3DC26] uppercase">
+                                    <span className="font-bold text-primary uppercase">
                                       {pro.liveScoringSupport
                                         ? "🟢 Supported"
                                         : "🔴 Independent"}
@@ -1905,7 +1960,7 @@ export default function Profile() {
                       )}
 
                       {/* SERVICE AREAS & LOCATIONS */}
-                      <div className="bg-[#1A1A1A] rounded-xl border border-white/5 p-8 space-y-6 shadow-xl">
+                      <div className="bg-card rounded-xl border border-white/5 p-8 space-y-6 shadow-xl">
                         <h3
                           style={HEADING_STYLE}
                           className="font-sans text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2"
@@ -1930,7 +1985,7 @@ export default function Profile() {
                                   return (
                                     <span
                                       key={groundId}
-                                      className="px-2.5 py-1 bg-[#111] border border-white/5 rounded text-[8px] font-black uppercase tracking-wider text-white"
+                                      className="px-2.5 py-1 bg-card border border-white/5 rounded text-[8px] font-black uppercase tracking-wider text-white"
                                     >
                                       {gObj.name} ({gObj.city})
                                     </span>
@@ -1956,7 +2011,7 @@ export default function Profile() {
                               {pro.preferredLocations?.customLocations?.map(
                                 (item, idx) => (
                                   <div key={idx} className="text-xs font-sans">
-                                    <span className="font-bold text-[#B3DC26] uppercase tracking-wider block text-[9px]">
+                                    <span className="font-bold text-primary uppercase tracking-wider block text-[9px]">
                                       {item.state}:
                                     </span>
                                     <span className="text-white/60 leading-normal">
@@ -1982,7 +2037,7 @@ export default function Profile() {
                     <div className="lg:col-span-4">
                       <div className="sticky top-24 space-y-6">
                         {/* Matchmaking Action Card */}
-                        <div className="bg-[#1A1A1A] rounded-xl p-6 sm:p-8 border border-white/10 shadow-2xl space-y-6">
+                        <div className="bg-card rounded-xl p-6 sm:p-8 border border-white/10 shadow-2xl space-y-6">
                           <div className="flex items-center gap-3 justify-between">
                             <h2
                               style={HEADING_STYLE}
@@ -2008,7 +2063,7 @@ export default function Profile() {
                               <span className="text-white/40">
                                 Hourly/Match Rate:
                               </span>
-                              <span className="text-[#B3DC26] font-black">
+                              <span className="text-primary font-black">
                                 ₹{pro.price > 0 ? pro.price : "Not Set"}
                               </span>
                             </div>
@@ -2022,17 +2077,23 @@ export default function Profile() {
                             </div>
                           </div>
 
-                          <button
-                            onClick={() => setIsRequestModalOpen(true)}
-                            className="w-full bg-gradient-to-r from-[#B3DC26] to-[#B3DC26] text-black py-4 rounded-lg font-black text-xs uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2"
-                          >
-                            ⚡ Request
-                          </button>
+                          {hasRecentInquiry ? (
+                            <div className="w-full bg-red-500/10 border border-red-500/20 text-red-400 py-4 rounded-lg font-bold text-xs text-center px-4">
+                              You can only send one request to this professional every 24 hours.
+                            </div>
+                          ) : (
+                            <Button
+                              onClick={() => setIsRequestModalOpen(true)}
+                              className="w-full bg-gradient-to-r from-primary to-primary text-black py-4 rounded-lg font-black text-xs uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2"
+                            >
+                              ⚡ Request
+                            </Button>
+                          )}
                         </div>
 
                         {/* Connect & Socials Card */}
                         {(pro.linkedin || pro.instagram || pro.youtube) && (
-                          <div className="bg-[#1A1A1A] rounded-xl p-6 sm:p-8 border border-white/10 shadow-2xl space-y-5">
+                          <div className="bg-card rounded-xl p-6 sm:p-8 border border-white/10 shadow-2xl space-y-5">
                             <h3
                               style={HEADING_STYLE}
                               className="font-sans text-sm font-bold text-white uppercase tracking-wider"
@@ -2078,7 +2139,7 @@ export default function Profile() {
                                   href={pro.youtube}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="w-8 h-8 rounded-lg bg-[#FF0000]/10 border border-[#FF0000]/30 flex items-center justify-center text-[#FF0000] hover:bg-[#FF0000]/20 transition-colors backdrop-blur-sm"
+                                  className="w-8 h-8 rounded-lg bg-destructive/10 border border-destructive/30 flex items-center justify-center text-destructive hover:bg-destructive/20 transition-colors backdrop-blur-sm"
                                 >
                                   <svg
                                     className="w-3.5 h-3.5"
@@ -2095,7 +2156,7 @@ export default function Profile() {
 
                         {/* Reviews Card */}
                         {proReviews && proReviews.length > 0 && (
-                          <div className="bg-[#1A1A1A] rounded-xl p-6 border border-white/5 shadow-lg">
+                          <div className="bg-card rounded-xl p-6 border border-white/5 shadow-lg">
                             <h3
                               style={HEADING_STYLE}
                               className="font-sans text-sm font-bold text-white mb-6 uppercase tracking-wider"
@@ -2130,7 +2191,7 @@ export default function Profile() {
                                           review.user?.name || review.authorName
                                         )?.toLowerCase()}
                                       </span>
-                                      <div className="flex items-center text-[#B3DC26] text-[8px] font-bold">
+                                      <div className="flex items-center text-primary text-[8px] font-bold">
                                         <Star
                                           size={8}
                                           className="fill-white mr-0.5 text-white"
@@ -2163,7 +2224,7 @@ export default function Profile() {
                 const pro = profileUser?.ownerProfile || profileUser || {};
                 return (
                   <div className="space-y-6 animate-in fade-in duration-300">
-                    <div className="bg-[#1A1A1A] rounded-xl border border-white/5 p-8 space-y-6 shadow-xl min-h-[400px]">
+                    <div className="bg-card rounded-xl border border-white/5 p-8 space-y-6 shadow-xl min-h-[400px]">
                       <div className="border-b border-white/5 pb-4">
                         <h3
                           style={HEADING_STYLE}
@@ -2188,12 +2249,12 @@ export default function Profile() {
                                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                       alt="Gallery item"
                                     />
-                                    <button className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                    <Button className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
                                       <Eye size={18} />
-                                    </button>
+                                    </Button>
                                   </>
                                 ) : (
-                                  <div className="w-full h-full bg-[#111] flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-[#151515] transition-colors">
+                                  <div className="w-full h-full bg-card flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-card transition-colors">
                                     <Play size={24} className="text-white" />
                                     <span className="text-[7px] font-black text-neutral-600 uppercase tracking-[0.3em]">
                                       Motion Media
@@ -2231,7 +2292,7 @@ export default function Profile() {
                 const pro = profileUser?.ownerProfile || profileUser || {};
                 return (
                   <div className="space-y-6 animate-in fade-in duration-300">
-                    <div className="bg-[#1A1A1A] rounded-xl border border-white/5 p-8 shadow-xl">
+                    <div className="bg-card rounded-xl border border-white/5 p-8 shadow-xl">
                       <h3
                         style={HEADING_STYLE}
                         className="font-sans text-xs font-bold uppercase tracking-wider text-white mb-6 flex items-center gap-2"
@@ -2257,7 +2318,7 @@ export default function Profile() {
                                       alt={cert.title}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-3">
-                                      <span className="text-[8px] font-black text-[#B3DC26] uppercase tracking-[0.25em] flex items-center gap-1.5">
+                                      <span className="text-[8px] font-black text-primary uppercase tracking-[0.25em] flex items-center gap-1.5">
                                         <Eye size={12} /> View Certificate
                                       </span>
                                     </div>
@@ -2306,7 +2367,7 @@ export default function Profile() {
                 const reviews = proReviews;
                 return (
                   <div className="space-y-6 animate-in fade-in duration-300">
-                    <div className="bg-[#1A1A1A] rounded-xl border border-white/5 p-8 shadow-xl min-h-[400px]">
+                    <div className="bg-card rounded-xl border border-white/5 p-8 shadow-xl min-h-[400px]">
                       <h3
                         style={HEADING_STYLE}
                         className="font-sans text-xs font-bold uppercase tracking-wider text-white mb-6 flex items-center gap-2 border-b border-white/5 pb-3"
@@ -2356,7 +2417,7 @@ export default function Profile() {
                                         review.user?.name || review.authorName
                                       )?.toLowerCase()}
                                     </span>
-                                    <div className="flex items-center text-[#B3DC26] text-[8px] font-black mt-0.5">
+                                    <div className="flex items-center text-primary text-[8px] font-black mt-0.5">
                                       <Star
                                         size={10}
                                         className="fill-white mr-1 text-white"
@@ -2388,11 +2449,11 @@ export default function Profile() {
                 {/* Live Playing Matches Section */}
                 {profileUser?.liveMatches &&
                   profileUser.liveMatches.length > 0 && (
-                    <div className="relative overflow-hidden rounded-[8px] border border-[#BFF367]/30 bg-gradient-to-br from-[#BFF367]/10 via-black/80 to-[#BFF367]/5 backdrop-blur-md p-2.5">
-                      <div className="absolute inset-0 rounded-[8px] bg-gradient-to-r from-[#BFF367]/5 to-[#BFF367]/5 animate-pulse pointer-events-none" />
-                      <h3 className="text-[10px] font-black uppercase tracking-wider text-[#BFF367] mb-2 flex items-center gap-1.5 relative z-10">
+                    <div className="relative overflow-hidden rounded-[8px] border border-primary/30 bg-gradient-to-br from-primary/10 via-black/80 to-primary/5 backdrop-blur-md p-2.5">
+                      <div className="absolute inset-0 rounded-[8px] bg-gradient-to-r from-primary/5 to-primary/5 animate-pulse pointer-events-none" />
+                      <h3 className="text-[10px] font-black uppercase tracking-wider text-primary mb-2 flex items-center gap-1.5 relative z-10">
                         <span className="relative flex items-center justify-center">
-                          <span className="absolute w-3 h-3 rounded-full bg-[#BFF367]/30 animate-ping" />
+                          <span className="absolute w-3 h-3 rounded-full bg-primary/30 animate-ping" />
                           <Wifi className="w-3 h-3 relative" />
                         </span>
                         Live Now — Playing a Match
@@ -2438,7 +2499,7 @@ export default function Profile() {
                             <Link
                               key={match.id}
                               to={`/analytics/${match.id}`}
-                              className="group flex items-center justify-between gap-2 bg-black/50 border border-[#BFF367]/20 hover:border-[#BFF367]/60 rounded-[8px] px-2.5 py-2 transition-all duration-300 hover:bg-black/70 hover:shadow-[0_0_20px_rgba(85,222,232,0.15)]"
+                              className="group flex items-center justify-between gap-2 bg-black/50 border border-primary/20 hover:border-primary/60 rounded-[8px] px-2.5 py-2 transition-all duration-300 hover:bg-black/70 hover:shadow-[0_0_20px_rgba(85,222,232,0.15)]"
                             >
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
@@ -2448,7 +2509,7 @@ export default function Profile() {
                                   >
                                     {teamA}
                                   </span>
-                                  <span className="text-[9px] font-black text-[#BFF367] px-1 py-0.5 bg-[#BFF367]/10 rounded border border-[#BFF367]/20 shrink-0">
+                                  <span className="text-[9px] font-black text-primary px-1 py-0.5 bg-primary/10 rounded border border-primary/20 shrink-0">
                                     VS
                                   </span>
                                   <span
@@ -2460,13 +2521,13 @@ export default function Profile() {
                                 </div>
 
                                 <div className="flex items-center gap-2 flex-wrap">
-                                  <span className="px-1.5 py-0.5 rounded bg-[#BFF367]/10 border border-[#BFF367]/20 text-[#BFF367] text-[9px] font-black uppercase tracking-widest">
+                                  <span className="px-1.5 py-0.5 rounded bg-primary/10 border border-primary/20 text-primary text-[9px] font-black uppercase tracking-widest">
                                     {matchFormat}
                                   </span>
                                   <span className="flex items-center gap-1 text-[9px] font-bold text-gray-500 uppercase tracking-widest">
                                     <MapPin
                                       size={10}
-                                      className="text-[#BFF367]"
+                                      className="text-primary"
                                     />
                                     {location}
                                   </span>
@@ -2482,7 +2543,7 @@ export default function Profile() {
                               </div>
 
                               <div className="flex items-center gap-2 shrink-0">
-                                <div className="px-2 py-1 bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black text-[9px] font-black uppercase tracking-widest rounded-[4px] flex items-center gap-1 group-hover:scale-105 transition-transform">
+                                <div className="px-2 py-1 bg-gradient-to-r from-primary to-primary text-black text-[9px] font-black uppercase tracking-widest rounded-[4px] flex items-center gap-1 group-hover:scale-105 transition-transform">
                                   <Radio size={10} strokeWidth={2.5} />
                                   Watch Live
                                 </div>
@@ -2551,15 +2612,15 @@ export default function Profile() {
                             <div
                               key={idx}
                               onClick={() => setSelectedMatch(match)}
-                              className="group relative rounded-[8px] p-[1px] transition-all duration-300 cursor-pointer overflow-hidden hover:shadow-[#BFF367]/5"
+                              className="group relative rounded-[8px] p-[1px] transition-all duration-300 cursor-pointer overflow-hidden hover:shadow-[var(--primary)]/5"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#BFF367] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[8px]" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[8px]" />
                               <div className="absolute inset-0 border border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[8px]" />
-                              <div className="relative bg-[#0d0d0d] rounded-[8px] p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                              <div className="relative bg-background rounded-[8px] p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                 <div>
                                   <div className="flex items-center gap-2 mb-2">
                                     <span
-                                      className={`px-2 py-0.5 rounded-[8px] text-[8px] font-black uppercase tracking-widest border ${won ? "text-[#BFF367] bg-[#BFF367]/10 border-[#BFF367]/20" : "text-red-400 bg-red-500/10 border-red-500/20"}`}
+                                      className={`px-2 py-0.5 rounded-[8px] text-[8px] font-black uppercase tracking-widest border ${won ? "text-primary bg-primary/10 border-primary/20" : "text-red-400 bg-red-500/10 border-red-500/20"}`}
                                     >
                                       {won ? "WON" : "LOST"}
                                     </span>
@@ -2578,7 +2639,7 @@ export default function Profile() {
                                   <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-1">
                                     <MapPin
                                       size={10}
-                                      className="text-[#BFF367]"
+                                      className="text-primary"
                                     />{" "}
                                     {match.turf?.name ||
                                       match.customVenue ||
@@ -2590,7 +2651,7 @@ export default function Profile() {
                                     <p className="text-[7px] font-black text-gray-500 uppercase tracking-widest">
                                       Match Performance
                                     </p>
-                                    <p className="text-xs font-black text-[#BFF367]">
+                                    <p className="text-xs font-black text-primary">
                                       {stat.battingRuns > 0
                                         ? `${stat.battingRuns} Runs `
                                         : ""}
@@ -2603,9 +2664,9 @@ export default function Profile() {
                                         : ""}
                                     </p>
                                   </div>
-                                  <button className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-[8px] text-white transition-all group-hover:scale-105">
+                                  <Button className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-[8px] text-white transition-all group-hover:scale-105">
                                     <ArrowRight size={14} />
-                                  </button>
+                                  </Button>
                                 </div>
                               </div>
                             </div>
@@ -2634,7 +2695,7 @@ export default function Profile() {
                 {/* Sports Filter & Resume Header */}
                 <div className="flex w-full items-center justify-between bg-white/[0.02] border border-white/5 px-4 py-3 md:p-5 rounded-[8px] backdrop-blur-md">
                   <div className="flex items-center gap-3">
-                    <Medal className="text-[#BFF367]" size={22} />
+                    <Medal className="text-primary" size={22} />
                     <div>
                       <h3
                         className="text-sm font-black uppercase tracking-wider text-white"
@@ -2647,14 +2708,14 @@ export default function Profile() {
                       </p>
                     </div>
                   </div>
-                  <select
+                  <Select
                     value={sportFilter}
                     onChange={(e) => setSportFilter(e.target.value)}
-                    className="bg-black border border-white/10 text-white text-[10px] font-black uppercase tracking-widest px-4 py-2.5 rounded-[8px] focus:outline-none focus:border-[#BFF367] transition-all cursor-pointer"
+                    className="bg-black border border-white/10 text-white text-[10px] font-black uppercase tracking-widest px-4 py-2.5 rounded-[8px] focus:outline-none focus:border-primary transition-all cursor-pointer"
                   >
                     <option value="CRICKET">Cricket Stats</option>
                     <option value="FOOTBALL">Football (Coming Soon)</option>
-                  </select>
+                  </Select>
                 </div>
 
                 {(() => {
@@ -2727,12 +2788,12 @@ export default function Profile() {
                               {
                                 label: "Win/Loss Spell",
                                 value: `${currentStats.matchesWon}W - ${currentStats.matchesLost}L`,
-                                color: "#BFF367",
+                                color: "var(--primary)",
                               },
                               {
                                 label: "Win Ratio",
                                 value: `${currentStats.winPercentage}%`,
-                                color: "#BFF367",
+                                color: "var(--primary)",
                               },
                               {
                                 label: "Runs Scored",
@@ -2747,7 +2808,7 @@ export default function Profile() {
                               {
                                 label: "Strike Rate",
                                 value: currentStats.battingStrikeRate || "0.0",
-                                color: "#BFF367",
+                                color: "var(--primary)",
                               },
                               {
                                 label: "High Score",
@@ -2762,7 +2823,7 @@ export default function Profile() {
                               {
                                 label: "Wickets Taken",
                                 value: currentStats.wickets,
-                                color: "#BFF367",
+                                color: "var(--primary)",
                               },
                               {
                                 label: "Economy",
@@ -2787,7 +2848,7 @@ export default function Profile() {
                             ].map((stat, idx) => (
                               <div
                                 key={idx}
-                                className="bg-black/40 rounded-[8px] p-4 border border-white/5 hover:border-[#BFF367]/30 transition-all group"
+                                className="bg-black/40 rounded-[8px] p-4 border border-white/5 hover:border-primary/30 transition-all group"
                               >
                                 <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
                                   {stat.label}
@@ -2854,7 +2915,7 @@ export default function Profile() {
                                       stroke="url(#cyan-lime-gradient)"
                                       strokeWidth={3.5}
                                       dot={{
-                                        fill: "#BFF367",
+                                        fill: "var(--primary)",
                                         r: 4,
                                         strokeWidth: 2,
                                         stroke: "#000",
@@ -2905,14 +2966,14 @@ export default function Profile() {
                       {profileUser.badges.map((badge, idx) => (
                         <div
                           key={idx}
-                          className="group relative rounded-[8px] p-[1px] transition-all duration-300 cursor-pointer overflow-hidden shadow-lg hover:shadow-[#BFF367]/10 shrink-0"
+                          className="group relative rounded-[8px] p-[1px] transition-all duration-300 cursor-pointer overflow-hidden shadow-lg hover:shadow-[var(--primary)]/10 shrink-0"
                         >
-                          <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#BFF367] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[8px]" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[8px]" />
                           <div className="absolute inset-0 border border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[8px]" />
-                          <div className="relative bg-[#0d0d0d] rounded-[8px] p-4 h-full flex flex-col justify-between text-center min-h-[130px]">
+                          <div className="relative bg-background rounded-[8px] p-4 h-full flex flex-col justify-between text-center min-h-[130px]">
                             <div>
                               <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-zinc-950 border border-white/10 flex items-center justify-center">
-                                <Medal className="w-5 h-5 text-[#BFF367]" />
+                                <Medal className="w-5 h-5 text-primary" />
                               </div>
                               <h3 className="text-white text-center mb-1 font-black text-[11px] uppercase tracking-tight truncate">
                                 {badge.name}
@@ -2921,7 +2982,7 @@ export default function Profile() {
                                 {badge.description}
                               </p>
                             </div>
-                            <p className="text-[8px] text-[#BFF367] font-black uppercase tracking-widest mt-2">
+                            <p className="text-[8px] text-primary font-black uppercase tracking-widest mt-2">
                               {badge.category || "MILESTONE"}
                             </p>
                           </div>
@@ -2948,7 +3009,7 @@ export default function Profile() {
               <div className="space-y-6 animate-in fade-in duration-300">
                 <div className="bg-white/[0.02] border border-white/5 p-5 rounded-[8px] backdrop-blur-md">
                   <h3 className="text-xs font-black uppercase tracking-wider text-gray-400 mb-4 flex items-center gap-2">
-                    <Users className="w-4 h-4 text-[#BFF367]" />
+                    <Users className="w-4 h-4 text-primary" />
                     My Teams
                   </h3>
                   {profileUser?.teams && profileUser.teams.length > 0 ? (
@@ -2959,7 +3020,7 @@ export default function Profile() {
                           to={`/team/${team.id}`}
                           className="flex flex-col items-center gap-2 group shrink-0"
                         >
-                          <div className="w-20 h-20 rounded-[12px] bg-black border border-white/10 flex items-center justify-center text-[#BFF367] font-bold overflow-hidden group-hover:border-[#BFF367]/50 transition-all">
+                          <div className="w-20 h-20 rounded-[12px] bg-black border border-white/10 flex items-center justify-center text-primary font-bold overflow-hidden group-hover:border-primary/50 transition-all">
                             {team.logo || team.image ? (
                               <img
                                 src={team.logo || team.image}
@@ -3006,7 +3067,7 @@ export default function Profile() {
                   {isOwnProfile && (
                     <Link
                       to="/community?createPost=true"
-                      className="px-4 py-2 bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black rounded-[8px] text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-[0_4px_12px_rgba(85,222,232,0.2)] flex items-center justify-center"
+                      className="px-4 py-2 bg-gradient-to-r from-primary to-primary text-black rounded-[8px] text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-[0_4px_12px_rgba(85,222,232,0.2)] flex items-center justify-center"
                     >
                       Create New Post
                     </Link>
@@ -3015,7 +3076,7 @@ export default function Profile() {
 
                 {loadingPosts ? (
                   <div className="flex justify-center items-center py-12">
-                    <Loader2 className="w-8 h-8 text-[#BFF367] animate-spin" />
+                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
                   </div>
                 ) : userPosts && userPosts.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -3034,7 +3095,7 @@ export default function Profile() {
                       return (
                         <div
                           key={post.id || post._id}
-                          className="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-sm rounded-[8px] border border-white/10 overflow-hidden hover:border-[#BFF367]/40 transition-all group"
+                          className="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-sm rounded-[8px] border border-white/10 overflow-hidden hover:border-primary/40 transition-all group"
                         >
                           <div className="h-40 relative overflow-hidden bg-zinc-900/50">
                             {post.mediaType === "video" ? (
@@ -3045,7 +3106,7 @@ export default function Profile() {
                                   muted
                                 />
                                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                  <Zap className="w-8 h-8 text-[#BFF367]" />
+                                  <Zap className="w-8 h-8 text-primary" />
                                 </div>
                               </div>
                             ) : (
@@ -3064,10 +3125,10 @@ export default function Profile() {
                               {profileUser?.profilePicture ? (
                                 <img
                                   src={profileUser.profilePicture}
-                                  className="w-5 h-5 rounded-full border border-[#BFF367]/40"
+                                  className="w-5 h-5 rounded-full border border-primary/40"
                                 />
                               ) : (
-                                <div className="w-5 h-5 rounded-full bg-zinc-850 flex items-center justify-center text-[8px] font-black text-[#BFF367]">
+                                <div className="w-5 h-5 rounded-full bg-zinc-850 flex items-center justify-center text-[8px] font-black text-primary">
                                   {profileUser?.name?.[0]}
                                 </div>
                               )}
@@ -3094,22 +3155,22 @@ export default function Profile() {
                             </p>
                             <div className="flex items-center justify-between pt-3 border-t border-white/5">
                               <div className="flex items-center gap-3">
-                                <button className="flex items-center gap-1 text-gray-500 hover:text-[#BFF367] transition-colors">
+                                <Button className="flex items-center gap-1 text-gray-500 hover:text-primary transition-colors">
                                   <Heart size={12} />
                                   <span className="text-[9px] font-bold">
                                     {post.likes?.length || 0}
                                   </span>
-                                </button>
-                                <button className="flex items-center gap-1 text-gray-500 hover:text-[#BFF367] transition-colors">
+                                </Button>
+                                <Button className="flex items-center gap-1 text-gray-500 hover:text-primary transition-colors">
                                   <MessageSquare size={12} />
                                   <span className="text-[9px] font-bold">
                                     {post.comments?.length || 0}
                                   </span>
-                                </button>
+                                </Button>
                               </div>
-                              <button className="text-gray-500 hover:text-white transition-colors">
+                              <Button className="text-gray-500 hover:text-white transition-colors">
                                 <ArrowRight size={12} />
-                              </button>
+                              </Button>
                             </div>
                           </div>
                         </div>
@@ -3136,25 +3197,25 @@ export default function Profile() {
             {activeProfileTab === "connections" && (
               <div className="space-y-6 animate-in fade-in duration-300">
                 <div className="flex border-b border-white/5 mb-6 overflow-x-auto no-scrollbar gap-2">
-                  <button
+                  <Button
                     onClick={() => setConnectionsActiveTab("followers")}
-                    className={`py-3 px-4 text-center font-black uppercase tracking-widest text-[10px] sm:text-[11px] border-b-2 transition-all shrink-0 ${connectionsActiveTab === "followers" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-400 border-transparent hover:text-white/80"}`}
+                    className={`py-3 px-4 text-center font-black uppercase tracking-widest text-[10px] sm:text-[11px] border-b-2 transition-all shrink-0 ${connectionsActiveTab === "followers" ? "text-primary border-primary" : "text-gray-400 border-transparent hover:text-white/80"}`}
                   >
                     Followers ({profileUser?.followersList?.length || 0})
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => setConnectionsActiveTab("following")}
-                    className={`py-3 px-4 text-center font-black uppercase tracking-widest text-[10px] sm:text-[11px] border-b-2 transition-all shrink-0 ${connectionsActiveTab === "following" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-400 border-transparent hover:text-white/80"}`}
+                    className={`py-3 px-4 text-center font-black uppercase tracking-widest text-[10px] sm:text-[11px] border-b-2 transition-all shrink-0 ${connectionsActiveTab === "following" ? "text-primary border-primary" : "text-gray-400 border-transparent hover:text-white/80"}`}
                   >
                     Following ({profileUser?.followingList?.length || 0})
-                  </button>
+                  </Button>
                   {!isOwnProfile && (
-                    <button
+                    <Button
                       onClick={() => setConnectionsActiveTab("common")}
-                      className={`py-3 px-4 text-center font-black uppercase tracking-widest text-[10px] sm:text-[11px] border-b-2 transition-all shrink-0 ${connectionsActiveTab === "common" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-400 border-transparent hover:text-white/80"}`}
+                      className={`py-3 px-4 text-center font-black uppercase tracking-widest text-[10px] sm:text-[11px] border-b-2 transition-all shrink-0 ${connectionsActiveTab === "common" ? "text-primary border-primary" : "text-gray-400 border-transparent hover:text-white/80"}`}
                     >
                       Common ({commonConnections.length})
-                    </button>
+                    </Button>
                   )}
                 </div>
 
@@ -3163,7 +3224,7 @@ export default function Profile() {
                     {connectionsList.map((player) => (
                       <div
                         key={player.id || player._id}
-                        className="flex items-center justify-between p-4 bg-[#0d0d0d] border border-white/5 rounded-[8px] hover:border-white/10 transition-all"
+                        className="flex items-center justify-between p-4 bg-background border border-white/5 rounded-[8px] hover:border-white/10 transition-all"
                       >
                         <Link
                           to={`/profile/${player.id || player._id}`}
@@ -3190,20 +3251,20 @@ export default function Profile() {
                         <div className="flex items-center gap-3 shrink-0">
                           {player.sportTypes &&
                             player.sportTypes.length > 0 && (
-                              <span className="px-2.5 py-1 bg-[#BFF367]/10 text-[#BFF367] rounded-full border border-[#BFF367]/20 text-[9px] font-black uppercase">
+                              <span className="px-2.5 py-1 bg-primary/10 text-primary rounded-full border border-primary/20 text-[9px] font-black uppercase">
                                 {player.sportTypes[0]}
                               </span>
                             )}
                           {player.id !==
                             (currentUser?.id || currentUser?._id) && (
-                            <button
+                            <Button
                               onClick={() => handlePlayerFollowToggle(player)}
-                              className={`px-3.5 py-2 rounded-[12px] font-black uppercase tracking-wider text-[10px] transition-all ${followingIds.includes(player.id) ? "bg-white/10 text-white/40 border border-white/5" : "bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black hover:scale-105 active:scale-95"}`}
+                              className={`px-3.5 py-2 rounded-[12px] font-black uppercase tracking-wider text-[10px] transition-all ${followingIds.includes(player.id) ? "bg-white/10 text-white/40 border border-white/5" : "bg-gradient-to-r from-primary to-primary text-black hover:scale-105 active:scale-95"}`}
                             >
                               {followingIds.includes(player.id)
                                 ? "Following"
                                 : "Follow"}
-                            </button>
+                            </Button>
                           )}
                         </div>
                       </div>
@@ -3236,6 +3297,7 @@ export default function Profile() {
         isOpen={isRequestModalOpen}
         onClose={() => setIsRequestModalOpen(false)}
         pro={profileUser}
+        onRequestSuccess={() => setHasRecentInquiry(true)}
       />
       <MatchDetailModal
         isOpen={selectedMatch !== null}

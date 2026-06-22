@@ -8,7 +8,7 @@ const NeonClassicEndOfOverCard = ({ score }) => (
       padding: "20px",
       width: "350px",
       background: "rgba(15, 23, 42, 0.9)",
-      border: "2px solid #a3e635",
+      border: "2px solid var(--primary)",
       borderRadius: "16px",
       color: "#fff",
       fontFamily: "'Open Sans', sans-serif",
@@ -24,7 +24,7 @@ const NeonClassicEndOfOverCard = ({ score }) => (
     >
       End of Over {score?.overs}
     </h3>
-    <div style={{ fontSize: "32px", fontWeight: 900, color: "#a3e635" }}>
+    <div style={{ fontSize: "32px", fontWeight: 900, color: "var(--primary)" }}>
       {score?.totalRuns}/{score?.totalWickets}
     </div>
     <div style={{ fontSize: "14px", color: "#94a3b8" }}>CRR: {score?.crr}</div>
@@ -38,7 +38,7 @@ const NeonClassicMilestoneCard = ({ data }) => (
       width: "300px",
       textAlign: "center",
       background: "rgba(15, 23, 42, 0.9)",
-      border: "2px solid #a3e635",
+      border: "2px solid var(--primary)",
       borderRadius: "16px",
       color: "#fff",
       fontFamily: "'Open Sans', sans-serif",
@@ -48,7 +48,7 @@ const NeonClassicMilestoneCard = ({ data }) => (
       style={{
         margin: "0 0 10px 0",
         fontSize: "18px",
-        color: "#a3e635",
+        color: "var(--primary)",
         textTransform: "uppercase",
         fontWeight: 900,
       }}
@@ -56,7 +56,7 @@ const NeonClassicMilestoneCard = ({ data }) => (
       MILESTONE
     </h3>
     <div style={{ fontSize: "24px", fontWeight: "bold" }}>{data?.name}</div>
-    <div style={{ fontSize: "48px", fontWeight: 900, color: "#a3e635" }}>
+    <div style={{ fontSize: "48px", fontWeight: 900, color: "var(--primary)" }}>
       {data?.runs || data?.wickets}
     </div>
   </div>
@@ -68,7 +68,7 @@ const NeonClassicFallOfWicketCard = ({ data }) => (
       padding: "20px",
       width: "350px",
       background: "rgba(15, 23, 42, 0.9)",
-      border: "2px solid #ef4444",
+      border: "2px solid var(--destructive)",
       borderRadius: "16px",
       color: "#fff",
       fontFamily: "'Open Sans', sans-serif",
@@ -78,7 +78,7 @@ const NeonClassicFallOfWicketCard = ({ data }) => (
       style={{
         margin: "0 0 10px 0",
         fontSize: "18px",
-        color: "#ef4444",
+        color: "var(--destructive)",
         textTransform: "uppercase",
         fontWeight: 900,
       }}
@@ -124,7 +124,7 @@ const NeonClassicNewBatterCard = ({ data }) => (
       padding: "20px",
       width: "300px",
       background: "rgba(15, 23, 42, 0.9)",
-      border: "2px solid #a3e635",
+      border: "2px solid var(--primary)",
       borderRadius: "16px",
       color: "#fff",
       fontFamily: "'Open Sans', sans-serif",
@@ -134,7 +134,7 @@ const NeonClassicNewBatterCard = ({ data }) => (
       style={{
         margin: "0 0 10px 0",
         fontSize: "14px",
-        color: "#a3e635",
+        color: "var(--primary)",
         textTransform: "uppercase",
       }}
     >
@@ -177,7 +177,7 @@ const NeonClassicInningsBreakCard = ({ data }) => (
       width: "400px",
       textAlign: "center",
       background: "rgba(15, 23, 42, 0.95)",
-      border: "3px solid #a3e635",
+      border: "3px solid var(--primary)",
       borderRadius: "16px",
       color: "#fff",
       fontFamily: "'Open Sans', sans-serif",
@@ -185,7 +185,7 @@ const NeonClassicInningsBreakCard = ({ data }) => (
   >
     <h2
       style={{
-        color: "#a3e635",
+        color: "var(--primary)",
         textTransform: "uppercase",
         margin: "0 0 20px 0",
       }}
@@ -205,7 +205,7 @@ const NeonClassicMatchResultCard = ({ data }) => (
       width: "500px",
       textAlign: "center",
       background: "rgba(15, 23, 42, 0.95)",
-      border: "4px solid #a3e635",
+      border: "4px solid var(--primary)",
       borderRadius: "16px",
       color: "#fff",
       fontFamily: "'Open Sans', sans-serif",
@@ -213,7 +213,7 @@ const NeonClassicMatchResultCard = ({ data }) => (
   >
     <h1
       style={{
-        color: "#a3e635",
+        color: "var(--primary)",
         textTransform: "uppercase",
         margin: "0 0 20px 0",
       }}
@@ -286,7 +286,7 @@ const NeonClassicWormCard = ({ data }) => (
       padding: "20px",
       width: "400px",
       background: "rgba(15, 23, 42, 0.9)",
-      border: "2px solid #a3e635",
+      border: "2px solid var(--primary)",
       borderRadius: "16px",
       color: "#fff",
       fontFamily: "'Open Sans', sans-serif",
@@ -296,7 +296,7 @@ const NeonClassicWormCard = ({ data }) => (
       style={{
         margin: "0 0 10px 0",
         fontSize: "14px",
-        color: "#a3e635",
+        color: "var(--primary)",
         textTransform: "uppercase",
       }}
     >
@@ -323,7 +323,7 @@ const NeonClassicWinProbCard = ({ data }) => (
       padding: "20px",
       width: "350px",
       background: "rgba(15, 23, 42, 0.9)",
-      border: "2px solid #a3e635",
+      border: "2px solid var(--primary)",
       borderRadius: "16px",
       color: "#fff",
       fontFamily: "'Open Sans', sans-serif",
@@ -333,7 +333,7 @@ const NeonClassicWinProbCard = ({ data }) => (
       style={{
         margin: "0 0 10px 0",
         fontSize: "14px",
-        color: "#a3e635",
+        color: "var(--primary)",
         textTransform: "uppercase",
       }}
     >

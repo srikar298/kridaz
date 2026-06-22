@@ -418,7 +418,7 @@ const LiveOverlay = () => {
             height: 120,
             background: "rgba(5,5,5,0.95)",
             backdropFilter: "blur(20px)",
-            borderTop: "2px solid #a3e635",
+            borderTop: "2px solid var(--primary)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -438,13 +438,13 @@ const LiveOverlay = () => {
               alignItems: "center",
             }}
           >
-            <span style={{ color: "#a3e635" }}>
+            <span style={{ color: "var(--primary)" }}>
               {score.teamA?.name || "TBD"}
             </span>
             <span style={{ opacity: 0.5, margin: "0 16px", fontSize: 20 }}>
               VS
             </span>
-            <span style={{ color: "#a3e635" }}>
+            <span style={{ color: "var(--primary)" }}>
               {score.teamB?.name || "TBD"}
             </span>
             <span
@@ -540,7 +540,7 @@ const LiveOverlay = () => {
             backgroundColor: "rgba(239, 68, 68, 0.15)",
             border: "1px solid rgba(239, 68, 68, 0.3)",
             borderRadius: "9999px",
-            color: "#ef4444",
+            color: "var(--destructive)",
             fontWeight: "900",
             textTransform: "uppercase",
             letterSpacing: "0.1em",
@@ -558,7 +558,7 @@ const LiveOverlay = () => {
               width: "8px",
               height: "8px",
               borderRadius: "50%",
-              backgroundColor: "#ef4444",
+              backgroundColor: "var(--destructive)",
             }}
           />
           MATCH ON BREAK
@@ -597,7 +597,7 @@ const LiveOverlay = () => {
                 width: "8px",
                 height: "8px",
                 borderRadius: "50%",
-                background: "#a3e635",
+                background: "var(--primary)",
                 animation: "pulse 2s infinite",
               }}
             />
@@ -605,7 +605,7 @@ const LiveOverlay = () => {
               style={{
                 fontSize: "12px",
                 fontWeight: 900,
-                color: "#a3e635",
+                color: "var(--primary)",
                 textTransform: "uppercase",
                 letterSpacing: "1px",
               }}

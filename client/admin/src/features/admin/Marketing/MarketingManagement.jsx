@@ -11,7 +11,8 @@ import {
   Image as ImageIcon,
   Activity as BellIcon,
 } from "lucide-react";
-import PushComposer from "./PushComposer";
+import PushComposer from "./PushComposer";import { Button, Input } from "@kridaz/ui";
+
 
 export const MarketingManagement = () => {
   const [activeTab, setActiveTab] = useState("banners");
@@ -187,19 +188,19 @@ export const MarketingManagement = () => {
           </p>
         </div>
         {activeTab !== "notifications" && (
-          <button
+          <Button
             onClick={() => handleOpenModal()}
             className="inline-flex items-center gap-2 bg-lime-500 text-black px-4 py-2 rounded-[6px] font-bold hover:bg-lime-400 transition-colors"
           >
             <Plus size={18} />
             Add New Banner
-          </button>
+          </Button>
         )}
       </div>
 
       {/* Tabs */}
       <div className="flex border-b border-white/10">
-        <button
+        <Button
           onClick={() => setActiveTab("banners")}
           className={`px-6 py-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeTab === "banners" ? "border-lime-500 text-lime-500" : "border-transparent text-gray-400 hover:text-white"}`}
         >
@@ -207,8 +208,8 @@ export const MarketingManagement = () => {
             <Layout size={16} />
             Ad Banners
           </div>
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => setActiveTab("promotions")}
           className={`px-6 py-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeTab === "promotions" ? "border-lime-500 text-lime-500" : "border-transparent text-gray-400 hover:text-white"}`}
         >
@@ -216,8 +217,8 @@ export const MarketingManagement = () => {
             <ImageIcon size={16} />
             Promotions
           </div>
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => setActiveTab("notifications")}
           className={`px-6 py-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeTab === "notifications" ? "border-lime-500 text-lime-500" : "border-transparent text-gray-400 hover:text-white"}`}
         >
@@ -225,7 +226,7 @@ export const MarketingManagement = () => {
             <BellIcon size={16} />
             Push Notifications
           </div>
-        </button>
+        </Button>
       </div>
 
       {/* Content */}
@@ -236,7 +237,7 @@ export const MarketingManagement = () => {
           {displayBanners.map((item) => (
             <div
               key={item._id || item.id}
-              className="group relative flex flex-col rounded-[8px] border border-white/10 bg-[#1A1A1A] overflow-hidden transition-all hover:border-lime-500/50"
+              className="group relative flex flex-col rounded-[8px] border border-white/10 bg-card overflow-hidden transition-all hover:border-lime-500/50"
             >
               <div className="aspect-video w-full bg-black overflow-hidden relative">
                 {item.videoUrl ? (
@@ -281,19 +282,19 @@ export const MarketingManagement = () => {
                 </p>
 
                 <div className="flex items-center gap-2 pt-4 border-t border-white/5">
-                  <button
+                  <Button
                     onClick={() => handleOpenModal(item)}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition-all text-xs font-bold"
                   >
                     <Edit2 size={14} />
                     Edit
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => handleDelete(item._id || item.id)}
                     className="w-10 h-10 flex items-center justify-center rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"
                   >
                     <Trash2 size={16} />
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -314,17 +315,17 @@ export const MarketingManagement = () => {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-[#111] border border-white/10 rounded-[8px] overflow-hidden shadow-2xl">
+          <div className="w-full max-w-lg bg-card border border-white/10 rounded-[8px] overflow-hidden shadow-2xl">
             <div className="p-6 border-b border-white/10 flex items-center justify-between">
               <h2 className="text-xl font-bold font-bebas tracking-wider text-white">
                 {editingItem ? "EDIT" : "ADD NEW"} BANNER
               </h2>
-              <button
+              <Button
                 onClick={() => setIsModalOpen(false)}
                 className="text-gray-400 hover:text-white"
               >
                 <X size={20} />
-              </button>
+              </Button>
             </div>
 
             <form
@@ -333,7 +334,7 @@ export const MarketingManagement = () => {
             >
               <div className="grid grid-cols-1 gap-5">
                 <div className="hidden">
-                  <input
+                  <Input
                     type="text"
                     value={formData.title || `Ad - ${Date.now()}`}
                     onChange={(e) =>
@@ -390,7 +391,7 @@ export const MarketingManagement = () => {
                           </span>
                         </>
                       )}
-                      <input
+                      <Input
                         type="file"
                         ref={fileInputRef}
                         onChange={handleFileChange}
@@ -403,7 +404,7 @@ export const MarketingManagement = () => {
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <ImageIcon size={14} className="text-gray-500" />
                       </div>
-                      <input
+                      <Input
                         type="text"
                         value={formData.imageUrl || formData.videoUrl}
                         onChange={(e) => {
@@ -436,7 +437,7 @@ export const MarketingManagement = () => {
                   <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
                     Target URL (Optional)
                   </label>
-                  <input
+                  <Input
                     type="text"
                     value={formData.targetUrl}
                     onChange={(e) =>
@@ -452,7 +453,7 @@ export const MarketingManagement = () => {
                     <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
                       Order
                     </label>
-                    <input
+                    <Input
                       type="number"
                       value={formData.order}
                       onChange={(e) =>
@@ -468,7 +469,7 @@ export const MarketingManagement = () => {
                     <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
                       Status
                     </label>
-                    <button
+                    <Button
                       type="button"
                       onClick={() =>
                         setFormData({
@@ -479,25 +480,25 @@ export const MarketingManagement = () => {
                       className={`w-full h-[42px] flex items-center justify-center rounded-lg border font-bold text-[10px] uppercase tracking-widest transition-all ${formData.isActive ? "bg-lime-500/10 border-lime-500 text-lime-500" : "bg-red-500/10 border-red-500 text-red-500"}`}
                     >
                       {formData.isActive ? "Active" : "Inactive"}
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
 
               <div className="pt-6 border-t border-white/10 flex gap-4">
-                <button
+                <Button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
                   className="flex-1 py-3 rounded-[8px] border border-white/10 text-white font-bold hover:bg-white/5 transition-all"
                 >
                   CANCEL
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
                   className="flex-1 py-3 rounded-[8px] bg-lime-500 text-black font-bold hover:bg-lime-400 transition-all shadow-[0_0_20px_rgba(132,204,22,0.3)]"
                 >
                   SAVE BANNER
-                </button>
+                </Button>
               </div>
             </form>
           </div>

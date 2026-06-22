@@ -274,7 +274,7 @@ const Navbar = () => {
                     <img
                       src="/logo.png"
                       alt="Kridaz"
-                      className="h-6 sm:h-8 object-contain"
+                      className="h-5 sm:h-6 object-contain"
                     />
                   </Link>
                 </div>
@@ -284,7 +284,7 @@ const Navbar = () => {
                     <img
                       src="/logo.png"
                       alt="Kridaz"
-                      className="h-6 sm:h-8 object-contain"
+                      className="h-5 sm:h-6 object-contain"
                     />
                   </Link>
                   <button

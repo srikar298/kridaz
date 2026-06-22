@@ -1,12 +1,10 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../config/prisma.js";
 import { NotFoundError, ForbiddenError, BadRequestError } from "@kridaz/common";
 import {
   autoGenerateGroupStage,
   getTournamentStandings,
   createManualScheduledGame,
 } from "./scheduler.service.js";
-
-const prisma = new PrismaClient();
 
 /**
  * @desc    Create a draft tournament (Step 1)
@@ -177,7 +175,7 @@ export const uploadPoster = async (req, res, next) => {
       throw new ForbiddenError("Not authorized");
     }
 
-    // req.file.path comes from the multer upload middleware (cloudinary/s3)
+    // req.file.path comes from the multer upload middleware (R2/S3)
     const posterUrl = req.file.path;
 
     const updatedTournament = await prisma.tournament.update({

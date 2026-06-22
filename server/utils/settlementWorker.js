@@ -1,7 +1,7 @@
 import { prisma } from "../config/prisma.js";
 import logger from "./logger.js";
 import * as Sentry from "@sentry/node";
-import NotificationService from "../../services/notification.service.js";
+import NotificationService from "../services/notification.service.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers

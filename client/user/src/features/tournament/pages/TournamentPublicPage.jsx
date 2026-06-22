@@ -12,7 +12,8 @@ import {
   FileText,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import RegistrationModal from "../components/RegistrationModal";
+import RegistrationModal from "../components/RegistrationModal";import { Button } from "@kridaz/ui";
+
 
 const TournamentPublicPage = () => {
   const { id } = useParams();
@@ -26,7 +27,7 @@ const TournamentPublicPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#BFF367] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -38,12 +39,12 @@ const TournamentPublicPage = () => {
         <p className="text-sm text-white/50 mb-6">
           This tournament may have been canceled or the link is invalid.
         </p>
-        <button
+        <Button
           onClick={() => navigate("/")}
-          className="px-6 py-2 bg-[#BFF367] text-black rounded-full font-bold"
+          className="px-6 py-2 bg-primary text-black rounded-full font-bold"
         >
           Go Home
-        </button>
+        </Button>
       </div>
     );
   }
@@ -69,7 +70,7 @@ const TournamentPublicPage = () => {
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto px-4 pt-8">
-          <button
+          <Button
             onClick={() => {
               navigator.clipboard.writeText(window.location.href);
               // toast.success("Link copied!");
@@ -77,7 +78,7 @@ const TournamentPublicPage = () => {
             className="absolute top-8 right-4 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
           >
             <Share2 size={18} />
-          </button>
+          </Button>
 
           <div className="flex flex-col items-center text-center mt-8">
             <div className="w-32 h-32 md:w-48 md:h-48 rounded-3xl bg-black border border-white/10 overflow-hidden flex-shrink-0 shadow-2xl mb-6">
@@ -88,13 +89,13 @@ const TournamentPublicPage = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-[#1a1a1a]">
-                  <Trophy size={48} className="text-[#BFF367]" />
+                <div className="w-full h-full flex items-center justify-center bg-card">
+                  <Trophy size={48} className="text-primary" />
                 </div>
               )}
             </div>
 
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#BFF367]/10 border border-[#BFF367]/20 text-[#BFF367] text-[10px] font-black uppercase tracking-wider mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-wider mb-4">
               Registration Open
             </div>
 
@@ -104,19 +105,19 @@ const TournamentPublicPage = () => {
 
             <div className="flex flex-wrap items-center justify-center gap-3 text-xs md:text-sm text-white/80 font-bold tracking-widest uppercase mb-8">
               <span className="flex items-center gap-1">
-                <Trophy size={14} className="text-[#55DEE8]" />{" "}
+                <Trophy size={14} className="text-secondary" />{" "}
                 {tournament.sport} • {tournament.type}
               </span>
               <span className="w-1 h-1 rounded-full bg-white/30" />
               <span className="flex items-center gap-1">
-                <Users size={14} className="text-[#55DEE8]" />{" "}
+                <Users size={14} className="text-secondary" />{" "}
                 {tournament.format}
               </span>
               {tournament.venues?.length > 0 && (
                 <>
                   <span className="w-1 h-1 rounded-full bg-white/30" />
                   <span className="flex items-center gap-1">
-                    <MapPin size={14} className="text-[#55DEE8]" />{" "}
+                    <MapPin size={14} className="text-secondary" />{" "}
                     {tournament.venues[0].turf?.name || "Multiple Venues"}
                   </span>
                 </>
@@ -128,8 +129,8 @@ const TournamentPublicPage = () => {
 
       <main className="max-w-4xl mx-auto px-4">
         {/* Quick Stats Banner */}
-        <div className="bg-[#111] border border-white/5 rounded-2xl p-4 md:p-6 mb-8 flex flex-wrap gap-6 md:gap-0 justify-between items-center relative overflow-hidden">
-          <div className="absolute right-0 top-0 w-32 h-32 bg-[#BFF367]/5 blur-3xl rounded-full" />
+        <div className="bg-card border border-white/5 rounded-2xl p-4 md:p-6 mb-8 flex flex-wrap gap-6 md:gap-0 justify-between items-center relative overflow-hidden">
+          <div className="absolute right-0 top-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full" />
 
           <div className="flex items-center gap-4 w-1/2 md:w-auto">
             <div className="w-10 h-10 rounded-full bg-[#FFD700]/10 flex items-center justify-center">
@@ -146,8 +147,8 @@ const TournamentPublicPage = () => {
           </div>
 
           <div className="flex items-center gap-4 w-1/2 md:w-auto border-l border-white/5 pl-6 md:pl-8">
-            <div className="w-10 h-10 rounded-full bg-[#55DEE8]/10 flex items-center justify-center">
-              <Calendar className="text-[#55DEE8]" size={20} />
+            <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
+              <Calendar className="text-secondary" size={20} />
             </div>
             <div>
               <p className="text-[10px] text-white/50 uppercase font-bold">
@@ -165,8 +166,8 @@ const TournamentPublicPage = () => {
           </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto border-t md:border-t-0 md:border-l border-white/5 pt-6 md:pt-0 md:pl-8">
-            <div className="w-10 h-10 rounded-full bg-[#BFF367]/10 flex items-center justify-center">
-              <Users className="text-[#BFF367]" size={20} />
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <Users className="text-primary" size={20} />
             </div>
             <div>
               <p className="text-[10px] text-white/50 uppercase font-bold">
@@ -197,12 +198,12 @@ const TournamentPublicPage = () => {
               icon: <Users size={14} />,
             },
           ].map((tab) => (
-            <button
+            <Button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 py-3 px-6 whitespace-nowrap transition-colors relative ${
                 activeTab === tab.id
-                  ? "text-[#BFF367]"
+                  ? "text-primary"
                   : "text-white/50 hover:text-white"
               }`}
             >
@@ -213,10 +214,10 @@ const TournamentPublicPage = () => {
               {activeTab === tab.id && (
                 <motion.div
                   layoutId="pubTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#BFF367]"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
                 />
               )}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -269,9 +270,9 @@ const TournamentPublicPage = () => {
                   {tournament.teams.map((t, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center gap-4 bg-[#111] p-4 rounded-xl border border-white/5"
+                      className="flex items-center gap-4 bg-card p-4 rounded-xl border border-white/5"
                     >
-                      <div className="w-12 h-12 rounded-full bg-[#1a1a1a] flex flex-shrink-0 items-center justify-center overflow-hidden border border-white/10">
+                      <div className="w-12 h-12 rounded-full bg-card flex flex-shrink-0 items-center justify-center overflow-hidden border border-white/10">
                         {t.team?.logo ? (
                           <img
                             src={t.team.logo}
@@ -294,11 +295,11 @@ const TournamentPublicPage = () => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center p-8 bg-[#111] rounded-2xl border border-white/5">
+                <div className="text-center p-8 bg-card rounded-2xl border border-white/5">
                   <p className="text-sm font-bold text-white/50 mb-2">
                     No teams registered yet.
                   </p>
-                  <p className="text-xs text-[#BFF367]">
+                  <p className="text-xs text-primary">
                     Be the first to join!
                   </p>
                 </div>
@@ -311,15 +312,15 @@ const TournamentPublicPage = () => {
       {/* Sticky Bottom CTA */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/90 to-transparent z-40">
         <div className="max-w-4xl mx-auto flex gap-4">
-          <button
+          <Button
             disabled={isFull}
             onClick={() => setShowRegistrationModal(true)}
-            className="flex-1 bg-[#BFF367] text-black font-black px-6 py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-xs sm:text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(191,243,103,0.2)]"
+            className="flex-1 bg-primary text-black font-black px-6 py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-xs sm:text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(191,243,103,0.2)]"
           >
             {isFull
               ? "Tournament Full"
               : `Register Team • â‚¹${tournament.entryFee}`}
-          </button>
+          </Button>
         </div>
       </div>
 

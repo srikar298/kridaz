@@ -43,13 +43,13 @@
 }
 
 .dock-item:hover {
-  color: #bff367;
+  color: var(--primary);
   background-color: rgba(191, 243, 103, 0.1);
   border-color: rgba(191, 243, 103, 0.3);
 }
 
 .active-dock-item {
-  color: #bff367 !important;
+  color: var(--primary) !important;
   background-color: rgba(191, 243, 103, 0.08) !important;
   border-color: rgba(191, 243, 103, 0.25) !important;
   box-shadow: 0 0 12px rgba(191, 243, 103, 0.15) !important;
@@ -61,9 +61,9 @@
   bottom: 4px;
   width: 4px;
   height: 4px;
-  background-color: #bff367;
+  background-color: var(--primary);
   border-radius: 50%;
-  box-shadow: 0 0 8px #bff367;
+  box-shadow: 0 0 8px var(--primary);
 }
 
 .dock-icon {
@@ -186,6 +186,6 @@
 }
 
 .dock-submenu-item:hover {
-  color: #bff367;
+  color: var(--primary);
   background-color: rgba(191, 243, 103, 0.08);
 }

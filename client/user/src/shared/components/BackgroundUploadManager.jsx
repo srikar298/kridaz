@@ -21,7 +21,8 @@ import {
 } from "@redux/api/communityApi";
 import { uploadFileToR2 } from "@utils/mediaUpload";
 import toast from "react-hot-toast";
-import { useSocket } from "@context/SocketContext";
+import { useSocket } from "@context/SocketContext";import { Button } from "@kridaz/ui";
+
 
 const BackgroundUploadManager = () => {
   const dispatch = useDispatch();
@@ -268,7 +269,7 @@ const BackgroundUploadManager = () => {
             {/* Progress Bar */}
             <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
               <motion.div
-                className={`h-full ${status === "error" ? "bg-red-500" : "bg-[#BFF367]"}`}
+                className={`h-full ${status === "error" ? "bg-red-500" : "bg-primary"}`}
                 initial={{ width: 0 }}
                 animate={{ width: `${status === "error" ? 100 : progress}%` }}
                 transition={{ duration: 0.3 }}
@@ -276,7 +277,7 @@ const BackgroundUploadManager = () => {
             </div>
 
             {status !== "success" && status !== "error" && (
-              <p className="text-[10px] text-transparent bg-clip-text bg-gradient-to-r from-[#BFF367] to-[#BFF367] mt-2 flex items-center gap-1">
+              <p className="text-[10px] text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary mt-2 flex items-center gap-1">
                 <AlertTriangle size={10} />
                 Do not close or refresh the app
               </p>
@@ -289,13 +290,13 @@ const BackgroundUploadManager = () => {
 
           <div className="flex-shrink-0">
             {status === "uploading" || status === "finalizing" ? (
-              <Loader2 size={24} className="animate-spin text-[#BFF367]" />
+              <Loader2 size={24} className="animate-spin text-primary" />
             ) : status === "success" ? (
-              <CheckCircle size={24} className="text-[#BFF367]" />
+              <CheckCircle size={24} className="text-primary" />
             ) : (
-              <button onClick={() => dispatch(clearUpload())}>
+              <Button onClick={() => dispatch(clearUpload())}>
                 <XCircle size={24} className="text-red-500" />
-              </button>
+              </Button>
             )}
           </div>
         </motion.div>

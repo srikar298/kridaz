@@ -8,7 +8,8 @@ import {
   Mail,
   ChevronRight,
 } from "lucide-react";
-import { useGetMyTeamsQuery } from "@redux/api/teamApi";
+import { useGetMyTeamsQuery } from "@redux/api/teamApi";import { Button, Input } from "@kridaz/ui";
+
 
 const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
   const [activeTab, setActiveTab] = useState("squad"); // 'squad' or 'guest'
@@ -83,32 +84,32 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
               Select a club member or add a guest player
             </p>
           </div>
-          <button
+          <Button
             onClick={onClose}
             className="p-1.5 rounded-lg bg-slate-800/80 text-slate-400 hover:text-slate-200 hover:bg-slate-700/80 transition-all"
           >
             <X className="h-5 w-5" />
-          </button>
+          </Button>
         </div>
 
         {/* Tab Controls */}
         <div className="relative flex border-b border-white/5 bg-slate-950/30 p-1.5 m-4 rounded-[8px]">
-          <button
+          <Button
             type="button"
             onClick={() => setActiveTab("squad")}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all ${activeTab === "squad" ? "bg-violet-600 text-white shadow-md" : "text-slate-400 hover:text-slate-200"}`}
           >
             <Users className="h-4 w-4" />
             Club Squad Members
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={() => setActiveTab("guest")}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all ${activeTab === "guest" ? "bg-violet-600 text-white shadow-md" : "text-slate-400 hover:text-slate-200"}`}
           >
             <UserPlus className="h-4 w-4" />
             Guest Player
-          </button>
+          </Button>
         </div>
 
         {/* Content */}
@@ -126,7 +127,7 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
                 </div>
               ) : (
                 allUniqueMembers.map((member, idx) => (
-                  <button
+                  <Button
                     key={idx}
                     type="button"
                     onClick={() => handleSquadMemberSelect(member)}
@@ -149,7 +150,7 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
                       </div>
                     </div>
                     <ChevronRight className="h-4 w-4 text-slate-500 group-hover:translate-x-1 transition-transform" />
-                  </button>
+                  </Button>
                 ))
               )}
             </div>
@@ -166,7 +167,7 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
                     className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"
                     size={16}
                   />
-                  <input
+                  <Input
                     type="text"
                     required
                     value={guestName}
@@ -186,7 +187,7 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
                     className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"
                     size={16}
                   />
-                  <input
+                  <Input
                     type="email"
                     value={guestEmail}
                     onChange={(e) => setGuestEmail(e.target.value)}
@@ -196,13 +197,13 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
                 </div>
               </div>
 
-              <button
+              <Button
                 type="submit"
                 disabled={!guestName.trim()}
                 className="w-full mt-4 py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-[8px] text-xs font-bold transition-all shadow-[0_4px_12px_rgba(109,40,217,0.2)] disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
               >
                 Assign Guest Player to Slot
-              </button>
+              </Button>
             </form>
           )}
         </div>

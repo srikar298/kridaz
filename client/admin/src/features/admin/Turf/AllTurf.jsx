@@ -6,7 +6,8 @@ import useTurfData from "@hooks/admin/useTurf";
 import Turf from "./Turf";
 import TurfSkeleton from "./TurfSkeleton";
 import VenueDetailsModal from "./VenueDetailsModal";
-import ConfirmationPopup from "./ConfirmationPopup";
+import ConfirmationPopup from "./ConfirmationPopup";import { Button } from "@kridaz/ui";
+
 
 export const AllTurf = () => {
   const {
@@ -99,7 +100,7 @@ export const AllTurf = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-white p-6 lg:p-10">
+      <div className="min-h-screen bg-background text-white p-6 lg:p-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, index) => (
             <TurfSkeleton key={index} />
@@ -110,50 +111,50 @@ export const AllTurf = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white p-6 lg:p-10 relative">
+    <div className="min-h-screen bg-background text-white p-6 lg:p-10 relative">
       <div className="space-y-12">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="space-y-4">
-            <div className="flex items-center gap-3 text-[#CCFF00] font-bold text-xs uppercase tracking-widest">
+            <div className="flex items-center gap-3 text-primary font-bold text-xs uppercase tracking-widest">
               <Activity size={14} className="animate-pulse" />
               <span>Venue Management</span>
             </div>
             <div className="relative flex justify-between items-start w-full">
               <div>
                 <h1 className="text-4xl md:text-5xl font-black tracking-tight uppercase text-white leading-none">
-                  Platform <span className="text-[#CCFF00]">Venues</span>
+                  Platform <span className="text-primary">Venues</span>
                 </h1>
                 <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-3">
                   Manage and monitor all platform venues
                 </p>
               </div>
-              <button
+              <Button
                 onClick={() => navigate("/admin/turfs/invites")}
-                className="px-6 py-2 rounded-[8px] bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] text-black text-xs font-bold uppercase tracking-widest shadow-[0_4px_12px_rgba(179,220,38,0.2)] ml-4"
+                className="px-6 py-2 rounded-[8px] bg-gradient-to-r from-secondary to-primary text-black text-xs font-bold uppercase tracking-widest shadow-[0_4px_12px_rgba(179,220,38,0.2)] ml-4"
               >
                 Invite Venues
-              </button>
+              </Button>
             </div>
           </div>
 
           {/* Filters */}
           <div className="flex flex-wrap gap-2 p-1 bg-white/5 rounded-[8px] border border-white/5">
             {filters.map((filter) => (
-              <button
+              <Button
                 key={filter.id}
                 onClick={() => setActiveFilter(filter.id)}
-                className={`px-4 py-2 rounded-[8px] text-[10px] font-black uppercase tracking-widest transition-all ${activeFilter === filter.id ? "bg-[#CCFF00] text-black shadow-lg shadow-[#CCFF00]/20" : "text-gray-500 hover:text-white hover:bg-white/5"}`}
+                className={`px-4 py-2 rounded-[8px] text-[10px] font-black uppercase tracking-widest transition-all ${activeFilter === filter.id ? "bg-primary text-black shadow-lg shadow-[var(--primary)]/20" : "text-gray-500 hover:text-white hover:bg-white/5"}`}
               >
                 {filter.label}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
 
         {!filteredTurfs || filteredTurfs.length === 0 ? (
           <div className="relative p-20 rounded-[8px] border border-white/5 bg-white/[0.02] text-center overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-full bg-[#CCFF00]/5 blur-[100px]"></div>
+            <div className="absolute top-0 left-0 w-full h-full bg-primary/5 blur-[100px]"></div>
             <div className="relative space-y-6">
               <PackageOpen size={80} className="mx-auto text-gray-800" />
               <div className="space-y-2">

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { Shield } from "lucide-react";
+import { Shield } from "lucide-react";import { Button } from "@kridaz/ui";
+
 
 const ballColor = (ball) => {
   if (ball.isWicket) return "bg-red-600 text-white";
@@ -82,49 +83,49 @@ const BallByBallHistory = ({ matchData }) => {
             ["extra", "Extras"],
             ["dot", "Dots"],
           ].map(([val, label]) => (
-            <button
+            <Button
               key={val}
               onClick={() => setFilterType(val)}
               className={`px-4 py-2 rounded-[8px] text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all shrink-0 ${filterType === val ? "bg-primary text-black" : "bg-white/5 text-gray-500 border border-white/10"}`}
             >
               {label}
-            </button>
+            </Button>
           ))}
         </div>
 
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-          <button
+          <Button
             onClick={() => setFilterPlayer("all")}
             className={`px-4 py-2 rounded-[8px] text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all shrink-0 ${filterPlayer === "all" ? "bg-white/20 text-white" : "bg-white/5 text-gray-500 border border-white/10"}`}
           >
             All Players
-          </button>
+          </Button>
           {players.map((p) => (
-            <button
+            <Button
               key={p.id}
               onClick={() => setFilterPlayer(p.id)}
               className={`px-4 py-2 rounded-[8px] text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all shrink-0 ${filterPlayer === p.id ? "bg-white/20 text-white" : "bg-white/5 text-gray-500 border border-white/10"}`}
             >
               {p.name}
-            </button>
+            </Button>
           ))}
         </div>
 
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-          <button
+          <Button
             onClick={() => setFilterOver("all")}
             className={`px-4 py-2 rounded-[8px] text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all shrink-0 ${filterOver === "all" ? "bg-white/20 text-white" : "bg-white/5 text-gray-500 border border-white/10"}`}
           >
             All Overs
-          </button>
+          </Button>
           {overOptions.map((ov) => (
-            <button
+            <Button
               key={ov}
               onClick={() => setFilterOver(String(ov))}
               className={`px-4 py-2 rounded-[8px] text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all shrink-0 ${filterOver === String(ov) ? "bg-white/20 text-white" : "bg-white/5 text-gray-500 border border-white/10"}`}
             >
               Over {ov + 1}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

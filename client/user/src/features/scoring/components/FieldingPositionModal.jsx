@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Target } from "lucide-react";
+import { X, Target } from "lucide-react";import { Button } from "@kridaz/ui";
+
 
 const POSITIONS = [
   { key: "DEEP_MID_WICKET", label: "Deep Mid Wicket" },
@@ -60,7 +61,7 @@ const FieldingPositionModal = ({ runs, isBoundary, onConfirm, onClose }) => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: "spring", damping: 22 }}
-          className="relative w-full max-w-md bg-[#111] rounded-[8px] border border-blue-500/20 overflow-hidden z-10"
+          className="relative w-full max-w-md bg-card rounded-[8px] border border-blue-500/20 overflow-hidden z-10"
         >
           {/* Header */}
           <div className="px-6 pt-6 pb-4 border-b border-white/10 flex items-center justify-between">
@@ -79,12 +80,12 @@ const FieldingPositionModal = ({ runs, isBoundary, onConfirm, onClose }) => {
                 </p>
               </div>
             </div>
-            <button
+            <Button
               onClick={handleSkip}
               className="p-1 rounded-full hover:bg-white/10 text-neutral-500 hover:text-white transition-colors"
             >
               <X size={16} />
-            </button>
+            </Button>
           </div>
 
           {/* Body */}
@@ -92,7 +93,7 @@ const FieldingPositionModal = ({ runs, isBoundary, onConfirm, onClose }) => {
             {step === "position" && (
               <div className="grid grid-cols-2 gap-2">
                 {POSITIONS.map((pos) => (
-                  <button
+                  <Button
                     key={pos.key}
                     onClick={() => handlePositionSelect(pos.key)}
                     className="p-4 rounded-[8px] border border-white/8 bg-white/4 hover:border-blue-500/50 hover:bg-blue-500/8 transition-all text-left group"
@@ -100,7 +101,7 @@ const FieldingPositionModal = ({ runs, isBoundary, onConfirm, onClose }) => {
                     <span className="text-sm font-black text-white group-hover:text-blue-400 transition-colors">
                       {pos.label}
                     </span>
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}
@@ -108,7 +109,7 @@ const FieldingPositionModal = ({ runs, isBoundary, onConfirm, onClose }) => {
             {step === "distance" && (
               <div className="grid grid-cols-2 gap-2">
                 {DISTANCES.map((dist) => (
-                  <button
+                  <Button
                     key={dist.key}
                     onClick={() => handleDistanceSelect(dist.key)}
                     className="p-4 rounded-[8px] border border-white/8 bg-white/4 hover:border-blue-500/50 hover:bg-blue-500/8 transition-all text-left group"
@@ -116,29 +117,29 @@ const FieldingPositionModal = ({ runs, isBoundary, onConfirm, onClose }) => {
                     <span className="text-sm font-black text-white group-hover:text-blue-400 transition-colors">
                       {dist.label}
                     </span>
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}
 
             {step === "position" && (
-              <button
+              <Button
                 onClick={handleSkip}
                 className="w-full mt-2 py-3 rounded-[8px] border border-dashed border-white/15 text-neutral-500 text-sm font-bold hover:border-white/30 transition-colors"
               >
                 Skip Wagon Wheel
-              </button>
+              </Button>
             )}
           </div>
 
           {step === "distance" && (
             <div className="px-6 pb-5 pt-3 border-t border-white/10">
-              <button
+              <Button
                 onClick={() => setStep("position")}
                 className="text-xs text-neutral-500 hover:text-white font-bold uppercase tracking-widest transition-colors"
               >
                 ← Back
-              </button>
+              </Button>
             </div>
           )}
         </motion.div>

@@ -11,7 +11,8 @@ import {
   Loader2,
   Eye,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
+
 
 const CommunityManagement = () => {
   const [activeTab, setActiveTab] = useState("posts"); // 'posts' or 'stories'
@@ -77,7 +78,7 @@ const CommunityManagement = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-3xl font-black text-white uppercase tracking-tight">
-            Community <span className="text-[#55DEE8]">Moderation</span>
+            Community <span className="text-secondary">Moderation</span>
           </h1>
           <p className="text-white/20 text-xs font-bold uppercase tracking-[0.2em] mt-1">
             Manage posts and stories across the platform
@@ -85,18 +86,18 @@ const CommunityManagement = () => {
         </div>
         <div className="flex items-center gap-3">
           <div className="bg-white/5 border border-white/10 rounded-[8px] p-1 flex">
-            <button
+            <Button
               onClick={() => setActiveTab("posts")}
-              className={`px-6 py-2.5 rounded-[8px] text-xs font-bold uppercase tracking-widest transition-all ${activeTab === "posts" ? "bg-[#55DEE8] text-black" : "text-white/40 hover:text-white"}`}
+              className={`px-6 py-2.5 rounded-[8px] text-xs font-bold uppercase tracking-widest transition-all ${activeTab === "posts" ? "bg-secondary text-black" : "text-white/40 hover:text-white"}`}
             >
               Posts
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setActiveTab("stories")}
-              className={`px-6 py-2.5 rounded-[8px] text-xs font-bold uppercase tracking-widest transition-all ${activeTab === "stories" ? "bg-[#55DEE8] text-black" : "text-white/40 hover:text-white"}`}
+              className={`px-6 py-2.5 rounded-[8px] text-xs font-bold uppercase tracking-widest transition-all ${activeTab === "stories" ? "bg-secondary text-black" : "text-white/40 hover:text-white"}`}
             >
               Stories
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -108,31 +109,31 @@ const CommunityManagement = () => {
             className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"
             size={18}
           />
-          <input
+          <Input
             type="text"
             placeholder={`SEARCH ${activeTab.toUpperCase()}...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-[8px] h-12 pl-12 pr-4 text-white text-xs font-bold tracking-widest outline-none focus:border-[#55DEE8]/50 transition-all placeholder:text-white/10"
+            className="w-full bg-white/5 border border-white/10 rounded-[8px] h-12 pl-12 pr-4 text-white text-xs font-bold tracking-widest outline-none focus:border-secondary/50 transition-all placeholder:text-white/10"
           />
         </div>
         <div className="flex items-center gap-4 w-full md:w-auto">
-          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white/5 border border-white/10 text-white/40 hover:text-white px-6 h-12 rounded-[8px] text-xs font-bold uppercase tracking-widest transition-all">
+          <Button className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white/5 border border-white/10 text-white/40 hover:text-white px-6 h-12 rounded-[8px] text-xs font-bold uppercase tracking-widest transition-all">
             <Filter size={16} /> Filter
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={fetchItems}
             className="p-3 bg-white/5 border border-white/10 text-white/40 hover:text-white rounded-[8px] transition-all"
           >
             <Clock size={18} />
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Content Grid */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-40 gap-4">
-          <Loader2 size={40} className="text-[#55DEE8] animate-spin" />
+          <Loader2 size={40} className="text-secondary animate-spin" />
           <p className="text-white/20 text-[10px] font-bold uppercase tracking-[0.3em]">
             Auditing Content...
           </p>
@@ -174,7 +175,7 @@ const CommunityManagement = () => {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center p-8 bg-gradient-to-br from-[#55DEE8]/5 to-transparent">
+                  <div className="w-full h-full flex items-center justify-center p-8 bg-gradient-to-br from-secondary/5 to-transparent">
                     <p className="text-sm font-medium text-white/40 text-center leading-relaxed">
                       {item.content}
                     </p>
@@ -184,7 +185,7 @@ const CommunityManagement = () => {
                 {/* Badge */}
                 <div className="absolute top-4 left-4 flex gap-2">
                   <div className="bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-[6px] flex items-center gap-2">
-                    <Clock size={10} className="text-[#55DEE8]" />
+                    <Clock size={10} className="text-secondary" />
                     <span className="text-[9px] font-bold text-white uppercase tracking-widest">
                       {new Date(item.createdAt).toLocaleDateString()}
                     </span>
@@ -199,14 +200,14 @@ const CommunityManagement = () => {
                     to={`/profile/${item.user?._id}`}
                     className="flex items-center gap-3 hover:opacity-80 transition-opacity"
                   >
-                    <div className="w-8 h-8 rounded-full bg-[#55DEE8]/10 flex items-center justify-center border border-[#55DEE8]/20">
-                      <UserIcon size={14} className="text-[#55DEE8]" />
+                    <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center border border-secondary/20">
+                      <UserIcon size={14} className="text-secondary" />
                     </div>
                     <div>
-                      <p className="text-[11px] font-bold text-white uppercase tracking-widest hover:text-[#55DEE8] transition-colors">
+                      <p className="text-[11px] font-bold text-white uppercase tracking-widest hover:text-secondary transition-colors">
                         {item.user?.name || "System"}
                       </p>
-                      <p className="text-[9px] text-[#55DEE8] font-bold uppercase tracking-widest">
+                      <p className="text-[9px] text-secondary font-bold uppercase tracking-widest">
                         @{item.user?.username || "admin"}
                       </p>
                     </div>
@@ -256,15 +257,15 @@ const CommunityManagement = () => {
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <button className="w-10 h-10 rounded-[8px] bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-all">
+                    <Button className="w-10 h-10 rounded-[8px] bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-all">
                       <Eye size={16} />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => handleDelete(item._id)}
                       className="w-10 h-10 rounded-[8px] bg-red-500/10 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all"
                     >
                       <Trash2 size={16} />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>

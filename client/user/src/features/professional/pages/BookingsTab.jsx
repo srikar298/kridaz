@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Calendar, MapPin, User, Trophy, Clock, Info } from "lucide-react";
-import { useGetMyOnDemandBookingsQuery } from "../../../redux/api/professionalApi";
+import { useGetMyOnDemandBookingsQuery } from "../../../redux/api/professionalApi";import { Button } from "@kridaz/ui";
+
 
 const BookingsTab = ({ role }) => {
   const {
@@ -35,7 +36,7 @@ const BookingsTab = ({ role }) => {
       case "ASSIGNED":
         return "bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-[0_0_12px_rgba(245,158,11,0.05)]";
       case "IN_PROGRESS":
-        return "bg-[#BFF367]/10 text-[#BFF367] border border-[#BFF367]/20 shadow-[0_0_12px_rgba(191,243,103,0.05)]";
+        return "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_12px_rgba(191,243,103,0.05)]";
       case "COMPLETED":
         return "bg-green-500/10 text-green-400 border border-green-500/20";
       case "CANCELLED":
@@ -103,64 +104,44 @@ const BookingsTab = ({ role }) => {
   return (
     <div className="space-y-6 text-white font-inter">
       {/* Tab Selectors */}
-      <div className="border-b border-[#1A1A1A] pb-1">
-        <div className="grid grid-cols-4 w-full text-center">
-          <button
+      <div className="border-b border-card pb-1 overflow-x-auto no-scrollbar">
+        <div className="flex w-full min-w-max sm:min-w-0 sm:grid sm:grid-cols-4 text-center">
+          <Button
             onClick={() => setActiveSubTab("active")}
-            className={`pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "active" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "active" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
           >
-            <span className="block sm:hidden">
-              Active ({activeBookings.length})
-            </span>
-            <span className="hidden sm:block">
-              Active ({activeBookings.length})
-            </span>
-          </button>
-          <button
+            Active ({activeBookings.length})
+          </Button>
+          <Button
             onClick={() => setActiveSubTab("history")}
-            className={`pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "history" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "history" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
           >
-            <span className="block sm:hidden">
-              History ({completedBookings.length})
-            </span>
-            <span className="hidden sm:block">
-              History ({completedBookings.length})
-            </span>
-          </button>
-          <button
+            History ({completedBookings.length})
+          </Button>
+          <Button
             onClick={() => setActiveSubTab("nonAccepted")}
-            className={`pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "nonAccepted" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "nonAccepted" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
           >
-            <span className="block sm:hidden">
-              Rejected ({nonAcceptedBookings.length})
-            </span>
-            <span className="hidden sm:block">
-              Rejected ({nonAcceptedBookings.length})
-            </span>
-          </button>
-          <button
+            Rejected ({nonAcceptedBookings.length})
+          </Button>
+          <Button
             onClick={() => setActiveSubTab("skipped")}
-            className={`pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "skipped" ? "text-[#BFF367] border-[#BFF367]" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "skipped" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
           >
-            <span className="block sm:hidden">
-              Skipped ({skippedBookings.length})
-            </span>
-            <span className="hidden sm:block">
-              Skipped ({skippedBookings.length})
-            </span>
-          </button>
+            Skipped ({skippedBookings.length})
+          </Button>
         </div>
       </div>
 
       {isLoading ? (
         <div className="py-20 text-center flex flex-col items-center justify-center gap-3">
-          <div className="w-8 h-8 rounded-full border-2 border-t-transparent border-[#BFF367] animate-spin" />
+          <div className="w-8 h-8 rounded-full border-2 border-t-transparent border-primary animate-spin" />
           <p className="text-xs font-bold uppercase tracking-widest text-gray-500">
             Syncing assignments...
           </p>
         </div>
       ) : currentList.length === 0 ? (
-        <div className="p-16 text-center bg-[#0D0D0D] border border-[#1A1A1A] rounded-2xl space-y-4">
+        <div className="p-16 text-center bg-background border border-card rounded-2xl space-y-4">
           <div className="mx-auto w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-gray-600">
             <Info size={24} />
           </div>
@@ -184,10 +165,10 @@ const BookingsTab = ({ role }) => {
           {currentList.map((booking) => (
             <div
               key={booking.id}
-              className={`p-5 rounded-2xl bg-[#0D0D0D] border transition-all duration-300 flex flex-col justify-between gap-5 relative overflow-hidden ${
+              className={`p-5 rounded-2xl bg-background border transition-all duration-300 flex flex-col justify-between gap-5 relative overflow-hidden ${
                 booking.status === "PENDING"
                   ? "border-yellow-500/20 hover:border-yellow-500/40"
-                  : "border-[#1A1A1A] hover:border-[#BFF367]/30"
+                  : "border-card hover:border-primary/30"
               }`}
             >
               {/* Background gradient card glow */}
@@ -195,7 +176,7 @@ const BookingsTab = ({ role }) => {
                 className={`absolute top-0 right-0 w-24 h-24 blur-3xl pointer-events-none rounded-full ${
                   booking.status === "PENDING"
                     ? "bg-yellow-500/5"
-                    : "bg-[#BFF367]/5"
+                    : "bg-primary/5"
                 }`}
               />
 
@@ -232,14 +213,14 @@ const BookingsTab = ({ role }) => {
                     <span className="block text-[8px] font-black text-gray-500 uppercase tracking-widest leading-none">
                       Hourly rate
                     </span>
-                    <span className="text-[#BFF367] font-black text-base sm:text-lg block mt-1">
+                    <span className="text-primary font-black text-base sm:text-lg block mt-1">
                       ₹{booking.hourlyRate}
                     </span>
                   </div>
                 </div>
 
                 {/* Match timing block */}
-                <div className="p-3 bg-[#121212] border border-[#1A1A1A] rounded-xl grid grid-cols-2 gap-3">
+                <div className="p-3 bg-card border border-card rounded-xl grid grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-1">
                       <Calendar size={10} /> Match Date
@@ -262,8 +243,8 @@ const BookingsTab = ({ role }) => {
 
                 {/* Venue / Location Details */}
                 <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#BFF367]/5 border border-[#BFF367]/10 flex items-center justify-center shrink-0">
-                    <MapPin size={16} className="text-[#BFF367]" />
+                  <div className="w-8 h-8 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-center shrink-0">
+                    <MapPin size={16} className="text-primary" />
                   </div>
                   <div className="min-w-0">
                     <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest block leading-none mb-1.5">
@@ -282,16 +263,16 @@ const BookingsTab = ({ role }) => {
               </div>
 
               {/* Client Details Section — no email/phone */}
-              <div className="p-3 bg-[#121212] border border-[#1A1A1A] rounded-xl flex items-center gap-3">
+              <div className="p-3 bg-card border border-card rounded-xl flex items-center gap-3">
                 <div className="flex items-center gap-2.5 min-w-0">
                   {booking.user?.profilePicture ? (
                     <img
                       src={booking.user.profilePicture}
                       alt=""
-                      className="w-9 h-9 rounded-full object-cover border border-[#BFF367]/20 shrink-0"
+                      className="w-9 h-9 rounded-full object-cover border border-primary/20 shrink-0"
                     />
                   ) : (
-                    <div className="w-9 h-9 rounded-full bg-[#BFF367]/10 text-[#BFF367] border border-[#BFF367]/20 flex items-center justify-center font-bold text-xs uppercase shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-bold text-xs uppercase shrink-0">
                       {booking.user?.name?.charAt(0) || "U"}
                     </div>
                   )}

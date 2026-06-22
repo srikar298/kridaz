@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/react";
 import { useState, useEffect, useRef } from "react";
 import {
   ChevronDown,
@@ -8,7 +7,8 @@ import {
   Trophy,
   Loader2,
 } from "lucide-react";
-import { fetchStates, fetchCities } from "../../utils/locationService";
+import { fetchStates, fetchCities } from "../../utils/locationService";import { Button } from "@kridaz/ui";
+
 
 /**
  * SearchTurf ΓÇö unified filter bar for the venue discovery page.
@@ -54,7 +54,7 @@ const SearchTurf = ({ onSearch }) => {
         const stateList = await fetchStates();
         setStates(stateList || []);
       } catch (err) {
-        Sentry.captureException(err);
+        console.error("Failed to fetch states:", err);
       } finally {
         setLoadingStates(false);
       }
@@ -71,7 +71,7 @@ const SearchTurf = ({ onSearch }) => {
           const cityList = await fetchCities(selectedState);
           setCities(cityList || []);
         } catch (err) {
-          Sentry.captureException(err);
+          console.error(`Failed to fetch cities for ${selectedState}:`, err);
         } finally {
           setLoadingCities(false);
         }
@@ -132,13 +132,13 @@ const SearchTurf = ({ onSearch }) => {
   return (
     <div className="w-full animate-fade-in-up relative z-[50]">
       <div className="relative group">
-        <div className="relative flex flex-row items-center bg-black/60 backdrop-blur-2xl border border-white/5 rounded-[8px] p-1.5 shadow-2xl transition-all duration-500 hover:border-[#BFF367]/30 min-h-[56px] md:min-h-[64px]">
+        <div className="relative flex flex-row items-center bg-black/60 backdrop-blur-2xl border border-white/5 rounded-[8px] p-1.5 shadow-2xl transition-all duration-500 hover:border-primary/30 min-h-[56px] md:min-h-[64px]">
           {/* Sport Selector */}
           <div
             className="flex-1 min-w-[80px] relative z-[100] border-r border-white/5"
             ref={sportDropdownRef}
           >
-            <button
+            <Button
               onClick={() => {
                 setShowSportDropdown(!showSportDropdown);
                 setShowStateDropdown(false);
@@ -146,10 +146,10 @@ const SearchTurf = ({ onSearch }) => {
               }}
               className="flex items-center gap-3 w-full h-full px-4 py-2 transition-all hover:bg-white/5 rounded-[8px] group/btn"
             >
-              <div className="p-2 bg-white/5 rounded-[10px] group-hover/btn:bg-[#BFF367]/10 transition-colors">
+              <div className="p-2 bg-white/5 rounded-[10px] group-hover/btn:bg-primary/10 transition-colors">
                 <Trophy
                   size={14}
-                  className={`${showSportDropdown ? "text-[#BFF367]" : "text-gray-500"}`}
+                  className={`${showSportDropdown ? "text-primary" : "text-gray-500"}`}
                 />
               </div>
               <div className="flex flex-col text-left font-inter">
@@ -162,44 +162,44 @@ const SearchTurf = ({ onSearch }) => {
               </div>
               <ChevronDown
                 size={12}
-                className={`ml-auto text-gray-600 transition-transform duration-500 ${showSportDropdown ? "rotate-180 text-[#BFF367]" : ""}`}
+                className={`ml-auto text-gray-600 transition-transform duration-500 ${showSportDropdown ? "rotate-180 text-primary" : ""}`}
               />
-            </button>
+            </Button>
 
             {showSportDropdown && (
-              <div className="absolute top-full mt-2 left-0 w-64 lg:w-72 bg-[#0a0a0a] border border-white/10 rounded-[8px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.9)] z-[110] animate-in slide-in-from-top-2 duration-200">
+              <div className="absolute top-full mt-2 left-0 w-64 lg:w-72 bg-background border border-white/10 rounded-[8px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.9)] z-[110] animate-in slide-in-from-top-2 duration-200">
                 <div className="p-2 max-h-[300px] overflow-y-auto grid grid-cols-1 gap-1 custom-scrollbar">
-                  <button
+                  <Button
                     onClick={() => {
                       setSport("");
                       setShowSportDropdown(false);
                     }}
-                    className="flex items-center px-4 py-3 rounded-[8px] hover:bg-[#BFF367]/10 text-left transition-colors group/item"
+                    className="flex items-center px-4 py-3 rounded-[8px] hover:bg-primary/10 text-left transition-colors group/item"
                   >
                     <Trophy
                       size={14}
-                      className="mr-3 text-gray-600 group-hover/item:text-[#BFF367]"
+                      className="mr-3 text-gray-600 group-hover/item:text-primary"
                     />
                     <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 font-inter">
                       All Categories
                     </span>
-                  </button>
+                  </Button>
                   <div className="h-px bg-white/5 my-1" />
                   {SPORTS_LIST.map((s) => (
-                    <button
+                    <Button
                       key={s}
                       onClick={() => {
                         setSport(s);
                         setShowSportDropdown(false);
                       }}
-                      className={`flex items-center px-4 py-2.5 rounded-[8px] transition-all text-left ${sport === s ? "bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black shadow-[0_0_15px_rgba(85,222,232,0.3)]" : "hover:bg-white/5 text-gray-400 hover:text-white"}`}
+                      className={`flex items-center px-4 py-2.5 rounded-[8px] transition-all text-left ${sport === s ? "bg-gradient-to-r from-primary to-primary text-black shadow-[0_0_15px_rgba(85,222,232,0.3)]" : "hover:bg-white/5 text-gray-400 hover:text-white"}`}
                     >
                       <span
                         className={`text-[11px] font-bold uppercase tracking-wider font-inter ${sport === s ? "text-black" : ""}`}
                       >
                         {s}
                       </span>
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -211,7 +211,7 @@ const SearchTurf = ({ onSearch }) => {
             className="flex-1 min-w-[80px] relative z-[95] border-r border-white/5"
             ref={stateDropdownRef}
           >
-            <button
+            <Button
               onClick={() => {
                 setShowStateDropdown(!showStateDropdown);
                 setShowSportDropdown(false);
@@ -219,10 +219,10 @@ const SearchTurf = ({ onSearch }) => {
               }}
               className="flex items-center gap-3 w-full h-full px-4 py-2 transition-all hover:bg-white/5 rounded-[8px] group/btn"
             >
-              <div className="p-2 bg-white/5 rounded-[10px] group-hover/btn:bg-[#BFF367]/10 transition-colors">
+              <div className="p-2 bg-white/5 rounded-[10px] group-hover/btn:bg-primary/10 transition-colors">
                 <MapPin
                   size={14}
-                  className={`${selectedState ? "text-[#BFF367]" : "text-gray-500"}`}
+                  className={`${selectedState ? "text-primary" : "text-gray-500"}`}
                 />
               </div>
               <div className="flex flex-col text-left flex-1 min-w-0 font-inter">
@@ -235,48 +235,48 @@ const SearchTurf = ({ onSearch }) => {
               </div>
               <ChevronDown
                 size={12}
-                className={`ml-auto text-gray-600 transition-transform duration-500 flex-shrink-0 ${showStateDropdown ? "rotate-180 text-[#BFF367]" : ""}`}
+                className={`ml-auto text-gray-600 transition-transform duration-500 flex-shrink-0 ${showStateDropdown ? "rotate-180 text-primary" : ""}`}
               />
-            </button>
+            </Button>
 
             {showStateDropdown && (
-              <div className="absolute top-full mt-2 left-0 w-64 lg:w-72 bg-[#0a0a0a] border border-white/10 rounded-[8px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.9)] z-[110] animate-in slide-in-from-top-2 duration-200">
+              <div className="absolute top-full mt-2 left-0 w-64 lg:w-72 bg-background border border-white/10 rounded-[8px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.9)] z-[110] animate-in slide-in-from-top-2 duration-200">
                 <div className="p-2 max-h-[300px] overflow-y-auto grid grid-cols-1 gap-1 custom-scrollbar">
-                  <button
+                  <Button
                     onClick={() => {
                       setSelectedState("");
                       setShowStateDropdown(false);
                     }}
-                    className="flex items-center px-4 py-3 rounded-[8px] hover:bg-[#BFF367]/10 text-left transition-colors group/item"
+                    className="flex items-center px-4 py-3 rounded-[8px] hover:bg-primary/10 text-left transition-colors group/item"
                   >
                     <MapPin
                       size={14}
-                      className="mr-3 text-gray-600 group-hover/item:text-[#BFF367]"
+                      className="mr-3 text-gray-600 group-hover/item:text-primary"
                     />
                     <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 font-inter">
                       All States
                     </span>
-                  </button>
+                  </Button>
                   <div className="h-px bg-white/5 my-1" />
                   {states.map((st) => (
-                    <button
+                    <Button
                       key={st}
                       onClick={() => {
                         setSelectedState(st);
                         setShowStateDropdown(false);
                       }}
-                      className={`flex items-center px-4 py-2.5 rounded-[8px] transition-all text-left ${selectedState === st ? "bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black shadow-[0_0_15px_rgba(85,222,232,0.3)]" : "hover:bg-white/5 text-gray-400 hover:text-white"}`}
+                      className={`flex items-center px-4 py-2.5 rounded-[8px] transition-all text-left ${selectedState === st ? "bg-gradient-to-r from-primary to-primary text-black shadow-[0_0_15px_rgba(85,222,232,0.3)]" : "hover:bg-white/5 text-gray-400 hover:text-white"}`}
                     >
                       <span
                         className={`text-[11px] font-bold uppercase tracking-wider font-inter ${selectedState === st ? "text-black" : ""}`}
                       >
                         {st}
                       </span>
-                    </button>
+                    </Button>
                   ))}
                   {loadingStates ? (
                     <div className="px-4 py-6 flex flex-col items-center justify-center text-center">
-                      <Loader2 className="w-5 h-5 text-[#BFF367] animate-spin mb-2" />
+                      <Loader2 className="w-5 h-5 text-primary animate-spin mb-2" />
                       <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest font-inter">
                         Loading states...
                       </p>
@@ -298,7 +298,7 @@ const SearchTurf = ({ onSearch }) => {
             className="flex-1 min-w-[80px] relative z-[90]"
             ref={cityDropdownRef}
           >
-            <button
+            <Button
               onClick={() => {
                 setShowCityDropdown(!showCityDropdown);
                 setShowSportDropdown(false);
@@ -306,10 +306,10 @@ const SearchTurf = ({ onSearch }) => {
               }}
               className="flex items-center gap-3 w-full h-full px-4 py-2 transition-all hover:bg-white/5 rounded-[8px] group/btn"
             >
-              <div className="p-2 bg-white/5 rounded-[10px] group-hover/btn:bg-[#BFF367]/10 transition-colors">
+              <div className="p-2 bg-white/5 rounded-[10px] group-hover/btn:bg-primary/10 transition-colors">
                 <Building2
                   size={14}
-                  className={`${selectedCity ? "text-[#BFF367]" : "text-gray-500"}`}
+                  className={`${selectedCity ? "text-primary" : "text-gray-500"}`}
                 />
               </div>
               <div className="flex flex-col text-left flex-1 min-w-0 font-inter">
@@ -322,48 +322,48 @@ const SearchTurf = ({ onSearch }) => {
               </div>
               <ChevronDown
                 size={12}
-                className={`ml-auto text-gray-600 transition-transform duration-500 flex-shrink-0 ${showCityDropdown ? "rotate-180 text-[#BFF367]" : ""}`}
+                className={`ml-auto text-gray-600 transition-transform duration-500 flex-shrink-0 ${showCityDropdown ? "rotate-180 text-primary" : ""}`}
               />
-            </button>
+            </Button>
 
             {showCityDropdown && (
-              <div className="absolute top-full mt-2 left-0 w-64 lg:w-72 bg-[#0a0a0a] border border-white/10 rounded-[8px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.9)] z-[110] animate-in slide-in-from-top-2 duration-200">
+              <div className="absolute top-full mt-2 left-0 w-64 lg:w-72 bg-background border border-white/10 rounded-[8px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.9)] z-[110] animate-in slide-in-from-top-2 duration-200">
                 <div className="p-2 max-h-[300px] overflow-y-auto grid grid-cols-1 gap-1 custom-scrollbar">
-                  <button
+                  <Button
                     onClick={() => {
                       setSelectedCity("");
                       setShowCityDropdown(false);
                     }}
-                    className="flex items-center px-4 py-3 rounded-[8px] hover:bg-[#BFF367]/10 text-left transition-colors group/item"
+                    className="flex items-center px-4 py-3 rounded-[8px] hover:bg-primary/10 text-left transition-colors group/item"
                   >
                     <Building2
                       size={14}
-                      className="mr-3 text-gray-600 group-hover/item:text-[#BFF367]"
+                      className="mr-3 text-gray-600 group-hover/item:text-primary"
                     />
                     <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 font-inter">
                       All Cities
                     </span>
-                  </button>
+                  </Button>
                   <div className="h-px bg-white/5 my-1" />
                   {cities.map((ct) => (
-                    <button
+                    <Button
                       key={ct}
                       onClick={() => {
                         setSelectedCity(ct);
                         setShowCityDropdown(false);
                       }}
-                      className={`flex items-center px-4 py-2.5 rounded-[8px] transition-all text-left ${selectedCity === ct ? "bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black shadow-[0_0_15px_rgba(85,222,232,0.3)]" : "hover:bg-white/5 text-gray-400 hover:text-white"}`}
+                      className={`flex items-center px-4 py-2.5 rounded-[8px] transition-all text-left ${selectedCity === ct ? "bg-gradient-to-r from-primary to-primary text-black shadow-[0_0_15px_rgba(85,222,232,0.3)]" : "hover:bg-white/5 text-gray-400 hover:text-white"}`}
                     >
                       <span
                         className={`text-[11px] font-bold uppercase tracking-wider font-inter ${selectedCity === ct ? "text-black" : ""}`}
                       >
                         {ct}
                       </span>
-                    </button>
+                    </Button>
                   ))}
                   {loadingCities ? (
                     <div className="px-4 py-6 flex flex-col items-center justify-center text-center">
-                      <Loader2 className="w-5 h-5 text-[#BFF367] animate-spin mb-2" />
+                      <Loader2 className="w-5 h-5 text-primary animate-spin mb-2" />
                       <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest font-inter">
                         Loading cities...
                       </p>
@@ -383,13 +383,13 @@ const SearchTurf = ({ onSearch }) => {
           </div>
 
           {/* Reset Filter */}
-          <button
+          <Button
             onClick={resetFilters}
-            className="flex items-center justify-center p-3 text-gray-500 hover:text-[#BFF367] transition-colors group/reset"
+            className="flex items-center justify-center p-3 text-gray-500 hover:text-primary transition-colors group/reset"
             title="Reset Filters"
           >
             <RotateCcw className="w-4 h-4 transition-transform duration-500 group-hover/reset:rotate-[-180deg]" />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

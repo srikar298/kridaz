@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useScrollDirection } from "@hooks/useScrollDirection.js";
 import {
   Home,
   Search,
@@ -9,19 +10,8 @@ import {
   Plus,
   PenSquare,
   MessageCircle,
-  History,
-  Gamepad2,
-  Award,
+  Briefcase,
   Wallet,
-  Bookmark,
-  Bell,
-  Swords,
-  Settings,
-  Map,
-  HelpCircle,
-  Activity,
-  Calendar,
-  Store,
   MapPin,
 } from "lucide-react";
 import { useSelector } from "react-redux";
@@ -31,32 +21,22 @@ const MobileBottomNav = () => {
   const navigate = useNavigate();
   const { isLoggedIn } = useSelector((state) => state.auth);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { scrollDirection } = useScrollDirection();
 
-  // Custom Icons State
-  const [customIcons, setCustomIcons] = useState([
-    null,
-    null,
-    null,
-    null,
-    null,
-  ]);
-  const [showIconSelector, setShowIconSelector] = useState(false);
-  const [selectedSlotIndex, setSelectedSlotIndex] = useState(null);
+  // Hide bottom nav when a modal sets the body attribute
+  const [isHidden, setIsHidden] = useState(
+    () => document.body.hasAttribute("data-hide-bottom-nav")
+  );
 
-  const availableCustomIcons = [
-    { title: "Hosted Games", path: "/my-hosted-games", icon: Swords },
-    { title: "Professionals", path: "/professionals", icon: Award },
-    { title: "Wallet", path: "/wallet", icon: Wallet },
-    { title: "Saved Items", path: "/saved", icon: Bookmark },
-    { title: "Notifications", path: "/notifications", icon: Bell },
-    {
-      title: "Start Scoring",
-      path: "/my-teams",
-      state: { openStartScoringModal: true },
-      icon: Gamepad2,
-    },
-    { title: "Find Venues", path: "/venues", icon: Map },
-  ];
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsHidden(document.body.hasAttribute("data-hide-bottom-nav"));
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ["data-hide-bottom-nav"] });
+    return () => observer.disconnect();
+  }, []);
+
+  if (isHidden) return null;
 
   const handleToggle = () => {
     if (isMenuOpen) {
@@ -69,33 +49,6 @@ const MobileBottomNav = () => {
 
   const handleClose = () => {
     setIsMenuOpen(false);
-    setShowIconSelector(false);
-  };
-
-  const handleEmptyIconClick = (e, index) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setSelectedSlotIndex(index);
-    setShowIconSelector(true);
-  };
-
-  const handleSelectIcon = (selectedIcon) => {
-    setCustomIcons((prev) => {
-      const newIcons = [...prev];
-      newIcons[selectedSlotIndex] = selectedIcon;
-      return newIcons;
-    });
-    setShowIconSelector(false);
-  };
-
-  const handleRemoveIcon = (e, index) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setCustomIcons((prev) => {
-      const newIcons = [...prev];
-      newIcons[index] = null;
-      return newIcons;
-    });
   };
 
   const navItems = [
@@ -120,12 +73,12 @@ const MobileBottomNav = () => {
     },
     { title: "Join Game", path: "/join-games", icon: Trophy, isSpecial: false },
     {
-      title: "Hosted Games",
-      path: "/hosted-games",
-      icon: Swords,
+      title: "Wallet",
+      path: "/wallet",
+      icon: Wallet,
       isSpecial: false,
     },
-    { title: "Saved", path: "/saved", icon: Bookmark, isSpecial: false },
+    { title: "Professionals", path: "/professionals", icon: Briefcase, isSpecial: false },
   ];
 
   // Filter items based on login status and role
@@ -159,63 +112,19 @@ const MobileBottomNav = () => {
 
       {/* Floating Bottom Nav Container */}
       <div
-        className="lg:hidden fixed left-4 right-4 z-[100] flex flex-col justify-end pointer-events-none mb-4"
+        className={`lg:hidden fixed left-4 right-4 z-[100] flex flex-col justify-end pointer-events-none mb-4 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${scrollDirection === "down" && !isMenuOpen ? "translate-y-[150%]" : "translate-y-0"}`}
         style={{ bottom: "env(safe-area-inset-bottom)" }}
       >
         <div
           className={`relative w-full pointer-events-auto overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] ${
             isMenuOpen
-              ? "h-[190px] rounded-[32px] bg-[#050505]/90 backdrop-blur-3xl"
+              ? "h-[130px] rounded-[32px] bg-[#050505]/90 backdrop-blur-3xl"
               : "h-[60px] rounded-full bg-[#050505]/70 backdrop-blur-2xl"
           }`}
         >
-          {/* Top Row (Custom Icons) */}
+          {/* Popup Items Row */}
           <div
             className={`absolute top-2 left-0 w-full h-[60px] flex items-center justify-around px-2 transition-all duration-300 ease-in-out ${
-              isMenuOpen
-                ? "opacity-100 translate-y-0 delay-150 pointer-events-auto"
-                : "opacity-0 translate-y-4 pointer-events-none"
-            }`}
-          >
-            {customIcons.map((item, i) => (
-              <div key={`custom-${i}`} className="relative">
-                {item ? (
-                  <div className="relative flex items-center justify-center group">
-                    <Link
-                      to={item.path}
-                      state={item.state}
-                      onClick={handleClose}
-                      className="flex items-center justify-center"
-                      title={item.title}
-                    >
-                      <div className="w-11 h-11 flex items-center justify-center transition-all duration-300 transform group-hover:scale-110 text-white/50 hover:text-white">
-                        <item.icon size={22} strokeWidth={2} />
-                      </div>
-                    </Link>
-                    {/* Tiny edit button to remove/change */}
-                    <button
-                      onClick={(e) => handleRemoveIcon(e, i)}
-                      className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[#1A1A1A] border border-white/20 text-white/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:text-[#BFF367] z-10 cursor-pointer"
-                    >
-                      <PenSquare size={8} strokeWidth={2.5} />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={(e) => handleEmptyIconClick(e, i)}
-                    className="w-11 h-11 flex items-center justify-center transition-all duration-300 text-white/20 hover:text-white/50 transform hover:scale-110"
-                    title="Add Custom Shortcut"
-                  >
-                    <Plus size={22} strokeWidth={2} />
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Middle Row (Popup Items) */}
-          <div
-            className={`absolute top-[62px] left-0 w-full h-[60px] flex items-center justify-around px-2 transition-all duration-300 ease-in-out ${
               isMenuOpen
                 ? "opacity-100 translate-y-0 delay-75 pointer-events-auto"
                 : "opacity-0 translate-y-4 pointer-events-none"
@@ -277,19 +186,19 @@ const MobileBottomNav = () => {
               <div className="absolute bottom-[8px] flex justify-center items-center">
                 <button
                   onClick={handleToggle}
-                  className={`relative flex items-center justify-center w-[44px] h-[44px] rounded-full text-black transition-all duration-500 border-[3px] border-[#050505] ${
+                  className={`relative flex items-center justify-center w-[44px] h-[44px] rounded-full text-black transition-all duration-500 border-[3px] border-[#050505] overflow-hidden ${
                     isMenuOpen ? "bg-[#aade55]" : "bg-[#BFF367]"
                   }`}
                 >
                   <Plus
                     size={22}
                     strokeWidth={3.5}
-                    className={`absolute transition-all duration-300 ease-in-out ${isMenuOpen ? "opacity-0 scale-50 rotate-90" : "opacity-100 scale-100 rotate-0"}`}
+                    className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-in-out ${isMenuOpen ? "opacity-0 scale-50 rotate-90" : "opacity-100 scale-100 rotate-0"}`}
                   />
                   <Search
                     size={20}
                     strokeWidth={3}
-                    className={`absolute transition-all duration-300 ease-in-out ${isMenuOpen ? "opacity-100 scale-100 rotate-0" : "opacity-0 scale-50 -rotate-90"}`}
+                    className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-in-out ${isMenuOpen ? "opacity-100 scale-100 rotate-0" : "opacity-0 scale-50 -rotate-90"}`}
                   />
                 </button>
               </div>
@@ -325,56 +234,7 @@ const MobileBottomNav = () => {
         </div>
       </div>
 
-      {/* Icon Selector Modal */}
-      {showIconSelector && (
-        <div className="lg:hidden fixed inset-0 z-[110] flex items-center justify-center px-4">
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setShowIconSelector(false)}
-          />
-          <div className="relative w-full max-w-[320px] bg-[#111] border border-white/10 rounded-[20px] p-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-            <h3 className="text-white font-black text-sm mb-3 text-center uppercase tracking-wider">
-              Add Custom Shortcut
-            </h3>
-            <div className="grid grid-cols-4 gap-2">
-              {availableCustomIcons.map((iconOpt, idx) => {
-                const isSelected = customIcons.some(
-                  (item) => item && item.title === iconOpt.title
-                );
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => handleSelectIcon(iconOpt)}
-                    disabled={isSelected}
-                    className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-[12px] transition-all group ${
-                      isSelected
-                        ? "bg-[#BFF367]/10 border border-[#BFF367]/50 text-[#BFF367] opacity-60 cursor-not-allowed"
-                        : "bg-white/5 border border-white/5 hover:bg-[#BFF367]/10 hover:border-[#BFF367]/30 hover:text-[#BFF367] text-white/70"
-                    }`}
-                  >
-                    <div className="relative">
-                      <iconOpt.icon
-                        size={18}
-                        strokeWidth={2}
-                        className={`${isSelected ? "" : "group-hover:scale-110"} transition-transform`}
-                      />
-                    </div>
-                    <span className="text-[8px] font-medium text-center leading-[1.1]">
-                      {iconOpt.title}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-            <button
-              onClick={() => setShowIconSelector(false)}
-              className="mt-4 w-full py-2.5 rounded-full bg-white/10 text-white font-bold text-xs hover:bg-white/20 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
+
     </>
   );
 };

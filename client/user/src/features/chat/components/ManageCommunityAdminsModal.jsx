@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { X, Shield, ShieldOff, Search, Crown } from "lucide-react";
+import { X, Shield, ShieldOff, Search, Crown } from "lucide-react";import { Button, Input } from "@kridaz/ui";
+
 import {
   useMakeGroupAdminMutation,
   useDismissGroupAdminMutation,
@@ -102,12 +103,12 @@ const ManageCommunityAdminsModal = ({
 
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
-      <div className="bg-[#111111] border border-white/10 rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+      <div className="bg-card border border-white/10 rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
         {/* Header */}
         <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-[8px] bg-[#BFF367]/10 flex items-center justify-center">
-              <Crown size={20} className="text-[#BFF367]" />
+            <div className="w-10 h-10 rounded-[8px] bg-primary/10 flex items-center justify-center">
+              <Crown size={20} className="text-primary" />
             </div>
             <div>
               <h2 className="text-lg font-semibold text-white">
@@ -118,17 +119,17 @@ const ManageCommunityAdminsModal = ({
               </p>
             </div>
           </div>
-          <button
+          <Button
             onClick={onClose}
             className="p-2 hover:bg-white/5 rounded-full transition-colors text-white/20 hover:text-white"
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         {/* Info Banner */}
-        <div className="mx-6 mt-4 p-3 bg-[#BFF367]/5 border border-[#BFF367]/20 rounded-[8px] shrink-0">
-          <p className="text-[11px] text-[#BFF367]/80 font-medium leading-relaxed">
+        <div className="mx-6 mt-4 p-3 bg-primary/5 border border-primary/20 rounded-[8px] shrink-0">
+          <p className="text-[11px] text-primary/80 font-medium leading-relaxed">
             Admins can post in Announcements, add groups, and manage community
             settings.
           </p>
@@ -136,9 +137,9 @@ const ManageCommunityAdminsModal = ({
 
         {/* Search */}
         <div className="px-6 pt-4 shrink-0">
-          <div className="flex items-center gap-2 bg-white/[0.03] border border-white/10 rounded-[8px] px-4 py-2.5 focus-within:border-[#BFF367]/40 transition-all">
+          <div className="flex items-center gap-2 bg-white/[0.03] border border-white/10 rounded-[8px] px-4 py-2.5 focus-within:border-primary/40 transition-all">
             <Search size={14} className="text-white/30 shrink-0" />
-            <input
+            <Input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -166,7 +167,7 @@ const ManageCommunityAdminsModal = ({
               return (
                 <div
                   key={memberId}
-                  className={`flex items-center gap-3 p-3 rounded-[8px] border transition-all ${isAdmin ? "bg-[#BFF367]/5 border-[#BFF367]/20" : "bg-white/[0.02] border-transparent hover:border-white/10"}`}
+                  className={`flex items-center gap-3 p-3 rounded-[8px] border transition-all ${isAdmin ? "bg-primary/5 border-primary/20" : "bg-white/[0.02] border-transparent hover:border-white/10"}`}
                 >
                   <img
                     src={
@@ -182,7 +183,7 @@ const ManageCommunityAdminsModal = ({
                         {member?.name}
                       </p>
                       {isAdmin && (
-                        <span className="shrink-0 text-[8px] bg-[#BFF367]/20 text-[#BFF367] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+                        <span className="shrink-0 text-[8px] bg-primary/20 text-primary px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
                           Admin
                         </span>
                       )}
@@ -192,11 +193,11 @@ const ManageCommunityAdminsModal = ({
                     </p>
                   </div>
 
-                  <button
+                  <Button
                     onClick={() => handleToggleAdmin(member, isAdmin)}
                     disabled={isLoading}
                     title={isAdmin ? "Remove admin" : "Make admin"}
-                    className={`shrink-0 p-2 rounded-[8px] transition-all flex items-center gap-1.5 text-[11px] font-black uppercase ${isAdmin ? "bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300" : "bg-[#BFF367]/10 text-[#BFF367] hover:bg-[#BFF367] hover:text-black"} disabled:opacity-40`}
+                    className={`shrink-0 p-2 rounded-[8px] transition-all flex items-center gap-1.5 text-[11px] font-black uppercase ${isAdmin ? "bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300" : "bg-primary/10 text-primary hover:bg-primary hover:text-black"} disabled:opacity-40`}
                   >
                     {isLoading ? (
                       <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -205,7 +206,7 @@ const ManageCommunityAdminsModal = ({
                     ) : (
                       <Shield size={14} />
                     )}
-                  </button>
+                  </Button>
                 </div>
               );
             })
@@ -214,12 +215,12 @@ const ManageCommunityAdminsModal = ({
 
         {/* Footer */}
         <div className="p-4 border-t border-white/5 shrink-0">
-          <button
+          <Button
             onClick={onClose}
             className="w-full py-3 bg-white/5 text-white/60 font-bold rounded-[8px] hover:bg-white/10 transition-all text-sm"
           >
             Done
-          </button>
+          </Button>
         </div>
       </div>
     </div>

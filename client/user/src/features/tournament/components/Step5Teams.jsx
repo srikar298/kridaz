@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState } from "react";import { Button, Input, Select } from "@kridaz/ui";
+
 import {
   ArrowRight,
   ArrowLeft,
@@ -56,13 +57,13 @@ const Step5Teams = ({ formData, onNext, onBack, isLoading }) => {
             <label className="text-xs text-white/50 block mb-2">
               Entry Fee per Team (â‚¹)
             </label>
-            <input
+            <Input
               type="number"
               name="entryFee"
               value={localData.entryFee}
               onChange={handleNumChange}
               placeholder="e.g. 5000"
-              className="w-full bg-[#111] border border-white/5 rounded-xl px-4 py-4 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"
+              className="w-full bg-card border border-white/5 rounded-xl px-4 py-4 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"
             />
           </div>
 
@@ -71,13 +72,13 @@ const Step5Teams = ({ formData, onNext, onBack, isLoading }) => {
               <label className="text-xs text-white/50 block mb-2">
                 Advance Amount
               </label>
-              <input
+              <Input
                 type="number"
                 name="advanceFee"
                 value={localData.advanceFee}
                 onChange={handleNumChange}
                 placeholder="Required to book slot"
-                className="w-full bg-[#111] border border-white/5 rounded-xl px-4 py-4 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"
+                className="w-full bg-card border border-white/5 rounded-xl px-4 py-4 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"
               />
             </div>
             <div>
@@ -85,13 +86,13 @@ const Step5Teams = ({ formData, onNext, onBack, isLoading }) => {
                 Early Bird Discount
               </label>
               <div className="relative">
-                <input
+                <Input
                   type="number"
                   name="discount"
                   value={localData.discount}
                   onChange={handleNumChange}
                   placeholder="Optional discount"
-                  className="w-full bg-[#111] border border-white/5 rounded-xl pl-4 pr-10 py-4 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"
+                  className="w-full bg-card border border-white/5 rounded-xl pl-4 pr-10 py-4 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"
                 />
                 <Percent
                   size={14}
@@ -105,18 +106,18 @@ const Step5Teams = ({ formData, onNext, onBack, isLoading }) => {
 
       <section className="space-y-4">
         <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
-          <Users size={16} className="text-[#55DEE8]" />
+          <Users size={16} className="text-secondary" />
           Waitlist
         </h2>
 
-        <label className="flex items-center gap-3 p-4 bg-[#111] rounded-xl border border-white/5 cursor-pointer hover:border-white/20 transition-colors">
+        <label className="flex items-center gap-3 p-4 bg-card rounded-xl border border-white/5 cursor-pointer hover:border-white/20 transition-colors">
           <div className="relative flex items-center justify-center">
-            <input
+            <Input
               type="checkbox"
               name="allowWaitlist"
               checked={localData.details.allowWaitlist}
               onChange={handleDetailsChange}
-              className="peer appearance-none w-5 h-5 border-2 border-white/20 rounded bg-transparent checked:bg-[#55DEE8] checked:border-[#55DEE8] transition-all"
+              className="peer appearance-none w-5 h-5 border-2 border-white/20 rounded bg-transparent checked:bg-secondary checked:border-secondary transition-all"
             />
             <div className="absolute text-black opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
               <svg
@@ -146,7 +147,7 @@ const Step5Teams = ({ formData, onNext, onBack, isLoading }) => {
 
       <section className="space-y-4 pt-4 border-t border-white/5">
         <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
-          <AlertCircle size={16} className="text-[#BFF367]" />
+          <AlertCircle size={16} className="text-primary" />
           Rules & Requirements
         </h2>
 
@@ -155,11 +156,11 @@ const Step5Teams = ({ formData, onNext, onBack, isLoading }) => {
             <label className="text-xs text-white/50 block mb-2">
               Age Limit
             </label>
-            <select
+            <Select
               name="ageLimit"
               value={localData.details.ageLimit}
               onChange={handleDetailsChange}
-              className="w-full bg-[#111] border border-white/5 rounded-xl px-4 py-4 text-sm font-bold text-white focus:outline-none focus:border-[#BFF367] transition-colors appearance-none"
+              className="w-full bg-card border border-white/5 rounded-xl px-4 py-4 text-sm font-bold text-white focus:outline-none focus:border-primary transition-colors appearance-none"
             >
               <option value="Open">Open for All</option>
               <option value="U-14">Under 14</option>
@@ -167,17 +168,17 @@ const Step5Teams = ({ formData, onNext, onBack, isLoading }) => {
               <option value="U-19">Under 19</option>
               <option value="Corporate">Corporate Only</option>
               <option value="Veterans">Veterans (35+)</option>
-            </select>
+            </Select>
           </div>
 
-          <label className="flex items-center gap-3 p-4 bg-[#111] rounded-xl border border-white/5 cursor-pointer hover:border-white/20 transition-colors">
+          <label className="flex items-center gap-3 p-4 bg-card rounded-xl border border-white/5 cursor-pointer hover:border-white/20 transition-colors">
             <div className="relative flex items-center justify-center">
-              <input
+              <Input
                 type="checkbox"
                 name="allowPros"
                 checked={localData.details.allowPros}
                 onChange={handleDetailsChange}
-                className="peer appearance-none w-5 h-5 border-2 border-white/20 rounded bg-transparent checked:bg-[#BFF367] checked:border-[#BFF367] transition-all"
+                className="peer appearance-none w-5 h-5 border-2 border-white/20 rounded bg-transparent checked:bg-primary checked:border-primary transition-all"
               />
               <div className="absolute text-black opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
                 <svg
@@ -207,23 +208,23 @@ const Step5Teams = ({ formData, onNext, onBack, isLoading }) => {
       </section>
 
       {/* Bottom Fixed Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#000] via-[#000]/90 to-transparent pt-12 pb-6 px-4 z-40">
+      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/90 to-transparent pt-12 pb-6 px-4 z-40">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <button
+          <Button
             onClick={onBack}
             className="flex items-center gap-2 text-white/70 hover:text-white px-4 py-2 font-bold text-xs uppercase tracking-wider transition-colors"
           >
             <ArrowLeft size={16} /> Back
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={submit}
             disabled={!isValid || isLoading}
-            className="flex items-center gap-2 bg-[#BFF367] text-black font-black px-8 py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-xs"
+            className="flex items-center gap-2 bg-primary text-black font-black px-8 py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-xs"
           >
             {isLoading ? "Saving..." : "Continue"}
             <ArrowRight size={16} />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

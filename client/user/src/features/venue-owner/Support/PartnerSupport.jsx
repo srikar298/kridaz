@@ -11,12 +11,13 @@ import {
 import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
 
-import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 
 const PartnerSupport = () => {
   const { role } = useSelector((state) => state.auth);
   const isScorer = role?.toLowerCase().includes("scorer");
-  const themeColor = "#BFF367";
+  const themeColor = "var(--primary)";
   const portalTitle = isScorer ? "Scorer Help Center" : "Help & Support";
 
   const [tickets, setTickets] = useState([]);
@@ -147,7 +148,7 @@ const PartnerSupport = () => {
   };
 
   return (
-    <div className="h-full custom-scrollbar bg-[#000000] text-white font-inter">
+    <div className="h-full custom-scrollbar bg-background text-white font-inter">
       <div className="px-1 lg:px-3 lg:pt-2 lg:pb-3 space-y-2 md:space-y-8 animate-fade-in pt-0 pb-4 h-full relative">
         {/* Header Section */}
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6 relative z-10 border-b border-white/10 pb-2 md:pb-6 mt-2 md:mt-0">
@@ -166,7 +167,7 @@ const PartnerSupport = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
-            <div className="bg-[#000000] px-5 py-2.5 rounded-[16px] border border-white/10 flex items-center gap-3 shadow-2xl">
+            <div className="bg-background px-5 py-2.5 rounded-[16px] border border-white/10 flex items-center gap-3 shadow-2xl">
               <div
                 className="w-2 h-2 rounded-full animate-pulse"
                 style={{ backgroundColor: themeColor }}
@@ -180,7 +181,7 @@ const PartnerSupport = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8">
           {/* New Ticket Form / Chat Box */}
-          <div className="lg:col-span-5 bg-[#121212] border-none md:border md:border-white/10 rounded-[16px] px-2 py-0 md:p-8 md:shadow-2xl relative overflow-hidden h-fit">
+          <div className="lg:col-span-5 bg-card border-none md:border md:border-white/10 rounded-[16px] px-2 py-0 md:p-8 md:shadow-2xl relative overflow-hidden h-fit">
             <div
               className="absolute top-0 right-0 w-32 h-32 blur-[60px] pointer-events-none"
               style={{ backgroundColor: `${themeColor}0D` }}
@@ -195,19 +196,19 @@ const PartnerSupport = () => {
                   >
                     Ticket: {selectedTicket.subject}
                   </h3>
-                  <button
+                  <Button
                     onClick={() => setSelectedTicket(null)}
                     className="text-[10px] font-bold uppercase tracking-widest hover:underline font-inter"
                     style={{ color: themeColor }}
                   >
                     Close Chat
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto space-y-6 pr-2 no-scrollbar max-h-[400px]">
                   {/* Initial Message */}
                   <div className="flex flex-col items-start max-w-[90%]">
-                    <div className="bg-[#111] p-4 rounded-[16px] border border-white/10">
+                    <div className="bg-card p-4 rounded-[16px] border border-white/10">
                       <p
                         className="text-[10px] font-bold mb-2 uppercase tracking-widest font-inter"
                         style={{ color: themeColor }}
@@ -242,7 +243,7 @@ const PartnerSupport = () => {
                       className={`flex flex-col ${reply.sender === "OWNER" ? "items-start" : "items-end"} max-w-full`}
                     >
                       <div
-                        className={`p-4 rounded-[16px] border ${reply.sender === "OWNER" ? "bg-[#111] border-white/10 max-w-[90%]" : "border-white/10 max-w-[90%]"}`}
+                        className={`p-4 rounded-[16px] border ${reply.sender === "OWNER" ? "bg-card border-white/10 max-w-[90%]" : "border-white/10 max-w-[90%]"}`}
                         style={{
                           backgroundColor:
                             reply.sender !== "OWNER"
@@ -297,15 +298,15 @@ const PartnerSupport = () => {
 
                   {selectedTicket.status !== "CLOSED" && (
                     <div className="flex gap-2">
-                      <input
+                      <Input
                         type="text"
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
                         placeholder="Type your message..."
-                        className="flex-1 bg-[#111] border border-white/10 rounded-[16px] px-4 py-3 text-sm text-white focus:outline-none transition-all font-inter"
+                        className="flex-1 bg-card border border-white/10 rounded-[16px] px-4 py-3 text-sm text-white focus:outline-none transition-all font-inter"
                         onKeyPress={(e) => e.key === "Enter" && handleReply()}
                       />
-                      <button
+                      <Button
                         onClick={handleReply}
                         disabled={!replyText.trim() || loading}
                         className="text-black px-8 rounded-[16px] font-bold uppercase tracking-widest text-[11px] transition-all disabled:opacity-50 font-inter shadow-lg"
@@ -315,7 +316,7 @@ const PartnerSupport = () => {
                         }}
                       >
                         Send
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -339,8 +340,8 @@ const PartnerSupport = () => {
                       <label className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
                         Category
                       </label>
-                      <select
-                        className="w-full bg-[#121212] border border-white/10 rounded-[16px] px-2 md:px-4 py-2 md:py-3 text-white focus:outline-none transition-all appearance-none text-[10px] md:text-sm"
+                      <Select
+                        className="w-full bg-card border border-white/10 rounded-[16px] px-2 md:px-4 py-2 md:py-3 text-white focus:outline-none transition-all appearance-none text-[10px] md:text-sm"
                         style={{ borderColor: themeColor }}
                         value={formData.category}
                         onChange={(e) =>
@@ -352,17 +353,17 @@ const PartnerSupport = () => {
                         <option value="BOOKING">Booking Related</option>
                         <option value="ACCOUNT">Account Management</option>
                         <option value="OTHER">Other</option>
-                      </select>
+                      </Select>
                     </div>
 
                     <div className="space-y-2">
                       <label className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
                         Subject
                       </label>
-                      <input
+                      <Input
                         type="text"
                         required
-                        className="w-full bg-[#121212] border border-white/10 rounded-[16px] px-2 md:px-4 py-2 md:py-3 text-white focus:outline-none transition-all text-[10px] md:text-sm"
+                        className="w-full bg-card border border-white/10 rounded-[16px] px-2 md:px-4 py-2 md:py-3 text-white focus:outline-none transition-all text-[10px] md:text-sm"
                         style={{ focusBorderColor: themeColor }}
                         value={formData.subject}
                         onChange={(e) =>
@@ -377,10 +378,10 @@ const PartnerSupport = () => {
                     <label className="text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
                       Message
                     </label>
-                    <textarea
+                    <Textarea
                       required
                       rows="5"
-                      className="w-full bg-[#121212] border border-white/10 rounded-[16px] px-4 py-3 text-white focus:outline-none transition-all text-sm custom-scrollbar"
+                      className="w-full bg-card border border-white/10 rounded-[16px] px-4 py-3 text-white focus:outline-none transition-all text-sm custom-scrollbar"
                       style={{ focusBorderColor: themeColor }}
                       value={formData.message}
                       onChange={(e) =>
@@ -405,7 +406,7 @@ const PartnerSupport = () => {
                             alt="support"
                             className="w-full h-full object-cover"
                           />
-                          <button
+                          <Button
                             type="button"
                             onClick={() =>
                               setFormData((prev) => ({
@@ -418,14 +419,14 @@ const PartnerSupport = () => {
                             className="absolute top-1 right-1 p-0.5 bg-red-500 rounded-full text-white"
                           >
                             <X size={10} />
-                          </button>
+                          </Button>
                         </div>
                       ))}
                       {formData.images.length < 5 && (
                         <label
-                          className="aspect-square rounded-[16px] border border-dashed border-white/10 flex items-center justify-center cursor-pointer hover:bg-[#121212] transition-all"
+                          className="aspect-square rounded-[16px] border border-dashed border-white/10 flex items-center justify-center cursor-pointer hover:bg-card transition-all"
                           style={{
-                            borderColor: uploading ? themeColor : "#2D2D2D",
+                            borderColor: uploading ? themeColor : "var(--border)",
                           }}
                         >
                           {uploading ? (
@@ -436,7 +437,7 @@ const PartnerSupport = () => {
                           ) : (
                             <Plus size={18} className="text-[#555]" />
                           )}
-                          <input
+                          <Input
                             type="file"
                             multiple
                             accept="image/*"
@@ -449,7 +450,7 @@ const PartnerSupport = () => {
                     </div>
                   </div>
 
-                  <button
+                  <Button
                     type="submit"
                     disabled={loading || uploading}
                     className="w-full py-2.5 md:py-4 text-[11px] md:text-sm text-black rounded-[16px] font-bold uppercase tracking-[2px] transition-all transform hover:scale-[1.01] active:scale-[0.99] shadow-lg disabled:opacity-50 mt-4 font-inter"
@@ -459,14 +460,14 @@ const PartnerSupport = () => {
                     }}
                   >
                     {loading ? "SYNCHRONIZING..." : "Initialize Ticket"}
-                  </button>
+                  </Button>
                 </form>
               </>
             )}
           </div>
 
           {/* Ticket History */}
-          <div className="lg:col-span-7 bg-[#121212] border-none md:border md:border-white/10 rounded-[16px] px-2 py-2 md:p-8 md:shadow-2xl relative overflow-hidden mt-2 md:mt-0">
+          <div className="lg:col-span-7 bg-card border-none md:border md:border-white/10 rounded-[16px] px-2 py-2 md:p-8 md:shadow-2xl relative overflow-hidden mt-2 md:mt-0">
             <div
               className="absolute top-0 left-0 w-32 h-32 blur-[60px] pointer-events-none"
               style={{ backgroundColor: `${themeColor}0D` }}
@@ -493,7 +494,7 @@ const PartnerSupport = () => {
                 </div>
               ) : tickets.length === 0 ? (
                 <div className="text-center py-20 border border-dashed border-white/10 rounded-[16px] bg-black/40">
-                  <AlertCircle className="mx-auto text-[#222] mb-4" size={32} />
+                  <AlertCircle className="mx-auto text-card mb-4" size={32} />
                   <p className="text-[12px] font-normal text-white/70 uppercase tracking-[0.5px]">
                     No active telemetry records.
                   </p>
@@ -506,13 +507,13 @@ const PartnerSupport = () => {
                   <div
                     key={ticket.id}
                     onClick={() => setSelectedTicket(ticket)}
-                    className="p-5 bg-[#121212] border border-white/10 rounded-[16px] transition-all group cursor-pointer"
+                    className="p-5 bg-card border border-white/10 rounded-[16px] transition-all group cursor-pointer"
                     style={{ "--hover-border": themeColor }}
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center gap-3">
                         <span
-                          className={`text-[10px] font-bold px-3 py-1 rounded-[16px] uppercase tracking-widest border ${ticket.status === "RESOLVED" ? "bg-[#B3DC26]/10 text-[#B3DC26] border-[#B3DC26]/20" : ticket.status === "IN_PROGRESS" || ticket.status === "OPEN" ? "bg-[#B3DC26]/10 text-[#B3DC26] border-[#B3DC26]/20" : "bg-amber-500/10 text-amber-500 border-amber-500/20"}`}
+                          className={`text-[10px] font-bold px-3 py-1 rounded-[16px] uppercase tracking-widest border ${ticket.status === "RESOLVED" ? "bg-primary/10 text-primary border-primary/20" : ticket.status === "IN_PROGRESS" || ticket.status === "OPEN" ? "bg-primary/10 text-primary border-primary/20" : "bg-amber-500/10 text-amber-500 border-amber-500/20"}`}
                         >
                           {ticket.status}
                         </span>
@@ -569,12 +570,12 @@ const PartnerSupport = () => {
                           </span>
                         )}
                       </div>
-                      <button
+                      <Button
                         className="text-[10px] font-bold font-inter uppercase tracking-widest hover:text-white transition-colors"
                         style={{ color: themeColor }}
                       >
                         Enter Chat {"->"}
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ))
@@ -585,7 +586,7 @@ const PartnerSupport = () => {
 
         {/* Footer Metrics */}
         <div className="pt-8 border-t border-white/10 flex justify-between items-center opacity-40">
-          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#999999]">
+          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
             Secure Communication Tunnel | End-to-End Encrypted
           </p>
           <div className="flex gap-4">

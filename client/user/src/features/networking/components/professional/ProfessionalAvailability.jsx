@@ -13,18 +13,19 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { format, addDays, startOfToday, parse } from "date-fns";
-import ClockPicker from "@components/common/ClockPicker";
+import ClockPicker from "@components/common/ClockPicker";import { Button } from "@kridaz/ui";
+
 
 /**
  * ProfessionalAvailability ΓÇö Role-aware schedule management.
- * Fully rebranded for Scorer users with Teal Green (#BFF367) and Inter typography.
+ * Fully rebranded for Scorer users with Teal Green (var(--primary)) and Inter typography.
  */
 
 export default function ProfessionalAvailability() {
   const { user, role } = useSelector((state) => state.auth);
 
   const isScorer = role?.toLowerCase().includes("scorer");
-  const themeColor = isScorer ? "#BFF367" : "#BFF367";
+  const themeColor = isScorer ? "var(--primary)" : "var(--primary)";
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
@@ -188,7 +189,7 @@ export default function ProfessionalAvailability() {
   };
 
   return (
-    <div className="h-full custom-scrollbar bg-[#000000]">
+    <div className="h-full custom-scrollbar bg-background">
       <div className="p-4 lg:px-10 lg:pt-8 lg:pb-12 space-y-8 animate-fade-in pt-0 pb-24 h-full relative font-inter">
         {/* Header Section */}
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10 pb-6 border-b border-white/5">
@@ -202,7 +203,7 @@ export default function ProfessionalAvailability() {
                 {role || "Node"}{" "}
                 <span style={{ color: themeColor }}>Availability</span>
               </h1>
-              <p className="text-[#878C9F] text-[10px] font-black uppercase tracking-[0.2em] font-inter mt-1.5">
+              <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.2em] font-inter mt-1.5">
                 {getTimeGreeting()}, {user?.name || "Professional"} |
                 Professional Schedule Console
               </p>
@@ -243,7 +244,7 @@ export default function ProfessionalAvailability() {
               </div>
             </div>
 
-            <button
+            <Button
               onClick={handleSave}
               disabled={loading}
               className="px-8 py-4 rounded-[6px] text-black font-black uppercase text-[11px] tracking-[0.2em] flex items-center gap-3 transition-all disabled:opacity-50 font-inter shadow-2xl active:scale-95 hover:brightness-110"
@@ -258,7 +259,7 @@ export default function ProfessionalAvailability() {
                 <Save size={16} />
               )}{" "}
               Save Schedule
-            </button>
+            </Button>
           </div>
         </header>
 
@@ -286,10 +287,10 @@ export default function ProfessionalAvailability() {
                   const isSelected = selectedDate === dateStr;
                   const hasSlots = hasAvailability[dateStr];
                   return (
-                    <button
+                    <Button
                       key={dateStr}
                       onClick={() => setSelectedDate(dateStr)}
-                      className={`relative flex flex-col items-center justify-center p-3 rounded-[8px] border transition-all duration-300 ${isSelected ? "text-black shadow-lg" : "bg-[#2D2D2D]/30 border-[#2D2D2D] text-[#878C9F] hover:border-[#BFF367]/30 hover:bg-[#2D2D2D]/50"}`}
+                      className={`relative flex flex-col items-center justify-center p-3 rounded-[8px] border transition-all duration-300 ${isSelected ? "text-black shadow-lg" : "bg-border/30 border-border text-muted-foreground hover:border-primary/30 hover:bg-border/50"}`}
                       style={{
                         backgroundColor: isSelected ? themeColor : undefined,
                         borderColor: isSelected ? themeColor : undefined,
@@ -310,7 +311,7 @@ export default function ProfessionalAvailability() {
                           style={{ backgroundColor: themeColor }}
                         ></div>
                       )}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -335,7 +336,7 @@ export default function ProfessionalAvailability() {
                   Operational Tips
                 </h4>
               </div>
-              <ul className="space-y-3 text-[11px] font-medium text-[#878C9F] uppercase tracking-widest leading-relaxed font-inter relative z-10">
+              <ul className="space-y-3 text-[11px] font-medium text-muted-foreground uppercase tracking-widest leading-relaxed font-inter relative z-10">
                 <li className="flex items-start gap-2">
                   <span style={{ color: themeColor }}>ΓÇó</span>
                   <span>Define specific slots for different session types</span>
@@ -371,7 +372,7 @@ export default function ProfessionalAvailability() {
 
               <div className="flex flex-col md:flex-row items-end gap-4 mb-10 pb-10 border-b border-white/5">
                 <div className="flex-1 space-y-3">
-                  <label className="text-[10px] font-medium text-[#999999] uppercase tracking-widest font-inter flex items-center gap-2">
+                  <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest font-inter flex items-center gap-2">
                     <div
                       className="w-1 h-1 rounded-full"
                       style={{ backgroundColor: themeColor }}
@@ -388,7 +389,7 @@ export default function ProfessionalAvailability() {
                   </div>
                 </div>
                 <div className="flex-1 space-y-3">
-                  <label className="text-[10px] font-medium text-[#999999] uppercase tracking-widest font-inter flex items-center gap-2">
+                  <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest font-inter flex items-center gap-2">
                     <div
                       className="w-1 h-1 rounded-full"
                       style={{ backgroundColor: themeColor }}
@@ -404,7 +405,7 @@ export default function ProfessionalAvailability() {
                     />
                   </div>
                 </div>
-                <button
+                <Button
                   onClick={handleAddSlot}
                   className="h-[54px] px-8 bg-transparent text-white hover:text-black rounded-[8px] font-bold uppercase text-[11px] tracking-[2px] transition-all flex items-center gap-3 font-inter group shadow-lg border border-white/10"
                   style={{ "--hover-bg": themeColor }}
@@ -424,11 +425,11 @@ export default function ProfessionalAvailability() {
                     className="group-hover:rotate-90 transition-transform"
                   />{" "}
                   Add Slot
-                </button>
+                </Button>
               </div>
 
               <div className="flex items-center justify-between mb-8">
-                <h3 className="text-[11px] font-bold uppercase tracking-[3px] text-[#878C9F] font-inter">
+                <h3 className="text-[11px] font-bold uppercase tracking-[3px] text-muted-foreground font-inter">
                   Active Schedule |{" "}
                   <span className="text-white">
                     {format(new Date(selectedDate), "MMMM dd, yyyy")}
@@ -439,7 +440,7 @@ export default function ProfessionalAvailability() {
                     className="w-2 h-2 rounded-full animate-pulse"
                     style={{ backgroundColor: themeColor }}
                   />
-                  <span className="text-[10px] text-[#999999] uppercase tracking-widest">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest">
                     Real-time Feed
                   </span>
                 </div>
@@ -482,7 +483,7 @@ export default function ProfessionalAvailability() {
                         style={{
                           backgroundColor: slot.isAvailable
                             ? themeColor
-                            : "#ef4444",
+                            : "var(--destructive)",
                         }}
                       />
                       <div className="flex items-center gap-5">
@@ -505,7 +506,7 @@ export default function ProfessionalAvailability() {
                               style={{
                                 backgroundColor: slot.isAvailable
                                   ? themeColor
-                                  : "#ef4444",
+                                  : "var(--destructive)",
                               }}
                             />
                             <p
@@ -513,7 +514,7 @@ export default function ProfessionalAvailability() {
                               style={{
                                 color: slot.isAvailable
                                   ? themeColor
-                                  : "#ef4444",
+                                  : "var(--destructive)",
                               }}
                             >
                               {slot.isAvailable ? "Available" : "Assigned"}
@@ -522,12 +523,12 @@ export default function ProfessionalAvailability() {
                         </div>
                       </div>
                       {slot.isAvailable && (
-                        <button
+                        <Button
                           onClick={() => handleRemoveSlot(slot.startTime)}
                           className="p-3 text-neutral-600 hover:text-red-500 hover:bg-red-500/10 rounded-[8px] transition-all border border-transparent hover:border-red-500/20"
                         >
                           <Trash2 size={18} />
-                        </button>
+                        </Button>
                       )}
                     </div>
                   ))}

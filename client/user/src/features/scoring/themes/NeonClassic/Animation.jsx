@@ -25,7 +25,7 @@ const NeonClassicAnimation = ({ badge }) => {
 
   let text = "";
   let subText = badge.description || "";
-  let color = "#a3e635";
+  let color = "var(--primary)";
 
   switch (badge.type) {
     case "six":
@@ -36,7 +36,7 @@ const NeonClassicAnimation = ({ badge }) => {
       break;
     case "wicket":
       text = "WICKET!";
-      color = "#ef4444";
+      color = "var(--destructive)";
       break;
     case "free_hit":
       text = "FREE HIT!";
@@ -111,7 +111,7 @@ const NeonClassicAnimation = ({ badge }) => {
             transition={{ delay: 0.5 }}
             style={{
               fontSize: "32px",
-              color: "#ffffff",
+              color: "var(--foreground)",
               marginTop: "20px",
               background: "rgba(0,0,0,0.5)",
               padding: "10px 20px",

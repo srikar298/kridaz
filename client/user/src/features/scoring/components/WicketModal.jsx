@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronRight, Users } from "lucide-react";
+import { X, ChevronRight, Users } from "lucide-react";import { Button } from "@kridaz/ui";
+
 
 /**
  * WicketModal — P1.1
@@ -134,7 +135,7 @@ const WicketModal = ({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: "100%", opacity: 0 }}
           transition={{ type: "spring", damping: 24 }}
-          className="relative w-full max-w-md bg-[#000] rounded-t-[20px] sm:rounded-[12px] overflow-hidden z-10 shadow-2xl pb-4 sm:pb-0"
+          className="relative w-full max-w-md bg-background rounded-t-[20px] sm:rounded-[12px] overflow-hidden z-10 shadow-2xl pb-4 sm:pb-0"
         >
           {/* Header */}
           <div className="px-6 pt-6 pb-4 border-b border-white/10 flex items-center justify-between">
@@ -155,12 +156,12 @@ const WicketModal = ({
                 )}
               </div>
             </div>
-            <button
+            <Button
               onClick={onClose}
               className="p-1 rounded-full hover:bg-white/10 text-neutral-500 hover:text-white transition-colors"
             >
               <X size={16} />
-            </button>
+            </Button>
           </div>
 
           {/* Body */}
@@ -169,15 +170,15 @@ const WicketModal = ({
             {step === "type" && (
               <div className="grid grid-cols-2 gap-2">
                 {WICKET_TYPES.map((wt) => (
-                  <button
+                  <Button
                     key={wt.key}
                     onClick={() => handleTypeSelect(wt)}
-                    className="p-4 rounded-[8px] bg-[#222] hover:border-red-500/50 hover:bg-red-500/8 transition-all text-left group"
+                    className="p-4 rounded-[8px] bg-card hover:border-red-500/50 hover:bg-red-500/8 transition-all text-left group"
                   >
                     <span className="text-sm font-black text-white group-hover:text-red-400 transition-colors">
                       {wt.label}
                     </span>
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}
@@ -186,10 +187,10 @@ const WicketModal = ({
             {step === "whoOut" && (
               <>
                 {activeBatters.map((player) => (
-                  <button
+                  <Button
                     key={player.userId}
                     onClick={() => handleWhoOutSelect(player.userId)}
-                    className="w-full flex items-center gap-4 px-4 py-3 rounded-[8px] bg-[#222] hover:border-red-500/40 hover:bg-red-500/8 transition-all group mb-2"
+                    className="w-full flex items-center gap-4 px-4 py-3 rounded-[8px] bg-card hover:border-red-500/40 hover:bg-red-500/8 transition-all group mb-2"
                   >
                     <div className="w-9 h-9 rounded-[8px] bg-neutral-800 flex items-center justify-center text-sm font-black text-red-400 shrink-0">
                       {player.name?.charAt(0)?.toUpperCase()}
@@ -206,7 +207,7 @@ const WicketModal = ({
                       size={14}
                       className="text-neutral-600 group-hover:text-red-400 transition-colors"
                     />
-                  </button>
+                  </Button>
                 ))}
               </>
             )}
@@ -215,15 +216,15 @@ const WicketModal = ({
             {step === "runs" && (
               <div className="grid grid-cols-4 gap-2">
                 {[0, 1, 2, 3, 4, 5, 6].map((run) => (
-                  <button
+                  <Button
                     key={run}
                     onClick={() => handleRunsSelect(run)}
-                    className="p-4 rounded-[8px] bg-[#222] hover:border-red-500/50 hover:bg-red-500/8 transition-all text-center group"
+                    className="p-4 rounded-[8px] bg-card hover:border-red-500/50 hover:bg-red-500/8 transition-all text-center group"
                   >
                     <span className="text-xl font-black text-white group-hover:text-red-400 transition-colors">
                       {run}
                     </span>
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}
@@ -232,10 +233,10 @@ const WicketModal = ({
             {step === "fielder" && (
               <>
                 {fieldingTeamSlots.map((player) => (
-                  <button
+                  <Button
                     key={player.userId}
                     onClick={() => handleFielderSelect(player.userId)}
-                    className="w-full flex items-center gap-4 px-4 py-3 rounded-[8px] bg-[#222] hover:border-red-500/40 hover:bg-red-500/8 transition-all group"
+                    className="w-full flex items-center gap-4 px-4 py-3 rounded-[8px] bg-card hover:border-red-500/40 hover:bg-red-500/8 transition-all group"
                   >
                     <div className="w-9 h-9 rounded-[8px] bg-neutral-800 flex items-center justify-center text-sm font-black text-red-400 shrink-0">
                       {player.name?.charAt(0)?.toUpperCase()}
@@ -247,7 +248,7 @@ const WicketModal = ({
                       size={14}
                       className="text-neutral-600 group-hover:text-red-400 transition-colors"
                     />
-                  </button>
+                  </Button>
                 ))}
               </>
             )}
@@ -264,7 +265,7 @@ const WicketModal = ({
                     <p className="text-neutral-500 text-sm font-medium">
                       All wickets fallen — innings over!
                     </p>
-                    <button
+                    <Button
                       onClick={() =>
                         onConfirm({
                           wicketType,
@@ -277,14 +278,14 @@ const WicketModal = ({
                       className="mt-4 px-6 py-3 bg-red-500 text-white font-black rounded-[8px] text-sm uppercase tracking-widest hover:bg-red-600 transition-colors"
                     >
                       End Innings
-                    </button>
+                    </Button>
                   </div>
                 ) : (
                   battingTeamSlots.map((player) => (
-                    <button
+                    <Button
                       key={player.userId}
                       onClick={() => handleNextBatterSelect(player.userId)}
-                      className="w-full flex items-center gap-4 px-4 py-3 rounded-[8px] bg-[#222] hover:border-yellow-500/40 hover:bg-yellow-500/8 transition-all group"
+                      className="w-full flex items-center gap-4 px-4 py-3 rounded-[8px] bg-card hover:border-yellow-500/40 hover:bg-yellow-500/8 transition-all group"
                     >
                       <div className="w-9 h-9 rounded-[8px] bg-neutral-800 flex items-center justify-center text-sm font-black text-yellow-400 shrink-0">
                         {player.name?.charAt(0)?.toUpperCase()}
@@ -296,7 +297,7 @@ const WicketModal = ({
                         size={14}
                         className="text-neutral-600 group-hover:text-yellow-400 transition-colors"
                       />
-                    </button>
+                    </Button>
                   ))
                 )}
               </>
@@ -306,7 +307,7 @@ const WicketModal = ({
           {/* Bottom Actions */}
           {step !== "type" && (
             <div className="px-6 pb-6 pt-4 border-t border-white/10 flex gap-4">
-              <button
+              <Button
                 onClick={() => {
                   if (step === "nextBatter") {
                     if (selectedMeta?.needsFielder) setStep("fielder");
@@ -324,18 +325,18 @@ const WicketModal = ({
                     setStep("type");
                   }
                 }}
-                className="flex-1 py-4 rounded-[8px] bg-[#1a1a1a] hover:bg-[#222] text-[11px] text-neutral-400 hover:text-white font-black uppercase tracking-[0.2em] transition-all active:scale-95"
+                className="flex-1 py-4 rounded-[8px] bg-card hover:bg-card text-[11px] text-neutral-400 hover:text-white font-black uppercase tracking-[0.2em] transition-all active:scale-95"
               >
                 BACK
-              </button>
+              </Button>
 
               {step === "fielder" && (
-                <button
+                <Button
                   onClick={() => setStep("nextBatter")}
-                  className="flex-[2] py-4 rounded-[8px] bg-[#222] hover:bg-[#333] text-[11px] text-white font-black uppercase tracking-[0.2em] transition-all transform active:scale-95 shadow-xl"
+                  className="flex-[2] py-4 rounded-[8px] bg-card hover:bg-[#333] text-[11px] text-white font-black uppercase tracking-[0.2em] transition-all transform active:scale-95 shadow-xl"
                 >
                   Skip Fielder
-                </button>
+                </Button>
               )}
             </div>
           )}

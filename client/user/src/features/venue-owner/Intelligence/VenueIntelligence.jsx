@@ -54,11 +54,11 @@ export default function VenueIntelligence() {
   const revenueByCategory = dashboardData?.revenueByCategory || [];
   const revenueByVenue = dashboardData?.revenueByVenue || [];
   const colors = [
-    "bg-[#B3DC26]",
-    "bg-[#B3DC26]",
+    "bg-primary",
+    "bg-primary",
     "bg-orange-500",
     "bg-red-500",
-    "bg-[#B3DC26]",
+    "bg-primary",
   ];
 
   const sportDist =
@@ -87,7 +87,7 @@ export default function VenueIntelligence() {
   const isHeatmapSufficient = occupancyHeatmap.length > 0;
 
   return (
-    <div className="h-full custom-scrollbar bg-[#000000] text-white">
+    <div className="h-full custom-scrollbar bg-background text-white">
       <div className="space-y-3 animate-fade-in pb-4 h-full relative">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
@@ -106,8 +106,8 @@ export default function VenueIntelligence() {
 
         {/* Top Stat Cards */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
-          <div className="bg-[#121212] border border-white/10 rounded-[16px] md:rounded-[16px] p-2 md:p-5 flex flex-col relative overflow-hidden shadow-[var(--shadow-2)] hover:border-[#B3DC26]/30 transition-all duration-500">
-            <div className="w-6 h-6 md:w-10 md:h-10 bg-[#B3DC26]/10 rounded-[16px] md:rounded-[16px] flex items-center justify-center mb-1.5 md:mb-4 text-[#B3DC26] transition-colors border border-[#B3DC26]/20">
+          <div className="bg-card border border-white/10 rounded-[16px] md:rounded-[16px] p-2 md:p-5 flex flex-col relative overflow-hidden shadow-[var(--shadow-2)] hover:border-primary/30 transition-all duration-500">
+            <div className="w-6 h-6 md:w-10 md:h-10 bg-primary/10 rounded-[16px] md:rounded-[16px] flex items-center justify-center mb-1.5 md:mb-4 text-primary transition-colors border border-primary/20">
               <Zap className="w-3 h-3 md:w-5 md:h-5" />
             </div>
             <p className="text-[7.5px] md:text-[12px] font-normal text-white/70 uppercase tracking-[0.5px] mb-0.5 md:mb-1 truncate">
@@ -118,8 +118,8 @@ export default function VenueIntelligence() {
             </h3>
           </div>
 
-          <div className="bg-[#121212] border border-white/10 rounded-[16px] md:rounded-[16px] p-2 md:p-5 flex flex-col relative overflow-hidden shadow-[var(--shadow-2)] hover:border-[#B3DC26]/30 transition-all duration-500">
-            <div className="w-6 h-6 md:w-10 md:h-10 bg-[#B3DC26]/10 rounded-[16px] md:rounded-[16px] flex items-center justify-center mb-1.5 md:mb-4 text-[#B3DC26] transition-colors border border-[#B3DC26]/20">
+          <div className="bg-card border border-white/10 rounded-[16px] md:rounded-[16px] p-2 md:p-5 flex flex-col relative overflow-hidden shadow-[var(--shadow-2)] hover:border-primary/30 transition-all duration-500">
+            <div className="w-6 h-6 md:w-10 md:h-10 bg-primary/10 rounded-[16px] md:rounded-[16px] flex items-center justify-center mb-1.5 md:mb-4 text-primary transition-colors border border-primary/20">
               <Percent className="w-3 h-3 md:w-5 md:h-5" />
             </div>
             <p className="text-[7.5px] md:text-[12px] font-normal text-white/70 uppercase tracking-[0.5px] mb-0.5 md:mb-1 truncate">
@@ -134,7 +134,7 @@ export default function VenueIntelligence() {
         {/* Main Charts Row */}
         <div className="grid grid-cols-1 gap-3 mt-3">
           {/* Revenue & Demand Forecasting */}
-          <div className="bg-[#121212] border border-white/10 rounded-[16px] md:rounded-[16px] p-4 md:p-6 shadow-[var(--shadow-2)] hover:border-[#B3DC26]/30 transition-all duration-500">
+          <div className="bg-card border border-white/10 rounded-[16px] md:rounded-[16px] p-4 md:p-6 shadow-[var(--shadow-2)] hover:border-primary/30 transition-all duration-500">
             <div className="flex justify-between items-start mb-4 md:mb-6">
               <div>
                 <h2 className="text-[12px] md:text-xl font-bold font-['Open_Sans'] text-white uppercase tracking-tight">
@@ -163,31 +163,31 @@ export default function VenueIntelligence() {
                       >
                         <stop
                           offset="5%"
-                          stopColor="#BFF367"
+                          stopColor="var(--primary)"
                           stopOpacity={0.3}
                         />
                         <stop
                           offset="95%"
-                          stopColor="#BFF367"
+                          stopColor="var(--primary)"
                           stopOpacity={0}
                         />
                       </linearGradient>
                     </defs>
                     <CartesianGrid
                       strokeDasharray="3 3"
-                      stroke="#2D2D2D"
+                      stroke="var(--border)"
                       vertical={false}
                     />
                     <XAxis
                       dataKey="name"
-                      stroke="#878C9F"
+                      stroke="var(--muted-foreground)"
                       fontSize={10}
                       tickLine={false}
                       axisLine={false}
                     />
                     <YAxis
                       yAxisId="left"
-                      stroke="#878C9F"
+                      stroke="var(--muted-foreground)"
                       fontSize={10}
                       tickLine={false}
                       axisLine={false}
@@ -195,16 +195,16 @@ export default function VenueIntelligence() {
                     <RechartsTooltip
                       contentStyle={{
                         backgroundColor: "#111",
-                        borderColor: "#2D2D2D",
+                        borderColor: "var(--border)",
                         borderRadius: "8px",
                       }}
-                      itemStyle={{ color: "#BFF367" }}
+                      itemStyle={{ color: "var(--primary)" }}
                     />
                     <Area
                       yAxisId="left"
                       type="monotone"
                       dataKey="revenue"
-                      stroke="#BFF367"
+                      stroke="var(--primary)"
                       strokeWidth={3}
                       fill="url(#colorRevenue)"
                     />
@@ -224,7 +224,7 @@ export default function VenueIntelligence() {
 
         <div className="grid grid-cols-1 gap-3 mt-3">
           {/* Venue Comparison & Sport Distribution */}
-          <div className="bg-[#121212] border border-white/10 rounded-[16px] p-6 flex flex-col relative shadow-[var(--shadow-2)] hover:border-[#B3DC26]/30 transition-all duration-500">
+          <div className="bg-card border border-white/10 rounded-[16px] p-6 flex flex-col relative shadow-[var(--shadow-2)] hover:border-primary/30 transition-all duration-500">
             <div className="flex justify-between items-center mb-1">
               <h2 className="text-lg md:text-xl font-bold font-['Open_Sans'] text-white uppercase tracking-tight">
                 Revenue Comparison
@@ -245,11 +245,11 @@ export default function VenueIntelligence() {
                     <div key={venue.name} className="space-y-1">
                       <div className="flex justify-between text-[11px] font-bold text-white">
                         <span>{venue.name}</span>
-                        <span className="text-[#B3DC26]">
+                        <span className="text-primary">
                           Rs {venue.value.toLocaleString()}
                         </span>
                       </div>
-                      <div className="w-full bg-[#1B1B1B] rounded-[16px] h-6 overflow-hidden relative">
+                      <div className="w-full bg-card rounded-[16px] h-6 overflow-hidden relative">
                         <div
                           className={`h-full ${venue.color} opacity-80`}
                           style={{
@@ -270,7 +270,7 @@ export default function VenueIntelligence() {
                     {sportDist.map((sport) => (
                       <div
                         key={sport.name}
-                        className="px-3 py-2 bg-[#1B1B1B] border border-white/10 rounded-[16px] flex-1 min-w-[100px]"
+                        className="px-3 py-2 bg-card border border-white/10 rounded-[16px] flex-1 min-w-[100px]"
                       >
                         <p className="text-[9px] font-bold text-white/70 uppercase tracking-wider">
                           {sport.name}

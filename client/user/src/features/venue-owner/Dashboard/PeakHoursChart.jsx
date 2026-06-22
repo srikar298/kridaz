@@ -6,12 +6,12 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell,
   AreaChart,
   Area,
 } from "recharts";
 import { Calendar, TrendingUp } from "lucide-react";
-import axiosInstance from "@hooks/useAxiosInstance";
+import axiosInstance from "@hooks/useAxiosInstance";import { Select } from "@kridaz/ui";
+
 
 const PeakHoursChart = () => {
   const [data, setData] = useState([]);
@@ -67,12 +67,12 @@ const PeakHoursChart = () => {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-[#1B1B1B] border border-white/10 p-3 rounded-[16px] shadow-[0px_4px_16px_rgba(0,0,0,0.4)]">
+        <div className="bg-card border border-white/10 p-3 rounded-[16px] shadow-[0px_4px_16px_rgba(0,0,0,0.4)]">
           <p className="text-[12px] text-white/70 tracking-widest font-bold mb-1 font-inter">
             {payload[0].payload.time}
           </p>
           <p className="text-white font-bold flex items-center gap-2 font-inter">
-            <span className="w-2 h-2 rounded-full bg-[#B3DC26]" />
+            <span className="w-2 h-2 rounded-full bg-primary" />
             {payload[0].value} Bookings
           </p>
         </div>
@@ -82,14 +82,14 @@ const PeakHoursChart = () => {
   };
 
   return (
-    <div className="bg-[#121212] p-6 rounded-[16px] border border-white/10 hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)] transition-shadow h-full flex flex-col">
+    <div className="bg-card p-6 rounded-[16px] border border-white/10 hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)] transition-shadow h-full flex flex-col">
       <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-4 mb-8">
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <h2 className="text-[16px] font-bold text-white tracking-tighter whitespace-nowrap font-inter truncate">
               Peak Booking Hours
             </h2>
-            <div className="px-1.5 py-0.5 bg-[#B3DC26]/10 text-[#B3DC26] rounded-[16px] text-[10px] font-bold tracking-widest border border-white/10 shrink-0">
+            <div className="px-1.5 py-0.5 bg-primary/10 text-primary rounded-[16px] text-[10px] font-bold tracking-widest border border-white/10 shrink-0">
               Live
             </div>
           </div>
@@ -99,10 +99,10 @@ const PeakHoursChart = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 mt-2 xl:mt-0">
-          <select
+          <Select
             value={selectedTurf}
             onChange={(e) => setSelectedTurf(e.target.value)}
-            className="bg-[#121212] border border-white/10 text-white text-[10px] sm:text-[12px] font-bold tracking-widest rounded-[16px] px-2 py-1 focus:outline-none focus:border-[#55DEE8] transition-all cursor-pointer hover:border-[#55DEE8]/50 max-w-[140px] sm:max-w-[180px] truncate"
+            className="bg-card border border-white/10 text-white text-[10px] sm:text-[12px] font-bold tracking-widest rounded-[16px] px-2 py-1 focus:outline-none focus:border-secondary transition-all cursor-pointer hover:border-secondary/50 max-w-[140px] sm:max-w-[180px] truncate"
           >
             <option value="" disabled>
               Select Facility
@@ -112,18 +112,18 @@ const PeakHoursChart = () => {
                 {turf.name}
               </option>
             ))}
-          </select>
+          </Select>
 
-          <select
+          <Select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="bg-[#121212] border border-white/10 text-white text-[10px] sm:text-[12px] font-bold tracking-widest rounded-[16px] px-2 py-1 focus:outline-none focus:border-[#55DEE8] transition-all cursor-pointer hover:border-[#55DEE8]/50"
+            className="bg-card border border-white/10 text-white text-[10px] sm:text-[12px] font-bold tracking-widest rounded-[16px] px-2 py-1 focus:outline-none focus:border-secondary transition-all cursor-pointer hover:border-secondary/50"
           >
             <option value="day">Day</option>
             <option value="week">Week</option>
             <option value="month">Month</option>
             <option value="year">Year</option>
-          </select>
+          </Select>
         </div>
       </div>
 
@@ -135,35 +135,35 @@ const PeakHoursChart = () => {
           >
             <defs>
               <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#BFF367" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#BFF367" stopOpacity={0} />
+                <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="#2D2D2D"
+              stroke="var(--border)"
               vertical={false}
             />
             <XAxis
               dataKey="time"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#878C9F", fontSize: 10, fontWeight: 500 }}
+              tick={{ fill: "var(--muted-foreground)", fontSize: 10, fontWeight: 500 }}
               interval={3}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#878C9F", fontSize: 10, fontWeight: 500 }}
+              tick={{ fill: "var(--muted-foreground)", fontSize: 10, fontWeight: 500 }}
             />
             <Tooltip
               content={<CustomTooltip />}
-              cursor={{ stroke: "#BFF367", strokeWidth: 1 }}
+              cursor={{ stroke: "var(--primary)", strokeWidth: 1 }}
             />
             <Area
               type="monotone"
               dataKey="count"
-              stroke="#BFF367"
+              stroke="var(--primary)"
               strokeWidth={3}
               fillOpacity={1}
               fill="url(#colorCount)"
@@ -174,8 +174,8 @@ const PeakHoursChart = () => {
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2">
-        <div className="bg-[#1B1B1B] p-2.5 sm:p-4 rounded-[16px] sm:rounded-[16px] border border-white/10 flex items-center gap-2 sm:gap-3 group hover:border-[#55DEE8]/50 transition-all overflow-hidden">
-          <div className="shrink-0 p-1.5 sm:p-2 bg-[#B3DC26]/10 text-[#B3DC26] rounded-[16px] sm:rounded-[16px] group-hover:scale-110 transition-transform">
+        <div className="bg-card p-2.5 sm:p-4 rounded-[16px] sm:rounded-[16px] border border-white/10 flex items-center gap-2 sm:gap-3 group hover:border-secondary/50 transition-all overflow-hidden">
+          <div className="shrink-0 p-1.5 sm:p-2 bg-primary/10 text-primary rounded-[16px] sm:rounded-[16px] group-hover:scale-110 transition-transform">
             <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4" />
           </div>
           <div className="min-w-0">
@@ -187,8 +187,8 @@ const PeakHoursChart = () => {
             </p>
           </div>
         </div>
-        <div className="bg-[#1B1B1B] p-2.5 sm:p-4 rounded-[16px] sm:rounded-[16px] border border-white/10 flex items-center gap-2 sm:gap-3 group hover:border-[#55DEE8]/50 transition-all overflow-hidden">
-          <div className="shrink-0 p-1.5 sm:p-2 bg-[#B3DC26]/10 text-[#B3DC26] rounded-[16px] sm:rounded-[16px] group-hover:scale-110 transition-transform">
+        <div className="bg-card p-2.5 sm:p-4 rounded-[16px] sm:rounded-[16px] border border-white/10 flex items-center gap-2 sm:gap-3 group hover:border-secondary/50 transition-all overflow-hidden">
+          <div className="shrink-0 p-1.5 sm:p-2 bg-primary/10 text-primary rounded-[16px] sm:rounded-[16px] group-hover:scale-110 transition-transform">
             <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
           </div>
           <div className="min-w-0">

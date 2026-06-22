@@ -10,9 +10,10 @@ import {
   X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TurfCardMobile, VenueCard } from "../../features/turf";
+import { TurfCardMobile, VenueCard } from "../../features/turf";import { Button } from "@kridaz/ui";
 
-const BDR = "#2A2A2A";
+
+const BDR = "var(--border)";
 
 export default function VenuesSection({
   userLocation,
@@ -69,7 +70,7 @@ export default function VenuesSection({
           className="text-[14px] font-black text-white tracking-tighter leading-none text-left"
           style={{ fontFamily: "'Open Sans', sans-serif" }}
         >
-          Featured <span className="text-[#BFF367]">Venues</span>
+          Featured <span className="text-primary">Venues</span>
         </h2>
       </div>
 
@@ -79,8 +80,8 @@ export default function VenuesSection({
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="w-[85vw] md:w-[400px] shrink-0 snap-center rounded-[12px] border animate-pulse"
-              style={{ height: 320, backgroundColor: "#111", borderColor: BDR }}
+              className="w-[65%] shrink-0 snap-start rounded-[12px] border animate-pulse aspect-[1080/1350]"
+              style={{ backgroundColor: "#111", borderColor: BDR }}
             />
           ))}
         </div>
@@ -118,7 +119,7 @@ export default function VenuesSection({
                 </div>
               ))}
             </div>
-          ))}
+          </div>
         </div>
       )}
 
@@ -141,12 +142,12 @@ export default function VenuesSection({
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
-              <button
+              <Button
                 className="absolute top-4 left-4 z-50 w-8 h-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/80 transition-colors border border-white/20"
                 onClick={() => setSelectedTurfForPopup(null)}
               >
                 <X size={18} />
-              </button>
+              </Button>
 
               <TurfCardMobile turf={selectedTurfForPopup} />
             </motion.div>

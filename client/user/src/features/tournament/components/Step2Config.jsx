@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState } from "react";import { Button } from "@kridaz/ui";
+
 import {
   ArrowRight,
   ArrowLeft,
@@ -71,46 +72,46 @@ const Step2Config = ({ formData, onNext, onBack, isLoading }) => {
   const renderSelectChips = (options, currentVal, field) => (
     <div className="flex flex-wrap gap-2">
       {options.map((opt) => (
-        <button
+        <Button
           key={opt}
           onClick={() => updateField(field, opt)}
           className={`px-4 py-2 rounded-full text-xs font-bold transition-all border ${
             currentVal === opt
-              ? "bg-[#BFF367] text-black border-[#BFF367]"
-              : "bg-[#111] text-white/70 border-white/10 hover:border-white/30"
+              ? "bg-primary text-black border-primary"
+              : "bg-card text-white/70 border-white/10 hover:border-white/30"
           }`}
         >
           {opt}
-        </button>
+        </Button>
       ))}
     </div>
   );
 
   const renderStepper = (label, field, min, max) => (
-    <div className="flex items-center justify-between bg-[#111] border border-white/5 p-4 rounded-2xl">
+    <div className="flex items-center justify-between bg-card border border-white/5 p-4 rounded-2xl">
       <span className="text-sm font-bold text-white/90">{label}</span>
       <div className="flex items-center gap-4">
-        <button
+        <Button
           onClick={() =>
             updateField(field, Math.max(min, localData[field] - 1))
           }
-          className="w-8 h-8 rounded-full bg-[#1a1a1a] flex items-center justify-center text-white hover:bg-white/10 transition-colors disabled:opacity-30"
+          className="w-8 h-8 rounded-full bg-card flex items-center justify-center text-white hover:bg-white/10 transition-colors disabled:opacity-30"
           disabled={localData[field] <= min}
         >
           <Minus size={14} />
-        </button>
-        <span className="text-lg font-black w-8 text-center text-[#BFF367]">
+        </Button>
+        <span className="text-lg font-black w-8 text-center text-primary">
           {localData[field]}
         </span>
-        <button
+        <Button
           onClick={() =>
             updateField(field, Math.min(max, localData[field] + 1))
           }
-          className="w-8 h-8 rounded-full bg-[#1a1a1a] flex items-center justify-center text-white hover:bg-white/10 transition-colors disabled:opacity-30"
+          className="w-8 h-8 rounded-full bg-card flex items-center justify-center text-white hover:bg-white/10 transition-colors disabled:opacity-30"
           disabled={localData[field] >= max}
         >
           <Plus size={14} />
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -119,7 +120,7 @@ const Step2Config = ({ formData, onNext, onBack, isLoading }) => {
     <div className="space-y-8 animate-fade-in pb-20">
       <section className="space-y-4">
         <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
-          <Activity size={16} className="text-[#55DEE8]" />
+          <Activity size={16} className="text-secondary" />
           Sport
         </h2>
         {renderSelectChips(SPORTS, localData.sport, "sport")}
@@ -127,7 +128,7 @@ const Step2Config = ({ formData, onNext, onBack, isLoading }) => {
 
       <section className="space-y-4">
         <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
-          <Trophy size={16} className="text-[#BFF367]" />
+          <Trophy size={16} className="text-primary" />
           Tournament Type
         </h2>
         {renderSelectChips(TYPES, localData.type, "type")}
@@ -135,7 +136,7 @@ const Step2Config = ({ formData, onNext, onBack, isLoading }) => {
 
       <section className="space-y-4">
         <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
-          <Flag size={16} className="text-[#55DEE8]" />
+          <Flag size={16} className="text-secondary" />
           Match Format
         </h2>
         {renderSelectChips(
@@ -178,23 +179,23 @@ const Step2Config = ({ formData, onNext, onBack, isLoading }) => {
       </section>
 
       {/* Bottom Fixed Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#000] via-[#000]/90 to-transparent pt-12 pb-6 px-4 z-40">
+      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/90 to-transparent pt-12 pb-6 px-4 z-40">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <button
+          <Button
             onClick={onBack}
             className="flex items-center gap-2 text-white/70 hover:text-white px-4 py-2 font-bold text-xs uppercase tracking-wider transition-colors"
           >
             <ArrowLeft size={16} /> Back
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={submit}
             disabled={isLoading}
-            className="flex items-center gap-2 bg-[#BFF367] text-black font-black px-8 py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-xs"
+            className="flex items-center gap-2 bg-primary text-black font-black px-8 py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-xs"
           >
             {isLoading ? "Saving..." : "Continue"}
             <ArrowRight size={16} />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

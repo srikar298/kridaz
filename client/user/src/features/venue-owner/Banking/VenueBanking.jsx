@@ -19,7 +19,8 @@ import useBanking from "@hooks/venue-owner/useBanking";
 import useVenueOwnerDashboard from "@hooks/venue-owner/useVenueOwnerDashboard";
 import useOwnerWallet from "@hooks/venue-owner/useOwnerWallet";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";import { Button, Input, Select } from "@kridaz/ui";
+
 
 /**
  * VenueBanking Rs � Secure banking, KYC, and settlement management.
@@ -29,7 +30,7 @@ import { useSelector } from "react-redux";
 const VenueBanking = () => {
   const { role } = useSelector((state) => state.auth);
   const isScorer = role?.toLowerCase().includes("scorer");
-  const themeColor = isScorer ? "#BFF367" : "#BFF367";
+  const themeColor = isScorer ? "var(--primary)" : "var(--primary)";
   const vaultTitle = isScorer ? "Payout & Settlement" : "Marketplace Vault";
 
   const {
@@ -190,19 +191,19 @@ const VenueBanking = () => {
     );
 
   return (
-    <div className="h-full custom-scrollbar bg-[#000000] text-white font-inter pb-4">
+    <div className="h-full custom-scrollbar bg-background text-white font-inter pb-4">
       <div className="px-1 lg:px-3 pt-1 lg:pt-3 lg:pb-3 flex flex-col gap-4 md:gap-12 animate-fade-in relative">
         {/* Header Section */}
         <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 relative z-10 pb-6 border-b border-white/10">
           <div className="flex items-center gap-4">
             <div>
               <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-                <button
+                <Button
                   onClick={() => setShowBankModal(true)}
-                  className="px-3 py-1.5 md:px-4 md:py-2 bg-[#121212] border border-white/10 hover:border-[#B3DC26]/30 rounded-[16px] text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-2 mt-2 sm:mt-0"
+                  className="px-3 py-1.5 md:px-4 md:py-2 bg-card border border-white/10 hover:border-primary/30 rounded-[6px] text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-2 mt-2 sm:mt-0"
                 >
                   <Landmark size={14} className="shrink-0" /> Bank Details
-                </button>
+                </Button>
               </div>
               <p className="text-white/70 font-inter font-light text-[14px] md:text-[20px] mt-2">
                 Banking & Secure Settlement Console
@@ -243,7 +244,7 @@ const VenueBanking = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
           <div className="lg:col-span-8 space-y-6 md:space-y-10">
             {/* Simple Balance Card */}
-            <div className="bg-[#121212] border border-white/10 rounded-[16px] p-4 md:p-6 shadow-2xl flex flex-row items-center justify-between gap-4">
+            <div className="bg-card border border-white/10 rounded-[16px] p-4 md:p-6 shadow-2xl flex flex-row items-center justify-between gap-4">
               <div className="flex flex-col md:flex-row md:items-baseline gap-0.5 md:gap-3">
                 <span className="text-[10px] md:text-[12px] font-bold uppercase tracking-widest text-white/70">
                   Balance:
@@ -255,32 +256,32 @@ const VenueBanking = () => {
                   Rs {numericTotalCoins.toLocaleString()}
                 </span>
               </div>
-              <button
+              <Button
                 onClick={handleOpenPayoutModal}
-                className="px-3 py-2 md:px-6 md:py-3 text-black rounded-[16px] font-bold uppercase tracking-widest text-[9px] md:text-[11px] transition-all transform active:scale-95 whitespace-nowrap"
+                className="px-3 py-2 md:px-6 md:py-3 text-black rounded-[6px] font-bold uppercase tracking-widest text-[9px] md:text-[11px] transition-all transform active:scale-95 whitespace-nowrap"
                 style={{ backgroundColor: themeColor }}
               >
                 Request Settlement
-              </button>
+              </Button>
             </div>
 
             {/* Financial Ledger */}
-            <div className="bg-[#121212] border border-white/10 rounded-[16px] overflow-hidden shadow-2xl">
+            <div className="bg-card border border-white/10 rounded-[16px] overflow-hidden shadow-2xl">
               <div className="p-4 md:p-8 border-b border-white/10 flex justify-between items-center gap-2">
                 <div className="flex items-center gap-2 md:gap-4">
                   <h3 className="text-[10px] md:text-[12px] font-bold font-['Open_Sans'] uppercase tracking-[0.1em] md:tracking-[0.2em] whitespace-nowrap">
                     Financial Ledger
                   </h3>
                 </div>
-                <button className="text-[7px] md:text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 md:gap-2 text-neutral-500 hover:text-white transition-all text-right md:text-left">
+                <Button className="rounded-[6px] text-[7px] md:text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 md:gap-2 text-neutral-500 hover:text-white transition-all text-right md:text-left">
                   <Download className="w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0" />{" "}
                   Download Audit CSV
-                </button>
+                </Button>
               </div>
               <div className="overflow-x-auto no-scrollbar w-full">
                 <table className="w-full text-left table-fixed sm:table-auto">
                   <thead>
-                    <tr className="bg-[#121212]">
+                    <tr className="bg-card">
                       <th className="px-3 md:px-8 py-3 md:py-5 text-[6px] md:text-[9px] font-black text-neutral-600 uppercase tracking-widest w-1/2 sm:w-auto">
                         Transaction Origin
                       </th>
@@ -298,13 +299,13 @@ const VenueBanking = () => {
                       walletData.transactions.map((tx, idx) => (
                         <tr
                           key={tx._id || idx}
-                          className="hover:bg-[#121212] transition-colors group"
+                          className="hover:bg-card transition-colors group"
                         >
                           {" "}
                           <td className="px-3 md:px-8 py-4 md:py-6 overflow-hidden">
                             <div className="flex items-center gap-2 md:gap-4">
                               <div
-                                className="w-6 h-6 md:w-10 md:h-10 rounded-[16px] md:rounded-[16px] bg-[#121212] flex items-center justify-center border border-white/10 transition-all flex-shrink-0"
+                                className="w-6 h-6 md:w-10 md:h-10 rounded-[16px] md:rounded-[16px] bg-card flex items-center justify-center border border-white/10 transition-all flex-shrink-0"
                                 style={{
                                   color: [
                                     "DEBIT",
@@ -313,7 +314,7 @@ const VenueBanking = () => {
                                     "HOST_GAME",
                                     "JOIN_GAME",
                                   ].includes(tx.type)
-                                    ? "#ef4444"
+                                    ? "var(--destructive)"
                                     : themeColor,
                                   borderColor: [
                                     "DEBIT",
@@ -322,7 +323,7 @@ const VenueBanking = () => {
                                     "HOST_GAME",
                                     "JOIN_GAME",
                                   ].includes(tx.type)
-                                    ? "#ef444433"
+                                    ? "var(--destructive)33"
                                     : `${themeColor}33`,
                                 }}
                               >
@@ -369,7 +370,7 @@ const VenueBanking = () => {
                                 "HOST_GAME",
                                 "JOIN_GAME",
                               ].includes(tx.type)
-                                ? "#ef4444"
+                                ? "var(--destructive)"
                                 : themeColor,
                             }}
                           >
@@ -407,7 +408,7 @@ const VenueBanking = () => {
           {/* Right Sidebar: Records */}
           <div className="lg:col-span-4 space-y-10">
             {/* Recent Settlements */}
-            <div className="bg-[#121212] border border-white/10 rounded-[16px] p-8 shadow-2xl">
+            <div className="bg-card border border-white/10 rounded-[16px] p-8 shadow-2xl">
               <div className="flex items-center gap-3 mb-8">
                 <h3 className="text-[12px] font-bold font-['Open_Sans'] uppercase tracking-[0.2em]">
                   Recent Records
@@ -418,11 +419,11 @@ const VenueBanking = () => {
                   withdrawals.slice(0, 3).map((withdrawal, i) => (
                     <div
                       key={withdrawal._id || i}
-                      className="flex justify-between items-center p-5 bg-[#121212] rounded-[16px] border border-white/10 hover:border-white/10 transition-all group"
+                      className="flex justify-between items-center p-5 bg-card rounded-[16px] border border-white/10 hover:border-white/10 transition-all group"
                     >
                       <div className="flex items-center gap-4">
                         <div
-                          className={`w-10 h-10 rounded-[16px] flex items-center justify-center border transition-all ${withdrawal.status === "SUCCESS" ? "bg-[#B3DC26]/10 text-[#B3DC26] border-[#B3DC26]/20" : withdrawal.status === "PENDING" ? "bg-orange-500/10 text-orange-500 border-orange-500/20" : "bg-red-500/10 text-red-500 border-red-500/20"}`}
+                          className={`w-10 h-10 rounded-[16px] flex items-center justify-center border transition-all ${withdrawal.status === "SUCCESS" ? "bg-primary/10 text-primary border-primary/20" : withdrawal.status === "PENDING" ? "bg-orange-500/10 text-orange-500 border-orange-500/20" : "bg-red-500/10 text-red-500 border-red-500/20"}`}
                         >
                           {withdrawal.status === "SUCCESS" ? (
                             <CheckCircle size={16} />
@@ -443,14 +444,14 @@ const VenueBanking = () => {
                         </div>
                       </div>
                       <span
-                        className={`text-[9px] font-black uppercase tracking-widest ${withdrawal.status === "SUCCESS" ? "text-[#B3DC26]" : withdrawal.status === "PENDING" ? "text-orange-500" : "text-red-500"}`}
+                        className={`text-[9px] font-black uppercase tracking-widest ${withdrawal.status === "SUCCESS" ? "text-primary" : withdrawal.status === "PENDING" ? "text-orange-500" : "text-red-500"}`}
                       >
                         {withdrawal.status}
                       </span>
                     </div>
                   ))
                 ) : (
-                  <div className="py-16 text-center bg-[#121212] rounded-[16px] border border-dashed border-white/10">
+                  <div className="py-16 text-center bg-card rounded-[16px] border border-dashed border-white/10">
                     <p className="text-[10px] text-neutral-700 font-black uppercase tracking-[0.2em]">
                       No Records Found
                     </p>
@@ -464,7 +465,7 @@ const VenueBanking = () => {
         {/* Verification Modal */}
         {showVerifyModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-black/90 backdrop-blur-xl animate-fade-in">
-            <div className="bg-[#121212] border border-white/10 rounded-[16px] w-full max-w-lg overflow-hidden shadow-2xl animate-scale-in relative">
+            <div className="bg-card border border-white/10 rounded-[16px] w-full max-w-lg overflow-hidden shadow-2xl animate-scale-in relative">
               <div className="p-4 md:p-8 border-b border-white/10 flex justify-between items-center relative z-10">
                 <div className="flex items-center gap-3 md:gap-4">
                   <div
@@ -475,12 +476,12 @@ const VenueBanking = () => {
                     Fund Withdrawal
                   </h3>
                 </div>
-                <button
+                <Button
                   onClick={() => setShowVerifyModal(false)}
                   className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-[16px] text-neutral-500 hover:text-white transition-all"
                 >
                   <X className="w-4 h-4 md:w-5 md:h-5" />
-                </button>
+                </Button>
               </div>
 
               <form
@@ -488,7 +489,7 @@ const VenueBanking = () => {
                 className="p-4 md:p-8 space-y-3 md:space-y-8 relative z-10 h-auto max-h-[90vh] md:h-[500px] overflow-y-auto no-scrollbar pb-4 md:pb-10"
               >
                 <div
-                  className="rounded-[16px] p-3 md:p-6 flex items-center gap-3 md:gap-5 border border-white/10 bg-[#121212]"
+                  className="rounded-[16px] p-3 md:p-6 flex items-center gap-3 md:gap-5 border border-white/10 bg-card"
                   style={{ borderColor: `${themeColor}20` }}
                 >
                   <div
@@ -528,8 +529,8 @@ const VenueBanking = () => {
                       Withdrawal Quantum
                     </label>
                     <div className="relative group">
-                      <IndianRupee className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 text-neutral-700 group-focus-within:text-[#B3DC26] transition-colors w-4 h-4 md:w-5 md:h-5" />
-                      <input
+                      <IndianRupee className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 text-neutral-700 group-focus-within:text-primary transition-colors w-4 h-4 md:w-5 md:h-5" />
+                      <Input
                         type="number"
                         required
                         min="500"
@@ -540,15 +541,15 @@ const VenueBanking = () => {
                             e.target.value === "" ? 0 : Number(e.target.value)
                           )
                         }
-                        className="w-full bg-[#121212] border border-white/10 rounded-[16px] pl-10 md:pl-14 pr-4 md:pr-6 py-2 md:py-5 text-white focus:outline-none focus:border-[#B3DC26]/30 transition-all font-black text-lg md:text-3xl placeholder-neutral-800 shadow-inner"
+                        className="w-full bg-card border border-white/10 rounded-[16px] pl-10 md:pl-14 pr-4 md:pr-6 py-2 md:py-5 text-white focus:outline-none focus:border-primary/30 transition-all font-black text-lg md:text-3xl placeholder-neutral-800 shadow-inner"
                         placeholder="0.00"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="sticky bottom-0 left-0 right-0 pt-2 md:pt-6 bg-[#121212]">
-                  <button
+                <div className="sticky bottom-0 left-0 right-0 pt-2 md:pt-6 bg-card">
+                  <Button
                     type="submit"
                     disabled={
                       submitting ||
@@ -564,7 +565,7 @@ const VenueBanking = () => {
                     {submitting
                       ? "Authenticating Audit..."
                       : "Execute Settlement"}
-                  </button>
+                  </Button>
                 </div>
               </form>
             </div>
@@ -572,7 +573,7 @@ const VenueBanking = () => {
         )}
         {showBankModal && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-6 bg-black/90 backdrop-blur-xl animate-fade-in">
-            <div className="bg-[#121212] border border-white/10 rounded-[16px] w-full max-w-lg overflow-hidden shadow-2xl animate-scale-in relative flex flex-col max-h-full">
+            <div className="bg-card border border-white/10 rounded-[16px] w-full max-w-lg overflow-hidden shadow-2xl animate-scale-in relative flex flex-col max-h-full">
               <div className="p-4 md:p-6 border-b border-white/10 flex justify-between items-center relative z-10 shrink-0">
                 <div className="flex items-center gap-3">
                   <div
@@ -583,16 +584,16 @@ const VenueBanking = () => {
                     Banking Details
                   </h3>
                 </div>
-                <button
+                <Button
                   onClick={() => setShowBankModal(false)}
                   className="w-8 h-8 flex items-center justify-center bg-white/5 border border-white/10 rounded-[16px] text-neutral-500 hover:text-white transition-all"
                 >
                   <X className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
               <div className="p-4 md:p-6 relative z-10 overflow-y-auto no-scrollbar flex-1">
                 <div className="flex justify-end mb-6">
-                  <button
+                  <Button
                     onClick={() => setIsEditingBank(!isEditingBank)}
                     className="px-3 py-1.5 flex items-center gap-2 bg-white/5 rounded-[16px] border border-white/10 hover:bg-white/10 transition-all text-neutral-400 hover:text-white text-[10px] uppercase font-bold tracking-widest"
                   >
@@ -603,7 +604,7 @@ const VenueBanking = () => {
                         <Plus size={12} /> Edit Details
                       </>
                     )}
-                  </button>
+                  </Button>
                 </div>
 
                 {isEditingBank ? (
@@ -615,10 +616,10 @@ const VenueBanking = () => {
                       <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">
                         Account Holder
                       </label>
-                      <input
+                      <Input
                         type="text"
                         required
-                        className="w-full bg-black border border-white/10 rounded-[16px] px-5 py-4 text-[13px] text-white focus:outline-none focus:border-[#B3DC26]/30 transition-all font-black placeholder-neutral-800"
+                        className="w-full bg-black border border-white/10 rounded-[16px] px-5 py-4 text-[13px] text-white focus:outline-none focus:border-primary/30 transition-all font-black placeholder-neutral-800"
                         value={bankForm.accountName}
                         onChange={(e) =>
                           setBankForm({
@@ -635,10 +636,10 @@ const VenueBanking = () => {
                           <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">
                             Account Number
                           </label>
-                          <input
+                          <Input
                             type="text"
                             required
-                            className="w-full bg-black border border-white/10 rounded-[16px] px-5 py-4 text-[13px] text-white focus:outline-none focus:border-[#B3DC26]/30 transition-all font-black placeholder-neutral-800"
+                            className="w-full bg-black border border-white/10 rounded-[16px] px-5 py-4 text-[13px] text-white focus:outline-none focus:border-primary/30 transition-all font-black placeholder-neutral-800"
                             value={bankForm.accountNumber}
                             onChange={(e) =>
                               setBankForm({
@@ -653,10 +654,10 @@ const VenueBanking = () => {
                           <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">
                             IFSC Code
                           </label>
-                          <input
+                          <Input
                             type="text"
                             required
-                            className="w-full bg-black border border-white/10 rounded-[16px] px-5 py-4 text-[13px] text-white focus:outline-none focus:border-[#B3DC26]/30 transition-all font-black uppercase placeholder-neutral-800"
+                            className="w-full bg-black border border-white/10 rounded-[16px] px-5 py-4 text-[13px] text-white focus:outline-none focus:border-primary/30 transition-all font-black uppercase placeholder-neutral-800"
                             value={bankForm.ifscCode}
                             onChange={(e) =>
                               setBankForm({
@@ -673,11 +674,11 @@ const VenueBanking = () => {
                         <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">
                           UPI ID
                         </label>
-                        <input
+                        <Input
                           type="text"
                           required
                           placeholder="username@bank"
-                          className="w-full bg-black border border-white/10 rounded-[16px] px-5 py-4 text-[13px] text-white focus:outline-none focus:border-[#B3DC26]/30 transition-all font-black"
+                          className="w-full bg-black border border-white/10 rounded-[16px] px-5 py-4 text-[13px] text-white focus:outline-none focus:border-primary/30 transition-all font-black"
                           value={bankForm.upiId}
                           onChange={(e) =>
                             setBankForm({ ...bankForm, upiId: e.target.value })
@@ -689,7 +690,7 @@ const VenueBanking = () => {
                       <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">
                         Payout Channel
                       </label>
-                      <select
+                      <Select
                         className="w-full bg-black border border-white/10 rounded-[16px] px-5 py-4 text-[13px] text-white focus:outline-none font-black appearance-none cursor-pointer uppercase tracking-widest"
                         value={bankForm.payoutMode}
                         onChange={(e) =>
@@ -701,19 +702,19 @@ const VenueBanking = () => {
                       >
                         <option value="BANK">Bank Transfer</option>
                         <option value="UPI">UPI Gateway</option>
-                      </select>
+                      </Select>
                     </div>
-                    <button
+                    <Button
                       type="submit"
                       className="w-full py-5 text-black font-black uppercase text-[11px] tracking-[0.2em] rounded-[16px] mt-4 shadow-2xl transition-all"
                       style={{ backgroundColor: themeColor }}
                     >
                       Synchronize Credentials
-                    </button>
+                    </Button>
                   </form>
                 ) : (
                   <div className="space-y-6 md:space-y-8 animate-fade-in">
-                    <div className="flex items-center gap-3 md:gap-5 bg-[#121212] p-4 md:p-6 rounded-[16px] border border-white/10">
+                    <div className="flex items-center gap-3 md:gap-5 bg-card p-4 md:p-6 rounded-[16px] border border-white/10">
                       <div
                         className="w-10 h-10 md:w-14 md:h-14 rounded-[16px] flex items-center justify-center border shrink-0"
                         style={{
@@ -789,7 +790,7 @@ const VenueBanking = () => {
                           Financial identity verification is pending. Settlement
                           nodes are currently frozen.
                         </p>
-                        <button
+                        <Button
                           onClick={() => setIsEditingBank(true)}
                           className="w-full py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-[16px] border transition-all flex items-center justify-center gap-2"
                           style={{
@@ -799,7 +800,7 @@ const VenueBanking = () => {
                           }}
                         >
                           <ShieldCheck size={14} /> INITIALIZE KYC
-                        </button>
+                        </Button>
                       </div>
                     )}
                   </div>

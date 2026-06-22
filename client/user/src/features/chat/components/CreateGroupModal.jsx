@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState } from "react";import { Button, Input } from "@kridaz/ui";
+
 import {
   useGetFollowersFollowingQuery,
   useCreateGroupChatMutation,
@@ -46,10 +47,10 @@ const CreateGroupModal = ({ isOpen, onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#1a1a1a] border border-[#2D2D2D] rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl">
-        <div className="p-6 border-b border-[#2D2D2D] flex justify-between items-center">
+      <div className="bg-card border border-border rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl">
+        <div className="p-6 border-b border-border flex justify-between items-center">
           <h2 className="text-xl font-bold text-white">Create Group</h2>
-          <button onClick={onClose} className="text-white/60 hover:text-white">
+          <Button onClick={onClose} className="text-white/60 hover:text-white">
             <svg
               className="w-6 h-6"
               fill="none"
@@ -63,7 +64,7 @@ const CreateGroupModal = ({ isOpen, onClose, onSuccess }) => {
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-          </button>
+          </Button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -71,12 +72,12 @@ const CreateGroupModal = ({ isOpen, onClose, onSuccess }) => {
             <label className="block text-sm font-medium text-white/60 mb-2">
               Group Name
             </label>
-            <input
+            <Input
               type="text"
               required
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
-              className="w-full bg-[#000000] border border-[#2D2D2D] rounded-[6px] px-4 py-3 text-white focus:border-primary outline-none transition-all"
+              className="w-full bg-background border border-border rounded-[6px] px-4 py-3 text-white focus:border-primary outline-none transition-all"
               placeholder="Enter group name..."
             />
           </div>
@@ -101,7 +102,7 @@ const CreateGroupModal = ({ isOpen, onClose, onSuccess }) => {
                     <div
                       key={userId}
                       onClick={() => toggleUser(userId)}
-                      className={`flex items-center gap-3 p-3 rounded-[6px] border cursor-pointer transition-all ${selectedUsers.includes(userId) ? "bg-primary/20 border-primary/50" : "bg-[#000000] border-transparent hover:border-[#2D2D2D]"}`}
+                      className={`flex items-center gap-3 p-3 rounded-[6px] border cursor-pointer transition-all ${selectedUsers.includes(userId) ? "bg-primary/20 border-primary/50" : "bg-background border-transparent hover:border-border"}`}
                     >
                       <img
                         src={
@@ -143,13 +144,13 @@ const CreateGroupModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
           </div>
 
-          <button
+          <Button
             type="submit"
             disabled={isCreating || !groupName || selectedUsers.length === 0}
             className="w-full py-4 bg-primary text-black font-bold rounded-[8px] hover:bg-primary/80 transition-all disabled:opacity-50"
           >
             {isCreating ? "Creating..." : "Create Group"}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

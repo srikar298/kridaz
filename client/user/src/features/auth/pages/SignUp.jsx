@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import GoogleAuthButton from "../components/GoogleAuthButton";
 import OnboardingModal from "@components/modals/OnboardingModal";
 import {
@@ -17,7 +17,8 @@ import { searchLocations, fetchCountryCodes } from "@utils/locationService";
 import { login } from "@redux/slices/authSlice";
 import { Capacitor } from "@capacitor/core";
 
-import { useAuthModal } from "../../../context/AuthModalContext";
+import { useAuthModal } from "../../../context/AuthModalContext";import { Button, Input, Select } from "@kridaz/ui";
+
 
 const SUBHEADING_STYLE = {
   fontFamily: "'Inter 28pt Light', sans-serif",
@@ -388,10 +389,10 @@ const SignUp = ({ isModal = false }) => {
                       Phone Number
                     </label>
                     <div className="relative flex gap-3">
-                      <select
+                      <Select
                         value={countryCode}
                         onChange={(e) => setCountryCode(e.target.value)}
-                        className="bg-[#121212] border border-white/5 focus:border-[#D2F40E]/50 focus:shadow-[0_0_10px_rgba(210,244,14,0.1)] rounded-[8px] h-11 px-2 text-white text-sm outline-none transition-all cursor-pointer w-[90px] appearance-none text-center"
+                        className="bg-card border border-white/5 focus:border-[#D2F40E]/50 focus:shadow-[0_0_10px_rgba(210,244,14,0.1)] rounded-[8px] h-11 px-2 text-white text-sm outline-none transition-all cursor-pointer w-[90px] appearance-none text-center"
                       >
                         <option value="+91" className="text-black">
                           IN (+91)
@@ -405,9 +406,9 @@ const SignUp = ({ isModal = false }) => {
                             {c.code} ({c.dial_code})
                           </option>
                         ))}
-                      </select>
+                      </Select>
                       <div className="relative flex-1">
-                        <input
+                        <Input
                           type="tel"
                           required
                           placeholder="Enter your phone number"
@@ -416,7 +417,7 @@ const SignUp = ({ isModal = false }) => {
                             const val = e.target.value.replace(/\D/g, "");
                             setIdentifier(val.slice(0, 10));
                           }}
-                          className="w-full bg-[#121212] border border-white/5 focus:border-[#D2F40E]/50 focus:shadow-[0_0_10px_rgba(210,244,14,0.1)] rounded-[8px] h-11 px-4 text-white text-sm placeholder:text-[12px] placeholder:text-white/30 outline-none transition-all"
+                          className="w-full bg-card border border-white/5 focus:border-[#D2F40E]/50 focus:shadow-[0_0_10px_rgba(210,244,14,0.1)] rounded-[8px] h-11 px-4 text-white text-sm placeholder:text-[12px] placeholder:text-white/30 outline-none transition-all"
                         />
                       </div>
                     </div>
@@ -426,7 +427,7 @@ const SignUp = ({ isModal = false }) => {
 
                   {/* Continue Button & Login Link */}
                   <div className="mt-auto pb-4 flex flex-col gap-5">
-                    <button
+                    <Button
                       type="submit"
                       disabled={loading}
                       className="w-full bg-[linear-gradient(90deg,#D2F40E_0%,#B8ED30_50%,#A9E956_100%)] text-black h-11 rounded-[8px] font-bold text-[15px] flex items-center justify-center gap-3 transition-all active:scale-[0.98] disabled:opacity-50 shadow-[0_0_20px_rgba(210,244,14,0.25)] hover:shadow-[0_0_25px_rgba(210,244,14,0.4)]"
@@ -439,12 +440,12 @@ const SignUp = ({ isModal = false }) => {
                           <ArrowRight size={18} />
                         </>
                       )}
-                    </button>
+                    </Button>
 
                     <div className="text-center">
                       <p className="text-[14px] text-white/60">
                         Already have an account?{" "}
-                        <button
+                        <Button
                           type="button"
                           onClick={() => {
                             if (isModal) {
@@ -456,7 +457,7 @@ const SignUp = ({ isModal = false }) => {
                           className="text-[#C8F53B] font-semibold hover:text-[#D2F40E] drop-shadow-[0_0_4px_rgba(200,245,59,0.3)] transition-all"
                         >
                           Login
-                        </button>
+                        </Button>
                       </p>
                     </div>
                   </div>
@@ -478,7 +479,7 @@ const SignUp = ({ isModal = false }) => {
                     <div className="space-y-4">
                       <div className="flex justify-between gap-1 sm:gap-2">
                         {[0, 1, 2, 3, 4, 5].map((index) => (
-                          <input
+                          <Input
                             key={index}
                             id={`otp-${index}`}
                             type="text"
@@ -526,19 +527,19 @@ const SignUp = ({ isModal = false }) => {
                             Didn't receive the code?
                           </p>
                         )}
-                        <button
+                        <Button
                           type="button"
                           disabled={timeLeft > 0 || loading}
                           onClick={(e) => handleSendOtp(e, false)}
                           className={`text-[15px] font-semibold transition-colors ${timeLeft > 0 ? "text-white/40 cursor-not-allowed" : "text-[#C8F53B] hover:text-[#D2F40E] drop-shadow-[0_0_4px_rgba(200,245,59,0.3)]"}`}
                         >
                           Resend Code
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </div>
 
-                  <button
+                  <Button
                     type="button"
                     onClick={handleVerifyOtp}
                     disabled={loading}
@@ -549,7 +550,7 @@ const SignUp = ({ isModal = false }) => {
                       : loading
                         ? "Verifying..."
                         : "Verify & Sign Up"}
-                  </button>
+                  </Button>
                 </div>
               )}
             </form>
@@ -611,12 +612,12 @@ const SignUp = ({ isModal = false }) => {
       >
         {/* Close Button */}
         {/* Close Button */}
-        <button
+        <Button
           onClick={() => navigate("/")}
           className="absolute top-4 right-4 z-50 p-2 bg-black/40 hover:bg-white/10 rounded-full text-white/70 hover:text-white transition-colors"
         >
           <X size={20} />
-        </button>
+        </Button>
 
         {/* Background Image */}
         <div className="absolute inset-0 w-full h-full overflow-hidden bg-black pointer-events-none">

@@ -1,0 +1,571 @@
+{
+  "users": [
+    {
+      "id": "11d860ec-fd09-4a20-be3b-96b2d522c9d6",
+      "name": "Striker Batsman",
+      "email": "player1_1781319414631@kridaz.test",
+      "role": "USER",
+      "username": "player1_1781319414631"
+    },
+    {
+      "id": "9b535caa-fbdf-4438-b0fe-a1bb595f021d",
+      "name": "Dispute Admin",
+      "email": "dispute_a_1781319414653@kridaz.test",
+      "role": "ADMIN",
+      "username": "dispute_a_1781319414653"
+    },
+    {
+      "id": "aec31b05-91ff-48a5-9300-cafda8b57abf",
+      "name": "Host Scorer",
+      "email": "host_1781319414631@kridaz.test",
+      "role": "USER",
+      "username": "host_1781319414631"
+    },
+    {
+      "id": "e7d58e18-abc2-44ff-88b9-b582e069b216",
+      "name": "Community Tester",
+      "email": "comm_1781319414523@kridaz.test",
+      "role": "USER",
+      "username": "comm_1781319414523"
+    },
+    {
+      "id": "fb151e13-6ff3-47c9-a898-dfa912a5bad5",
+      "name": "Reels Tester",
+      "email": "reels_1781319414911@kridaz.test",
+      "role": "USER",
+      "username": "reels_1781319414911"
+    },
+    {
+      "id": "1befccd4-4a79-4228-a172-15495a9128de",
+      "name": "Notify General User",
+      "email": "notify_u_1781319415304@kridaz.test",
+      "role": "USER",
+      "username": "notify_u_1781319415304"
+    },
+    {
+      "id": "52247173-2765-4e61-bd12-ac42060037b9",
+      "name": "Story Tester",
+      "email": "story_1781319414635@kridaz.test",
+      "role": "USER",
+      "username": "story_1781319414635"
+    },
+    {
+      "id": "5a713f9d-3949-4a19-b54f-7a028f734b38",
+      "name": "Reviewer Player",
+      "email": "reviewuser_1781319415072@kridaz.test",
+      "role": "USER",
+      "username": "reviewuser_1781319415072"
+    },
+    {
+      "id": "95bb1c32-bb2b-4bf5-9c67-4f3217784b94",
+      "name": "Chat User A",
+      "email": "chata_1781319414725@kridaz.test",
+      "role": "USER",
+      "username": "chata_1781319414725"
+    },
+    {
+      "id": "cec5981e-4cfb-4443-b3d4-1dd7b6d54b05",
+      "name": "Game Host Tester",
+      "email": "host_1781319415173@kridaz.test",
+      "role": "USER",
+      "username": "host_1781319415173"
+    },
+    {
+      "id": "a57187e6-77d6-43fe-8726-69743081f5ab",
+      "name": "Team Owner A",
+      "email": "team_ta_1781319414650@kridaz.test",
+      "role": "USER",
+      "username": "team_ta_1781319414650"
+    },
+    {
+      "id": "3362ce53-0f53-485a-ba50-6b6e29ee9390",
+      "name": "Team Owner B",
+      "email": "team_tb_1781319414650@kridaz.test",
+      "role": "USER",
+      "username": "team_tb_1781319414650"
+    },
+    {
+      "id": "357e90e1-6506-4e6c-8ff6-2165786e621e",
+      "name": "Chat User B",
+      "email": "chatb_1781319414725@kridaz.test",
+      "role": "USER",
+      "username": "chatb_1781319414725"
+    },
+    {
+      "id": "110f5e63-6e1e-4f8b-9a70-be2f7103987a",
+      "name": "Non-Striker Batsman",
+      "email": "player2_1781319414631@kridaz.test",
+      "role": "USER",
+      "username": "player2_1781319414631"
+    },
+    {
+      "id": "d2e16a15-ddcf-467b-8b99-35cd17e705d8",
+      "name": "Main Bowler",
+      "email": "bowler_1781319414631@kridaz.test",
+      "role": "USER",
+      "username": "bowler_1781319414631"
+    },
+    {
+      "id": "a2729c7a-7806-4281-849d-2486299bceb2",
+      "name": "Player Two",
+      "email": "player_t2_1781319414712@kridaz.test",
+      "role": "USER",
+      "username": "player_t2_1781319414712"
+    },
+    {
+      "id": "1532b67a-af5c-45ad-a7ab-fe6248d8931e",
+      "name": "Player One",
+      "email": "player_t1_1781319414712@kridaz.test",
+      "role": "USER",
+      "username": "player_t1_1781319414712"
+    },
+    {
+      "id": "df549ea1-9844-4105-ac43-1a4dd583e5b8",
+      "name": "Test Player",
+      "email": "testuser_1781319434811@kridaz.test",
+      "role": "USER",
+      "username": "testuser_1781319434811"
+    },
+    {
+      "id": "66d07dfb-efb1-46af-a0a8-2167a93734ae",
+      "name": "Booking Tester",
+      "email": "booker_1781319435416@kridaz.test",
+      "role": "USER",
+      "username": "booker_1781319435416"
+    },
+    {
+      "id": "429f4cf3-8291-4dc8-b2e6-96089472b885",
+      "name": "Chat User A",
+      "email": "chata_1781603909658@kridaz.test",
+      "role": "USER",
+      "username": "chata_1781603909658"
+    },
+    {
+      "id": "00068719-bdcf-4935-b2e6-bd331fd95fab",
+      "name": "Story Tester",
+      "email": "story_1781603909879@kridaz.test",
+      "role": "USER",
+      "username": "story_1781603909879"
+    },
+    {
+      "id": "844ff291-7dac-48fd-8fd9-f8db4d17d4bc",
+      "name": "Team Owner A",
+      "email": "team_ta_1781603909727@kridaz.test",
+      "role": "USER",
+      "username": "team_ta_1781603909727"
+    },
+    {
+      "id": "51ff4a4d-59e2-4d08-9fdd-4de5c67e4004",
+      "name": "Chat User B",
+      "email": "chatb_1781603909658@kridaz.test",
+      "role": "USER",
+      "username": "chatb_1781603909658"
+    },
+    {
+      "id": "79045466-9a5f-4c04-a9cf-7c43cfaa7099",
+      "name": "Team Owner B",
+      "email": "team_tb_1781603909727@kridaz.test",
+      "role": "USER",
+      "username": "team_tb_1781603909727"
+    },
+    {
+      "id": "92c69a63-f5fd-410e-bc61-6b5a7b14b357",
+      "name": "Player Two",
+      "email": "player_t2_1781603910078@kridaz.test",
+      "role": "USER",
+      "username": "player_t2_1781603910078"
+    },
+    {
+      "id": "92a43eb2-1249-48e0-934e-0f83f391a58c",
+      "name": "User Book",
+      "email": "prof_u_1781603910478@kridaz.test",
+      "role": "USER",
+      "username": "prof_u_1781603910478"
+    },
+    {
+      "id": "7ab215eb-0283-4772-b3f1-ae6263e3af81",
+      "name": "Booking Tester",
+      "email": "booker_1781603909529@kridaz.test",
+      "role": "USER",
+      "username": "booker_1781603909529"
+    },
+    {
+      "id": "c95f71f9-b4de-4700-b48f-d588c949e592",
+      "name": "Host Scorer",
+      "email": "host_1781603909526@kridaz.test",
+      "role": "USER",
+      "username": "host_1781603909526"
+    },
+    {
+      "id": "93652952-b670-4484-94b9-5717fd72a92c",
+      "name": "Striker Batsman",
+      "email": "player1_1781603909526@kridaz.test",
+      "role": "USER",
+      "username": "player1_1781603909526"
+    },
+    {
+      "id": "1705e8cc-d534-436e-a478-2afa03616909",
+      "name": "Non-Striker Batsman",
+      "email": "player2_1781603909526@kridaz.test",
+      "role": "USER",
+      "username": "player2_1781603909526"
+    },
+    {
+      "id": "edc6420b-84a0-48b2-b829-9e50fefb40d1",
+      "name": "Main Bowler",
+      "email": "bowler_1781603909526@kridaz.test",
+      "role": "USER",
+      "username": "bowler_1781603909526"
+    },
+    {
+      "id": "6316cab5-8a1b-4f8d-b6f2-ef1e9de20cb9",
+      "name": "Player One",
+      "email": "player_t1_1781603910078@kridaz.test",
+      "role": "USER",
+      "username": "player_t1_1781603910078"
+    },
+    {
+      "id": "54781c3c-88a9-4ced-b8bb-837d6e2bc00e",
+      "name": "Reviewer Player",
+      "email": "reviewuser_1781603919744@kridaz.test",
+      "role": "USER",
+      "username": "reviewuser_1781603919744"
+    },
+    {
+      "id": "81ffb491-d5d8-4662-bcae-73bea2fc3216",
+      "name": "New User",
+      "email": "newuser-a5fb2256-7bc3-469b-8e6b-2105c0ad058f@test.com",
+      "role": "VENUE_OWNER",
+      "username": "newuser4324"
+    },
+    {
+      "id": "67f521ac-10bd-41c9-a5e4-109d37f3a995",
+      "name": "New User",
+      "email": "newuser-65b72f10-626b-44f9-94d6-7b7a254c8b8e@test.com",
+      "role": "VENUE_OWNER",
+      "username": "newuser9037"
+    },
+    {
+      "id": "e2d00d91-ae42-45ab-ba25-8c347b8745d4",
+      "name": "New User",
+      "email": "newuser-0360cd8d-17e0-4db2-a500-b99e8e5c6cb5@test.com",
+      "role": "VENUE_OWNER",
+      "username": "newuser3551"
+    },
+    {
+      "id": "786f3efa-18d3-4b2a-b979-e2e64d38c7fd",
+      "name": "New User",
+      "email": "newuser-0f8029b6-ca39-4644-9380-d940b06c439d@test.com",
+      "role": "VENUE_OWNER",
+      "username": "newuser8478"
+    },
+    {
+      "id": "36dcdee6-1bdb-4305-adb4-c735fda99f13",
+      "name": "New User",
+      "email": "newuser-87a24930-87eb-485b-8d93-87b48ffb7041@test.com",
+      "role": "VENUE_OWNER",
+      "username": "newuser3875"
+    },
+    {
+      "id": "1a0f1278-c276-46d4-be5d-8487180038e2",
+      "name": "New User",
+      "email": "newuser-624cc712-8b61-4915-8b1d-ddd09b03038f@test.com",
+      "role": "VENUE_OWNER",
+      "username": "newuser3513"
+    },
+    {
+      "id": "ea1c2f68-a313-4479-93c4-c6692b1005f9",
+      "name": "New User",
+      "email": "newuser-8166eb03-2a10-4291-abca-c63f8e6a208f@test.com",
+      "role": "VENUE_OWNER",
+      "username": "newuser2491"
+    },
+    {
+      "id": "2a2be677-541d-4081-b485-478620b2a673",
+      "name": "Test Admin",
+      "email": "admin-5be743b3-9e55-4c5e-9b32-3c14bc71f41a@test.com",
+      "role": "ADMIN",
+      "username": "testadmin1133"
+    },
+    {
+      "id": "bc9cd9e9-64d8-48e8-9cfa-e383f3def7b7",
+      "name": "New User",
+      "email": "newuser-6a5127e8-3d25-47fd-bd42-b48fe8b55510@test.com",
+      "role": "VENUE_OWNER",
+      "username": "newuser6993"
+    },
+    {
+      "id": "95458e1e-5f62-421f-a189-acda708fbb25",
+      "name": "Test Admin",
+      "email": "admin-840d14aa-f1c1-49ed-9097-df920eac2cca@test.com",
+      "role": "ADMIN",
+      "username": "testadmin5392"
+    },
+    {
+      "id": "cc2d110e-31b3-4666-b9de-e4e7fafd3c3c",
+      "name": "New User",
+      "email": "newuser-fcc956af-74fd-496a-9413-b4d7048fe60f@test.com",
+      "role": "VENUE_OWNER",
+      "username": "newuser8015"
+    },
+    {
+      "id": "a8c783c0-1cdc-4d16-b2e3-179069ae8308",
+      "name": "Test Admin",
+      "email": "admin-1a40d81d-26c9-4da1-89c8-04518a0e3862@test.com",
+      "role": "ADMIN",
+      "username": "testadmin2942"
+    },
+    {
+      "id": "07dfff49-2d3f-4434-97fa-be444644f829",
+      "name": "New User",
+      "email": "newuser-6cf94a21-2233-4f80-b5d8-65cfbd0c37a1@test.com",
+      "role": "VENUE_OWNER",
+      "username": "newuser9819"
+    },
+    {
+      "id": "b96280df-2551-4e01-a728-f4b9ab06394e",
+      "name": "Test Admin",
+      "email": "admin-608f95d8-eb4f-475c-83f9-982669e1b208@test.com",
+      "role": "ADMIN",
+      "username": "testadmin9333"
+    },
+    {
+      "id": "072f5d11-a121-4acc-806e-c4a33a2d94e8",
+      "name": "New User",
+      "email": "newuser-84ebe2be-d3ce-4596-a779-077891654df8@test.com",
+      "role": "VENUE_OWNER",
+      "username": "newuser5752"
+    },
+    {
+      "id": "0bbfd436-63c4-408f-917d-8a231d394acf",
+      "name": "Test Admin",
+      "email": "admin-71942516-95de-4a4b-aa86-d85b45112db3@test.com",
+      "role": "ADMIN",
+      "username": "testadmin9884"
+    },
+    {
+      "id": "7c985a28-8346-4bac-b0ba-31dca773f116",
+      "name": "New User",
+      "email": "newuser-00621e20-668b-4f47-8e74-306ddddd7a85@test.com",
+      "role": "VENUE_OWNER",
+      "username": "newuser"
+    },
+    {
+      "id": "ea8a38db-22c8-4316-91c1-1f29f8e7f9ce",
+      "name": "Pro User",
+      "email": "pro-5659bba6-8fe7-4634-95dc-bb8c06e61f9b@test.com",
+      "role": "COACH",
+      "username": "prouser"
+    },
+    {
+      "id": "fcf80b28-b81c-4d5a-862a-b3dce8ec9270",
+      "name": "Some User",
+      "email": "invite2-dc763c49-5a01-4b34-8d84-116aafb11be5@test.com",
+      "role": "VENUE_OWNER",
+      "username": "someuser6128"
+    },
+    {
+      "id": "f00762a8-cc4d-4ad8-9be3-c62f6bd3324d",
+      "name": "Test Admin",
+      "email": "admin-5a9f0b23-5fa2-48e9-9989-afaa47ed5fa9@test.com",
+      "role": "ADMIN",
+      "username": "testadmin5894"
+    },
+    {
+      "id": "f6e99224-3f53-4195-bf31-7b1f5476e2ce",
+      "name": "New User",
+      "email": "newuser-55708c78-b5f5-4c66-a30a-8435c8cd061c@test.com",
+      "role": "VENUE_OWNER",
+      "username": "newuser1"
+    },
+    {
+      "id": "b44aff0e-84ad-455d-a484-9b2ccd63af1d",
+      "name": "Pro User",
+      "email": "pro-225560f4-369c-46ee-8e5f-93e09b5ed99c@test.com",
+      "role": "COACH",
+      "username": "prouser1"
+    },
+    {
+      "id": "ce144681-3800-43b6-982e-d470e4fbdc49",
+      "name": "Test Admin",
+      "email": "admin-7096aa6c-838c-44d9-a1c8-3136fb304dcc@test.com",
+      "role": "ADMIN",
+      "username": "testadmin9005"
+    },
+    {
+      "id": "565ad9af-e3b1-43b5-b1b5-bf081503cc4d",
+      "name": "New User",
+      "email": "newuser-a2e5af38-93a2-4553-8a82-53d03fe6089b@test.com",
+      "role": "VENUE_OWNER",
+      "username": "newuser2"
+    },
+    {
+      "id": "e7193fe5-3441-44b5-a8c1-a6f85ab0de52",
+      "name": "Pro User",
+      "email": "pro-4f16e1fc-eb45-4797-a5c3-fb1ea0ecd469@test.com",
+      "role": "COACH",
+      "username": "prouser2"
+    },
+    {
+      "id": "8f1952a2-3606-4bc7-b11b-61e4cda1451f",
+      "name": "Some User",
+      "email": "invite2-5cce3e36-4dce-4570-82ad-3f38f2cccd03@test.com",
+      "role": "VENUE_OWNER",
+      "username": "someuser1133"
+    },
+    {
+      "id": "caa46957-08f3-421d-a04b-a417cba0f9ff",
+      "name": "Regular User",
+      "email": "user-b5baf081-743d-41e8-89ee-18cc5476a723@test.com",
+      "role": "VENUE_OWNER",
+      "username": "regularuser"
+    },
+    {
+      "id": "1c71ef2b-1b8e-453a-9e5a-0f7cf7a94c2b",
+      "name": "Some User 3",
+      "email": "invite3-c2695675-b0c2-429b-9db0-4ca83cd485fa@test.com",
+      "role": "VENUE_OWNER",
+      "username": "someuser36128"
+    },
+    {
+      "id": "0c500a68-f7d4-4f11-a134-8d4a6dad3e57",
+      "name": "Test Admin",
+      "email": "admin-41290444-65f1-45c3-bdbc-5dc32ccce0bf@test.com",
+      "role": "ADMIN",
+      "username": "testadmin8751"
+    },
+    {
+      "id": "137bdb71-a01f-45d0-9748-04cb93378af9",
+      "name": "New User",
+      "email": "newuser-bdc46f2d-30fd-4715-955f-df46c8af03be@test.com",
+      "role": "VENUE_OWNER",
+      "username": "newuser3"
+    },
+    {
+      "id": "2c54d24f-6abd-440b-a102-099b77b37388",
+      "name": "Pro User",
+      "email": "pro-3a51eccb-e0f2-465b-87aa-8100bfd63f7c@test.com",
+      "role": "COACH",
+      "username": "prouser3"
+    },
+    {
+      "id": "04c3e3af-1899-46e5-9ebd-2e48d50286a2",
+      "name": "Some User",
+      "email": "invite2-a997198e-09f3-4224-905c-183f1a36ffcb@test.com",
+      "role": "VENUE_OWNER",
+      "username": "someuser2875"
+    },
+    {
+      "id": "559cb487-cb19-4475-854a-fbd5b3f8b0f1",
+      "name": "Some User 3",
+      "email": "invite3-a84bfe2c-2a1a-48ec-a16f-27e9877e0e88@test.com",
+      "role": "VENUE_OWNER",
+      "username": "someuser37578"
+    },
+    {
+      "id": "1f714662-7506-4ac4-a01a-93000d412684",
+      "name": "Regular User",
+      "email": "user-caf0741a-79ba-4baf-b2c8-b7d11028e280@test.com",
+      "role": "VENUE_OWNER",
+      "username": "regularuser1"
+    }
+  ],
+  "turfs": [
+    {
+      "id": "303b8b88-204b-4f4a-ab7b-c24f15b18694",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "c75224f6-a095-4a83-85a1-ec549acf5156"
+    },
+    {
+      "id": "2ddc2bbf-9fa2-4ab0-b386-182cd50ead04",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "5447a8bc-5308-4ad3-bb7b-8aed1cebfac2"
+    },
+    {
+      "id": "5477783b-7e86-4677-8904-908f623df230",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "25ce0b66-d34c-4c2f-8cd8-b31cfec03e09"
+    },
+    {
+      "id": "f8a05f55-8736-45df-b9de-4c0fd0b23c05",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "ef5f470f-abfa-4541-a61b-3e2719aa37e3"
+    },
+    {
+      "id": "f5959785-f2b2-47d8-a77d-337c41e5ac14",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "0271b04e-6248-4924-a380-caa46e31afd1"
+    },
+    {
+      "id": "734175ee-645b-49bf-b22b-7385b9ae72ce",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "2cb7d26e-7879-4ddb-941b-3e4037790f5c"
+    },
+    {
+      "id": "c8a2d298-8e71-430d-aa62-61543aa35637",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "9459e886-33ca-49ab-b731-a31c1e46aa43"
+    },
+    {
+      "id": "f48826f3-30d8-47b1-844a-e66eacabc759",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "a980aaac-dd11-4a02-9cac-9e0287ffd4eb"
+    },
+    {
+      "id": "5d560492-d877-4121-93e2-06333bd2cdfe",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "12eb7b39-0ee1-4809-9987-24ab2b6886e4"
+    },
+    {
+      "id": "08837dd0-3a07-4b42-8558-6335030a1da3",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "f6850055-975c-4e4b-ad2d-223612f4f4fe"
+    },
+    {
+      "id": "12a53ca3-44d2-4ab9-84d8-d97ecf9520c5",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "26e9fef7-f52f-4c37-be31-10ba29cb3fe4"
+    },
+    {
+      "id": "72bb419b-1bba-4f41-afd6-eec758fc61e3",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "3468b449-cdbd-498f-8494-cf00b0871a1e"
+    },
+    {
+      "id": "03a0be7d-31f1-4722-aeca-db1ae1aac153",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "ce3d36c0-ce91-48dc-b2f8-2ba378db8380"
+    },
+    {
+      "id": "0682a53a-1cdb-4624-8efa-12956d6ae5a9",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "45173e25-329c-4da6-b765-f563cfa0c404"
+    },
+    {
+      "id": "cf68f94c-a956-4bf9-b96e-bb1c30076688",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "3111ff0c-4d9d-477f-8ee5-33e834592f6c"
+    },
+    {
+      "id": "3b165a53-402f-44df-9628-2aaf01593879",
+      "name": "Test Turf",
+      "city": "Test City",
+      "ownerId": "c8b6c4f1-9232-4b58-b78e-d1181cb62302"
+    }
+  ]
+}

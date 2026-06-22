@@ -1,6 +1,7 @@
 ﻿import React from "react";
 import { motion } from "framer-motion";
-import { ChevronDown, Map as MapIcon, Maximize2 } from "lucide-react";
+import { ChevronDown, Map as MapIcon, Maximize2 } from "lucide-react";import { Button } from "@kridaz/ui";
+
 
 const DiscoveryMapShell = ({
   children,
@@ -13,7 +14,7 @@ const DiscoveryMapShell = ({
       initial={false}
       animate={{ height: isExpanded ? "55vh" : "32vh" }}
       transition={{ type: "spring", damping: 25, stiffness: 120 }}
-      className="relative w-full overflow-hidden bg-[#0A0A0A] border-b border-white/10"
+      className="relative w-full overflow-hidden bg-background border-b border-white/10"
     >
       {/* Map Content Container */}
       <div className="absolute inset-0 w-full h-full">{children}</div>
@@ -21,7 +22,7 @@ const DiscoveryMapShell = ({
       {/* Glossy Overlay UI */}
       <div className="absolute top-4 left-4 z-[1000] flex flex-col gap-2">
         <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-[8px] p-2 px-3 flex items-center gap-2 shadow-2xl">
-          <div className="w-2 h-2 bg-[#BFF367] rounded-full animate-pulse shadow-[0_0_8px_#BFF367]" />
+          <div className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_8px_var(--primary)]" />
           <span className="text-[10px] font-black text-white uppercase tracking-widest">
             Live Discovery
           </span>
@@ -38,18 +39,18 @@ const DiscoveryMapShell = ({
 
         {/* The Handle Tab */}
         <div className="relative flex flex-col items-center gap-0.5 pb-2 transition-transform duration-300 group-hover:scale-110">
-          <div className="w-12 h-1 bg-white/20 rounded-full mb-1 group-hover:bg-[#BFF367]/40 transition-colors" />
+          <div className="w-12 h-1 bg-white/20 rounded-full mb-1 group-hover:bg-primary/40 transition-colors" />
           <div className="flex items-center gap-1.5 px-4 py-1 bg-black/80 backdrop-blur-md rounded-[6px] border border-white/10 shadow-lg">
             {isExpanded ? (
               <>
-                <ChevronDown className="w-3.5 h-3.5 text-[#BFF367]" />
+                <ChevronDown className="w-3.5 h-3.5 text-primary" />
                 <span className="text-[9px] font-bold text-white uppercase tracking-tighter">
                   Collapse Map
                 </span>
               </>
             ) : (
               <>
-                <Maximize2 className="w-3 h-3 text-[#BFF367]" />
+                <Maximize2 className="w-3 h-3 text-primary" />
                 <span className="text-[9px] font-bold text-white uppercase tracking-tighter">
                   Fullscreen View
                 </span>
@@ -61,9 +62,9 @@ const DiscoveryMapShell = ({
 
       {/* Corner Action - Layer Toggle Placeholder */}
       <div className="absolute top-4 right-4 z-[1000]">
-        <button className="w-10 h-10 bg-black/60 backdrop-blur-xl border border-white/10 rounded-[8px] flex items-center justify-center text-white hover:text-[#BFF367] transition-colors shadow-2xl">
+        <Button className="w-10 h-10 bg-black/60 backdrop-blur-xl border border-white/10 rounded-[8px] flex items-center justify-center text-white hover:text-primary transition-colors shadow-2xl">
           <MapIcon className="w-5 h-5" />
-        </button>
+        </Button>
       </div>
     </motion.div>
   );

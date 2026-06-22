@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axiosInstance from "../../../config/axios";
+import axiosInstance from "@hooks/useAxiosInstance";
 import { toast } from "react-hot-toast";
-import { Loader2, MessageSquare, Phone, User, Check, X } from "lucide-react";
+import { Loader2, MessageSquare, Phone, User, Check, X } from "lucide-react";import { Button } from "@kridaz/ui";
+
 
 const InquiriesTab = () => {
   const [inquiries, setInquiries] = useState([]);
@@ -44,7 +45,7 @@ const InquiriesTab = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-12">
-        <Loader2 className="w-8 h-8 animate-spin text-[#BFF367]" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -91,7 +92,7 @@ const InquiriesTab = () => {
                     <User size={12} />
                     <span>
                       Interest:{" "}
-                      <span className="text-[#BFF367]">
+                      <span className="text-primary">
                         {inquiry.interestFor}
                       </span>
                     </span>
@@ -117,24 +118,24 @@ const InquiriesTab = () => {
               <div className="flex flex-col justify-center items-end gap-3 md:w-1/4 border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-6">
                 {inquiry.status === "PENDING" ? (
                   <>
-                    <button
+                    <Button
                       onClick={() => handleStatusUpdate(inquiry.id, "ACCEPTED")}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[#BFF367]/10 text-[#BFF367] border border-[#BFF367]/20 rounded-xl hover:bg-[#BFF367]/20 transition-colors text-xs font-bold"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-xl hover:bg-primary/20 transition-colors text-xs font-bold"
                     >
                       <Check size={14} /> Accept
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => handleStatusUpdate(inquiry.id, "DECLINED")}
                       className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-colors text-xs font-bold"
                     >
                       <X size={14} /> Decline
-                    </button>
+                    </Button>
                   </>
                 ) : (
                   <div
                     className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider w-full text-center ${
                       inquiry.status === "ACCEPTED"
-                        ? "bg-[#BFF367]/10 text-[#BFF367] border border-[#BFF367]/20"
+                        ? "bg-primary/10 text-primary border border-primary/20"
                         : "bg-red-500/10 text-red-500 border border-red-500/20"
                     }`}
                   >

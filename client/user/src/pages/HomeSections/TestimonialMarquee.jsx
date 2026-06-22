@@ -50,7 +50,7 @@ const col2 = [...col2Base, ...col2Base, ...col2Base, ...col2Base];
 const col3 = [...col3Base, ...col3Base, ...col3Base, ...col3Base];
 
 const TestimonialCard = ({ item }) => (
-  <div className="bg-[#111111] border border-white/5 rounded-2xl p-6 md:p-8 flex flex-col gap-6 w-full cursor-default hover:bg-[#151515] hover:border-white/10 transition-colors duration-300">
+  <div className="bg-card border border-white/5 rounded-2xl p-6 md:p-8 flex flex-col gap-6 w-full cursor-default hover:bg-card hover:border-white/10 transition-colors duration-300">
     <div className="flex gap-1">
       {[...Array(5)].map((_, i) => (
         <Star
@@ -63,7 +63,7 @@ const TestimonialCard = ({ item }) => (
       "{item.text}"
     </p>
     <div className="flex items-center gap-4 mt-auto pt-4 border-t border-white/5">
-      <div className="w-10 h-10 rounded-full bg-[#222222] border border-white/10 flex items-center justify-center text-white/90 text-sm font-bold font-inter">
+      <div className="w-10 h-10 rounded-full bg-card border border-white/10 flex items-center justify-center text-white/90 text-sm font-bold font-inter">
         {item.initials}
       </div>
       <div className="flex flex-col">
@@ -84,7 +84,7 @@ export default function TestimonialMarquee() {
       {/* Title */}
       <div className="w-full mb-8 z-10 relative text-left">
         <h2 className="text-[36px] font-medium tracking-tight font-poppins normal-case text-white">
-          Voices of the <span className="text-[#BFF367]">Arena</span>
+          Voices of the <span className="text-primary">Arena</span>
         </h2>
       </div>
 

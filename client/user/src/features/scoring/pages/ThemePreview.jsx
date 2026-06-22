@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { NeonClassicPack, SportsNetworkPack } from "../themes";
+import { NeonClassicPack, SportsNetworkPack } from "../themes";import { Button } from "@kridaz/ui";
+
 
 const THEME_MAP = {
   neon_classic: NeonClassicPack,
@@ -156,12 +157,12 @@ const ThemePreview = () => {
         <p style={{ fontSize: "12px", color: "#ccc" }}>
           Simulating real-time graphics cycle.
         </p>
-        <button
+        <Button
           onClick={() => window.close()}
           style={{
             marginTop: "10px",
             padding: "8px 16px",
-            background: "#ef4444",
+            background: "var(--destructive)",
             color: "#fff",
             border: "none",
             borderRadius: "5px",
@@ -170,7 +171,7 @@ const ThemePreview = () => {
           }}
         >
           Close Preview
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -33,7 +33,8 @@ import { useSelector } from "react-redux";
 import useVenueOwnerDashboard from "@hooks/venue-owner/useVenueOwnerDashboard";
 import DashboardSkeleton from "./DashboardSkeleton";
 import OccupancyHeatmap from "./OccupancyHeatmap";
-import PeakHoursChart from "./PeakHoursChart";
+import PeakHoursChart from "./PeakHoursChart";import { Button, Select } from "@kridaz/ui";
+
 
 const VenueOwnerDashboard = () => {
   const [selectedVenue, setSelectedVenue] = useState("");
@@ -41,7 +42,7 @@ const VenueOwnerDashboard = () => {
     useVenueOwnerDashboard(selectedVenue);
   const { role, user } = useSelector((state) => state.auth);
   const isScorer = role?.toLowerCase().includes("scorer");
-  const themeColor = isScorer ? "#B3DC26" : "#B3DC26";
+  const themeColor = isScorer ? "var(--primary)" : "var(--primary)";
   const dashboardTitle = isScorer ? "SCORER Dashboard" : "Dashboard Overview";
 
   const [timeFilter, setTimeFilter] = useState("Month");
@@ -63,12 +64,12 @@ const VenueOwnerDashboard = () => {
         <p className="font-bold text-xl uppercase tracking-wider text-red-500">
           Connection Interrupted
         </p>
-        <button
+        <Button
           onClick={() => window.location.reload()}
           className="mt-6 px-8 py-3 border border-red-500/50 text-red-500 font-bold uppercase rounded-[16px] hover:bg-red-500/10 transition-all"
         >
           Try Again
-        </button>
+        </Button>
       </div>
     );
   }
@@ -122,11 +123,11 @@ const VenueOwnerDashboard = () => {
 
   const COLORS = [
     themeColor,
-    "#10B981",
+    "var(--success)",
     "#3B82F6",
     "#6366F1",
     "#F59E0B",
-    "#EF4444",
+    "var(--destructive)",
   ];
 
   const getTimeGreeting = () => {
@@ -140,7 +141,7 @@ const VenueOwnerDashboard = () => {
   const currentRevenueData = revenueDataMap[revenueFilter] || [];
 
   return (
-    <div className="h-full custom-scrollbar bg-[#000000]">
+    <div className="h-full custom-scrollbar bg-background">
       <div className="px-1 lg:px-3 lg:pt-2 lg:pb-3 space-y-8 lg:space-y-10 animate-fade-in pt-0 pb-4 h-full relative">
         <div className="space-y-8 lg:space-y-10 relative z-10">
           {/* Facility Selector */}
@@ -149,10 +150,10 @@ const VenueOwnerDashboard = () => {
               {dashboardTitle}
             </h1>
             {finalData.turfsList && finalData.turfsList.length > 0 && (
-              <select
+              <Select
                 value={selectedVenue}
                 onChange={(e) => setSelectedVenue(e.target.value)}
-                className="bg-[#121212] border border-white/10 text-white text-xs font-bold uppercase tracking-wider rounded-[12px] px-3 py-2 outline-none focus:border-[#B3DC26]/50 transition-colors max-w-full"
+                className="bg-card border border-white/10 text-white text-[10px] font-bold uppercase tracking-wider rounded-[8px] px-2 py-1.5 outline-none focus:border-primary/50 transition-colors max-w-full"
               >
                 <option value="">All Facilities</option>
                 {finalData.turfsList.map((turf) => (
@@ -160,7 +161,7 @@ const VenueOwnerDashboard = () => {
                     {turf.name}
                   </option>
                 ))}
-              </select>
+              </Select>
             )}
           </div>
 
@@ -196,7 +197,7 @@ const VenueOwnerDashboard = () => {
             <div className="lg:col-span-4">
               <div className="space-y-6 lg:space-y-8 h-full flex flex-col">
                 {/* Live Feed */}
-                <div className="bg-[#121212] p-4 lg:p-6 rounded-[16px] lg:rounded-[16px] border border-white/10 shadow-sm hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)] transition-shadow flex-1">
+                <div className="bg-card p-4 lg:p-6 rounded-[16px] lg:rounded-[16px] border border-white/10 shadow-sm hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)] transition-shadow flex-1">
                   <div className="flex items-center justify-between mb-4 lg:mb-6">
                     <h2 className="text-[13px] lg:text-[16px] font-bold text-white tracking-wider font-inter">
                       Live Feed
@@ -225,7 +226,7 @@ const VenueOwnerDashboard = () => {
                           className="flex gap-3 lg:gap-4 group cursor-pointer"
                         >
                           <div
-                            className="mt-1 p-1.5 lg:p-2 rounded-[16px] bg-[#1B1B1B] group-hover:scale-110 transition-transform shrink-0 h-fit"
+                            className="mt-1 p-1.5 lg:p-2 rounded-[16px] bg-card group-hover:scale-110 transition-transform shrink-0 h-fit"
                             style={{ color: themeColor }}
                           >
                             <CheckCircle2
@@ -243,7 +244,7 @@ const VenueOwnerDashboard = () => {
                                 ? "Cancelled"
                                 : "Confirmed"}
                             </p>
-                            <p className="text-[9px] lg:text-[12px] text-[#999999] mt-0.5 truncate">
+                            <p className="text-[9px] lg:text-[12px] text-muted-foreground mt-0.5 truncate">
                               {booking?.user?.name ||
                                 booking?.guestDetails?.name ||
                                 "Guest"}{" "}
@@ -274,7 +275,7 @@ const VenueOwnerDashboard = () => {
 
                   <Link
                     to="/venue-owner/bookings"
-                    className="w-full mt-6 lg:mt-8 py-2 lg:py-3 bg-[#1B1B1B] border border-white/10 hover:text-white text-white text-[10px] lg:text-[14px] font-bold tracking-widest rounded-[16px] lg:rounded-[16px] transition-all font-inter flex items-center justify-center"
+                    className="w-full mt-6 lg:mt-8 py-2 lg:py-3 bg-card border border-white/10 hover:text-white text-white text-[10px] lg:text-[14px] font-bold tracking-widest rounded-[16px] lg:rounded-[16px] transition-all font-inter flex items-center justify-center"
                   >
                     View Full Activity History
                   </Link>
@@ -291,19 +292,19 @@ const VenueOwnerDashboard = () => {
                 title="Booking Performance"
                 subtitle="Revenue trends over time"
                 action={
-                  <div className="flex items-center gap-2 bg-[#1B1B1B] p-1 rounded-[16px]">
+                  <div className="flex items-center gap-2 bg-card p-1 rounded-[16px]">
                     {["Weekly", "Monthly"].map((filter) => (
-                      <button
+                      <Button
                         key={filter}
                         onClick={() =>
                           setRevenueFilter(
                             filter === "Weekly" ? "Week" : "Month"
                           )
                         }
-                        className={`px-4 py-1.5 rounded-[16px] text-[11px] font-normal uppercase tracking-wider transition-all font-inter ${(revenueFilter === "Week" && filter === "Weekly") || (revenueFilter === "Month" && filter === "Monthly") ? "bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black" : "text-[#999999] hover:text-[#FFFFFF]"}`}
+                        className={`px-2 py-1 rounded-[8px] text-[9px] font-normal uppercase tracking-wider transition-all font-inter ${(revenueFilter === "Week" && filter === "Weekly") || (revenueFilter === "Month" && filter === "Monthly") ? "bg-gradient-to-r from-primary to-primary text-black" : "text-muted-foreground hover:text-foreground"}`}
                       >
                         {filter}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 }
@@ -334,19 +335,19 @@ const VenueOwnerDashboard = () => {
                       </defs>
                       <CartesianGrid
                         strokeDasharray="3 3"
-                        stroke="#2D2D2D"
+                        stroke="var(--border)"
                         vertical={false}
                       />
                       <XAxis
                         dataKey="date"
-                        stroke="#999999"
+                        stroke="var(--muted-foreground)"
                         fontSize={10}
                         tickLine={false}
                         axisLine={false}
                         font-family="Inter"
                       />
                       <YAxis
-                        stroke="#999999"
+                        stroke="var(--muted-foreground)"
                         fontSize={10}
                         tickLine={false}
                         axisLine={false}
@@ -355,7 +356,7 @@ const VenueOwnerDashboard = () => {
                       <Tooltip
                         contentStyle={{
                           backgroundColor: "#151617",
-                          border: "1px solid #2D2D2D",
+                          border: "1px solid var(--border)",
                           borderRadius: "8px",
                           padding: "12px",
                         }}
@@ -417,7 +418,7 @@ const VenueOwnerDashboard = () => {
                         <Tooltip
                           contentStyle={{
                             backgroundColor: "#151617",
-                            border: "1px solid #2D2D2D",
+                            border: "1px solid var(--border)",
                             borderRadius: "8px",
                           }}
                           itemStyle={{
@@ -442,7 +443,7 @@ const VenueOwnerDashboard = () => {
                                 backgroundColor: COLORS[idx % COLORS.length],
                               }}
                             />
-                            <span className="text-[9px] font-medium text-[#999999] uppercase tracking-wider">
+                            <span className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider">
                               {item.name}
                             </span>
                           </div>
@@ -536,7 +537,7 @@ const ChartCard = ({
   className = "h-full",
 }) => (
   <div
-    className={`bg-[#121212] p-4 lg:p-8 rounded-[16px] lg:rounded-[16px] border border-white/10 hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)] transition-shadow relative overflow-hidden group flex flex-col ${className}`}
+    className={`bg-card p-4 lg:p-8 rounded-[16px] lg:rounded-[16px] border border-white/10 hover:shadow-[0px_8px_24px_rgba(85,222,232,0.10)] transition-shadow relative overflow-hidden group flex flex-col ${className}`}
   >
     <div className="flex flex-col gap-1.5 md:gap-2 mb-4 lg:mb-6 relative z-10 shrink-0">
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">

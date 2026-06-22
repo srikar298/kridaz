@@ -28,7 +28,8 @@ import {
   Search,
   Trophy,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 
 const ALL_SPORTS = [
   "Cricket",
@@ -147,7 +148,7 @@ export default function ProfessionalProfile() {
   const { user, role } = useSelector((state) => state.auth);
 
   const isScorer = role?.toLowerCase().includes("scorer");
-  const themeColor = "#BFF367";
+  const themeColor = "var(--primary)";
   const portalName = role?.toUpperCase() || "PROFESSIONAL";
 
   const [loading, setLoading] = useState(false);
@@ -957,14 +958,14 @@ export default function ProfessionalProfile() {
   if (fetching)
     return (
       <div className="py-20 flex justify-center">
-        <Loader2 className="animate-spin text-[#BFF367]" size={48} />
+        <Loader2 className="animate-spin text-primary" size={48} />
       </div>
     );
 
   const StepIndicator = () => (
     <div className="flex items-center gap-4 mb-6 overflow-x-auto no-scrollbar pb-1">
       {[1, 2, 3].map((step) => (
-        <button
+        <Button
           key={step}
           onClick={() => jumpToStep(step)}
           className="flex items-center gap-3 group text-left outline-none shrink-0"
@@ -1014,7 +1015,7 @@ export default function ProfessionalProfile() {
             </p>
           </div>
           {step < 3 && <div className="w-6 h-[1px] bg-white/5" />}
-        </button>
+        </Button>
       ))}
     </div>
   );
@@ -1024,15 +1025,11 @@ export default function ProfessionalProfile() {
       {/* Header */}
       <header className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 relative z-10 pb-4 border-b border-white/5">
         <div className="flex items-center gap-3">
-          <div
-            className="w-1 h-8 rounded-full"
-            style={{ backgroundColor: themeColor }}
-          />
           <div>
-            <h1 className="text-2xl lg:text-3xl font-black tracking-tight font-['Open_Sans'] uppercase leading-none text-white">
-              {portalName} <span style={{ color: themeColor }}>PROFILE</span>
+            <h1 className="text-xl lg:text-2xl font-black tracking-tight font-['Open_Sans'] capitalize leading-none text-white">
+              {portalName?.toLowerCase()} <span style={{ color: themeColor }}>Profile</span>
             </h1>
-            <p className="text-[#878C9F] text-[9px] font-black uppercase tracking-[0.2em] font-inter mt-1 ml-0.5 opacity-60">
+            <p className="text-muted-foreground text-[9px] font-black tracking-[0.28em] font-inter mt-1 ml-0.5 opacity-60">
               Manage your professional presence and preferences
             </p>
           </div>
@@ -1067,7 +1064,7 @@ export default function ProfessionalProfile() {
             </div>
           </div>
 
-          <button
+          <Button
             onClick={handleUpdate}
             disabled={loading}
             className="px-6 py-3 text-black rounded-lg text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all transform active:scale-95 shadow-xl font-bold"
@@ -1082,7 +1079,7 @@ export default function ProfessionalProfile() {
               <Save size={16} />
             )}
             Save Changes
-          </button>
+          </Button>
         </div>
       </header>
 
@@ -1095,10 +1092,13 @@ export default function ProfessionalProfile() {
               {/* Left Column - Core Identity */}
               <div className="lg:col-span-5 space-y-6">
                 {/* Identity & Presence Card */}
-                <div className="bg-[#111111] border border-white/5 rounded-xl p-5 space-y-4">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#878C9F] flex items-center gap-2">
+                <div className="bg-card border border-white/5 rounded-xl p-5 space-y-4">
+                  <h3 
+                    className="text-[10px] font-black tracking-[0.3em] text-muted-foreground flex items-center gap-2"
+                    style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                  >
                     <User size={14} style={{ color: themeColor }} /> Identity &
-                    Presence
+                    presence
                   </h3>
 
                   <div className="space-y-4">
@@ -1108,7 +1108,7 @@ export default function ProfessionalProfile() {
                         Cover Banner Image
                       </label>
                       <div className="relative group/banner overflow-hidden rounded-lg border border-dashed border-white/10 bg-white/[0.02] h-28 flex items-center justify-center transition-colors hover:border-white/20">
-                        <input
+                        <Input
                           type="file"
                           accept="image/*"
                           onChange={handleBannerUpload}
@@ -1140,7 +1140,7 @@ export default function ProfessionalProfile() {
                     <div className="flex items-center justify-between gap-4 py-2 border-b border-white/5 pb-4 mb-2">
                       <div className="flex items-center gap-3">
                         <div className="relative group/avatar w-14 h-14 rounded-full overflow-hidden border border-white/10 bg-white/[0.02] flex items-center justify-center shrink-0">
-                          <input
+                          <Input
                             type="file"
                             accept="image/*"
                             onChange={handleProfilePicUpload}
@@ -1170,63 +1170,64 @@ export default function ProfessionalProfile() {
                       </div>
                     </div>
 
-                    {/* Editable Full Name */}
-                    <div>
-                      <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
-                        Full Name
-                      </label>
-                      <div className="relative flex items-center">
-                        <User
-                          size={14}
-                          className="absolute left-3 text-neutral-500"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Your full name"
-                          className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg pl-8 pr-3 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
-                          value={formData.name}
-                          onChange={(e) =>
-                            setFormData({ ...formData, name: e.target.value })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    {/* Editable Username */}
-                    <div>
-                      <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
-                        Username
-                      </label>
-                      <div className="relative flex items-center">
-                        <span className="absolute left-3 text-neutral-500 text-xs font-bold">
-                          @
-                        </span>
-                        <input
-                          type="text"
-                          placeholder="your_username"
-                          className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg pl-8 pr-3 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
-                          value={formData.username}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              username: e.target.value
-                                .toLowerCase()
-                                .replace(/[^a-z0-9_]/g, ""),
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {/* Full Name & Username */}
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
+                        <label className="text-[8px] sm:text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
+                          Full Name
+                        </label>
+                        <div className="relative flex items-center">
+                          <User
+                            size={14}
+                            className="absolute left-2.5 text-neutral-500"
+                          />
+                          <Input
+                            type="text"
+                            placeholder="Your full name"
+                            className="w-full bg-card border border-white/5 rounded-lg pl-7 pr-2 py-2.5 text-[11px] sm:text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
+                            value={formData.name}
+                            onChange={(e) =>
+                              setFormData({ ...formData, name: e.target.value })
+                            }
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[8px] sm:text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
+                          Username
+                        </label>
+                        <div className="relative flex items-center">
+                          <span className="absolute left-2.5 text-neutral-500 text-xs font-bold">
+                            @
+                          </span>
+                          <Input
+                            type="text"
+                            placeholder="username"
+                            className="w-full bg-card border border-white/5 rounded-lg pl-7 pr-2 py-2.5 text-[11px] sm:text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
+                            value={formData.username}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                username: e.target.value
+                                  .toLowerCase()
+                                  .replace(/[^a-z0-9_]/g, ""),
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[8px] sm:text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
                           Email Address
                         </label>
-                        <div className="flex items-center gap-2 bg-white/[0.02] border border-white/5 rounded-lg px-3 py-2.5 text-xs text-neutral-400 font-medium overflow-hidden truncate">
+                        <div className="flex items-center gap-1.5 bg-white/[0.02] border border-white/5 rounded-lg px-2.5 py-2.5 text-[10px] sm:text-xs text-neutral-400 font-medium overflow-hidden truncate">
                           <Mail
-                            size={14}
-                            className="text-neutral-600 shrink-0"
+                            size={12}
+                            className="text-neutral-600 shrink-0 sm:w-3.5 sm:h-3.5"
                           />
                           <span className="truncate">
                             {formData.email || "N/A"}
@@ -1235,12 +1236,12 @@ export default function ProfessionalProfile() {
                       </div>
 
                       <div>
-                        <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
-                          Phone Number
+                        <label className="text-[8px] sm:text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
+                          Phone
                         </label>
-                        <div className="flex items-center gap-2 bg-white/[0.02] border border-white/5 rounded-lg px-3 py-2.5 text-xs text-neutral-400 font-medium">
-                          <Phone size={14} className="text-neutral-600" />
-                          <span>{formData.phone || "N/A"}</span>
+                        <div className="flex items-center gap-1.5 bg-white/[0.02] border border-white/5 rounded-lg px-2.5 py-2.5 text-[10px] sm:text-xs text-neutral-400 font-medium overflow-hidden truncate">
+                          <Phone size={12} className="text-neutral-600 shrink-0 sm:w-3.5 sm:h-3.5" />
+                          <span className="truncate">{formData.phone || "N/A"}</span>
                         </div>
                       </div>
                     </div>
@@ -1251,8 +1252,8 @@ export default function ProfessionalProfile() {
                         <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
                           Gender
                         </label>
-                        <select
-                          className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
+                        <Select
+                          className="w-full bg-card border border-white/5 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
                           value={formData.gender}
                           onChange={(e) =>
                             setFormData({ ...formData, gender: e.target.value })
@@ -1262,7 +1263,7 @@ export default function ProfessionalProfile() {
                           <option value="Male">Male</option>
                           <option value="Female">Female</option>
                           <option value="Other">Other</option>
-                        </select>
+                        </Select>
                       </div>
 
                       <div>
@@ -1270,9 +1271,9 @@ export default function ProfessionalProfile() {
                           Date of Birth
                         </label>
                         <div className="relative">
-                          <input
+                          <Input
                             type="date"
-                            className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium uppercase font-mono"
+                            className="w-full bg-card border border-white/5 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium uppercase font-mono"
                             value={formData.dob}
                             onChange={(e) =>
                               setFormData({ ...formData, dob: e.target.value })
@@ -1286,10 +1287,10 @@ export default function ProfessionalProfile() {
                       <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
                         Operational Headline
                       </label>
-                      <input
+                      <Input
                         type="text"
                         placeholder="e.g. Senior Scorer / Certified Coach"
-                        className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg px-3 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-colors font-bold"
+                        className="w-full bg-card border border-white/5 rounded-lg px-3 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-colors font-bold"
                         value={formData.specialization}
                         onChange={(e) =>
                           setFormData({
@@ -1304,10 +1305,10 @@ export default function ProfessionalProfile() {
                       <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
                         Professional Bio Description
                       </label>
-                      <textarea
+                      <Textarea
                         rows="4"
                         placeholder="Describe your qualifications, history, and achievements..."
-                        className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg px-3 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium resize-y break-words overflow-hidden"
+                        className="w-full bg-card border border-white/5 rounded-lg px-3 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium resize-y break-words overflow-hidden"
                         value={formData.bio}
                         onChange={(e) =>
                           setFormData({ ...formData, bio: e.target.value })
@@ -1325,10 +1326,10 @@ export default function ProfessionalProfile() {
                           size={14}
                           className="absolute left-3 text-neutral-500"
                         />
-                        <input
+                        <Input
                           type="text"
                           placeholder="Search city, area, or address..."
-                          className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg pl-8 pr-3 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
+                          className="w-full bg-card border border-white/5 rounded-lg pl-8 pr-3 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
                           value={locationSearchQuery}
                           onChange={(e) => {
                             setLocationSearchQuery(e.target.value);
@@ -1349,9 +1350,9 @@ export default function ProfessionalProfile() {
 
                       {/* Search Results Dropdown */}
                       {showLocationResults && locationResults.length > 0 && (
-                        <div className="absolute top-full left-0 right-0 mt-1 bg-[#1A1A1A] border border-white/10 rounded-lg shadow-2xl max-h-52 overflow-y-auto z-[150] custom-scrollbar">
+                        <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-white/10 rounded-lg shadow-2xl max-h-52 overflow-y-auto z-[150] custom-scrollbar">
                           {locationResults.map((result, idx) => (
-                            <button
+                            <Button
                               key={idx}
                               type="button"
                               onClick={() => selectLocation(result)}
@@ -1364,7 +1365,7 @@ export default function ProfessionalProfile() {
                               <span className="text-[11px] text-white/80 font-medium leading-snug">
                                 {result.display_name}
                               </span>
-                            </button>
+                            </Button>
                           ))}
                         </div>
                       )}
@@ -1384,7 +1385,7 @@ export default function ProfessionalProfile() {
                             .filter(Boolean)
                             .join(", ")}
                         </span>
-                        <button
+                        <Button
                           type="button"
                           onClick={() => {
                             setFormData({
@@ -1399,7 +1400,7 @@ export default function ProfessionalProfile() {
                           className="ml-auto text-neutral-500 hover:text-red-400 transition-colors"
                         >
                           <X size={14} />
-                        </button>
+                        </Button>
                       </div>
                     )}
 
@@ -1409,11 +1410,11 @@ export default function ProfessionalProfile() {
                         Social Media Connections
                       </label>
                       <div className="grid grid-cols-1 gap-2.5">
-                        <div className="flex items-center bg-[#1A1A1A] border border-white/5 rounded-lg px-3 py-2 text-xs text-white">
+                        <div className="flex items-center bg-card border border-white/5 rounded-lg px-3 py-2 text-xs text-white">
                           <span className="w-20 text-[8px] font-black text-neutral-500 uppercase tracking-wider">
                             Instagram
                           </span>
-                          <input
+                          <Input
                             type="text"
                             placeholder="https://instagram.com/yourprofile"
                             className="flex-1 bg-transparent border-0 outline-none text-xs text-white font-medium pl-2"
@@ -1426,11 +1427,11 @@ export default function ProfessionalProfile() {
                             }
                           />
                         </div>
-                        <div className="flex items-center bg-[#1A1A1A] border border-white/5 rounded-lg px-3 py-2 text-xs text-white">
+                        <div className="flex items-center bg-card border border-white/5 rounded-lg px-3 py-2 text-xs text-white">
                           <span className="w-20 text-[8px] font-black text-neutral-500 uppercase tracking-wider">
                             LinkedIn
                           </span>
-                          <input
+                          <Input
                             type="text"
                             placeholder="https://linkedin.com/in/yourprofile"
                             className="flex-1 bg-transparent border-0 outline-none text-xs text-white font-medium pl-2"
@@ -1443,11 +1444,11 @@ export default function ProfessionalProfile() {
                             }
                           />
                         </div>
-                        <div className="flex items-center bg-[#1A1A1A] border border-white/5 rounded-lg px-3 py-2 text-xs text-white">
+                        <div className="flex items-center bg-card border border-white/5 rounded-lg px-3 py-2 text-xs text-white">
                           <span className="w-20 text-[8px] font-black text-neutral-500 uppercase tracking-wider">
                             YouTube
                           </span>
-                          <input
+                          <Input
                             type="text"
                             placeholder="https://youtube.com/@yourchannel"
                             className="flex-1 bg-transparent border-0 outline-none text-xs text-white font-medium pl-2"
@@ -1469,10 +1470,13 @@ export default function ProfessionalProfile() {
               {/* Right Column - Matrix & Locations */}
               <div className="lg:col-span-7 space-y-6">
                 {/* Professional Matrix & Engagement */}
-                <div className="bg-[#111111] border border-white/5 rounded-xl p-5 space-y-6 shadow-2xl relative overflow-hidden">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#878C9F] flex items-center gap-2">
+                <div className="bg-card border border-white/5 rounded-xl p-5 space-y-6 shadow-2xl relative overflow-hidden">
+                  <h3 
+                    className="text-[10px] font-black tracking-[0.3em] text-muted-foreground flex items-center gap-2"
+                    style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                  >
                     <FileText size={14} style={{ color: themeColor }} />{" "}
-                    Professional Matrix
+                    Professional matrix
                   </h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1484,12 +1488,12 @@ export default function ProfessionalProfile() {
                         Proficiency Level
                       </label>
                       <div className="relative">
-                        <button
+                        <Button
                           type="button"
                           onClick={() =>
                             setShowProficiencyDropdown(!showProficiencyDropdown)
                           }
-                          className="w-full bg-[#1A1A1A] border border-white/5 rounded-[8px] p-3 text-xs text-white focus:border-white/10 outline-none font-bold uppercase tracking-widest flex items-center justify-between"
+                          className="w-full bg-card border border-white/5 rounded-[8px] p-3 text-xs text-white focus:border-white/10 outline-none font-bold uppercase tracking-widest flex items-center justify-between"
                         >
                           <span>
                             {formData.coachingLevel === "Beginner"
@@ -1504,10 +1508,10 @@ export default function ProfessionalProfile() {
                             size={16}
                             className={`transition-transform duration-300 ${showProficiencyDropdown ? "rotate-180" : ""}`}
                           />
-                        </button>
+                        </Button>
 
                         {showProficiencyDropdown && (
-                          <div className="absolute top-full left-0 right-0 mt-1 bg-[#0A0A0A] border border-white/10 rounded-[8px] shadow-2xl z-[100] overflow-hidden">
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-white/10 rounded-[8px] shadow-2xl z-[100] overflow-hidden">
                             {[
                               { label: "Junior Associate", value: "Beginner" },
                               {
@@ -1520,7 +1524,7 @@ export default function ProfessionalProfile() {
                                 value: "National",
                               },
                             ].map((opt) => (
-                              <button
+                              <Button
                                 key={opt.value}
                                 type="button"
                                 onClick={() => {
@@ -1533,7 +1537,7 @@ export default function ProfessionalProfile() {
                                 className="w-full px-4 py-3 text-left text-[10px] text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 font-bold uppercase tracking-wider"
                               >
                                 {opt.label}
-                              </button>
+                              </Button>
                             ))}
                           </div>
                         )}
@@ -1547,12 +1551,12 @@ export default function ProfessionalProfile() {
                         Availability / Engagement Mode
                       </label>
                       <div className="relative">
-                        <button
+                        <Button
                           type="button"
                           onClick={() =>
                             setShowEngagementDropdown(!showEngagementDropdown)
                           }
-                          className="w-full bg-[#1A1A1A] border border-white/5 rounded-[8px] p-3 text-xs text-white outline-none font-bold uppercase tracking-widest transition-all flex items-center justify-between"
+                          className="w-full bg-card border border-white/5 rounded-[8px] p-3 text-xs text-white outline-none font-bold uppercase tracking-widest transition-all flex items-center justify-between"
                         >
                           <span>
                             {formData.availabilityMode === "Both"
@@ -1565,10 +1569,10 @@ export default function ProfessionalProfile() {
                             size={16}
                             className={`transition-transform duration-300 ${showEngagementDropdown ? "rotate-180" : ""}`}
                           />
-                        </button>
+                        </Button>
 
                         {showEngagementDropdown && (
-                          <div className="absolute top-full left-0 right-0 mt-1 bg-[#0A0A0A] border border-white/10 rounded-[8px] shadow-2xl z-[100] overflow-hidden">
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-white/10 rounded-[8px] shadow-2xl z-[100] overflow-hidden">
                             {[
                               {
                                 label: "Physical Presence Only",
@@ -1580,7 +1584,7 @@ export default function ProfessionalProfile() {
                               },
                               { label: "Hybrid Mode (Both)", value: "Both" },
                             ].map((opt) => (
-                              <button
+                              <Button
                                 key={opt.value}
                                 type="button"
                                 onClick={() => {
@@ -1593,7 +1597,7 @@ export default function ProfessionalProfile() {
                                 className="w-full px-4 py-3 text-left text-[10px] text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 font-bold uppercase tracking-wider"
                               >
                                 {opt.label}
-                              </button>
+                              </Button>
                             ))}
                           </div>
                         )}
@@ -1603,10 +1607,10 @@ export default function ProfessionalProfile() {
                       <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider ml-0.5">
                         Tenure & Core Experience
                       </label>
-                      <input
+                      <Input
                         type="text"
                         placeholder="e.g. 5+ Years officiating regional league tournaments"
-                        className="w-full bg-[#1A1A1A] border border-white/5 rounded-[8px] p-3 text-xs text-white focus:border-white/10 outline-none font-bold transition-all"
+                        className="w-full bg-card border border-white/5 rounded-[8px] p-3 text-xs text-white focus:border-white/10 outline-none font-bold transition-all"
                         value={formData.experience}
                         onChange={(e) =>
                           setFormData({
@@ -1626,13 +1630,13 @@ export default function ProfessionalProfile() {
                           size={14}
                           className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500"
                         />
-                        <input
+                        <Input
                           type="number"
                           min={300}
                           max={10000}
                           step={50}
                           placeholder="e.g. 800"
-                          className="w-full bg-[#1A1A1A] border border-white/5 rounded-[8px] p-3 pl-9 text-xs text-white focus:border-white/10 outline-none font-bold transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          className="w-full bg-card border border-white/5 rounded-[8px] p-3 pl-9 text-xs text-white focus:border-white/10 outline-none font-bold transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           value={formData.hourlyPrice || ""}
                           onChange={(e) => {
                             const val = Number(e.target.value);
@@ -1664,10 +1668,10 @@ export default function ProfessionalProfile() {
                       <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider ml-0.5">
                         Matches & Tournaments Covered
                       </label>
-                      <input
+                      <Input
                         type="text"
                         placeholder="e.g. 150+ Matches, 12 Leagues"
-                        className="w-full bg-[#1A1A1A] border border-white/5 rounded-[8px] p-3 text-xs text-white focus:border-white/10 outline-none font-bold transition-all"
+                        className="w-full bg-card border border-white/5 rounded-[8px] p-3 text-xs text-white focus:border-white/10 outline-none font-bold transition-all"
                         value={formData.matchesCovered}
                         onChange={(e) =>
                           setFormData({
@@ -1686,10 +1690,10 @@ export default function ProfessionalProfile() {
                       </label>
                       <div className="relative">
                         <div className="flex gap-2">
-                          <input
+                          <Input
                             type="text"
                             placeholder="Search & Add Languages..."
-                            className="flex-1 bg-[#1A1A1A] border border-[#222] rounded-lg px-4 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-all font-medium"
+                            className="flex-1 bg-card border border-card rounded-lg px-4 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-all font-medium"
                             value={newLanguage}
                             onChange={(e) => {
                               setNewLanguage(e.target.value);
@@ -1697,28 +1701,28 @@ export default function ProfessionalProfile() {
                             }}
                             onFocus={() => setShowLanguagesDropdown(true)}
                           />
-                          <button
+                          <Button
                             type="button"
                             onClick={() => addLanguage()}
                             className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-transform active:scale-95"
                             style={{ backgroundColor: themeColor }}
                           >
                             <Plus size={18} color="#000" />
-                          </button>
+                          </Button>
                         </div>
 
                         {showLanguagesDropdown &&
                           filteredLanguages.length > 0 && (
-                            <div className="absolute top-full left-0 right-0 mt-1 bg-[#0A0A0A] border border-white/10 rounded-[8px] shadow-2xl z-[100] max-h-64 overflow-y-auto custom-scrollbar">
+                            <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-white/10 rounded-[8px] shadow-2xl z-[100] max-h-64 overflow-y-auto custom-scrollbar">
                               {filteredLanguages.map((lang) => (
-                                <button
+                                <Button
                                   key={lang}
                                   type="button"
                                   onClick={() => addLanguage(lang)}
                                   className="w-full px-4 py-2.5 text-left text-[10px] text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 font-bold uppercase tracking-wider"
                                 >
                                   {lang}
-                                </button>
+                                </Button>
                               ))}
                             </div>
                           )}
@@ -1731,13 +1735,13 @@ export default function ProfessionalProfile() {
                             className="px-3 py-1.5 bg-white/[0.04] border border-white/5 rounded-[6px] text-[8px] font-black text-white flex items-center gap-2 uppercase tracking-widest"
                           >
                             {lang}
-                            <button
+                            <Button
                               type="button"
                               onClick={() => removeLanguage(lang)}
                               className="text-neutral-600 hover:text-red-500 transition-colors"
                             >
                               <X size={10} />
-                            </button>
+                            </Button>
                           </span>
                         ))}
                       </div>
@@ -1751,10 +1755,10 @@ export default function ProfessionalProfile() {
                       </label>
                       <div className="relative">
                         <div className="flex gap-2">
-                          <input
+                          <Input
                             type="text"
                             placeholder="Search & Add Sports..."
-                            className="flex-1 bg-[#1A1A1A] border border-white/5 rounded-lg px-4 py-2 text-xs text-white outline-none focus:border-white/10 transition-all font-medium"
+                            className="flex-1 bg-card border border-white/5 rounded-lg px-4 py-2 text-xs text-white outline-none focus:border-white/10 transition-all font-medium"
                             value={newGameType}
                             onChange={(e) => {
                               setNewGameType(e.target.value);
@@ -1762,27 +1766,27 @@ export default function ProfessionalProfile() {
                             }}
                             onFocus={() => setShowSportsDropdown(true)}
                           />
-                          <button
+                          <Button
                             type="button"
                             onClick={() => addGameType()}
                             className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-transform active:scale-95"
                             style={{ backgroundColor: themeColor }}
                           >
                             <Plus size={18} color="#000" />
-                          </button>
+                          </Button>
                         </div>
 
                         {showSportsDropdown && filteredSports.length > 0 && (
-                          <div className="absolute top-full left-0 right-0 mt-1 bg-[#0A0A0A] border border-white/10 rounded-[8px] shadow-2xl z-[100] max-h-64 overflow-y-auto custom-scrollbar">
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-white/10 rounded-[8px] shadow-2xl z-[100] max-h-64 overflow-y-auto custom-scrollbar">
                             {filteredSports.map((sport) => (
-                              <button
+                              <Button
                                 key={sport}
                                 type="button"
                                 onClick={() => addGameType(sport)}
                                 className="w-full px-4 py-2.5 text-left text-[10px] text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 font-black uppercase tracking-wider"
                               >
                                 {sport}
-                              </button>
+                              </Button>
                             ))}
                           </div>
                         )}
@@ -1795,13 +1799,13 @@ export default function ProfessionalProfile() {
                             className="px-3 py-1.5 bg-white/[0.04] border border-white/5 rounded-[6px] text-[8px] font-black text-white flex items-center gap-2 uppercase tracking-widest"
                           >
                             {type}
-                            <button
+                            <Button
                               type="button"
                               onClick={() => removeGameType(type)}
                               className="text-neutral-600 hover:text-red-500 transition-colors"
                             >
                               <X size={10} />
-                            </button>
+                            </Button>
                           </span>
                         ))}
                       </div>
@@ -1813,10 +1817,10 @@ export default function ProfessionalProfile() {
                       </label>
                       <div className="relative">
                         <div className="flex gap-2">
-                          <input
+                          <Input
                             type="text"
                             placeholder="Add Match Formats (e.g. T20, Box Cricket)..."
-                            className="flex-1 bg-[#1A1A1A] border border-white/5 rounded-lg px-4 py-2 text-xs text-white outline-none focus:border-white/10 transition-all font-medium"
+                            className="flex-1 bg-card border border-white/5 rounded-lg px-4 py-2 text-xs text-white outline-none focus:border-white/10 transition-all font-medium"
                             value={newMatchFormat}
                             onChange={(e) => setNewMatchFormat(e.target.value)}
                             onKeyPress={(e) =>
@@ -1824,14 +1828,14 @@ export default function ProfessionalProfile() {
                               (e.preventDefault(), addMatchFormat())
                             }
                           />
-                          <button
+                          <Button
                             type="button"
                             onClick={() => addMatchFormat()}
                             className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-transform active:scale-95"
                             style={{ backgroundColor: themeColor }}
                           >
                             <Plus size={18} color="#000" />
-                          </button>
+                          </Button>
                         </div>
                       </div>
 
@@ -1842,13 +1846,13 @@ export default function ProfessionalProfile() {
                             className="px-3 py-1.5 bg-white/[0.04] border border-white/5 rounded-[6px] text-[8px] font-black text-white flex items-center gap-2 uppercase tracking-widest"
                           >
                             {fmt}
-                            <button
+                            <Button
                               type="button"
                               onClick={() => removeMatchFormat(fmt)}
                               className="text-neutral-600 hover:text-red-500 transition-colors"
                             >
                               <X size={10} />
-                            </button>
+                            </Button>
                           </span>
                         ))}
                       </div>
@@ -1856,7 +1860,7 @@ export default function ProfessionalProfile() {
                     {/* Role-conditioned streaming specs */}
                     {role?.toLowerCase().includes("streamer") && (
                       <div className="md:col-span-2 border-t border-white/5 pt-4 space-y-4">
-                        <h4 className="text-[9px] font-black uppercase tracking-widest text-[#BFF367]">
+                        <h4 className="text-[9px] font-black uppercase tracking-widest text-primary">
                           Streamer Specifications
                         </h4>
                         <div className="grid grid-cols-2 gap-3">
@@ -1864,8 +1868,8 @@ export default function ProfessionalProfile() {
                             <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
                               Max Stream Quality
                             </label>
-                            <select
-                              className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg px-3 py-2 text-xs text-white outline-none"
+                            <Select
+                              className="w-full bg-card border border-white/5 rounded-lg px-3 py-2 text-xs text-white outline-none"
                               value={formData.streamQuality}
                               onChange={(e) =>
                                 setFormData({
@@ -1877,16 +1881,16 @@ export default function ProfessionalProfile() {
                               <option value="720p">720p HD</option>
                               <option value="1080p">1080p Full HD</option>
                               <option value="4K">4K Ultra HD</option>
-                            </select>
+                            </Select>
                           </div>
                           <div>
-                            <label className="text-[9px] font-bold text-[#878C9F] uppercase tracking-wider block mb-1">
+                            <label className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
                               Cameras Supported
                             </label>
-                            <input
+                            <Input
                               type="number"
                               placeholder="e.g. 3"
-                              className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg px-3 py-2 text-xs text-white outline-none"
+                              className="w-full bg-card border border-white/5 rounded-lg px-3 py-2 text-xs text-white outline-none"
                               value={formData.camerasSupported}
                               onChange={(e) =>
                                 setFormData({
@@ -1898,7 +1902,7 @@ export default function ProfessionalProfile() {
                           </div>
                         </div>
                         <div>
-                          <label className="text-[9px] font-bold text-[#878C9F] uppercase tracking-wider block mb-1">
+                          <label className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
                             Stream Support Platforms
                           </label>
                           <div className="flex flex-wrap gap-2">
@@ -1912,7 +1916,7 @@ export default function ProfessionalProfile() {
                               const isSelected =
                                 formData.streamPlatforms?.includes(platform);
                               return (
-                                <button
+                                <Button
                                   key={platform}
                                   type="button"
                                   onClick={() => {
@@ -1926,10 +1930,10 @@ export default function ProfessionalProfile() {
                                       streamPlatforms: updated,
                                     });
                                   }}
-                                  className={`px-2.5 py-1.5 rounded border text-[9px] font-bold uppercase tracking-wider transition-colors ${isSelected ? "border-[#BFF367] bg-[#BFF367]/10 text-white font-black" : "border-white/5 bg-black/20 text-neutral-500 hover:text-white"}`}
+                                  className={`px-2.5 py-1.5 rounded border text-[9px] font-bold uppercase tracking-wider transition-colors ${isSelected ? "border-primary bg-primary/10 text-white font-black" : "border-white/5 bg-black/20 text-neutral-500 hover:text-white"}`}
                                 >
                                   {platform}
-                                </button>
+                                </Button>
                               );
                             })}
                           </div>
@@ -1940,13 +1944,13 @@ export default function ProfessionalProfile() {
                     {(role?.toLowerCase().includes("scorer") ||
                       role?.toLowerCase().includes("umpire")) && (
                       <div className="md:col-span-2 border-t border-white/5 pt-4 space-y-3">
-                        <h4 className="text-[9px] font-black uppercase tracking-widest text-[#BFF367]">
+                        <h4 className="text-[9px] font-black uppercase tracking-widest text-primary">
                           Scoring Integration
                         </h4>
                         <label className="flex items-center gap-2.5 cursor-pointer group">
-                          <input
+                          <Input
                             type="checkbox"
-                            className="peer appearance-none w-4 h-4 border border-white/10 rounded checked:bg-[#BFF367] checked:border-[#BFF367] cursor-pointer"
+                            className="peer appearance-none w-4 h-4 border border-white/10 rounded checked:bg-primary checked:border-primary cursor-pointer"
                             checked={formData.liveScoringSupport}
                             onChange={(e) =>
                               setFormData({
@@ -1964,14 +1968,14 @@ export default function ProfessionalProfile() {
                     {/* Role-conditioned commentator specs */}
                     {role?.toLowerCase().includes("commentator") && (
                       <div className="md:col-span-2 border-t border-white/5 pt-4 space-y-3">
-                        <h4 className="text-[9px] font-black uppercase tracking-widest text-[#BFF367]">
+                        <h4 className="text-[9px] font-black uppercase tracking-widest text-primary">
                           Commentary Features
                         </h4>
                         <div className="flex flex-col gap-2">
                           <label className="flex items-center gap-2.5 cursor-pointer group">
-                            <input
+                            <Input
                               type="checkbox"
-                              className="peer appearance-none w-4 h-4 border border-white/10 rounded checked:bg-[#BFF367] checked:border-[#BFF367] cursor-pointer"
+                              className="peer appearance-none w-4 h-4 border border-white/10 rounded checked:bg-primary checked:border-primary cursor-pointer"
                               checked={formData.liveCommentarySupported}
                               onChange={(e) =>
                                 setFormData({
@@ -1985,9 +1989,9 @@ export default function ProfessionalProfile() {
                             </span>
                           </label>
                           <label className="flex items-center gap-2.5 cursor-pointer group">
-                            <input
+                            <Input
                               type="checkbox"
-                              className="peer appearance-none w-4 h-4 border border-white/10 rounded checked:bg-[#BFF367] checked:border-[#BFF367] cursor-pointer"
+                              className="peer appearance-none w-4 h-4 border border-white/10 rounded checked:bg-primary checked:border-primary cursor-pointer"
                               checked={formData.panelDiscussionEnabled}
                               onChange={(e) =>
                                 setFormData({
@@ -2007,10 +2011,13 @@ export default function ProfessionalProfile() {
                 </div>
 
                 {/* Preferred Locations & Timings Card */}
-                <div className="bg-[#111111] border border-white/5 rounded-xl p-5 space-y-4 relative z-20">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#878C9F] flex items-center gap-2">
+                <div className="bg-card border border-white/5 rounded-xl p-5 space-y-4 relative z-20">
+                  <h3 
+                    className="text-[10px] font-black tracking-[0.3em] text-muted-foreground flex items-center gap-2"
+                    style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                  >
                     <MapPin size={14} style={{ color: themeColor }} /> Preferred
-                    Locations & Timings
+                    locations & timings
                   </h3>
 
                   <div className="space-y-4">
@@ -2023,7 +2030,7 @@ export default function ProfessionalProfile() {
                         onClick={() =>
                           setShowPreferredDropdown(!showPreferredDropdown)
                         }
-                        className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg pl-3 pr-8 py-2.5 text-xs text-neutral-400 outline-none focus:border-white/10 transition-colors font-medium flex items-center justify-between cursor-pointer"
+                        className="w-full bg-card border border-white/5 rounded-lg pl-3 pr-8 py-2.5 text-xs text-neutral-400 outline-none focus:border-white/10 transition-colors font-medium flex items-center justify-between cursor-pointer"
                       >
                         <span className="text-white font-semibold">
                           {(formData.preferredLocations?.grounds?.length || 0) +
@@ -2037,10 +2044,10 @@ export default function ProfessionalProfile() {
                       </div>
 
                       {showPreferredDropdown && (
-                        <div className="absolute top-full left-0 right-0 mt-1 bg-[#1A1A1A] border border-white/10 rounded-lg shadow-2xl p-4 z-50 custom-scrollbar max-h-96 overflow-y-auto">
+                        <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-white/10 rounded-lg shadow-2xl p-4 z-50 custom-scrollbar max-h-96 overflow-y-auto">
                           {preferredMode === "list" ? (
                             <div className="space-y-3">
-                              <p className="text-[10px] font-black uppercase tracking-widest text-[#878C9F] flex items-center gap-1.5 leading-none">
+                              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 leading-none">
                                 <Building
                                   size={12}
                                   style={{ color: themeColor }}
@@ -2057,10 +2064,10 @@ export default function ProfessionalProfile() {
                                   size={12}
                                   className="absolute left-2.5 text-neutral-500"
                                 />
-                                <input
+                                <Input
                                   type="text"
                                   placeholder="Filter venues/grounds..."
-                                  className="w-full bg-[#222] border border-[#333] rounded-lg pl-8 pr-3 py-1.5 text-xs text-white outline-none focus:border-white/10 font-medium"
+                                  className="w-full bg-card border border-[#333] rounded-lg pl-8 pr-3 py-1.5 text-xs text-white outline-none focus:border-white/10 font-medium"
                                   value={groundSearch}
                                   onChange={(e) => {
                                     e.stopPropagation();
@@ -2076,7 +2083,7 @@ export default function ProfessionalProfile() {
                                       ground.id
                                     );
                                   return (
-                                    <button
+                                    <Button
                                       key={ground.id}
                                       type="button"
                                       onClick={(e) => {
@@ -2093,11 +2100,11 @@ export default function ProfessionalProfile() {
                                           {ground.city}, {ground.state}
                                         </p>
                                       </div>
-                                      <input
+                                      <Input
                                         type="checkbox"
                                         checked={isSelected}
                                         readOnly
-                                        className="peer appearance-none w-3.5 h-3.5 border border-white/20 rounded checked:bg-[#BFF367] checked:border-[#BFF367]"
+                                        className="peer appearance-none w-3.5 h-3.5 border border-white/20 rounded checked:bg-primary checked:border-primary"
                                         style={{
                                           backgroundColor: isSelected
                                             ? themeColor
@@ -2107,7 +2114,7 @@ export default function ProfessionalProfile() {
                                             : "rgba(255,255,255,0.2)",
                                         }}
                                       />
-                                    </button>
+                                    </Button>
                                   );
                                 })}
                                 {filteredGrounds.length === 0 && (
@@ -2118,7 +2125,7 @@ export default function ProfessionalProfile() {
                               </div>
 
                               {/* Special Search by Location Option */}
-                              <button
+                              <Button
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -2133,16 +2140,16 @@ export default function ProfessionalProfile() {
                                   style={{ color: themeColor }}
                                 />
                                 Search by Location
-                              </button>
+                              </Button>
                             </div>
                           ) : (
                             // Search Location mode
                             <div className="space-y-4">
                               <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-[#BFF367] flex items-center gap-1.5 leading-none">
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-1.5 leading-none">
                                   <MapPin size={12} /> Search Location
                                 </h4>
-                                <button
+                                <Button
                                   type="button"
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -2153,23 +2160,23 @@ export default function ProfessionalProfile() {
                                   className="text-neutral-500 hover:text-white transition-colors"
                                 >
                                   <X size={14} />
-                                </button>
+                                </Button>
                               </div>
 
-                              <button
+                              <Button
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   detectGPSLocation();
                                 }}
-                                className="w-full py-2 bg-white/[0.02] border border-white/5 hover:border-white/10 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 text-[#BFF367] transition-all"
+                                className="w-full py-2 bg-white/[0.02] border border-white/5 hover:border-white/10 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 text-primary transition-all"
                                 style={{
                                   color: themeColor,
                                   borderColor: `${themeColor}22`,
                                 }}
                               >
                                 <MapPin size={12} /> Detect My GPS Location
-                              </button>
+                              </Button>
 
                               <div
                                 className="relative"
@@ -2180,10 +2187,10 @@ export default function ProfessionalProfile() {
                                     size={12}
                                     className="absolute left-2.5 text-neutral-500"
                                   />
-                                  <input
+                                  <Input
                                     type="text"
                                     placeholder="Search for a place, city, or area..."
-                                    className="w-full bg-[#222] border border-[#333] rounded-lg pl-8 pr-8 py-2 text-xs text-white outline-none focus:border-white/10 font-medium"
+                                    className="w-full bg-card border border-[#333] rounded-lg pl-8 pr-8 py-2 text-xs text-white outline-none focus:border-white/10 font-medium"
                                     value={customSearchQuery}
                                     onChange={(e) => {
                                       setCustomSearchQuery(e.target.value);
@@ -2202,9 +2209,9 @@ export default function ProfessionalProfile() {
 
                                 {/* Search Results for Custom Location */}
                                 {customSearchResults.length > 0 && (
-                                  <div className="absolute top-full left-0 right-0 mt-1 bg-[#1A1A1A] border border-white/10 rounded-lg shadow-2xl max-h-48 overflow-y-auto z-[60] custom-scrollbar">
+                                  <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-white/10 rounded-lg shadow-2xl max-h-48 overflow-y-auto z-[60] custom-scrollbar">
                                     {customSearchResults.map((result, idx) => (
-                                      <button
+                                      <Button
                                         key={idx}
                                         type="button"
                                         onClick={() =>
@@ -2219,7 +2226,7 @@ export default function ProfessionalProfile() {
                                         <span className="text-[10px] text-white/80 font-medium leading-snug">
                                           {result.display_name}
                                         </span>
-                                      </button>
+                                      </Button>
                                     ))}
                                   </div>
                                 )}
@@ -2255,7 +2262,7 @@ export default function ProfessionalProfile() {
                                       className="text-neutral-500"
                                     />
                                     <span>{gObj.name}</span>
-                                    <button
+                                    <Button
                                       type="button"
                                       onClick={() =>
                                         toggleGroundSelection(groundId)
@@ -2263,7 +2270,7 @@ export default function ProfessionalProfile() {
                                       className="text-neutral-600 hover:text-red-400"
                                     >
                                       <X size={10} />
-                                    </button>
+                                    </Button>
                                   </span>
                                 );
                               }
@@ -2294,7 +2301,7 @@ export default function ProfessionalProfile() {
                                     <span>
                                       {cityName}, {item.state}
                                     </span>
-                                    <button
+                                    <Button
                                       type="button"
                                       onClick={() =>
                                         removeCustomCity(item.state, cityName)
@@ -2302,7 +2309,7 @@ export default function ProfessionalProfile() {
                                       className="text-neutral-600 hover:text-red-400"
                                     >
                                       <X size={10} />
-                                    </button>
+                                    </Button>
                                   </span>
                                 ))
                             )}
@@ -2317,9 +2324,9 @@ export default function ProfessionalProfile() {
                         <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
                           Start Time
                         </label>
-                        <input
+                        <Input
                           type="time"
-                          className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg px-3 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
+                          className="w-full bg-card border border-white/5 rounded-lg px-3 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
                           value={startTime}
                           onChange={(e) =>
                             handleTimeChange(e.target.value, endTime)
@@ -2330,9 +2337,9 @@ export default function ProfessionalProfile() {
                         <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
                           End Time
                         </label>
-                        <input
+                        <Input
                           type="time"
-                          className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg px-3 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
+                          className="w-full bg-card border border-white/5 rounded-lg px-3 py-2.5 text-xs text-white outline-none focus:border-white/10 transition-colors font-medium"
                           value={endTime}
                           onChange={(e) =>
                             handleTimeChange(startTime, e.target.value)
@@ -2344,7 +2351,7 @@ export default function ProfessionalProfile() {
                 </div>
 
                 {/* Services Provided */}
-                <div className="bg-[#111111] border border-white/5 rounded-xl p-6 space-y-6 relative overflow-hidden">
+                <div className="bg-card border border-white/5 rounded-xl p-6 space-y-6 relative overflow-hidden">
                   {/* Header */}
                   <div className="flex items-center gap-3 border-b border-white/5 pb-4">
                     <div
@@ -2354,8 +2361,11 @@ export default function ProfessionalProfile() {
                       <Award size={20} />
                     </div>
                     <div>
-                      <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-500">
-                        Professional Services
+                      <h3 
+                        className="text-[10px] font-black tracking-[0.3em] text-neutral-500"
+                        style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                      >
+                        Professional services
                       </h3>
                       <p className="text-white text-[14px] font-black uppercase tracking-tight font-['Open_Sans']">
                         Services Offered / Provided
@@ -2376,10 +2386,10 @@ export default function ProfessionalProfile() {
                         <label className="text-[8px] font-black text-neutral-600 uppercase tracking-widest ml-0.5">
                           Service Title
                         </label>
-                        <input
+                        <Input
                           type="text"
                           placeholder="e.g. Live Scoring, Coach, Commentator"
-                          className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg p-3 text-[11px] text-white focus:border-white/10 outline-none font-bold transition-all"
+                          className="w-full bg-card border border-white/5 rounded-lg p-3 text-[11px] text-white focus:border-white/10 outline-none font-bold transition-all"
                           value={newAchievement}
                           onChange={(e) => setNewAchievement(e.target.value)}
                         />
@@ -2388,10 +2398,10 @@ export default function ProfessionalProfile() {
                         <label className="text-[8px] font-black text-neutral-600 uppercase tracking-widest ml-0.5">
                           Tags / Specialties (Comma-separated)
                         </label>
-                        <input
+                        <Input
                           type="text"
                           placeholder="e.g. T20, Box Cricket, Junior Training"
-                          className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg p-3 text-[11px] text-white focus:border-white/10 outline-none font-bold transition-all"
+                          className="w-full bg-card border border-white/5 rounded-lg p-3 text-[11px] text-white focus:border-white/10 outline-none font-bold transition-all"
                           value={newAchievementTags}
                           onChange={(e) =>
                             setNewAchievementTags(e.target.value)
@@ -2402,10 +2412,10 @@ export default function ProfessionalProfile() {
                         <label className="text-[8px] font-black text-neutral-600 uppercase tracking-widest ml-0.5">
                           Service Description / Scope
                         </label>
-                        <textarea
+                        <Textarea
                           rows="2"
                           placeholder="Detail the deliverables, match coverage scope, or specific details of this service..."
-                          className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg p-3 text-[11px] text-white focus:border-white/10 outline-none font-medium transition-all resize-none"
+                          className="w-full bg-card border border-white/5 rounded-lg p-3 text-[11px] text-white focus:border-white/10 outline-none font-medium transition-all resize-none"
                           value={newAchievementDesc}
                           onChange={(e) =>
                             setNewAchievementDesc(e.target.value)
@@ -2415,14 +2425,14 @@ export default function ProfessionalProfile() {
                     </div>
 
                     <div className="flex justify-end pt-2">
-                      <button
+                      <Button
                         type="button"
                         onClick={addAchievement}
                         className="px-6 h-10 text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-lg transition-all transform active:scale-95 flex items-center justify-center gap-2 hover:brightness-110 font-bold"
                         style={{ backgroundColor: themeColor }}
                       >
                         <Plus size={16} /> Add Service Offered
-                      </button>
+                      </Button>
                     </div>
                   </div>
 
@@ -2461,13 +2471,13 @@ export default function ProfessionalProfile() {
                                     {title}
                                   </h4>
                                 </div>
-                                <button
+                                <Button
                                   type="button"
                                   onClick={() => removeAchievement(ach)}
                                   className="text-neutral-600 hover:text-red-500 transition-colors shrink-0 p-1 rounded-md hover:bg-white/5"
                                 >
                                   <Trash2 size={13} />
-                                </button>
+                                </Button>
                               </div>
                               {description && (
                                 <p className="text-[10px] text-neutral-400 font-medium leading-relaxed line-clamp-3">
@@ -2513,14 +2523,14 @@ export default function ProfessionalProfile() {
             {/* Navigation Buttons */}
             <div className="flex items-center justify-end gap-3 pt-6 border-t border-white/5">
               {currentStep > 1 && (
-                <button
+                <Button
                   onClick={prevStep}
                   className="px-5 h-10 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-neutral-400 active:scale-95"
                 >
                   <ChevronLeft size={14} /> Previous
-                </button>
+                </Button>
               )}
-              <button
+              <Button
                 onClick={nextStep}
                 className="px-8 h-10 rounded-lg text-[9px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:brightness-110"
                 style={{ backgroundColor: themeColor, color: "#000" }}
@@ -2535,7 +2545,7 @@ export default function ProfessionalProfile() {
                     <ChevronRight size={14} />
                   </>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -2545,7 +2555,7 @@ export default function ProfessionalProfile() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Add Certification */}
               <div className="lg:col-span-4 space-y-4">
-                <div className="bg-[#111111] border border-white/5 rounded-xl p-5 space-y-6 shadow-2xl relative overflow-hidden group">
+                <div className="bg-card border border-white/5 rounded-xl p-5 space-y-6 shadow-2xl relative overflow-hidden group">
                   <div className="flex items-center gap-4 border-b border-white/5 pb-4">
                     <div
                       className="w-10 h-10 rounded-lg flex items-center justify-center text-black"
@@ -2554,7 +2564,10 @@ export default function ProfessionalProfile() {
                       <Award size={20} />
                     </div>
                     <div>
-                      <h3 className="text-[9px] font-black uppercase tracking-[0.3em] text-neutral-500">
+                      <h3 
+                        className="text-[9px] font-black tracking-[0.3em] text-neutral-500"
+                        style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                      >
                         Verification
                       </h3>
                       <p className="text-white text-[12px] font-black uppercase tracking-tight">
@@ -2568,10 +2581,10 @@ export default function ProfessionalProfile() {
                       <label className="text-[8px] font-black text-neutral-600 uppercase tracking-widest ml-0.5">
                         Credential Title
                       </label>
-                      <input
+                      <Input
                         type="text"
                         placeholder="e.g. ICC Certified Umpire"
-                        className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg p-3.5 text-[11px] text-white focus:border-white/10 outline-none font-bold transition-all"
+                        className="w-full bg-card border border-white/5 rounded-lg p-3.5 text-[11px] text-white focus:border-white/10 outline-none font-bold transition-all"
                         value={newCert.title}
                         onChange={(e) =>
                           setNewCert({ ...newCert, title: e.target.value })
@@ -2583,10 +2596,10 @@ export default function ProfessionalProfile() {
                       <label className="text-[8px] font-black text-neutral-600 uppercase tracking-widest ml-0.5">
                         Description / Scope
                       </label>
-                      <textarea
+                      <Textarea
                         rows="3"
                         placeholder="Add validating description..."
-                        className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg p-3.5 text-[11px] text-white focus:border-white/10 outline-none font-bold transition-all resize-none"
+                        className="w-full bg-card border border-white/5 rounded-lg p-3.5 text-[11px] text-white focus:border-white/10 outline-none font-bold transition-all resize-none"
                         value={newCert.description}
                         onChange={(e) =>
                           setNewCert({
@@ -2602,7 +2615,7 @@ export default function ProfessionalProfile() {
                         Digital Proof Image
                       </label>
                       <div className="relative group/upload">
-                        <input
+                        <Input
                           type="file"
                           accept="image/*"
                           onChange={handleCertImageUpload}
@@ -2632,24 +2645,27 @@ export default function ProfessionalProfile() {
                       </div>
                     </div>
 
-                    <button
+                    <Button
                       onClick={addCertification}
                       className="w-full h-12 text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-lg transition-transform active:scale-95 flex items-center justify-center gap-2"
                       style={{ backgroundColor: themeColor }}
                     >
                       <Plus size={16} /> Integrate credential
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
 
               {/* Right: Credentials List */}
               <div className="lg:col-span-8 space-y-4">
-                <div className="bg-[#111111] border border-white/5 rounded-xl p-5 space-y-6 min-h-[500px] relative overflow-hidden">
+                <div className="bg-card border border-white/5 rounded-xl p-5 space-y-6 min-h-[500px] relative overflow-hidden">
                   <div className="flex items-center justify-between border-b border-white/5 pb-4 relative z-10">
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white flex items-center gap-3 font-['Open_Sans']">
+                    <h3 
+                      className="text-[10px] font-black tracking-[0.3em] text-white flex items-center gap-3"
+                      style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                    >
                       <ShieldCheck size={16} style={{ color: themeColor }} />{" "}
-                      Verified Stack
+                      Verified stack
                     </h3>
                     <span className="text-[8px] font-black text-neutral-600 uppercase tracking-widest px-3 py-1 bg-white/5 rounded-full border border-white/5">
                       {formData.certifications.length} Credentials
@@ -2673,12 +2689,12 @@ export default function ProfessionalProfile() {
                             <Award size={24} className="text-neutral-900" />
                           )}
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/item:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                            <button
+                            <Button
                               onClick={() => removeCertification(idx)}
                               className="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center transition-all hover:scale-105"
                             >
                               <Trash2 size={16} />
-                            </button>
+                            </Button>
                           </div>
                         </div>
                         <div className="p-3 space-y-1">
@@ -2706,23 +2722,26 @@ export default function ProfessionalProfile() {
             </div>
 
             {/* Structured Achievements Section */}
-            <div className="bg-[#111111] border border-white/5 rounded-xl p-5 space-y-6 relative overflow-hidden mt-6">
+            <div className="bg-card border border-white/5 rounded-xl p-5 space-y-6 relative overflow-hidden mt-6">
               <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-b border-white/5 pb-4">
                 <div>
-                  <h3 className="text-lg font-black text-white uppercase tracking-widest flex items-center gap-3">
+                  <h3 
+                    className="text-lg font-black text-white tracking-widest flex items-center gap-3"
+                    style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                  >
                     <Trophy size={20} style={{ color: themeColor }} /> Career
-                    Achievements
+                    achievements
                   </h3>
-                  <p className="text-[8px] text-neutral-500 font-bold uppercase tracking-[0.3em] mt-1">
+                  <p className="text-[8px] text-neutral-500 font-bold tracking-[0.28em] font-inter mt-1">
                     Log your verified career awards, titles, and milestones with
                     rich details
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto lg:min-w-[450px]">
-                  <input
+                  <Input
                     type="text"
                     placeholder="Achievement Title (e.g. Best Scorer 2025)"
-                    className="flex-1 bg-[#1A1A1A] border border-white/5 rounded-lg px-4 py-2.5 text-xs text-white outline-none font-bold"
+                    className="flex-1 bg-card border border-white/5 rounded-lg px-4 py-2.5 text-xs text-white outline-none font-bold"
                     value={newStructuredAchievement.title}
                     onChange={(e) =>
                       setNewStructuredAchievement({
@@ -2731,10 +2750,10 @@ export default function ProfessionalProfile() {
                       })
                     }
                   />
-                  <input
+                  <Input
                     type="text"
                     placeholder="Brief description / scope"
-                    className="flex-1 bg-[#1A1A1A] border border-white/5 rounded-lg px-4 py-2.5 text-xs text-white outline-none"
+                    className="flex-1 bg-card border border-white/5 rounded-lg px-4 py-2.5 text-xs text-white outline-none"
                     value={newStructuredAchievement.description}
                     onChange={(e) =>
                       setNewStructuredAchievement({
@@ -2743,13 +2762,13 @@ export default function ProfessionalProfile() {
                       })
                     }
                   />
-                  <button
+                  <Button
                     onClick={addStructuredAchievement}
                     className="w-10 h-10 rounded-lg shadow-xl flex items-center justify-center shrink-0 transition-transform active:scale-95 mx-auto sm:mx-0"
                     style={{ backgroundColor: themeColor }}
                   >
                     <Plus size={20} color="#000" />
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -2774,19 +2793,19 @@ export default function ProfessionalProfile() {
                         {ach.description}
                       </p>
                     </div>
-                    <button
+                    <Button
                       onClick={() => removeStructuredAchievement(idx)}
                       className="text-neutral-700 hover:text-red-500 transition-colors shrink-0 ml-2"
                     >
                       <Trash2 size={13} />
-                    </button>
+                    </Button>
                   </div>
                 ))}
                 {(!formData.structuredAchievements ||
                   formData.structuredAchievements.length === 0) && (
                   <div className="col-span-full py-10 bg-white/[0.01] rounded-lg border border-dashed border-white/5 flex flex-col items-center justify-center space-y-2">
                     <Trophy size={24} className="text-neutral-800" />
-                    <p className="text-[8px] text-neutral-500 font-black uppercase tracking-[0.5em]">
+                    <p className="text-[8px] text-neutral-500 font-black tracking-[0.5em]">
                       No career achievements logged yet
                     </p>
                   </div>
@@ -2796,20 +2815,20 @@ export default function ProfessionalProfile() {
 
             {/* Adjusted Navigation */}
             <div className="flex items-center justify-end gap-3 pt-6 border-t border-white/5">
-              <button
+              <Button
                 onClick={prevStep}
                 className="px-5 h-10 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-neutral-400 active:scale-95"
               >
                 <ChevronLeft size={14} /> Previous
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={nextStep}
                 className="px-8 h-10 rounded-lg text-[9px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:brightness-110"
                 style={{ backgroundColor: themeColor, color: "#000" }}
               >
                 <Zap size={14} /> Next Phase (PHASE 3){" "}
                 <ChevronRight size={14} />
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -2819,7 +2838,7 @@ export default function ProfessionalProfile() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Gallery Form */}
               <div className="lg:col-span-4 space-y-4">
-                <div className="bg-[#111111] border border-white/5 rounded-xl p-5 space-y-6 shadow-2xl relative overflow-hidden group">
+                <div className="bg-card border border-white/5 rounded-xl p-5 space-y-6 shadow-2xl relative overflow-hidden group">
                   <div className="flex items-center gap-4 border-b border-white/5 pb-4">
                     <div
                       className="w-10 h-10 rounded-lg flex items-center justify-center text-black"
@@ -2828,7 +2847,10 @@ export default function ProfessionalProfile() {
                       <Layout size={20} />
                     </div>
                     <div>
-                      <h3 className="text-[9px] font-black uppercase tracking-[0.3em] text-neutral-500">
+                      <h3 
+                        className="text-[9px] font-black tracking-[0.3em] text-neutral-500"
+                        style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                      >
                         Portfolio
                       </h3>
                       <p className="text-white text-[12px] font-black uppercase tracking-tight">
@@ -2839,7 +2861,7 @@ export default function ProfessionalProfile() {
 
                   <div className="space-y-6">
                     <div className="flex bg-black p-1 rounded-lg border border-white/5">
-                      <button
+                      <Button
                         onClick={() =>
                           setNewPortfolioItem({
                             ...newPortfolioItem,
@@ -2856,8 +2878,8 @@ export default function ProfessionalProfile() {
                         }}
                       >
                         Photos
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() =>
                           setNewPortfolioItem({
                             ...newPortfolioItem,
@@ -2874,17 +2896,17 @@ export default function ProfessionalProfile() {
                         }}
                       >
                         Videos
-                      </button>
+                      </Button>
                     </div>
 
                     <div className="space-y-1.5">
                       <label className="text-[8px] font-black text-neutral-600 uppercase tracking-widest ml-0.5">
                         Project Title Scope
                       </label>
-                      <input
+                      <Input
                         type="text"
                         placeholder="e.g. Local Premier League"
-                        className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg p-3.5 text-[11px] text-white outline-none font-bold transition-all"
+                        className="w-full bg-card border border-white/5 rounded-lg p-3.5 text-[11px] text-white outline-none font-bold transition-all"
                         value={newPortfolioItem.title}
                         onChange={(e) =>
                           setNewPortfolioItem({
@@ -2899,10 +2921,10 @@ export default function ProfessionalProfile() {
                       <label className="text-[8px] font-black text-neutral-600 uppercase tracking-widest ml-0.5">
                         Brief details
                       </label>
-                      <textarea
+                      <Textarea
                         rows="3"
                         placeholder="Add brief role info..."
-                        className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg p-3.5 text-[11px] text-white outline-none font-bold transition-all resize-none"
+                        className="w-full bg-card border border-white/5 rounded-lg p-3.5 text-[11px] text-white outline-none font-bold transition-all resize-none"
                         value={newPortfolioItem.description}
                         onChange={(e) =>
                           setNewPortfolioItem({
@@ -2918,10 +2940,10 @@ export default function ProfessionalProfile() {
                         <label className="text-[8px] font-black text-neutral-600 uppercase tracking-widest ml-0.5">
                           YouTube Video URL
                         </label>
-                        <input
+                        <Input
                           type="text"
                           placeholder="e.g. https://www.youtube.com/watch?v=..."
-                          className="w-full bg-[#1A1A1A] border border-white/5 rounded-lg p-3 text-[11px] text-white outline-none font-bold transition-all focus:border-white/10"
+                          className="w-full bg-card border border-white/5 rounded-lg p-3 text-[11px] text-white outline-none font-bold transition-all focus:border-white/10"
                           value={
                             newPortfolioItem.mediaUrl &&
                             (newPortfolioItem.mediaUrl.includes(
@@ -2947,7 +2969,7 @@ export default function ProfessionalProfile() {
                           Upload Asset
                         </label>
                         <div className="relative group/upload">
-                          <input
+                          <Input
                             type="file"
                             accept="image/*"
                             onChange={handlePortfolioMediaUpload}
@@ -2978,24 +3000,27 @@ export default function ProfessionalProfile() {
                       </div>
                     )}
 
-                    <button
+                    <Button
                       onClick={addPortfolioItem}
                       className="w-full h-12 text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-lg transition-transform active:scale-95 flex items-center justify-center gap-2"
                       style={{ backgroundColor: themeColor }}
                     >
                       <Plus size={16} /> Integrate portfolio
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
 
               {/* Right: Exhibition Gallery */}
               <div className="lg:col-span-8 space-y-4">
-                <div className="bg-[#111111] border border-white/5 rounded-xl p-5 space-y-6 min-h-[500px] relative overflow-hidden">
+                <div className="bg-card border border-white/5 rounded-xl p-5 space-y-6 min-h-[500px] relative overflow-hidden">
                   <div className="flex items-center justify-between border-b border-white/5 pb-4 relative z-10">
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white flex items-center gap-3 font-['Open_Sans']">
+                    <h3 
+                      className="text-[10px] font-black tracking-[0.3em] text-white flex items-center gap-3"
+                      style={{ fontFamily: "'Open Sans', sans-serif", textTransform: 'none' }}
+                    >
                       <Layout size={16} style={{ color: themeColor }} />{" "}
-                      Exhibition Showcase
+                      Exhibition showcase
                     </h3>
                     <span className="text-[8px] font-black text-neutral-600 uppercase tracking-widest px-3 py-1 bg-white/5 rounded-full border border-white/5">
                       {formData.portfolio?.length || 0} Assets Linked
@@ -3008,7 +3033,7 @@ export default function ProfessionalProfile() {
                         key={idx}
                         className="bg-white/[0.02] border border-white/5 rounded-lg overflow-hidden group/item transition-all hover:border-white/10"
                       >
-                        <div className="h-28 bg-[#111] relative overflow-hidden flex items-center justify-center border-b border-white/5">
+                        <div className="h-28 bg-card relative overflow-hidden flex items-center justify-center border-b border-white/5">
                           {item.mediaType === "image" ? (
                             <img
                               src={item.mediaUrl}
@@ -3016,7 +3041,7 @@ export default function ProfessionalProfile() {
                               alt={item.title}
                             />
                           ) : (
-                            <div className="w-full h-full bg-[#111] flex flex-col items-center justify-center gap-2">
+                            <div className="w-full h-full bg-card flex flex-col items-center justify-center gap-2">
                               <Play size={20} style={{ color: themeColor }} />
                               <span className="text-[7px] font-black text-neutral-700 uppercase tracking-[0.3em]">
                                 Motion Media
@@ -3024,12 +3049,12 @@ export default function ProfessionalProfile() {
                             </div>
                           )}
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/item:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                            <button
+                            <Button
                               onClick={() => removePortfolioItem(idx)}
                               className="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center transition-all hover:scale-105"
                             >
                               <Trash2 size={16} />
-                            </button>
+                            </Button>
                           </div>
                         </div>
                         <div className="p-3 space-y-1">
@@ -3059,13 +3084,13 @@ export default function ProfessionalProfile() {
 
             {/* Adjusted Navigation */}
             <div className="flex items-center justify-end gap-3 pt-6 border-t border-white/5">
-              <button
+              <Button
                 onClick={prevStep}
                 className="px-5 h-10 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-neutral-400 active:scale-95"
               >
                 <ChevronLeft size={14} /> Previous
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleUpdate}
                 disabled={loading}
                 className="px-8 h-10 rounded-lg text-[9px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:brightness-110 font-bold"
@@ -3077,7 +3102,7 @@ export default function ProfessionalProfile() {
                   <CheckCircle2 size={14} />
                 )}{" "}
                 Finalize Profile
-              </button>
+              </Button>
             </div>
           </div>
         )}

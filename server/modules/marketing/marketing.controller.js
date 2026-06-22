@@ -1,23 +1,10 @@
 // Touch comment to reload nodemon and prisma client yet again final
 import { prisma } from "../../config/prisma.js";
-import cloudinary from "../../utils/cloudinary.js";
+import { uploadToR2 } from "../../utils/r2Upload.js";
 
-// Helper for cloudinary upload
-const uploadToCloudinary = (fileBuffer, folder, isVideo = false) => {
-  return new Promise((resolve, reject) => {
-    const options = { folder };
-    if (isVideo) {
-      options.resource_type = "video";
-    }
-    const uploadStream = cloudinary.uploader.upload_stream(
-      options,
-      (error, result) => {
-        if (error) reject(error);
-        else resolve(result.secure_url);
-      }
-    );
-    uploadStream.end(fileBuffer);
-  });
+// Helper for upload (kept name for minimal changes)
+const uploadMedia = (fileBuffer, folder, mimeType) => {
+  return uploadToR2(fileBuffer, folder, mimeType);
 };
 
 // Ad Banners
@@ -47,10 +34,10 @@ export const createAdBanner = async (req, res) => {
 
     if (req.file) {
       const isVideo = req.file.mimetype.startsWith("video/");
-      const uploadedUrl = await uploadToCloudinary(
+      const uploadedUrl = await uploadMedia(
         req.file.buffer,
         "kridaz/marketing",
-        isVideo
+        req.file.mimetype
       );
       if (isVideo) {
         bannerData.videoUrl = uploadedUrl;
@@ -88,10 +75,10 @@ export const updateAdBanner = async (req, res) => {
 
     if (req.file) {
       const isVideo = req.file.mimetype.startsWith("video/");
-      const uploadedUrl = await uploadToCloudinary(
+      const uploadedUrl = await uploadMedia(
         req.file.buffer,
         "kridaz/marketing",
-        isVideo
+        req.file.mimetype
       );
       if (isVideo) {
         bannerData.videoUrl = uploadedUrl;

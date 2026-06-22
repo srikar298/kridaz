@@ -6,7 +6,8 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
-import axiosInstance from "../../../infrastructure/axios";
+import axiosInstance from "../../../infrastructure/axios";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 
 const SupportTab = ({ role }) => {
   const [tickets, setTickets] = useState([]);
@@ -92,102 +93,102 @@ const SupportTab = ({ role }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Ticket Submission Form */}
-        <div className="lg:col-span-1 p-6 rounded-2xl bg-[#141414] border border-[#2D2D2D] space-y-6">
-          <div className="flex items-center gap-2.5 border-b border-[#2D2D2D] pb-4">
-            <HelpCircle size={20} className="text-[#BFF367]" />
+        <div className="lg:col-span-1 p-6 rounded-2xl bg-[#141414] border border-border space-y-6">
+          <div className="flex items-center gap-2.5 border-b border-border pb-4">
+            <HelpCircle size={20} className="text-primary" />
             <h3 className="text-lg font-bold tracking-tight">Raise a Ticket</h3>
           </div>
 
           <form onSubmit={handleCreateTicket} className="space-y-4">
             <div className="space-y-1">
-              <label className="text-[11px] text-[#878C9F] uppercase tracking-wider">
+              <label className="text-[11px] text-muted-foreground uppercase tracking-wider">
                 Subject
               </label>
-              <input
+              <Input
                 type="text"
                 required
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="e.g. Booking Match check-in error"
-                className="w-full bg-black border border-[#2D2D2D] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#BFF367] transition-colors"
+                className="w-full bg-black border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-[11px] text-[#878C9F] uppercase tracking-wider">
+                <label className="text-[11px] text-muted-foreground uppercase tracking-wider">
                   Category
                 </label>
-                <select
+                <Select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-black border border-[#2D2D2D] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-[#BFF367]"
+                  className="w-full bg-black border border-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-primary"
                 >
                   <option value="MATCHMAKING">Matchmaking</option>
                   <option value="PAYMENT">Payment/Wallet</option>
                   <option value="TECHNICAL">App Glitch</option>
                   <option value="OTHER">Other Issues</option>
-                </select>
+                </Select>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] text-[#878C9F] uppercase tracking-wider">
+                <label className="text-[11px] text-muted-foreground uppercase tracking-wider">
                   Priority
                 </label>
-                <select
+                <Select
                   value={priority}
                   onChange={(e) => setPriority(e.target.value)}
-                  className="w-full bg-black border border-[#2D2D2D] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-[#BFF367]"
+                  className="w-full bg-black border border-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-primary"
                 >
                   <option value="LOW">Low</option>
                   <option value="MEDIUM">Medium</option>
                   <option value="HIGH">High</option>
-                </select>
+                </Select>
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[11px] text-[#878C9F] uppercase tracking-wider">
+              <label className="text-[11px] text-muted-foreground uppercase tracking-wider">
                 Problem details
               </label>
-              <textarea
+              <Textarea
                 required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe your issue in detail..."
-                className="w-full bg-black border border-[#2D2D2D] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#BFF367] min-h-[120px]"
+                className="w-full bg-black border border-border rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-primary min-h-[120px]"
               />
             </div>
 
-            <button
+            <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[#BFF367] hover:bg-[#44cdd7] disabled:bg-gray-600 text-black font-semibold rounded-xl py-3.5 transition-colors text-sm flex items-center justify-center gap-2"
+              className="w-full bg-primary hover:bg-[#44cdd7] disabled:bg-gray-600 text-black font-semibold rounded-xl py-3.5 transition-colors text-sm flex items-center justify-center gap-2"
             >
               <Send size={14} />
               <span>{isSubmitting ? "Submitting..." : "Submit Ticket"}</span>
-            </button>
+            </Button>
           </form>
         </div>
 
         {/* Existing Tickets List */}
         <div className="lg:col-span-2 space-y-4">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-[#878C9F] border-b border-[#2D2D2D] pb-3">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border pb-3">
             Active Requests & Support History
           </h3>
 
           {isLoading ? (
-            <div className="py-12 text-center text-[#878C9F]">
+            <div className="py-12 text-center text-muted-foreground">
               Loading tickets...
             </div>
           ) : tickets.length === 0 ? (
-            <div className="p-12 text-center bg-[#141414] border border-[#2D2D2D] rounded-2xl space-y-4">
+            <div className="p-12 text-center bg-[#141414] border border-border rounded-2xl space-y-4">
               <div className="mx-auto w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-gray-500">
                 <MessageSquare size={20} />
               </div>
               <div>
                 <h4 className="font-bold">No active tickets</h4>
-                <p className="text-sm text-[#878C9F] mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   Your created tickets will appear here with dynamic status
                   indicators.
                 </p>
@@ -198,14 +199,14 @@ const SupportTab = ({ role }) => {
               {tickets.map((ticket) => (
                 <div
                   key={ticket.id}
-                  className="p-4 rounded-xl bg-[#141414] border border-[#2D2D2D] flex items-center justify-between hover:border-[#BFF367]/30 transition-colors"
+                  className="p-4 rounded-xl bg-[#141414] border border-border flex items-center justify-between hover:border-primary/30 transition-colors"
                 >
                   <div className="space-y-1">
                     <h4 className="text-sm font-bold text-white">
                       {ticket.subject}
                     </h4>
-                    <div className="flex flex-wrap gap-2 text-[10px] text-[#878C9F]">
-                      <span className="font-medium px-2 py-0.5 bg-black rounded border border-[#2D2D2D]">
+                    <div className="flex flex-wrap gap-2 text-[10px] text-muted-foreground">
+                      <span className="font-medium px-2 py-0.5 bg-black rounded border border-border">
                         {ticket.category}
                       </span>
                       <span
@@ -221,7 +222,7 @@ const SupportTab = ({ role }) => {
                   </div>
 
                   <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border ${ticket.status === "OPEN" ? "bg-[#BFF367]/10 text-[#BFF367] border-[#BFF367]/20" : ticket.status === "IN_PROGRESS" ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" : "bg-green-500/10 text-green-400 border-green-500/20"}`}
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border ${ticket.status === "OPEN" ? "bg-primary/10 text-primary border-primary/20" : ticket.status === "IN_PROGRESS" ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" : "bg-green-500/10 text-green-400 border-green-500/20"}`}
                   >
                     {ticket.status}
                   </span>

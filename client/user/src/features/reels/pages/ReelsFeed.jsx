@@ -5,7 +5,8 @@ import { ChevronLeft, Camera } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSocket } from "@context/SocketContext";
 import { useDispatch, useSelector } from "react-redux";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button } from "@kridaz/ui";
+
 
 const ReelsFeed = () => {
   const navigate = useNavigate();
@@ -51,8 +52,7 @@ const ReelsFeed = () => {
         );
       };
       patchFeed(undefined);
-      patchFeed({});
-      patchFeed({ cursor: null, initialId: undefined });
+      
     });
 
     socket.on("reel_commented", ({ reelId }) => {
@@ -68,8 +68,7 @@ const ReelsFeed = () => {
         );
       };
       patchFeed(undefined);
-      patchFeed({});
-      patchFeed({ cursor: null, initialId: undefined });
+      
     });
 
     socket.on("reel_deleted", ({ reelId }) => {
@@ -82,8 +81,7 @@ const ReelsFeed = () => {
         );
       };
       patchFeed(undefined);
-      patchFeed({});
-      patchFeed({ cursor: null, initialId: undefined });
+      
     });
 
     socket.on(
@@ -110,8 +108,7 @@ const ReelsFeed = () => {
             );
           };
           patchFeed(undefined);
-          patchFeed({});
-          patchFeed({ cursor: null, initialId: undefined });
+          
         }
       }
     );
@@ -140,8 +137,7 @@ const ReelsFeed = () => {
             );
           };
           patchFeed(undefined);
-          patchFeed({});
-          patchFeed({ cursor: null, initialId: undefined });
+          
         }
       }
     );
@@ -214,7 +210,7 @@ const ReelsFeed = () => {
   if (isLoading && !data) {
     return (
       <div className="h-screen w-full bg-black flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-[#BFF367] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -227,12 +223,12 @@ const ReelsFeed = () => {
         <h2 className="text-white font-bold text-lg tracking-tight pointer-events-auto drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
           Shorts
         </h2>
-        <button
+        <Button
           onClick={() => navigate("/reels/upload")}
           className="p-2.5 bg-black/50 rounded-full text-white pointer-events-auto backdrop-blur-md border border-white/10 active:scale-90 transition-transform shadow-lg"
         >
           <Camera size={22} />
-        </button>
+        </Button>
       </div>
 
       {/* Vertical Feed Container */}
@@ -275,7 +271,7 @@ const ReelsFeed = () => {
 
         {isFetching && (
           <div className="h-full w-full flex items-center justify-center snap-start">
-            <div className="w-8 h-8 border-3 border-[#BFF367] border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
           </div>
         )}
 
@@ -285,12 +281,12 @@ const ReelsFeed = () => {
             <p className="text-gray-400 text-center">
               Be the first one to post a reel!
             </p>
-            <button
+            <Button
               onClick={() => navigate("/reels/upload")}
-              className="mt-6 px-6 py-2 bg-[#BFF367] text-black font-bold rounded-full hover:scale-105 active:scale-95 transition-transform"
+              className="mt-6 px-6 py-2 bg-primary text-black font-bold rounded-full hover:scale-105 active:scale-95 transition-transform"
             >
               Create Short
-            </button>
+            </Button>
           </div>
         )}
       </div>

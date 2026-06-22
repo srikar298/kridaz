@@ -2,13 +2,14 @@ import daisyui from "daisyui";
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  presets: [require("@kridaz/ui/tailwind.preset.js")],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "../../packages/ui/src/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     extend: {
-      colors: {
-        primary: "#55DEE8",
-        "primary-focus": "#3cc5ce",
-      },
       fontFamily: {
         sans: ['"Open Sans"', "sans-serif"],
       },

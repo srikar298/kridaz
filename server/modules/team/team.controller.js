@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { prisma } from "../../config/prisma.js";
-import { uploadToCloudinary } from "../../utils/cloudinary.js";
-import { createUniqueTeamCode, ensureTeamQRCode, getTeamWithDetails } from "./team.service.js";
+import { uploadToR2 } from "../../utils/r2Upload.js";
+import { createUniqueTeamCode } from "./team.service.js";
 import { updateGeoPoint } from "../../utils/geo.util.js";
 import logger from "../../utils/logger.js";
 import generateQRCode from "../../utils/generateQRCode.js";
@@ -135,8 +135,8 @@ export const createTeam = async (req, res) => {
 
     let imageUrl = req.body.image || req.body.logo || "";
     if (req.file) {
-      logger.info("Uploading team image to Cloudinary...");
-      imageUrl = await uploadToCloudinary(req.file.buffer, "teams");
+      logger.info("Uploading team image to R2...");
+      imageUrl = await uploadToR2(req.file.buffer, "teams");
     }
 
     const team = await prisma.team.create({
@@ -808,7 +808,7 @@ export const updateTeam = async (req, res) => {
 
     let imageUrl = team.image;
     if (req.file) {
-      imageUrl = await uploadToCloudinary(req.file.buffer, "teams");
+      imageUrl = await uploadToR2(req.file.buffer, "teams");
     }
 
     const updatedTeam = await prisma.team.update({

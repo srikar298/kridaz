@@ -13,12 +13,13 @@ import {
 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
-import { format, addDays, subDays } from "date-fns";
+import { format, addDays, subDays } from "date-fns";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 
 export default function PracticeScheduling() {
   const { role } = useSelector((state) => state.auth);
   const isScorer = role?.toLowerCase().includes("scorer");
-  const themeColor = isScorer ? "#BFF367" : "#BFF367";
+  const themeColor = isScorer ? "var(--primary)" : "var(--primary)";
 
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
@@ -160,28 +161,28 @@ export default function PracticeScheduling() {
             <h1 className="text-3xl lg:text-4xl font-black tracking-tight text-white font-inter uppercase leading-none">
               Dedicated <span style={{ color: themeColor }}>Calendar</span>
             </h1>
-            <p className="text-[#878C9F] text-[10px] font-black uppercase tracking-[0.2em] font-inter mt-1.5">
+            <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.2em] font-inter mt-1.5">
               Manage your practice scheduling
             </p>
           </div>
         </div>
 
-        <button
+        <Button
           onClick={() => setShowSettings(true)}
           className="h-12 px-6 rounded-[8px] font-black uppercase text-[12px] tracking-[0.2em] transition-all transform active:scale-95 flex items-center gap-2 shadow-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/20"
         >
           <Settings size={18} /> Settings
-        </button>
+        </Button>
       </div>
 
       {/* Date Navigation */}
       <div className="flex items-center justify-between bg-white/[0.02] border border-white/5 p-4 rounded-[8px] backdrop-blur-xl">
-        <button
+        <Button
           onClick={() => setSelectedDate(subDays(selectedDate, 1))}
           className="p-3 bg-white/5 hover:bg-white/10 rounded-[8px] transition-colors border border-white/10"
         >
           <ChevronLeft size={20} className="text-white" />
-        </button>
+        </Button>
         <div className="text-center flex flex-col items-center">
           <span className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-1">
             {format(selectedDate, "EEEE")}
@@ -191,12 +192,12 @@ export default function PracticeScheduling() {
             {format(selectedDate, "MMM dd, yyyy")}
           </span>
         </div>
-        <button
+        <Button
           onClick={() => setSelectedDate(addDays(selectedDate, 1))}
           className="p-3 bg-white/5 hover:bg-white/10 rounded-[8px] transition-colors border border-white/10"
         >
           <ChevronRight size={20} className="text-white" />
-        </button>
+        </Button>
       </div>
 
       {/* Loading overlay for day switch */}
@@ -222,7 +223,7 @@ export default function PracticeScheduling() {
                 className="bg-white/[0.03] backdrop-blur-xl border border-white/5 rounded-[8px] overflow-hidden shadow-2xl relative"
               >
                 {/* Slot Header */}
-                <div className="bg-[#111] p-4 border-b border-white/5 flex justify-between items-center relative overflow-hidden">
+                <div className="bg-card p-4 border-b border-white/5 flex justify-between items-center relative overflow-hidden">
                   <div
                     className="absolute inset-y-0 left-0 w-1"
                     style={{ backgroundColor: themeColor }}
@@ -251,14 +252,14 @@ export default function PracticeScheduling() {
                       {slotTasks.map((task) => (
                         <div
                           key={task.id}
-                          className="bg-[#1a1a1a] border border-white/10 rounded-[8px] p-5 relative group"
+                          className="bg-card border border-white/10 rounded-[8px] p-5 relative group"
                         >
-                          <button
+                          <Button
                             onClick={() => handleDeleteTask(task.id)}
                             className="absolute top-4 right-4 text-neutral-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <Trash2 size={16} />
-                          </button>
+                          </Button>
                           <h4 className="text-white font-black uppercase tracking-tight text-sm pr-6">
                             {task.title}
                           </h4>
@@ -283,7 +284,7 @@ export default function PracticeScheduling() {
                   )}
 
                   {canAddTask && (
-                    <button
+                    <Button
                       onClick={() => {
                         setSelectedSlot(slot);
                         setShowTaskModal(true);
@@ -291,7 +292,7 @@ export default function PracticeScheduling() {
                       className="mt-6 w-full h-12 border border-white/10 border-dashed rounded-[8px] flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-neutral-400 hover:text-white hover:border-white/30 hover:bg-white/5 transition-all"
                     >
                       <Plus size={16} /> Add Task
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -303,7 +304,7 @@ export default function PracticeScheduling() {
       {/* Settings Modal */}
       {showSettings && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#111111] border border-white/10 rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl font-inter animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-card border border-white/10 rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl font-inter animate-in fade-in zoom-in-95 duration-200">
             <div className="p-6 border-b border-white/5">
               <h3 className="text-xl font-black text-white uppercase tracking-tight">
                 Calendar <span style={{ color: themeColor }}>Settings</span>
@@ -319,7 +320,7 @@ export default function PracticeScheduling() {
                     <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">
                       Start Time
                     </label>
-                    <input
+                    <Input
                       type="time"
                       value={workingHours.startTime}
                       onChange={(e) =>
@@ -336,7 +337,7 @@ export default function PracticeScheduling() {
                     <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">
                       End Time
                     </label>
-                    <input
+                    <Input
                       type="time"
                       value={workingHours.endTime}
                       onChange={(e) =>
@@ -357,14 +358,14 @@ export default function PracticeScheduling() {
               </div>
 
               <div className="pt-4 flex gap-4">
-                <button
+                <Button
                   type="button"
                   onClick={() => setShowSettings(false)}
                   className="flex-1 h-12 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg font-black uppercase text-[12px] tracking-[0.2em] text-white transition-all"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
                   disabled={saving}
                   className="flex-1 h-12 text-black rounded-lg font-black uppercase text-[12px] tracking-[0.2em] transition-all flex items-center justify-center gap-2"
@@ -375,7 +376,7 @@ export default function PracticeScheduling() {
                   ) : (
                     "Save Settings"
                   )}
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -385,7 +386,7 @@ export default function PracticeScheduling() {
       {/* Add Task Modal */}
       {showTaskModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#111111] border border-white/10 rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl font-inter animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-card border border-white/10 rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl font-inter animate-in fade-in zoom-in-95 duration-200">
             <div className="p-6 border-b border-white/5">
               <h3 className="text-xl font-black text-white uppercase tracking-tight">
                 Add <span style={{ color: themeColor }}>Task</span>
@@ -399,29 +400,29 @@ export default function PracticeScheduling() {
                 <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">
                   Select Customer (Optional)
                 </label>
-                <select
+                <Select
                   value={newTask.customerId}
                   onChange={(e) =>
                     setNewTask({ ...newTask, customerId: e.target.value })
                   }
                   className="w-full h-12 bg-white/5 border border-white/10 rounded-lg px-4 text-white focus:outline-none focus:border-white/20 transition-colors cursor-pointer appearance-none"
                 >
-                  <option value="" className="bg-[#111]">
+                  <option value="" className="bg-card">
                     -- No Customer --
                   </option>
                   {customers.map((c) => (
-                    <option key={c.id} value={c.id} className="bg-[#111]">
+                    <option key={c.id} value={c.id} className="bg-card">
                       {c.name}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">
                   Task Title *
                 </label>
-                <input
+                <Input
                   type="text"
                   value={newTask.title}
                   onChange={(e) =>
@@ -437,7 +438,7 @@ export default function PracticeScheduling() {
                 <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">
                   Description / Notes
                 </label>
-                <textarea
+                <Textarea
                   value={newTask.description}
                   onChange={(e) =>
                     setNewTask({ ...newTask, description: e.target.value })
@@ -448,14 +449,14 @@ export default function PracticeScheduling() {
               </div>
 
               <div className="pt-4 flex gap-4">
-                <button
+                <Button
                   type="button"
                   onClick={() => setShowTaskModal(false)}
                   className="flex-1 h-12 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg font-black uppercase text-[12px] tracking-[0.2em] text-white transition-all"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
                   disabled={saving}
                   className="flex-1 h-12 text-black rounded-lg font-black uppercase text-[12px] tracking-[0.2em] transition-all flex items-center justify-center gap-2"
@@ -466,7 +467,7 @@ export default function PracticeScheduling() {
                   ) : (
                     "Save Task"
                   )}
-                </button>
+                </Button>
               </div>
             </form>
           </div>

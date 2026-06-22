@@ -11,7 +11,8 @@ import {
 import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
 import { Capacitor } from "@capacitor/core";
-import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";import { Button, Input } from "@kridaz/ui";
+
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -119,7 +120,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#000] relative flex items-center justify-center font-sans p-4">
+    <div className="min-h-screen bg-background relative flex items-center justify-center font-sans p-4">
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_transparent_0%,_black_100%)] opacity-80" />
       </div>
@@ -136,16 +137,16 @@ const ForgotPassword = () => {
           Back to Login
         </Link>
 
-        <div className="bg-[#0A0A0A] border border-white/5 rounded-[8px] p-8 md:p-12 shadow-2xl relative overflow-hidden">
-          <div className="absolute -top-32 -right-32 w-64 h-64 bg-[#BFF367]/10 blur-[100px] rounded-full pointer-events-none" />
+        <div className="bg-background border border-white/5 rounded-[8px] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+          <div className="absolute -top-32 -right-32 w-64 h-64 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
 
           <div className="mb-10 text-center">
-            <div className="w-16 h-16 bg-[#BFF367]/10 rounded-[8px] flex items-center justify-center mx-auto mb-6 border border-[#BFF367]/20">
-              {step === 1 && <Mail size={32} className="text-[#BFF367]" />}
+            <div className="w-16 h-16 bg-primary/10 rounded-[8px] flex items-center justify-center mx-auto mb-6 border border-primary/20">
+              {step === 1 && <Mail size={32} className="text-primary" />}
               {step === 2 && (
-                <ShieldCheck size={32} className="text-[#BFF367]" />
+                <ShieldCheck size={32} className="text-primary" />
               )}
-              {step === 3 && <KeyRound size={32} className="text-[#BFF367]" />}
+              {step === 3 && <KeyRound size={32} className="text-primary" />}
             </div>
             <h1 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">
               {step === 1 && "Reset Password"}
@@ -168,23 +169,23 @@ const ForgotPassword = () => {
                   Email or Phone Number
                 </label>
                 <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/30 group-focus-within:text-[#BFF367] transition-colors">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/30 group-focus-within:text-primary transition-colors">
                     <Mail size={18} />
                   </div>
-                  <input
+                  <Input
                     type="text"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter registered email or phone"
-                    className="w-full bg-white/5 border border-white/10 rounded-[8px] py-4 pl-12 pr-4 text-white focus:outline-none focus:border-[#BFF367]/50 transition-all text-sm font-bold"
+                    className="w-full bg-white/5 border border-white/10 rounded-[8px] py-4 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 transition-all text-sm font-bold"
                   />
                 </div>
               </div>
-              <button
+              <Button
                 type="submit"
                 disabled={loading}
-                className="w-full h-14 bg-[#BFF367] text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-[8px] flex items-center justify-center gap-2 hover:bg-[#a3e635] transition-all"
+                className="w-full h-14 bg-primary text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-[8px] flex items-center justify-center gap-2 hover:bg-primary transition-all"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
@@ -193,7 +194,7 @@ const ForgotPassword = () => {
                     Send Code <ArrowRight size={16} />
                   </>
                 )}
-              </button>
+              </Button>
             </form>
           )}
 
@@ -205,33 +206,33 @@ const ForgotPassword = () => {
                   6-Digit Code
                 </label>
                 <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/30 group-focus-within:text-[#BFF367] transition-colors">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/30 group-focus-within:text-primary transition-colors">
                     <ShieldCheck size={18} />
                   </div>
-                  <input
+                  <Input
                     type="text"
                     required
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     placeholder="••••••"
                     maxLength={6}
-                    className="w-full bg-white/5 border border-white/10 rounded-[8px] py-4 pl-12 pr-4 text-white focus:outline-none focus:border-[#BFF367]/50 transition-all text-center text-xl font-black tracking-[0.5em]"
+                    className="w-full bg-white/5 border border-white/10 rounded-[8px] py-4 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 transition-all text-center text-xl font-black tracking-[0.5em]"
                   />
                 </div>
               </div>
-              <button
+              <Button
                 type="submit"
-                className="w-full h-14 bg-[#BFF367] text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-[8px] flex items-center justify-center gap-2 hover:bg-[#a3e635] transition-all"
+                className="w-full h-14 bg-primary text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-[8px] flex items-center justify-center gap-2 hover:bg-primary transition-all"
               >
                 Verify Code <CheckCircle2 size={16} />
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => setStep(1)}
                 className="w-full text-[10px] font-black text-white/40 uppercase tracking-widest hover:text-white transition-colors"
               >
                 Change Details
-              </button>
+              </Button>
             </form>
           )}
 
@@ -244,16 +245,16 @@ const ForgotPassword = () => {
                     New Password
                   </label>
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/30 group-focus-within:text-[#BFF367] transition-colors">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/30 group-focus-within:text-primary transition-colors">
                       <KeyRound size={18} />
                     </div>
-                    <input
+                    <Input
                       type="password"
                       required
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="Min 8 characters"
-                      className="w-full bg-white/5 border border-white/10 rounded-[8px] py-4 pl-12 pr-4 text-white focus:outline-none focus:border-[#BFF367]/50 transition-all text-sm font-bold"
+                      className="w-full bg-white/5 border border-white/10 rounded-[8px] py-4 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
@@ -262,31 +263,31 @@ const ForgotPassword = () => {
                     Confirm Password
                   </label>
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/30 group-focus-within:text-[#BFF367] transition-colors">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/30 group-focus-within:text-primary transition-colors">
                       <KeyRound size={18} />
                     </div>
-                    <input
+                    <Input
                       type="password"
                       required
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Repeat new password"
-                      className="w-full bg-white/5 border border-white/10 rounded-[8px] py-4 pl-12 pr-4 text-white focus:outline-none focus:border-[#BFF367]/50 transition-all text-sm font-bold"
+                      className="w-full bg-white/5 border border-white/10 rounded-[8px] py-4 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
               </div>
-              <button
+              <Button
                 type="submit"
                 disabled={loading}
-                className="w-full h-14 bg-[#BFF367] text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-[8px] flex items-center justify-center gap-2 hover:bg-[#a3e635] transition-all"
+                className="w-full h-14 bg-primary text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-[8px] flex items-center justify-center gap-2 hover:bg-primary transition-all"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
                 ) : (
                   "Update Password"
                 )}
-              </button>
+              </Button>
             </form>
           )}
         </div>

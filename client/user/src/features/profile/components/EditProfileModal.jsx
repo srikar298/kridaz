@@ -13,7 +13,8 @@ import toast from "react-hot-toast";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useDispatch } from "react-redux";
 import { updateUser } from "@redux/slices/authSlice";
-import { searchLocations } from "@utils/locationService";
+import { searchLocations } from "@utils/locationService";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 
 export default function EditProfileModal({ isOpen, onClose, user }) {
   const [formData, setFormData] = useState({
@@ -242,12 +243,12 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-lg bg-[#000000] border border-[#2D2D2D] rounded-[8px] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+      <div className="relative w-full max-w-lg bg-background border border-border rounded-[8px] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
-        <div className="px-8 py-6 border-b border-[#2D2D2D] flex items-center justify-between bg-gradient-to-r from-[#CCFF00]/5 to-transparent">
+        <div className="px-8 py-6 border-b border-border flex items-center justify-between bg-gradient-to-r from-primary/5 to-transparent">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-[6px] bg-[#CCFF00]/10 flex items-center justify-center">
-              <User size={20} className="text-[#CCFF00]" />
+            <div className="w-10 h-10 rounded-[6px] bg-primary/10 flex items-center justify-center">
+              <User size={20} className="text-primary" />
             </div>
             <div>
               <h2 className="text-sm font-black uppercase tracking-[0.2em] text-white">
@@ -258,12 +259,12 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
               </p>
             </div>
           </div>
-          <button
+          <Button
             onClick={onClose}
-            className="p-2 rounded-[6px] hover:bg-[#000000] text-white/20 hover:text-white transition-all"
+            className="p-2 rounded-[6px] hover:bg-background text-white/20 hover:text-white transition-all"
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         {/* Content */}
@@ -274,7 +275,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
           {/* Profile Picture Upload */}
           <div className="flex flex-col items-center justify-center mb-8">
             <div className="relative group">
-              <div className="w-24 h-24 rounded-[8px] bg-[#CCFF00]/5 border border-[#2D2D2D] overflow-hidden flex items-center justify-center group-hover:border-[#CCFF00]/30 transition-all">
+              <div className="w-24 h-24 rounded-[8px] bg-primary/5 border border-border overflow-hidden flex items-center justify-center group-hover:border-primary/30 transition-all">
                 {user?.profilePicture ? (
                   <img
                     src={user.profilePicture}
@@ -282,7 +283,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-[#CCFF00] font-black text-3xl tracking-tighter">
+                  <span className="text-primary font-black text-3xl tracking-tighter">
                     {user?.name
                       ?.split(" ")
                       .map((w) => w[0])
@@ -296,7 +297,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                   <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10">
                     <Loader2
                       size={24}
-                      className="animate-spin text-[#CCFF00]"
+                      className="animate-spin text-primary"
                     />
                   </div>
                 )}
@@ -304,10 +305,10 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
 
               <label
                 htmlFor="modal-profile-upload"
-                className="absolute -bottom-2 -right-2 w-10 h-10 bg-[#CCFF00] rounded-[8px] flex items-center justify-center cursor-pointer shadow-lg shadow-[#CCFF00]/20 hover:scale-110 active:scale-95 transition-all z-20 border-4 border-black"
+                className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary rounded-[8px] flex items-center justify-center cursor-pointer shadow-lg shadow-[var(--primary)]/20 hover:scale-110 active:scale-95 transition-all z-20 border-4 border-black"
               >
                 <Camera size={16} className="text-black" />
-                <input
+                <Input
                   type="file"
                   id="modal-profile-upload"
                   className="hidden"
@@ -330,15 +331,15 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
               </label>
               <div className="relative group">
                 <User
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#CCFF00] transition-colors"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors"
                   size={16}
                 />
-                <input
+                <Input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full bg-[#000000] border border-[#2D2D2D] rounded-[8px] py-4 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-[#CCFF00] focus:ring-4 focus:ring-[#CCFF00]/10 transition-all"
+                  className="w-full bg-background border border-border rounded-[8px] py-4 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
                   placeholder="Enter your name"
                   required
                 />
@@ -353,7 +354,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                 </label>
                 {usernameStatus && (
                   <span
-                    className={`text-[9px] font-bold uppercase tracking-wider ${usernameStatus === "available" ? "text-[#CCFF00]" : usernameStatus === "taken" ? "text-red-500" : usernameStatus === "short" ? "text-orange-500" : "text-white/20"}`}
+                    className={`text-[9px] font-bold uppercase tracking-wider ${usernameStatus === "available" ? "text-primary" : usernameStatus === "taken" ? "text-red-500" : usernameStatus === "short" ? "text-orange-500" : "text-white/20"}`}
                   >
                     {usernameStatus === "checking"
                       ? "Checking..."
@@ -369,16 +370,16 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
               </div>
               <div className="relative group">
                 <span
-                  className={`absolute left-4 top-1/2 -translate-y-1/2 font-black text-sm transition-colors ${usernameStatus === "available" ? "text-[#CCFF00]" : usernameStatus === "taken" ? "text-red-500" : "text-white/20"}`}
+                  className={`absolute left-4 top-1/2 -translate-y-1/2 font-black text-sm transition-colors ${usernameStatus === "available" ? "text-primary" : usernameStatus === "taken" ? "text-red-500" : "text-white/20"}`}
                 >
                   @
                 </span>
-                <input
+                <Input
                   type="text"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  className={`w-full bg-[#000000] border rounded-[8px] py-4 pl-10 pr-12 text-sm text-white focus:outline-none focus:ring-4 transition-all ${usernameStatus === "available" ? "border-[#CCFF00]/50 focus:border-[#CCFF00] focus:ring-[#CCFF00]/10" : usernameStatus === "taken" ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/10" : "border-[#2D2D2D] focus:border-[#CCFF00] focus:ring-[#CCFF00]/10"}`}
+                  className={`w-full bg-background border rounded-[8px] py-4 pl-10 pr-12 text-sm text-white focus:outline-none focus:ring-4 transition-all ${usernameStatus === "available" ? "border-primary/50 focus:border-primary focus:ring-primary/10" : usernameStatus === "taken" ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/10" : "border-border focus:border-primary focus:ring-primary/10"}`}
                   placeholder="username"
                   required
                 />
@@ -386,13 +387,13 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                   <div className="absolute right-4 top-1/2 -translate-y-1/2">
                     <Loader2
                       size={14}
-                      className="animate-spin text-[#CCFF00]"
+                      className="animate-spin text-primary"
                     />
                   </div>
                 )}
                 {!isCheckingUsername && usernameStatus === "available" && (
                   <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                    <Check size={14} className="text-[#CCFF00]" />
+                    <Check size={14} className="text-primary" />
                   </div>
                 )}
               </div>
@@ -407,28 +408,28 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
               </label>
               <div className="relative group">
                 <Phone
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#CCFF00] transition-colors"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors"
                   size={16}
                 />
-                <input
+                <Input
                   type="text"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full bg-[#000000] border border-[#2D2D2D] rounded-[8px] py-4 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-[#CCFF00] focus:ring-4 focus:ring-[#CCFF00]/10 transition-all"
+                  className="w-full bg-background border border-border rounded-[8px] py-4 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
                   placeholder="Phone number"
                 />
               </div>
               {showOtpInput && (
                 <div className="mt-2 relative group animate-in fade-in slide-in-from-top-2 duration-300">
-                  <input
+                  <Input
                     type="text"
                     value={otp}
                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                    className="w-full bg-[#000000] border border-[#2D2D2D] rounded-[8px] py-4 px-4 text-sm text-white focus:outline-none focus:border-[#CCFF00] focus:ring-4 focus:ring-[#CCFF00]/10 transition-all text-center tracking-[0.5em] font-bold"
+                    className="w-full bg-background border border-border rounded-[8px] py-4 px-4 text-sm text-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-center tracking-[0.5em] font-bold"
                     placeholder="ENTER OTP"
                   />
-                  <button
+                  <Button
                     type="button"
                     onClick={async () => {
                       setSendingOtp(true);
@@ -444,10 +445,10 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                       }
                     }}
                     disabled={sendingOtp}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black uppercase text-[#CCFF00] hover:text-white transition-colors disabled:opacity-50"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black uppercase text-primary hover:text-white transition-colors disabled:opacity-50"
                   >
                     {sendingOtp ? "Sending..." : "Resend"}
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
@@ -457,28 +458,28 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
               <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 ml-1">
                 Gender
               </label>
-              <select
+              <Select
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
-                className="w-full bg-[#000000] border border-[#2D2D2D] rounded-[8px] py-4 px-4 text-sm text-white focus:outline-none focus:border-[#CCFF00] focus:ring-4 focus:ring-[#CCFF00]/10 transition-all appearance-none"
+                className="w-full bg-background border border-border rounded-[8px] py-4 px-4 text-sm text-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all appearance-none"
               >
-                <option value="" className="bg-[#000000]">
+                <option value="" className="bg-background">
                   Select Gender
                 </option>
-                <option value="Male" className="bg-[#000000]">
+                <option value="Male" className="bg-background">
                   Male
                 </option>
-                <option value="Female" className="bg-[#000000]">
+                <option value="Female" className="bg-background">
                   Female
                 </option>
-                <option value="Other" className="bg-[#000000]">
+                <option value="Other" className="bg-background">
                   Other
                 </option>
-                <option value="Prefer not to say" className="bg-[#000000]">
+                <option value="Prefer not to say" className="bg-background">
                   Prefer not to say
                 </option>
-              </select>
+              </Select>
             </div>
           </div>
 
@@ -489,14 +490,14 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
             </label>
             <div className="relative group">
               <AlignLeft
-                className="absolute left-4 top-4 text-white/20 group-focus-within:text-[#CCFF00] transition-colors"
+                className="absolute left-4 top-4 text-white/20 group-focus-within:text-primary transition-colors"
                 size={16}
               />
-              <textarea
+              <Textarea
                 name="bio"
                 value={formData.bio}
                 onChange={handleChange}
-                className="w-full bg-[#000000] border border-[#2D2D2D] rounded-[8px] py-4 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-[#CCFF00] focus:ring-4 focus:ring-[#CCFF00]/10 transition-all min-h-[100px] resize-none"
+                className="w-full bg-background border border-border rounded-[8px] py-4 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all min-h-[100px] resize-none"
                 placeholder="Tell us about yourself..."
               />
             </div>
@@ -513,10 +514,10 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
               </label>
               <div className="relative group">
                 <MapPin
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#CCFF00] transition-colors"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors"
                   size={16}
                 />
-                <input
+                <Input
                   type="text"
                   value={formData.location}
                   onChange={(e) => {
@@ -527,23 +528,23 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                     setShowSuggestions(locationSuggestions.length > 0)
                   }
                   placeholder="e.g. Mumbai, Maharashtra"
-                  className="w-full bg-[#000000] border border-[#2D2D2D] rounded-[8px] py-4 pl-12 pr-12 text-sm text-white focus:outline-none focus:border-[#CCFF00] focus:ring-4 focus:ring-[#CCFF00]/10 transition-all"
+                  className="w-full bg-background border border-border rounded-[8px] py-4 pl-12 pr-12 text-sm text-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
                 />
                 {isSearchingLocation && (
                   <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                    <Loader2 className="w-4 h-4 text-[#CCFF00] animate-spin" />
+                    <Loader2 className="w-4 h-4 text-primary animate-spin" />
                   </div>
                 )}
 
                 {/* Suggestions Dropdown */}
                 {showSuggestions && locationSuggestions.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-[#0A0A0A] border border-[#2D2D2D] rounded-[12px] overflow-hidden z-[110] shadow-2xl max-h-[200px] overflow-y-auto custom-scrollbar">
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-[12px] overflow-hidden z-[110] shadow-2xl max-h-[200px] overflow-y-auto custom-scrollbar">
                     {locationSuggestions.map((suggestion, idx) => (
-                      <button
+                      <Button
                         type="button"
                         key={idx}
                         onClick={() => handleSelectLocation(suggestion)}
-                        className="w-full px-5 py-3 text-left hover:bg-[#CCFF00]/10 text-white/80 hover:text-white border-b border-[#2D2D2D] last:border-0 transition-colors flex flex-col gap-0.5"
+                        className="w-full px-5 py-3 text-left hover:bg-primary/10 text-white/80 hover:text-white border-b border-border last:border-0 transition-colors flex flex-col gap-0.5"
                       >
                         <span className="text-xs font-bold uppercase tracking-wider">
                           {suggestion.city ||
@@ -552,7 +553,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                         <span className="text-[9px] text-white/40 truncate">
                           {suggestion.display_name}
                         </span>
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 )}
@@ -569,10 +570,10 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
               {(formData.interests || []).map((interest, idx) => (
                 <span
                   key={idx}
-                  className="px-3 py-1 bg-[#CCFF00]/10 border border-[#CCFF00]/20 rounded-[6px] text-[10px] font-bold text-[#CCFF00] flex items-center gap-2"
+                  className="px-3 py-1 bg-primary/10 border border-primary/20 rounded-[6px] text-[10px] font-bold text-primary flex items-center gap-2"
                 >
                   {interest}
-                  <button
+                  <Button
                     type="button"
                     onClick={() => {
                       setFormData((prev) => ({
@@ -583,12 +584,12 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                     className="hover:text-white"
                   >
                     <X size={10} />
-                  </button>
+                  </Button>
                 </span>
               ))}
             </div>
             <div className="relative group">
-              <select
+              <Select
                 onChange={(e) => {
                   if (
                     e.target.value &&
@@ -601,7 +602,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                   }
                   e.target.value = "";
                 }}
-                className="w-full bg-[#000000] border border-[#2D2D2D] rounded-[8px] py-4 px-4 text-sm text-white focus:outline-none focus:border-[#CCFF00] focus:ring-4 focus:ring-[#CCFF00]/10 transition-all appearance-none"
+                className="w-full bg-background border border-border rounded-[8px] py-4 px-4 text-sm text-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all appearance-none"
               >
                 <option value="">Add Interest...</option>
                 {[
@@ -622,20 +623,20 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                       {sport}
                     </option>
                   ))}
-              </select>
+              </Select>
             </div>
           </div>
 
           {/* Action Buttons */}
           <div className="pt-6 flex items-center gap-4">
-            <button
+            <Button
               type="button"
               onClick={onClose}
-              className="flex-1 px-8 py-4 rounded-[8px] border border-[#2D2D2D] text-white/40 text-[10px] font-black uppercase tracking-widest hover:bg-[#000000] hover:text-white transition-all"
+              className="flex-1 px-8 py-4 rounded-[8px] border border-border text-white/40 text-[10px] font-black uppercase tracking-widest hover:bg-background hover:text-white transition-all"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={
                 loading ||
@@ -645,7 +646,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                 usernameStatus === "taken" ||
                 usernameStatus === "short"
               }
-              className="flex-[2] px-8 py-4 rounded-[8px] bg-[#CCFF00] text-black text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-lg shadow-[#CCFF00]/20 disabled:opacity-50 disabled:grayscale disabled:hover:scale-100"
+              className="flex-[2] px-8 py-4 rounded-[8px] bg-primary text-black text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-lg shadow-[var(--primary)]/20 disabled:opacity-50 disabled:grayscale disabled:hover:scale-100"
             >
               {loading || sendingOtp || verifyingOtp ? (
                 <>
@@ -658,7 +659,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                   {showOtpInput ? "Verify & Save" : "Save Changes"}
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

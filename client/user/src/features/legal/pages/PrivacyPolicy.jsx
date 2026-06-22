@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 
 const PrivacyPolicy = () => {
   return (
-    <div className="min-h-screen bg-[#050505] text-white pt-24 pb-12 font-sans selection:bg-[#BFF367]/30">
+    <div className="min-h-screen bg-[#050505] text-white pt-24 pb-12 font-sans selection:bg-primary/30">
       <div className="container mx-auto px-6 max-w-4xl">
-        <h1 className="text-4xl font-black mb-8 uppercase tracking-tight text-[#BFF367]">
+        <h1 className="text-4xl font-black mb-8 uppercase tracking-tight text-primary">
           Privacy Policy
         </h1>
 
@@ -66,7 +66,7 @@ const PrivacyPolicy = () => {
               contact us at{" "}
               <a
                 href="mailto:contact@kridaz.com"
-                className="text-[#BFF367] hover:underline"
+                className="text-primary hover:underline"
               >
                 contact@kridaz.com
               </a>
@@ -78,7 +78,7 @@ const PrivacyPolicy = () => {
         <div className="mt-12 pt-8 border-t border-white/10">
           <Link
             to="/"
-            className="text-[#BFF367] hover:underline font-bold uppercase tracking-wider text-sm"
+            className="text-primary hover:underline font-bold uppercase tracking-wider text-sm"
           >
             ΓåÉ Back to Home
           </Link>

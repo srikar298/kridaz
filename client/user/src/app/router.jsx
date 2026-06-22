@@ -21,7 +21,7 @@ const PageLoader = () => (
       alt="Loading..."
       className="w-24 h-24 object-contain"
     />
-    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00C187] mt-3">
+    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-success mt-3">
       Loading page...
     </p>
   </div>
@@ -37,6 +37,9 @@ const ProfessionalDashboard = lazy(
 );
 const BookingsTab = lazy(
   () => import("@features/professional/pages/BookingsTab")
+);
+const InquiriesTab = lazy(
+  () => import("@features/professional/components/InquiriesTab")
 );
 const PayoutsTab = lazy(
   () => import("@features/professional/pages/PayoutsTab")
@@ -491,6 +494,14 @@ const router = createBrowserRouter([
         element: (
           <S>
             <BookingsTab />
+          </S>
+        ),
+      },
+      {
+        path: "inquiries",
+        element: (
+          <S>
+            <InquiriesTab />
           </S>
         ),
       },

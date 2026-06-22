@@ -65,7 +65,7 @@
 }
 
 .sm-toggle:focus-visible {
-  outline: 2px solid #ffffffaa;
+  outline: 2px solid var(--foreground)aa;
   outline-offset: 4px;
   border-radius: 4px;
 }
@@ -135,7 +135,7 @@
   right: 0;
   width: clamp(260px, 38vw, 420px);
   height: 100vh;
-  background: #000000;
+  background: var(--background);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   display: flex;
@@ -197,7 +197,7 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 500;
-  color: var(--sm-accent, #ff0000);
+  color: var(--sm-accent, var(--destructive));
 }
 
 .sm-socials-list {
@@ -224,7 +224,7 @@
 }
 
 .sm-socials-link:focus-visible {
-  outline: 2px solid var(--sm-accent, #ff0000);
+  outline: 2px solid var(--sm-accent, var(--destructive));
   outline-offset: 3px;
 }
 
@@ -250,7 +250,7 @@
 }
 
 .sm-socials-link:hover {
-  color: var(--sm-accent, #ff0000);
+  color: var(--sm-accent, var(--destructive));
 }
 
 .sm-panel-title {

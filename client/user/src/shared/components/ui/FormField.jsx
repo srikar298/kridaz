@@ -1,4 +1,5 @@
-import { cn } from "@lib/utils";
+import { cn } from "@lib/utils";import { Input } from "@kridaz/ui";
+
 
 const FormField = ({
   label,
@@ -15,11 +16,11 @@ const FormField = ({
         {label}
       </span>
     </label>
-    <input
+    <Input
       type={type}
       placeholder={label}
       className={cn(
-        "input bg-[#151515] border-gray-800 text-white focus:border-primary focus:outline-none font-secondary text-sm h-12",
+        "input bg-card border-gray-800 text-white focus:border-primary focus:outline-none font-secondary text-sm h-12",
         inputClassName
       )}
       {...register(name)}

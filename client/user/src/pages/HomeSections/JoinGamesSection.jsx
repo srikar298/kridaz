@@ -1,10 +1,11 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MapPin, ChevronRight, Info, Share2, Users } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button, Select } from "@kridaz/ui";
 
-const GRAD = "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)";
-const BDR = "#2A2A2A";
+
+const GRAD = "linear-gradient(90deg, var(--primary) 0%, var(--primary) 100%)";
+const BDR = "var(--border)";
 
 export default function JoinGamesSection({
   featureFlags,
@@ -28,17 +29,17 @@ export default function JoinGamesSection({
   return (
     <section className="py-6 mb-6 w-full">
       <div className="w-full">
-        <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8 mb-6 border-b border-white/5 pb-4">
+        <div className="relative flex flex-row items-center justify-between gap-4 mb-6 border-b border-white/5 pb-4">
           <div className="relative">
             <div
-              className="absolute -left-6 top-1/2 -translate-y-1/2 w-1.5 h-16 rounded-full shadow-[0_0_25px_rgba(85,222,232,0.5)] hidden md:block"
+              className="absolute -left-6 top-1/2 -translate-y-1/2 w-1.5 h-12 rounded-full shadow-[0_0_25px_rgba(85,222,232,0.5)] hidden md:block"
               style={{ background: GRAD }}
             ></div>
             <h2
               className="text-[14px] font-black text-white tracking-tighter leading-none"
               style={{ fontFamily: "'Open Sans', sans-serif" }}
             >
-              JOIN{" "}
+              Join{" "}
               <span
                 style={{
                   background: GRAD,
@@ -46,20 +47,14 @@ export default function JoinGamesSection({
                   WebkitTextFillColor: "transparent",
                 }}
               >
-                GAMES
+                Games
               </span>
             </h2>
-            <p
-              className="text-xs md:text-sm font-bold text-white/40 uppercase tracking-[0.3em] mt-4"
-              style={{ fontFamily: "'Inter 28pt Light', sans-serif" }}
-            >
-              Community Matchmaking • No Team? No Problem.
-            </p>
           </div>
 
           <Link
             to="/join-games"
-            className="group flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 rounded-[6px] hover:bg-[#BFF367] hover:text-black hover:border-[#BFF367] transition-all duration-500"
+            className="flex items-center gap-1 font-semibold text-[10px] md:text-[15px] transition-all hover:text-primary text-muted-foreground whitespace-nowrap"
           >
             View More <span className="hidden md:inline">Games</span>{" "}
             <ChevronRight size={16} />
@@ -70,17 +65,17 @@ export default function JoinGamesSection({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           <div className="relative">
             <MapPin
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 group-focus-within:text-[#BFF367] transition-colors pointer-events-none"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 group-focus-within:text-primary transition-colors pointer-events-none"
               size={18}
             />
-            <select
+            <Select
               value={selectedHomeState}
               onChange={(e) => {
                 setSelectedHomeState(e.target.value);
                 setSelectedHomeCity("");
               }}
               disabled={loadingStates}
-              className="w-full bg-[#111] border border-white/10 rounded-[8px] py-3 pl-12 pr-4 appearance-none text-sm text-white focus:border-[#BFF367] outline-none transition-all font-bold disabled:opacity-50"
+              className="w-full bg-card border border-white/10 rounded-[8px] py-3 pl-12 pr-4 appearance-none text-sm text-white focus:border-primary outline-none transition-all font-bold disabled:opacity-50"
             >
               <option value="">
                 {loadingStates ? "Loading States..." : "Select State"}
@@ -90,19 +85,19 @@ export default function JoinGamesSection({
                   {s}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
 
           <div className="relative">
             <MapPin
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 group-focus-within:text-[#BFF367] transition-colors pointer-events-none"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 group-focus-within:text-primary transition-colors pointer-events-none"
               size={18}
             />
-            <select
+            <Select
               value={selectedHomeCity}
               onChange={(e) => setSelectedHomeCity(e.target.value)}
               disabled={!selectedHomeState || loadingCities}
-              className="w-full bg-[#111] border border-white/10 rounded-[8px] py-3 pl-12 pr-4 appearance-none text-sm text-white focus:border-[#BFF367] outline-none transition-all font-bold disabled:opacity-50"
+              className="w-full bg-card border border-white/10 rounded-[8px] py-3 pl-12 pr-4 appearance-none text-sm text-white focus:border-primary outline-none transition-all font-bold disabled:opacity-50"
             >
               <option value="">
                 {loadingCities
@@ -116,7 +111,7 @@ export default function JoinGamesSection({
                   {c}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
         </div>
 
@@ -133,7 +128,7 @@ export default function JoinGamesSection({
             "TENNIS",
             "PICKLEBALL",
           ].map((tab) => (
-            <button
+            <Button
               key={tab}
               onClick={() => setSelectedGameSport(tab)}
               className="px-6 py-2 rounded-full font-bold text-xs shrink-0 transition-colors border"
@@ -152,7 +147,7 @@ export default function JoinGamesSection({
               }
             >
               {tab}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -209,7 +204,7 @@ export default function JoinGamesSection({
                     style={{
                       height: 340,
                       background:
-                        "linear-gradient(160deg,#0d0d0d 0%,#111 100%)",
+                        "linear-gradient(160deg,var(--background) 0%,#111 100%)",
                     }}
                   >
                     <div className="absolute inset-0">
@@ -231,8 +226,8 @@ export default function JoinGamesSection({
                       <div className="flex items-start justify-between">
                         <div className="flex flex-col gap-1">
                           <div className="flex gap-2">
-                            <div className="px-3 py-1 bg-[#BFF367]/20 border border-[#BFF367]/40 rounded-full inline-flex">
-                              <span className="text-[9px] font-black text-[#BFF367] uppercase tracking-widest">
+                            <div className="px-3 py-1 bg-primary/20 border border-primary/40 rounded-full inline-flex">
+                              <span className="text-[9px] font-black text-primary uppercase tracking-widest">
                                 {g.gameType}
                               </span>
                             </div>
@@ -245,7 +240,7 @@ export default function JoinGamesSection({
                             )}
                           </div>
                           <div className="flex items-center gap-2">
-                            <button
+                            <Button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 navigator.clipboard?.writeText(
@@ -253,15 +248,15 @@ export default function JoinGamesSection({
                                 );
                                 toast.success("Game ID copied!");
                               }}
-                              className="px-2.5 py-1 bg-black/50 border border-white/15 hover:border-[#BFF367]/40 rounded-[6px] inline-flex items-center gap-1 transition-all"
+                              className="px-2.5 py-1 bg-black/50 border border-white/15 hover:border-primary/40 rounded-[6px] inline-flex items-center gap-1 transition-all"
                               title="Click to copy"
                             >
-                              <Info size={9} className="text-[#BFF367]/70" />
+                              <Info size={9} className="text-primary/70" />
                               <span className="text-[9px] font-black text-white/60 uppercase tracking-widest">
                                 ID: {g.shortId || g._id.slice(-6).toUpperCase()}
                               </span>
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 const shareUrl = `${window.location.origin}/join-games?gameId=${g._id}`;
@@ -287,15 +282,15 @@ export default function JoinGamesSection({
                                   toast.success("Link copied to clipboard!");
                                 }
                               }}
-                              className="p-1.5 bg-black/50 border border-white/15 hover:border-[#BFF367]/40 rounded-[8px] flex items-center justify-center transition-all"
+                              className="p-1.5 bg-black/50 border border-white/15 hover:border-primary/40 rounded-[8px] flex items-center justify-center transition-all"
                               title="Share Match"
                             >
-                              <Share2 size={10} className="text-[#BFF367]/70" />
-                            </button>
+                              <Share2 size={10} className="text-primary/70" />
+                            </Button>
                           </div>
                         </div>
                         <div className="flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-[6px] border border-white/10">
-                          <span className="text-[10px] font-black text-[#BFF367]">
+                          <span className="text-[10px] font-black text-primary">
                             ₹
                           </span>
                           <span className="text-xs font-black text-white">
@@ -305,11 +300,11 @@ export default function JoinGamesSection({
                       </div>
 
                       <div className="flex items-center gap-2 mt-1">
-                        <div className="h-px flex-1 bg-[#BFF367]/20" />
-                        <span className="text-[8px] font-black text-[#BFF367]/60 uppercase tracking-[0.2em]">
+                        <div className="h-px flex-1 bg-primary/20" />
+                        <span className="text-[8px] font-black text-primary/60 uppercase tracking-[0.2em]">
                           ✦ {isQuick ? "Casual Pool" : "Rivalry Ledger"}
                         </span>
-                        <div className="h-px flex-1 bg-[#BFF367]/20" />
+                        <div className="h-px flex-1 bg-primary/20" />
                       </div>
 
                       <div className="flex-1">
@@ -319,13 +314,13 @@ export default function JoinGamesSection({
                           ) : (
                             <>
                               {g.teams?.teamA?.name || "TBD"}{" "}
-                              <span className="text-[#BFF367]">VS</span>{" "}
+                              <span className="text-primary">VS</span>{" "}
                               {g.teams?.teamB?.name || "TBD"}
                             </>
                           )}
                         </h3>
                         <div className="flex items-center gap-1.5 mt-1.5">
-                          <MapPin size={10} className="text-[#BFF367]" />
+                          <MapPin size={10} className="text-primary" />
                           <span className="text-[10px] text-white/50 truncate">
                             {g.ground?.name || g.city || "Self-Arranged Venue"}
                           </span>
@@ -353,7 +348,7 @@ export default function JoinGamesSection({
 
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <Users size={12} className="text-[#BFF367]" />
+                          <Users size={12} className="text-primary" />
                           <div>
                             <span className="text-sm font-black text-white">
                               {openSlots} Open
@@ -370,7 +365,7 @@ export default function JoinGamesSection({
                                 key={idx}
                                 className={`w-5 h-5 rounded-full border ${
                                   idx < totalSlots - openSlots
-                                    ? "bg-[#BFF367]/30 border-[#BFF367]/50"
+                                    ? "bg-primary/30 border-primary/50"
                                     : "bg-white/5 border-white/10"
                                 }`}
                               />
@@ -381,8 +376,8 @@ export default function JoinGamesSection({
 
                       <div className="flex items-center justify-between mt-1">
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-[#BFF367]/20 border border-[#BFF367]/40 flex items-center justify-center">
-                            <span className="text-[10px] font-black text-[#BFF367]">
+                          <div className="w-7 h-7 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
+                            <span className="text-[10px] font-black text-primary">
                               {hostInitial}
                             </span>
                           </div>
@@ -395,7 +390,7 @@ export default function JoinGamesSection({
                             </p>
                           </div>
                         </div>
-                        <button
+                        <Button
                           onClick={(e) => {
                             e.stopPropagation();
                             navigate("/join-games");
@@ -403,11 +398,11 @@ export default function JoinGamesSection({
                           className="flex items-center gap-2 text-black px-5 py-2 rounded-[6px] font-black text-xs uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(85,222,232,0.4)] hover:scale-105"
                           style={{
                             background:
-                              "linear-gradient(90deg, #BFF367 0%, #BFF367 100%)",
+                              "linear-gradient(90deg, var(--primary) 0%, var(--primary) 100%)",
                           }}
                         >
                           JOIN <ChevronRight size={14} />
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </div>

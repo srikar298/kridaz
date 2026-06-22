@@ -106,7 +106,7 @@ export const AdBannerSection = ({ banners = [] }) => {
                     <video
                       ref={isCurrent ? videoRef : null}
                       src={banner.videoUrl}
-                      className="w-full h-full object-cover opacity-90"
+                      className="w-full h-full object-contain opacity-90"
                       autoPlay={isCurrent}
                       muted={isMuted}
                       loop
@@ -116,7 +116,7 @@ export const AdBannerSection = ({ banners = [] }) => {
                     <img
                       src={banner.imageUrl}
                       alt={banner.title}
-                      className="w-full h-full object-cover opacity-90"
+                      className="w-full h-full object-contain opacity-90"
                     />
                   )}
                   {banner.targetUrl && (
@@ -137,18 +137,18 @@ export const AdBannerSection = ({ banners = [] }) => {
             <div className="absolute top-4 right-4 z-40 flex items-center gap-2">
               <button
                 onClick={togglePlay}
-                className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-primary hover:text-black transition-all"
+                className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:text-[#D2F40E] transition-all"
                 title={isPlaying ? "Pause" : "Play"}
               >
                 {isPlaying ? (
                   <Pause size={14} />
                 ) : (
-                  <Play size={14} className="fill-white hover:fill-black" />
+                  <Play size={14} className="fill-current" />
                 )}
               </button>
               <button
                 onClick={toggleMute}
-                className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-primary hover:text-black transition-all"
+                className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:text-[#D2F40E] transition-all"
                 title={isMuted ? "Unmute" : "Mute"}
               >
                 {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
@@ -162,8 +162,7 @@ export const AdBannerSection = ({ banners = [] }) => {
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}
-                className={`h-1 rounded-full transition-all ${idx === currentIndex ? "w-6 bg-primary" : "w-1.5 bg-white/20 hover:bg-white/40"}`}
-                style={idx === currentIndex ? { backgroundColor: PRI } : {}}
+                className={`h-1 rounded-full transition-all ${idx === currentIndex ? "w-6 bg-[#D2F40E]" : "w-1.5 bg-white/20 hover:bg-white/40"}`}
               />
             ))}
           </div>

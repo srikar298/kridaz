@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useGetSavedTurfsQuery } from "@redux/api/turfApi";
 import TurfCardMobile from "../../turf/components/TurfCardMobile";
-import TurfCardSkeleton from "@components/ui/TurfCardSkeleton";
+import TurfCardSkeleton from "@components/ui/TurfCardSkeleton";import { Button } from "@kridaz/ui";
+
 
 const SavedPage = () => {
   const navigate = useNavigate();
@@ -42,18 +43,18 @@ const SavedPage = () => {
     }
 
     return (
-      <div className="flex flex-col items-center justify-center py-20 px-4 text-center border border-zinc-800 rounded-[12px] bg-[#121212]/50 border-dashed">
+      <div className="flex flex-col items-center justify-center py-20 px-4 text-center border border-zinc-800 rounded-[12px] bg-card/50 border-dashed">
         {icon}
         <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-wide">
           No saved {type}
         </h3>
         <p className="text-zinc-500 max-w-sm mx-auto text-sm">{message}</p>
-        <button
+        <Button
           onClick={() => navigate("/venues")}
           className="mt-6 px-6 py-2.5 rounded-full bg-zinc-800 text-white font-semibold hover:bg-zinc-700 transition-colors"
         >
           Explore Now
-        </button>
+        </Button>
       </div>
     );
   };
@@ -61,7 +62,7 @@ const SavedPage = () => {
   const renderContent = () => {
     if (!isLoggedIn) {
       return (
-        <div className="flex flex-col items-center justify-center py-20 px-4 text-center border border-zinc-800 rounded-[12px] bg-[#121212]/50 border-dashed">
+        <div className="flex flex-col items-center justify-center py-20 px-4 text-center border border-zinc-800 rounded-[12px] bg-card/50 border-dashed">
           <Bookmark className="w-16 h-16 text-zinc-700 mb-4 mx-auto" />
           <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-wide">
             Please Log In
@@ -69,12 +70,12 @@ const SavedPage = () => {
           <p className="text-zinc-500 max-w-sm mx-auto text-sm">
             You must be logged in to view your personal saved items.
           </p>
-          <button
+          <Button
             onClick={() => navigate("/login")}
-            className="mt-6 px-8 py-3 rounded-full bg-[#BFF367] text-black font-bold hover:brightness-110 transition-all uppercase tracking-wider text-xs"
+            className="mt-6 px-8 py-3 rounded-full bg-primary text-black font-bold hover:brightness-110 transition-all uppercase tracking-wider text-xs"
           >
             Log In Now
-          </button>
+          </Button>
         </div>
       );
     }
@@ -122,7 +123,7 @@ const SavedPage = () => {
           <div className="mb-4 sm:mb-6">
             <div>
               <h1 className="text-2xl sm:text-4xl font-black uppercase tracking-tighter flex items-center gap-3">
-                <Bookmark className="w-6 h-6 sm:w-8 sm:h-8 text-[#BFF367]" />
+                <Bookmark className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                 Saved Items
               </h1>
               <p className="text-xs sm:text-sm text-zinc-500 font-medium tracking-wide uppercase mt-1">
@@ -138,18 +139,18 @@ const SavedPage = () => {
               const isActive = activeTab === tab.id;
 
               return (
-                <button
+                <Button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex-none flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold tracking-wide uppercase transition-all duration-300 ${
                     isActive
-                      ? "bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black shadow-[0_0_15px_rgba(191,243,103,0.3)]"
+                      ? "bg-gradient-to-r from-primary to-primary text-black shadow-[0_0_15px_rgba(191,243,103,0.3)]"
                       : "bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700"
                   }`}
                 >
                   <Icon className="w-4 h-4" />
                   {tab.label}
-                </button>
+                </Button>
               );
             })}
           </div>

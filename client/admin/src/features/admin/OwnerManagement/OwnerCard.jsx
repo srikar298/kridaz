@@ -7,7 +7,8 @@ import {
   CheckCircle,
   ExternalLink,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";import { Button, Input } from "@kridaz/ui";
+
 
 const OwnerCard = ({
   owner,
@@ -32,40 +33,40 @@ const OwnerCard = ({
   return (
     <div
       onClick={handleRowClick}
-      className={`group relative bg-[#000000] border transition-all duration-500 rounded-[12px] p-4 lg:px-8 lg:py-5 shadow-xl overflow-hidden cursor-pointer ${isSelected ? "border-[#CCFF00] bg-[#CCFF00]/5" : "border-[#2D2D2D] hover:border-[#CCFF00]/40"}`}
+      className={`group relative bg-background border transition-all duration-500 rounded-[12px] p-4 lg:px-8 lg:py-5 shadow-xl overflow-hidden cursor-pointer ${isSelected ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}
     >
       {/* Interaction Highlight */}
       <div
-        className={`absolute inset-y-0 left-0 w-1 bg-[#CCFF00] transition-transform duration-500 shadow-[0_0_15px_#CCFF00] ${isSelected ? "scale-y-100" : "scale-y-0 group-hover:scale-y-100"}`}
+        className={`absolute inset-y-0 left-0 w-1 bg-primary transition-transform duration-500 shadow-[0_0_15px_var(--primary)] ${isSelected ? "scale-y-100" : "scale-y-0 group-hover:scale-y-100"}`}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center relative z-10">
         {/* Checkbox */}
         <div className="lg:col-span-1 flex items-center justify-center">
-          <input
+          <Input
             type="checkbox"
             checked={isSelected}
             onChange={(e) => {
               e.stopPropagation();
               onSelect(owner._id);
             }}
-            className="w-5 h-5 rounded border-[#2D2D2D] bg-[#0d0d0d] text-[#CCFF00] focus:ring-[#CCFF00]/50"
+            className="w-5 h-5 rounded border-border bg-background text-primary focus:ring-primary/50"
           />
         </div>
 
         {/* Partner Profile */}
         <div className="lg:col-span-3 flex items-center gap-5">
           <div className="relative shrink-0">
-            <div className="absolute inset-0 bg-[#CCFF00]/5 blur-lg rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative w-11 h-11 rounded-[10px] bg-[#CCFF00]/10 flex items-center justify-center text-[18px] font-black text-[#CCFF00] uppercase border border-[#CCFF00]/20">
+            <div className="absolute inset-0 bg-primary/5 blur-lg rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative w-11 h-11 rounded-[10px] bg-primary/10 flex items-center justify-center text-[18px] font-black text-primary uppercase border border-primary/20">
               {owner.name?.[0] || "U"}
             </div>
           </div>
           <div className="min-w-0">
-            <h3 className="text-[15px] font-black text-white uppercase tracking-tight group-hover:text-[#CCFF00] transition-colors truncate">
+            <h3 className="text-[15px] font-black text-white uppercase tracking-tight group-hover:text-primary transition-colors truncate">
               {owner.name}
             </h3>
-            <p className="text-[9px] font-black text-[#878C9F] uppercase tracking-[0.2em] mt-0.5">
+            <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-0.5">
               PARTNER ID: <span className="text-white/40">{ownerId}</span>
             </p>
           </div>
@@ -103,7 +104,7 @@ const OwnerCard = ({
 
         {/* Actions */}
         <div className="lg:col-span-2 flex justify-end gap-2">
-          <button
+          <Button
             onClick={(e) => {
               e.stopPropagation();
               onToggleStatus([owner._id], isBlocked ? "active" : "blocked");
@@ -112,8 +113,8 @@ const OwnerCard = ({
             className={`p-2 rounded-[8px] border transition-all ${isBlocked ? "bg-green-500/10 border-green-500/20 text-green-400 hover:bg-green-500/20" : "bg-orange-500/10 border-orange-500/20 text-orange-400 hover:bg-orange-500/20"}`}
           >
             {isBlocked ? <CheckCircle size={16} /> : <Ban size={16} />}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={(e) => {
               e.stopPropagation();
               onDelete(owner);
@@ -121,16 +122,16 @@ const OwnerCard = ({
             className="p-2 rounded-[8px] bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all"
           >
             <Trash2 size={16} />
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/admin/owners/${owner._id}/turf`);
             }}
-            className="p-2 rounded-[8px] bg-white/5 border border-white/10 text-white/40 hover:bg-[#CCFF00] hover:text-black transition-all"
+            className="p-2 rounded-[8px] bg-white/5 border border-white/10 text-white/40 hover:bg-primary hover:text-black transition-all"
           >
             <ExternalLink size={16} />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

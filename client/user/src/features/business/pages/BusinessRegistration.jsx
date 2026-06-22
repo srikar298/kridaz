@@ -15,9 +15,10 @@ import {
   Upload,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { searchLocations } from "@user/utils/locationService";
+import { searchLocations } from "@user/utils/locationService";import { Button, Input } from "@kridaz/ui";
 
-const PRI = "#CCFF00";
+
+const PRI = "var(--primary)";
 
 export default function BusinessRegistration({ defaultRole }) {
   const navigate = useNavigate();
@@ -42,13 +43,6 @@ export default function BusinessRegistration({ defaultRole }) {
   });
 
   const [files, setFiles] = useState({
-    BUSINESS: null,
-    GST: null,
-    OWNERSHIP: null,
-    SALE_DEED: null,
-    PROPERTY_TAX: null,
-    ELECTRICITY: null,
-    GOOGLE: null,
     PAN: null,
     AADHAR: null,
   });
@@ -265,17 +259,17 @@ export default function BusinessRegistration({ defaultRole }) {
   if (hasRoleConflict && existingRole) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center p-6">
-        <div className="max-w-md w-full text-center space-y-8 p-12 rounded-[8px] border border-[#2D2D2D] bg-[#000000] relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#BFF367] to-[#BFF367]" />
-          <div className="w-16 h-16 bg-gradient-to-r from-[#BFF367]/10 to-[#BFF367]/10 rounded-[8px] flex items-center justify-center mx-auto mb-6">
+        <div className="max-w-md w-full text-center space-y-8 p-12 rounded-[8px] border border-border bg-background relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-primary" />
+          <div className="w-16 h-16 bg-gradient-to-r from-primary/10 to-primary/10 rounded-[8px] flex items-center justify-center mx-auto mb-6">
             <ShieldAlert
               size={40}
-              className="text-transparent bg-clip-text bg-gradient-to-r from-[#BFF367] to-[#BFF367]"
+              className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary"
             />
           </div>
           <h2 className="text-4xl font-black uppercase tracking-tight">
             Role{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#BFF367] to-[#BFF367]">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary">
               Conflict
             </span>
           </h2>
@@ -286,7 +280,7 @@ export default function BusinessRegistration({ defaultRole }) {
             </span>{" "}
             role. Kridaz supports only one professional role per account.
           </p>
-          <button
+          <Button
             onClick={() => {
               if (existingRole?.toLowerCase() === "coach")
                 navigate("/professional/coach");
@@ -308,10 +302,10 @@ export default function BusinessRegistration({ defaultRole }) {
                 navigate("/admin");
               else navigate("/");
             }}
-            className="w-full py-4 rounded-[8px] border border-[#2D2D2D] hover:border-[#BFF367]/30 hover:text-transparent bg-clip-text bg-gradient-to-r from-[#BFF367] to-[#BFF367] transition-all font-normal uppercase tracking-widest text-[12px]"
+            className="w-full py-4 rounded-[8px] border border-border hover:border-primary/30 hover:text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary transition-all font-normal uppercase tracking-widest text-[12px]"
           >
             Go to Dashboard
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -338,17 +332,17 @@ export default function BusinessRegistration({ defaultRole }) {
 
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center p-6 pt-20">
-        <div className="max-w-md w-full text-center space-y-6 p-8 md:p-10 rounded-[8px] border border-[#2D2D2D] bg-[#000000] relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#BFF367] to-[#BFF367]" />
-          <div className="w-14 h-14 bg-gradient-to-br from-[#BFF367]/15 to-[#BFF367]/15 rounded-[12px] flex items-center justify-center mx-auto mb-4 border border-[#BFF367]/20">
-            <Clock size={32} className="text-[#BFF367] animate-pulse" />
+        <div className="max-w-md w-full text-center space-y-6 p-8 md:p-10 rounded-[8px] border border-border bg-background relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-primary" />
+          <div className="w-14 h-14 bg-gradient-to-br from-primary/15 to-primary/15 rounded-[12px] flex items-center justify-center mx-auto mb-4 border border-primary/20">
+            <Clock size={32} className="text-primary animate-pulse" />
           </div>
           <h2
             className="text-3xl font-black uppercase tracking-tight"
             style={{ fontFamily: "'Open Sans', sans-serif" }}
           >
             Application{" "}
-            <span className="bg-gradient-to-r from-[#BFF367] to-[#BFF367] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
               Pending
             </span>
           </h2>
@@ -360,33 +354,33 @@ export default function BusinessRegistration({ defaultRole }) {
             <span className="text-white font-semibold">{formattedRole}</span>.
             Our admin team is reviewing your registration details and documents.
           </p>
-          <div className="bg-[#000000] rounded-[8px] p-4 text-[12px] text-left space-y-4 border border-[#2D2D2D]">
+          <div className="bg-background rounded-[8px] p-4 text-[12px] text-left space-y-4 border border-border">
             <div className="flex items-center gap-3 text-gray-300">
-              <CheckCircle2 size={18} className="text-[#BFF367]" />
+              <CheckCircle2 size={18} className="text-primary" />
               <span>Application Received</span>
             </div>
             <div className="flex items-center gap-3 text-gray-300">
-              <div className="w-[18px] h-[18px] border-2 border-[#BFF367]/30 border-t-[#BFF367] rounded-full animate-spin" />
+              <div className="w-[18px] h-[18px] border-2 border-primary/30 border-t-[var(--primary)] rounded-full animate-spin" />
               <span>Document Verification In-Progress</span>
             </div>
             <div className="flex items-center gap-3 text-white/20">
-              <div className="w-[18px] h-[18px] border-2 border-[#2D2D2D] rounded-full" />
+              <div className="w-[18px] h-[18px] border-2 border-border rounded-full" />
               <span>Final Approval &amp; Access</span>
             </div>
           </div>
-          <button
+          <Button
             onClick={() => navigate("/")}
-            className="w-full py-4 mt-2 rounded-[8px] border border-[#2D2D2D] hover:border-[#BFF367]/30 hover:text-[#BFF367] transition-all font-normal uppercase tracking-widest text-[12px]"
+            className="w-full py-4 mt-2 rounded-[8px] border border-border hover:border-primary/30 hover:text-primary transition-all font-normal uppercase tracking-widest text-[12px]"
           >
             Back to Home
-          </button>
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black text-white pt-10 pb-20 font-sans selection:bg-[#BFF367] selection:text-black">
+    <div className="min-h-screen bg-black text-white pt-10 pb-20 font-sans selection:bg-primary selection:text-black">
       <div className="w-full px-6">
         <div className="grid lg:grid-cols-[1fr_380px] gap-12 relative">
           <div className="space-y-10">
@@ -396,7 +390,7 @@ export default function BusinessRegistration({ defaultRole }) {
                 style={{ fontFamily: "'Open Sans', sans-serif" }}
               >
                 Professional{" "}
-                <span className="bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-transparent bg-clip-text">
+                <span className="bg-gradient-to-r from-primary to-primary text-transparent bg-clip-text">
                   Registration.
                 </span>
               </h1>
@@ -428,40 +422,40 @@ export default function BusinessRegistration({ defaultRole }) {
                 />
               )}
               <form onSubmit={handleFormSubmit} className="space-y-6">
-                <div className="p-6 rounded-[8px] border border-[#2D2D2D] bg-[#000000] space-y-6 relative overflow-hidden">
+                <div className="p-6 rounded-[8px] border border-border bg-background space-y-6 relative overflow-hidden">
                   <h3
                     className="text-lg font-black uppercase tracking-widest flex items-center gap-3"
                     style={{ fontFamily: "'Open Sans', sans-serif" }}
                   >
-                    <Building2 className="text-[#BFF367] w-5 h-5" />{" "}
-                    <span className="bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-transparent bg-clip-text">
+                    <Building2 className="text-primary w-5 h-5" />{" "}
+                    <span className="bg-gradient-to-r from-primary to-primary text-transparent bg-clip-text">
                       Business Details
                     </span>
                   </h3>
 
                   <div className="space-y-2 group">
-                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878C9F] group-focus-within:text-[#BFF367] transition-colors">
+                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground group-focus-within:text-primary transition-colors">
                       Business Name <span className="text-red-500">*</span>
                     </label>
-                    <input
+                    <Input
                       type="text"
                       name="businessDetails.businessName"
                       value={formData.businessDetails.businessName}
                       onChange={handleChange}
                       placeholder="e.g. Dream Sports Arena"
-                      className="w-full bg-[#0a0a0c] border border-[#2D2D2D] focus:border-[#BFF367]/50 rounded-[6px] h-12 px-4 text-white text-sm outline-none transition-all"
+                      className="w-full bg-[#0a0a0c] border border-border focus:border-primary/50 rounded-[6px] h-12 px-4 text-white text-sm outline-none transition-all"
                     />
                   </div>
                 </div>
 
-                <div className="p-6 rounded-[8px] border border-[#2D2D2D] bg-[#000000] space-y-6 relative overflow-hidden">
+                <div className="p-6 rounded-[8px] border border-border bg-background space-y-6 relative overflow-hidden">
                   <div className="flex flex-col gap-1">
                     <h3
                       className="text-lg font-black uppercase tracking-widest flex items-center gap-3"
                       style={{ fontFamily: "'Open Sans', sans-serif" }}
                     >
-                      <FileText className="text-[#BFF367] w-5 h-5" />{" "}
-                      <span className="bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-transparent bg-clip-text">
+                      <FileText className="text-primary w-5 h-5" />{" "}
+                      <span className="bg-gradient-to-r from-primary to-primary text-transparent bg-clip-text">
                         Document Uploads
                       </span>
                     </h3>
@@ -470,7 +464,7 @@ export default function BusinessRegistration({ defaultRole }) {
                       style={{ fontFamily: "'Inter', sans-serif" }}
                     >
                       Accepted formats: JPG, PNG, PDF &nbsp;&bull;&nbsp;{" "}
-                      <span className="text-[#BFF367]">
+                      <span className="text-primary">
                         Max file size: 10MB
                       </span>
                     </p>
@@ -503,10 +497,10 @@ export default function BusinessRegistration({ defaultRole }) {
                   </div>
                 </div>
 
-                <button
+                <Button
                   type="submit"
                   disabled={loading || hasRoleConflict}
-                  className={`w-full py-4 rounded-[6px] font-bold text-xs uppercase tracking-widest transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 ${hasRoleConflict ? "bg-[#2D2D2D] text-[#878C9F] cursor-not-allowed" : "bg-gradient-to-r from-[#BFF367] to-[#BFF367] hover:opacity-90 text-black "}`}
+                  className={`w-full py-4 rounded-[6px] font-bold text-xs uppercase tracking-widest transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 ${hasRoleConflict ? "bg-border text-muted-foreground cursor-not-allowed" : "bg-gradient-to-r from-primary to-primary hover:opacity-90 text-black "}`}
                 >
                   {loading ? (
                     <>
@@ -524,18 +518,18 @@ export default function BusinessRegistration({ defaultRole }) {
                       <ArrowRight size={18} />
                     </>
                   )}
-                </button>
+                </Button>
               </form>
             </div>
           </div>
 
           <aside className="space-y-6 sticky top-24 self-start">
-            <div className="p-8 rounded-[8px] border border-[#2D2D2D] bg-[#000000] relative overflow-hidden">
+            <div className="p-8 rounded-[8px] border border-border bg-background relative overflow-hidden">
               <div className="absolute top-0 right-0 p-4 opacity-10">
-                <ShieldCheckIcon size={80} className="text-[#BFF367]" />
+                <ShieldCheckIcon size={80} className="text-primary" />
               </div>
               <h4
-                className="text-[16px] font-black uppercase tracking-[0.2em] mb-4 bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-transparent bg-clip-text"
+                className="text-[16px] font-black uppercase tracking-[0.2em] mb-4 bg-gradient-to-r from-primary to-primary text-transparent bg-clip-text"
                 style={{ fontFamily: "'Open Sans', sans-serif" }}
               >
                 Verification Policy
@@ -551,10 +545,10 @@ export default function BusinessRegistration({ defaultRole }) {
                   "Email notification on status",
                   "Dedicated support access",
                 ].map((text, i) => (
-                  <li key={i} className="flex gap-3 text-[13px] text-[#999999]">
+                  <li key={i} className="flex gap-3 text-[13px] text-muted-foreground">
                     <CheckCircle2
                       size={16}
-                      className="text-[#BFF367] shrink-0"
+                      className="text-primary shrink-0"
                     />
                     {text}
                   </li>
@@ -562,13 +556,13 @@ export default function BusinessRegistration({ defaultRole }) {
               </ul>
             </div>
 
-            <div className="p-8 rounded-[8px] border border-[#2D2D2D] bg-[#000000]">
+            <div className="p-8 rounded-[8px] border border-border bg-background">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded-[6px] bg-[#BFF367]/10">
-                  <Briefcase size={20} className="text-[#BFF367]" />
+                <div className="p-2 rounded-[6px] bg-primary/10">
+                  <Briefcase size={20} className="text-primary" />
                 </div>
                 <h4
-                  className="text-[16px] font-black uppercase tracking-[0.2em] bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-transparent bg-clip-text"
+                  className="text-[16px] font-black uppercase tracking-[0.2em] bg-gradient-to-r from-primary to-primary text-transparent bg-clip-text"
                   style={{ fontFamily: "'Open Sans', sans-serif" }}
                 >
                   Partner Perks
@@ -582,19 +576,19 @@ export default function BusinessRegistration({ defaultRole }) {
                   Join India's fastest growing sports ecosystem. Get access to:
                 </p>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-4 bg-[#0a0a0c] rounded-[8px] border border-[#2D2D2D]">
-                    <span className="bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-transparent bg-clip-text block font-black text-2xl mb-1">
+                  <div className="p-4 bg-[#0a0a0c] rounded-[8px] border border-border">
+                    <span className="bg-gradient-to-r from-primary to-primary text-transparent bg-clip-text block font-black text-2xl mb-1">
                       0%
                     </span>
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878C9F]">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                       Initial Fee
                     </span>
                   </div>
-                  <div className="p-4 bg-[#0a0a0c] rounded-[8px] border border-[#2D2D2D]">
-                    <span className="bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-transparent bg-clip-text block font-black text-2xl mb-1">
+                  <div className="p-4 bg-[#0a0a0c] rounded-[8px] border border-border">
+                    <span className="bg-gradient-to-r from-primary to-primary text-transparent bg-clip-text block font-black text-2xl mb-1">
                       24/7
                     </span>
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878C9F]">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                       Support
                     </span>
                   </div>
@@ -608,8 +602,8 @@ export default function BusinessRegistration({ defaultRole }) {
       {/* Agreement Modal */}
       {showAgreementModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#0a0a0c] border border-[#2D2D2D] rounded-[8px] p-8 max-w-md w-full shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#BFF367] to-[#BFF367]" />
+          <div className="bg-[#0a0a0c] border border-border rounded-[8px] p-8 max-w-md w-full shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-primary" />
             <h3
               className="text-xl font-black text-white uppercase tracking-wider mb-4"
               style={{ fontFamily: "'Open Sans', sans-serif" }}
@@ -627,9 +621,9 @@ export default function BusinessRegistration({ defaultRole }) {
 
             <label className="flex items-start gap-3 cursor-pointer mb-8 group">
               <div className="relative flex items-center justify-center mt-0.5">
-                <input
+                <Input
                   type="checkbox"
-                  className="peer appearance-none w-5 h-5 border border-[#2D2D2D] bg-[#0a0a0c] rounded-[4px] flex-shrink-0 checked:bg-[#BFF367] checked:border-[#BFF367] transition-colors cursor-pointer"
+                  className="peer appearance-none w-5 h-5 border border-border bg-[#0a0a0c] rounded-[4px] flex-shrink-0 checked:bg-primary checked:border-primary transition-colors cursor-pointer"
                   checked={isAgreed}
                   onChange={(e) => setIsAgreed(e.target.checked)}
                 />
@@ -647,21 +641,21 @@ export default function BusinessRegistration({ defaultRole }) {
             </label>
 
             <div className="flex gap-4">
-              <button
+              <Button
                 type="button"
                 onClick={() => setShowAgreementModal(false)}
-                className="flex-1 py-3 rounded-[8px] font-bold text-xs uppercase tracking-widest border border-[#2D2D2D] hover:bg-[#2D2D2D]/50 transition-colors text-white"
+                className="flex-1 py-3 rounded-[8px] font-bold text-xs uppercase tracking-widest border border-border hover:bg-border/50 transition-colors text-white"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={processSubmission}
                 disabled={!isAgreed}
-                className="flex-1 py-3 rounded-[8px] font-bold text-xs uppercase tracking-widest bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
+                className="flex-1 py-3 rounded-[8px] font-bold text-xs uppercase tracking-widest bg-gradient-to-r from-primary to-primary text-black disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
               >
                 Proceed
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -700,7 +694,7 @@ function DocumentUploadBox({
           {label}
         </span>
       )}
-      <input
+      <Input
         type="file"
         id={id}
         className="hidden"
@@ -716,7 +710,7 @@ function DocumentUploadBox({
       />
       <label
         htmlFor={id}
-        className={`flex flex-row items-center justify-center gap-2 py-3 px-2 border border-dashed transition-all cursor-pointer rounded-[6px] flex-1 ${selectedFile ? "border-[#BFF367] bg-[#BFF367]/10 text-[#BFF367]" : "border-[#2D2D2D] bg-[#0a0a0c] hover:border-[#BFF367]/50 hover:bg-[#BFF367]/5 text-[#BFF367]"}`}
+        className={`flex flex-row items-center justify-center gap-2 py-3 px-2 border border-dashed transition-all cursor-pointer rounded-[6px] flex-1 ${selectedFile ? "border-primary bg-primary/10 text-primary" : "border-border bg-[#0a0a0c] hover:border-primary/50 hover:bg-primary/5 text-primary"}`}
       >
         <Upload size={14} />
         <span className="text-[10px] font-bold truncate max-w-[80px]">

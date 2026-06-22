@@ -1,4 +1,4 @@
-import { uploadToCloudinary } from "../../utils/cloudinary.js";
+import { uploadToR2 } from "../../utils/r2Upload.js";
 import logger from "../../utils/logger.js";
 
 /**
@@ -14,7 +14,7 @@ export const handleSingleUpload = async (req, res) => {
     }
 
     const folder = req.body.folder || "kridaz/verification";
-    const result = await uploadToCloudinary(req.file.buffer, folder);
+    const result = await uploadToR2(req.file.buffer, folder, req.file.mimetype);
 
     return res.status(200).json({
       success: true,

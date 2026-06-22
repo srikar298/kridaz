@@ -3,7 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { format, parse } from "date-fns";
+import { format, parse } from "date-fns";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+
 import {
   Save,
   X,
@@ -85,7 +86,7 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
   const InputWrapper = ({ label, icon: Icon, children, error }) => (
     <div className="space-y-2">
       <label className="flex items-center gap-2 text-[8px] md:text-[10px] font-bold text-white/70 uppercase tracking-[1px] md:tracking-[2px] ml-1">
-        {Icon && <Icon size={12} className="text-[#B3DC26]/60" />}
+        {Icon && <Icon size={12} className="text-primary/60" />}
         {label}
       </label>
       {children}
@@ -100,7 +101,7 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="bg-[#000000] border-none md:border md:border-white/10 rounded-[16px] overflow-hidden md:shadow-2xl animate-fade-in"
+      className="bg-background border-none md:border md:border-white/10 rounded-[16px] overflow-hidden md:shadow-2xl animate-fade-in"
     >
       <div className="px-2 py-4 md:p-6 lg:p-8 space-y-8">
         <header className="flex items-center justify-between border-b border-white/10 pb-6">
@@ -109,9 +110,9 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
               Edit Arena Identity
             </h2>
           </div>
-          <div className="bg-[#B3DC26]/10 border border-[#B3DC26]/20 px-3 py-1 rounded-[16px] flex items-center gap-2">
-            <ShieldCheck size={12} className="text-[#B3DC26]" />
-            <span className="text-[10px] font-bold text-[#B3DC26] uppercase tracking-widest">
+          <div className="bg-primary/10 border border-primary/20 px-3 py-1 rounded-[16px] flex items-center gap-2">
+            <ShieldCheck size={12} className="text-primary" />
+            <span className="text-[10px] font-bold text-primary uppercase tracking-widest">
               Admin Control
             </span>
           </div>
@@ -120,11 +121,11 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
         <div className="grid grid-cols-2 gap-3 md:gap-8">
           <div className="space-y-3 md:space-y-6">
             <InputWrapper label="Arena Name" error={errors.name?.message}>
-              <input
+              <Input
                 type="text"
                 {...register("name")}
                 placeholder="E.g. Wembley Pro"
-                className={`w-full bg-[#050505] border rounded-[16px] md:rounded-[16px] px-3 md:px-4 py-2 md:py-3 text-[10px] md:text-sm text-white placeholder-[#333] focus:outline-none transition-all ${errors.name ? "border-red-500/50 bg-red-500/5" : "border-white/10 focus:border-[#B3DC26]/50"}`}
+                className={`w-full bg-[#050505] border rounded-[16px] md:rounded-[16px] px-3 md:px-4 py-2 md:py-3 text-[10px] md:text-sm text-white placeholder-[#333] focus:outline-none transition-all ${errors.name ? "border-red-500/50 bg-red-500/5" : "border-white/10 focus:border-primary/50"}`}
               />
             </InputWrapper>
 
@@ -132,25 +133,25 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
               label="Arena Biography"
               error={errors.description?.message}
             >
-              <textarea
+              <Textarea
                 {...register("description")}
                 placeholder="Describe the atmosphere and facilities..."
                 rows={4}
-                className={`w-full bg-[#050505] border rounded-[16px] md:rounded-[16px] px-3 md:px-4 py-2 md:py-3 text-[10px] md:text-sm text-white placeholder-[#333] focus:outline-none transition-all resize-none ${errors.description ? "border-red-500/50 bg-red-500/5" : "border-white/10 focus:border-[#B3DC26]/50"}`}
-              ></textarea>
+                className={`w-full bg-[#050505] border rounded-[16px] md:rounded-[16px] px-3 md:px-4 py-2 md:py-3 text-[10px] md:text-sm text-white placeholder-[#333] focus:outline-none transition-all resize-none ${errors.description ? "border-red-500/50 bg-red-500/5" : "border-white/10 focus:border-primary/50"}`}
+              ></Textarea>
             </InputWrapper>
 
             <InputWrapper
               label="Venue Policies & Rules"
               error={errors.policies?.message}
             >
-              <textarea
+              <Textarea
                 {...register("policies")}
                 maxLength={1000}
                 placeholder="Rules, cancellation terms, safety... (Min 200 chars)"
                 rows={6}
-                className={`w-full bg-[#050505] border rounded-[16px] md:rounded-[16px] px-3 md:px-4 py-2 md:py-3 text-[10px] md:text-sm text-white placeholder-[#333] focus:outline-none transition-all resize-none ${errors.policies ? "border-red-500/50 bg-red-500/5" : "border-white/10 focus:border-[#B3DC26]/50"}`}
-              ></textarea>
+                className={`w-full bg-[#050505] border rounded-[16px] md:rounded-[16px] px-3 md:px-4 py-2 md:py-3 text-[10px] md:text-sm text-white placeholder-[#333] focus:outline-none transition-all resize-none ${errors.policies ? "border-red-500/50 bg-red-500/5" : "border-white/10 focus:border-primary/50"}`}
+              ></Textarea>
               {!errors.policies && (
                 <p className="text-[9px] font-bold text-[#444] uppercase tracking-widest ml-1 mt-1">
                   {watch("policies")?.length || 0} / 1000 max characters (200
@@ -164,11 +165,11 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                 label="Hourly Rate (Rs)"
                 error={errors.pricePerHour?.message}
               >
-                <input
+                <Input
                   type="number"
                   {...register("pricePerHour", { valueAsNumber: true })}
                   placeholder="2500"
-                  className={`w-full bg-[#050505] border rounded-[16px] md:rounded-[16px] px-3 md:px-4 py-2 md:py-3 text-[10px] md:text-sm text-white placeholder-[#333] focus:outline-none transition-all ${errors.pricePerHour ? "border-red-500/50 bg-red-500/5" : "border-white/10 focus:border-[#B3DC26]/50"}`}
+                  className={`w-full bg-[#050505] border rounded-[16px] md:rounded-[16px] px-3 md:px-4 py-2 md:py-3 text-[10px] md:text-sm text-white placeholder-[#333] focus:outline-none transition-all ${errors.pricePerHour ? "border-red-500/50 bg-red-500/5" : "border-white/10 focus:border-primary/50"}`}
                 />
               </InputWrapper>
 
@@ -177,11 +178,11 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                 error={errors.location?.message}
                 icon={MapPin}
               >
-                <input
+                <Input
                   type="text"
                   {...register("location")}
                   placeholder="City, State"
-                  className={`w-full bg-[#050505] border rounded-[16px] md:rounded-[16px] px-3 md:px-4 py-2 md:py-3 text-[10px] md:text-sm text-white placeholder-[#333] focus:outline-none transition-all ${errors.location ? "border-red-500/50 bg-red-500/5" : "border-white/10 focus:border-[#B3DC26]/50"}`}
+                  className={`w-full bg-[#050505] border rounded-[16px] md:rounded-[16px] px-3 md:px-4 py-2 md:py-3 text-[10px] md:text-sm text-white placeholder-[#333] focus:outline-none transition-all ${errors.location ? "border-red-500/50 bg-red-500/5" : "border-white/10 focus:border-primary/50"}`}
                 />
               </InputWrapper>
             </div>
@@ -196,10 +197,10 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                     watch("sportTypes").map((sport) => (
                       <span
                         key={sport}
-                        className="px-2 md:px-3 py-1 bg-[#B3DC26]/10 text-[#B3DC26] border border-[#B3DC26]/20 rounded-[16px] text-[10px] font-bold uppercase tracking-wider flex items-center gap-2 group/tag animate-scale-in"
+                        className="px-2 md:px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-[16px] text-[10px] font-bold uppercase tracking-wider flex items-center gap-2 group/tag animate-scale-in"
                       >
                         {sport}
-                        <button
+                        <Button
                           type="button"
                           onClick={() =>
                             setValue(
@@ -210,7 +211,7 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                           className="hover:text-white transition-colors"
                         >
                           <X size={10} />
-                        </button>
+                        </Button>
                       </span>
                     ))
                   ) : (
@@ -219,8 +220,8 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                     </span>
                   )}
                 </div>
-                <select
-                  className="w-full bg-[#050505] border border-white/10 rounded-[16px] px-4 py-3 text-xs text-white/70 focus:outline-none focus:border-[#B3DC26]/50 transition-all appearance-none cursor-pointer"
+                <Select
+                  className="w-full bg-[#050505] border border-white/10 rounded-[16px] px-4 py-3 text-xs text-white/70 focus:outline-none focus:border-primary/50 transition-all appearance-none cursor-pointer"
                   onChange={(e) => {
                     const val = e.target.value;
                     const current = watch("sportTypes") || [];
@@ -229,7 +230,7 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                     e.target.value = "";
                   }}
                 >
-                  <option value="" className="bg-[#000]">
+                  <option value="" className="bg-background">
                     Add Sport...
                   </option>
                   {[
@@ -242,11 +243,11 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                     "Volleyball",
                     "Hockey",
                   ].map((s) => (
-                    <option key={s} value={s} className="bg-[#000]">
+                    <option key={s} value={s} className="bg-background">
                       {s}
                     </option>
                   ))}
-                </select>
+                </Select>
               </InputWrapper>
 
               <div className="grid grid-cols-2 gap-6">
@@ -259,7 +260,7 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                           className="px-2 md:px-3 py-1 bg-white/5 text-white border border-white/10 rounded-[16px] text-[10px] font-bold uppercase tracking-wider flex items-center gap-2 group/tag animate-scale-in"
                         >
                           {ground}
-                          <button
+                          <Button
                             type="button"
                             onClick={() =>
                               setValue(
@@ -267,10 +268,10 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                                 watch("groundTypes").filter((g) => g !== ground)
                               )
                             }
-                            className="hover:text-[#B3DC26] transition-colors"
+                            className="hover:text-primary transition-colors"
                           >
                             <X size={10} />
-                          </button>
+                          </Button>
                         </span>
                       ))
                     ) : (
@@ -279,8 +280,8 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                       </span>
                     )}
                   </div>
-                  <select
-                    className="w-full bg-[#050505] border border-white/10 rounded-[16px] px-4 py-3 text-xs text-white/70 focus:outline-none focus:border-[#B3DC26]/50 transition-all appearance-none cursor-pointer"
+                  <Select
+                    className="w-full bg-[#050505] border border-white/10 rounded-[16px] px-4 py-3 text-xs text-white/70 focus:outline-none focus:border-primary/50 transition-all appearance-none cursor-pointer"
                     onChange={(e) => {
                       const val = e.target.value;
                       const current = watch("groundTypes") || [];
@@ -289,7 +290,7 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                       e.target.value = "";
                     }}
                   >
-                    <option value="" className="bg-[#000]">
+                    <option value="" className="bg-background">
                       Add Type...
                     </option>
                     {[
@@ -300,11 +301,11 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                       "Small Turf",
                       "Indoor Court",
                     ].map((g) => (
-                      <option key={g} value={g} className="bg-[#000]">
+                      <option key={g} value={g} className="bg-background">
                         {g}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </InputWrapper>
 
                 <InputWrapper label="Amenities" icon={Activity}>
@@ -313,10 +314,10 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                       watch("facilities").map((facility) => (
                         <span
                           key={facility}
-                          className="px-2 md:px-3 py-1 bg-[#1B1B1B] text-white/70 border border-white/10 rounded-[16px] text-[10px] font-bold uppercase tracking-wider flex items-center gap-2 group/tag animate-scale-in"
+                          className="px-2 md:px-3 py-1 bg-card text-white/70 border border-white/10 rounded-[16px] text-[10px] font-bold uppercase tracking-wider flex items-center gap-2 group/tag animate-scale-in"
                         >
                           {facility}
-                          <button
+                          <Button
                             type="button"
                             onClick={() =>
                               setValue(
@@ -329,7 +330,7 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                             className="hover:text-white transition-colors"
                           >
                             <X size={10} />
-                          </button>
+                          </Button>
                         </span>
                       ))
                     ) : (
@@ -338,8 +339,8 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                       </span>
                     )}
                   </div>
-                  <select
-                    className="w-full bg-[#050505] border border-white/10 rounded-[16px] px-4 py-3 text-xs text-white/70 focus:outline-none focus:border-[#B3DC26]/50 transition-all appearance-none cursor-pointer"
+                  <Select
+                    className="w-full bg-[#050505] border border-white/10 rounded-[16px] px-4 py-3 text-xs text-white/70 focus:outline-none focus:border-primary/50 transition-all appearance-none cursor-pointer"
                     onChange={(e) => {
                       const val = e.target.value;
                       const current = watch("facilities") || [];
@@ -348,7 +349,7 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                       e.target.value = "";
                     }}
                   >
-                    <option value="" className="bg-[#000]">
+                    <option value="" className="bg-background">
                       Add Amenity...
                     </option>
                     {[
@@ -363,11 +364,11 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                       "Lighting",
                       "Sitting Area",
                     ].map((f) => (
-                      <option key={f} value={f} className="bg-[#000]">
+                      <option key={f} value={f} className="bg-background">
                         {f}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </InputWrapper>
               </div>
             </div>
@@ -391,7 +392,7 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                       timeIntervals={60}
                       timeCaption="Time"
                       dateFormat="h:mm aa"
-                      className={`w-full bg-[#050505] border rounded-[16px] md:rounded-[16px] px-3 md:px-4 py-2 md:py-3 text-[10px] md:text-sm text-white focus:outline-none transition-all ${errors.openTime ? "border-red-500/50 bg-red-500/5" : "border-white/10 focus:border-[#B3DC26]/50"}`}
+                      className={`w-full bg-[#050505] border rounded-[16px] md:rounded-[16px] px-3 md:px-4 py-2 md:py-3 text-[10px] md:text-sm text-white focus:outline-none transition-all ${errors.openTime ? "border-red-500/50 bg-red-500/5" : "border-white/10 focus:border-primary/50"}`}
                       filterTime={filterPassedTime}
                     />
                   )}
@@ -415,7 +416,7 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
                       timeIntervals={60}
                       timeCaption="Time"
                       dateFormat="h:mm aa"
-                      className={`w-full bg-[#050505] border rounded-[16px] md:rounded-[16px] px-3 md:px-4 py-2 md:py-3 text-[10px] md:text-sm text-white focus:outline-none transition-all ${errors.closeTime ? "border-red-500/50 bg-red-500/5" : "border-white/10 focus:border-[#B3DC26]/50"}`}
+                      className={`w-full bg-[#050505] border rounded-[16px] md:rounded-[16px] px-3 md:px-4 py-2 md:py-3 text-[10px] md:text-sm text-white focus:outline-none transition-all ${errors.closeTime ? "border-red-500/50 bg-red-500/5" : "border-white/10 focus:border-primary/50"}`}
                       filterTime={filterCloseTime}
                       disabled={!getValues("openTime")}
                     />
@@ -427,21 +428,21 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
         </div>
 
         <footer className="flex flex-col sm:flex-row justify-end items-center gap-4 pt-8 border-t border-white/10">
-          <button
+          <Button
             type="button"
             onClick={onCancel}
-            className="w-full sm:w-auto px-8 py-3 bg-[#1B1B1B] border border-white/10 text-white/70 font-bold uppercase text-[11px] tracking-widest rounded-[16px] hover:text-white transition-all flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-8 py-3 bg-card border border-white/10 text-white/70 font-bold uppercase text-[11px] tracking-widest rounded-[16px] hover:text-white transition-all flex items-center justify-center gap-2"
           >
             <X size={14} />
             Discard Changes
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
-            className="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-[#55DEE8] to-[#B3DC26] shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold uppercase text-[11px] tracking-widest rounded-[16px] hover:opacity-90 transition-all flex items-center justify-center gap-2 "
+            className="w-full sm:w-auto px-10 py-3 bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold uppercase text-[11px] tracking-widest rounded-[16px] hover:opacity-90 transition-all flex items-center justify-center gap-2 "
           >
             <Save size={14} />
             Commit Deployment
-          </button>
+          </Button>
         </footer>
       </div>
     </form>

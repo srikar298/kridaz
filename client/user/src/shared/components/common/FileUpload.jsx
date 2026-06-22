@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Upload, X, CheckCircle, AlertCircle, FileText, ImageIcon } from "lucide-react";
+import { Upload, X, CheckCircle, AlertCircle, FileText } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
+
 
 const FileUpload = ({
   label,
@@ -78,16 +79,16 @@ const FileUpload = ({
 
   return (
     <div className="space-y-3 group/field">
-      <label className="text-xs font-bold text-white/20 uppercase tracking-widest group-focus-within/field:text-[#BFF367] transition-colors ml-1">
+      <label className="text-xs font-bold text-white/20 uppercase tracking-widest group-focus-within/field:text-primary transition-colors ml-1">
         {label}
       </label>
 
       <div
-        className={`relative min-h-[120px] rounded-[8px] border-2 border-dashed transition-all duration-300 flex flex-col items-center justify-center p-4 overflow-hidden ${uploadedUrl ? "border-[#BFF367]/50 bg-[#BFF367]/5" : "border-white/5 bg-white/[0.02] hover:border-white/10 hover:bg-white/[0.04]"}`}
+        className={`relative min-h-[120px] rounded-[8px] border-2 border-dashed transition-all duration-300 flex flex-col items-center justify-center p-4 overflow-hidden ${uploadedUrl ? "border-primary/50 bg-primary/5" : "border-white/5 bg-white/[0.02] hover:border-white/10 hover:bg-white/[0.04]"}`}
       >
         {!file ? (
           <>
-            <input
+            <Input
               type="file"
               accept={accept}
               onChange={handleFileChange}
@@ -118,7 +119,7 @@ const FileUpload = ({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <FileText size={24} className="text-[#BFF367]" />
+                <FileText size={24} className="text-primary" />
               )}
             </div>
 
@@ -134,13 +135,13 @@ const FileUpload = ({
               <div className="mt-2 flex items-center gap-2">
                 {uploading ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-[#BFF367] animate-pulse" />
-                    <span className="text-[8px] font-bold text-[#BFF367] uppercase tracking-widest animate-pulse">
+                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                    <span className="text-[8px] font-bold text-primary uppercase tracking-widest animate-pulse">
                       Uploading...
                     </span>
                   </div>
                 ) : uploadedUrl ? (
-                  <div className="flex items-center gap-2 text-[#BFF367]">
+                  <div className="flex items-center gap-2 text-primary">
                     <CheckCircle size={10} />
                     <span className="text-[8px] font-bold uppercase tracking-widest">
                       Uploaded Successfully
@@ -159,12 +160,12 @@ const FileUpload = ({
 
             {/* Actions */}
             {!uploading && (
-              <button
+              <Button
                 onClick={clearFile}
                 className="w-8 h-8 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-500 flex items-center justify-center transition-colors"
               >
                 <X size={14} />
-              </button>
+              </Button>
             )}
           </div>
         )}

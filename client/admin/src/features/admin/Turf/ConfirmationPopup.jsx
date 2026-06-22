@@ -1,6 +1,7 @@
 import React from "react";
 import { AlertCircle, CheckCircle, XCircle, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";import { Button, Input } from "@kridaz/ui";
+
 
 const ConfirmationPopup = ({
   isOpen,
@@ -38,10 +39,10 @@ const ConfirmationPopup = ({
     },
     success: {
       icon: CheckCircle,
-      color: "text-[#CCFF00]",
-      bg: "bg-[#CCFF00]/10",
-      border: "border-[#CCFF00]/20",
-      btn: "bg-[#CCFF00] hover:bg-[#CCFF00]/80 text-black",
+      color: "text-primary",
+      bg: "bg-primary/10",
+      border: "border-primary/20",
+      btn: "bg-primary hover:bg-primary/80 text-black",
     },
   };
 
@@ -77,7 +78,7 @@ const ConfirmationPopup = ({
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="relative w-full max-w-md bg-[#151617] border border-[#2D2D2D] rounded-[8px] p-8 shadow-2xl overflow-hidden"
+            className="relative w-full max-w-md bg-[#151617] border border-border rounded-[8px] p-8 shadow-2xl overflow-hidden"
           >
             {/* Ambient background glow */}
             <div
@@ -106,21 +107,21 @@ const ConfirmationPopup = ({
                     <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">
                       Admin Name
                     </label>
-                    <input
+                    <Input
                       type="text"
                       value={adminData.name}
                       onChange={(e) =>
                         setAdminData({ ...adminData, name: e.target.value })
                       }
                       placeholder="Enter your full name"
-                      className="w-full bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-white text-sm focus:border-[#CCFF00]/50 outline-none transition-all placeholder:text-gray-600"
+                      className="w-full bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-white text-sm focus:border-primary/50 outline-none transition-all placeholder:text-gray-600"
                     />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">
                       Designation
                     </label>
-                    <input
+                    <Input
                       type="text"
                       value={adminData.designation}
                       onChange={(e) =>
@@ -130,7 +131,7 @@ const ConfirmationPopup = ({
                         })
                       }
                       placeholder="e.g. Platform Supervisor"
-                      className="w-full bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-white text-sm focus:border-[#CCFF00]/50 outline-none transition-all placeholder:text-gray-600"
+                      className="w-full bg-white/5 border border-white/10 rounded-[8px] px-4 py-3 text-white text-sm focus:border-primary/50 outline-none transition-all placeholder:text-gray-600"
                     />
                   </div>
                   {error && (
@@ -142,27 +143,27 @@ const ConfirmationPopup = ({
               )}
 
               <div className="flex gap-4 w-full mt-2">
-                <button
+                <Button
                   onClick={onClose}
                   className="flex-1 py-3 bg-white/5 border border-white/10 text-white font-bold uppercase text-xs tracking-widest rounded-[8px] hover:bg-white/10 transition-all"
                 >
                   {cancelText}
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={handleConfirm}
                   className={`flex-1 py-3 ${theme.btn} font-black uppercase text-xs tracking-widest rounded-[8px] transition-all shadow-lg shadow-black/20`}
                 >
                   {confirmText}
-                </button>
+                </Button>
               </div>
             </div>
 
-            <button
+            <Button
               onClick={onClose}
               className="absolute top-4 right-4 p-2 text-gray-500 hover:text-white transition-colors"
             >
               <X size={20} />
-            </button>
+            </Button>
           </motion.div>
         </div>
       )}

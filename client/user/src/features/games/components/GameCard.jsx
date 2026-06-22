@@ -54,16 +54,16 @@ const GameCard = ({ game, onSelect, actionButton }) => {
       onClick={() => onSelect && onSelect(game)}
     >
       {/* Gradient Border Overlay - Only visible on hover */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#BFF367] to-[#BFF367] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
+      <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
 
       {/* Normal Border Overlay - Fades out on hover */}
       <div className="absolute inset-0 border border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[16px]" />
 
-      <div className="relative bg-[#121212] rounded-[15px] p-4 h-full flex flex-col">
+      <div className="relative bg-card rounded-[15px] p-4 h-full flex flex-col">
         {/* Top bar with tags */}
         <div className="flex items-center justify-between gap-3 mb-3">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-[#BFF367]/10 text-[#BFF367] border border-[#BFF367]/20">
+            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
               {game.sport ||
                 (game.gameType === "SCORING_MATCH"
                   ? "LIVE MATCH"
@@ -95,7 +95,7 @@ const GameCard = ({ game, onSelect, actionButton }) => {
         {/* Venue & Host */}
         <div className="mb-4">
           <h3
-            className="text-[14px] font-bold text-white group-hover:text-[#BFF367] transition-colors line-clamp-1 uppercase tracking-tight"
+            className="text-[14px] font-bold text-white group-hover:text-primary transition-colors line-clamp-1 uppercase tracking-tight"
             style={HEADING_STYLE}
           >
             {game.requestType === "LOOKING_FOR_TEAM"
@@ -146,7 +146,7 @@ const GameCard = ({ game, onSelect, actionButton }) => {
             <MapPin className="h-3.5 w-3.5 text-white/40" />
             <span className="truncate">{game.city || "Any City"}</span>
           </div>
-          <div className="flex items-center gap-1.5 font-semibold text-[#BFF367]">
+          <div className="flex items-center gap-1.5 font-semibold text-primary">
             <Coins className="h-3.5 w-3.5 shrink-0" />
             <span>{game.perPlayerCharge || "Free"}</span>
           </div>
@@ -162,9 +162,9 @@ const GameCard = ({ game, onSelect, actionButton }) => {
             </span>
           </div>
         ) : game.gameMode === "HIRING" ? (
-          <div className="mt-3 bg-[#55DEE8]/10 border border-[#55DEE8]/20 p-3 rounded-[8px] flex flex-col gap-2">
+          <div className="mt-3 bg-secondary/10 border border-secondary/20 p-3 rounded-[8px] flex flex-col gap-2">
             <div className="flex justify-between items-center">
-              <span className="text-[10px] font-bold text-[#55DEE8] uppercase tracking-widest block">
+              <span className="text-[10px] font-bold text-secondary uppercase tracking-widest block">
                 Budget
               </span>
               <span className="font-bold text-white text-xs">
@@ -181,8 +181,8 @@ const GameCard = ({ game, onSelect, actionButton }) => {
             )}
           </div>
         ) : game.requestType === "GBNO" ? (
-          <div className="mt-3 bg-[#BFF367]/10 border border-[#BFF367]/20 p-2 rounded-[8px] text-center">
-            <span className="text-[10px] font-bold text-[#BFF367] uppercase tracking-widest block mb-1">
+          <div className="mt-3 bg-primary/10 border border-primary/20 p-2 rounded-[8px] text-center">
+            <span className="text-[10px] font-bold text-primary uppercase tracking-widest block mb-1">
               {game.matchPreferences?.gbnoPreference === "FULL_TEAM"
                 ? "Seeking Full Team"
                 : "Seeking Individual Players"}
@@ -194,13 +194,13 @@ const GameCard = ({ game, onSelect, actionButton }) => {
                     <Users className="h-3 w-3" />
                     Roster Spots
                   </span>
-                  <span className="font-bold text-[#BFF367]">
+                  <span className="font-bold text-primary">
                     {filledSlots} / {totalSlots} Filled
                   </span>
                 </div>
-                <div className="h-1.5 w-full bg-[#111] rounded-full overflow-hidden border border-white/5">
+                <div className="h-1.5 w-full bg-card rounded-full overflow-hidden border border-white/5">
                   <div
-                    className="h-full bg-[#BFF367] transition-all duration-500"
+                    className="h-full bg-primary transition-all duration-500"
                     style={{ width: `${fillPercentage}%` }}
                   />
                 </div>
@@ -214,7 +214,7 @@ const GameCard = ({ game, onSelect, actionButton }) => {
                 {game.teams?.teamA?.image ? (
                   <img
                     src={game.teams.teamA.image}
-                    className="w-7 h-7 rounded-full border border-white/10 shrink-0 object-cover bg-[#111]"
+                    className="w-7 h-7 rounded-full border border-white/10 shrink-0 object-cover bg-card"
                     alt={game.teams.teamA?.name || "Team A"}
                   />
                 ) : (
@@ -238,7 +238,7 @@ const GameCard = ({ game, onSelect, actionButton }) => {
                 {game.teams?.teamB?.image ? (
                   <img
                     src={game.teams.teamB.image}
-                    className="w-7 h-7 rounded-full border border-white/10 shrink-0 object-cover bg-[#111]"
+                    className="w-7 h-7 rounded-full border border-white/10 shrink-0 object-cover bg-card"
                     alt={game.teams.teamB?.name || "Team B"}
                   />
                 ) : (
@@ -266,9 +266,9 @@ const GameCard = ({ game, onSelect, actionButton }) => {
                 {filledSlots} / {totalSlots} Filled
               </span>
             </div>
-            <div className="h-1.5 w-full bg-[#111] rounded-full overflow-hidden border border-white/5">
+            <div className="h-1.5 w-full bg-card rounded-full overflow-hidden border border-white/5">
               <div
-                className="h-full bg-[#BFF367] transition-all duration-500"
+                className="h-full bg-primary transition-all duration-500"
                 style={{ width: `${fillPercentage}%` }}
               />
             </div>

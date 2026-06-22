@@ -25,7 +25,8 @@ import {
 } from "@redux/api/turfApi";
 import toast from "react-hot-toast";
 import { format, parse, isBefore, isAfter, parseISO, addDays } from "date-fns";
-import axiosInstance from "@infrastructure/axios";
+import axiosInstance from "@infrastructure/axios";import { Button } from "@kridaz/ui";
+
 
 /** Haversine distance in km */
 const haversineKm = (lat1, lon1, lat2, lon2) => {
@@ -269,7 +270,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
     try {
       await toggleLikeApi(targetId).unwrap();
     } catch (err) {
-      Sentry.captureException(err);
+      console.error("Failed to toggle wishlist like:", err);
       toast.error("Failed to save venue");
     }
   };
@@ -322,7 +323,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
   };
 
   return (
-    <div className="w-full h-auto bg-[#121212] rounded-[16px] overflow-hidden border border-[rgba(255,255,255,0.08)] font-inter shadow-[0px_8px_24px_rgba(85,222,232,0.10)] flex flex-col">
+    <div className="w-full h-auto bg-card rounded-[16px] overflow-hidden border border-[rgba(255,255,255,0.08)] font-inter shadow-[0px_8px_24px_rgba(85,222,232,0.10)] flex flex-col">
       {/* ── Top Image Header (16:9 ratio) ── */}
       <div className="relative w-full aspect-video shrink-0 group">
         <div
@@ -354,7 +355,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
 
         {/* Action Buttons Overlay */}
         <div className="absolute top-4 right-4 z-20 flex flex-col items-end gap-2">
-          <button
+          <Button
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -363,8 +364,8 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
             className="flex items-center justify-center px-3 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-black/80 transition-colors text-[11px] font-bold"
           >
             About
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={toggleWishlist}
             className="flex items-center justify-center w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-black/80 transition-colors"
           >
@@ -374,8 +375,8 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                 isWishlisted ? "fill-red-500 text-red-500" : "text-white"
               }
             />
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -397,7 +398,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
             className="flex items-center justify-center w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-black/80 transition-colors"
           >
             <Share2 size={14} />
-          </button>
+          </Button>
         </div>
 
         {/* Pagination Dots */}
@@ -406,7 +407,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
             {images.map((_, idx) => (
               <div
                 key={idx}
-                className={`w-1.5 h-1.5 rounded-full ${idx === 0 ? "bg-[#BFF367]" : "bg-white/40"}`}
+                className={`w-1.5 h-1.5 rounded-full ${idx === 0 ? "bg-primary" : "bg-white/40"}`}
               />
             ))}
           </div>
@@ -418,19 +419,19 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
         {/* Title and Rating Row */}
         <div className="flex justify-between items-start gap-3">
           <div className="min-w-0 flex-1">
-            <h2 className="text-[18px] font-[700] font-inter tracking-normal text-[#FFFFFF] leading-[28px] mb-1 truncate">
+            <h2 className="text-[18px] font-[700] font-inter tracking-normal text-foreground leading-[28px] mb-1 truncate">
               {turf.name}
             </h2>
             <div className="flex items-center gap-1.5 text-[rgba(255,255,255,0.70)] mt-0.5">
-              <MapPin size={12} className="text-[#BFF367] shrink-0" />
+              <MapPin size={12} className="text-primary shrink-0" />
               <p className="text-[12px] font-[400] leading-[16px] truncate">
                 {turf.location || turf.city || "Location unavailable"}
               </p>
             </div>
           </div>
           <div className="flex flex-col items-end shrink-0">
-            <div className="flex items-center gap-1 text-[#BFF367]">
-              <Star size={14} className="fill-[#BFF367]" />
+            <div className="flex items-center gap-1 text-primary">
+              <Star size={14} className="fill-primary" />
               <span className="text-[18px] font-[700] leading-none">
                 {rating.toFixed(1)}
               </span>
@@ -444,13 +445,13 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
             {dates.slice(0, 4).map((d, idx) => {
               const isSelected = selectedDate.dateNum === d.dateNum;
               return (
-                <button
+                <Button
                   key={idx}
                   onClick={() => setSelectedDate(d)}
                   className={`flex flex-col items-center justify-center w-full py-1.5 rounded-[16px] border transition-all ${
                     isSelected
-                      ? "border-none bg-[#BFF367] text-[#000000]"
-                      : "border-[rgba(255,255,255,0.08)] bg-transparent text-[rgba(255,255,255,0.70)] hover:text-[#FFFFFF]"
+                      ? "border-none bg-primary text-background"
+                      : "border-[rgba(255,255,255,0.08)] bg-transparent text-[rgba(255,255,255,0.70)] hover:text-foreground"
                   }`}
                 >
                   <span className="text-[12px] font-[400] mb-0.5">
@@ -459,29 +460,29 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                   <span className="text-[14px] font-[600] leading-none">
                     {d.dateNum}
                   </span>
-                </button>
+                </Button>
               );
             })}
-            <button
+            <Button
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsDateTimeDrawerOpen(true);
               }}
-              className="flex flex-col items-center justify-center w-full py-1.5 rounded-[16px] border border-[rgba(255,255,255,0.08)] bg-transparent text-[rgba(255,255,255,0.70)] hover:text-[#FFFFFF] transition-all group"
+              className="flex flex-col items-center justify-center w-full py-1.5 rounded-[16px] border border-[rgba(255,255,255,0.08)] bg-transparent text-[rgba(255,255,255,0.70)] hover:text-foreground transition-all group"
             >
               <Calendar
                 size={16}
                 className="group-hover:scale-110 transition-transform"
               />
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Time Slot Selector */}
         <div className="flex flex-col gap-[8px]">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-[#FFFFFF]">
+            <div className="flex items-center gap-1.5 text-foreground">
               <Clock size={12} />
               <h4 className="text-[14px] font-[600] leading-[20px]">
                 Select time slot
@@ -494,20 +495,20 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                 const isSelected = selectedSlot === slot;
                 const isBooked = isTimeSlotBooked(slot);
                 return (
-                  <button
+                  <Button
                     key={idx}
                     disabled={isBooked}
                     onClick={() => !isBooked && setSelectedSlot(slot)}
                     className={`shrink-0 relative px-3 py-1.5 rounded-[16px] border transition-all text-[12px] font-[600] flex items-center justify-center ${
                       isBooked
-                        ? "bg-[#1A1A1A] border-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.3)] cursor-not-allowed"
+                        ? "bg-card border-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.3)] cursor-not-allowed"
                         : isSelected
-                          ? "bg-[#BFF367] border-none text-[#000000]"
-                          : "border-[rgba(255,255,255,0.08)] bg-transparent text-[rgba(255,255,255,0.70)] hover:text-[#FFFFFF]"
+                          ? "bg-primary border-none text-background"
+                          : "border-[rgba(255,255,255,0.08)] bg-transparent text-[rgba(255,255,255,0.70)] hover:text-foreground"
                     }`}
                   >
                     {slot}
-                  </button>
+                  </Button>
                 );
               })
             ) : (
@@ -520,12 +521,12 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
 
         {/* Book Now Button & Footer */}
         <div className="flex flex-col gap-[12px] mt-auto pt-[12px]">
-          <button
+          <Button
             onClick={handleBookNow}
             className={`w-full font-[700] text-[18px] h-[58px] rounded-[16px] flex items-center justify-center transition-all ${
               selectedSlot
-                ? "bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] shadow-[0px_8px_24px_rgba(191,243,103,0.15)]"
-                : "bg-[#1B1B1B] text-[#FFFFFF] border border-[rgba(255,255,255,0.08)] opacity-40 cursor-not-allowed"
+                ? "bg-gradient-to-r from-secondary to-primary text-background shadow-[0px_8px_24px_rgba(191,243,103,0.15)]"
+                : "bg-card text-foreground border border-[rgba(255,255,255,0.08)] opacity-40 cursor-not-allowed"
             }`}
           >
             <span>
@@ -539,7 +540,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                     : "Book Now"
                 : "Select a Time Slot"}
             </span>
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -560,7 +561,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
               }}
             />
             <div
-              className="relative w-full h-[100dvh] max-w-md mx-auto bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] p-[24px] flex flex-col overflow-y-auto no-scrollbar font-sans rounded-t-[20px]"
+              className="relative w-full h-[100dvh] max-w-md mx-auto bg-card border border-[rgba(255,255,255,0.08)] p-[24px] flex flex-col overflow-y-auto no-scrollbar font-sans rounded-t-[20px]"
               style={{
                 animation: "slideDownDrawer 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
                 marginTop: "auto",
@@ -569,27 +570,27 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-6 shrink-0">
-                <h3 className="text-[18px] font-[700] text-[#FFFFFF]">
+                <h3 className="text-[18px] font-[700] text-foreground">
                   Select Date & Time
                 </h3>
-                <button
+                <Button
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsDateTimeDrawerOpen(false);
                   }}
-                  className="p-2 rounded-full bg-transparent text-[rgba(255,255,255,0.70)] hover:text-[#FFFFFF] transition-colors border border-[rgba(255,255,255,0.08)]"
+                  className="p-2 rounded-full bg-transparent text-[rgba(255,255,255,0.70)] hover:text-foreground transition-colors border border-[rgba(255,255,255,0.08)]"
                 >
                   <X size={16} />
-                </button>
+                </Button>
               </div>
 
-              <div className="flex flex-col mb-6 shrink-0 bg-[#121212] p-[16px] rounded-[16px] border border-[rgba(255,255,255,0.08)]">
+              <div className="flex flex-col mb-6 shrink-0 bg-card p-[16px] rounded-[16px] border border-[rgba(255,255,255,0.08)]">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-[16px] font-[600] text-[#FFFFFF]">
+                  <h4 className="text-[16px] font-[600] text-foreground">
                     Select Date
                   </h4>
-                  <div className="flex items-center gap-3 bg-[#1B1B1B] border border-[rgba(255,255,255,0.08)] rounded-full px-2 py-1">
-                    <button
+                  <div className="flex items-center gap-3 bg-card border border-[rgba(255,255,255,0.08)] rounded-full px-2 py-1">
+                    <Button
                       onClick={(e) => {
                         e.stopPropagation();
                         setCurrentMonthDate(
@@ -600,7 +601,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                           )
                         );
                       }}
-                      className="p-1 text-[rgba(255,255,255,0.70)] hover:text-[#FFFFFF]"
+                      className="p-1 text-[rgba(255,255,255,0.70)] hover:text-foreground"
                     >
                       <svg
                         width="12"
@@ -614,14 +615,14 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                       >
                         <path d="m15 18-6-6 6-6" />
                       </svg>
-                    </button>
-                    <span className="text-[12px] font-[600] text-[#FFFFFF] uppercase tracking-wider min-w-[60px] text-center">
+                    </Button>
+                    <span className="text-[12px] font-[600] text-foreground uppercase tracking-wider min-w-[60px] text-center">
                       {currentMonthDate.toLocaleString("default", {
                         month: "short",
                         year: "numeric",
                       })}
                     </span>
-                    <button
+                    <Button
                       onClick={(e) => {
                         e.stopPropagation();
                         setCurrentMonthDate(
@@ -632,7 +633,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                           )
                         );
                       }}
-                      className="p-1 text-[rgba(255,255,255,0.70)] hover:text-[#FFFFFF]"
+                      className="p-1 text-[rgba(255,255,255,0.70)] hover:text-foreground"
                     >
                       <svg
                         width="12"
@@ -646,7 +647,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                       >
                         <path d="m9 18 6-6-6-6" />
                       </svg>
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
@@ -677,7 +678,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                     const isPast =
                       day < new Date(new Date().setHours(0, 0, 0, 0));
                     return (
-                      <button
+                      <Button
                         key={idx}
                         disabled={isPast}
                         onClick={(e) => {
@@ -695,20 +696,20 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                         }}
                         className={`aspect-square rounded-full flex items-center justify-center text-[12px] font-[600] transition-all ${
                           isActive
-                            ? "bg-[#BFF367] text-[#000000]"
+                            ? "bg-primary text-background"
                             : isPast
                               ? "text-[rgba(255,255,255,0.20)] cursor-not-allowed"
-                              : "text-[rgba(255,255,255,0.70)] hover:bg-[#1B1B1B]"
+                              : "text-[rgba(255,255,255,0.70)] hover:bg-card"
                         }`}
                       >
                         {day.getDate()}
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
               </div>
 
-              <h4 className="text-[16px] font-[600] text-[#FFFFFF] mb-3 shrink-0">
+              <h4 className="text-[16px] font-[600] text-foreground mb-3 shrink-0">
                 Time Slots
               </h4>
               <div className="grid grid-cols-2 gap-[12px] mb-6 shrink-0">
@@ -717,7 +718,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                     const isSelected = selectedSlot === slot;
                     const isBooked = isTimeSlotBooked(slot);
                     return (
-                      <button
+                      <Button
                         key={idx}
                         disabled={isBooked}
                         onClick={(e) => {
@@ -726,14 +727,14 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                         }}
                         className={`py-3 rounded-[16px] border transition-all text-[12px] font-[600] flex items-center justify-center ${
                           isBooked
-                            ? "bg-[#1A1A1A] border-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.3)] cursor-not-allowed"
+                            ? "bg-card border-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.3)] cursor-not-allowed"
                             : isSelected
-                              ? "border-none bg-[#BFF367] text-[#000000]"
-                              : "border-[rgba(255,255,255,0.08)] bg-[#121212] text-[rgba(255,255,255,0.70)] hover:text-[#FFFFFF]"
+                              ? "border-none bg-primary text-background"
+                              : "border-[rgba(255,255,255,0.08)] bg-card text-[rgba(255,255,255,0.70)] hover:text-foreground"
                         }`}
                       >
                         {slot}
-                      </button>
+                      </Button>
                     );
                   })
                 ) : (
@@ -743,7 +744,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                 )}
               </div>
 
-              <button
+              <Button
                 onClick={(e) => {
                   e.stopPropagation();
                   if (selectedSlot) {
@@ -754,8 +755,8 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                 }}
                 className={`w-full mt-auto font-[700] text-[18px] h-[58px] rounded-[16px] flex items-center justify-center transition-all shrink-0 ${
                   selectedSlot
-                    ? "bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-[#000000] shadow-[0px_8px_24px_rgba(191,243,103,0.15)]"
-                    : "bg-[#1B1B1B] text-[#FFFFFF] border border-[rgba(255,255,255,0.08)] opacity-40"
+                    ? "bg-gradient-to-r from-secondary to-primary text-background shadow-[0px_8px_24px_rgba(191,243,103,0.15)]"
+                    : "bg-card text-foreground border border-[rgba(255,255,255,0.08)] opacity-40"
                 }`}
               >
                 {selectedSlot
@@ -767,7 +768,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                       ? "Add to Game"
                       : "Book Now"
                   : "Close"}
-              </button>
+              </Button>
             </div>
           </div>,
           document.body

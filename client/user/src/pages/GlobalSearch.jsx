@@ -20,7 +20,8 @@ import {
 import { useGetGroundsQuery } from "@redux/api/gamesApi";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { VenueCard } from "../features/turf";
-import { GameCard } from "../features/games";
+import { GameCard } from "../features/games";import { Button, Input } from "@kridaz/ui";
+
 
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
 
@@ -164,7 +165,7 @@ const GlobalSearch = () => {
     return (
       <div
         key={post._id || post.id}
-        className="bg-[#0A0A0A] border border-white/5 rounded-[8px] p-5 space-y-4"
+        className="bg-background border border-white/5 rounded-[8px] p-5 space-y-4"
       >
         {/* Post Header */}
         <div className="flex items-center justify-between">
@@ -174,23 +175,23 @@ const GlobalSearch = () => {
           >
             <img
               src={authorPic}
-              className="w-10 h-10 rounded-full object-cover border border-white/10 group-hover:border-[#BFF367]/50 transition-colors"
+              className="w-10 h-10 rounded-full object-cover border border-white/10 group-hover:border-primary/50 transition-colors"
             />
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="text-[13px] font-bold text-white transition-colors">
                   {authorName}
                 </span>
-                <ShieldCheck size={14} className="text-[#BFF367]" />
+                <ShieldCheck size={14} className="text-primary" />
               </div>
               <div className="text-[11px] font-bold text-white/40 mt-0.5">
                 {new Date(post.createdAt).toLocaleDateString()}
               </div>
             </div>
           </Link>
-          <button className="text-white/40 hover:text-white transition-colors p-2">
+          <Button className="text-white/40 hover:text-white transition-colors p-2">
             <MoreVertical size={18} />
-          </button>
+          </Button>
         </div>
 
         {/* Caption */}
@@ -205,7 +206,7 @@ const GlobalSearch = () => {
 
         {/* Media */}
         {postImage && (
-          <div className="relative rounded-[8px] overflow-hidden group border border-white/5 bg-[#111]">
+          <div className="relative rounded-[8px] overflow-hidden group border border-white/5 bg-card">
             {mediaType === "video" ? (
               <video
                 src={postImage}
@@ -224,31 +225,31 @@ const GlobalSearch = () => {
         {/* Action Bar */}
         <div className="flex items-center justify-between pt-1">
           <div className="flex items-center gap-5">
-            <button className="flex items-center gap-2 group">
+            <Button className="flex items-center gap-2 group">
               <ThumbsUp
                 size={20}
-                className="text-white/70 group-hover:text-[#BFF367] transition-colors"
+                className="text-white/70 group-hover:text-primary transition-colors"
               />
               <span className="text-[12px] font-bold text-white">
                 {post.likes?.length || 0}
               </span>
-            </button>
-            <button className="flex items-center gap-2 group">
+            </Button>
+            <Button className="flex items-center gap-2 group">
               <MessageCircle
                 size={20}
-                className="text-white/70 group-hover:text-[#BFF367] transition-colors"
+                className="text-white/70 group-hover:text-primary transition-colors"
               />
               <span className="text-[12px] font-bold text-white">
                 {post.comments?.length || post.totalComments || 0}
               </span>
-            </button>
-            <button className="flex items-center gap-2 group">
+            </Button>
+            <Button className="flex items-center gap-2 group">
               <Send
                 size={18}
-                className="text-white/70 group-hover:text-[#BFF367] transition-colors"
+                className="text-white/70 group-hover:text-primary transition-colors"
               />
               <span className="text-[12px] font-bold text-white">Share</span>
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -271,12 +272,12 @@ const GlobalSearch = () => {
     <div className="min-h-screen bg-[#050505] text-white pt-0 px-4 md:px-6 font-inter relative overflow-hidden">
       <div className="max-w-3xl mx-auto space-y-6 pb-20">
         {/* Search Bar */}
-        <div className="relative flex items-center w-full bg-[#1A1A1A] rounded-xl overflow-hidden shadow-lg border border-white/5 group focus-within:border-[#BFF367]/30 transition-colors">
+        <div className="relative flex items-center w-full bg-card rounded-xl overflow-hidden shadow-lg border border-white/5 group focus-within:border-primary/30 transition-colors">
           <Search
             size={20}
-            className="absolute left-4 text-white/40 group-focus-within:text-[#BFF367] transition-colors"
+            className="absolute left-4 text-white/40 group-focus-within:text-primary transition-colors"
           />
-          <input
+          <Input
             type="text"
             placeholder="Search venues, games, players..."
             className="w-full bg-transparent py-4 pl-12 pr-14 text-sm font-bold text-white outline-none placeholder:text-white/30"
@@ -284,36 +285,36 @@ const GlobalSearch = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           {searchQuery && (
-            <button
+            <Button
               onClick={() => setSearchQuery("")}
               className="absolute right-12 text-white/40 hover:text-white transition-colors p-1"
             >
               <X size={16} />
-            </button>
+            </Button>
           )}
-          <button
+          <Button
             onClick={() => setIsFilterOpen(true)}
-            className="absolute right-3 p-2 bg-white/5 hover:bg-white/10 rounded-lg text-[#BFF367] transition-colors"
+            className="absolute right-3 p-2 bg-white/5 hover:bg-white/10 rounded-lg text-primary transition-colors"
           >
             <SlidersHorizontal size={18} />
-          </button>
+          </Button>
         </div>
 
         {/* Quick Filters */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
             {QUICK_FILTERS.map((filter) => (
-              <button
+              <Button
                 key={filter}
                 onClick={() => setActiveQuickFilter(filter)}
                 className={`whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all border ${
                   activeQuickFilter === filter
-                    ? "bg-[#BFF367]/10 text-[#BFF367] border-[#BFF367]/30 shadow-[0_0_15px_rgba(191,243,103,0.15)]"
+                    ? "bg-primary/10 text-primary border-primary/30 shadow-[0_0_15px_rgba(191,243,103,0.15)]"
                     : "bg-white/5 text-white/50 border-white/10 hover:border-white/20 hover:text-white/80"
                 }`}
               >
                 {filter}
-              </button>
+              </Button>
             ))}
           </div>
 
@@ -323,18 +324,18 @@ const GlobalSearch = () => {
               {ROLES.map((role) => {
                 const isSelected = selectedRoles.includes(role);
                 return (
-                  <button
+                  <Button
                     key={role}
                     onClick={() => handleToggleRole(role)}
                     className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 border ${
                       isSelected
-                        ? "bg-[#BFF367]/15 border-[#BFF367] text-[#BFF367]"
+                        ? "bg-primary/15 border-primary text-primary"
                         : "bg-white/5 text-white/50 border-white/10 hover:border-white/20 hover:text-white/80"
                     }`}
                   >
                     {isSelected && <Check size={10} strokeWidth={3} />}
                     {role}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -346,18 +347,18 @@ const GlobalSearch = () => {
               {VENUE_TYPES.map((type) => {
                 const isSelected = selectedVenueTypes.includes(type);
                 return (
-                  <button
+                  <Button
                     key={type}
                     onClick={() => handleToggleVenueType(type)}
                     className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 border ${
                       isSelected
-                        ? "bg-[#BFF367]/15 border-[#BFF367] text-[#BFF367]"
+                        ? "bg-primary/15 border-primary text-primary"
                         : "bg-white/5 text-white/50 border-white/10 hover:border-white/20 hover:text-white/80"
                     }`}
                   >
                     {isSelected && <Check size={10} strokeWidth={3} />}
                     {type}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -372,10 +373,10 @@ const GlobalSearch = () => {
             {((activeQuickFilter === "All" &&
               (loadedPlayers.length > 0 || playersLoading)) ||
               activeQuickFilter === "Roles") && (
-              <div className="flex flex-col gap-3 bg-[#0A0A0A] border border-white/5 rounded-[8px] p-5">
+              <div className="flex flex-col gap-3 bg-background border border-white/5 rounded-[8px] p-5">
                 <div className="flex items-center justify-between mb-1">
                   <h3
-                    className="text-xs font-black uppercase tracking-widest text-[#BFF367]"
+                    className="text-xs font-black uppercase tracking-widest text-primary"
                     style={HEADING_STYLE}
                   >
                     PLAYERS MATCHING &quot;{debouncedQuery}&quot;
@@ -383,7 +384,7 @@ const GlobalSearch = () => {
                   {playersLoading && (
                     <Loader2
                       size={16}
-                      className="text-[#BFF367] animate-spin"
+                      className="text-primary animate-spin"
                     />
                   )}
                 </div>
@@ -406,9 +407,9 @@ const GlobalSearch = () => {
                         onClick={() =>
                           navigate(`/profile/${player.id || player._id}`)
                         }
-                        className="flex items-center gap-3 bg-neutral-900/50 hover:bg-neutral-900 border border-white/5 hover:border-[#BFF367]/30 p-3 rounded-[8px] cursor-pointer transition-all min-w-[220px] max-w-[280px] group shrink-0"
+                        className="flex items-center gap-3 bg-neutral-900/50 hover:bg-neutral-900 border border-white/5 hover:border-primary/30 p-3 rounded-[8px] cursor-pointer transition-all min-w-[220px] max-w-[280px] group shrink-0"
                       >
-                        <div className="w-[42px] h-[42px] rounded-full bg-[#111] border border-white/10 overflow-hidden shrink-0">
+                        <div className="w-[42px] h-[42px] rounded-full bg-card border border-white/10 overflow-hidden shrink-0">
                           <img
                             src={
                               player.profilePicture ||
@@ -419,7 +420,7 @@ const GlobalSearch = () => {
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-[13px] font-bold text-white group-hover:text-[#BFF367] transition-colors truncate">
+                          <div className="text-[13px] font-bold text-white group-hover:text-primary transition-colors truncate">
                             {player.name}
                           </div>
                           <div className="text-[11px] font-medium text-white/40 truncate">
@@ -428,7 +429,7 @@ const GlobalSearch = () => {
                               player.name.toLowerCase().replace(/\s+/g, "")}
                           </div>
                           {(player.city || player.state) && (
-                            <div className="text-[9px] font-semibold text-[#BFF367] mt-0.5 uppercase tracking-wider truncate">
+                            <div className="text-[9px] font-semibold text-primary mt-0.5 uppercase tracking-wider truncate">
                               {player.city}
                               {player.city && player.state ? ", " : ""}
                               {player.state}
@@ -446,10 +447,10 @@ const GlobalSearch = () => {
             {((activeQuickFilter === "All" &&
               (venues.length > 0 || loadingVenues)) ||
               activeQuickFilter === "Venue") && (
-              <div className="flex flex-col gap-3 bg-[#0A0A0A] border border-white/5 rounded-[8px] p-5">
+              <div className="flex flex-col gap-3 bg-background border border-white/5 rounded-[8px] p-5">
                 <div className="flex items-center justify-between mb-1">
                   <h3
-                    className="text-xs font-black uppercase tracking-widest text-[#BFF367]"
+                    className="text-xs font-black uppercase tracking-widest text-primary"
                     style={HEADING_STYLE}
                   >
                     VENUES MATCHING &quot;{debouncedQuery}&quot;
@@ -457,7 +458,7 @@ const GlobalSearch = () => {
                   {loadingVenues && (
                     <Loader2
                       size={16}
-                      className="text-[#BFF367] animate-spin"
+                      className="text-primary animate-spin"
                     />
                   )}
                 </div>
@@ -485,10 +486,10 @@ const GlobalSearch = () => {
             {((activeQuickFilter === "All" &&
               (games.length > 0 || loadingGames)) ||
               activeQuickFilter === "Join Games") && (
-              <div className="flex flex-col gap-3 bg-[#0A0A0A] border border-white/5 rounded-[8px] p-5">
+              <div className="flex flex-col gap-3 bg-background border border-white/5 rounded-[8px] p-5">
                 <div className="flex items-center justify-between mb-1">
                   <h3
-                    className="text-xs font-black uppercase tracking-widest text-[#BFF367]"
+                    className="text-xs font-black uppercase tracking-widest text-primary"
                     style={HEADING_STYLE}
                   >
                     GAMES MATCHING &quot;{debouncedQuery}&quot;
@@ -496,7 +497,7 @@ const GlobalSearch = () => {
                   {loadingGames && (
                     <Loader2
                       size={16}
-                      className="text-[#BFF367] animate-spin"
+                      className="text-primary animate-spin"
                     />
                   )}
                 </div>
@@ -520,10 +521,10 @@ const GlobalSearch = () => {
               (loadedPosts.length > 0 || postsLoading)) ||
               activeQuickFilter === "Posts" ||
               activeQuickFilter === "Live") && (
-              <div className="flex flex-col gap-3 bg-[#0A0A0A] border border-white/5 rounded-[8px] p-5">
+              <div className="flex flex-col gap-3 bg-background border border-white/5 rounded-[8px] p-5">
                 <div className="flex items-center justify-between mb-1">
                   <h3
-                    className="text-xs font-black uppercase tracking-widest text-[#BFF367]"
+                    className="text-xs font-black uppercase tracking-widest text-primary"
                     style={HEADING_STYLE}
                   >
                     POSTS MATCHING &quot;{debouncedQuery}&quot;
@@ -531,7 +532,7 @@ const GlobalSearch = () => {
                   {postsLoading && (
                     <Loader2
                       size={16}
-                      className="text-[#BFF367] animate-spin"
+                      className="text-primary animate-spin"
                     />
                   )}
                 </div>
@@ -560,9 +561,9 @@ const GlobalSearch = () => {
                 >
                   Popular Near You
                 </h3>
-                <button className="text-xs font-bold text-[#BFF367] hover:underline">
+                <Button className="text-xs font-bold text-primary hover:underline">
                   View All
-                </button>
+                </Button>
               </div>
 
               {groundsLoading ? (
@@ -606,9 +607,9 @@ const GlobalSearch = () => {
                 >
                   Latest Posts
                 </h3>
-                <button className="text-xs font-bold text-[#BFF367] hover:underline">
+                <Button className="text-xs font-bold text-primary hover:underline">
                   View All
-                </button>
+                </Button>
               </div>
 
               {defaultPostsLoading ? (
@@ -651,17 +652,17 @@ const GlobalSearch = () => {
           {/* Header */}
           <div className="p-6 border-b border-white/5 flex items-center justify-between">
             <h2
-              className="text-lg font-bold uppercase tracking-widest text-[#BFF367]"
+              className="text-lg font-bold uppercase tracking-widest text-primary"
               style={HEADING_STYLE}
             >
               Filters
             </h2>
-            <button
+            <Button
               onClick={() => setIsFilterOpen(false)}
               className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-white/50 hover:text-white transition-colors"
             >
               <X size={18} />
-            </button>
+            </Button>
           </div>
 
           {/* Filter Content */}
@@ -675,18 +676,18 @@ const GlobalSearch = () => {
                 {ROLES.map((role) => {
                   const isSelected = selectedRoles.includes(role);
                   return (
-                    <button
+                    <Button
                       key={role}
                       onClick={() => handleToggleRole(role)}
                       className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                         isSelected
-                          ? "bg-[#BFF367]/15 border border-[#BFF367] text-[#BFF367]"
+                          ? "bg-primary/15 border border-primary text-primary"
                           : "bg-white/5 border border-white/10 text-white/50 hover:border-white/20"
                       }`}
                     >
                       {isSelected && <Check size={10} strokeWidth={3} />}
                       {role}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -701,18 +702,18 @@ const GlobalSearch = () => {
                 {VENUE_TYPES.map((type) => {
                   const isSelected = selectedVenueTypes.includes(type);
                   return (
-                    <button
+                    <Button
                       key={type}
                       onClick={() => handleToggleVenueType(type)}
                       className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                         isSelected
-                          ? "bg-[#BFF367]/15 border border-[#BFF367] text-[#BFF367]"
+                          ? "bg-primary/15 border border-primary text-primary"
                           : "bg-white/5 border border-white/10 text-white/50 hover:border-white/20"
                       }`}
                     >
                       {isSelected && <Check size={10} strokeWidth={3} />}
                       {type}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -720,38 +721,38 @@ const GlobalSearch = () => {
 
             <div className="space-y-4">
               <label className="flex items-center justify-between cursor-pointer group">
-                <span className="text-sm font-bold text-white group-hover:text-[#BFF367] transition-colors">
+                <span className="text-sm font-bold text-white group-hover:text-primary transition-colors">
                   Joinable Games Only
                 </span>
-                <input
+                <Input
                   type="checkbox"
-                  className="w-4 h-4 accent-[#BFF367] rounded bg-black border-white/20"
+                  className="w-4 h-4 accent-[var(--primary)] rounded bg-black border-white/20"
                 />
               </label>
               <label className="flex items-center justify-between cursor-pointer group">
-                <span className="text-sm font-bold text-white group-hover:text-[#BFF367] transition-colors">
+                <span className="text-sm font-bold text-white group-hover:text-primary transition-colors">
                   Live Games
                 </span>
-                <input
+                <Input
                   type="checkbox"
-                  className="w-4 h-4 accent-[#BFF367] rounded bg-black border-white/20"
+                  className="w-4 h-4 accent-[var(--primary)] rounded bg-black border-white/20"
                 />
               </label>
               <label className="flex items-center justify-between cursor-pointer group">
-                <span className="text-sm font-bold text-white group-hover:text-[#BFF367] transition-colors">
+                <span className="text-sm font-bold text-white group-hover:text-primary transition-colors">
                   Has Posts
                 </span>
-                <input
+                <Input
                   type="checkbox"
-                  className="w-4 h-4 accent-[#BFF367] rounded bg-black border-white/20"
+                  className="w-4 h-4 accent-[var(--primary)] rounded bg-black border-white/20"
                 />
               </label>
             </div>
           </div>
 
           {/* Footer Actions */}
-          <div className="p-6 border-t border-white/5 flex gap-3 bg-[#0A0A0A]">
-            <button
+          <div className="p-6 border-t border-white/5 flex gap-3 bg-background">
+            <Button
               onClick={() => {
                 setSelectedRoles([]);
                 setSelectedVenueTypes([]);
@@ -759,13 +760,13 @@ const GlobalSearch = () => {
               className="flex-1 py-3 rounded-lg border border-white/10 text-xs font-bold text-white/70 hover:text-white hover:bg-white/5 transition-colors uppercase tracking-widest"
             >
               Reset
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setIsFilterOpen(false)}
-              className="flex-[2] py-3 rounded-lg bg-[#BFF367] text-black text-xs font-black uppercase tracking-widest hover:bg-[#BFF367]/90 transition-colors shadow-[0_0_15px_rgba(191,243,103,0.3)]"
+              className="flex-[2] py-3 rounded-lg bg-primary text-black text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(191,243,103,0.3)]"
             >
               Apply Filters
-            </button>
+            </Button>
           </div>
         </div>
       </div>

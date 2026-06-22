@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import axios from "axios";import { Button } from "@kridaz/ui";
+
 import {
   ArrowLeft,
   Eye,
@@ -12,8 +13,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-const PRI = "#BFF367";
-const BDR = "#2A2A2A";
+const PRI = "var(--primary)";
+const BDR = "var(--border)";
 
 export default function BlogDetail() {
   const { id } = useParams();
@@ -160,7 +161,7 @@ export default function BlogDetail() {
               <Eye size={13} style={{ color: PRI }} />
               {blog.views} views
             </div>
-            <button
+            <Button
               onClick={handleLike}
               className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-white transition-all group"
             >
@@ -170,7 +171,7 @@ export default function BlogDetail() {
                 style={{ color: PRI }}
               />
               {blog.likes} likes
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -178,7 +179,7 @@ export default function BlogDetail() {
       {/* ΓöÇΓöÇ ARTICLE BODY ΓöÇΓöÇ */}
       <div className="max-w-4xl mx-auto px-6 pt-14">
         <div
-          className="text-gray-400 text-lg leading-relaxed space-y-6 [&_h2]:text-white [&_h2]:text-3xl [&_h2]:font-black [&_h2]:uppercase [&_h2]:tracking-tight [&_h2]:mt-12 [&_h2]:mb-4 [&_h3]:text-white [&_h3]:text-2xl [&_h3]:font-black [&_h3]:uppercase [&_h3]:tracking-tight [&_h3]:mt-8 [&_h3]:mb-3 [&_p]:mb-6 [&_p]:leading-relaxed [&_strong]:text-white [&_strong]:font-bold [&_a]:text-[#BFF367] [&_a]:no-underline hover:[&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2 [&_li]:leading-relaxed [&_blockquote]:border-l-4 [&_blockquote]:border-[#BFF367] [&_blockquote]:pl-6 [&_blockquote]:italic [&_blockquote]:text-gray-500 [&_hr]:border-white/10 [&_hr]:my-10 [&_img]:rounded-[8px] [&_img]:w-full [&_img]:object-cover"
+          className="text-gray-400 text-lg leading-relaxed space-y-6 [&_h2]:text-white [&_h2]:text-3xl [&_h2]:font-black [&_h2]:uppercase [&_h2]:tracking-tight [&_h2]:mt-12 [&_h2]:mb-4 [&_h3]:text-white [&_h3]:text-2xl [&_h3]:font-black [&_h3]:uppercase [&_h3]:tracking-tight [&_h3]:mt-8 [&_h3]:mb-3 [&_p]:mb-6 [&_p]:leading-relaxed [&_strong]:text-white [&_strong]:font-bold [&_a]:text-primary [&_a]:no-underline hover:[&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2 [&_li]:leading-relaxed [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:pl-6 [&_blockquote]:italic [&_blockquote]:text-gray-500 [&_hr]:border-white/10 [&_hr]:my-10 [&_img]:rounded-[8px] [&_img]:w-full [&_img]:object-cover"
           dangerouslySetInnerHTML={{ __html: blog.content }}
         />
       </div>
@@ -187,7 +188,7 @@ export default function BlogDetail() {
       <div className="max-w-4xl mx-auto px-6 pt-20">
         <div
           className="rounded-[8px] border p-10 text-center"
-          style={{ borderColor: BDR, backgroundColor: "#0A0A0A" }}
+          style={{ borderColor: BDR, backgroundColor: "var(--background)" }}
         >
           <h3 className="text-2xl font-black uppercase tracking-tight mb-3">
             Ready to play?

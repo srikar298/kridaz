@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, Lock, Loader2 } from "lucide-react";
-import axiosInstance from "@hooks/useAxiosInstance";
+import axiosInstance from "@hooks/useAxiosInstance";import { Button, Input } from "@kridaz/ui";
 
-const THEME_COLOR = "#00C187";
+
+const THEME_COLOR = "var(--success)";
 
 export default function EndMatchModal({
   matchId,
@@ -59,16 +60,16 @@ export default function EndMatchModal({
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: "100%", opacity: 0 }}
         transition={{ type: "spring", damping: 24 }}
-        className="relative w-full max-w-sm bg-[#000] rounded-t-[20px] sm:rounded-[12px] border-t border-x sm:border border-white/5 overflow-hidden z-10 shadow-2xl pb-4 sm:pb-0"
+        className="relative w-full max-w-sm bg-background rounded-t-[20px] sm:rounded-[12px] border-t border-x sm:border border-white/5 overflow-hidden z-10 shadow-2xl pb-4 sm:pb-0"
       >
         {/* Header */}
         <div className="px-6 pt-6 pb-5 flex items-center justify-between border-b border-white/5">
           <div>
             <h2 className="font-inter text-[24px] font-semibold text-white leading-tight tracking-tight uppercase flex items-center gap-3">
               {hasPassword ? (
-                <Lock size={20} className="text-[#00C187]" />
+                <Lock size={20} className="text-success" />
               ) : (
-                <CheckCircle2 size={20} className="text-[#00C187]" />
+                <CheckCircle2 size={20} className="text-success" />
               )}
               End Match
             </h2>
@@ -84,12 +85,12 @@ export default function EndMatchModal({
 
           {hasPassword && (
             <div className="space-y-2">
-              <input
+              <Input
                 type="password"
                 placeholder="Enter Password..."
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/[0.02] border border-white/10 rounded-[8px] px-6 py-5 text-sm focus:border-[#00C187] outline-none text-white font-bold tracking-widest transition-all"
+                className="w-full bg-white/[0.02] border border-white/10 rounded-[8px] px-6 py-5 text-sm focus:border-success outline-none text-white font-bold tracking-widest transition-all"
               />
               {error && (
                 <p className="text-[10px] text-red-500 font-black uppercase tracking-widest pl-2 animate-in slide-in-from-top-1">
@@ -101,13 +102,13 @@ export default function EndMatchModal({
 
           {/* Actions */}
           <div className="flex gap-4 pt-2">
-            <button
+            <Button
               onClick={onClose}
-              className="flex-1 py-4 rounded-[8px] font-black text-neutral-400 text-[11px] uppercase tracking-[0.2em] transition-all bg-[#1a1a1a] hover:bg-[#222] active:scale-95"
+              className="flex-1 py-4 rounded-[8px] font-black text-neutral-400 text-[11px] uppercase tracking-[0.2em] transition-all bg-card hover:bg-card active:scale-95"
             >
               BACK
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleEndMatch}
               disabled={loading}
               className="flex-[2] py-4 rounded-[8px] font-black text-black text-[11px] uppercase tracking-[0.2em] transition-all transform active:scale-95 shadow-xl flex items-center justify-center gap-2"
@@ -121,7 +122,7 @@ export default function EndMatchModal({
               ) : (
                 "END MATCH"
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </motion.div>

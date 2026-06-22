@@ -56,7 +56,7 @@ const FUITestimonialWithSlide = () => {
       <div className="w-full">
         <div className="max-w-[800px] mx-auto px-6 mb-8">
           <h2 className="text-[20px] md:text-4xl font-black tracking-tight leading-[1.05] font-poppins font-medium normal-case">
-            Voices of the <span className="text-[#BFF367]">Arena</span>
+            Voices of the <span className="text-primary">Arena</span>
           </h2>
         </div>
 
@@ -75,7 +75,7 @@ const FUITestimonialWithSlide = () => {
               return (
                 <div
                   key={indx}
-                  className="border-[1.2px] flex flex-col bg-[#111] border-white/10 rounded-3xl shrink-0 grow-0 w-[350px] md:w-[450px] h-full group hover:border-[#BFF367]/30 transition-colors"
+                  className="border-[1.2px] flex flex-col bg-card border-white/10 rounded-3xl shrink-0 grow-0 w-[350px] md:w-[450px] h-full group hover:border-primary/30 transition-colors"
                 >
                   <p className="px-8 py-8 text-pretty text-lg md:text-xl font-medium text-white/80 italic leading-relaxed">
                     &quot;{testimonial.description}&quot;
@@ -91,7 +91,7 @@ const FUITestimonialWithSlide = () => {
                         <h5 className="text-white font-bold text-base md:text-lg">
                           {testimonial.name}
                         </h5>
-                        <p className="text-[#BFF367] mt-[-2px] text-xs font-black uppercase tracking-widest">
+                        <p className="text-primary mt-[-2px] text-xs font-black uppercase tracking-widest">
                           {testimonial.profession}
                         </p>
                       </div>
@@ -100,7 +100,7 @@ const FUITestimonialWithSlide = () => {
                     <div className="max-w-full self-center px-6 flex items-center justify-center flex-1">
                       <Logo
                         size={28}
-                        className="text-white/20 group-hover:text-[#BFF367] transition-colors"
+                        className="text-white/20 group-hover:text-primary transition-colors"
                       />
                     </div>
                   </div>

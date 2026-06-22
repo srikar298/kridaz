@@ -33,6 +33,17 @@
               }
             ]
           }
+        ],
+        "react/forbid-elements": [
+          "error",
+          {
+            "forbid": [
+              { "element": "button", "message": "Use <Button> from @kridaz/ui instead." },
+              { "element": "input", "message": "Use <Input> from @kridaz/ui instead." },
+              { "element": "select", "message": "Use <Select> from @kridaz/ui instead." },
+              { "element": "textarea", "message": "Use <Textarea> from @kridaz/ui instead." }
+            ]
+          }
         ]
       }
     }

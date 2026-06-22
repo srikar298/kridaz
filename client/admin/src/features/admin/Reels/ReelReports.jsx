@@ -6,7 +6,8 @@ import {
 import { format } from "date-fns";
 import { ShieldAlert, Trash2, ExternalLink, RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";import { Button } from "@kridaz/ui";
+
 
 const ReelReports = () => {
   const { data, isLoading, isError, refetch, isFetching } =
@@ -34,7 +35,7 @@ const ReelReports = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-12 h-12 border-4 border-[#55DEE8] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-secondary border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -59,14 +60,14 @@ const ReelReports = () => {
             Manage and review reported reels from users.
           </p>
         </div>
-        <button
+        <Button
           onClick={refetch}
           className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-[8px] transition-colors"
           disabled={isFetching}
         >
           <RefreshCw size={18} className={isFetching ? "animate-spin" : ""} />
           Refresh
-        </button>
+        </Button>
       </div>
 
       <div className="bg-zinc-900 border border-white/10 rounded-[12px] overflow-hidden">
@@ -95,7 +96,7 @@ const ReelReports = () => {
                     <td className="px-6 py-4">
                       {report.reel ? (
                         <div>
-                          <p className="font-medium truncate max-w-[200px] text-[#55DEE8]">
+                          <p className="font-medium truncate max-w-[200px] text-secondary">
                             {report.reel.id}
                           </p>
                           <p className="text-sm text-zinc-400 truncate max-w-[200px]">
@@ -137,14 +138,14 @@ const ReelReports = () => {
                           >
                             <ExternalLink size={18} />
                           </Link>
-                          <button
+                          <Button
                             onClick={() => handleDeleteReel(report.reel.id)}
                             disabled={isDeleting}
                             className="p-2 text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500 rounded-lg transition-colors"
                             title="Delete Reel"
                           >
                             <Trash2 size={18} />
-                          </button>
+                          </Button>
                         </div>
                       )}
                     </td>

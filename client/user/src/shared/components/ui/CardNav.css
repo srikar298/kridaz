@@ -50,7 +50,7 @@
 
 .hamburger-menu:hover .hamburger-line {
   opacity: 0.75;
-  color: #bff367;
+  color: var(--primary);
 }
 
 .hamburger-line {
@@ -67,12 +67,12 @@
 
 .hamburger-menu.open .hamburger-line:first-child {
   transform: translateY(4px) rotate(45deg);
-  color: #bff367;
+  color: var(--primary);
 }
 
 .hamburger-menu.open .hamburger-line:last-child {
   transform: translateY(-4px) rotate(-45deg);
-  color: #bff367;
+  color: var(--primary);
 }
 
 .logo-container {

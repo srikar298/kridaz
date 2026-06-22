@@ -40,7 +40,7 @@ const BookingHistoryChart = ({ data }) => (
         />
         <Tooltip
           contentStyle={{
-            backgroundColor: "#0a0a0a",
+            backgroundColor: "var(--background)",
             border: "1px solid #71b300",
             borderRadius: "4px",
             fontFamily: "Inter, sans-serif",

@@ -45,25 +45,26 @@ import EndMatchModal from "../components/EndMatchModal";
 import MatchReportModal from "../components/MatchReportModal";
 import MatchExitModal from "../components/MatchExitModal";
 import cricketLoadingGif from "../../../assets/cricket-loading.gif";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button, Input, Select } from "@kridaz/ui";
+
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:6001";
 /**
  * ScoringApp — The primary match scoring console.
- * Fully rebranded for the Scorer Portal with Teal Green (#00C187) and Inter font.
+ * Fully rebranded for the Scorer Portal with Teal Green (var(--success)) and Inter font.
  */
 
-const THEME_COLOR = "#00C187";
+const THEME_COLOR = "var(--success)";
 
 /* ─── Helpers ─── */
 const ballColor = (ball) => {
   if (ball.isWicket)
     return "bg-red-500/20 text-red-500 border border-red-500/30";
   if (ball.isExtra)
-    return "bg-[#00C187]/20 text-[#00C187] border border-[#00C187]/30";
+    return "bg-success/20 text-success border border-success/30";
   if (ball.runs === 6)
-    return "bg-[#00C187] text-black shadow-[0_0_15px_rgba(0,193,135,0.4)]";
-  if (ball.runs === 4) return "bg-[#00C187]/80 text-black";
+    return "bg-success text-black shadow-[0_0_15px_rgba(0,193,135,0.4)]";
+  if (ball.runs === 4) return "bg-success/80 text-black";
   if (ball.runs === 0)
     return "bg-white/5 text-neutral-600 border border-white/5";
   return "bg-white/10 text-white border border-white/10";
@@ -133,10 +134,10 @@ function MembersTab({ matchData }) {
           ["teamA", teamA?.name || "TBD", teamA?.logo || teamA?.image],
           ["teamB", teamB?.name || "TBD", teamB?.logo || teamB?.image],
         ].map(([key, label, logo]) => (
-          <button
+          <Button
             key={key}
             onClick={() => setTeamTab(key)}
-            className={`flex-1 py-2.5 rounded-[8px] text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 ${teamTab === key ? "bg-[#00C187] text-black shadow-lg" : "text-neutral-500 hover:text-white"}`}
+            className={`flex-1 py-2.5 rounded-[8px] text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 ${teamTab === key ? "bg-success text-black shadow-lg" : "text-neutral-500 hover:text-white"}`}
           >
             {logo ? (
               <img
@@ -146,7 +147,7 @@ function MembersTab({ matchData }) {
               />
             ) : null}
             {label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -162,7 +163,7 @@ function MembersTab({ matchData }) {
                 key={i}
                 className="flex items-center gap-4 p-4 bg-white/[0.02] rounded-[8px] border border-white/5 hover:bg-white/[0.04] transition-all"
               >
-                <div className="w-11 h-11 rounded-[8px] bg-[#00C187]/10 border border-[#00C187]/20 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
+                <div className="w-11 h-11 rounded-[8px] bg-success/10 border border-success/20 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
                   {slot.user?.profilePicture ? (
                     <img
                       src={slot.user.profilePicture}
@@ -719,8 +720,8 @@ const ScoringApp = () => {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center font-inter">
         <div className="text-center">
-          <div className="w-10 h-10 border-4 border-[#00C187]/20 border-t-[#00C187] rounded-full animate-spin mx-auto mb-4" />
-          <h2 className="text-[13px] font-black uppercase tracking-widest text-[#00C187]">
+          <div className="w-10 h-10 border-4 border-success/20 border-t-[var(--success)] rounded-full animate-spin mx-auto mb-4" />
+          <h2 className="text-[13px] font-black uppercase tracking-widest text-success">
             Acquiring Scoring Lock
           </h2>
         </div>
@@ -742,9 +743,9 @@ const ScoringApp = () => {
           Someone else is currently scoring this game. Please wait until they
           leave to gain access.
         </p>
-        <div className="flex items-center gap-3 bg-[#00C187]/10 border border-[#00C187]/20 px-6 py-4 rounded-[8px]">
-          <div className="w-4 h-4 border-2 border-[#00C187]/30 border-t-[#00C187] rounded-full animate-spin" />
-          <span className="text-[11px] font-black uppercase tracking-widest text-[#00C187]">
+        <div className="flex items-center gap-3 bg-success/10 border border-success/20 px-6 py-4 rounded-[8px]">
+          <div className="w-4 h-4 border-2 border-success/30 border-t-[var(--success)] rounded-full animate-spin" />
+          <span className="text-[11px] font-black uppercase tracking-widest text-success">
             Waiting in queue...
           </span>
         </div>
@@ -821,18 +822,18 @@ const ScoringApp = () => {
             {needsInningsSetup &&
               !needsMatchStart &&
               !isFirstInningsComplete && (
-                <button
+                <Button
                   onClick={() => setShowInningsSetup(true)}
-                  className="w-full py-5 bg-[#00C187]/10 border border-[#00C187]/30 rounded-[8px] text-center text-[#00C187] text-[11px] font-black uppercase tracking-[0.2em] animate-pulse shadow-xl"
+                  className="w-full py-5 bg-success/10 border border-success/30 rounded-[8px] text-center text-success text-[11px] font-black uppercase tracking-[0.2em] animate-pulse shadow-xl"
                 >
                   ⚡ Setup Next Pair & Bowler
-                </button>
+                </Button>
               )}
 
             {isFirstInningsComplete && (
               <div className="p-8 bg-white/[0.02] border border-white/5 rounded-[8px] space-y-6 text-center relative overflow-hidden shadow-2xl">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#00C187]/5 blur-3xl pointer-events-none" />
-                <div className="w-16 h-16 bg-[#00C187]/10 border border-[#00C187]/20 rounded-[8px] flex items-center justify-center mx-auto shadow-lg">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-success/5 blur-3xl pointer-events-none" />
+                <div className="w-16 h-16 bg-success/10 border border-success/20 rounded-[8px] flex items-center justify-center mx-auto shadow-lg">
                   <Trophy size={28} style={{ color: THEME_COLOR }} />
                 </div>
                 <div>
@@ -847,7 +848,7 @@ const ScoringApp = () => {
                     runs
                   </p>
                 </div>
-                <button
+                <Button
                   onClick={async () => {
                     try {
                       const response = await axiosInstance.post(
@@ -889,7 +890,7 @@ const ScoringApp = () => {
                   }}
                 >
                   Start 2nd Innings
-                </button>
+                </Button>
               </div>
             )}
 
@@ -903,7 +904,7 @@ const ScoringApp = () => {
                     {/* Col 1 */}
                     <div className="flex flex-col gap-0 w-[25%]">
                       {[0, 3].map((run) => (
-                        <button
+                        <Button
                           key={run}
                           onClick={() =>
                             handleScoringClick(() => {
@@ -929,13 +930,13 @@ const ScoringApp = () => {
                           >
                             {run}
                           </span>
-                        </button>
+                        </Button>
                       ))}
                     </div>
 
                     {/* Col 2 */}
                     <div className="flex flex-col gap-0 w-[25%]">
-                      <button
+                      <Button
                         onClick={() =>
                           handleScoringClick(() => {
                             processRuns({
@@ -958,8 +959,8 @@ const ScoringApp = () => {
                         >
                           1
                         </span>
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() =>
                           handleScoringClick(() => {
                             processRuns({
@@ -982,12 +983,12 @@ const ScoringApp = () => {
                         >
                           4
                         </span>
-                      </button>
+                      </Button>
                     </div>
 
                     {/* Col 3 */}
                     <div className="flex flex-col gap-0 w-[25%]">
-                      <button
+                      <Button
                         onClick={() =>
                           handleScoringClick(() => {
                             processRuns({
@@ -1010,8 +1011,8 @@ const ScoringApp = () => {
                         >
                           2
                         </span>
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() =>
                           handleScoringClick(() => {
                             processRuns({
@@ -1034,12 +1035,12 @@ const ScoringApp = () => {
                         >
                           6
                         </span>
-                      </button>
+                      </Button>
                     </div>
 
                     {/* Col 4 */}
                     <div className="flex flex-col gap-0 w-[25%]">
-                      <button
+                      <Button
                         disabled={isMutating}
                         onClick={() =>
                           handleScoringClick(async () => {
@@ -1055,14 +1056,14 @@ const ScoringApp = () => {
                         className="flex-[3] bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95 disabled:opacity-50"
                       >
                         {isUndoing ? (
-                          <div className="w-5 h-5 border-2 border-white/20 border-t-[#00C187] rounded-full animate-spin" />
+                          <div className="w-5 h-5 border-2 border-white/20 border-t-[var(--success)] rounded-full animate-spin" />
                         ) : (
                           <span className="text-white font-inter font-semibold uppercase tracking-widest text-[16px]">
                             UNDO
                           </span>
                         )}
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() =>
                           handleScoringClick(() => setShowWicketModal(true))
                         }
@@ -1071,8 +1072,8 @@ const ScoringApp = () => {
                         <span className="text-[#F40000] font-inter font-semibold uppercase tracking-widest text-[18px]">
                           OUT
                         </span>
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() =>
                           handleScoringClick(() => setShowCustomRunsModal(true))
                         }
@@ -1081,33 +1082,33 @@ const ScoringApp = () => {
                         <span className="text-white font-inter font-semibold uppercase tracking-wider text-[13px]">
                           CUSTOM
                         </span>
-                      </button>
+                      </Button>
                     </div>
                   </div>
 
                   {/* Bottom Row Extras */}
                   <div className="flex h-[46px] gap-0 mt-0">
-                    <button
+                    <Button
                       onClick={() =>
                         handleScoringClick(() => setExtraModal("WIDE"))
                       }
                       className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95"
                     >
-                      <span className="text-[#00C187] font-inter font-semibold uppercase tracking-widest text-[15px]">
+                      <span className="text-success font-inter font-semibold uppercase tracking-widest text-[15px]">
                         WIDE
                       </span>
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() =>
                         handleScoringClick(() => setExtraModal("NO_BALL"))
                       }
                       className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95"
                     >
-                      <span className="text-[#00C187] font-inter font-semibold uppercase tracking-widest text-[16px]">
+                      <span className="text-success font-inter font-semibold uppercase tracking-widest text-[16px]">
                         NB
                       </span>
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() =>
                         handleScoringClick(() => setExtraModal("BYE"))
                       }
@@ -1116,8 +1117,8 @@ const ScoringApp = () => {
                       <span className="text-white font-inter font-semibold uppercase tracking-widest text-[16px]">
                         BYE
                       </span>
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() =>
                         handleScoringClick(() => setExtraModal("LEG_BYE"))
                       }
@@ -1126,7 +1127,7 @@ const ScoringApp = () => {
                       <span className="text-white font-inter font-semibold uppercase tracking-wider text-[13px]">
                         LEG BYE
                       </span>
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -1137,7 +1138,7 @@ const ScoringApp = () => {
 
   return (
     <div
-      className="min-h-[100dvh] bg-[#121212] flex justify-center text-white selection:bg-[#00C187] selection:text-black overflow-hidden"
+      className="min-h-[100dvh] bg-card flex justify-center text-white selection:bg-success selection:text-black overflow-hidden"
       style={{ fontFamily: "'Open Sans', sans-serif" }}
     >
       {isLocked && (
@@ -1157,7 +1158,7 @@ const ScoringApp = () => {
       >
         {/* Match Starting Loading Overlay — lives in PARENT so it persists across TossModal unmount */}
         {matchStarting && (
-          <div className="absolute inset-0 z-[200] bg-[#121212] flex flex-col items-center justify-center gap-6">
+          <div className="absolute inset-0 z-[200] bg-card flex flex-col items-center justify-center gap-6">
             <div className="w-16 h-16 rounded-full border-4 border-[#7bf090]/20 border-t-[#7bf090] animate-spin" />
             <div className="text-center">
               <h2
@@ -1195,7 +1196,7 @@ const ScoringApp = () => {
               "Location Not Provided";
 
             return (
-              <div className="flex-1 flex flex-col p-4 bg-[#121212] relative overflow-y-auto no-scrollbar">
+              <div className="flex-1 flex flex-col p-4 bg-card relative overflow-y-auto no-scrollbar">
                 <div className="mt-4 border-t border-white/5 pt-4 flex-1 flex flex-col">
                   <TossModal
                     teamA={
@@ -1324,18 +1325,18 @@ const ScoringApp = () => {
                         }}
                       >
                         <div className="absolute top-4 left-4 z-50">
-                          <button
+                          <Button
                             onClick={() => setShowExitModal(true)}
                             className="p-2 transition-all opacity-80 hover:opacity-100 bg-black/40 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center w-10 h-10"
                           >
                             <ChevronLeft size={24} className="text-white" />
-                          </button>
+                          </Button>
                         </div>
                         <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
                           {/* Timer Display */}
                           <div className="flex items-center gap-1.5 bg-black/50 backdrop-blur-md rounded-full border border-white/10 px-2.5 py-1.5 h-10 shadow-lg text-xs font-mono font-bold text-white shrink-0">
                             <span>{formatTimer(localTimerSecs)}</span>
-                            <button
+                            <Button
                               onClick={async () => {
                                 await toggleTimer();
                               }}
@@ -1345,7 +1346,7 @@ const ScoringApp = () => {
                                 <Pause
                                   size={10}
                                   fill="currentColor"
-                                  className="text-[#00C187]"
+                                  className="text-success"
                                 />
                               ) : (
                                 <Play
@@ -1354,10 +1355,10 @@ const ScoringApp = () => {
                                   className="text-yellow-500 ml-0.5"
                                 />
                               )}
-                            </button>
+                            </Button>
                           </div>
 
-                          <button
+                          <Button
                             onClick={() => {
                               const shareUrl = `${window.location.origin}/analytics/${matchData?.hostedGameId?.shortId || matchId}`;
                               if (navigator.share) {
@@ -1376,13 +1377,13 @@ const ScoringApp = () => {
                             className="p-2 transition-all opacity-80 hover:opacity-100 bg-black/40 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center w-10 h-10"
                           >
                             <Share2 size={20} className="text-white" />
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             onClick={() => setShowSettings(true)}
                             className="p-2 transition-all opacity-80 hover:opacity-100 bg-black/40 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center w-10 h-10"
                           >
                             <Settings size={20} className="text-white" />
-                          </button>
+                          </Button>
                         </div>
                         <div className="px-6 flex justify-between items-end">
                           {/* Score */}
@@ -1556,8 +1557,8 @@ const ScoringApp = () => {
                       </div>
 
                       {/* Match Controls Dropdown */}
-                      <div className="bg-[#1a1a1a] border-y border-white/5 rounded-none overflow-hidden shadow-xl -mx-4 !mt-0 mb-0 z-10 relative">
-                        <button
+                      <div className="bg-card border-y border-white/5 rounded-none overflow-hidden shadow-xl -mx-4 !mt-0 mb-0 z-10 relative">
+                        <Button
                           onClick={() => setShowMatchActions(!showMatchActions)}
                           className="w-full p-3 flex items-center justify-between hover:bg-white/5 transition-all"
                         >
@@ -1574,20 +1575,20 @@ const ScoringApp = () => {
                             size={16}
                             className={`text-white/50 transition-transform duration-300 ${showMatchActions ? "-rotate-90" : "rotate-180"}`}
                           />
-                        </button>
+                        </Button>
 
                         <div
                           className={`transition-all duration-300 ease-in-out ${showMatchActions ? "max-h-40 opacity-100 p-4 pt-2" : "max-h-0 opacity-0 px-4 pointer-events-none"}`}
                         >
                           <div className="grid grid-cols-4 gap-3">
-                            <button
+                            <Button
                               onClick={() => setShowInningsSetup(true)}
                               className="h-16 bg-white/5 border border-white/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex flex-col items-center justify-center gap-1.5 text-white transform active:scale-95 shadow-xl"
                             >
                               <Users size={16} />{" "}
                               <span className="mt-0.5">Players</span>
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                               disabled={isMutating}
                               onClick={() => {
                                 if (!isMutating && checkTimerActive())
@@ -1597,17 +1598,17 @@ const ScoringApp = () => {
                             >
                               <Zap size={16} />{" "}
                               <span className="mt-0.5">Penalty</span>
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                               onClick={() =>
                                 setIsWagonWheelEnabled(!isWagonWheelEnabled)
                               }
-                              className={`h-16 border rounded-[8px] text-[9px] font-black uppercase tracking-[0.2em] transition-all flex flex-col items-center justify-center gap-1.5 transform active:scale-95 shadow-xl ${isWagonWheelEnabled ? "bg-[#00C187]/10 border-[#00C187]/30 text-[#00C187]" : "bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white"}`}
+                              className={`h-16 border rounded-[8px] text-[9px] font-black uppercase tracking-[0.2em] transition-all flex flex-col items-center justify-center gap-1.5 transform active:scale-95 shadow-xl ${isWagonWheelEnabled ? "bg-success/10 border-success/30 text-success" : "bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white"}`}
                             >
                               <Crosshair size={16} />{" "}
                               <span className="mt-0.5">Wagon</span>
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                               onClick={() => setShowEndMatchModal(true)}
                               className="h-16 bg-white/[0.03] border border-white/10 rounded-[8px] text-[9px] font-black uppercase tracking-[0.2em] transition-all transform active:scale-95 shadow-xl flex flex-col items-center justify-center gap-1.5"
                               style={{
@@ -1617,7 +1618,7 @@ const ScoringApp = () => {
                             >
                               <CheckCircle2 size={16} />{" "}
                               <span className="mt-0.5">End Match</span>
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       </div>
@@ -1637,16 +1638,16 @@ const ScoringApp = () => {
                   { id: "members", icon: Users, label: "Teams" },
                   { id: "history", icon: History, label: "Ledger" },
                 ].map((tab) => (
-                  <button
+                  <Button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex-1 flex items-center justify-center gap-3 py-3.5 rounded-[8px] transition-all border ${activeTab === tab.id ? "bg-white/10 text-[#00C187] border-[#00C187]/20 shadow-lg" : "text-neutral-500 hover:text-white border-transparent"}`}
+                    className={`flex-1 flex items-center justify-center gap-3 py-3.5 rounded-[8px] transition-all border ${activeTab === tab.id ? "bg-white/10 text-success border-success/20 shadow-lg" : "text-neutral-500 hover:text-white border-transparent"}`}
                   >
                     <tab.icon size={16} />
                     <span className="text-[10px] font-black uppercase tracking-widest">
                       {tab.label}
                     </span>
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -1656,24 +1657,24 @@ const ScoringApp = () => {
       {/* Settings Modal */}
       {showSettings && (
         <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-3xl flex justify-center animate-in fade-in duration-500">
-          <div className="w-full h-[100dvh] max-w-[450px] overflow-y-auto bg-[#000] px-4 py-8 space-y-10 shadow-2xl relative pb-24">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#00C187]/5 blur-3xl pointer-events-none" />
+          <div className="w-full h-[100dvh] max-w-[450px] overflow-y-auto bg-background px-4 py-8 space-y-10 shadow-2xl relative pb-24">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-success/5 blur-3xl pointer-events-none" />
             <div className="flex justify-between items-center">
               <h3 className="text-[28px] font-semibold font-inter text-white tracking-tight">
                 Interface Config
               </h3>
-              <button
+              <Button
                 onClick={() => setShowSettings(false)}
                 className="p-3 bg-white/5 rounded-[8px] border border-white/5 hover:text-white transition-all"
               >
                 <X size={20} className="text-neutral-500" />
-              </button>
+              </Button>
             </div>
 
             <div className="space-y-6">
               {matchData?.hostedGameId && !liveEnabled && (
                 <div className="py-12 text-center">
-                  <div className="w-8 h-8 border-2 border-[#00C187] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                  <div className="w-8 h-8 border-2 border-success border-t-transparent rounded-full animate-spin mx-auto mb-4" />
                   <p className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">
                     Establishing Sync...
                   </p>
@@ -1686,14 +1687,14 @@ const ScoringApp = () => {
                     Broadcast Credentials
                   </p>
                   <div className="space-y-3">
-                    <input
+                    <Input
                       type="text"
                       placeholder="YouTube ID..."
                       defaultValue={matchData?.hostedGameId?.youtubeVideoId}
                       id="ytVideoId"
-                      className="w-full bg-[#222] border border-white/10 rounded-[8px] px-6 py-[14.5px] text-[10px] focus:border-[#00C187] outline-none text-white font-bold"
+                      className="w-full bg-card border border-white/10 rounded-[8px] px-6 py-[14.5px] text-[10px] focus:border-success outline-none text-white font-bold"
                     />
-                    <button
+                    <Button
                       onClick={async () => {
                         const rawVid =
                           document.getElementById("ytVideoId")?.["value"] || "";
@@ -1735,10 +1736,10 @@ const ScoringApp = () => {
                           );
                         }
                       }}
-                      className="w-full py-[14.5px] bg-[#222] border border-white/10 text-[#00C187] text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:bg-[#00C187] hover:text-black transition-all"
+                      className="w-full py-[14.5px] bg-card border border-white/10 text-success text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:bg-success hover:text-black transition-all"
                     >
                       Authorize Stream
-                    </button>
+                    </Button>
                   </div>
 
                   {liveUrls && (
@@ -1748,60 +1749,60 @@ const ScoringApp = () => {
                           OBS Overlay (Copy this)
                         </p>
                         <div className="flex gap-2">
-                          <input
+                          <Input
                             readOnly
                             value={liveUrls.obsOverlay}
-                            className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-neutral-400 font-bold truncate outline-none"
+                            className="flex-1 bg-card border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-neutral-400 font-bold truncate outline-none"
                           />
-                          <button
+                          <Button
                             onClick={() => {
                               navigator.clipboard.writeText(
                                 liveUrls.obsOverlay
                               );
                               toast.success("Copied!");
                             }}
-                            className="px-4 py-[14.5px] bg-[#222] text-[#00C187] text-[10px] font-black uppercase rounded-[8px] border border-white/10 hover:bg-[#00C187] hover:text-black transition-all"
+                            className="px-4 py-[14.5px] bg-card text-success text-[10px] font-black uppercase rounded-[8px] border border-white/10 hover:bg-success hover:text-black transition-all"
                           >
                             Copy
-                          </button>
+                          </Button>
                         </div>
-                        <button
+                        <Button
                           type="button"
                           onClick={() => setShowThemeStore(true)}
-                          className="w-full mt-2 py-[14.5px] bg-[#222] text-[#00C187] text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-white/10 hover:bg-[#00C187] hover:text-black hover:shadow-[0_0_15px_rgba(0,193,135,0.15)] transition-all flex items-center justify-center gap-2"
+                          className="w-full mt-2 py-[14.5px] bg-card text-success text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-white/10 hover:bg-success hover:text-black hover:shadow-[0_0_15px_rgba(0,193,135,0.15)] transition-all flex items-center justify-center gap-2"
                         >
                           <Sparkles size={12} />
                           Change Ticker Theme
-                        </button>
+                        </Button>
                       </div>
                       <div className="space-y-1.5">
                         <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">
                           Public Match Analytics
                         </p>
                         <div className="flex gap-2">
-                          <input
+                          <Input
                             readOnly
                             value={liveUrls.publicScoreboard}
-                            className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-neutral-400 font-bold truncate outline-none"
+                            className="flex-1 bg-card border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-neutral-400 font-bold truncate outline-none"
                           />
-                          <button
+                          <Button
                             onClick={() => {
                               navigator.clipboard.writeText(
                                 liveUrls.publicScoreboard
                               );
                               toast.success("Copied!");
                             }}
-                            className="px-4 py-[14.5px] bg-[#222] text-[#00C187] text-[10px] font-black uppercase rounded-[8px] border border-white/10 hover:bg-[#00C187] hover:text-black transition-all"
+                            className="px-4 py-[14.5px] bg-card text-success text-[10px] font-black uppercase rounded-[8px] border border-white/10 hover:bg-success hover:text-black transition-all"
                           >
                             Copy
-                          </button>
+                          </Button>
                         </div>
                         <div className="flex gap-2 w-full mt-2">
                           <a
                             href={`/live-overlay/${matchId}/preview?theme=${matchData?.hostedGameId?.tickerTheme || "neon_classic"}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="w-full py-[14.5px] bg-[#222] text-[#00C187] border border-white/10 rounded-[8px] px-4 text-[10px] font-black uppercase tracking-widest text-center hover:bg-[#00C187]/30 transition-colors"
+                            className="w-full py-[14.5px] bg-card text-success border border-white/10 rounded-[8px] px-4 text-[10px] font-black uppercase tracking-widest text-center hover:bg-success/30 transition-colors"
                           >
                             Preview Theme
                           </a>
@@ -1818,17 +1819,17 @@ const ScoringApp = () => {
                     Match State
                   </p>
                   <div className="grid grid-cols-3 gap-2">
-                    <button
+                    <Button
                       onClick={async () => {
                         const res = await updateMatchStatus("LIVE");
                         if (res.success) toast.success("Match resumed!");
                         else toast.error("Could not resume match. Try again.");
                       }}
-                      className={`py-[14.5px] rounded-[8px] text-[10px] font-black uppercase transition-all ${matchData?.status === "LIVE" ? "bg-[#222] text-[#00C187] border border-white/10" : "bg-white/5 text-neutral-400 hover:bg-white/10"}`}
+                      className={`py-[14.5px] rounded-[8px] text-[10px] font-black uppercase transition-all ${matchData?.status === "LIVE" ? "bg-card text-success border border-white/10" : "bg-white/5 text-neutral-400 hover:bg-white/10"}`}
                     >
                       Live
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={async () => {
                         const res = await updateMatchStatus("RAIN_DELAY");
                         if (res.success)
@@ -1838,8 +1839,8 @@ const ScoringApp = () => {
                       className={`py-[14.5px] rounded-[8px] text-[10px] font-black uppercase transition-all ${matchData?.status === "RAIN_DELAY" ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-white/5 text-neutral-400 hover:bg-white/10"}`}
                     >
                       Rain Delay
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={async () => {
                         const res = await updateMatchStatus("BAD_LIGHT");
                         if (res.success)
@@ -1849,7 +1850,7 @@ const ScoringApp = () => {
                       className={`py-[14.5px] rounded-[8px] text-[10px] font-black uppercase transition-all ${matchData?.status === "BAD_LIGHT" ? "bg-orange-500/20 text-orange-400 border border-orange-500/30" : "bg-white/5 text-neutral-400 hover:bg-white/10"}`}
                     >
                       Bad Light
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
@@ -1857,32 +1858,32 @@ const ScoringApp = () => {
                   <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest flex items-center justify-between">
                     <span>AI Commentator (OpenAI TTS)</span>
                     <span
-                      className={`px-2 py-0.5 rounded text-[8px] ${isAiCommentaryEnabled ? "bg-[#222] text-[#00C187]" : "bg-white/5 text-neutral-500"}`}
+                      className={`px-2 py-0.5 rounded text-[8px] ${isAiCommentaryEnabled ? "bg-card text-success" : "bg-white/5 text-neutral-500"}`}
                     >
                       {isAiCommentaryEnabled ? "ACTIVE" : "OFF"}
                     </span>
                   </p>
 
                   <div className="flex gap-2">
-                    <button
+                    <Button
                       onClick={() =>
                         setIsAiCommentaryEnabled(!isAiCommentaryEnabled)
                       }
-                      className={`flex-1 py-[14.5px] rounded-[8px] text-[10px] font-black uppercase tracking-widest transition-all ${isAiCommentaryEnabled ? "bg-[#222] text-[#00C187] border border-white/10 shadow-[0_0_15px_rgba(0,193,135,0.15)]" : "bg-white/5 border border-white/10 text-white"}`}
+                      className={`flex-1 py-[14.5px] rounded-[8px] text-[10px] font-black uppercase tracking-widest transition-all ${isAiCommentaryEnabled ? "bg-card text-success border border-white/10 shadow-[0_0_15px_rgba(0,193,135,0.15)]" : "bg-white/5 border border-white/10 text-white"}`}
                     >
                       {isAiCommentaryEnabled ? "Disable" : "Enable Commentary"}
-                    </button>
+                    </Button>
                   </div>
 
                   {isAiCommentaryEnabled && (
                     <div className="space-y-3 animate-in slide-in-from-top-2">
                       <div className="flex gap-2">
-                        <select
+                        <Select
                           value={commentaryLanguage}
                           onChange={(e) =>
                             setCommentaryLanguage(e.target.value)
                           }
-                          className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
+                          className="flex-1 bg-card border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-success"
                         >
                           <option value="en">English (Default)</option>
                           <option value="hi">Hindi</option>
@@ -1892,12 +1893,12 @@ const ScoringApp = () => {
                           <option value="ta">Tamil</option>
                           <option value="te">Telugu</option>
                           <option value="gu">Gujarati</option>
-                        </select>
+                        </Select>
 
-                        <select
+                        <Select
                           value={commentaryVoice}
                           onChange={(e) => setCommentaryVoice(e.target.value)}
-                          className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
+                          className="flex-1 bg-card border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-success"
                         >
                           <option value="alloy">Alloy (Neutral)</option>
                           <option value="echo">Echo (Male, Warm)</option>
@@ -1909,13 +1910,13 @@ const ScoringApp = () => {
                           <option value="shimmer">
                             Shimmer (Female, Bright)
                           </option>
-                        </select>
+                        </Select>
                       </div>
                       <div className="flex gap-2">
-                        <select
+                        <Select
                           value={commentaryStyle}
                           onChange={(e) => setCommentaryStyle(e.target.value)}
-                          className="w-full bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
+                          className="w-full bg-card border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-success"
                         >
                           <option value="professional">
                             Professional Broadcast
@@ -1927,9 +1928,9 @@ const ScoringApp = () => {
                           <option value="dramatic">
                             High Energy / Dramatic
                           </option>
-                        </select>
+                        </Select>
                       </div>
-                      <button
+                      <Button
                         onClick={async () => {
                           try {
                             const response = await axiosInstance.post(
@@ -1958,10 +1959,10 @@ const ScoringApp = () => {
                             toast.error("Connection issue. Please try again.");
                           }
                         }}
-                        className="w-full py-[14.5px] bg-[#222] text-[#00C187] text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-white/10 hover:bg-[#00C187] hover:text-black transition-all"
+                        className="w-full py-[14.5px] bg-card text-success text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-white/10 hover:bg-success hover:text-black transition-all"
                       >
                         Save Commentary Profile
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -1971,23 +1972,23 @@ const ScoringApp = () => {
                     DLS / Target Revision
                   </p>
                   <div className="flex gap-2">
-                    <input
+                    <Input
                       type="number"
                       id="revisedTarget"
                       placeholder="Revised Target"
                       defaultValue={matchData?.revisedTarget || ""}
-                      className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
+                      className="flex-1 bg-card border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-success"
                     />
-                    <input
+                    <Input
                       type="number"
                       step="0.1"
                       id="revisedOvers"
                       placeholder="Revised Overs"
                       defaultValue={matchData?.revisedOvers || ""}
-                      className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
+                      className="flex-1 bg-card border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-success"
                     />
                   </div>
-                  <button
+                  <Button
                     onClick={async () => {
                       const tgt = parseInt(
                         document.getElementById("revisedTarget").value
@@ -2007,7 +2008,7 @@ const ScoringApp = () => {
                     className="w-full py-[14.5px] bg-purple-500/10 text-purple-400 text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-purple-500/20 hover:bg-purple-500 hover:text-white transition-all"
                   >
                     Apply DLS Revision
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="space-y-4 pt-4 border-t border-white/5">
@@ -2015,32 +2016,32 @@ const ScoringApp = () => {
                     Match Officials
                   </p>
                   <div className="flex gap-2">
-                    <input
+                    <Input
                       type="text"
                       id="umpire1"
                       placeholder="Umpire 1"
                       defaultValue={matchData?.matchOfficials?.umpire1 || ""}
-                      className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
+                      className="flex-1 bg-card border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-success"
                     />
-                    <input
+                    <Input
                       type="text"
                       id="umpire2"
                       placeholder="Umpire 2"
                       defaultValue={matchData?.matchOfficials?.umpire2 || ""}
-                      className="flex-1 bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
+                      className="flex-1 bg-card border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-success"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <input
+                    <Input
                       type="text"
                       id="matchReferee"
                       placeholder="Match Referee"
                       defaultValue={
                         matchData?.matchOfficials?.matchReferee || ""
                       }
-                      className="w-full bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
+                      className="w-full bg-card border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-success"
                     />
-                    <button
+                    <Button
                       onClick={async () => {
                         const umpire1 =
                           document.getElementById("umpire1").value;
@@ -2061,7 +2062,7 @@ const ScoringApp = () => {
                       className="w-full py-[14.5px] bg-blue-500/10 text-blue-400 text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-blue-500/20 hover:bg-blue-500 hover:text-white transition-all"
                     >
                       Save
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
@@ -2071,14 +2072,14 @@ const ScoringApp = () => {
                   </p>
 
                   <div className="grid grid-cols-2 gap-2">
-                    <input
+                    <Input
                       type="number"
                       id="powerplayOvers"
                       placeholder="Powerplay Overs"
                       defaultValue={matchData?.powerplayOvers || 0}
-                      className="w-full bg-[#222] border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-[#00C187]"
+                      className="w-full bg-card border border-white/10 rounded-[8px] px-4 py-[14.5px] text-[10px] text-white font-bold outline-none focus:border-success"
                     />
-                    <button
+                    <Button
                       onClick={async () => {
                         const overs = parseInt(
                           document.getElementById("powerplayOvers").value
@@ -2091,14 +2092,14 @@ const ScoringApp = () => {
                         else
                           toast.error("Could not update powerplay. Try again.");
                       }}
-                      className="w-full py-[14.5px] bg-[#222] text-[#00C187] text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-white/10 hover:bg-[#00C187] hover:text-black transition-all"
+                      className="w-full py-[14.5px] bg-card text-success text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-white/10 hover:bg-success hover:text-black transition-all"
                     >
                       Set Powerplay
-                    </button>
+                    </Button>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
-                    <button
+                    <Button
                       onClick={async () => {
                         const isSuccess = window.confirm(
                           "Was the Batting Team's review successful? (Click OK for Yes, Cancel for No)"
@@ -2116,9 +2117,9 @@ const ScoringApp = () => {
                       className="w-full py-[14.5px] bg-yellow-500/10 text-yellow-400 text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-yellow-500/20 hover:bg-yellow-500 hover:text-white transition-all"
                     >
                       Use Batting Review ({matchData?.reviews?.batting ?? 2})
-                    </button>
+                    </Button>
 
-                    <button
+                    <Button
                       onClick={async () => {
                         const isSuccess = window.confirm(
                           "Was the Fielding Team's review successful? (Click OK for Yes, Cancel for No)"
@@ -2136,7 +2137,7 @@ const ScoringApp = () => {
                       className="w-full py-[14.5px] bg-yellow-500/10 text-yellow-400 text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-yellow-500/20 hover:bg-yellow-500 hover:text-white transition-all"
                     >
                       Use Fielding Review ({matchData?.reviews?.fielding ?? 2})
-                    </button>
+                    </Button>
                   </div>
                 </div>
                 <div className="space-y-4 pt-4 border-t border-white/5">
@@ -2144,33 +2145,33 @@ const ScoringApp = () => {
                     Match Analysis
                   </p>
                   <div className="grid grid-cols-2 gap-2">
-                    <button
+                    <Button
                       onClick={() => {
                         setShowSettings(false);
                         setShowMatchReport(true);
                       }}
-                      className="w-full py-[14.5px] bg-[#222] text-[#00C187] text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-white/10 hover:bg-[#00C187] hover:text-black hover:shadow-[0_0_15px_rgba(0,193,135,0.15)] transition-all flex items-center justify-center gap-2"
+                      className="w-full py-[14.5px] bg-card text-success text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-white/10 hover:bg-success hover:text-black hover:shadow-[0_0_15px_rgba(0,193,135,0.15)] transition-all flex items-center justify-center gap-2"
                     >
                       <FileText size={14} />
                       Match Report
-                    </button>
+                    </Button>
 
-                    <button
+                    <Button
                       onClick={() => {
                         window.open(
                           `/analytics/${matchData?.hostedGameId?.shortId || matchId}`,
                           "_blank"
                         );
                       }}
-                      className="w-full py-[14.5px] bg-[#55DEE8]/10 text-[#55DEE8] text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-[#55DEE8]/20 hover:bg-[#55DEE8] hover:text-black hover:shadow-[0_0_15px_rgba(85,222,232,0.15)] transition-all flex items-center justify-center gap-2"
+                      className="w-full py-[14.5px] bg-secondary/10 text-secondary text-[10px] font-black uppercase tracking-widest rounded-[8px] border border-secondary/20 hover:bg-secondary hover:text-black hover:shadow-[0_0_15px_rgba(85,222,232,0.15)] transition-all flex items-center justify-center gap-2"
                     >
                       <TrendingUp size={14} />
                       Live Analytics
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
-              <button
+              <Button
                 onClick={() => setShowSettings(false)}
                 className="w-full py-5 rounded-[8px] font-black uppercase text-[11px] tracking-[0.2em] transition-all transform active:scale-95 shadow-xl"
                 style={{
@@ -2180,7 +2181,7 @@ const ScoringApp = () => {
                 }}
               >
                 Save Parameters
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -2294,7 +2295,7 @@ const ScoringApp = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative w-full max-w-sm bg-[#111] rounded-[8px] border border-white/10 p-6 text-center shadow-2xl"
+            className="relative w-full max-w-sm bg-card rounded-[8px] border border-white/10 p-6 text-center shadow-2xl"
           >
             <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
               <span className="text-3xl">🔄</span>
@@ -2307,7 +2308,7 @@ const ScoringApp = () => {
               match timer has been paused. Set up the next innings to resume the
               match.
             </p>
-            <button
+            <Button
               onClick={async () => {
                 setShowInningsCompleteModal(false);
                 const res = await advanceToNextInnings(bowlingTeamKey);
@@ -2321,10 +2322,10 @@ const ScoringApp = () => {
                   );
                 }
               }}
-              className="w-full py-4 bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-black font-black text-sm uppercase tracking-wider rounded-[8px] hover:opacity-90 transition-opacity"
+              className="w-full py-4 bg-gradient-to-r from-secondary to-primary text-black font-black text-sm uppercase tracking-wider rounded-[8px] hover:opacity-90 transition-opacity"
             >
               Start Next Innings
-            </button>
+            </Button>
           </motion.div>
         </div>
       )}

@@ -58,7 +58,7 @@ export default function AuthNavbar() {
           <img
             src="/logo.png"
             alt="Kridaz"
-            className="h-10 w-full object-contain"
+            className="h-8 w-full object-contain"
           />
         </Link>
       </div>

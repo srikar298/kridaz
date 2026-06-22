@@ -20,7 +20,8 @@ import {
 } from "lucide-react";
 import { fetchStates, fetchCities } from "@utils/locationService";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
-import GameCard from "../components/GameCard";
+import GameCard from "../components/GameCard";import { Button, Input, Select } from "@kridaz/ui";
+
 
 const JoinGames = () => {
   const navigate = useNavigate();
@@ -46,12 +47,12 @@ const JoinGames = () => {
   const fetchGames = async (city = "", state = "", sport = "All Sports") => {
     try {
       setLoading(true);
-      let url = `${import.meta.env.VITE_API_URL}/api/hosted-game/list?`;
-      if (city) url += `city=${city}&`;
-      if (state) url += `state=${state}&`;
-      if (sport !== "All Sports") url += `gameType=${sport}&`;
+      const params = new URLSearchParams();
+      if (city) params.append("city", city);
+      if (state) params.append("state", state);
+      if (sport !== "All Sports") params.append("gameType", sport);
 
-      const res = await axiosInstance.get(url);
+      const res = await axiosInstance.get(`/api/hosted-game/list?${params.toString()}`);
       setGames(res.data.games || []);
     } catch (err) {
       toast.error("Failed to fetch games");
@@ -258,43 +259,43 @@ const JoinGames = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white px-2 md:px-4 pt-6 pb-24 relative overflow-hidden font-inter">
+    <div className="min-h-screen bg-background text-white px-2 md:px-4 pt-6 pb-24 relative overflow-hidden font-inter">
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header Section */}
-        <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#2D2D2D] pb-6 mb-6">
+        <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-border pb-6 mb-6">
           <div className="relative w-full lg:w-auto">
             <div className="flex items-center justify-between lg:justify-start gap-4 w-full">
               <h1 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none font-open-sans">
                 Join{" "}
-                <span className="bg-gradient-to-r from-[#55DEE8] to-[#BFF367] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
                   Games
                 </span>
               </h1>
-              <button
+              <Button
                 onClick={() => gateInteraction(() => navigate("/host-game"))}
-                className="lg:hidden px-4 py-2.5 bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-black font-black text-[10px] uppercase tracking-widest rounded-[16px] flex items-center gap-2 transition-all duration-500 shadow-[0px_8px_24px_rgba(191,243,103,0.15)] whitespace-nowrap"
+                className="lg:hidden px-4 py-2.5 bg-gradient-to-r from-secondary to-primary text-black font-black text-[10px] uppercase tracking-widest rounded-[16px] flex items-center gap-2 transition-all duration-500 shadow-[0px_8px_24px_rgba(191,243,103,0.15)] whitespace-nowrap"
               >
                 <Trophy size={14} /> Host Match
-              </button>
+              </Button>
             </div>
           </div>
 
           {/* Desktop Host Match Button */}
           <div className="hidden lg:flex flex-wrap items-center gap-4">
-            <button
+            <Button
               onClick={() => gateInteraction(() => navigate("/host-game"))}
-              className="px-6 py-3.5 bg-gradient-to-r from-[#55DEE8] to-[#BFF367] text-black font-black text-[11px] uppercase tracking-widest rounded-[16px] flex items-center gap-2.5 transition-all duration-500 shadow-[0px_8px_24px_rgba(191,243,103,0.15)] whitespace-nowrap"
+              className="px-6 py-3.5 bg-gradient-to-r from-secondary to-primary text-black font-black text-[11px] uppercase tracking-widest rounded-[16px] flex items-center gap-2.5 transition-all duration-500 shadow-[0px_8px_24px_rgba(191,243,103,0.15)] whitespace-nowrap"
             >
               <Trophy size={16} /> Host Match
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Search & Filter Button Container */}
         <div className="w-full mb-10 flex items-center gap-3">
-          <div className="flex-1 relative flex items-center min-h-[56px] bg-[#121212] border border-white/[0.08] rounded-[16px] px-4 transition-all focus-within:border-[#55DEE8]">
+          <div className="flex-1 relative flex items-center min-h-[56px] bg-card border border-white/[0.08] rounded-[16px] px-4 transition-all focus-within:border-secondary">
             <Search className="text-gray-500 mr-3 shrink-0" size={16} />
-            <input
+            <Input
               className="w-full h-full bg-transparent text-white outline-none text-[14px] font-normal placeholder-white/70 py-4"
               placeholder="Search by sport, venue..."
               value={search}
@@ -305,9 +306,9 @@ const JoinGames = () => {
               }
             />
           </div>
-          <button
+          <Button
             onClick={() => setIsFilterOpen(true)}
-            className="min-h-[56px] w-[56px] md:w-auto md:px-5 bg-[#1B1B1B] border border-white/[0.08] hover:bg-[#222] text-white rounded-[16px] flex items-center justify-center gap-2 transition-all shrink-0 group relative"
+            className="min-h-[56px] w-[56px] md:w-auto md:px-5 bg-card border border-white/[0.08] hover:bg-card text-white rounded-[16px] flex items-center justify-center gap-2 transition-all shrink-0 group relative"
           >
             <Filter
               size={20}
@@ -320,9 +321,9 @@ const JoinGames = () => {
               selectedState ||
               selectedCity ||
               matchTypeFilter !== "All Matches") && (
-              <span className="absolute top-3 right-3 md:top-3.5 md:right-3 w-2 h-2 bg-[#BFF367] rounded-full shadow-[0_0_10px_#BFF367]"></span>
+              <span className="absolute top-3 right-3 md:top-3.5 md:right-3 w-2 h-2 bg-primary rounded-full shadow-[0_0_10px_var(--primary)]"></span>
             )}
-          </button>
+          </Button>
         </div>
 
         {/* Filter Sidebar Modal */}
@@ -347,17 +348,17 @@ const JoinGames = () => {
                   {/* Header */}
                   <div className="flex items-center justify-between p-6 border-b border-white/10 shrink-0">
                     <div className="flex items-center gap-2">
-                      <Filter className="text-[#BFF367]" size={20} />
+                      <Filter className="text-primary" size={20} />
                       <h2 className="text-xl font-black text-white uppercase tracking-tighter">
                         Filters
                       </h2>
                     </div>
-                    <button
+                    <Button
                       onClick={() => setIsFilterOpen(false)}
                       className="text-gray-500 hover:text-white transition-colors p-1.5 bg-white/5 rounded-full hover:bg-white/10"
                     >
                       <X size={18} />
-                    </button>
+                    </Button>
                   </div>
 
                   {/* Filter Body */}
@@ -370,8 +371,8 @@ const JoinGames = () => {
                           <Trophy size={12} /> Sport
                         </label>
                         <div className="relative">
-                          <select
-                            className="w-full bg-[#121212] border border-white/5 text-white text-[12px] font-bold uppercase p-4 pr-8 rounded-[8px] appearance-none outline-none focus:border-[#BFF367]/50 cursor-pointer truncate"
+                          <Select
+                            className="w-full bg-card border border-white/5 text-white text-[12px] font-bold uppercase p-4 pr-8 rounded-[8px] appearance-none outline-none focus:border-primary/50 cursor-pointer truncate"
                             value={sportFilter}
                             onChange={(e) => {
                               setSportFilter(e.target.value);
@@ -389,7 +390,7 @@ const JoinGames = () => {
                             <option value="Basketball">Basketball</option>
                             <option value="Tennis">Tennis</option>
                             <option value="Volleyball">Volleyball</option>
-                          </select>
+                          </Select>
                           <ChevronDown
                             size={14}
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
@@ -403,8 +404,8 @@ const JoinGames = () => {
                           <Zap size={12} /> Match Type
                         </label>
                         <div className="relative">
-                          <select
-                            className="w-full bg-[#121212] border border-white/5 text-white text-[12px] font-bold uppercase p-4 pr-8 rounded-[8px] appearance-none outline-none focus:border-[#BFF367]/50 cursor-pointer truncate"
+                          <Select
+                            className="w-full bg-card border border-white/5 text-white text-[12px] font-bold uppercase p-4 pr-8 rounded-[8px] appearance-none outline-none focus:border-primary/50 cursor-pointer truncate"
                             value={matchTypeFilter}
                             onChange={(e) => setMatchTypeFilter(e.target.value)}
                           >
@@ -433,7 +434,7 @@ const JoinGames = () => {
                             <option value="Need Scorer">Need Scorer</option>
                             <option value="Need Streamer">Need Streamer</option>
                             <option value="Need Coach">Need Coach</option>
-                          </select>
+                          </Select>
                           <ChevronDown
                             size={14}
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
@@ -450,8 +451,8 @@ const JoinGames = () => {
                           <MapPin size={12} /> State
                         </label>
                         <div className="relative">
-                          <select
-                            className="w-full bg-[#121212] border border-white/5 text-white text-[12px] font-bold uppercase p-4 pr-8 rounded-[8px] appearance-none outline-none focus:border-[#BFF367]/50 disabled:opacity-50 cursor-pointer truncate"
+                          <Select
+                            className="w-full bg-card border border-white/5 text-white text-[12px] font-bold uppercase p-4 pr-8 rounded-[8px] appearance-none outline-none focus:border-primary/50 disabled:opacity-50 cursor-pointer truncate"
                             value={selectedState}
                             onChange={(e) => handleStateChange(e.target.value)}
                             disabled={loadingStates}
@@ -464,7 +465,7 @@ const JoinGames = () => {
                                 {s}
                               </option>
                             ))}
-                          </select>
+                          </Select>
                           <ChevronDown
                             size={14}
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
@@ -478,8 +479,8 @@ const JoinGames = () => {
                           <MapPin size={12} /> City
                         </label>
                         <div className="relative">
-                          <select
-                            className="w-full bg-[#121212] border border-white/5 text-white text-[12px] font-bold uppercase p-4 pr-8 rounded-[8px] appearance-none outline-none focus:border-[#BFF367]/50 disabled:opacity-50 cursor-pointer truncate"
+                          <Select
+                            className="w-full bg-card border border-white/5 text-white text-[12px] font-bold uppercase p-4 pr-8 rounded-[8px] appearance-none outline-none focus:border-primary/50 disabled:opacity-50 cursor-pointer truncate"
                             value={selectedCity}
                             onChange={(e) => handleCityChange(e.target.value)}
                             disabled={!selectedState || loadingCities}
@@ -492,7 +493,7 @@ const JoinGames = () => {
                                 {c}
                               </option>
                             ))}
-                          </select>
+                          </Select>
                           <ChevronDown
                             size={14}
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
@@ -504,7 +505,7 @@ const JoinGames = () => {
 
                   {/* Footer actions */}
                   <div className="p-6 pb-8 border-t border-white/10 flex gap-3 bg-[#0a0a0c] shrink-0">
-                    <button
+                    <Button
                       onClick={() => {
                         setSportFilter("All Sports");
                         setMatchTypeFilter("All Matches");
@@ -513,13 +514,13 @@ const JoinGames = () => {
                       className="flex-1 py-4 border border-white/10 text-white rounded-[8px] text-[11px] font-black uppercase tracking-wider hover:bg-white/5 transition-colors"
                     >
                       Reset All
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => setIsFilterOpen(false)}
-                      className="flex-1 py-4 bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black rounded-[8px] text-[11px] font-black uppercase tracking-wider hover:scale-105 shadow-[0_0_20px_rgba(191,243,103,0.2)] hover:shadow-[0_0_30px_rgba(191,243,103,0.35)] transition-all"
+                      className="flex-1 py-4 bg-gradient-to-r from-primary to-primary text-black rounded-[8px] text-[11px] font-black uppercase tracking-wider hover:scale-105 shadow-[0_0_20px_rgba(191,243,103,0.2)] hover:shadow-[0_0_30px_rgba(191,243,103,0.35)] transition-all"
                     >
                       Show Results
-                    </button>
+                    </Button>
                   </div>
                 </motion.div>
               </div>
@@ -534,31 +535,31 @@ const JoinGames = () => {
             [1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <div
                 key={i}
-                className="h-[420px] bg-[#0d0d0d] rounded-[8px] border border-[#2D2D2D] animate-pulse"
+                className="h-[420px] bg-background rounded-[8px] border border-border animate-pulse"
               />
             ))
           ) : filteredGames.length === 0 ? (
-            <div className="col-span-full py-32 text-center bg-[#0d0d0d] rounded-[8px] border border-[#2D2D2D] relative overflow-hidden">
-              <div className="absolute inset-0 bg-[#BFF367]/5 blur-[100px]" />
+            <div className="col-span-full py-32 text-center bg-background rounded-[8px] border border-border relative overflow-hidden">
+              <div className="absolute inset-0 bg-primary/5 blur-[100px]" />
               <div className="relative z-10 space-y-6">
                 <div className="w-24 h-24 bg-white/5 border border-white/5 rounded-full flex items-center justify-center mx-auto shadow-2xl">
-                  <Info className="text-[#BFF367]/40" size={48} />
+                  <Info className="text-primary/40" size={48} />
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-3xl font-black text-white uppercase tracking-tighter font-open-sans">
                     No Active Matches
                   </h3>
-                  <p className="text-[#999999] max-w-md mx-auto">
+                  <p className="text-muted-foreground max-w-md mx-auto">
                     The sports ledger is currently empty. Be the first to host a
                     match in this region.
                   </p>
                 </div>
-                <button
+                <Button
                   onClick={() => navigate("/host-game")}
-                  className="px-10 py-4 bg-gradient-to-r from-[#BFF367] to-[#BFF367] text-black font-black text-xs uppercase tracking-[0.2em] rounded-full shadow-[0_0_20px_rgba(191,243,103,0.25)] hover:scale-105 transition-all"
+                  className="px-10 py-4 bg-gradient-to-r from-primary to-primary text-black font-black text-xs uppercase tracking-[0.2em] rounded-full shadow-[0_0_20px_rgba(191,243,103,0.25)] hover:scale-105 transition-all"
                 >
                   Create Match
-                </button>
+                </Button>
               </div>
             </div>
           ) : (
@@ -578,7 +579,7 @@ const JoinGames = () => {
                   }
                   actionButton={
                     !isHost && currentUserId ? (
-                      <button
+                      <Button
                         onClick={(e) => {
                           e.stopPropagation();
                           navigate(`/messages?userId=${hostId}`);
@@ -590,7 +591,7 @@ const JoinGames = () => {
                         {game.requestType === "LOOKING_FOR_TEAM"
                           ? "Player"
                           : "Host"}
-                      </button>
+                      </Button>
                     ) : null
                   }
                 />
