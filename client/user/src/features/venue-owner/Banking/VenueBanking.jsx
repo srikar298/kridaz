@@ -200,7 +200,7 @@ const VenueBanking = () => {
               <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                 <Button
                   onClick={() => setShowBankModal(true)}
-                  className="px-3 py-1.5 md:px-4 md:py-2 bg-card border border-white/10 hover:border-primary/30 rounded-[16px] text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-2 mt-2 sm:mt-0"
+                  className="px-3 py-1.5 md:px-4 md:py-2 bg-card border border-white/10 hover:border-primary/30 rounded-[6px] text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-2 mt-2 sm:mt-0"
                 >
                   <Landmark size={14} className="shrink-0" /> Bank Details
                 </Button>
@@ -258,7 +258,7 @@ const VenueBanking = () => {
               </div>
               <Button
                 onClick={handleOpenPayoutModal}
-                className="px-3 py-2 md:px-6 md:py-3 text-black rounded-[16px] font-bold uppercase tracking-widest text-[9px] md:text-[11px] transition-all transform active:scale-95 whitespace-nowrap"
+                className="px-3 py-2 md:px-6 md:py-3 text-black rounded-[6px] font-bold uppercase tracking-widest text-[9px] md:text-[11px] transition-all transform active:scale-95 whitespace-nowrap"
                 style={{ backgroundColor: themeColor }}
               >
                 Request Settlement
@@ -273,7 +273,7 @@ const VenueBanking = () => {
                     Financial Ledger
                   </h3>
                 </div>
-                <Button className="text-[7px] md:text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 md:gap-2 text-neutral-500 hover:text-white transition-all text-right md:text-left">
+                <Button className="rounded-[6px] text-[7px] md:text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 md:gap-2 text-neutral-500 hover:text-white transition-all text-right md:text-left">
                   <Download className="w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0" />{" "}
                   Download Audit CSV
                 </Button>

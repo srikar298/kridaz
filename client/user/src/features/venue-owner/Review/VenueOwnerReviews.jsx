@@ -8,8 +8,8 @@ import {
 } from "lucide-react";
 import useVenueOwnerReviews from "@hooks/venue-owner/useVenueOwnerReviews";
 import ReviewsSkeleton from "./ReviewSkeleton";
-import { useNavigate } from "react-router-dom";import { Button } from "@kridaz/ui";
-
+import { useNavigate } from "react-router-dom";
+import { Button } from "@kridaz/ui";
 
 const VenueOwnerReviews = () => {
   const { turfs, selectedTurf, setSelectedTurf, loading, error } =
@@ -40,11 +40,11 @@ const VenueOwnerReviews = () => {
 
   return (
     <div className="h-full custom-scrollbar bg-background text-white">
-      <div className="px-1 lg:px-3 lg:pt-2 lg:pb-3 space-y-8 animate-fade-in pt-0 pb-4 h-full relative">
+      <div className="px-1 lg:px-3 lg:pt-2 lg:pb-3 space-y-4 animate-fade-in pt-0 pb-4 h-full relative">
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 blur-[120px] pointer-events-none" />
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10 border-b border-white/10 pb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 relative z-10 border-b border-white/10 pb-3">
           <div>
             <div className="flex items-center gap-3">
               <h2 className="text-[20px] sm:text-[24px] lg:text-[32px] mt-2 sm:mt-0 font-bold font-['Open_Sans'] tracking-tight uppercase leading-none whitespace-nowrap">
@@ -72,14 +72,14 @@ const VenueOwnerReviews = () => {
                 {turfs.map((turf) => (
                   <li key={turf.id}>
                     <Button
-                      className={`w-full text-left p-4 rounded-[16px] border transition-all flex justify-between items-center group ${selectedTurf === turf.id ? "bg-primary/10 border-primary/40 text-white" : "bg-card border-white/10 text-white/70 hover:border-primary/20 hover:text-white"}`}
+                      className={`w-full text-left !p-4 !rounded-[16px] !border transition-all !flex !justify-between !items-center group ${selectedTurf === turf.id ? "!bg-primary/10 !border-primary/40 !text-white" : "!bg-card !border-white/10 !text-white/70 hover:!border-primary/20 hover:!text-white"}`}
                       onClick={() => setSelectedTurf(turf.id)}
                     >
                       <span className="font-bold text-[13px] uppercase tracking-widest">
                         {turf.name}
                       </span>
                       <span
-                        className={`px-2 py-1 rounded-[16px] font-bold text-[11px] flex items-center gap-1.5 ${selectedTurf === turf.id ? "bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black" : "bg-card text-white/70 border border-white/10 group-hover:border-primary/20"}`}
+                        className={`px-2 py-1 rounded-[16px] font-bold text-[11px] flex items-center gap-1.5 ${selectedTurf === turf.id ? "!bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black" : "bg-card text-white/70 border border-white/10 group-hover:border-primary/20"}`}
                       >
                         <Star
                           size={11}
@@ -150,28 +150,30 @@ const VenueOwnerReviews = () => {
                           key={review.id}
                           className="bg-card border border-white/10 p-5 rounded-[16px] hover:border-primary/30 transition-colors group"
                         >
-                          <div className="flex justify-between items-start mb-4">
-                            <div className="flex items-center gap-3">
-                              <div
-                                onClick={() =>
-                                  review.user?._id &&
-                                  navigate(`/profile/${review.user._id}`)
-                                }
-                                className="w-10 h-10 rounded-full border border-white/10 overflow-hidden cursor-pointer hover:border-primary transition-all"
-                              >
-                                {review.user?.profilePicture ? (
-                                  <img
-                                    src={review.user.profilePicture}
-                                    alt={review.userName}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full bg-white/5 flex items-center justify-center text-[10px] font-black text-white/70">
-                                    {review.userName.charAt(0)}
-                                  </div>
-                                )}
-                              </div>
-                              <div>
+                          {/* Review header: avatar + name + stars in a row */}
+                          <div className="flex items-start gap-3 mb-4">
+                            <div
+                              onClick={() =>
+                                review.user?._id &&
+                                navigate(`/profile/${review.user._id}`)
+                              }
+                              className="w-10 h-10 rounded-full border border-white/10 overflow-hidden cursor-pointer hover:border-primary transition-all shrink-0"
+                            >
+                              {review.user?.profilePicture ? (
+                                <img
+                                  src={review.user.profilePicture}
+                                  alt={review.userName}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-white/5 flex items-center justify-center text-[10px] font-black text-white/70">
+                                  {review.userName.charAt(0)}
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              {/* Name + stars on same row */}
+                              <div className="flex items-center gap-3 flex-wrap">
                                 <h3
                                   onClick={() =>
                                     review.user?._id &&
@@ -181,31 +183,31 @@ const VenueOwnerReviews = () => {
                                 >
                                   {review.userName}
                                 </h3>
-                                <div className="flex items-center gap-2">
-                                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest">
-                                    Verified Booking
-                                  </p>
-                                  <span className="text-[8px] text-white/70">
-                                    GÇó
-                                  </span>
-                                  <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest">
-                                    {new Date(
-                                      review.createdAt
-                                    ).toLocaleDateString()}
-                                  </span>
+                                <div className="flex items-center gap-1 bg-card px-2 py-1 rounded-[6px] border border-white/10">
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      size={10}
+                                      className={`${i < review.rating ? "text-primary fill-primary" : "text-[#333]"}`}
+                                    />
+                                  ))}
                                 </div>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-1 bg-card px-2 py-1 rounded-[16px] border border-white/10">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  size={10}
-                                  className={`${i < review.rating ? "text-primary fill-primary" : "text-[#333]"}`}
-                                />
-                              ))}
+                              {/* Verified booking + date below */}
+                              <div className="flex items-center gap-2 mt-1">
+                                <p className="text-[10px] font-bold text-primary uppercase tracking-widest">
+                                  Verified Booking
+                                </p>
+                                <span className="text-[8px] text-white/70">•</span>
+                                <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest">
+                                  {new Date(
+                                    review.createdAt
+                                  ).toLocaleDateString()}
+                                </span>
+                              </div>
                             </div>
                           </div>
+
                           <p className="text-white/70 text-sm leading-relaxed mb-4">
                             &quot;{review.comment}&quot;
                           </p>

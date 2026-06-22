@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Edit2, Trash2, Tag, Star, Eye, EyeOff } from "lucide-react";import { Button } from "@kridaz/ui";
+import { Edit2, Trash2, Tag, Star, Eye, EyeOff } from "lucide-react";import { Button } from "@kridaz/ui";
 
 
 const TurfCard = ({ turf, onEdit, onDelete, onToggleVisibility }) => {
@@ -119,35 +119,36 @@ const TurfCard = ({ turf, onEdit, onDelete, onToggleVisibility }) => {
 
         <div className="mt-auto space-y-3">
           <div className="flex items-center justify-between">
-            <Button className="flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1 bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none hover:bg-white text-black rounded-[16px] text-[7px] md:text-[8px] font-black uppercase tracking-widest transition-all shadow-[0_5px_15px_rgba(204,255,0,0.1)]">
+            <button className="flex flex-row flex-nowrap items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1 bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none hover:bg-white text-black rounded-[16px] text-[7px] md:text-[8px] font-black uppercase tracking-widest transition-all shadow-[0_5px_15px_rgba(204,255,0,0.1)] !h-6 !min-h-0 w-fit shrink-0">
               <Tag size={10} />
               Promotion
-            </Button>
+            </button>
 
             <div className="flex items-center gap-1.5">
               <Button
                 onClick={onEdit}
-                className="w-6 h-6 md:w-7 md:h-7 bg-card border border-white/10 hover:border-primary/40 text-white/70 hover:text-primary rounded-[16px] transition-all flex items-center justify-center group/btn"
+                className="w-6 h-6 md:w-7 md:h-7 bg-card border border-white/10 hover:border-primary/40 text-white/70 hover:text-primary !min-h-0 rounded-full transition-all flex items-center justify-center group/btn"
               >
                 <Edit2 size={11} />
               </Button>
 
               <Button
                 onClick={onToggleVisibility}
-                className={`w-6 h-6 md:w-7 md:h-7 rounded-[16px] transition-all flex items-center justify-center border ${turf.isActive ? "bg-primary/5 border-primary/20 text-primary hover:bg-primary/10" : "bg-black border-white/10 text-[#444] hover:text-white"}`}
+                className={`w-6 h-6 md:w-7 md:h-7 !min-h-0 rounded-full transition-all flex items-center justify-center border ${turf.isActive ? "bg-primary/5 border-primary/20 text-primary hover:bg-primary/10" : "bg-black border-white/10 text-[#444] hover:text-white"}`}
               >
                 {turf.isActive ? <Eye size={11} /> : <EyeOff size={11} />}
               </Button>
 
               <Button
                 onClick={onDelete}
-                className="w-6 h-6 md:w-7 md:h-7 bg-card border border-white/10 hover:border-red-500/40 text-white/70 hover:text-red-500 rounded-[16px] transition-all flex items-center justify-center"
+                className="w-6 h-6 md:w-7 md:h-7 bg-card border border-white/10 hover:border-red-500/40 text-white/70 hover:text-red-500 !min-h-0 rounded-full transition-all flex items-center justify-center"
               >
                 <Trash2 size={11} />
               </Button>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );

@@ -72,7 +72,7 @@ const OccupancyHeatmap = () => {
           <Select
             value={selectedTurf}
             onChange={(e) => setSelectedTurf(e.target.value)}
-            className="bg-card border border-white/10 text-white text-[11px] font-bold tracking-widest rounded-[12px] px-3 py-1.5 focus:outline-none focus:border-secondary transition-all cursor-pointer max-w-full"
+            className="bg-card border border-white/10 text-white text-[10px] font-bold tracking-widest rounded-[8px] px-2 py-1 focus:outline-none focus:border-secondary transition-all cursor-pointer max-w-full"
           >
             <option value="" disabled>
               Select Facility
@@ -192,7 +192,7 @@ const OccupancyHeatmap = () => {
                   >
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-[16px] bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none flex items-center justify-center text-black font-bold text-lg">
+                        <div className="w-10 h-10 rounded-[16px] bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none flex items-center justify-center text-black font-bold text-lg">
                           {b.user?.[0] || "G"}
                         </div>
                         <div>

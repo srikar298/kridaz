@@ -153,7 +153,7 @@ const VenueOwnerDashboard = () => {
               <Select
                 value={selectedVenue}
                 onChange={(e) => setSelectedVenue(e.target.value)}
-                className="bg-card border border-white/10 text-white text-xs font-bold uppercase tracking-wider rounded-[12px] px-3 py-2 outline-none focus:border-primary/50 transition-colors max-w-full"
+                className="bg-card border border-white/10 text-white text-[10px] font-bold uppercase tracking-wider rounded-[8px] px-2 py-1.5 outline-none focus:border-primary/50 transition-colors max-w-full"
               >
                 <option value="">All Facilities</option>
                 {finalData.turfsList.map((turf) => (
@@ -301,7 +301,7 @@ const VenueOwnerDashboard = () => {
                             filter === "Weekly" ? "Week" : "Month"
                           )
                         }
-                        className={`px-4 py-1.5 rounded-[16px] text-[11px] font-normal uppercase tracking-wider transition-all font-inter ${(revenueFilter === "Week" && filter === "Weekly") || (revenueFilter === "Month" && filter === "Monthly") ? "bg-gradient-to-r from-primary to-primary text-black" : "text-muted-foreground hover:text-foreground"}`}
+                        className={`px-2 py-1 rounded-[8px] text-[9px] font-normal uppercase tracking-wider transition-all font-inter ${(revenueFilter === "Week" && filter === "Weekly") || (revenueFilter === "Month" && filter === "Monthly") ? "bg-gradient-to-r from-primary to-primary text-black" : "text-muted-foreground hover:text-foreground"}`}
                       >
                         {filter}
                       </Button>

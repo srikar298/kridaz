@@ -136,7 +136,7 @@ export default function VenueOwnerPromotions() {
           </div>
           <Button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none hover:opacity-90 text-black rounded-[16px] text-[13px] font-bold uppercase tracking-widest transition-all w-full md:w-auto shadow-[0_0_15px_rgba(204,255,0,0.15)] font-inter"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none hover:opacity-90 text-black rounded-[16px] text-[13px] font-bold uppercase tracking-widest transition-all w-full md:w-auto shadow-[0_0_15px_rgba(204,255,0,0.15)] font-inter"
           >
             <Plus size={18} />
             Create Promotion
@@ -456,7 +456,7 @@ export default function VenueOwnerPromotions() {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 px-4 py-2.5 bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black rounded-[16px] text-[13px] uppercase tracking-widest font-bold hover:opacity-90 transition-colors shadow-[0_0_15px_rgba(204,255,0,0.15)] disabled:opacity-50"
+                    className="flex-1 px-4 py-2.5 bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black rounded-[16px] text-[13px] uppercase tracking-widest font-bold hover:opacity-90 transition-colors shadow-[0_0_15px_rgba(204,255,0,0.15)] disabled:opacity-50"
                   >
                     {isSubmitting ? "Deploying..." : "Deploy Campaign"}
                   </Button>

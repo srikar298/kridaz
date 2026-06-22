@@ -11,3 +11,11 @@
   --primary-dark: #a2d152;
   /* --secondary inherited from core.css */
 }
+
+
+
+/* Force rounded-full to override any component default border radius */
+.btn.rounded-full {
+  border-radius: 9999px !important;
+  padding: 0 !important;
+}
