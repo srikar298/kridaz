@@ -16,6 +16,8 @@ import { useDispatch } from "react-redux";
 import { updateUser } from "../../../redux/slices/authSlice";
 import { searchLocations } from "../../utils/locationService";
 import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import Cropper from "react-easy-crop";
+import { getCroppedImg } from "../../utils/cropImage";
 
 
 export default function EditProfileModal({ isOpen, onClose, user }) {
@@ -45,6 +47,18 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
   // Username check states
   const [usernameStatus, setUsernameStatus] = useState(null); // 'available', 'taken', 'checking'
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+
+  // Banner Crop States
+  const [bannerToCrop, setBannerToCrop] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+  // Profile Crop States
+  const [profileToCrop, setProfileToCrop] = useState(null);
+  const [profileCrop, setProfileCrop] = useState({ x: 0, y: 0 });
+  const [profileZoom, setProfileZoom] = useState(1);
+  const [profileCroppedAreaPixels, setProfileCroppedAreaPixels] = useState(null);
 
   const dispatch = useDispatch();
 
@@ -139,7 +153,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
     return () => clearTimeout(timer);
   }, [formData.username, user?.username]);
 
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -148,11 +162,26 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("profilePicture", file);
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      setProfileToCrop(reader.result);
+    });
+    reader.readAsDataURL(file);
+  };
+
+  const handleProfileCropDone = async () => {
+    if (!profileCroppedAreaPixels || !profileToCrop) return;
 
     setUploading(true);
     try {
+      const croppedBlob = await getCroppedImg(profileToCrop, profileCroppedAreaPixels);
+      const file = new File([croppedBlob], "cropped-profile.jpg", {
+        type: "image/jpeg",
+      });
+
+      const formData = new FormData();
+      formData.append("profilePicture", file);
+
       const response = await axiosInstance.post(
         "/api/user/auth/profile-picture",
         formData
@@ -160,6 +189,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
 
       dispatch(updateUser({ profilePicture: response.data.profilePicture }));
       toast.success("Profile picture updated!");
+      setProfileToCrop(null);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to upload image");
     } finally {
@@ -167,7 +197,18 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
     }
   };
 
-  const handleBannerUpload = async (e) => {
+  const handleProfileCropCancel = () => {
+    setProfileToCrop(null);
+    setProfileCrop({ x: 0, y: 0 });
+    setProfileZoom(1);
+    setProfileCroppedAreaPixels(null);
+  };
+
+  const onProfileCropComplete = (croppedArea, croppedAreaPixels) => {
+    setProfileCroppedAreaPixels(croppedAreaPixels);
+  };
+
+  const handleBannerUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -176,11 +217,26 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("bannerPicture", file);
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      setBannerToCrop(reader.result);
+    });
+    reader.readAsDataURL(file);
+  };
+
+  const handleCropDone = async () => {
+    if (!croppedAreaPixels || !bannerToCrop) return;
 
     setBannerUploading(true);
     try {
+      const croppedBlob = await getCroppedImg(bannerToCrop, croppedAreaPixels);
+      const file = new File([croppedBlob], "cropped-banner.jpg", {
+        type: "image/jpeg",
+      });
+
+      const formData = new FormData();
+      formData.append("bannerPicture", file);
+
       const response = await axiosInstance.post(
         "/api/user/auth/banner-picture",
         formData
@@ -188,11 +244,23 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
 
       dispatch(updateUser({ bannerPicture: response.data.bannerPicture }));
       toast.success("Banner picture updated!");
+      setBannerToCrop(null);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to upload banner");
     } finally {
       setBannerUploading(false);
     }
+  };
+
+  const handleCropCancel = () => {
+    setBannerToCrop(null);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setCroppedAreaPixels(null);
+  };
+
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
   };
 
   const submitProfileUpdate = async (finalPhone = formData.phone) => {
@@ -801,6 +869,142 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
             >
               {verifyingOtp ? <Loader2 className="w-5 h-5 mx-auto animate-spin" /> : "Verify"}
             </Button>
+          </div>
+        </div>
+      )}
+      {/* Banner Crop Modal Overlay */}
+      {bannerToCrop && (
+        <div className="absolute inset-0 z-[1001] bg-card/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-md bg-card border border-white/[0.08] rounded-[16px] p-6 shadow-[0px_8px_32px_rgba(0,0,0,0.5)] flex flex-col max-h-[90vh]">
+            <h3 className="text-[20px] font-bold text-white mb-2 text-center">Crop Banner Image</h3>
+            <p className="text-[14px] text-white/70 mb-4 text-center">
+              Adjust the selection to fit the banner dimensions.
+            </p>
+            
+            <div className="relative w-full h-[200px] bg-black/50 rounded-[12px] overflow-hidden mb-4 border border-white/[0.08]">
+              <Cropper
+                image={bannerToCrop}
+                crop={crop}
+                zoom={zoom}
+                aspect={3 / 1}
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+              />
+            </div>
+            
+            {/* Zoom slider */}
+            <div className="mb-6 flex items-center gap-4">
+              <span className="text-[14px] text-white/70">Zoom</span>
+              <input
+                id="banner-crop-zoom-slider"
+                type="range"
+                value={zoom}
+                min={1}
+                max={3}
+                step={0.1}
+                aria-label="Zoom"
+                onChange={(e) => setZoom(Number(e.target.value))}
+                className="flex-1 accent-primary h-1 bg-white/20 rounded-lg appearance-none cursor-pointer"
+              />
+            </div>
+            
+            {/* Buttons */}
+            <div className="flex gap-4 w-full">
+              <Button
+                id="banner-crop-cancel-btn"
+                type="button"
+                onClick={handleCropCancel}
+                className="flex-1 h-[48px] bg-card border border-white/[0.08] rounded-[12px] text-white text-[14px] font-bold hover:bg-white/[0.04] transition-colors"
+              >
+                Cancel
+              </Button>
+              <Button
+                id="banner-crop-done-btn"
+                type="button"
+                onClick={handleCropDone}
+                disabled={bannerUploading}
+                className="flex-1 h-[48px] bg-[linear-gradient(90deg,var(--secondary)_0%,var(--primary)_100%)] rounded-[12px] text-background text-[14px] font-bold hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+              >
+                {bannerUploading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Done"
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Profile Crop Modal Overlay */}
+      {profileToCrop && (
+        <div className="absolute inset-0 z-[1001] bg-card/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-md bg-card border border-white/[0.08] rounded-[16px] p-6 shadow-[0px_8px_32px_rgba(0,0,0,0.5)] flex flex-col max-h-[90vh]">
+            <h3 className="text-[20px] font-bold text-white mb-2 text-center">Crop Profile Picture</h3>
+            <p className="text-[14px] text-white/70 mb-4 text-center">
+              Adjust the selection to fit the profile circle.
+            </p>
+            
+            <div className="relative w-full h-[250px] bg-black/50 rounded-[12px] overflow-hidden mb-4 border border-white/[0.08]">
+              <Cropper
+                image={profileToCrop}
+                crop={profileCrop}
+                zoom={profileZoom}
+                aspect={1 / 1}
+                cropShape="round"
+                showGrid={false}
+                onCropChange={setProfileCrop}
+                onCropComplete={onProfileCropComplete}
+                onZoomChange={setProfileZoom}
+              />
+            </div>
+            
+            {/* Zoom slider */}
+            <div className="mb-6 flex items-center gap-4">
+              <span className="text-[14px] text-white/70">Zoom</span>
+              <input
+                id="profile-crop-zoom-slider"
+                type="range"
+                value={profileZoom}
+                min={1}
+                max={3}
+                step={0.1}
+                aria-label="Zoom"
+                onChange={(e) => setProfileZoom(Number(e.target.value))}
+                className="flex-1 accent-primary h-1 bg-white/20 rounded-lg appearance-none cursor-pointer"
+              />
+            </div>
+            
+            {/* Buttons */}
+            <div className="flex gap-4 w-full">
+              <Button
+                id="profile-crop-cancel-btn"
+                type="button"
+                onClick={handleProfileCropCancel}
+                className="flex-1 h-[48px] bg-card border border-white/[0.08] rounded-[12px] text-white text-[14px] font-bold hover:bg-white/[0.04] transition-colors"
+              >
+                Cancel
+              </Button>
+              <Button
+                id="profile-crop-done-btn"
+                type="button"
+                onClick={handleProfileCropDone}
+                disabled={uploading}
+                className="flex-1 h-[48px] bg-[linear-gradient(90deg,var(--secondary)_0%,var(--primary)_100%)] rounded-[12px] text-background text-[14px] font-bold hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+              >
+                {uploading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Done"
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       )}

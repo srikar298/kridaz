@@ -104,32 +104,32 @@ const BookingsTab = ({ role }) => {
   return (
     <div className="space-y-6 text-white font-inter">
       {/* Tab Selectors */}
-      <div className="border-b border-card pb-1 overflow-x-auto no-scrollbar">
-        <div className="flex w-full min-w-max sm:min-w-0 sm:grid sm:grid-cols-4 text-center">
-          <Button
+      <div className="border-b border-card pb-1 overflow-hidden w-full">
+        <div className="flex justify-between w-full text-center gap-1 sm:gap-2">
+          <button
             onClick={() => setActiveSubTab("active")}
-            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "active" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[9px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all bg-transparent outline-none ${activeSubTab === "active" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
           >
             Active ({activeBookings.length})
-          </Button>
-          <Button
+          </button>
+          <button
             onClick={() => setActiveSubTab("history")}
-            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "history" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[9px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all bg-transparent outline-none ${activeSubTab === "history" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
           >
             History ({completedBookings.length})
-          </Button>
-          <Button
+          </button>
+          <button
             onClick={() => setActiveSubTab("nonAccepted")}
-            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "nonAccepted" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[9px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all bg-transparent outline-none ${activeSubTab === "nonAccepted" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
           >
             Rejected ({nonAcceptedBookings.length})
-          </Button>
-          <Button
+          </button>
+          <button
             onClick={() => setActiveSubTab("skipped")}
-            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "skipped" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[9px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all bg-transparent outline-none ${activeSubTab === "skipped" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
           >
             Skipped ({skippedBookings.length})
-          </Button>
+          </button>
         </div>
       </div>
 

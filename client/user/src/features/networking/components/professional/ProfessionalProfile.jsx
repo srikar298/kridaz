@@ -963,15 +963,15 @@ export default function ProfessionalProfile() {
     );
 
   const StepIndicator = () => (
-    <div className="flex items-center gap-4 mb-6 overflow-x-auto no-scrollbar pb-1">
+    <div className="flex items-center justify-between sm:justify-start sm:gap-4 mb-6 w-full pb-1 overflow-x-auto no-scrollbar">
       {[1, 2, 3].map((step) => (
-        <Button
+        <button
           key={step}
           onClick={() => jumpToStep(step)}
-          className="flex items-center gap-3 group text-left outline-none shrink-0"
+          className="flex items-center gap-1.5 sm:gap-3 group text-left outline-none shrink-0 bg-transparent border-0 p-0"
         >
           <div
-            className={`w-8 h-8 rounded-lg flex items-center justify-center text-[9px] font-black transition-all duration-300 ${
+            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-[6px] sm:rounded-lg flex items-center justify-center text-[8px] sm:text-[9px] font-black transition-all duration-300 ${
               currentStep === step
                 ? `text-black`
                 : currentStep > step
@@ -995,17 +995,17 @@ export default function ProfessionalProfile() {
                 currentStep === step ? `0 0 15px ${themeColor}33` : "none",
             }}
           >
-            {currentStep > step ? <CheckCircle2 size={16} /> : `0${step}`}
+            {currentStep > step ? <CheckCircle2 size={14} className="sm:w-4 sm:h-4" /> : `0${step}`}
           </div>
-          <div className="hidden sm:block">
+          <div>
             <p
-              className={`text-[7px] font-black uppercase tracking-[0.2em] transition-colors font-inter leading-none`}
+              className={`text-[6px] sm:text-[7px] font-black uppercase tracking-[0.2em] transition-colors font-inter leading-none`}
               style={{ color: currentStep === step ? themeColor : "#444" }}
             >
               PHASE {step}
             </p>
             <p
-              className={`text-[10px] font-black uppercase tracking-widest transition-colors font-inter mt-0.5 ${currentStep === step ? "text-white" : "text-neutral-700 group-hover:text-white/60"}`}
+              className={`text-[8px] sm:text-[10px] font-black uppercase tracking-widest transition-colors font-inter mt-0.5 ${currentStep === step ? "text-white" : "text-neutral-700 group-hover:text-white/60"}`}
             >
               {step === 1
                 ? "Profile Details"
@@ -1014,8 +1014,8 @@ export default function ProfessionalProfile() {
                   : "Work Portfolio"}
             </p>
           </div>
-          {step < 3 && <div className="w-6 h-[1px] bg-white/5" />}
-        </Button>
+          {step < 3 && <div className="hidden sm:block w-6 h-[1px] bg-white/5" />}
+        </button>
       ))}
     </div>
   );
@@ -1352,11 +1352,11 @@ export default function ProfessionalProfile() {
                       {showLocationResults && locationResults.length > 0 && (
                         <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-white/10 rounded-lg shadow-2xl max-h-52 overflow-y-auto z-[150] custom-scrollbar">
                           {locationResults.map((result, idx) => (
-                            <Button
+                            <button
                               key={idx}
                               type="button"
                               onClick={() => selectLocation(result)}
-                              className="w-full text-left px-3 py-2.5 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 flex items-start gap-2"
+                              className="w-full text-left px-3 py-2.5 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 flex items-start gap-2 bg-transparent outline-none border-none"
                             >
                               <MapPin
                                 size={12}
@@ -1365,7 +1365,7 @@ export default function ProfessionalProfile() {
                               <span className="text-[11px] text-white/80 font-medium leading-snug">
                                 {result.display_name}
                               </span>
-                            </Button>
+                            </button>
                           ))}
                         </div>
                       )}
@@ -1385,7 +1385,7 @@ export default function ProfessionalProfile() {
                             .filter(Boolean)
                             .join(", ")}
                         </span>
-                        <Button
+                        <button
                           type="button"
                           onClick={() => {
                             setFormData({
@@ -1397,10 +1397,10 @@ export default function ProfessionalProfile() {
                             });
                             setLocationSearchQuery("");
                           }}
-                          className="ml-auto text-neutral-500 hover:text-red-400 transition-colors"
+                          className="ml-auto text-neutral-500 hover:text-red-400 transition-colors bg-transparent border-0 p-0 outline-none"
                         >
                           <X size={14} />
-                        </Button>
+                        </button>
                       </div>
                     )}
 
@@ -1701,28 +1701,28 @@ export default function ProfessionalProfile() {
                             }}
                             onFocus={() => setShowLanguagesDropdown(true)}
                           />
-                          <Button
+                          <button
                             type="button"
                             onClick={() => addLanguage()}
-                            className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-transform active:scale-95"
+                            className="w-8 h-8 rounded-md flex items-center justify-center shrink-0 transition-transform active:scale-95 outline-none border-none p-0"
                             style={{ backgroundColor: themeColor }}
                           >
-                            <Plus size={18} color="#000" />
-                          </Button>
+                            <Plus size={16} color="#000" />
+                          </button>
                         </div>
 
                         {showLanguagesDropdown &&
                           filteredLanguages.length > 0 && (
                             <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-white/10 rounded-[8px] shadow-2xl z-[100] max-h-64 overflow-y-auto custom-scrollbar">
                               {filteredLanguages.map((lang) => (
-                                <Button
+                                <button
                                   key={lang}
                                   type="button"
                                   onClick={() => addLanguage(lang)}
-                                  className="w-full px-4 py-2.5 text-left text-[10px] text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 font-bold uppercase tracking-wider"
+                                  className="w-full px-4 py-2.5 text-left text-[10px] text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 font-bold uppercase tracking-wider bg-transparent outline-none border-none"
                                 >
                                   {lang}
-                                </Button>
+                                </button>
                               ))}
                             </div>
                           )}
@@ -1735,13 +1735,13 @@ export default function ProfessionalProfile() {
                             className="px-3 py-1.5 bg-white/[0.04] border border-white/5 rounded-[6px] text-[8px] font-black text-white flex items-center gap-2 uppercase tracking-widest"
                           >
                             {lang}
-                            <Button
+                            <button
                               type="button"
                               onClick={() => removeLanguage(lang)}
-                              className="text-neutral-600 hover:text-red-500 transition-colors"
+                              className="text-neutral-600 hover:text-red-500 transition-colors bg-transparent border-0 p-0 outline-none"
                             >
                               <X size={10} />
-                            </Button>
+                            </button>
                           </span>
                         ))}
                       </div>
@@ -1766,27 +1766,27 @@ export default function ProfessionalProfile() {
                             }}
                             onFocus={() => setShowSportsDropdown(true)}
                           />
-                          <Button
+                          <button
                             type="button"
                             onClick={() => addGameType()}
-                            className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-transform active:scale-95"
+                            className="w-8 h-8 rounded-md flex items-center justify-center shrink-0 transition-transform active:scale-95 outline-none border-none p-0"
                             style={{ backgroundColor: themeColor }}
                           >
-                            <Plus size={18} color="#000" />
-                          </Button>
+                            <Plus size={16} color="#000" />
+                          </button>
                         </div>
 
                         {showSportsDropdown && filteredSports.length > 0 && (
                           <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-white/10 rounded-[8px] shadow-2xl z-[100] max-h-64 overflow-y-auto custom-scrollbar">
                             {filteredSports.map((sport) => (
-                              <Button
+                              <button
                                 key={sport}
                                 type="button"
                                 onClick={() => addGameType(sport)}
-                                className="w-full px-4 py-2.5 text-left text-[10px] text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 font-black uppercase tracking-wider"
+                                className="w-full px-4 py-2.5 text-left text-[10px] text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 font-black uppercase tracking-wider bg-transparent outline-none border-none"
                               >
                                 {sport}
-                              </Button>
+                              </button>
                             ))}
                           </div>
                         )}
@@ -1799,13 +1799,13 @@ export default function ProfessionalProfile() {
                             className="px-3 py-1.5 bg-white/[0.04] border border-white/5 rounded-[6px] text-[8px] font-black text-white flex items-center gap-2 uppercase tracking-widest"
                           >
                             {type}
-                            <Button
+                            <button
                               type="button"
                               onClick={() => removeGameType(type)}
-                              className="text-neutral-600 hover:text-red-500 transition-colors"
+                              className="text-neutral-600 hover:text-red-500 transition-colors bg-transparent border-0 p-0 outline-none flex items-center justify-center"
                             >
                               <X size={10} />
-                            </Button>
+                            </button>
                           </span>
                         ))}
                       </div>
@@ -1828,14 +1828,14 @@ export default function ProfessionalProfile() {
                               (e.preventDefault(), addMatchFormat())
                             }
                           />
-                          <Button
+                          <button
                             type="button"
                             onClick={() => addMatchFormat()}
-                            className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-transform active:scale-95"
+                            className="w-8 h-8 rounded-md flex items-center justify-center shrink-0 transition-transform active:scale-95 outline-none border-none p-0"
                             style={{ backgroundColor: themeColor }}
                           >
-                            <Plus size={18} color="#000" />
-                          </Button>
+                            <Plus size={16} color="#000" />
+                          </button>
                         </div>
                       </div>
 
@@ -1846,13 +1846,13 @@ export default function ProfessionalProfile() {
                             className="px-3 py-1.5 bg-white/[0.04] border border-white/5 rounded-[6px] text-[8px] font-black text-white flex items-center gap-2 uppercase tracking-widest"
                           >
                             {fmt}
-                            <Button
+                            <button
                               type="button"
                               onClick={() => removeMatchFormat(fmt)}
-                              className="text-neutral-600 hover:text-red-500 transition-colors"
+                              className="text-neutral-600 hover:text-red-500 transition-colors bg-transparent border-0 p-0 outline-none flex items-center justify-center"
                             >
                               <X size={10} />
-                            </Button>
+                            </button>
                           </span>
                         ))}
                       </div>
@@ -2523,16 +2523,16 @@ export default function ProfessionalProfile() {
             {/* Navigation Buttons */}
             <div className="flex items-center justify-end gap-3 pt-6 border-t border-white/5">
               {currentStep > 1 && (
-                <Button
+                <button
                   onClick={prevStep}
-                  className="px-5 h-10 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-neutral-400 active:scale-95"
+                  className="px-5 h-10 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-neutral-400 active:scale-95 outline-none"
                 >
                   <ChevronLeft size={14} /> Previous
-                </Button>
+                </button>
               )}
-              <Button
+              <button
                 onClick={nextStep}
-                className="px-8 h-10 rounded-lg text-[9px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:brightness-110"
+                className="px-8 h-10 rounded-lg text-[9px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:brightness-110 outline-none border-0"
                 style={{ backgroundColor: themeColor, color: "#000" }}
               >
                 {currentStep === 3 ? (
@@ -2545,7 +2545,7 @@ export default function ProfessionalProfile() {
                     <ChevronRight size={14} />
                   </>
                 )}
-              </Button>
+              </button>
             </div>
           </div>
         )}
@@ -2645,13 +2645,13 @@ export default function ProfessionalProfile() {
                       </div>
                     </div>
 
-                    <Button
+                    <button
                       onClick={addCertification}
-                      className="w-full h-12 text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-lg transition-transform active:scale-95 flex items-center justify-center gap-2"
+                      className="w-full h-12 text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-lg transition-transform active:scale-95 flex items-center justify-center gap-2 outline-none border-0"
                       style={{ backgroundColor: themeColor }}
                     >
                       <Plus size={16} /> Integrate credential
-                    </Button>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -2689,12 +2689,12 @@ export default function ProfessionalProfile() {
                             <Award size={24} className="text-neutral-900" />
                           )}
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/item:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                            <Button
+                            <button
                               onClick={() => removeCertification(idx)}
-                              className="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center transition-all hover:scale-105"
+                              className="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center transition-all hover:scale-105 outline-none border-0"
                             >
                               <Trash2 size={16} />
-                            </Button>
+                            </button>
                           </div>
                         </div>
                         <div className="p-3 space-y-1">
@@ -2762,13 +2762,13 @@ export default function ProfessionalProfile() {
                       })
                     }
                   />
-                  <Button
+                  <button
                     onClick={addStructuredAchievement}
-                    className="w-10 h-10 rounded-lg shadow-xl flex items-center justify-center shrink-0 transition-transform active:scale-95 mx-auto sm:mx-0"
+                    className="w-10 h-10 rounded-lg shadow-xl flex items-center justify-center shrink-0 transition-transform active:scale-95 mx-auto sm:mx-0 outline-none border-none p-0"
                     style={{ backgroundColor: themeColor }}
                   >
                     <Plus size={20} color="#000" />
-                  </Button>
+                  </button>
                 </div>
               </div>
 
@@ -2793,12 +2793,12 @@ export default function ProfessionalProfile() {
                         {ach.description}
                       </p>
                     </div>
-                    <Button
+                    <button
                       onClick={() => removeStructuredAchievement(idx)}
-                      className="text-neutral-700 hover:text-red-500 transition-colors shrink-0 ml-2"
+                      className="text-neutral-700 hover:text-red-500 transition-colors shrink-0 ml-2 outline-none bg-transparent border-0 p-0"
                     >
                       <Trash2 size={13} />
-                    </Button>
+                    </button>
                   </div>
                 ))}
                 {(!formData.structuredAchievements ||
@@ -2815,20 +2815,20 @@ export default function ProfessionalProfile() {
 
             {/* Adjusted Navigation */}
             <div className="flex items-center justify-end gap-3 pt-6 border-t border-white/5">
-              <Button
+              <button
                 onClick={prevStep}
-                className="px-5 h-10 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-neutral-400 active:scale-95"
+                className="px-5 h-10 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-neutral-400 active:scale-95 outline-none"
               >
                 <ChevronLeft size={14} /> Previous
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={nextStep}
-                className="px-8 h-10 rounded-lg text-[9px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:brightness-110"
+                className="px-8 h-10 rounded-lg text-[9px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:brightness-110 outline-none border-0"
                 style={{ backgroundColor: themeColor, color: "#000" }}
               >
                 <Zap size={14} /> Next Phase (PHASE 3){" "}
                 <ChevronRight size={14} />
-              </Button>
+              </button>
             </div>
           </div>
         )}
@@ -2861,7 +2861,7 @@ export default function ProfessionalProfile() {
 
                   <div className="space-y-6">
                     <div className="flex bg-black p-1 rounded-lg border border-white/5">
-                      <Button
+                      <button
                         onClick={() =>
                           setNewPortfolioItem({
                             ...newPortfolioItem,
@@ -2878,8 +2878,8 @@ export default function ProfessionalProfile() {
                         }}
                       >
                         Photos
-                      </Button>
-                      <Button
+                      </button>
+                      <button
                         onClick={() =>
                           setNewPortfolioItem({
                             ...newPortfolioItem,
@@ -2896,7 +2896,7 @@ export default function ProfessionalProfile() {
                         }}
                       >
                         Videos
-                      </Button>
+                      </button>
                     </div>
 
                     <div className="space-y-1.5">
@@ -3000,13 +3000,13 @@ export default function ProfessionalProfile() {
                       </div>
                     )}
 
-                    <Button
+                    <button
                       onClick={addPortfolioItem}
-                      className="w-full h-12 text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-lg transition-transform active:scale-95 flex items-center justify-center gap-2"
+                      className="w-full h-12 text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-lg transition-transform active:scale-95 flex items-center justify-center gap-2 outline-none border-0"
                       style={{ backgroundColor: themeColor }}
                     >
                       <Plus size={16} /> Integrate portfolio
-                    </Button>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -3049,12 +3049,12 @@ export default function ProfessionalProfile() {
                             </div>
                           )}
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/item:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                            <Button
+                            <button
                               onClick={() => removePortfolioItem(idx)}
-                              className="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center transition-all hover:scale-105"
+                              className="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center transition-all hover:scale-105 outline-none border-0"
                             >
                               <Trash2 size={16} />
-                            </Button>
+                            </button>
                           </div>
                         </div>
                         <div className="p-3 space-y-1">
@@ -3084,16 +3084,16 @@ export default function ProfessionalProfile() {
 
             {/* Adjusted Navigation */}
             <div className="flex items-center justify-end gap-3 pt-6 border-t border-white/5">
-              <Button
+              <button
                 onClick={prevStep}
-                className="px-5 h-10 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-neutral-400 active:scale-95"
+                className="px-5 h-10 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-neutral-400 active:scale-95 outline-none"
               >
                 <ChevronLeft size={14} /> Previous
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={handleUpdate}
                 disabled={loading}
-                className="px-8 h-10 rounded-lg text-[9px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:brightness-110 font-bold"
+                className="px-8 h-10 rounded-lg text-[9px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:brightness-110 font-bold outline-none border-0 disabled:opacity-50"
                 style={{ backgroundColor: themeColor, color: "#000" }}
               >
                 {loading ? (
@@ -3102,7 +3102,7 @@ export default function ProfessionalProfile() {
                   <CheckCircle2 size={14} />
                 )}{" "}
                 Finalize Profile
-              </Button>
+              </button>
             </div>
           </div>
         )}

@@ -49,6 +49,7 @@
     "react-countup": "^6.5.3",
     "react-datepicker": "^7.3.0",
     "react-dom": "^18.3.1",
+    "react-easy-crop": "^6.0.2",
     "react-helmet-async": "^3.0.0",
     "react-hook-form": "^7.52.1",
     "react-hot-toast": "^2.4.1",
