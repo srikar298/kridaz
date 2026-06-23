@@ -403,15 +403,19 @@ export const checkPaymentStatus = async (req, res) => {
     const successfulPayment = order.items.find((p) => p.status === "captured");
 
     if (successfulPayment) {
-      // Find the pending transaction
+      // Find transaction regardless of status — covers cases where verifyTopup
+      // already ran (may have set status FAILED on a bad-signature race) but
+      // Razorpay confirms the capture. Also handles double-poll on SUCCESS.
       const transaction = await prisma.walletTransaction.findFirst({
-        where: {
-          razorpayOrderId: orderId,
-          status: "PENDING",
-        },
+        where: { razorpayOrderId: orderId },
       });
 
       if (transaction) {
+        // Already credited by verifyTopup or a prior poll — return success immediately.
+        if (transaction.status === "SUCCESS") {
+          return res.status(200).json({ success: true, message: "Payment was successful. Wallet updated." });
+        }
+
         const user = await prisma.user.findUnique({
           where: { id: transaction.userId },
           select: { role: true },
@@ -419,9 +423,13 @@ export const checkPaymentStatus = async (req, res) => {
         const role = user?.role || "user";
 
         const newBalance = await prisma.$transaction(async (tx) => {
+          // Re-read inside the tx to guard against concurrent verifyTopup.
+          const current = await tx.walletTransaction.findUnique({ where: { id: transaction.id } });
+          if (current.status === "SUCCESS") return undefined;
+
           const balance = await WalletService.credit(
             transaction.userId,
-            "user", // Force role to "user" so top-ups ALWAYS go to the User Wallet
+            "user",
             transaction.amount,
             tx
           );
@@ -458,12 +466,12 @@ export const checkPaymentStatus = async (req, res) => {
               date: new Date(),
             });
           }
-
-          return res.status(200).json({
-            success: true,
-            message: "Payment was successful. Wallet updated.",
-          });
         }
+
+        return res.status(200).json({
+          success: true,
+          message: "Payment was successful. Wallet updated.",
+        });
       }
     }
 

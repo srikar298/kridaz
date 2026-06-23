@@ -274,23 +274,6 @@ export default function SocialArenaSection({ reelsFeed }) {
                       shouldPlay={shouldPlay}
                       navigate={navigate}
                     />
-                  ) : reel.mediaUrl || reel.rawVideoUrl ? (
-                    <video
-                      src={reel.mediaUrl || reel.rawVideoUrl}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      preload="metadata"
-                      muted
-                      playsInline
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-zinc-900 flex items-center justify-center text-white/20 transition-transform duration-700 group-hover:scale-110">
-                      <Play size={24} />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40">
-                      <Play size={16} className="text-white fill-white ml-1" />
-                    </div>
                   </div>
                 );
               })

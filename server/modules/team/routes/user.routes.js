@@ -15,6 +15,9 @@ import {
   updateTeam,
   deleteTeam,
   handleJoinRequest,
+  updateMemberRole,
+  removeMember,
+  getJoinRequests,
 } from "../team.controller.js";
 import { authenticate } from "../../../middleware/auth.middleware.js";
 import upload from "../../../middleware/uploads/upload.middleware.js";
@@ -77,6 +80,7 @@ router.get("/find-by-code/:code", getTeamByCode);
 router.get("/opponents", authenticate, getOpponentTeams);
 // Specific paths MUST be registered before /:id to avoid being shadowed.
 router.get("/:id/opponent-requests", authenticate, getOpponentRequestsForTeam);
+router.get("/:teamId/join-requests", authenticate, getJoinRequests);
 router.get("/:id", getTeamById);
 
 // ── Authenticated Routes ────────────────────────────────────────────────────
@@ -220,6 +224,10 @@ router.post("/:id/handle-join-request", handleJoinRequest);
  *         description: Team updated
  */
 router.put("/:id", upload.single("image"), updateTeam);
+
+router.put("/:teamId/members/:userId/role", updateMemberRole);
+router.patch("/:teamId/members/:userId/role", updateMemberRole);
+router.delete("/:teamId/members/:userId", removeMember);
 
 /**
  * @swagger

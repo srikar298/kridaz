@@ -1530,3 +1530,70 @@ export const getOpponentRequestsForTeam = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const getJoinRequests = async (req, res) => {
+  try {
+    const { teamId } = req.params;
+    const requesterId = req.user?.id;
+
+    const team = await prisma.team.findUnique({ where: { id: teamId }, select: { ownerId: true } });
+    if (!team) return res.status(404).json({ success: false, message: "Team not found" });
+    if (team.ownerId !== requesterId) {
+      return res.status(403).json({ success: false, message: "Only team owner can view join requests" });
+    }
+
+    const requests = await prisma.teamMember.findMany({
+      where: { teamId, status: "PENDING" },
+      include: {
+        user: {
+          select: { id: true, name: true, username: true, profilePicture: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return res.status(200).json({ success: true, data: requests });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const updateMemberRole = async (req, res) => {
+  try {
+    const { teamId, userId } = req.params;
+    const { role } = req.body;
+    const requesterId = req.user?.id;
+
+    const team = await prisma.team.findUnique({ where: { id: teamId }, select: { ownerId: true } });
+    if (!team) return res.status(404).json({ success: false, message: "Team not found" });
+    if (team.ownerId !== requesterId) return res.status(403).json({ success: false, message: "Only team owner can update roles" });
+
+    const member = await prisma.teamMember.updateMany({
+      where: { teamId, userId },
+      data: { role: role?.toUpperCase() ?? "PLAYER" },
+    });
+    if (member.count === 0) return res.status(404).json({ success: false, message: "Member not found in team" });
+
+    return res.status(200).json({ success: true, message: "Member role updated" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const removeMember = async (req, res) => {
+  try {
+    const { teamId, userId } = req.params;
+    const requesterId = req.user?.id;
+
+    const team = await prisma.team.findUnique({ where: { id: teamId }, select: { ownerId: true } });
+    if (!team) return res.status(404).json({ success: false, message: "Team not found" });
+    if (team.ownerId !== requesterId && requesterId !== userId) {
+      return res.status(403).json({ success: false, message: "Not authorised to remove this member" });
+    }
+
+    await prisma.teamMember.deleteMany({ where: { teamId, userId } });
+    return res.status(200).json({ success: true, message: "Member removed" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

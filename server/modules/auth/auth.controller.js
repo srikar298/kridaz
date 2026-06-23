@@ -1446,6 +1446,13 @@ export const googleAuth = asyncHandler(async (req, res) => {
       }
       const tokenInfo = await tokenInfoResponse.json();
 
+      const allowedClients = [
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_ANDROID_CLIENT_ID,
+        process.env.GOOGLE_ANDROID_RELEASE_CLIENT_ID,
+        process.env.GOOGLE_IOS_CLIENT_ID,
+      ].filter(Boolean);
+
       if (
         !allowedClients.includes(tokenInfo.aud) &&
         !allowedClients.includes(tokenInfo.azp)
@@ -1703,6 +1710,132 @@ export const googleAuth = asyncHandler(async (req, res) => {
     role: roleToReturn,
     user: sanitizeUser(user),
     isNewUser,
+  });
+});
+
+// Apple Sign-In
+export const appleAuth = asyncHandler(async (req, res) => {
+  const { identityToken, authorizationCode, fullName, email, userIdentifier } = req.body;
+
+  if (!identityToken || !userIdentifier) {
+    return res.status(400).json({ success: false, message: "Missing Apple credentials" });
+  }
+
+  // Verify Apple identity token against Apple's public JWKS
+  let applePayload;
+  try {
+    const headerB64 = identityToken.split(".")[0];
+    const header = JSON.parse(Buffer.from(headerB64, "base64url").toString());
+
+    const jwksRes = await fetch("https://appleid.apple.com/auth/keys");
+    if (!jwksRes.ok) throw new Error("Failed to fetch Apple JWKS");
+    const { keys } = await jwksRes.json();
+
+    const jwk = keys.find((k) => k.kid === header.kid);
+    if (!jwk) throw new Error("No matching Apple public key");
+
+    const publicKey = crypto.createPublicKey({ key: jwk, format: "jwk" });
+    const pem = publicKey.export({ type: "spki", format: "pem" });
+
+    applePayload = jwt.verify(identityToken, pem, {
+      algorithms: ["RS256"],
+      issuer: "https://appleid.apple.com",
+      audience: process.env.APPLE_BUNDLE_ID || "com.kridaz.app",
+    });
+  } catch (err) {
+    logger.error("Apple identity token verification failed:", err.message);
+    return res.status(401).json({ success: false, message: "Invalid Apple identity token" });
+  }
+
+  const appleId = applePayload.sub;
+  let userEmail = applePayload.email || email;
+
+  // Apple only sends email on first sign-in; on repeat logins look up by appleId
+  if (!userEmail) {
+    const existingByAppleId = await prisma.user.findFirst({ where: { appleId } });
+    if (!existingByAppleId) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required for first-time Apple sign-in",
+      });
+    }
+    userEmail = existingByAppleId.email;
+  }
+
+  userEmail = userEmail.toLowerCase();
+
+  let user = await prisma.user.findFirst({
+    where: { OR: [{ appleId }, { email: userEmail }] },
+    include: { ownerProfile: true },
+  });
+
+  let token;
+  let roleToReturn;
+  let isNewAccountCreated = false;
+
+  if (user) {
+    roleToReturn = user.role;
+    if (!user.appleId) {
+      await prisma.user.update({ where: { id: user.id }, data: { appleId } });
+    }
+    const ownerProfileId = user.ownerProfile ? user.ownerProfile.id : null;
+    token = await (user.ownerProfile
+      ? generateOwnerToken(user.id, roleToReturn, ownerProfileId)
+      : generateUserToken(user.id, user.role));
+  } else {
+    const name = fullName || userEmail.split("@")[0];
+    const randomPassword = crypto.randomBytes(32).toString("hex");
+    const hashedPassword = await argon2.hash(randomPassword);
+    const generatedUsername = await generateUniqueUsername(name);
+
+    const result = await prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: {
+          name,
+          email: userEmail,
+          appleId,
+          username: generatedUsername,
+          walletBalance: 50,
+          role: "USER",
+          password: hashedPassword,
+          wallet: { create: { balance: 50, reservedBalance: 0 } },
+        },
+      });
+      await tx.walletTransaction.create({
+        data: {
+          userId: newUser.id,
+          amount: 50,
+          type: "OFFER",
+          status: "SUCCESS",
+          description: "Platform Welcome Bonus: Rs 50 Credits",
+        },
+      });
+      return newUser;
+    });
+
+    user = result;
+    isNewAccountCreated = true;
+    roleToReturn = "USER";
+    token = await generateUserToken(user.id, user.role);
+    addUsernameToBloom(user.username);
+  }
+
+  if (user.status === "blocked") {
+    return res.status(403).json({
+      success: false,
+      message: "Your account has been blocked by an administrator.",
+    });
+  }
+
+  const tokens = await issueTokens(res, user.id, token);
+  return res.status(200).json({
+    success: true,
+    message: "Apple authentication successful",
+    token,
+    ...tokens,
+    role: roleToReturn,
+    user: sanitizeUser(user),
+    isNewUser: isNewAccountCreated,
   });
 });
 
