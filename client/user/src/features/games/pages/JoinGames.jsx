@@ -577,10 +577,20 @@ const JoinGames = () => {
                 <GameCard
                   key={game.id || game._id}
                   game={game}
-                  onSelect={(selectedGame) =>
-                    navigate(
-                      `/join-games/${selectedGame.id || selectedGame._id}`
-                    )
+                  onSelect={
+                    game.gameMode?.toUpperCase() === "HIRING" ||
+                    [
+                      "NEED_UMPIRE",
+                      "NEED_SCORER",
+                      "NEED_STREAMER",
+                      "NEED_COACH",
+                      "LOOKING_FOR_TEAM",
+                    ].includes(game.requestType)
+                      ? undefined
+                      : (selectedGame) =>
+                          navigate(
+                            `/join-games/${selectedGame.id || selectedGame._id}`
+                          )
                   }
                   actionButton={
                     !isHost && currentUserId ? (

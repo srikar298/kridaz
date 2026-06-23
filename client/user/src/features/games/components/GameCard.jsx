@@ -51,7 +51,7 @@ const GameCard = ({ game, onSelect, actionButton }) => {
 
   return (
     <div
-      className="group bg-card rounded-[16px] border border-white/10 hover:border-primary hover:shadow-[0_8px_30px_rgba(191,243,103,0.15)] transition-all duration-300 cursor-pointer overflow-hidden flex flex-col h-full p-4"
+      className={`group bg-card rounded-[16px] border border-white/10 hover:border-primary hover:shadow-[0_8px_30px_rgba(191,243,103,0.15)] transition-all duration-300 overflow-hidden flex flex-col h-full p-4 ${onSelect ? "cursor-pointer" : ""}`}
       onClick={() => onSelect && onSelect(game)}
     >
       {/* Content */}

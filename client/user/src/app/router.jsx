@@ -102,6 +102,18 @@ const BookingInvoice = lazy(() =>
 const HostGame = lazy(() =>
   import("@features/games").then((m) => ({ default: m.HostGame }))
 );
+const HostGameLanding = lazy(() =>
+  import("@features/games").then((m) => ({ default: m.HostGameLanding }))
+);
+const QuickMatchWizard = lazy(() =>
+  import("@features/games").then((m) => ({ default: m.QuickMatchWizard }))
+);
+const ProMatchWizard = lazy(() =>
+  import("@features/games").then((m) => ({ default: m.ProMatchWizard }))
+);
+const LookingForWizard = lazy(() =>
+  import("@features/games").then((m) => ({ default: m.LookingForWizard }))
+);
 const JoinGames = lazy(() =>
   import("@features/games").then((m) => ({ default: m.JoinGames }))
 );
@@ -717,7 +729,37 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <S>
-              <HostGame />
+              <HostGameLanding />
+            </S>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "host-game/quick",
+        element: (
+          <ProtectedRoute>
+            <S>
+              <QuickMatchWizard />
+            </S>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "host-game/pro",
+        element: (
+          <ProtectedRoute>
+            <S>
+              <ProMatchWizard />
+            </S>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "host-game/looking-for",
+        element: (
+          <ProtectedRoute>
+            <S>
+              <LookingForWizard />
             </S>
           </ProtectedRoute>
         ),
