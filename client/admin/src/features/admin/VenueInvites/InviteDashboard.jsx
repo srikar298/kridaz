@@ -175,7 +175,7 @@ const InviteDashboard = () => {
                             >
                               <RotateCw
                                 size={14}
-                                className="text-blue-400 group-hover:text-blue-300"
+                                className="text-purple-400 group-hover:text-purple-300"
                               />
                             </Button>
                             <Button

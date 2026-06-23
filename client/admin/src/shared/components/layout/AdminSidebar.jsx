@@ -116,7 +116,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
             className={`flex items-center justify-between w-full px-4 py-3 group relative transition-all duration-300 ${isActive ? "text-black" : "text-white/40 hover:text-white"}`}
           >
             {isActive && (
-              <div className="absolute inset-x-2 inset-y-1 bg-secondary rounded-[8px] -z-10 shadow-[0_0_15px_rgba(204,255,0,0.3)] transition-all duration-300" />
+              <div className="absolute inset-x-2 inset-y-1 bg-primary rounded-[8px] -z-10 shadow-[0_0_15px_rgba(204,255,0,0.3)] transition-all duration-300" />
             )}
             {!isActive && (
               <div className="absolute inset-x-2 inset-y-1 bg-white/5 rounded-[8px] -z-10 opacity-0 group-hover:opacity-100 transition-all duration-300" />
@@ -126,7 +126,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
               <div className="flex-shrink-0 flex items-center justify-center w-6">
                 <Icon
                   size={18}
-                  className={`transition-colors ${isActive ? "text-black" : "text-white/20 group-hover:text-secondary"}`}
+                  className={`transition-colors ${isActive ? "text-black" : "text-white/20 group-hover:text-primary"}`}
                 />
               </div>
               <span
@@ -157,7 +157,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
                   <Link
                     key={subItem.to}
                     to={subItem.to}
-                    className={`flex items-center px-4 py-2 transition-all duration-300 ${isSubActive ? "text-secondary" : "text-white/30 hover:text-white"}`}
+                    className={`flex items-center px-4 py-2 transition-all duration-300 ${isSubActive ? "text-primary" : "text-white/30 hover:text-white"}`}
                   >
                     <span
                       className={`font-medium tracking-wide ${isSubActive ? "text-sm" : "text-xs"}`}
@@ -190,7 +190,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
         }}
       >
         {isActive && !isLogout && (
-          <div className="absolute inset-x-2 inset-y-1 bg-secondary rounded-[8px] -z-10 shadow-[0_0_15px_rgba(204,255,0,0.3)] transition-all duration-300" />
+          <div className="absolute inset-x-2 inset-y-1 bg-primary rounded-[8px] -z-10 shadow-[0_0_15px_rgba(204,255,0,0.3)] transition-all duration-300" />
         )}
 
         {!isActive && !isLogout && (
@@ -204,7 +204,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
         <div className="flex-shrink-0 flex items-center justify-center w-6">
           <Icon
             size={18}
-            className={`transition-colors duration-300 ${isLogout ? "text-white/20 group-hover:text-red-500" : isActive ? "text-black" : "text-white/20 group-hover:text-secondary"}`}
+            className={`transition-colors duration-300 ${isLogout ? "text-white/20 group-hover:text-red-500" : isActive ? "text-black" : "text-white/20 group-hover:text-primary"}`}
           />
         </div>
 
@@ -225,7 +225,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
         <div className="flex items-center justify-end">
           <Button
             onClick={toggleSidebar}
-            className="text-white hover:text-secondary transition-colors"
+            className="text-white hover:text-primary transition-colors"
           >
             <X size={20} />
           </Button>

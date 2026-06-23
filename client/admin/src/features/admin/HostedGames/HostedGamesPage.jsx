@@ -367,10 +367,10 @@ const HostedGamesPage = () => {
                   {/* Status */}
                   <div className="lg:col-span-1">
                     <div
-                      className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-[6px] border text-[9px] font-black uppercase tracking-widest ${game.status === "ACTIVE" ? "bg-green-500/10 border-green-500/20 text-green-400" : game.status === "PENDING" ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-400" : game.status === "CANCELLED" ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-blue-500/10 border-blue-500/20 text-blue-400"}`}
+                      className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-[6px] border text-[9px] font-black uppercase tracking-widest ${game.status === "ACTIVE" ? "bg-green-500/10 border-green-500/20 text-green-400" : game.status === "PENDING" ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-400" : game.status === "CANCELLED" ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-amber-500/10 border-amber-500/20 text-amber-400"}`}
                     >
                       <div
-                        className={`w-1 h-1 rounded-full ${game.status === "ACTIVE" ? "bg-green-400 shadow-[0_0_8px_#4ade80]" : game.status === "PENDING" ? "bg-yellow-400" : game.status === "CANCELLED" ? "bg-red-400" : "bg-blue-400"}`}
+                        className={`w-1 h-1 rounded-full ${game.status === "ACTIVE" ? "bg-green-400 shadow-[0_0_8px_#4ade80]" : game.status === "PENDING" ? "bg-yellow-400" : game.status === "CANCELLED" ? "bg-red-400" : "bg-amber-400"}`}
                       />
                       {game.status}
                     </div>
