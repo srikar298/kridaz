@@ -642,6 +642,20 @@ export const getRecommendedReels = async (req, res) => {
 /**
  * Delete a Reel
  */
+export const getReelById = async (req, res) => {
+  try {
+    const { reelId } = req.params;
+    const reel = await prisma.reel.findUnique({
+      where: { id: reelId },
+      select: { id: true, status: true, videoUrl: true, thumbnailUrl: true, caption: true, createdAt: true },
+    });
+    if (!reel) return res.status(404).json({ success: false, message: "Reel not found" });
+    return res.status(200).json({ success: true, reel });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const deleteReel = async (req, res) => {
   try {
     const { reelId } = req.params;

@@ -35,4 +35,11 @@ router.get("/players", optionalUserAuth, getPublicPlayers);
  */
 router.get("/leaderboard", getLeaderboard);
 
+// Saved items — placeholder until a SavedItem model is added to the schema.
+// Returns an empty grouped map so the Flutter saved-items screen renders its
+// empty state rather than throwing on a 404.
+router.get("/saved", (req, res) => {
+  return res.status(200).json({ success: true, data: {} });
+});
+
 export default router;

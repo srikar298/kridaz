@@ -160,6 +160,7 @@ router.get("/analytics", reelsController.getCreatorAnalytics);
  *     security:
  *       - BearerAuth: []
  */
+router.get("/:reelId", optionalProtect, reelsController.getReelById);
 router.delete("/:reelId", reelsController.deleteReel);
 
 /**
