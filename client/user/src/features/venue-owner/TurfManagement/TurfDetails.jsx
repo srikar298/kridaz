@@ -83,7 +83,7 @@ const BookingModal = ({ slot, onClose }) => {
                   </h4>
                   <div className="flex items-center gap-2 mt-1">
                     <div
-                      className={`px-2 py-0.5 text-black text-[10px] font-bold uppercase rounded-[10px] ${bookingDetails.user?.isGuest || bookingDetails.guestDetails ? "bg-muted-foreground" : "bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none"}`}
+                      className={`px-2 py-0.5 text-black text-[10px] font-bold uppercase rounded-[10px] ${bookingDetails.user?.isGuest || bookingDetails.guestDetails ? "bg-muted-foreground" : "bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none"}`}
                     >
                       {bookingDetails.user?.isGuest ||
                       bookingDetails.guestDetails
@@ -185,7 +185,7 @@ const BookingModal = ({ slot, onClose }) => {
         <div className="p-5 pt-0">
           <Button
             onClick={onClose}
-            className="w-full py-4 bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none hover:opacity-90 rounded-[10px] text-[11px] font-bold text-black uppercase tracking-[2px] transition-all"
+            className="w-full py-4 bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none hover:opacity-90 rounded-[10px] text-[11px] font-bold text-black uppercase tracking-[2px] transition-all"
           >
             Acknowledge & Close
           </Button>
@@ -397,8 +397,8 @@ export default function TurfDetails() {
                 size={11}
                 className={
                   turf.status === "rejected"
-                    ? "text-red-400/60 shrink-0"
-                    : "text-primary/70 shrink-0"
+                    ? "text-red-400 shrink-0"
+                    : "text-primary shrink-0"
                 }
               />
               <span className="text-[11px] text-white/60 font-medium truncate max-w-[200px]">
@@ -411,8 +411,8 @@ export default function TurfDetails() {
                 size={11}
                 className={
                   turf.status === "rejected"
-                    ? "text-red-400/60 shrink-0"
-                    : "text-primary/70 shrink-0"
+                    ? "text-red-400 shrink-0"
+                    : "text-primary shrink-0"
                 }
               />
               <span className="text-[11px] text-white/60 font-medium whitespace-nowrap">
@@ -422,7 +422,7 @@ export default function TurfDetails() {
             {/* Price */}
             <div className="flex items-center gap-1 px-3 py-1.5 rounded-[8px] bg-white/5 border border-white/8">
               <span
-                className={`text-[10px] font-bold ${turf.status === "rejected" ? "text-red-400/60" : "text-primary/70"}`}
+                className={`text-[10px] font-bold ${turf.status === "rejected" ? "text-red-400" : "text-primary"}`}
               >
                 Rs
               </span>
@@ -480,36 +480,42 @@ export default function TurfDetails() {
           <div className="flex flex-col gap-2 pt-1">
             <Button
               onClick={() => navigate(`/venue-owner/edit-turf/${id}`)}
-              className={`w-full flex items-center justify-center gap-1.5 py-2 rounded-[10px] border text-[11px] font-semibold transition-all ${
+              className={`w-full !py-1 !h-8 !min-h-0 rounded-[10px] border text-[11px] font-semibold transition-all ${
                 turf.status === "rejected"
                   ? "bg-red-500 text-white border-red-500 hover:bg-red-600"
-                  : "bg-card border-white/10 text-white/60 hover:text-white"
+                  : "bg-black border-white/10 text-white/60 hover:text-white"
               }`}
             >
-              <Edit2 size={13} />
-              {turf.status === "rejected" ? "Review & Re-apply" : "Edit Arena"}
+              <div className="flex flex-row items-center justify-center gap-1.5 w-full">
+                <Edit2 size={13} className="text-primary" />
+                <span>{turf.status === "rejected" ? "Review & Re-apply" : "Edit Arena"}</span>
+              </div>
             </Button>
             <div className="flex gap-2">
               <Button
                 onClick={handleToggleVisibility}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-[10px] border text-[11px] font-semibold transition-all ${
+                className={`flex-1 !py-1 !h-8 !min-h-0 rounded-[10px] border text-[11px] font-semibold transition-all ${
                   turf.isActive
-                    ? "bg-primary/8 border-primary/25 text-primary hover:bg-primary/15"
+                    ? "bg-black border-primary/25 text-primary hover:border-primary"
                     : "bg-black border-white/10 text-[#555] hover:text-white"
                 }`}
               >
-                <Zap
-                  size={13}
-                  className={turf.isActive ? "fill-primary" : ""}
-                />
-                {turf.isActive ? "Visible" : "Hidden"}
+                <div className="flex flex-row items-center justify-center gap-1.5 w-full">
+                  <Zap
+                    size={13}
+                    className={`text-primary ${turf.isActive ? "fill-primary" : ""}`}
+                  />
+                  <span>{turf.isActive ? "Visible" : "Hidden"}</span>
+                </div>
               </Button>
               <Button
                 onClick={handleDelete}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-500/8 border border-red-500/20 rounded-[10px] text-red-500 text-[11px] font-semibold hover:bg-red-500/15 transition-all"
+                className="flex-1 !py-1 !h-8 !min-h-0 bg-black border border-red-500/20 rounded-[10px] text-red-500 text-[11px] font-semibold hover:border-red-500 transition-all"
               >
-                <Trash2 size={13} />
-                Decommission
+                <div className="flex flex-row items-center justify-center gap-1.5 w-full">
+                  <Trash2 size={13} className="text-red-500" />
+                  <span>Decommission</span>
+                </div>
               </Button>
             </div>
           </div>
@@ -744,9 +750,9 @@ export default function TurfDetails() {
                         </div>
                         <a
                           href={`tel:${manager.phone}`}
-                          className="p-2 bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none rounded-[10px] transition-all"
+                          className="p-2 bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none rounded-[10px] transition-all"
                         >
-                          <Phone size={12} />
+                          <Phone size={12} className="text-black" />
                         </a>
                       </div>
                     ))}
@@ -796,7 +802,7 @@ export default function TurfDetails() {
                       (facility, i) => (
                         <span
                           key={i}
-                          className={`px-2 py-1 rounded-[10px] text-[12px] font-medium uppercase snap-start ${pending.facilities ? "bg-amber-500/10 text-amber-500" : "bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black"}`}
+                          className={`px-2 py-1 rounded-[10px] text-[12px] font-medium uppercase snap-start ${pending.facilities ? "bg-amber-500/10 text-amber-500" : "bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black"}`}
                         >
                           {facility}
                         </span>
@@ -824,7 +830,7 @@ export default function TurfDetails() {
                       className={`flex items-center gap-3 border p-3 rounded-[10px] w-full group/sport transition-colors ${pending.sportTypes ? "bg-amber-500/5 border-amber-500/20" : "bg-card border-white/10 hover:border-primary/40"}`}
                     >
                       <div
-                        className={`w-2 h-2 rounded-full transition-colors ${pending.sportTypes ? "bg-amber-500 animate-pulse" : "bg-primary/20 group-hover/sport:bg-primary"}`}
+                        className={`w-2 h-2 rounded-full transition-colors ${pending.sportTypes ? "bg-amber-500 animate-pulse" : "bg-primary"}`}
                       />
                       <span
                         className={`text-[13px] font-medium uppercase ${pending.sportTypes ? "text-amber-500" : "text-white"}`}
@@ -868,7 +874,7 @@ export default function TurfDetails() {
                   {(pending.description || turf.description)?.length > 150 && (
                     <Button
                       onClick={() => setIsDescExpanded(!isDescExpanded)}
-                      className="text-primary text-[10px] font-bold uppercase tracking-wider mt-2 hover:underline"
+                      className="text-primary text-[10px] font-bold uppercase tracking-wider mt-2 hover:underline !bg-transparent !border-none !p-0 !h-auto !min-h-0 shadow-none w-fit block"
                     >
                       {isDescExpanded ? "Show Less" : "Read More"}
                     </Button>
@@ -1001,22 +1007,22 @@ export default function TurfDetails() {
             <Calendar size={14} className="text-primary" />
             Timeline Control
           </h3>
-          <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {uniqueDates.length > 0 ? (
               uniqueDates.map((date) => (
                 <Button
                   key={date}
                   onClick={() => setSelectedDate(date)}
-                  className={`w-full p-5 rounded-[10px]  text-left transition-all duration-300 flex justify-between items-center ${selectedDate === date ? "bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none -[var(--primary)] text-black shadow-[0_10px_20px_rgba(204,255,0,0.15)]" : "bg-background -white/10 text-white/70 hover:-[var(--primary)]/40"}`}
+                  className={`w-full p-3 md:p-4 rounded-[10px] text-left transition-all duration-300 flex justify-between items-center border ${selectedDate === date ? "bg-primary border-primary text-black shadow-[0_8px_24px_rgba(204,255,0,0.15)]" : "bg-background border-white/10 text-white/70 hover:border-primary/40"}`}
                 >
-                  <div className="flex flex-col">
-                    <span className="text-[11px] font-bold uppercase tracking-[1px]">
+                  <div className="flex flex-col overflow-hidden">
+                    <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-[1px] truncate">
                       {new Date(date).toLocaleDateString("en-US", {
                         weekday: "long",
                       })}
                     </span>
                     <span
-                      className={`text-[10px] font-medium uppercase mt-0.5 ${selectedDate === date ? "text-black/60" : "text-[#444]"}`}
+                      className={`text-[9px] md:text-[10px] font-medium uppercase mt-0.5 truncate ${selectedDate === date ? "text-black/60" : "text-[#444]"}`}
                     >
                       {new Date(date).toLocaleDateString("en-US", {
                         day: "numeric",
@@ -1024,9 +1030,6 @@ export default function TurfDetails() {
                       })}
                     </span>
                   </div>
-                  {selectedDate === date && (
-                    <Zap size={14} fill="currentColor" />
-                  )}
                 </Button>
               ))
             ) : (
@@ -1099,7 +1102,7 @@ export default function TurfDetails() {
                     </div>
                     {slot.isActive && (
                       <div
-                        className={`px-2 py-0.5 rounded-[10px] text-[10px] font-bold uppercase tracking-widest  ${slot.isBooked ? "bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none -[var(--primary)] text-black" : "bg-card -white/10 text-white/70"}`}
+                        className={`px-2 py-0.5 rounded-[10px] text-[10px] font-bold uppercase tracking-widest  ${slot.isBooked ? "bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none -[var(--primary)] text-black" : "bg-card -white/10 text-white/70"}`}
                       >
                         {slot.isBooked ? "Booked" : "Open"}
                       </div>

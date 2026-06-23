@@ -60,7 +60,7 @@ const TurfManagement = () => {
 
             <Link
               to="/venue-owner/add-turf"
-              className="flex-1 sm:flex-none justify-center sm:justify-start bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none hover:opacity-90 text-black px-4 py-2 rounded-[16px] text-[9px] md:text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 transition-all shadow-[var(--shadow-2)] shrink-0 whitespace-nowrap"
+              className="flex-1 sm:flex-none justify-center sm:justify-start bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none hover:opacity-90 text-black px-4 py-2 rounded-[16px] text-[9px] md:text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 transition-all shadow-[var(--shadow-2)] shrink-0 whitespace-nowrap"
             >
               <Plus size={16} strokeWidth={3} className="shrink-0" />
               <span>Add New Venue</span>

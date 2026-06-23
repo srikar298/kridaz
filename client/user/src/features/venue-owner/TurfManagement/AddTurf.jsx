@@ -262,7 +262,7 @@ const AddTurf = () => {
               className={`flex-1 flex flex-col items-center gap-2 relative ${currentStep === step ? "opacity-100" : "opacity-50"}`}
             >
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm z-10 ${currentStep === step ? "bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black shadow-[0_0_15px_rgba(204,255,0,0.5)]" : "bg-card  -white/10 text-white"}`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm z-10 ${currentStep === step ? "bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black shadow-[0_0_15px_rgba(204,255,0,0.5)]" : "bg-card  -white/10 text-white"}`}
               >
                 {step}
               </div>
@@ -375,13 +375,13 @@ const AddTurf = () => {
                   {sportTypes.map((type, index) => (
                     <span
                       key={index}
-                      className="px-2 md:px-3 py-1 md:py-1.5 bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold rounded-[16px] md:rounded-[16px] text-[8px] md:text-[10px] flex items-center gap-2 uppercase tracking-widest"
+                      className="px-2 md:px-3 py-1 md:py-1.5 bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold rounded-[16px] md:rounded-[16px] text-[8px] md:text-[10px] flex items-center gap-2 uppercase tracking-widest"
                     >
                       {type}{" "}
                       <Button
                         type="button"
                         onClick={() => removeSportType(type)}
-                        className="hover:text-white transition-colors"
+                        className="!p-0 !min-h-0 !h-auto !bg-transparent !border-none hover:text-white transition-colors shadow-none shrink-0 text-black/50"
                       >
                         <Plus size={12} className="rotate-45" />
                       </Button>
@@ -444,7 +444,7 @@ const AddTurf = () => {
                       <Button
                         type="button"
                         onClick={() => removeGroundType(type)}
-                        className="hover:text-primary transition-colors"
+                        className="!p-0 !min-h-0 !h-auto !bg-transparent !border-none hover:text-primary transition-colors shadow-none shrink-0 text-white/50"
                       >
                         <Plus size={12} className="rotate-45" />
                       </Button>
@@ -471,13 +471,23 @@ const AddTurf = () => {
                     Facility Images (Up to 10)
                   </span>
                 </label>
-                <Input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="w-full bg-card border border-white/10 text-white/70 text-[6px] md:text-sm file:bg-card file:text-white file:border-none file:px-2 md:file:px-6 file:h-7 md:file:h-12 file:mr-1 md:file:mr-4 file:font-bold file:uppercase file:text-[6px] md:file:text-[10px] file:tracking-widest rounded-[16px] md:rounded-[16px] h-7 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer"
-                  onChange={(e) => setValue("images", e.target.files)}
-                />
+                <label className={`w-full bg-card border ${errors.images ? "border-red-500" : "border-white/10"} text-white/70 text-[10px] md:text-sm rounded-[16px] h-9 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer overflow-hidden relative`}>
+                  <div className="bg-primary text-black px-4 md:px-6 h-full flex items-center justify-center font-bold uppercase tracking-widest text-[10px] shrink-0">
+                    Choose Files
+                  </div>
+                  <div className="px-3 md:px-4 truncate flex-1 text-[10px]">
+                    {watchedImages && watchedImages.length > 0 
+                      ? `${watchedImages.length} image${watchedImages.length > 1 ? 's' : ''} selected` 
+                      : "No files chosen"}
+                  </div>
+                  <Input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => setValue("images", e.target.files)}
+                  />
+                </label>
                 {errors.images && (
                   <span className="text-primary text-[8px] md:text-[10px] font-bold uppercase mt-1 md:mt-2 block ml-1">
                     {errors.images.message}
@@ -485,14 +495,28 @@ const AddTurf = () => {
                 )}
 
                 {imagePreviews.length > 0 && (
-                  <div className="flex gap-4 mt-4 overflow-x-auto pb-2 custom-scrollbar">
+                  <div className="flex gap-4 mt-2 overflow-x-auto pb-2 pt-3 pl-1 pr-3 custom-scrollbar">
                     {imagePreviews.map((src, i) => (
-                      <img
-                        key={i}
-                        src={src}
-                        alt={`preview ${i}`}
-                        className="w-20 h-20 object-cover rounded-[16px] border border-white/10"
-                      />
+                      <div key={i} className="relative w-20 h-20 shrink-0">
+                        <img
+                          src={src}
+                          alt={`preview ${i}`}
+                          className="w-full h-full object-cover rounded-[16px] border border-white/10"
+                        />
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            const dt = new DataTransfer();
+                            Array.from(watchedImages).forEach((file, index) => {
+                              if (index !== i) dt.items.add(file);
+                            });
+                            setValue("images", dt.files, { shouldValidate: true });
+                          }}
+                          className="absolute -top-2 -right-2 w-5 h-5 !min-h-0 !p-0 rounded-full bg-red-500 text-white !border-none flex items-center justify-center hover:bg-red-600 shadow-lg z-10"
+                        >
+                          <Plus size={10} className="rotate-45" />
+                        </Button>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -528,7 +552,7 @@ const AddTurf = () => {
                       <Button
                         type="button"
                         onClick={() => removeFacility(type)}
-                        className="hover:text-white transition-colors"
+                        className="!p-0 !min-h-0 !h-auto !bg-transparent !border-none hover:text-white transition-colors shadow-none shrink-0 text-primary/50"
                       >
                         <Plus size={12} className="rotate-45" />
                       </Button>
@@ -704,19 +728,27 @@ const AddTurf = () => {
                             {doc.label}
                           </span>
                         </label>
-                        <Input
-                          type="file"
-                          accept=".pdf,image/*"
-                          className={`w-full bg-card border ${errors[doc.name] ? "border-red-500" : "border-white/10"} text-white/70 text-[6px] md:text-sm file:bg-card file:text-white file:border-none file:px-2 md:file:px-6 file:h-7 md:file:h-12 file:mr-1 md:file:mr-4 file:font-bold file:uppercase file:text-[6px] md:file:text-[10px] file:tracking-widest rounded-[16px] md:rounded-[16px] h-7 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer`}
-                          onChange={(e) =>
-                            setValue(doc.name, e.target.files, {
-                              shouldValidate: true,
-                            })
-                          }
-                        />
+                        <label className={`w-full bg-card border ${errors[doc.name] ? "border-red-500" : "border-white/10"} text-white/70 text-[10px] md:text-sm rounded-[16px] h-9 md:h-12 flex items-center focus:outline-none transition-all cursor-pointer overflow-hidden relative`}>
+                          <div className="bg-white/10 text-white px-3 md:px-6 h-full flex items-center justify-center font-bold uppercase tracking-widest text-[8px] md:text-[10px] shrink-0">
+                            Choose File
+                          </div>
+                          <div className="px-3 md:px-4 truncate flex-1 text-[8px] md:text-[10px]">
+                            {hasFile ? selectedFiles[0].name : "No file chosen"}
+                          </div>
+                          <Input
+                            type="file"
+                            accept=".pdf,image/*"
+                            className="hidden"
+                            onChange={(e) =>
+                              setValue(doc.name, e.target.files, {
+                                shouldValidate: true,
+                              })
+                            }
+                          />
+                        </label>
                         {hasFile && (
                           <span className="text-primary text-[8px] md:text-[10px] font-bold mt-2 block ml-1 truncate">
-                            ✅ Selected: {selectedFiles[0].name}
+                            ✅ Ready to upload
                           </span>
                         )}
                         {errors[doc.name] && (
@@ -758,7 +790,7 @@ const AddTurf = () => {
                     <Button
                       type="button"
                       onClick={addManagerContact}
-                      className="w-full md:w-auto px-8 h-12 rounded-[16px] bg-card text-white hover:bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none  transition-all text-[11px] font-bold uppercase tracking-widest"
+                      className="w-full md:w-auto px-8 h-12 rounded-[16px] bg-card text-white hover:bg-primary hover:text-black border border-white/10 transition-all text-[11px] font-bold uppercase tracking-widest"
                     >
                       Add
                     </Button>
@@ -895,7 +927,7 @@ const AddTurf = () => {
                       Weekly Operational Sequence
                     </span>
                   </label>
-                  <div className="flex w-full gap-1 md:gap-3">
+                  <div className="grid grid-cols-7 w-full gap-1.5 md:gap-3">
                     {[
                       "Monday",
                       "Tuesday",
@@ -911,7 +943,7 @@ const AddTurf = () => {
                           key={day}
                           type="button"
                           onClick={() => toggleDay(day)}
-                          className={`flex-1 py-2 md:py-3 rounded-[16px] md:rounded-[16px] text-[8px] md:text-[11px] font-black uppercase tracking-wider md:tracking-widest transition-all  ${isActive ? "bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black -[var(--primary)] shadow-[0_5px_15px_rgba(204,255,0,0.2)]" : "bg-card text-[#444] -white/10 hover:-[var(--primary)]/40"}`}
+                          className={`w-full !p-0 !h-8 md:!h-10 rounded-[8px] md:rounded-[12px] text-[8px] md:text-[11px] font-black uppercase tracking-wider md:tracking-widest border transition-all ${isActive ? "bg-primary text-black border-primary shadow-[0_5px_15px_rgba(204,255,0,0.2)]" : "bg-card text-[#444] border-white/10 hover:border-primary/40"}`}
                         >
                           {day.substring(0, 3)}
                         </Button>
@@ -1032,7 +1064,7 @@ const AddTurf = () => {
                     e.preventDefault();
                     setCurrentStep((prev) => Math.min(4, prev + 1));
                   }}
-                  className="px-8 md:px-10 py-2 md:py-3 rounded-[16px] bg-gradient-to-r from-secondary to-primary text-black font-bold text-xs md:text-sm uppercase tracking-wider hover:opacity-90 transition-all duration-300 shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none"
+                  className="px-8 md:px-10 py-2 md:py-3 rounded-[16px] bg-primary text-black font-bold text-xs md:text-sm uppercase tracking-wider hover:opacity-90 transition-all duration-300 shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none"
                 >
                   Next Step
                 </Button>
@@ -1040,7 +1072,7 @@ const AddTurf = () => {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className={`px-8 md:px-12 py-2 md:py-3 rounded-[16px] bg-gradient-to-r from-secondary to-primary text-black font-bold text-xs md:text-sm uppercase tracking-wider transition-all duration-300 flex items-center gap-2 shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none ${loading ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"}`}
+                  className={`px-8 md:px-12 py-2 md:py-3 rounded-[16px] bg-primary text-black font-bold text-xs md:text-sm uppercase tracking-wider transition-all duration-300 flex items-center gap-2 shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none ${loading ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"}`}
                 >
                   {loading ? "Submitting..." : "Submit Venue"}
                 </Button>

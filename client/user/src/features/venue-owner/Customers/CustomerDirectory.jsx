@@ -8,7 +8,8 @@ import {
   Loader2,
 } from "lucide-react";
 import useCustomers from "@hooks/venue-owner/useCustomers";
-import { Link } from "react-router-dom";import { Button, Input } from "@kridaz/ui";
+import { Link } from "react-router-dom";
+import { Button, Input } from "@kridaz/ui";
 
 
 export default function CustomerDirectory() {
@@ -73,7 +74,7 @@ export default function CustomerDirectory() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4 lg:gap-5">
-          <div className="bg-card border border-white/10 rounded-[16px] p-2 md:p-3 flex flex-col relative overflow-hidden shadow-[var(--shadow-2)] hover:border-primary/30 transition-all duration-500">
+          <div className="bg-card border border-white/10 rounded-[16px] p-2 md:p-3 flex flex-col relative shadow-[var(--shadow-2)] hover:border-primary/30 transition-all duration-500">
             <p className="text-[9px] md:text-[12px] font-normal text-white/70 uppercase tracking-[0.5px] mb-2 md:mb-3 truncate">
               Total Players
             </p>
@@ -89,7 +90,7 @@ export default function CustomerDirectory() {
         </div>
 
         {/* Main Content Area */}
-        <div className="bg-card border border-white/10 rounded-[16px] overflow-hidden shadow-[var(--shadow-2)]">
+        <div className="bg-card border border-white/10 rounded-[16px] shadow-[var(--shadow-2)]">
           {/* Search & Filter */}
           <div className="p-2 md:p-3 border-b border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div className="flex w-full md:w-auto flex-1 max-w-xl gap-2 relative">

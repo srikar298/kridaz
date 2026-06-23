@@ -12,7 +12,7 @@ const Button = ({ children, loading, className, ...props }) => {
           <span className="loading loading-spinner loading-md"></span>
         </span>
       ) : null}
-      <span className={loading ? "invisible" : ""}>{children}</span>
+      <span className={`inline-flex items-center gap-2 ${loading ? "invisible" : ""}`}>{children}</span>
     </button>
   );
 };

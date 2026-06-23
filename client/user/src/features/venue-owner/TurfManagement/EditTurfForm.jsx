@@ -438,7 +438,7 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
           </Button>
           <Button
             type="submit"
-            className="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold uppercase text-[11px] tracking-widest rounded-[16px] hover:opacity-90 transition-all flex items-center justify-center gap-2 "
+            className="w-full sm:w-auto px-10 py-3 bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold uppercase text-[11px] tracking-widest rounded-[16px] hover:opacity-90 transition-all flex items-center justify-center gap-2 "
           >
             <Save size={14} />
             Commit Deployment

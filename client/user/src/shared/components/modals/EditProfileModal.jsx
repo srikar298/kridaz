@@ -14,7 +14,8 @@ import toast from "react-hot-toast";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../../../redux/slices/authSlice";
-import { searchLocations } from "../../utils/locationService";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import { searchLocations } from "../../utils/locationService";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 
 export default function EditProfileModal({ isOpen, onClose, user }) {
@@ -222,10 +223,10 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
       toast.error("Contact number is mandatory. Please enter a valid phone number.");
       return;
     }
-    
+
     // Check if phone was changed
     const phoneChanged = formData.phone !== (user?.phone || "");
-    
+
     if (phoneChanged && formData.phone) {
       setSendingOtp(true);
       try {
@@ -241,7 +242,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
       }
       return; // Do not submit the rest of the profile yet
     }
-    
+
     submitProfileUpdate();
   };
 
@@ -508,9 +509,8 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
                     if (!(user?.phone || user?.phoneNumber)) handleChange(e);
                   }}
                   readOnly={!!(user?.phone || user?.phoneNumber)}
-                  className={`w-full h-[58px] bg-card border rounded-[16px] py-4 pl-12 pr-4 text-[14px] text-white focus:outline-none transition-all placeholder-white/70 ${
-                    (user?.phone || user?.phoneNumber) ? "border-white/[0.08] opacity-50 cursor-not-allowed" : "border-white/[0.08] focus:border-secondary"
-                  }`}
+                  className={`w-full h-[58px] bg-card border rounded-[16px] py-4 pl-12 pr-4 text-[14px] text-white focus:outline-none transition-all placeholder-white/70 ${(user?.phone || user?.phoneNumber) ? "border-white/[0.08] opacity-50 cursor-not-allowed" : "border-white/[0.08] focus:border-secondary"
+                    }`}
                   placeholder="Phone number"
                 />
               </div>

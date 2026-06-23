@@ -273,7 +273,7 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
                         key={i}
                         disabled={slot.isBooked}
                         onClick={() => setSelectedSlot(slot)}
-                        className={`flex flex-col items-center justify-center min-h-[38px] rounded-[16px] transition-all font-inter ${selectedSlot === slot ? "bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black" : slot.isBooked ? "bg-red-500/10 border border-red-500/20 text-red-500 cursor-not-allowed opacity-50" : "bg-card border border-white/10 hover:border-primary/50 text-white/70"}`}
+                        className={`flex flex-col items-center justify-center min-h-[38px] rounded-[16px] transition-all font-inter ${selectedSlot === slot ? "bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black" : slot.isBooked ? "bg-red-500/10 border border-red-500/20 text-red-500 cursor-not-allowed opacity-50" : "bg-card border border-white/10 hover:border-primary/50 text-white/70"}`}
                       >
                         <span className="text-[10px] font-black tracking-tighter">
                           {slot.startTime}
@@ -450,7 +450,7 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
               <Button
                 disabled={!selectedTurf || (step === 2 && !selectedSlot)}
                 onClick={() => setStep(step + 1)}
-                className="flex-1 sm:flex-none px-6 py-2.5 rounded-[16px] bg-white text-black font-bold uppercase tracking-widest text-[11px] hover:bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none transition-all disabled:opacity-20 font-inter"
+                className="flex-1 sm:flex-none px-6 py-2.5 rounded-[16px] bg-white text-black font-bold uppercase tracking-widest text-[11px] hover:bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none transition-all disabled:opacity-20 font-inter"
               >
                 Continue
               </Button>
@@ -458,7 +458,7 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
               <Button
                 disabled={loading || !customerData.name}
                 onClick={handleSubmit}
-                className="flex-1 sm:flex-none px-6 py-2.5 rounded-[16px] bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold uppercase tracking-widest text-[11px] hover:opacity-90 transition-all shadow-[0_0_20px_rgba(204,255,0,0.15)] disabled:opacity-50 font-inter"
+                className="flex-1 sm:flex-none px-6 py-2.5 rounded-[16px] bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none text-black font-bold uppercase tracking-widest text-[11px] hover:opacity-90 transition-all shadow-[0_0_20px_rgba(204,255,0,0.15)] disabled:opacity-50 font-inter"
               >
                 {loading ? "Processing..." : "Confirm Booking"}
               </Button>

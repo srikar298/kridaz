@@ -81,7 +81,7 @@ const VenueOwnerBookings = () => {
                 </p>
               </div>
             </div>
-            <Button className="shrink-0 p-1.5 md:p-3 bg-card hover:bg-primary hover:text-background rounded-[16px] transition-all text-muted-foreground group shadow-[var(--shadow-2)] h-fit">
+            <Button className="shrink-0 w-8 h-8 md:w-10 md:h-10 p-0 flex items-center justify-center bg-card hover:bg-primary hover:text-background rounded-full transition-all text-muted-foreground group shadow-[var(--shadow-2)]">
               <Download className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] group-hover:scale-110 transition-transform" />
             </Button>
           </div>
@@ -98,7 +98,7 @@ const VenueOwnerBookings = () => {
                 </span>
               </div>
               <Select
-                className="bg-card border border-[#404040] text-white text-[11px] sm:text-[13px] font-normal rounded-[16px] px-2 py-1 sm:px-4 sm:py-1.5 focus:outline-none focus:border-primary transition-all font-inter uppercase tracking-wider"
+                className="bg-card border border-[#404040] text-white !text-[9px] font-medium rounded-[6px] !pl-2 !pr-6 !py-0 !h-7 focus:outline-none focus:border-primary transition-all font-inter uppercase tracking-wider !w-fit shrink-1 min-w-[90px]"
                 value={filterDays}
                 onChange={(e) => setFilterDays(Number(e.target.value))}
               >
@@ -108,7 +108,7 @@ const VenueOwnerBookings = () => {
               </Select>
 
               <Select
-                className="bg-card border border-[#404040] text-white text-[11px] sm:text-[13px] font-normal rounded-[16px] px-2 py-1 sm:px-4 sm:py-1.5 focus:outline-none focus:border-primary transition-all font-inter uppercase tracking-wider ml-2"
+                className="bg-card border border-[#404040] text-white !text-[9px] font-medium rounded-[6px] !pl-2 !pr-6 !py-0 !h-7 focus:outline-none focus:border-primary transition-all font-inter uppercase tracking-wider ml-1 sm:ml-2 !w-fit shrink-1 min-w-[70px]"
                 onChange={(e) =>
                   setSortConfig({
                     key: "bookingDate",
@@ -240,7 +240,7 @@ const VenueOwnerBookings = () => {
                           to={`/booking-invoice/${booking.id}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-1 md:p-2 bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none hover:bg-white text-black rounded-[16px] md:rounded-[16px] transition-all shadow-[0_5px_15px_rgba(204,255,0,0.15)]"
+                          className="p-1 md:p-2 bg-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none hover:bg-white text-black rounded-[16px] md:rounded-[16px] transition-all shadow-[0_5px_15px_rgba(204,255,0,0.15)]"
                           title="See Invoice"
                         >
                           <FileText className="w-3 h-3 md:w-[14px] md:h-[14px]" />
