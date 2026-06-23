@@ -90,7 +90,7 @@ export const getAllTurfs = async (req, res) => {
         let resultTurfs = [];
 
         if (lat && lng) {
-          const r = radius ? parseFloat(radius) : 500000;
+          const r = radius ? parseFloat(radius) : 40000000;
           resultTurfs = await findNearby(
             "Turf",
             parseFloat(lat),
@@ -166,8 +166,22 @@ export const getAllTurfs = async (req, res) => {
           const avgRating =
             t.reviews.length > 0 ? totalRating / t.reviews.length : 0;
 
-          const activeSlots = Array.isArray(t.generatedSlots)
-            ? t.generatedSlots.filter((s) => s.isActive !== false)
+          let parsedSlots = [];
+          if (Array.isArray(t.generatedSlots)) {
+            parsedSlots = t.generatedSlots;
+          } else if (typeof t.generatedSlots === "string") {
+            try {
+              parsedSlots = JSON.parse(t.generatedSlots);
+              if (typeof parsedSlots === "string") {
+                parsedSlots = JSON.parse(parsedSlots);
+              }
+            } catch (e) {
+              parsedSlots = [];
+            }
+          }
+
+          const activeSlots = Array.isArray(parsedSlots)
+            ? parsedSlots.filter((s) => s.isActive !== false)
             : [];
           const bookedCount = bookedCountMap[t.id] || 0;
           const slotsLeft = Math.max(0, activeSlots.length - bookedCount);

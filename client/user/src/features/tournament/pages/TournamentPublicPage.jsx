@@ -26,8 +26,43 @@ const TournamentPublicPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#050505] text-white pb-24 animate-pulse">
+        <div className="relative pt-0 pb-12">
+          <div className="absolute inset-0 z-0 h-[60vh] overflow-hidden bg-white/5" />
+          <div className="relative z-10 max-w-4xl mx-auto px-4 pt-8">
+            <div className="absolute top-8 right-4 w-10 h-10 rounded-full bg-white/10" />
+            <div className="flex flex-col items-center text-center mt-8">
+              <div className="w-32 h-32 md:w-48 md:h-48 rounded-3xl bg-white/10 mb-6" />
+              <div className="w-32 h-6 rounded-full bg-white/10 mb-4" />
+              <div className="w-64 md:w-96 h-12 bg-white/10 rounded-lg mb-4" />
+              <div className="w-48 h-4 bg-white/10 rounded-full mb-8" />
+            </div>
+          </div>
+        </div>
+        <main className="max-w-4xl mx-auto px-4">
+          <div className="bg-card border border-white/5 rounded-2xl p-4 md:p-6 mb-8 flex flex-wrap gap-6 md:gap-0 justify-between items-center">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className={`flex items-center gap-4 w-full md:w-auto ${i !== 1 ? 'border-t md:border-t-0 md:border-l border-white/5 pt-6 md:pt-0 md:pl-8' : ''}`}>
+                <div className="w-10 h-10 rounded-full bg-white/10" />
+                <div className="space-y-2">
+                  <div className="w-16 h-3 bg-white/10 rounded-full" />
+                  <div className="w-24 h-6 bg-white/10 rounded-lg" />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-4 border-b border-white/5 mb-6 pb-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="w-24 h-8 bg-white/10 rounded-md" />
+            ))}
+          </div>
+          <div className="space-y-4">
+            <div className="w-48 h-6 bg-white/10 rounded-lg" />
+            <div className="w-full h-4 bg-white/10 rounded-full" />
+            <div className="w-5/6 h-4 bg-white/10 rounded-full" />
+            <div className="w-4/6 h-4 bg-white/10 rounded-full" />
+          </div>
+        </main>
       </div>
     );
   }

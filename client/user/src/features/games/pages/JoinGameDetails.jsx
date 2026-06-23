@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { toast } from "react-hot-toast";
 import {
+  MessageCircle,
   Users,
   MapPin,
   Coins,
@@ -218,8 +219,10 @@ const JoinGameDetails = () => {
       </div>
     );
   }
-
   if (!game) return null;
+
+  const isTransactionFree = ["PRACTICE", "NET_BOWLERS", "UMPIRE", "SCORER", "STREAMER", "COACH"].includes(game.gameType) || ["PRACTICE", "NET_BOWLERS", "NEED_UMPIRE", "NEED_SCORER", "NEED_STREAMER", "NEED_COACH"].includes(game.requestType);
+
 
   return (
     <div className="min-h-screen bg-background text-white px-1 md:px-3 pt-4 pb-24 relative overflow-hidden font-inter">
@@ -348,7 +351,7 @@ const JoinGameDetails = () => {
           </div>
 
           {/* Team Tabs Selection (only for non-QUICK matches) */}
-          {game.gameMode !== "QUICK" && (
+          {game.gameMode !== "QUICK" && !isTransactionFree && (
             <div className="max-w-4xl mx-auto mb-8 border-b border-white/10 flex gap-6">
               <Button
                 onClick={() => setActiveTeamTab("teamA")}

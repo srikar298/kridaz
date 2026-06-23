@@ -438,10 +438,13 @@ export const createHostedGame = async (req, res) => {
         playerCount,
         quickSlotsData = [], // [{ role, userId, customPlayer }] from frontend
         customUmpireData, // { name, email, phone }
+        requestType,
+        matchPreferences,
       } = req.body;
 
       logger.info("Game Data:", {
         gameType,
+        requestType,
         date,
         time,
         groundId,
@@ -460,12 +463,16 @@ export const createHostedGame = async (req, res) => {
         });
       }
 
+      const isStandalonePost = 
+        gameMode === "HIRING" || 
+        ["GBNO", "LOOKING_FOR_TEAM", "NEED_UMPIRE", "NEED_SCORER", "NEED_STREAMER", "NEED_COACH", "NET_BOWLERS", "PRACTICE"].includes(requestType);
+
       // 1. Calculate Total Costs
       let groundCost = 0;
       let umpireCost = 0;
       let streamerCost = 0;
 
-      if (finalGroundId) {
+      if (finalGroundId && !isStandalonePost) {
         const g = await tx.turf.findUnique({ where: { id: finalGroundId } });
         groundCost =
           groundPrice !== undefined
@@ -489,33 +496,33 @@ export const createHostedGame = async (req, res) => {
 
       const totalCost = groundCost + umpireCost + streamerCost;
 
-      // 2. Check Balance
-      const usableBalance = await WalletService.getUsableBalance(
-        hostId,
-        "user",
-        tx
-      );
-      if (usableBalance < totalCost) {
-        const error = new Error(
-          `Insufficient coins. Total cost is ${totalCost}, you have ${usableBalance}. Please top up minimum â‚¹500.`
+      // 2. Check Balance & Reserve Coins (Only if cost > 0)
+      if (totalCost > 0) {
+        const usableBalance = await WalletService.getUsableBalance(
+          hostId,
+          "user",
+          tx
         );
-        error.status = 400;
-        throw error;
+        if (usableBalance < totalCost) {
+          const error = new Error(
+            `Insufficient coins. Total cost is ${totalCost}, you have ${usableBalance}. Please top up minimum ₹500.`
+          );
+          error.status = 400;
+          throw error;
+        }
+
+        await WalletService.reserve(hostId, "user", totalCost, tx);
+
+        await tx.walletTransaction.create({
+          data: {
+            userId: hostId,
+            amount: totalCost,
+            type: "HOST_GAME",
+            status: "RESERVED",
+            description: `Reserved for hosting ${gameType} game at ${date}`,
+          },
+        });
       }
-
-      // 3. Reserve Coins
-      await WalletService.reserve(hostId, "user", totalCost, tx);
-
-      // 4. Create Transaction Record
-      await tx.walletTransaction.create({
-        data: {
-          userId: hostId,
-          amount: totalCost,
-          type: "HOST_GAME",
-          status: "RESERVED",
-          description: `Reserved for hosting ${gameType} game at ${date}`,
-        },
-      });
 
       // 5. Create Game
       const isQuick = gameMode === "QUICK";
@@ -535,6 +542,8 @@ export const createHostedGame = async (req, res) => {
           streamerCost,
           totalCost,
           gameMode,
+          requestType: requestType || "MATCH",
+          matchPreferences,
           city,
           state,
           shortId: generateShortId(),
@@ -550,8 +559,8 @@ export const createHostedGame = async (req, res) => {
         },
       });
 
-      // 5.5 Create Actual Turf Booking if finalGroundId exists
-      if (finalGroundId) {
+      // 5.5 Create Actual Turf Booking if finalGroundId exists and it's not a standalone post
+      if (finalGroundId && !isStandalonePost) {
         const turfDate = new Date(date);
         let adjustedStartTime = new Date(turfDate);
         let adjustedEndTime = new Date(turfDate);
@@ -816,7 +825,7 @@ export const getAllHostedGames = async (req, res) => {
         ...(state ? { state: { contains: state, mode: "insensitive" } } : {}),
         ...(gameType ? { gameType } : {}),
       },
-      orderBy: { date: "asc" },
+      orderBy: [{ date: "asc" }, { createdAt: "desc" }],
       take,
       skip,
       include: compactGameInclude,

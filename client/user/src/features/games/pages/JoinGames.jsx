@@ -18,9 +18,10 @@ import {
   X,
   MessageCircle,
 } from "lucide-react";
-import { fetchStates, fetchCities } from "@utils/locationService";
+import { searchLocations } from "@utils/locationService";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
-import GameCard from "../components/GameCard";import { Button, Input, Select } from "@kridaz/ui";
+import GameCard from "../components/GameCard";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 const JoinGames = () => {
@@ -36,12 +37,14 @@ const JoinGames = () => {
   const [userLocation, setUserLocation] = useState({ city: "", state: "" });
 
   // Location filter state
-  const [states, setStates] = useState([]);
-  const [cities, setCities] = useState([]);
+  const [locationSearchInput, setLocationSearchInput] = useState("");
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [isSearchingLocation, setIsSearchingLocation] = useState(false);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const locationRef = React.useRef(null);
+
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
-  const [loadingStates, setLoadingStates] = useState(false);
-  const [loadingCities, setLoadingCities] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const fetchGames = async (city = "", state = "", sport = "All Sports") => {
@@ -73,11 +76,6 @@ const JoinGames = () => {
   useEffect(() => {
     const initializePage = async () => {
       try {
-        setLoadingStates(true);
-        const statesData = await fetchStates();
-        setStates(statesData);
-        setLoadingStates(false);
-
         let uCity = "";
         let uState = "";
         try {
@@ -91,29 +89,12 @@ const JoinGames = () => {
           // ignore auth errors if user not logged in
         }
 
-        let matchedState = "";
-        if (uState) {
-          matchedState =
-            statesData.find(
-              (s) => normalizeString(s) === normalizeString(uState)
-            ) || "";
-        }
-
-        let matchedCity = "";
-        if (matchedState && uCity) {
-          const citiesData = await fetchCities(matchedState);
-          setCities(citiesData);
-          matchedCity =
-            citiesData.find(
-              (c) => normalizeString(c) === normalizeString(uCity)
-            ) || "";
-        }
-
-        if (matchedCity || matchedState) {
-          setUserLocation({ city: matchedCity, state: matchedState });
-          setSelectedState(matchedState);
-          setSelectedCity(matchedCity);
-          fetchGames(matchedCity, matchedState);
+        if (uCity || uState) {
+          setUserLocation({ city: uCity, state: uState });
+          setSelectedState(uState);
+          setSelectedCity(uCity);
+          setLocationSearchInput(`${uCity ? uCity + ", " : ""}${uState}`);
+          fetchGames(uCity, uState);
         } else {
           fetchGames();
         }
@@ -149,36 +130,56 @@ const JoinGames = () => {
     }
   };
 
-  // When a state is selected, load its cities
+  // Location Autocomplete Effect
   useEffect(() => {
-    if (!selectedState) {
-      setCities([]);
+    if (!locationSearchInput || locationSearchInput.length < 3) {
+      setLocationSuggestions([]);
+      setShowLocationSuggestions(false);
       return;
     }
-    const loadCities = async () => {
-      setLoadingCities(true);
-      const data = await fetchCities(selectedState);
-      setCities(data);
-      setLoadingCities(false);
+
+    const timer = setTimeout(async () => {
+      setIsSearchingLocation(true);
+      try {
+        const results = await searchLocations(locationSearchInput);
+        setLocationSuggestions(results);
+        setShowLocationSuggestions(results.length > 0);
+      } catch (error) {
+        console.error("Location search error:", error);
+      } finally {
+        setIsSearchingLocation(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [locationSearchInput]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (locationRef.current && !locationRef.current.contains(e.target)) {
+        setShowLocationSuggestions(false);
+      }
     };
-    loadCities();
-  }, [selectedState]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  const handleStateChange = (state) => {
-    setSelectedState(state);
-    setSelectedCity("");
-    fetchGames("", state, sportFilter);
-  };
-
-  const handleCityChange = (city) => {
-    setSelectedCity(city);
-    fetchGames(city, selectedState, sportFilter);
+  const handleSelectLocation = (suggestion) => {
+    const cityName = suggestion.city || suggestion.display_name.split(",")[0];
+    const stateName = suggestion.state || "";
+    
+    setLocationSearchInput(suggestion.display_name);
+    setSelectedCity(cityName);
+    setSelectedState(stateName);
+    setShowLocationSuggestions(false);
+    
+    fetchGames(cityName, stateName, sportFilter);
   };
 
   const handleClearLocation = () => {
     setSelectedState("");
     setSelectedCity("");
-    setCities([]);
+    setLocationSearchInput("");
     fetchGames("", "", sportFilter);
   };
 
@@ -217,10 +218,10 @@ const JoinGames = () => {
         return false;
     } else if (matchTypeFilter === "Looking for Team") {
       if (game.requestType !== "LOOKING_FOR_TEAM") return false;
-    } else if (matchTypeFilter === "Need Opponent (GBNO)") {
-      if (game.requestType !== "GBNO") return false;
+    } else if (matchTypeFilter === "Need Opponent") {
+      if (game.requestType !== "GBNO" && !game.matchPreferences?.needOpponent) return false;
     } else if (matchTypeFilter === "Practice") {
-      if (game.requestType !== "PRACTICE") return false;
+      if (!game.matchPreferences?.isPracticeMatch && game.requestType !== "PRACTICE") return false;
     } else if (matchTypeFilter === "Net Bowlers") {
       if (game.requestType !== "NET_BOWLERS") return false;
     } else if (matchTypeFilter === "Professionals Wanted") {
@@ -363,8 +364,71 @@ const JoinGames = () => {
 
                   {/* Filter Body */}
                   <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+                    {/* Location Filter */}
+                    <div className="space-y-3" ref={locationRef}>
+                      <label className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
+                        <MapPin size={12} /> Location
+                      </label>
+                      <div className="relative group">
+                        <MapPin
+                          className="absolute left-4 top-1/2 -translate-y-1/2 text-primary z-10 pointer-events-none transition-colors"
+                          size={16}
+                        />
+                        <Input
+                          type="text"
+                          value={locationSearchInput}
+                          onChange={(e) => {
+                            setLocationSearchInput(e.target.value);
+                            setShowLocationSuggestions(true);
+                            if (!e.target.value) {
+                              setSelectedCity("");
+                              setSelectedState("");
+                              fetchGames("", "", sportFilter);
+                            }
+                          }}
+                          onFocus={() => setShowLocationSuggestions(locationSuggestions.length > 0)}
+                          placeholder="Search for a city or area..."
+                          className="w-full bg-card border border-white/5 hover:border-primary/50 rounded-[8px] py-4 pl-11 pr-12 text-sm text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-bold"
+                        />
+                        {isSearchingLocation && (
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                            <div className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+                          </div>
+                        )}
+
+                        {/* Suggestions Dropdown */}
+                        <AnimatePresence>
+                          {showLocationSuggestions && locationSuggestions.length > 0 && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              transition={{ duration: 0.2 }}
+                              className="absolute left-0 right-0 top-full mt-2 bg-card border border-white/10 rounded-[8px] overflow-hidden z-[60] shadow-xl max-h-[200px] overflow-y-auto custom-scrollbar"
+                            >
+                              {locationSuggestions.map((suggestion, idx) => (
+                                <Button
+                                  type="button"
+                                  key={idx}
+                                  onClick={() => handleSelectLocation(suggestion)}
+                                  className="w-full px-5 py-3 text-left hover:bg-white/5 text-white/80 hover:text-white border-b border-white/5 last:border-0 transition-colors flex flex-col gap-0.5"
+                                >
+                                  <span className="text-sm font-bold text-primary">
+                                    {suggestion.city || suggestion.display_name.split(",")[0]}
+                                  </span>
+                                  <span className="text-[10px] text-white/40 truncate w-full">
+                                    {suggestion.display_name}
+                                  </span>
+                                </Button>
+                              ))}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
+
                     {/* Sport & Match Type Row */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-6">
                       {/* Sport Filter */}
                       <div className="space-y-3">
                         <label className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
@@ -419,8 +483,8 @@ const JoinGames = () => {
                             <option value="Looking for Team">
                               Looking for Team
                             </option>
-                            <option value="Need Opponent (GBNO)">
-                              Need Opponent (GBNO)
+                            <option value="Need Opponent">
+                              Need Opponent
                             </option>
                             <option value="Practice">Practice Matches</option>
                             <option value="Net Bowlers">
@@ -434,65 +498,6 @@ const JoinGames = () => {
                             <option value="Need Scorer">Need Scorer</option>
                             <option value="Need Streamer">Need Streamer</option>
                             <option value="Need Coach">Need Coach</option>
-                          </Select>
-                          <ChevronDown
-                            size={14}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* State & City Row */}
-                    <div className="grid grid-cols-2 gap-4">
-                      {/* State Filter */}
-                      <div className="space-y-3">
-                        <label className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
-                          <MapPin size={12} /> State
-                        </label>
-                        <div className="relative">
-                          <Select
-                            className="w-full bg-card border border-white/5 text-white text-[12px] font-bold uppercase p-4 pr-8 rounded-[8px] appearance-none outline-none focus:border-primary/50 disabled:opacity-50 cursor-pointer truncate"
-                            value={selectedState}
-                            onChange={(e) => handleStateChange(e.target.value)}
-                            disabled={loadingStates}
-                          >
-                            <option value="">
-                              {loadingStates ? "Loading..." : "All States"}
-                            </option>
-                            {states.map((s) => (
-                              <option key={s} value={s}>
-                                {s}
-                              </option>
-                            ))}
-                          </Select>
-                          <ChevronDown
-                            size={14}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                          />
-                        </div>
-                      </div>
-
-                      {/* City Filter */}
-                      <div className="space-y-3">
-                        <label className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
-                          <MapPin size={12} /> City
-                        </label>
-                        <div className="relative">
-                          <Select
-                            className="w-full bg-card border border-white/5 text-white text-[12px] font-bold uppercase p-4 pr-8 rounded-[8px] appearance-none outline-none focus:border-primary/50 disabled:opacity-50 cursor-pointer truncate"
-                            value={selectedCity}
-                            onChange={(e) => handleCityChange(e.target.value)}
-                            disabled={!selectedState || loadingCities}
-                          >
-                            <option value="">
-                              {loadingCities ? "Loading..." : "All Cities"}
-                            </option>
-                            {cities.map((c) => (
-                              <option key={c} value={c}>
-                                {c}
-                              </option>
-                            ))}
                           </Select>
                           <ChevronDown
                             size={14}

@@ -93,7 +93,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
           <div className="flex items-center gap-2 shrink-0">
             <Button
               onClick={() => setIsStartScoringOpen(true)}
-              className="flex items-center justify-center px-4 h-8 bg-gradient-to-r from-secondary to-primary text-background rounded-[16px] hover:scale-105 shadow-[0_4px_24px_rgba(179,220,38,0.25)] transition-all duration-300 shrink-0"
+              className="flex items-center justify-center px-4 h-8 bg-primary text-background rounded-[16px] hover:scale-105 shadow-md shadow-primary/20 transition-all duration-300 shrink-0"
               title="Start Scoring"
             >
               <span className="text-[10px] font-[800] uppercase tracking-widest font-inter">
@@ -328,7 +328,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                     ) : (
                       <a
                         href={`/scoring/${item.id}`}
-                        className="flex-1 text-center text-[10px] uppercase font-[800] font-inter tracking-widest text-background bg-primary rounded-[8px] py-2 hover:opacity-90 transition-opacity shadow-lg shadow-[var(--primary)]/10"
+                        className="flex-1 text-center text-[10px] uppercase font-[800] font-inter tracking-widest text-background bg-primary rounded-[8px] py-2 hover:opacity-90 transition-opacity shadow-sm shadow-primary/20"
                       >
                         ⚡ Start Scoring
                       </a>
@@ -349,7 +349,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                     onSelectTeam(item);
                   }
                 }}
-                className={`w-full flex items-center gap-3 p-3 rounded-[16px] transition-all group font-inter ${isSelected ? "bg-card border border-primary shadow-[0_4px_24px_rgba(179,220,38,0.1)]" : "bg-card border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.20)]"}`}
+                className={`w-full flex items-center gap-3 p-3 rounded-[16px] transition-all group font-inter border ${isSelected ? "bg-card border-primary shadow-lg shadow-primary/10" : "bg-card border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.20)] hover:bg-card/50"}`}
               >
                 <div className="relative shrink-0">
                   <div

@@ -211,40 +211,26 @@ export default function Home() {
 
   const displayTurfs = useMemo(() => {
     if (!turfs || turfs.length === 0) return [];
-    let sortedAll = [...turfs].sort(
-      (a, b) =>
-        (b.averageRating ?? b.rating ?? 0) - (a.averageRating ?? a.rating ?? 0)
-    );
+    
+    // 1. Filter by available slots
+    let availableTurfs = [...turfs].filter((t) => (t.slotsLeft || 0) > 0);
 
-    // Apply local sport filter from VenueSection if present
+    // 2. Apply local sport filter from VenueSection if present
     if (turfFilters.sport && turfFilters.sport !== "all") {
-      sortedAll = sortedAll.filter(
+      availableTurfs = availableTurfs.filter(
         (t) =>
           t.sports?.includes(turfFilters.sport) ||
           t.sportTypes?.includes(turfFilters.sport)
       );
     }
 
-    if (!userLocation || (!userLocation.city && !userLocation.state)) {
-      return sortedAll;
-    }
-
-    const cityMatches = sortedAll.filter(
-      (t) => t.city?.toLowerCase() === userLocation.city?.toLowerCase()
-    );
-    const stateMatches = sortedAll.filter(
-      (t) =>
-        t.city?.toLowerCase() !== userLocation.city?.toLowerCase() &&
-        t.state?.toLowerCase() === userLocation.state?.toLowerCase()
-    );
-    const otherMatches = sortedAll.filter(
-      (t) =>
-        t.city?.toLowerCase() !== userLocation.city?.toLowerCase() &&
-        t.state?.toLowerCase() !== userLocation.state?.toLowerCase()
-    );
-
-    return [...cityMatches, ...stateMatches, ...otherMatches];
-  }, [turfs, userLocation, turfFilters.sport]);
+    // 3. Always sort by highest rating first
+    return availableTurfs.sort((a, b) => {
+      const ratingA = a.avgRating ?? a.averageRating ?? a.rating ?? 0;
+      const ratingB = b.avgRating ?? b.averageRating ?? b.rating ?? 0;
+      return ratingB - ratingA;
+    });
+  }, [turfs, turfFilters.sport]);
 
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(false);
