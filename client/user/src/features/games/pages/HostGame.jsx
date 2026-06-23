@@ -305,6 +305,14 @@ const HostGame = () => {
     ? {
       ...storedData,
       quickPlayerCount: storedData.quickPlayerCount || 2,
+      splitCostWithMultiplePlayers: storedData.splitCostWithMultiplePlayers || false,
+      descriptionTags: storedData.descriptionTags || "",
+      experienceLevel: storedData.experienceLevel || "Any",
+      gameVibe: storedData.gameVibe || "Casual / Fun",
+      autoApprovePlayers: storedData.autoApprovePlayers !== undefined ? storedData.autoApprovePlayers : true,
+      genderPreference: storedData.genderPreference || "Co-ed (Mixed)",
+      ageGroup: storedData.ageGroup || "Any Age",
+      equipmentStatus: storedData.equipmentStatus || "Everyone brings their own",
     }
     : {
       requestType: "",
@@ -313,6 +321,14 @@ const HostGame = () => {
       date: "",
       time: "",
       quickPlayerCount: 2,
+      splitCostWithMultiplePlayers: false,
+      descriptionTags: "",
+      experienceLevel: "Any",
+      gameVibe: "Casual / Fun",
+      autoApprovePlayers: true,
+      genderPreference: "Co-ed (Mixed)",
+      ageGroup: "Any Age",
+      equipmentStatus: "Everyone brings their own",
       quickSlotsData: [],
       city: user?.city || "",
       state: user?.state || "",
@@ -749,7 +765,6 @@ const HostGame = () => {
     }
 
     setGameData((prev) => ({ ...prev, quickSlotsData: slots }));
-    updateStep(2);
   };
 
   const handleSlotSelection = (player) => {
@@ -797,6 +812,10 @@ const HostGame = () => {
               ...gameData.teamA,
               name: "Casual Pool",
             },
+            groundId: null,
+            groundPrice: 0,
+            umpireId: null,
+            streamerId: null,
           }
           : {}),
         couponCode: couponData ? couponCode : undefined,
@@ -1659,6 +1678,158 @@ const HostGame = () => {
                           </Button>
                         </div>
                       </div>
+
+                      {/* Split Cost Toggle */}
+                      <div className="flex items-center justify-between bg-background p-3 rounded-[16px] border border-white/10">
+                        <div className="flex flex-col text-left">
+                          <span className="text-[9px] font-black uppercase text-white/70 tracking-wider">
+                            Split Cost
+                          </span>
+                          <span className="text-[8px] text-white/50 font-medium mt-0.5">
+                            Divide venue price among players
+                          </span>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={gameData.splitCostWithMultiplePlayers}
+                            onChange={(e) =>
+                              setGameData({ ...gameData, splitCostWithMultiplePlayers: e.target.checked })
+                            }
+                            className="sr-only peer"
+                          />
+                          <div className="w-9 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                      </div>
+
+                      {/* Experience Level */}
+                      <div className="flex flex-col gap-2">
+                        <span className="text-[9px] font-black uppercase text-white/70 tracking-wider px-1">
+                          Experience Level
+                        </span>
+                        <div className="flex flex-wrap gap-2">
+                          {["Any", "Beginner", "Intermediate", "Advanced"].map((level) => (
+                            <button
+                              key={level}
+                              type="button"
+                              onClick={() => setGameData({ ...gameData, experienceLevel: level })}
+                              className={`px-3 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all ${gameData.experienceLevel === level ? "bg-primary text-white border-primary" : "bg-white/5 text-white/60 border-white/10 hover:bg-white/10"} border`}
+                            >
+                              {level}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Description Tags */}
+                      <div className="flex flex-col gap-2">
+                        <span className="text-[9px] font-black uppercase text-white/70 tracking-wider px-1">
+                          Description Tags
+                        </span>
+                        <input
+                          type="text"
+                          placeholder="e.g. Friendly, Competitive, Weekend"
+                          className="w-full bg-background border border-white/10 rounded-[12px] p-3 text-[11px] text-white focus:border-primary/50 focus:outline-none transition-colors"
+                          value={gameData.descriptionTags}
+                          onChange={(e) => setGameData({ ...gameData, descriptionTags: e.target.value })}
+                        />
+                      </div>
+
+                      <div className="h-px w-full bg-white/10 my-2"></div>
+
+                      {/* Game Vibe / Intensity */}
+                      <div className="flex flex-col gap-2">
+                        <span className="text-[9px] font-black uppercase text-white/70 tracking-wider px-1">
+                          Game Vibe / Intensity
+                        </span>
+                        <div className="flex flex-wrap gap-2">
+                          {["Casual / Fun", "Competitive", "Practice / Drills"].map((vibe) => (
+                            <button
+                              key={vibe}
+                              type="button"
+                              onClick={() => setGameData({ ...gameData, gameVibe: vibe })}
+                              className={`px-3 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all ${gameData.gameVibe === vibe ? "bg-primary text-white border-primary" : "bg-white/5 text-white/60 border-white/10 hover:bg-white/10"} border`}
+                            >
+                              {vibe}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Gender Preference */}
+                      <div className="flex flex-col gap-2">
+                        <span className="text-[9px] font-black uppercase text-white/70 tracking-wider px-1">
+                          Gender Preference
+                        </span>
+                        <div className="flex flex-wrap gap-2">
+                          {["Co-ed (Mixed)", "Men Only", "Women Only"].map((pref) => (
+                            <button
+                              key={pref}
+                              type="button"
+                              onClick={() => setGameData({ ...gameData, genderPreference: pref })}
+                              className={`px-3 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all ${gameData.genderPreference === pref ? "bg-primary text-white border-primary" : "bg-white/5 text-white/60 border-white/10 hover:bg-white/10"} border`}
+                            >
+                              {pref}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Age Group Restriction & Equipment Status (Side by side) */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="flex flex-col gap-2">
+                          <span className="text-[9px] font-black uppercase text-white/70 tracking-wider px-1">
+                            Age Group
+                          </span>
+                          <select
+                            value={gameData.ageGroup}
+                            onChange={(e) => setGameData({ ...gameData, ageGroup: e.target.value })}
+                            className="w-full bg-background border border-white/10 rounded-[12px] p-2.5 text-[11px] text-white focus:border-primary/50 focus:outline-none transition-colors appearance-none"
+                          >
+                            <option value="Any Age">Any Age</option>
+                            <option value="Under 18">Under 18</option>
+                            <option value="18 - 35">18 - 35</option>
+                            <option value="35+">35+</option>
+                          </select>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <span className="text-[9px] font-black uppercase text-white/70 tracking-wider px-1">
+                            Equipment
+                          </span>
+                          <select
+                            value={gameData.equipmentStatus}
+                            onChange={(e) => setGameData({ ...gameData, equipmentStatus: e.target.value })}
+                            className="w-full bg-background border border-white/10 rounded-[12px] p-2.5 text-[11px] text-white focus:border-primary/50 focus:outline-none transition-colors appearance-none"
+                          >
+                            <option value="Everyone brings their own">Bring your own</option>
+                            <option value="Provided by host / venue">Provided</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Auto-Approve Players Toggle */}
+                      <div className="flex items-center justify-between bg-background p-3 rounded-[16px] border border-white/10 mt-1">
+                        <div className="flex flex-col text-left">
+                          <span className="text-[9px] font-black uppercase text-white/70 tracking-wider">
+                            Auto-Approve Players
+                          </span>
+                          <span className="text-[8px] text-white/50 font-medium mt-0.5">
+                            Instantly accept join requests
+                          </span>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={gameData.autoApprovePlayers}
+                            onChange={(e) =>
+                              setGameData({ ...gameData, autoApprovePlayers: e.target.checked })
+                            }
+                            className="sr-only peer"
+                          />
+                          <div className="w-9 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                      </div>
+
                     </div>
                   </div>
                   <div className="text-center py-2.5 px-3 bg-primary/5 border border-primary/10 rounded-[16px] mt-4 md:mt-0">
@@ -1672,7 +1843,40 @@ const HostGame = () => {
 
                 <div className="flex gap-3 pt-4 mt-4">
                   <Button
-                    onClick={() => navigate(-1)}
+                    onClick={() => {
+                      sessionStorage.removeItem("hostGameData");
+                      setGameData({
+                        requestType: "",
+                        gameType: "",
+                        gameMode: "",
+                        date: "",
+                        time: "",
+                        quickPlayerCount: 2,
+                        splitCostWithMultiplePlayers: false,
+                        descriptionTags: "",
+                        experienceLevel: "Any",
+                        gameVibe: "Casual / Fun",
+                        autoApprovePlayers: true,
+                        genderPreference: "Co-ed (Mixed)",
+                        ageGroup: "Any Age",
+                        equipmentStatus: "Everyone brings their own",
+                        quickSlotsData: [],
+                        city: user?.city || "",
+                        state: user?.state || "",
+                        teamA: { name: "", slots: [], image: MOCK_TEAM_IMAGES[0].url },
+                        teamB: { name: "", slots: [], image: MOCK_TEAM_IMAGES[1].url },
+                        bookingId: "",
+                        matchPreferences: {
+                          budget: "",
+                          budgetType: "Per Match",
+                          requirements: "",
+                          isDateFlexible: false,
+                          isLocationFlexible: false,
+                          customLocation: "",
+                          lookingForRoles: [],
+                        },
+                      });
+                    }}
                     className="flex-1 py-3 sm:py-3.5 bg-card text-white/70 font-bold rounded-[16px] sm:rounded-[16px] border border-white/10 hover:border-white/10 transition-all duration-300 text-sm sm:text-base font-open-sans uppercase tracking-wider"
                   >
                     Cancel
@@ -1684,6 +1888,9 @@ const HostGame = () => {
                         gameData.gameMode === "HIRING"
                       ) {
                         handleCreateGame();
+                      } else if (gameData.gameMode === "QUICK") {
+                        initQuickSlots();
+                        updateStep(3);
                       } else {
                         updateStep(2);
                       }
@@ -1718,132 +1925,7 @@ const HostGame = () => {
 
         {/* Step 4: Setup (Professional) */}
 
-        {/* Step 4.5: Quick Slot Setup */}
-        {step === 2 && gameData.gameMode === "QUICK" && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-12"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div className="text-left space-y-1">
-                <h2 className="text-4xl font-black tracking-tight">
-                  Manage Slots
-                </h2>
-                <p className="hidden sm:block text-white/70 font-medium italic">
-                  Assign players to slots or leave them open for the community
-                </p>
-              </div>
-              <Button
-                onClick={() => {
-                  setFillingTeamKey("quick");
-                  setShowTeamFillModal(true);
-                }}
-                className="flex items-center gap-1.5 px-3 py-2 bg-primary/10 border border-primary/20 rounded-[16px] text-primary font-black text-[10px] uppercase tracking-widest hover:bg-gradient-to-r hover:from-primary hover:to-primary hover:text-black transition-all"
-              >
-                <ShieldCheck size={14} /> Fill{" "}
-                <span className="hidden sm:inline">from My </span>Team
-              </Button>
-            </div>
 
-            <div className="grid grid-cols-4 gap-2 sm:gap-3">
-              {gameData.quickSlotsData.map((slot, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => idx !== 0 && setActiveSlotPicker({ idx })}
-                  className={`relative p-1 sm:p-4 rounded-[16px] border-2 transition-all cursor-pointer group flex flex-col items-center justify-center text-center h-28 sm:h-36 ${slot.userId || slot.customPlayer ? "border-primary/30 bg-primary/5" : "border-white/10 bg-card hover:border-white/10"}`}
-                >
-                  <div
-                    className={`w-10 h-10 sm:w-14 sm:h-14 rounded-[16px] flex items-center justify-center mb-1 sm:mb-2 transition-transform duration-500 group-hover:scale-110 overflow-hidden ${slot.userId || slot.customPlayer ? "border-2 border-primary bg-card" : "bg-card text-white/70"}`}
-                  >
-                    {slot.profilePicture ? (
-                      <img
-                        src={slot.profilePicture}
-                        alt={slot.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : slot.userId && user?._id && slot.userId === user._id ? (
-                      user?.profilePicture ? (
-                        <img
-                          src={user.profilePicture}
-                          alt={user.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="text-xl font-black bg-primary text-black w-full h-full flex items-center justify-center">
-                          {user?.name ? user.name.charAt(0).toUpperCase() : "?"}
-                        </div>
-                      )
-                    ) : slot.userId || slot.customPlayer ? (
-                      <div className="text-xl font-black bg-primary text-black w-full h-full flex items-center justify-center">
-                        {(slot.name || slot.customPlayer?.name || "?")
-                          .charAt(0)
-                          .toUpperCase()}
-                      </div>
-                    ) : (
-                      <Plus size={28} />
-                    )}
-                  </div>
-
-                  <div className="space-y-0.5 sm:space-y-1 w-full">
-                    <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-white/70">
-                      Slot {idx + 1}
-                    </p>
-                    <h4 className="font-black truncate w-full px-1 sm:px-2 text-[10px] sm:text-base leading-tight">
-                      {slot.userId && user?._id && slot.userId === user._id
-                        ? user?.name || "You (Host)"
-                        : slot.name ||
-                          slot.customPlayer?.name ||
-                          slot.customPlayer?.email ||
-                          "Open Slot"}
-                    </h4>
-                  </div>
-
-                  {idx !== 0 && (slot.userId || slot.customPlayer) && (
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const newSlots = [...gameData.quickSlotsData];
-                        newSlots[idx] = { role: "Player", status: "OPEN" };
-                        setGameData({ ...gameData, quickSlotsData: newSlots });
-                      }}
-                      className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-lg hover:bg-red-600"
-                    >
-                      <Trash2 size={14} />
-                    </Button>
-                  )}
-
-                  {idx === 0 && (
-                    <div className="absolute top-4 right-4 text-primary">
-                      <CheckCircle2 size={16} />
-                    </div>
-                  )}
-
-                  {slot.customPlayer && (
-                    <div className="absolute bottom-4 right-4 text-neutral-600">
-                      <Mail size={14} />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="flex gap-3 max-w-lg mx-auto w-full">
-              <Button
-                onClick={() => setStep(3)}
-                className="flex-1 h-[40px] flex items-center justify-center bg-card text-white/70 font-bold rounded-[16px] border border-white/10 hover:border-white/20 transition-all text-xs font-open-sans uppercase tracking-wider"
-              >
-                BACK
-              </Button>
-              <Button
-                onClick={() => setStep(5)}
-                className="flex-[2] h-[40px] bg-gradient-to-r from-secondary to-primary text-background font-bold rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 text-xs font-open-sans shadow-[0_8px_24px_rgba(191,243,103,0.15)] uppercase tracking-widest"
-              >
-                PREVIEW MATCH
-              </Button>
-            </div>
-          </motion.div>
-        )}
 
         {/* Step 4: Team Configuration (Professional Only) */}
         {step === 2 && gameData.gameMode === "PROFESSIONAL" && (
@@ -2116,13 +2198,13 @@ const HostGame = () => {
 
             <div className="flex gap-3">
               <Button
-                onClick={() => setStep(3)}
+                onClick={() => updateStep(1)}
                 className="flex-1 h-[40px] flex items-center justify-center bg-card text-white/70 font-bold rounded-[16px] border border-white/10 hover:border-white/20 transition-all text-xs font-open-sans uppercase tracking-wider"
               >
                 Back
               </Button>
               <Button
-                onClick={() => setStep(5)}
+                onClick={() => updateStep(3)}
                 className="flex-[2] h-[40px] bg-gradient-to-r from-secondary to-primary text-background font-bold rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all text-xs shadow-[0_8px_24px_rgba(191,243,103,0.15)] font-open-sans uppercase tracking-wider"
               >
                 PREVIEW MATCH
@@ -2375,7 +2457,7 @@ const HostGame = () => {
             {/* Action Buttons */}
             <div className="flex gap-3 pt-2">
               <Button
-                onClick={() => setStep(gameData.gameMode === "QUICK" ? 4.5 : 4)}
+                onClick={() => updateStep(gameData.gameMode === "QUICK" ? 1 : 2)}
                 className="flex-[0.8] h-[40px] bg-card text-white/70 font-black rounded-[16px] border border-white/10 hover:border-white/10 hover:text-white transition-all text-[11px] uppercase tracking-widest font-open-sans flex items-center justify-center"
               >
                 Back
