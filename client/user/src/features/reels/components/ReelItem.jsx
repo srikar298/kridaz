@@ -54,10 +54,12 @@ const ReelItem = ({ reel, isVisible }) => {
   const [reportReason, setReportReason] = useState("");
   const [localComments, setLocalComments] = useState(null); // null = not yet loaded
   const isLikingRef = React.useRef(false);
+  const isLikedRef = React.useRef(reel.isLiked || false);
 
   // Sync props to state if props change (e.g. from parent feed queries or websocket events)
   React.useEffect(() => {
     setIsLiked(reel.isLiked || false);
+    isLikedRef.current = reel.isLiked || false;
   }, [reel.isLiked]);
 
   React.useEffect(() => {
@@ -113,12 +115,11 @@ const ReelItem = ({ reel, isVisible }) => {
     if (isLikingRef.current) return;
     isLikingRef.current = true;
 
-    // We capture the current local state immediately
-    let wasLiked = isLiked;
+    let wasLiked = isLikedRef.current;
     setIsLiked((prev) => {
-      wasLiked = prev;
       return !prev;
     });
+    isLikedRef.current = !wasLiked;
     
     setLocalLikeCount((prev) => (wasLiked ? Math.max(0, prev - 1) : prev + 1));
 
@@ -135,6 +136,7 @@ const ReelItem = ({ reel, isVisible }) => {
     } catch {
       // Rollback on failure
       setIsLiked(wasLiked);
+      isLikedRef.current = wasLiked;
       setLocalLikeCount((prev) =>
         wasLiked ? prev + 1 : Math.max(0, prev - 1)
       );
@@ -145,7 +147,7 @@ const ReelItem = ({ reel, isVisible }) => {
   };
 
   const handleDoubleTap = () => {
-    if (!isLiked) {
+    if (!isLikedRef.current) {
       handleLike();
     } else {
       setShowHeartAnim(true);
@@ -418,12 +420,20 @@ const ReelItem = ({ reel, isVisible }) => {
                     src={reel.creatorId.profilePicture || reel.creatorId.profileImage}
                     alt={reel.creatorId?.username}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      if (e.target.nextSibling) {
+                        e.target.nextSibling.style.display = 'flex';
+                      }
+                    }}
                   />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-[var(--primary)] text-black font-bold text-[16px]">
-                    {(reel.creatorId?.name || reel.creatorId?.username || "U").substring(0, 2).toUpperCase()}
-                  </div>
-                )}
+                ) : null}
+                <div 
+                  className="w-full h-full items-center justify-center bg-[var(--primary)] text-black font-bold text-[16px]"
+                  style={{ display: (reel.creatorId?.profilePicture || reel.creatorId?.profileImage) ? 'none' : 'flex' }}
+                >
+                  {(reel.creatorId?.name || reel.creatorId?.username || "U").substring(0, 2).toUpperCase()}
+                </div>
               </div>
               {/* Follow Plus Button */}
               {!isCreator &&

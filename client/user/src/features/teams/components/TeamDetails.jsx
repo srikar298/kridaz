@@ -27,10 +27,10 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
 
   if (!team) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-background text-white/40 p-12">
-        <div className="w-24 h-24 rounded-[8px] bg-white/[0.03] border border-white/5 flex items-center justify-center mb-8 shadow-2xl relative overflow-hidden group">
+      <div className="flex-1 flex flex-col items-center justify-center bg-background text-[rgba(255,255,255,0.40)] p-12">
+        <div className="w-24 h-24 rounded-[16px] bg-card border border-[rgba(255,255,255,0.08)] flex items-center justify-center mb-8 shadow-2xl relative overflow-hidden group">
           <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <Users className="text-white/20 text-4xl group-hover:text-primary/50 transition-colors duration-500 relative z-10" />
+          <Users className="text-[rgba(255,255,255,0.20)] text-4xl group-hover:text-primary/50 transition-colors duration-500 relative z-10" />
         </div>
         <h2
           className="text-3xl font-bold text-white mb-3 tracking-tight"
@@ -39,7 +39,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
           Select a Team
         </h2>
         <p
-          className="text-white/30 max-w-sm text-center text-sm font-medium leading-relaxed mb-10"
+          className="text-[rgba(255,255,255,0.40)] max-w-sm text-center text-sm font-medium leading-relaxed mb-10"
           style={{ fontFamily: "'Inter', sans-serif" }}
         >
           Choose a team from the sidebar to manage members, view stats, and
@@ -48,7 +48,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
 
         <Button
           onClick={onCreateClick}
-          className="group relative px-8 py-4 bg-gradient-to-r from-primary to-primary text-black font-black rounded-[8px] flex items-center gap-3 shadow-lg shadow-[var(--primary)]/10 hover:shadow-[var(--primary)]/15 hover:brightness-[1.04] transition-all hover:-translate-y-0.5 active:translate-y-0 overflow-hidden duration-300"
+          className="group relative px-8 py-4 bg-primary text-background font-[800] rounded-[16px] flex items-center gap-3 shadow-md shadow-primary/20 hover:brightness-[1.04] transition-all hover:-translate-y-0.5 active:translate-y-0 overflow-hidden duration-300"
         >
           <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 skew-x-[30deg]" />
           <UserPlus className="text-lg" />
@@ -103,7 +103,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
       {/* Mobile Back Button */}
       <Button
         onClick={onBack}
-        className="md:hidden absolute top-4 left-4 z-20 p-2.5 bg-black/40 backdrop-blur-md rounded-[8px] text-white border border-white/10 shadow-lg"
+        className="md:hidden absolute top-4 left-4 z-20 p-2.5 bg-black/40 backdrop-blur-md rounded-[16px] text-white border border-[rgba(255,255,255,0.08)] shadow-lg"
       >
         <ChevronRight className="rotate-180" />
       </Button>
@@ -135,7 +135,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
         </div>
 
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-end gap-4 md:gap-6 mt-14 md:mt-12">
-          <div className="w-20 h-20 md:w-32 md:h-32 rounded-[8px] bg-black border-4 border-background shadow-2xl flex items-center justify-center text-primary text-3xl md:text-4xl font-bold overflow-hidden shrink-0">
+          <div className="w-20 h-20 md:w-32 md:h-32 rounded-[16px] bg-black border-4 border-background shadow-2xl flex items-center justify-center text-primary text-3xl md:text-4xl font-bold overflow-hidden shrink-0">
             {team.image ? (
               <img
                 src={team.image}
@@ -171,7 +171,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
           <div className="w-full md:w-auto mt-2 md:mt-0 pb-1">
             <Button
               onClick={onInviteClick}
-              className="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-primary to-primary hover:brightness-[1.04] text-black font-black rounded-[8px] flex items-center justify-center gap-2 shadow-lg shadow-[var(--primary)]/10 hover:shadow-[var(--primary)]/15 transition-all hover:-translate-y-0.5 active:translate-y-0 duration-300 uppercase tracking-widest text-xs"
+              className="w-full md:w-auto px-6 py-3 bg-primary hover:brightness-[1.04] text-background font-[800] rounded-[16px] flex items-center justify-center gap-2 shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 active:translate-y-0 duration-300 uppercase tracking-widest text-xs"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               <UserPlus size={16} /> Add Members
@@ -182,12 +182,12 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
 
       {/* Team Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 shrink-0">
-        <div className="bg-card p-4 rounded-[8px] border border-white/5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-[8px] shrink-0 bg-blue-500/10 flex items-center justify-center text-blue-500">
+        <div className="bg-card p-4 rounded-[16px] border border-[rgba(255,255,255,0.08)] flex items-center gap-4">
+          <div className="w-12 h-12 rounded-[12px] shrink-0 bg-blue-500/10 flex items-center justify-center text-blue-500">
             <Shield size={20} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-white/40 text-[9px] uppercase font-black tracking-wider truncate">
+            <p className="text-[rgba(255,255,255,0.40)] text-[9px] uppercase font-[800] tracking-wider truncate">
               Captain
             </p>
             <p className="text-white font-black truncate text-sm uppercase">
@@ -195,12 +195,12 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
             </p>
           </div>
         </div>
-        <div className="bg-card p-4 rounded-[8px] border border-white/5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-[8px] bg-yellow-500/10 flex items-center justify-center text-yellow-500">
+        <div className="bg-card p-4 rounded-[16px] border border-[rgba(255,255,255,0.08)] flex items-center gap-4">
+          <div className="w-12 h-12 rounded-[12px] bg-yellow-500/10 flex items-center justify-center text-yellow-500">
             <Trophy size={20} />
           </div>
           <div>
-            <p className="text-white/40 text-[9px] uppercase font-black tracking-wider">
+            <p className="text-[rgba(255,255,255,0.40)] text-[9px] uppercase font-[800] tracking-wider">
               Members
             </p>
             <p className="text-white font-black text-sm">
@@ -208,23 +208,23 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
             </p>
           </div>
         </div>
-        <div className="bg-card p-4 rounded-[8px] border border-white/5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-[8px] bg-red-500/10 flex items-center justify-center text-red-500">
+        <div className="bg-card p-4 rounded-[16px] border border-[rgba(255,255,255,0.08)] flex items-center gap-4">
+          <div className="w-12 h-12 rounded-[12px] bg-red-500/10 flex items-center justify-center text-red-500">
             <Users size={20} />
           </div>
           <div>
-            <p className="text-white/40 text-[9px] uppercase font-black tracking-wider">
+            <p className="text-[rgba(255,255,255,0.40)] text-[9px] uppercase font-[800] tracking-wider">
               Opponents
             </p>
             <p className="text-white font-black text-sm">{opponents.length}</p>
           </div>
         </div>
-        <div className="bg-card p-4 rounded-[8px] border border-white/5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-[8px] shrink-0 bg-green-500/10 flex items-center justify-center text-green-500">
+        <div className="bg-card p-4 rounded-[16px] border border-[rgba(255,255,255,0.08)] flex items-center gap-4">
+          <div className="w-12 h-12 rounded-[12px] shrink-0 bg-green-500/10 flex items-center justify-center text-green-500">
             <Calendar size={20} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-white/40 text-[9px] uppercase font-black tracking-wider truncate">
+            <p className="text-[rgba(255,255,255,0.40)] text-[9px] uppercase font-[800] tracking-wider truncate">
               Created
             </p>
             <p className="text-white font-black truncate text-sm">
@@ -253,7 +253,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                   {pendingRequests.map((req) => (
                     <div
                       key={req._id}
-                      className="bg-orange-500/5 border border-orange-500/20 p-4 rounded-[8px] flex items-center gap-4"
+                      className="bg-orange-500/5 border border-orange-500/20 p-4 rounded-[16px] flex items-center gap-4"
                     >
                       <div className="flex-1 overflow-hidden">
                         <p className="text-white font-bold text-sm truncate uppercase italic">
@@ -267,14 +267,14 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                         <Button
                           disabled={isHandling}
                           onClick={() => onHandleOpponent(req._id, "ACCEPT")}
-                          className="w-8 h-8 bg-orange-500 text-black rounded-[8px] flex items-center justify-center hover:bg-orange-400 transition-colors"
+                          className="w-8 h-8 bg-orange-500 text-black rounded-[12px] flex items-center justify-center hover:bg-orange-400 transition-colors"
                         >
                           <Check size={12} />
                         </Button>
                         <Button
                           disabled={isHandling}
                           onClick={() => onHandleOpponent(req._id, "REJECT")}
-                          className="w-8 h-8 bg-white/5 text-white/40 rounded-[8px] flex items-center justify-center hover:bg-white/10 transition-colors"
+                          className="w-8 h-8 bg-card text-[rgba(255,255,255,0.40)] rounded-[12px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.08)] transition-colors"
                         >
                           <X size={12} />
                         </Button>
@@ -299,9 +299,9 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                   {pendingMembers.map((req) => (
                     <div
                       key={req._id}
-                      className="bg-primary/5 border border-primary/20 p-4 rounded-[8px] flex items-center gap-4"
+                      className="bg-primary/5 border border-primary/20 p-4 rounded-[16px] flex items-center gap-4"
                     >
-                      <div className="w-10 h-10 rounded-[10px] bg-white/5 overflow-hidden border border-white/10 shrink-0">
+                      <div className="w-10 h-10 rounded-[12px] bg-card overflow-hidden border border-[rgba(255,255,255,0.08)] shrink-0">
                         <img
                           src={
                             req.profilePic ||
@@ -325,7 +325,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                           onClick={() =>
                             onHandleJoin(req.user?._id || req.userId, "ACCEPT")
                           }
-                          className="w-8 h-8 bg-primary text-black rounded-[8px] flex items-center justify-center hover:brightness-110 transition-colors"
+                          className="w-8 h-8 bg-primary text-background rounded-[12px] flex items-center justify-center hover:brightness-110 transition-colors"
                         >
                           <Check size={12} />
                         </Button>
@@ -334,7 +334,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                           onClick={() =>
                             onHandleJoin(req.user?._id || req.userId, "REJECT")
                           }
-                          className="w-8 h-8 bg-white/5 text-white/40 rounded-[8px] flex items-center justify-center hover:bg-white/10 transition-colors"
+                          className="w-8 h-8 bg-card text-[rgba(255,255,255,0.40)] rounded-[12px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.08)] transition-colors"
                         >
                           <X size={12} />
                         </Button>
@@ -358,9 +358,9 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                 {members.map((member) => (
                   <div
                     key={member._id}
-                    className="bg-white/[0.02] p-4 rounded-[8px] border border-white/5 hover:border-primary/20 transition-all flex items-center gap-4 group"
+                    className="bg-card p-4 rounded-[16px] border border-[rgba(255,255,255,0.08)] hover:border-primary/20 transition-all flex items-center gap-4 group"
                   >
-                    <div className="w-12 h-12 rounded-[8px] bg-white/5 overflow-hidden border border-white/10">
+                    <div className="w-12 h-12 rounded-[12px] bg-card overflow-hidden border border-[rgba(255,255,255,0.08)]">
                       <img
                         src={
                           member.profilePic ||
@@ -402,9 +402,9 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                 {customMembers.map((member, index) => (
                   <div
                     key={index}
-                    className="bg-white/[0.02] p-4 rounded-[8px] border border-white/5 border-l-4 border-l-yellow-500/50 flex items-center gap-4"
+                    className="bg-card p-4 rounded-[16px] border border-[rgba(255,255,255,0.08)] border-l-2 border-l-yellow-500/50 flex items-center gap-4"
                   >
-                    <div className="w-12 h-12 rounded-[8px] bg-yellow-500/10 flex items-center justify-center text-yellow-500">
+                    <div className="w-12 h-12 rounded-[12px] bg-yellow-500/10 flex items-center justify-center text-yellow-500">
                       <span className="text-lg font-black uppercase">
                         {member.name.charAt(0)}
                       </span>
@@ -443,9 +443,9 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
               {opponents.map((opp) => (
                 <div
                   key={opp._id}
-                  className="bg-white/[0.02] p-4 rounded-[8px] border border-white/5 flex items-center gap-4 hover:bg-white/[0.04] transition-all cursor-pointer group"
+                  className="bg-white/[0.02] p-4 rounded-[16px] border border-[rgba(255,255,255,0.08)] flex items-center gap-4 hover:bg-white/[0.04] transition-all cursor-pointer group"
                 >
-                  <div className="w-10 h-10 rounded-[8px] bg-black border border-white/10 flex items-center justify-center text-red-500 overflow-hidden shrink-0">
+                  <div className="w-10 h-10 rounded-[12px] bg-background border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-red-500 overflow-hidden shrink-0">
                     {opp.image ? (
                       <img
                         src={opp.image}
@@ -471,14 +471,14 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                 </div>
               ))}
               {opponents.length === 0 && (
-                <div className="py-12 border border-dashed border-white/5 rounded-[8px] flex flex-col items-center justify-center text-center p-6">
-                  <div className="w-12 h-12 bg-white/5 rounded-[8px] flex items-center justify-center mb-3">
-                    <Search className="text-white/10" />
+                <div className="py-12 border border-dashed border-[rgba(255,255,255,0.08)] rounded-[16px] flex flex-col items-center justify-center text-center p-6">
+                  <div className="w-12 h-12 bg-card rounded-[16px] flex items-center justify-center mb-3">
+                    <Search className="text-[rgba(255,255,255,0.20)]" />
                   </div>
-                  <p className="text-white/20 text-[10px] font-black uppercase tracking-widest">
+                  <p className="text-[rgba(255,255,255,0.40)] text-[10px] font-black uppercase tracking-widest">
                     No Opponents Linked
                   </p>
-                  <p className="text-white/10 text-[9px] mt-1">
+                  <p className="text-[rgba(255,255,255,0.30)] text-[9px] mt-1">
                     Use the "Add Opponent" search to find rivals
                   </p>
                 </div>

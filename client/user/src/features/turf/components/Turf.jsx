@@ -207,11 +207,13 @@ const Turf = () => {
           </div>
         ) : (
           <div className="py-20 text-center">
-            <Trophy size={48} className="mx-auto text-gray-800 mb-6" />
-            <h3 className="text-2xl font-display uppercase text-gray-400 mb-2">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-[16px] bg-card border border-[rgba(255,255,255,0.08)] flex items-center justify-center">
+              <Trophy size={32} className="text-[rgba(255,255,255,0.20)]" />
+            </div>
+            <h3 className="text-[20px] font-[700] uppercase text-foreground mb-2 font-inter tracking-tight">
               Venues Not Found
             </h3>
-            <p className="text-gray-600">
+            <p className="text-[14px] text-[rgba(255,255,255,0.40)] font-inter">
               Try adjusting your filters or search keywords.
             </p>
             <Button
@@ -224,7 +226,7 @@ const Turf = () => {
                   )
                 )
               }
-              className="mt-8 px-10 py-3 border border-white/10 rounded-[6px] text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all"
+              className="mt-8 px-8 py-3 bg-card border border-[rgba(255,255,255,0.08)] rounded-[16px] text-[10px] font-[800] uppercase tracking-widest text-foreground hover:border-primary hover:text-primary transition-all font-inter"
             >
               Clear All Filters
             </Button>
@@ -232,21 +234,21 @@ const Turf = () => {
             {/* Handpicked Alternate Recommendations */}
             {(recsLoading ||
               (recommendations && recommendations.length > 0)) && (
-              <div className="mt-24 pt-16 border-t border-white/5 space-y-10 text-left max-w-7xl mx-auto w-full">
+              <div className="mt-16 pt-12 border-t border-[rgba(255,255,255,0.08)] space-y-8 text-left max-w-7xl mx-auto w-full">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-primary">
                     <Sparkles
                       size={18}
                       className="fill-current animate-pulse"
                     />
-                    <span className="text-sm font-black uppercase tracking-[0.2em] font-sans">
+                    <span className="text-[10px] font-[800] uppercase tracking-[0.2em] font-inter">
                       Recommended
                     </span>
                   </div>
-                  <h4 className="text-3xl font-black uppercase tracking-tight text-white font-open-sans">
+                  <h4 className="text-[20px] font-[700] uppercase tracking-tight text-foreground font-inter">
                     Popular spots near you
                   </h4>
-                  <p className="text-xs font-semibold text-zinc-500 font-inter">
+                  <p className="text-[12px] font-[500] text-[rgba(255,255,255,0.40)] font-inter">
                     Discover highly-rated venues matching your interests.
                   </p>
                 </div>

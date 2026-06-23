@@ -1601,6 +1601,7 @@ const HostGame = () => {
                   </div>
                 </section>
               ) : null}
+            </div>
 
             {/* Pricing / Quick Settings Section */}
             {gameData.gameMode === "QUICK" && (

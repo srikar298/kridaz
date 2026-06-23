@@ -79,8 +79,40 @@ const TournamentDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#050505] text-white animate-pulse">
+        <div className="relative pt-6 pb-20">
+          <div className="absolute inset-0 z-0 overflow-hidden bg-white/5" />
+          <div className="relative z-10 max-w-5xl mx-auto px-4 pt-4">
+            <div className="w-10 h-10 rounded-full bg-white/10 mb-6" />
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <div className="flex items-center gap-6">
+                <div className="w-24 h-24 md:w-32 md:h-32 rounded-3xl bg-white/10" />
+                <div className="space-y-3">
+                  <div className="w-24 h-6 bg-white/10 rounded-full" />
+                  <div className="w-64 md:w-80 h-10 bg-white/10 rounded-lg" />
+                  <div className="w-48 h-4 bg-white/10 rounded-full" />
+                </div>
+              </div>
+              <div className="w-32 h-12 rounded-full bg-white/10" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-y border-white/5">
+          <div className="max-w-5xl mx-auto px-4">
+            <div className="flex gap-4 py-4">
+              {[1,2,3,4,5,6].map(i => <div key={i} className="w-24 h-6 bg-white/10 rounded-md" />)}
+            </div>
+          </div>
+        </div>
+        
+        <main className="max-w-5xl mx-auto px-4 py-8 pb-32">
+          <div className="w-full h-40 bg-white/5 rounded-2xl mb-6" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="w-full h-64 bg-white/5 rounded-2xl" />
+            <div className="w-full h-64 bg-white/5 rounded-2xl" />
+          </div>
+        </main>
       </div>
     );
   }

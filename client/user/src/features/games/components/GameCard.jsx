@@ -7,6 +7,7 @@ import {
   TrendingUp,
   ShieldCheck,
 } from "lucide-react";
+import moment from "moment";
 
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
 const SUBHEADING_STYLE = {
@@ -50,16 +51,11 @@ const GameCard = ({ game, onSelect, actionButton }) => {
 
   return (
     <div
-      className="group relative rounded-[16px] p-[1.5px] transition-all duration-300 cursor-pointer overflow-hidden flex flex-col h-full"
+      className="group bg-card rounded-[16px] border border-white/10 hover:border-primary hover:shadow-[0_8px_30px_rgba(191,243,103,0.15)] transition-all duration-300 cursor-pointer overflow-hidden flex flex-col h-full p-4"
       onClick={() => onSelect && onSelect(game)}
     >
-      {/* Gradient Border Overlay - Only visible on hover */}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
-
-      {/* Normal Border Overlay - Fades out on hover */}
-      <div className="absolute inset-0 border border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[16px]" />
-
-      <div className="relative bg-card rounded-[15px] p-4 h-full flex flex-col">
+      {/* Content */}
+      <div className="relative flex flex-col h-full">
         {/* Top bar with tags */}
         <div className="flex items-center justify-between gap-3 mb-3">
           <div className="flex items-center gap-2">
@@ -69,19 +65,27 @@ const GameCard = ({ game, onSelect, actionButton }) => {
                   ? "LIVE MATCH"
                   : game.gameType?.replace("_", " "))}
             </span>
-            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-white/5 text-white/70 border border-white/10">
-              {game.requestType === "LOOKING_FOR_TEAM"
-                ? "LOOKING FOR TEAM"
-                : game.requestType === "GBNO"
-                  ? "NEED OPPONENT"
-                  : game.requestType === "PRACTICE"
-                    ? "PRACTICE"
-                    : game.requestType === "NET_BOWLERS"
-                      ? "NET BOWLERS"
-                      : game.gameMode === "HIRING"
-                        ? "PRO WANTED"
-                        : game.gameMode}
-            </span>
+            {(game.matchPreferences?.needOpponent || game.requestType === "GBNO") && (
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-white/5 text-white/70 border border-white/10">
+                NEED OPPONENT
+              </span>
+            )}
+            {(game.matchPreferences?.isPracticeMatch || game.requestType === "PRACTICE") && (
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-white/5 text-white/70 border border-white/10">
+                PRACTICE
+              </span>
+            )}
+            {!game.matchPreferences?.needOpponent && game.requestType !== "GBNO" && !game.matchPreferences?.isPracticeMatch && game.requestType !== "PRACTICE" && (
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-white/5 text-white/70 border border-white/10">
+                {game.requestType === "LOOKING_FOR_TEAM"
+                  ? "LOOKING FOR TEAM"
+                  : game.requestType === "NET_BOWLERS"
+                    ? "NET BOWLERS"
+                    : game.gameMode === "HIRING"
+                      ? "PRO WANTED"
+                      : game.gameMode}
+              </span>
+            )}
           </div>
 
           {(game.scoringStatus === "IN_PROGRESS" || game.isLive) && (
@@ -108,13 +112,39 @@ const GameCard = ({ game, onSelect, actionButton }) => {
                   `${game.sport || "Match"} Event`}
           </h3>
           <p
-            className="text-[11px] font-medium text-white/40 mt-0.5"
+            className="text-[11px] font-medium text-white/40 mt-0.5 flex items-center gap-1.5"
             style={SUBHEADING_STYLE}
           >
-            Hosted by{" "}
-            <span className="text-white/70">
-              {game.host?.name || game.creator?.name || "Player"}
+            <span>
+              Hosted by{" "}
+              <span className="text-white/70">
+                {game.host?.name || game.creator?.name || "Player"}
+              </span>
             </span>
+            {game.createdAt && (
+              <>
+                <span className="text-white/20 text-[8px]">•</span>
+                <span className="text-white/50 italic text-[10px]">
+                  {(() => {
+                    const diff = moment().diff(moment(game.createdAt), "seconds");
+                    if (diff < 60) return "a moment ago";
+                    if (diff < 3600) {
+                      const mins = Math.floor(diff / 60);
+                      return `${mins} min${mins > 1 ? "s" : ""} ago`;
+                    }
+                    if (diff < 86400) {
+                      const hrs = Math.floor(diff / 3600);
+                      return `${hrs} hr${hrs > 1 ? "s" : ""} ago`;
+                    }
+                    if (diff < 604800) {
+                      const days = Math.floor(diff / 86400);
+                      return `${days} day${days > 1 ? "s" : ""} ago`;
+                    }
+                    return moment(game.createdAt).format("MMM D, YYYY");
+                  })()}
+                </span>
+              </>
+            )}
           </p>
         </div>
 

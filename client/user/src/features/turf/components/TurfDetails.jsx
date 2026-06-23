@@ -309,7 +309,7 @@ const TurfDetails = () => {
     <div className="w-full bg-card rounded-[8px] border border-[rgba(255,255,255,0.08)] p-4 md:p-6 flex flex-col shadow-2xl overflow-hidden h-auto max-h-[600px] lg:max-h-[800px]">
       {/* Select Date */}
       <div className="space-y-4 shrink-0">
-        <h3 className="text-[16px] font-medium text-white tracking-wide">
+        <h3 className="text-[16px] font-medium text-white tracking-wide uppercase font-inter">
           Select Date
         </h3>
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
@@ -322,23 +322,25 @@ const TurfDetails = () => {
             return (
               <div
                 key={dateStr}
-                className={`flex-none rounded-[12px] p-[2px] transition-all duration-300 ${isActive ? "bg-gradient-to-r from-primary to-primary shadow-[0_0_15px_rgba(85,222,232,0.2)]" : "bg-transparent"}`}
-                style={{ width: "68px", height: "85px" }}
+                className={`flex-none rounded-[12px] p-[1.5px] transition-all duration-300 ${isActive ? "bg-primary shadow-[0_0_15px_rgba(191,243,103,0.2)]" : "bg-transparent"}`}
+                style={{ width: "72px", height: "80px" }}
               >
                 <Button
                   onClick={() => handleDateChange(date)}
-                  className={`w-full h-full flex flex-col items-center justify-center gap-1 rounded-[10px] ${isActive ? "bg-[#1C1C1C]" : "bg-border hover:bg-[#333333]"}`}
+                  className={`w-full h-full p-0 rounded-[10px] border-none overflow-hidden ${isActive ? "bg-[#1C1C1C]" : "bg-border hover:bg-[#333333]"}`}
                 >
-                  <span
-                    className={`text-[28px] font-bold leading-none tracking-tight ${isActive ? "text-white" : "text-zinc-200"}`}
-                  >
-                    {String(date.getDate()).padStart(2, "0")}
-                  </span>
-                  <span
-                    className={`text-[13px] font-medium ${isActive ? "text-primary" : "text-[rgba(255,255,255,0.70)]"}`}
-                  >
-                    {date.toLocaleDateString("en-US", { weekday: "short" })}
-                  </span>
+                  <div className="flex flex-col items-center justify-center w-full h-full gap-0.5">
+                    <span
+                      className={`text-[24px] font-bold leading-none tracking-tight ${isActive ? "text-white" : "text-zinc-200"}`}
+                    >
+                      {String(date.getDate()).padStart(2, "0")}
+                    </span>
+                    <span
+                      className={`text-[12px] font-medium ${isActive ? "text-primary" : "text-[rgba(255,255,255,0.70)]"}`}
+                    >
+                      {date.toLocaleDateString("en-US", { weekday: "short" })}
+                    </span>
+                  </div>
                 </Button>
               </div>
             );
@@ -348,8 +350,8 @@ const TurfDetails = () => {
 
       {/* Select Time Slot */}
       <div className="space-y-4 mt-6 flex-1 overflow-y-auto pr-2 scrollbar-hide">
-        <h3 className="text-[16px] font-medium text-white tracking-wide">
-          Select Preffered time slot
+        <h3 className="text-[16px] font-medium text-white tracking-wide uppercase font-inter">
+          Select Preferred Time Slot
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 pb-4">
           {availableTimes.length > 0 ? (
@@ -377,7 +379,7 @@ const TurfDetails = () => {
               return (
                 <div
                   key={idx}
-                  className={`rounded-[8px] p-[1.5px] transition-all duration-300 ${isSelected ? "bg-gradient-to-r from-primary to-primary shadow-[0_0_10px_rgba(85,222,232,0.2)]" : "bg-transparent"}`}
+                  className={`rounded-[8px] p-[1.5px] transition-all duration-300 ${isSelected ? "bg-primary shadow-[0_0_10px_rgba(191,243,103,0.2)]" : "bg-transparent"}`}
                 >
                   <Button
                     disabled={!isAvailable}
@@ -413,7 +415,7 @@ const TurfDetails = () => {
         <Button
           onClick={handleReservation}
           disabled={bookingLoading || !selectedStartTime}
-          className="bg-gradient-to-r from-secondary to-primary text-background w-full md:w-[340px] h-[58px] rounded-[16px] font-inter text-[18px] font-[700] leading-[28px] shadow-[0px_8px_24px_rgba(179,220,38,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none"
+          className="w-full md:w-[340px] h-[58px] rounded-[16px] font-inter text-[18px] font-[700] leading-[28px] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:bg-[#1a1a1a] disabled:text-[rgba(255,255,255,0.3)] disabled:shadow-none disabled:pointer-events-none bg-primary text-black shadow-[0px_8px_24px_rgba(191,243,103,0.15)]"
         >
           {bookingLoading
             ? "..."
@@ -537,6 +539,15 @@ const TurfDetails = () => {
                           src={mediaItems[activeImageIndex].url}
                           alt={turf.name}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.style.display = "none";
+                            e.target.parentElement.classList.add("flex", "items-center", "justify-center", "bg-gradient-to-br", "from-[#1a1a2e]", "to-[#0a0a0a]");
+                            const placeholder = document.createElement("div");
+                            placeholder.className = "flex flex-col items-center justify-center gap-2 text-[rgba(255,255,255,0.15)]";
+                            placeholder.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>';
+                            e.target.parentElement.appendChild(placeholder);
+                          }}
                         />
                       )}
                     </motion.div>
@@ -595,6 +606,11 @@ const TurfDetails = () => {
                             src={`https://img.youtube.com/vi/${item.id}/hqdefault.jpg`}
                             alt="Thumbnail"
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.style.display = "none";
+                              e.target.parentElement.classList.add("flex", "items-center", "justify-center", "bg-[#0a0a0a]");
+                            }}
                           />
                         ) : item.type === "video" ? (
                           <video
@@ -606,6 +622,11 @@ const TurfDetails = () => {
                             src={item.url}
                             alt="Thumbnail"
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.style.display = "none";
+                              e.target.parentElement.classList.add("flex", "items-center", "justify-center", "bg-[#0a0a0a]");
+                            }}
                           />
                         )}
                       </Button>
@@ -857,7 +878,7 @@ const TurfDetails = () => {
       <div className="fixed bottom-20 lg:bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent z-50 pointer-events-none flex justify-center pb-6">
         <Button
           onClick={() => setIsBookingModalOpen(true)}
-          className="pointer-events-auto bg-gradient-to-r from-secondary to-primary text-background w-full max-w-md h-[56px] rounded-[16px] font-inter text-[18px] font-[700] leading-[28px] shadow-[0px_8px_24px_rgba(179,220,38,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+          className="pointer-events-auto bg-primary text-black w-full max-w-md h-[56px] rounded-[16px] font-inter text-[18px] font-[700] leading-[28px] shadow-[0px_8px_24px_rgba(191,243,103,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
         >
           Book Venue
         </Button>
@@ -1022,7 +1043,7 @@ const PoliciesModal = ({ isOpen, onClose, rules, turfName }) => {
 
               <Button
                 onClick={onClose}
-                className="bg-gradient-to-r from-secondary to-primary text-background w-full h-[58px] rounded-[16px] font-inter text-[18px] font-[700] leading-[28px] shadow-[0px_8px_24px_rgba(179,220,38,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-none cursor-pointer"
+                className="bg-primary text-black w-full h-[58px] rounded-[16px] font-inter text-[18px] font-[700] leading-[28px] shadow-[0px_8px_24px_rgba(191,243,103,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-none cursor-pointer"
               >
                 I Understand
               </Button>

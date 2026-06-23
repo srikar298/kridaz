@@ -41,11 +41,7 @@ const useTurfData = (filters = {}) => {
   let turfs = data?.turfs || [];
 
   // Local Filtering logic
-  if (filters.city) {
-    turfs = turfs.filter(
-      (t) => t.city?.toLowerCase() === filters.city.toLowerCase()
-    );
-  }
+  // Removed strict city matching so 'nearest global venues' are shown
 
   if (filters.onlyAvailable) {
     turfs = turfs.filter((t) => t.slotsLeft > 0);

@@ -256,12 +256,12 @@ const MyHostedGames = () => {
             const joinedSlotsCount =
               (game.teams?.teamA?.slots?.filter(
                 (s) => s.status === "JOINED" && s.userId
-              ).length || 0) +
+              )?.length || 0) +
               (game.teams?.teamB?.slots?.filter(
                 (s) => s.status === "JOINED" && s.userId
-              ).length || 0) +
+              )?.length || 0) +
               (game.quickSlots?.filter((s) => s.status === "JOINED" && s.userId)
-                .length || 0);
+                ?.length || 0);
 
             const perPlayerCharge = game.perPlayerCharge || 0;
             const totalPossibleCoins = totalSlotsCount * perPlayerCharge;
@@ -298,30 +298,43 @@ const MyHostedGames = () => {
                       </h2>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-neutral-500 font-bold uppercase tracking-widest">
-                        Ticket Collections
-                      </p>
-                      <div className="flex items-center gap-1 justify-end">
-                        <p className="text-xl font-black text-primary">
-                          {collectedCoins} / {totalPossibleCoins} Coins
-                        </p>
-                        {game.payoutStatus === "FROZEN" ? (
-                          <span className="bg-red-500/10 text-red-500 text-[10px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider ml-2">
-                            Disputed
+                    {game.matchPreferences?.isPracticeMatch || game.requestType === "PRACTICE" || ["PRACTICE", "NET_BOWLERS", "UMPIRE", "SCORER", "STREAMER", "COACH"].includes(game.gameType) ? (
+                        <div>
+                          <p className="text-xs text-neutral-500 font-bold uppercase tracking-widest mb-1">
+                            Status
+                          </p>
+                          <span className="bg-green-500/10 text-green-500 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider">
+                            Active Post
                           </span>
-                        ) : game.payoutStatus === "RELEASED" ? (
-                          <span className="bg-green-500/10 text-green-500 text-[10px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider ml-2">
-                            Settled
-                          </span>
-                        ) : (
-                          <span
-                            className="bg-blue-500/10 text-blue-500 text-[10px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider ml-2"
-                            title="Held safely until game completion"
-                          >
-                            Escrowed
-                          </span>
-                        )}
-                      </div>
+                        </div>
+                      ) : (
+                        <>
+                          <p className="text-xs text-neutral-500 font-bold uppercase tracking-widest">
+                            Ticket Collections
+                          </p>
+                          <div className="flex items-center gap-1 justify-end">
+                            <p className="text-xl font-black text-primary">
+                              {collectedCoins} / {totalPossibleCoins} Coins
+                            </p>
+                            {game.payoutStatus === "FROZEN" ? (
+                              <span className="bg-red-500/10 text-red-500 text-[10px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider ml-2">
+                                Disputed
+                              </span>
+                            ) : game.payoutStatus === "RELEASED" ? (
+                              <span className="bg-green-500/10 text-green-500 text-[10px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider ml-2">
+                                Settled
+                              </span>
+                            ) : (
+                              <span
+                                className="bg-blue-500/10 text-blue-500 text-[10px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider ml-2"
+                                title="Held safely until game completion"
+                              >
+                                Escrowed
+                              </span>
+                            )}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
 
@@ -437,411 +450,412 @@ const MyHostedGames = () => {
                         )}
                       </div>
                     </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 border-t border-neutral-800/50 pt-4">
-                      <div className="bg-neutral-900/50 p-2 rounded-[8px] flex flex-col items-center justify-center">
-                        <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-wider mb-1">
-                          Slot Collections
-                        </p>
-                        <p className="text-xs font-black text-primary">
-                          {collectedCoins} / {totalPossibleCoins} Coins
-                        </p>
-                        <p className="text-[8px] text-neutral-500 mt-0.5">
-                          {game.perPlayerCharge || 0} Coins per slot
-                        </p>
-                      </div>
-                      <div className="bg-neutral-900/50 p-2 rounded-[8px] flex flex-col items-center justify-center">
-                        <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-wider mb-1">
-                          Turf Expense
-                        </p>
-                        <p className="text-xs font-black text-white">
-                          {game.groundCost || 0} Coins
-                        </p>
-                        {game.turf?.name && (
-                          <p className="text-[8px] text-primary truncate max-w-full px-2 mt-0.5">
-                            {game.turf.name}
+                    {!(game.matchPreferences?.isPracticeMatch || game.requestType === "PRACTICE" || ["PRACTICE", "NET_BOWLERS", "UMPIRE", "SCORER", "STREAMER", "COACH"].includes(game.gameType)) && (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 border-t border-neutral-800/50 pt-4 mt-4">
+                        <div className="bg-neutral-900/50 p-2 rounded-[8px] flex flex-col items-center justify-center">
+                          <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-wider mb-1">
+                            Slot Collections
                           </p>
-                        )}
-                      </div>
-                      <div className="bg-neutral-900/50 p-2 rounded-[8px] flex flex-col items-center justify-center">
-                        <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-wider mb-1">
-                          Professionals
-                        </p>
-                        {(game.umpireCost || 0) + (game.streamerCost || 0) >
-                          0 && (
+                          <p className="text-xs font-black text-primary">
+                            {collectedCoins} / {totalPossibleCoins} Coins
+                          </p>
+                          <p className="text-[8px] text-neutral-500 mt-0.5">
+                            {game.perPlayerCharge || 0} Coins per slot
+                          </p>
+                        </div>
+                        <div className="bg-neutral-900/50 p-2 rounded-[8px] flex flex-col items-center justify-center">
+                          <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-wider mb-1">
+                            Turf Expense
+                          </p>
                           <p className="text-xs font-black text-white">
-                            {(game.umpireCost || 0) + (game.streamerCost || 0)}{" "}
-                            Coins
+                            {game.groundCost || 0} Coins
                           </p>
-                        )}
-                        <div className="flex gap-2 mt-1">
-                          {game.umpire && (
-                            <Link
-                              to={
-                                game.umpire._id
-                                  ? `/profile/${game.umpire._id}`
-                                  : "#"
-                              }
-                              className="flex flex-col items-center gap-0.5 group"
-                            >
-                              <div className="w-6 h-6 rounded-full overflow-hidden border border-neutral-700 group-hover:border-primary transition-colors">
-                                {game.umpire.profilePicture ? (
-                                  <img
-                                    src={game.umpire.profilePicture}
-                                    alt={game.umpire.name || "Umpire"}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
-                                    <User
-                                      size={10}
-                                      className="text-neutral-500"
-                                    />
-                                  </div>
-                                )}
-                              </div>
-                              <span
-                                className="text-[8px] text-neutral-400 group-hover:text-primary transition-colors truncate max-w-[40px] text-center"
-                                title="Umpire"
-                              >
-                                {game.umpire.name?.split(" ")[0] || "Umpire"}
-                              </span>
-                            </Link>
-                          )}
-                          {game.scorer && (
-                            <Link
-                              to={
-                                game.scorer._id
-                                  ? `/profile/${game.scorer._id}`
-                                  : "#"
-                              }
-                              className="flex flex-col items-center gap-0.5 group"
-                            >
-                              <div className="w-6 h-6 rounded-full overflow-hidden border border-neutral-700 group-hover:border-primary transition-colors">
-                                {game.scorer.profilePicture ? (
-                                  <img
-                                    src={game.scorer.profilePicture}
-                                    alt={game.scorer.name || "Scorer"}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
-                                    <User
-                                      size={10}
-                                      className="text-neutral-500"
-                                    />
-                                  </div>
-                                )}
-                              </div>
-                              <span
-                                className="text-[8px] text-neutral-400 group-hover:text-primary transition-colors truncate max-w-[40px] text-center"
-                                title="Scorer"
-                              >
-                                {game.scorer.name?.split(" ")[0] || "Scorer"}
-                              </span>
-                            </Link>
-                          )}
-                          {game.streamer && (
-                            <Link
-                              to={
-                                game.streamer._id
-                                  ? `/profile/${game.streamer._id}`
-                                  : "#"
-                              }
-                              className="flex flex-col items-center gap-0.5 group"
-                            >
-                              <div className="w-6 h-6 rounded-full overflow-hidden border border-neutral-700 group-hover:border-primary transition-colors">
-                                {game.streamer.profilePicture ? (
-                                  <img
-                                    src={game.streamer.profilePicture}
-                                    alt={game.streamer.name || "Streamer"}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
-                                    <User
-                                      size={10}
-                                      className="text-neutral-500"
-                                    />
-                                  </div>
-                                )}
-                              </div>
-                              <span
-                                className="text-[8px] text-neutral-400 group-hover:text-primary transition-colors truncate max-w-[40px] text-center"
-                                title="Streamer"
-                              >
-                                {game.streamer.name?.split(" ")[0] ||
-                                  "Streamer"}
-                              </span>
-                            </Link>
-                          )}
-                          {!game.umpire && !game.scorer && !game.streamer && (
-                            <span className="text-[10px] text-neutral-600 font-medium">
-                              None hired
-                            </span>
+                          {game.turf?.name && (
+                            <p className="text-[8px] text-primary truncate max-w-full px-2 mt-0.5">
+                              {game.turf.name}
+                            </p>
                           )}
                         </div>
+                        <div className="bg-neutral-900/50 p-2 rounded-[8px] flex flex-col items-center justify-center">
+                          <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-wider mb-1">
+                            Professionals
+                          </p>
+                          {(game.umpireCost || 0) + (game.streamerCost || 0) >
+                            0 && (
+                            <p className="text-xs font-black text-white">
+                              {(game.umpireCost || 0) + (game.streamerCost || 0)}{" "}
+                              Coins
+                            </p>
+                          )}
+                          <div className="flex gap-2 mt-1">
+                            {game.umpire && (
+                              <Link
+                                to={
+                                  game.umpire._id
+                                    ? `/profile/${game.umpire._id}`
+                                    : "#"
+                                }
+                                className="flex flex-col items-center gap-0.5 group"
+                              >
+                                <div className="w-6 h-6 rounded-full overflow-hidden border border-neutral-700 group-hover:border-primary transition-colors">
+                                  {game.umpire.profilePicture ? (
+                                    <img
+                                      src={game.umpire.profilePicture}
+                                      alt={game.umpire.name || "Umpire"}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
+                                      <User
+                                        size={10}
+                                        className="text-neutral-500"
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                                <span
+                                  className="text-[8px] text-neutral-400 group-hover:text-primary transition-colors truncate max-w-[40px] text-center"
+                                  title="Umpire"
+                                >
+                                  {game.umpire.name?.split(" ")[0] || "Umpire"}
+                                </span>
+                              </Link>
+                            )}
+                            {game.scorer && (
+                              <Link
+                                to={
+                                  game.scorer._id
+                                    ? `/profile/${game.scorer._id}`
+                                    : "#"
+                                }
+                                className="flex flex-col items-center gap-0.5 group"
+                              >
+                                <div className="w-6 h-6 rounded-full overflow-hidden border border-neutral-700 group-hover:border-primary transition-colors">
+                                  {game.scorer.profilePicture ? (
+                                    <img
+                                      src={game.scorer.profilePicture}
+                                      alt={game.scorer.name || "Scorer"}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
+                                      <User
+                                        size={10}
+                                        className="text-neutral-500"
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                                <span
+                                  className="text-[8px] text-neutral-400 group-hover:text-primary transition-colors truncate max-w-[40px] text-center"
+                                  title="Scorer"
+                                >
+                                  {game.scorer.name?.split(" ")[0] || "Scorer"}
+                                </span>
+                              </Link>
+                            )}
+                            {game.streamer && (
+                              <Link
+                                to={
+                                  game.streamer._id
+                                    ? `/profile/${game.streamer._id}`
+                                    : "#"
+                                }
+                                className="flex flex-col items-center gap-0.5 group"
+                              >
+                                <div className="w-6 h-6 rounded-full overflow-hidden border border-neutral-700 group-hover:border-primary transition-colors">
+                                  {game.streamer.profilePicture ? (
+                                    <img
+                                      src={game.streamer.profilePicture}
+                                      alt={game.streamer.name || "Streamer"}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
+                                      <User
+                                        size={10}
+                                        className="text-neutral-500"
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                                <span
+                                  className="text-[8px] text-neutral-400 group-hover:text-primary transition-colors truncate max-w-[40px] text-center"
+                                  title="Streamer"
+                                >
+                                  {game.streamer.name?.split(" ")[0] ||
+                                    "Streamer"}
+                                </span>
+                              </Link>
+                            )}
+                            {!game.umpire && !game.scorer && !game.streamer && (
+                              <span className="text-[10px] text-neutral-600 font-medium">
+                                None hired
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="bg-neutral-900/50 p-2 rounded-[8px] flex flex-col items-center justify-center">
+                          <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-wider mb-1">
+                            Total Hosting Cost
+                          </p>
+                          <p className="text-xs font-black text-primary">
+                            {game.totalCost || 0} Coins
+                          </p>
+                        </div>
                       </div>
-                      <div className="bg-neutral-900/50 p-2 rounded-[8px] flex flex-col items-center justify-center">
-                        <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-wider mb-1">
-                          Total Hosting Cost
-                        </p>
-                        <p className="text-xs font-black text-primary">
-                          {game.totalCost || 0} Coins
-                        </p>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Player Slot Management Section */}
-                <div className="p-6 border-t border-neutral-800">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-widest flex items-center gap-2">
-                      <Users size={16} /> Player Slot Management
-                    </h3>
-                  </div>
+                {/* Player Slot Management Section - Only for transaction games */}
+                {!(game.matchPreferences?.isPracticeMatch || game.requestType === "PRACTICE" || ["PRACTICE", "NET_BOWLERS", "UMPIRE", "SCORER", "STREAMER", "COACH"].includes(game.gameType)) && (
+                  <div className="p-6 border-t border-neutral-800">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-widest flex items-center gap-2">
+                        <Users size={16} /> Player Slot Management
+                      </h3>
+                    </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Quick Match Slots */}
-                    {game.gameMode === "QUICK" &&
-                      game.quickSlots &&
-                      game.quickSlots.length > 0 && (
-                        <div className="space-y-3 mb-6">
-                          <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2 px-2">
-                            QUICK MATCH SLOTS
-                          </h4>
-                          <div className="flex flex-wrap gap-4">
-                            {game.quickSlots.map((slot, index) => (
-                              <div
-                                key={`Q-${index}`}
-                                className="flex flex-col items-center gap-1 w-16 relative"
-                              >
-                                {slot.user || slot.userId ? (
-                                  <Link
-                                    to={`/profile/${slot.user?._id || slot.userId}`}
-                                    className={`w-10 h-10 rounded-full bg-neutral-800 border-2 ${slot.status === "JOINED" ? "border-green-500" : "border-neutral-700"} flex items-center justify-center overflow-hidden hover:opacity-80 transition-opacity`}
-                                  >
-                                    {slot.user?.profilePicture ? (
-                                      <img
-                                        src={slot.user.profilePicture}
-                                        alt=""
-                                        className="w-full h-full object-cover"
-                                      />
-                                    ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Quick Match Slots */}
+                      {game.gameMode === "QUICK" &&
+                        game.quickSlots &&
+                        game.quickSlots.length > 0 && (
+                          <div className="space-y-3 mb-6">
+                            <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2 px-2">
+                              QUICK MATCH SLOTS
+                            </h4>
+                            <div className="flex flex-wrap gap-4">
+                              {game.quickSlots.map((slot, index) => (
+                                <div
+                                  key={`Q-${index}`}
+                                  className="flex flex-col items-center gap-1 w-16 relative"
+                                >
+                                  {slot.user || slot.userId ? (
+                                    <Link
+                                      to={`/profile/${slot.user?._id || slot.userId}`}
+                                      className={`w-10 h-10 rounded-full bg-neutral-800 border-2 ${slot.status === "JOINED" ? "border-green-500" : "border-neutral-700"} flex items-center justify-center overflow-hidden hover:opacity-80 transition-opacity`}
+                                    >
+                                      {slot.user?.profilePicture ? (
+                                        <img
+                                          src={slot.user.profilePicture}
+                                          alt=""
+                                          className="w-full h-full object-cover"
+                                        />
+                                      ) : (
+                                        <User
+                                          size={16}
+                                          className="text-neutral-500"
+                                        />
+                                      )}
+                                    </Link>
+                                  ) : (
+                                    <div className="w-10 h-10 rounded-full bg-neutral-800 border-2 border-dashed border-neutral-700 flex items-center justify-center overflow-hidden">
                                       <User
                                         size={16}
                                         className="text-neutral-500"
                                       />
+                                    </div>
+                                  )}
+
+                                  <div
+                                    className={`absolute top-0 right-1 w-3 h-3 rounded-full border-2 border-card ${slot.status === "PENDING" ? "bg-amber-500" : slot.status === "HELD" ? "bg-blue-500" : slot.status === "JOINED" ? "bg-green-500" : "bg-neutral-600"}`}
+                                    title={slot.status}
+                                  />
+
+                                  <div className="text-center w-full">
+                                    {slot.user || slot.userId ? (
+                                      <Link
+                                        to={`/profile/${slot.user?._id || slot.userId}`}
+                                        className="text-[9px] font-bold text-white hover:text-primary transition-colors uppercase tracking-tighter truncate block w-full"
+                                      >
+                                        {slot.user?.name?.split(" ")[0] || "OPEN"}
+                                      </Link>
+                                    ) : (
+                                      <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-tighter truncate w-full">
+                                        OPEN
+                                      </p>
                                     )}
-                                  </Link>
-                                ) : (
-                                  <div className="w-10 h-10 rounded-full bg-neutral-800 border-2 border-dashed border-neutral-700 flex items-center justify-center overflow-hidden">
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                      {/* Team A Slots */}
+                      <div className="space-y-3">
+                        <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2 px-2">
+                          {game.teams?.teamA?.name
+                            ? `${game.teams.teamA.name} SLOTS`
+                            : "HOME TEAM SLOTS"}
+                        </h4>
+                        <div className="flex flex-wrap gap-4">
+                          {game.teams?.teamA?.slots?.map((slot, index) => (
+                            <div
+                              key={`A-${index}`}
+                              className="flex flex-col items-center gap-1 w-16 relative"
+                            >
+                              {slot.user ? (
+                                <Link
+                                  to={`/profile/${slot.user._id || slot.user.id}`}
+                                  className={`w-10 h-10 rounded-full bg-neutral-800 border-2 ${slot.status === "JOINED" ? "border-green-500" : "border-neutral-700"} flex items-center justify-center overflow-hidden hover:opacity-80 transition-opacity`}
+                                >
+                                  {slot.user.profilePicture ? (
+                                    <img
+                                      src={slot.user.profilePicture}
+                                      alt=""
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
                                     <User
                                       size={16}
                                       className="text-neutral-500"
                                     />
-                                  </div>
-                                )}
-
-                                <div
-                                  className={`absolute top-0 right-1 w-3 h-3 rounded-full border-2 border-card ${slot.status === "PENDING" ? "bg-amber-500" : slot.status === "HELD" ? "bg-blue-500" : slot.status === "JOINED" ? "bg-green-500" : "bg-neutral-600"}`}
-                                  title={slot.status}
-                                />
-
-                                <div className="text-center w-full">
-                                  {slot.user || slot.userId ? (
-                                    <Link
-                                      to={`/profile/${slot.user?._id || slot.userId}`}
-                                      className="text-[9px] font-bold text-white hover:text-primary transition-colors uppercase tracking-tighter truncate block w-full"
-                                    >
-                                      {slot.user?.name?.split(" ")[0] || "OPEN"}
-                                    </Link>
-                                  ) : (
-                                    <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-tighter truncate w-full">
-                                      OPEN
-                                    </p>
                                   )}
+                                </Link>
+                              ) : (
+                                <div className="w-10 h-10 rounded-full bg-neutral-800 border-2 border-dashed border-neutral-700 flex items-center justify-center overflow-hidden">
+                                  <User size={16} className="text-neutral-500" />
                                 </div>
+                              )}
 
-                                {/* Assuming Quick matches don't have approve/reject since payment happens immediately, but just in case we can add logic later if needed */}
+                              <div
+                                className={`absolute top-0 right-1 w-3 h-3 rounded-full border-2 border-card ${slot.status === "PENDING" ? "bg-amber-500" : slot.status === "HELD" ? "bg-blue-500" : slot.status === "JOINED" ? "bg-green-500" : "bg-neutral-600"}`}
+                                title={slot.status}
+                              />
+
+                              <div className="text-center w-full">
+                                {slot.user ? (
+                                  <Link
+                                    to={`/profile/${slot.user._id || slot.user.id}`}
+                                    className="text-[9px] font-bold text-white hover:text-primary transition-colors uppercase tracking-tighter truncate block w-full"
+                                  >
+                                    {slot.user.name?.split(" ")[0] || "OPEN"}
+                                  </Link>
+                                ) : (
+                                  <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-tighter truncate w-full">
+                                    {slot.customPlayer?.name?.split(" ")[0] ||
+                                      "OPEN"}
+                                  </p>
+                                )}
                               </div>
-                            ))}
-                          </div>
+
+                              {slot.status === "PENDING" && (
+                                <div className="flex gap-1 mt-1">
+                                  <Button
+                                    onClick={() =>
+                                      handleReject(game._id, "teamA", index)
+                                    }
+                                    className="p-1 bg-red-500/20 text-red-500 rounded hover:bg-red-500/40 transition-colors"
+                                    title="Reject"
+                                  >
+                                    <X size={10} />
+                                  </Button>
+                                  <Button
+                                    onClick={() =>
+                                      handleApprove(game._id, "teamA", index)
+                                    }
+                                    className="p-1 bg-green-500/20 text-green-500 rounded hover:bg-green-500/40 transition-colors"
+                                    title="Approve"
+                                  >
+                                    <Check size={10} />
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          ))}
                         </div>
-                      )}
-
-                    {/* Team A Slots */}
-                    <div className="space-y-3">
-                      <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2 px-2">
-                        {game.teams?.teamA?.name
-                          ? `${game.teams.teamA.name} SLOTS`
-                          : "HOME TEAM SLOTS"}
-                      </h4>
-                      <div className="flex flex-wrap gap-4">
-                        {game.teams?.teamA?.slots?.map((slot, index) => (
-                          <div
-                            key={`A-${index}`}
-                            className="flex flex-col items-center gap-1 w-16 relative"
-                          >
-                            {slot.user ? (
-                              <Link
-                                to={`/profile/${slot.user._id || slot.user.id}`}
-                                className={`w-10 h-10 rounded-full bg-neutral-800 border-2 ${slot.status === "JOINED" ? "border-green-500" : "border-neutral-700"} flex items-center justify-center overflow-hidden hover:opacity-80 transition-opacity`}
-                              >
-                                {slot.user.profilePicture ? (
-                                  <img
-                                    src={slot.user.profilePicture}
-                                    alt=""
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <User
-                                    size={16}
-                                    className="text-neutral-500"
-                                  />
-                                )}
-                              </Link>
-                            ) : (
-                              <div className="w-10 h-10 rounded-full bg-neutral-800 border-2 border-dashed border-neutral-700 flex items-center justify-center overflow-hidden">
-                                <User size={16} className="text-neutral-500" />
-                              </div>
-                            )}
-
-                            <div
-                              className={`absolute top-0 right-1 w-3 h-3 rounded-full border-2 border-card ${slot.status === "PENDING" ? "bg-amber-500" : slot.status === "HELD" ? "bg-blue-500" : slot.status === "JOINED" ? "bg-green-500" : "bg-neutral-600"}`}
-                              title={slot.status}
-                            />
-
-                            <div className="text-center w-full">
-                              {slot.user ? (
-                                <Link
-                                  to={`/profile/${slot.user._id || slot.user.id}`}
-                                  className="text-[9px] font-bold text-white hover:text-primary transition-colors uppercase tracking-tighter truncate block w-full"
-                                >
-                                  {slot.user.name?.split(" ")[0] || "OPEN"}
-                                </Link>
-                              ) : (
-                                <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-tighter truncate w-full">
-                                  {slot.customPlayer?.name?.split(" ")[0] ||
-                                    "OPEN"}
-                                </p>
-                              )}
-                            </div>
-
-                            {slot.status === "PENDING" && (
-                              <div className="flex gap-1 mt-1">
-                                <Button
-                                  onClick={() =>
-                                    handleReject(game._id, "teamA", index)
-                                  }
-                                  className="p-1 bg-red-500/20 text-red-500 rounded hover:bg-red-500/40 transition-colors"
-                                  title="Reject"
-                                >
-                                  <X size={10} />
-                                </Button>
-                                <Button
-                                  onClick={() =>
-                                    handleApprove(game._id, "teamA", index)
-                                  }
-                                  className="p-1 bg-green-500/20 text-green-500 rounded hover:bg-green-500/40 transition-colors"
-                                  title="Approve"
-                                >
-                                  <Check size={10} />
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        ))}
                       </div>
-                    </div>
 
-                    {/* Team B Slots */}
-                    <div className="space-y-3">
-                      <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2 px-2">
-                        {game.teams?.teamB?.name
-                          ? `${game.teams.teamB.name} SLOTS`
-                          : "AWAY TEAM SLOTS"}
-                      </h4>
-                      <div className="flex flex-wrap gap-4">
-                        {game.teams?.teamB?.slots?.map((slot, index) => (
-                          <div
-                            key={`B-${index}`}
-                            className="flex flex-col items-center gap-1 w-16 relative"
-                          >
-                            {slot.user ? (
-                              <Link
-                                to={`/profile/${slot.user._id || slot.user.id}`}
-                                className={`w-10 h-10 rounded-full bg-neutral-800 border-2 ${slot.status === "JOINED" ? "border-green-500" : "border-neutral-700"} flex items-center justify-center overflow-hidden hover:opacity-80 transition-opacity`}
-                              >
-                                {slot.user.profilePicture ? (
-                                  <img
-                                    src={slot.user.profilePicture}
-                                    alt=""
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <User
-                                    size={16}
-                                    className="text-neutral-500"
-                                  />
-                                )}
-                              </Link>
-                            ) : (
-                              <div className="w-10 h-10 rounded-full bg-neutral-800 border-2 border-dashed border-neutral-700 flex items-center justify-center overflow-hidden">
-                                <User size={16} className="text-neutral-500" />
-                              </div>
-                            )}
-
+                      {/* Team B Slots */}
+                      <div className="space-y-3">
+                        <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2 px-2">
+                          {game.teams?.teamB?.name
+                            ? `${game.teams.teamB.name} SLOTS`
+                            : "AWAY TEAM SLOTS"}
+                        </h4>
+                        <div className="flex flex-wrap gap-4">
+                          {game.teams?.teamB?.slots?.map((slot, index) => (
                             <div
-                              className={`absolute top-0 right-1 w-3 h-3 rounded-full border-2 border-card ${slot.status === "PENDING" ? "bg-amber-500" : slot.status === "HELD" ? "bg-blue-500" : slot.status === "JOINED" ? "bg-green-500" : "bg-neutral-600"}`}
-                              title={slot.status}
-                            />
-
-                            <div className="text-center w-full">
+                              key={`B-${index}`}
+                              className="flex flex-col items-center gap-1 w-16 relative"
+                            >
                               {slot.user ? (
                                 <Link
                                   to={`/profile/${slot.user._id || slot.user.id}`}
-                                  className="text-[9px] font-bold text-white hover:text-primary transition-colors uppercase tracking-tighter truncate block w-full"
+                                  className={`w-10 h-10 rounded-full bg-neutral-800 border-2 ${slot.status === "JOINED" ? "border-green-500" : "border-neutral-700"} flex items-center justify-center overflow-hidden hover:opacity-80 transition-opacity`}
                                 >
-                                  {slot.user.name?.split(" ")[0] || "OPEN"}
+                                  {slot.user.profilePicture ? (
+                                    <img
+                                      src={slot.user.profilePicture}
+                                      alt=""
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <User
+                                      size={16}
+                                      className="text-neutral-500"
+                                    />
+                                  )}
                                 </Link>
                               ) : (
-                                <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-tighter truncate w-full">
-                                  {slot.customPlayer?.name?.split(" ")[0] ||
-                                    "OPEN"}
-                                </p>
+                                <div className="w-10 h-10 rounded-full bg-neutral-800 border-2 border-dashed border-neutral-700 flex items-center justify-center overflow-hidden">
+                                  <User size={16} className="text-neutral-500" />
+                                </div>
+                              )}
+
+                              <div
+                                className={`absolute top-0 right-1 w-3 h-3 rounded-full border-2 border-card ${slot.status === "PENDING" ? "bg-amber-500" : slot.status === "HELD" ? "bg-blue-500" : slot.status === "JOINED" ? "bg-green-500" : "bg-neutral-600"}`}
+                                title={slot.status}
+                              />
+
+                              <div className="text-center w-full">
+                                {slot.user ? (
+                                  <Link
+                                    to={`/profile/${slot.user._id || slot.user.id}`}
+                                    className="text-[9px] font-bold text-white hover:text-primary transition-colors uppercase tracking-tighter truncate block w-full"
+                                  >
+                                    {slot.user.name?.split(" ")[0] || "OPEN"}
+                                  </Link>
+                                ) : (
+                                  <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-tighter truncate w-full">
+                                    {slot.customPlayer?.name?.split(" ")[0] ||
+                                      "OPEN"}
+                                  </p>
+                                )}
+                              </div>
+
+                              {slot.status === "PENDING" && (
+                                <div className="flex gap-1 mt-1">
+                                  <Button
+                                    onClick={() =>
+                                      handleReject(game._id, "teamB", index)
+                                    }
+                                    className="p-1 bg-red-500/20 text-red-500 rounded hover:bg-red-500/40 transition-colors"
+                                    title="Reject"
+                                  >
+                                    <X size={10} />
+                                  </Button>
+                                  <Button
+                                    onClick={() =>
+                                      handleApprove(game._id, "teamB", index)
+                                    }
+                                    className="p-1 bg-green-500/20 text-green-500 rounded hover:bg-green-500/40 transition-colors"
+                                    title="Approve"
+                                  >
+                                    <Check size={10} />
+                                  </Button>
+                                </div>
                               )}
                             </div>
-
-                            {slot.status === "PENDING" && (
-                              <div className="flex gap-1 mt-1">
-                                <Button
-                                  onClick={() =>
-                                    handleReject(game._id, "teamB", index)
-                                  }
-                                  className="p-1 bg-red-500/20 text-red-500 rounded hover:bg-red-500/40 transition-colors"
-                                  title="Reject"
-                                >
-                                  <X size={10} />
-                                </Button>
-                                <Button
-                                  onClick={() =>
-                                    handleApprove(game._id, "teamB", index)
-                                  }
-                                  className="p-1 bg-green-500/20 text-green-500 rounded hover:bg-green-500/40 transition-colors"
-                                  title="Approve"
-                                >
-                                  <Check size={10} />
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             );
           })

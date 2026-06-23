@@ -323,9 +323,9 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
   };
 
   return (
-    <div className="w-full h-auto bg-card rounded-[16px] overflow-hidden border border-[rgba(255,255,255,0.08)] font-inter shadow-[0px_8px_24px_rgba(85,222,232,0.10)] flex flex-col">
+    <div className="w-full h-auto bg-card rounded-[16px] overflow-hidden border border-[rgba(255,255,255,0.08)] font-inter shadow-[0px_8px_24px_rgba(85,222,232,0.10)] flex flex-col relative z-10 isolate">
       {/* ── Top Image Header (16:9 ratio) ── */}
-      <div className="relative w-full aspect-video shrink-0 group">
+      <div className="relative w-full aspect-video shrink-0 group bg-[#0a0a0a]">
         <div
           ref={scrollContainerRef}
           className="absolute inset-0 flex overflow-x-auto snap-x snap-mandatory no-scrollbar"
@@ -347,6 +347,15 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                   }
                   alt={`${turf.name} - ${idx + 1}`}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.style.display = "none";
+                    e.target.parentElement.classList.add("flex", "items-center", "justify-center", "bg-gradient-to-br", "from-[#1a1a2e]", "to-[#0a0a0a]");
+                    const placeholder = document.createElement("div");
+                    placeholder.className = "flex flex-col items-center justify-center gap-2 text-[rgba(255,255,255,0.15)]";
+                    placeholder.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>';
+                    e.target.parentElement.appendChild(placeholder);
+                  }}
                 />
               )}
             </div>
@@ -441,23 +450,23 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
 
         {/* Date Selector */}
         <div className="flex flex-col gap-[8px]">
-          <div className="grid grid-cols-5 gap-[12px]">
+          <div className="grid grid-cols-5 gap-[8px]">
             {dates.slice(0, 4).map((d, idx) => {
               const isSelected = selectedDate.dateNum === d.dateNum;
               return (
                 <Button
                   key={idx}
                   onClick={() => setSelectedDate(d)}
-                  className={`flex flex-col items-center justify-center w-full py-1.5 rounded-[16px] border transition-all ${
+                  className={`flex flex-col items-center justify-center w-full py-2 px-1 rounded-[12px] border transition-all min-h-[52px] ${
                     isSelected
                       ? "border-none bg-primary text-background"
                       : "border-[rgba(255,255,255,0.08)] bg-transparent text-[rgba(255,255,255,0.70)] hover:text-foreground"
                   }`}
                 >
-                  <span className="text-[12px] font-[400] mb-0.5">
+                  <span className="text-[10px] font-[400] leading-tight">
                     {d.dayName.substring(0, 3)}
                   </span>
-                  <span className="text-[14px] font-[600] leading-none">
+                  <span className="text-[13px] font-[600] leading-tight mt-0.5">
                     {d.dateNum}
                   </span>
                 </Button>
@@ -469,7 +478,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                 e.stopPropagation();
                 setIsDateTimeDrawerOpen(true);
               }}
-              className="flex flex-col items-center justify-center w-full py-1.5 rounded-[16px] border border-[rgba(255,255,255,0.08)] bg-transparent text-[rgba(255,255,255,0.70)] hover:text-foreground transition-all group"
+              className="flex flex-col items-center justify-center w-full py-2 px-1 rounded-[12px] border border-[rgba(255,255,255,0.08)] bg-transparent text-[rgba(255,255,255,0.70)] hover:text-foreground transition-all group min-h-[52px]"
             >
               <Calendar
                 size={16}
@@ -499,7 +508,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                     key={idx}
                     disabled={isBooked}
                     onClick={() => !isBooked && setSelectedSlot(slot)}
-                    className={`shrink-0 relative px-3 py-1.5 rounded-[16px] border transition-all text-[12px] font-[600] flex items-center justify-center ${
+                    className={`shrink-0 relative px-3 py-1.5 rounded-[12px] border transition-all text-[11px] font-[600] flex items-center justify-center whitespace-nowrap ${
                       isBooked
                         ? "bg-card border-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.3)] cursor-not-allowed"
                         : isSelected
@@ -523,7 +532,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
         <div className="flex flex-col gap-[12px] mt-auto pt-[12px]">
           <Button
             onClick={handleBookNow}
-            className={`w-full font-[700] text-[18px] h-[58px] rounded-[16px] flex items-center justify-center transition-all ${
+            className={`w-full font-[700] text-[16px] h-[52px] rounded-[12px] flex items-center justify-center transition-all ${
               selectedSlot
                 ? "bg-gradient-to-r from-secondary to-primary text-background shadow-[0px_8px_24px_rgba(191,243,103,0.15)]"
                 : "bg-card text-foreground border border-[rgba(255,255,255,0.08)] opacity-40 cursor-not-allowed"
@@ -753,9 +762,9 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                     setIsDateTimeDrawerOpen(false);
                   }
                 }}
-                className={`w-full mt-auto font-[700] text-[18px] h-[58px] rounded-[16px] flex items-center justify-center transition-all shrink-0 ${
+                className={`w-full mt-auto font-[700] text-[16px] h-[52px] rounded-[12px] flex items-center justify-center transition-all shrink-0 ${
                   selectedSlot
-                    ? "bg-gradient-to-r from-secondary to-primary text-background shadow-[0px_8px_24px_rgba(191,243,103,0.15)]"
+                    ? "bg-primary text-black shadow-[0px_8px_24px_rgba(191,243,103,0.15)]"
                     : "bg-card text-foreground border border-[rgba(255,255,255,0.08)] opacity-40"
                 }`}
               >
