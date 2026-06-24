@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { MoreVertical, ShieldCheck, Video } from "lucide-react";
 import CommentIcon from "../../../assets/icons/comment_icon.png";
@@ -34,6 +34,18 @@ const PostItem = React.memo(
     const [commentInput, setCommentInput] = useState("");
     const [activeDropdown, setActiveDropdown] = useState(false);
     const [activeMediaIndex, setActiveMediaIndex] = useState(0);
+
+    const [isCaptionExpanded, setIsCaptionExpanded] = useState(false);
+    const [hasMoreCaption, setHasMoreCaption] = useState(false);
+    const captionRef = useRef(null);
+
+    useEffect(() => {
+      if (captionRef.current) {
+        setHasMoreCaption(
+          captionRef.current.scrollHeight > captionRef.current.clientHeight
+        );
+      }
+    }, [post.content, post.title]);
 
     const handleMediaScroll = (e) => {
       if (!e.target) return;
@@ -218,12 +230,12 @@ const PostItem = React.memo(
             />
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[13px] font-bold text-white transition-colors">
+                <span className="text-[12px] font-bold text-white transition-colors">
                   {post.adminId?.name || post.author?.name || "Player"}
                 </span>
                 <ShieldCheck size={14} className="text-primary" />
               </div>
-              <div className="text-[11px] font-bold text-muted-foreground mt-0.5">
+              <div className="text-[10px] font-medium text-muted-foreground mt-0.5">
                 {getFormattedTime(post.createdAt)}
               </div>
             </div>
@@ -267,22 +279,35 @@ const PostItem = React.memo(
 
         {/* Caption */}
         {(post.title || post.content) && (
-          <div className="text-[13.5px] font-medium leading-relaxed px-4 pb-3">
-            {post.title && <span className="font-bold mr-2">{post.title}</span>}
-            <span className="text-white/90 whitespace-pre-wrap">
+          <div className="text-[13px] font-normal leading-snug px-4 pb-3">
+            <div
+              ref={captionRef}
+              className={`text-white/90 whitespace-pre-wrap ${
+                !isCaptionExpanded ? "line-clamp-2" : ""
+              }`}
+            >
+              {post.title && <span className="font-semibold mr-1.5 text-white">{post.title}</span>}
               {post.content}
-            </span>
+            </div>
+            {hasMoreCaption && (
+              <button
+                onClick={() => setIsCaptionExpanded(!isCaptionExpanded)}
+                className="text-primary font-semibold mt-1 text-[11px] hover:underline block focus:outline-none border-0 bg-transparent p-0"
+              >
+                {isCaptionExpanded ? "Read less" : "Read more"}
+              </button>
+            )}
           </div>
         )}
 
         {/* Looking For Details */}
         {post.postType === "LOOKING_FOR" && post.metadata && (
-          <div className="px-4 pb-3 flex flex-col gap-2 text-[13px]">
+          <div className="px-4 pb-3 flex flex-col gap-2 text-[12px]">
              <div className="bg-white/5 border border-white/10 rounded-[12px] p-3 space-y-2">
                 <div className="flex justify-between items-start mb-2">
                    <div>
-                     <div className="text-[14px] font-bold text-white uppercase">{post.metadata.subcategory} - {post.metadata.category}</div>
-                     <div className="text-[12px] text-muted-foreground mt-0.5">{post.metadata.lookingFor}</div>
+                     <div className="text-[13px] font-bold text-white uppercase">{post.metadata.subcategory} - {post.metadata.category}</div>
+                     <div className="text-[11px] text-muted-foreground mt-0.5">{post.metadata.lookingFor}</div>
                    </div>
                    <span className="bg-primary/20 text-primary px-2 py-1 rounded-full text-[10px] font-bold uppercase shrink-0">
                      Looking For
@@ -531,7 +556,7 @@ const PostItem = React.memo(
 
         {/* Likes Summary */}
         {post.likes?.length > 0 && (
-          <div className="flex items-center gap-2 text-[11px] font-medium text-white/50 px-4 py-3">
+          <div className="flex items-center gap-2 text-[10px] font-medium text-white/50 px-4 py-2.5">
             <div className="flex -space-x-1.5 shrink-0">
               {post.likes.slice(0, 3).map((likeUser, i) => (
                 <div
@@ -554,7 +579,7 @@ const PostItem = React.memo(
                 </div>
               ))}
             </div>
-            <p className="text-[11px] text-white/50 font-medium">
+            <p className="text-[10px] text-white/50 font-medium">
               {post.likes.length === 1 && (
                 <span>
                   Liked by{" "}
@@ -631,7 +656,7 @@ const PostItem = React.memo(
               />
             </svg>
             {post.likes?.length > 0 && (
-              <span className="text-[13px] font-bold text-foreground group-hover:text-white transition-colors">
+              <span className="text-[12px] font-bold text-foreground group-hover:text-white transition-colors">
                 {post.likes.length}
               </span>
             )}
@@ -646,7 +671,7 @@ const PostItem = React.memo(
               className="w-[18px] h-[18px] object-contain transition-all duration-200 opacity-70 group-hover:opacity-100 brightness-0 invert"
             />
             {(post.totalComments > 0 || post.comments?.length > 0) && (
-              <span className="text-[13px] font-bold text-foreground group-hover:text-white transition-colors">
+              <span className="text-[12px] font-bold text-foreground group-hover:text-white transition-colors">
                 {post.totalComments || post.comments.length}
               </span>
             )}
@@ -684,7 +709,7 @@ const PostItem = React.memo(
                       return (
                         <div
                           key={comment.id || comment._id}
-                          className="flex items-start gap-2 text-[12px] leading-relaxed"
+                          className="flex items-start gap-2 text-[11px] leading-normal"
                         >
                           <Link
                             to={`/profile/${commentUser?.id || commentUser?._id}`}
@@ -708,7 +733,7 @@ const PostItem = React.memo(
                   </div>
                 )}
                 {post.comments?.length === 0 && (
-                  <p className="text-[12px] text-white/30 italic">
+                  <p className="text-[11px] text-white/30 italic">
                     No comments yet. Be the first!
                   </p>
                 )}
@@ -723,7 +748,7 @@ const PostItem = React.memo(
                   <Input
                     type="text"
                     placeholder="Add a comment..."
-                    className="flex-1 bg-transparent text-[12px] font-medium outline-none text-white placeholder:text-muted-foreground"
+                    className="flex-1 bg-transparent text-[11px] font-medium outline-none text-white placeholder:text-muted-foreground"
                     value={commentInput}
                     onChange={(e) => setCommentInput(e.target.value)}
                     onKeyDown={(e) => {
@@ -733,7 +758,7 @@ const PostItem = React.memo(
                   <button
                     onClick={handleAddComment}
                     disabled={!commentInput.trim()}
-                    className={`text-[12px] font-bold px-3 py-1.5 rounded-full transition-all ${
+                    className={`text-[11px] font-bold px-3 py-1.5 rounded-full transition-all ${
                       commentInput.trim()
                         ? "bg-primary text-black hover:bg-primary/80 cursor-pointer"
                         : "bg-card text-muted-foreground cursor-not-allowed"
