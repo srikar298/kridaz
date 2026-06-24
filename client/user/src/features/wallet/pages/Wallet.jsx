@@ -196,7 +196,7 @@ const WalletPage = () => {
       <div className="max-w-4xl mx-auto space-y-4">
         {/* Header */}
         <div className="space-y-2">
-          <h1 className="text-[20px] font-black uppercase tracking-tight font-open-sans">
+          <h1 className="text-base font-black uppercase tracking-tight font-open-sans">
             My Wallet
           </h1>
           <p
@@ -212,35 +212,35 @@ const WalletPage = () => {
           <div className="md:col-span-5 space-y-4">
             <div className="relative group overflow-hidden bg-black p-4 rounded-[16px] animate-slide-in-left text-white">
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
-                <Wallet className="w-32 h-32 text-white/5" />
+                <Wallet className="w-20 h-20 text-white/5" />
               </div>
               <div className="relative z-10 space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-card rounded-[12px] backdrop-blur-sm">
-                    <Zap className="w-5 h-5 text-primary" />
+                    <Zap className="w-4 h-4 text-primary" />
                   </div>
-                  <span className="font-inter text-[20px] font-black uppercase text-white/70 tracking-wider text-[11px]">
+                  <span className="font-inter text-[9px] font-black uppercase text-white/70 tracking-wider">
                     Available Coins
                   </span>
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-4xl font-black text-white tracking-tighter font-open-sans">
+                    <span className="text-2xl font-black text-white tracking-tighter font-open-sans">
                       {usableBalance}
                     </span>
-                    <IndianRupee className="w-8 h-8 text-white/50 mt-4" />
+                    <IndianRupee className="w-4 h-4 text-white/50 mt-1" />
                   </div>
-                  <p className="font-inter text-[12px] font-bold text-primary uppercase">
+                  <p className="font-inter text-[9px] font-bold text-primary uppercase">
                     Spendable Coins Right Now
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-2 bg-card rounded-[16px] backdrop-blur-sm">
-                    <p className="font-inter text-xs font-black uppercase text-white/70 mb-1 tracking-widest">
+                    <p className="font-inter text-[9px] font-black uppercase text-white/70 mb-1 tracking-widest">
                       Total
                     </p>
-                    <p className="text-lg font-black text-white tracking-tighter font-open-sans">
+                    <p className="text-base font-black text-white tracking-tighter font-open-sans">
                       {balance}
                     </p>
                   </div>
@@ -254,7 +254,7 @@ const WalletPage = () => {
                   </div>
                 </div>
                 <div className="pt-4 border-t border-white/10">
-                  <p className="font-inter text-xs font-bold text-white/50 uppercase tracking-widest text-[9px]">
+                  <p className="font-inter font-bold text-white/50 uppercase tracking-widest text-[8px]">
                     Last updated: {new Date().toLocaleTimeString()}
                   </p>
                 </div>
@@ -263,8 +263,8 @@ const WalletPage = () => {
 
             {/* Top-up Form */}
             <div className="bg-black p-4 rounded-[16px] space-y-4">
-              <h2 className="text-lg font-bold uppercase tracking-tight flex items-center gap-3 font-open-sans">
-                <Plus className="w-5 h-5 text-primary" />
+              <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 font-open-sans">
+                <Plus className="w-4 h-4 text-primary" />
                 Top-up Wallet
               </h2>
               <div className="space-y-4 font-inter">
@@ -275,7 +275,7 @@ const WalletPage = () => {
                     value={topupAmount}
                     onChange={(e) => setTopupAmount(e.target.value)}
                     placeholder="Enter amount (e.g. 500)"
-                    className="w-full bg-background border border-white/10 rounded-[16px] py-2 pl-9 pr-3 text-sm font-bold focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none text-white font-inter"
+                    className="w-full bg-background border border-white/10 rounded-[16px] py-1.5 pl-8 pr-3 text-xs font-bold focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none text-white font-inter"
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-2 font-inter">
@@ -283,7 +283,7 @@ const WalletPage = () => {
                     <Button
                       key={amt}
                       onClick={() => setTopupAmount(amt.toString())}
-                      className="py-2 rounded-[16px] bg-card border border-white/10 hover:border-secondary hover:text-secondary font-bold text-xs uppercase transition-all"
+                      className="py-1.5 rounded-[12px] bg-card border border-white/10 hover:border-secondary hover:text-secondary font-bold text-xs uppercase transition-all"
                     >
                       +{amt}
                     </Button>
@@ -295,7 +295,7 @@ const WalletPage = () => {
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
                     placeholder="Have a coupon code?"
-                    className="w-full bg-background border border-white/10 rounded-[16px] py-2 pl-4 pr-24 text-sm font-bold focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none text-white font-inter"
+                    className="w-full bg-background border border-white/10 rounded-[16px] py-1.5 pl-4 pr-24 text-xs font-bold focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none text-white font-inter"
                   />
                   <Button
                     onClick={handleValidateCoupon}
@@ -330,14 +330,14 @@ const WalletPage = () => {
                 <Button
                   onClick={handleTopup}
                   disabled={isProcessing}
-                  className="w-full bg-gradient-to-r from-secondary to-primary text-background h-[40px] rounded-[16px] font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale font-open-sans shadow-[0_10px_25px_rgba(85,222,232,0.25)]"
+                  className="w-full bg-gradient-to-r from-secondary to-primary text-background h-[32px] rounded-[12px] font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale font-open-sans shadow-[0_10px_25px_rgba(85,222,232,0.25)]"
                 >
                   {isProcessing ? (
                     <Loader2 className="w-6 h-6 animate-spin" />
                   ) : (
                     <>
                       Purchase Coins
-                      <ArrowUpRight className="w-5 h-5" />
+                      <ArrowUpRight className="w-4 h-4" />
                     </>
                   )}
                 </Button>
@@ -348,11 +348,11 @@ const WalletPage = () => {
           {/* Transaction History */}
           <div className="md:col-span-7 bg-black rounded-[16px] overflow-hidden flex flex-col font-inter">
             <div className="p-4 border-b border-white/10 flex items-center justify-between">
-              <h2 className="text-lg font-bold uppercase tracking-tight flex items-center gap-3 font-open-sans">
-                <History className="w-5 h-5 text-primary" />
+              <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 font-open-sans">
+                <History className="w-4 h-4 text-primary" />
                 Coin Activity
               </h2>
-              <span className="font-inter text-xs font-bold text-white/50 uppercase tracking-widest">
+              <span className="font-inter text-[9px] font-bold text-white/50 uppercase tracking-widest">
                 Recent 20 entries
               </span>
             </div>
@@ -379,20 +379,20 @@ const WalletPage = () => {
                     return (
                       <div
                         key={tx._id || tx.id}
-                        className="p-4 flex items-center justify-between hover:bg-card/50 transition-colors"
+                        className="p-3 flex items-center justify-between hover:bg-card/50 transition-colors"
                       >
                         <div className="flex items-center gap-3">
                           <div
-                            className={`p-2.5 rounded-[12px] ${isPositive ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"}`}
+                            className={`p-1.5 rounded-[10px] ${isPositive ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"}`}
                           >
                             {isPositive ? (
-                              <ArrowDownLeft className="w-5 h-5" />
+                              <ArrowDownLeft className="w-4 h-4" />
                             ) : (
-                              <ArrowUpRight className="w-5 h-5" />
+                              <ArrowUpRight className="w-4 h-4" />
                             )}
                           </div>
                           <div>
-                            <p className="font-bold text-sm text-zinc-200 font-inter">
+                            <p className="font-bold text-xs text-zinc-200 font-inter">
                               {tx.description || tx.type}
                               {tx.description
                                 ?.toLowerCase()
@@ -402,7 +402,7 @@ const WalletPage = () => {
                                 </span>
                               )}
                             </p>
-                            <p className="text-[10px] text-zinc-500 font-bold uppercase font-inter">
+                            <p className="text-[8px] text-zinc-500 font-bold uppercase font-inter">
                               {new Date(tx.createdAt).toLocaleDateString()} •{" "}
                               {new Date(tx.createdAt).toLocaleTimeString([], {
                                 hour: "2-digit",
@@ -413,14 +413,14 @@ const WalletPage = () => {
                         </div>
                         <div className="text-right font-inter">
                           <p
-                            className={`font-black text-lg font-open-sans ${isPositive ? "text-emerald-500" : "text-zinc-200"}`}
+                            className={`font-black text-base font-open-sans ${isPositive ? "text-emerald-500" : "text-zinc-200"}`}
                           >
                             {isPositive ? "+" : "-"}
                             {tx.amount}
                           </p>
                           <div className="flex flex-col items-end gap-1 font-inter">
                             <span
-                              className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full font-inter ${tx.status === "SUCCESS" ? "bg-primary/10 text-primary" : tx.status === "PENDING" ? "bg-amber-500/10 text-amber-500" : "bg-rose-500/10 text-rose-500"}`}
+                              className={`text-[7px] font-black uppercase px-1.5 py-0.5 rounded-full font-inter ${tx.status === "SUCCESS" ? "bg-primary/10 text-primary" : tx.status === "PENDING" ? "bg-amber-500/10 text-amber-500" : "bg-rose-500/10 text-rose-500"}`}
                             >
                               {tx.status}
                             </span>

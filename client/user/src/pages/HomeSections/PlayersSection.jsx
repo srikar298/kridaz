@@ -86,7 +86,7 @@ export default function PlayersSection({
                 <div
                   key={playerId}
                   onClick={() => navigate(`/profile/${playerId}`)}
-                  className="shrink-0 w-[44vw] sm:w-[155px] md:w-[175px] h-[220px] snap-start relative rounded-[16px] border border-white/5 bg-card overflow-hidden transition-all duration-300 group hover:border-primary/30 cursor-pointer"
+                  className="shrink-0 w-[44vw] sm:w-[155px] md:w-[175px] h-[220px] snap-start relative rounded-[16px] border border-white/5 bg-transparent overflow-hidden transition-all duration-300 group hover:border-primary/30 cursor-pointer"
                 >
                   {/* Background Image or Initials */}
                   {p.profilePicture || p.profileImage ? (
@@ -101,7 +101,7 @@ export default function PlayersSection({
                     />
                   ) : null}
                   <div
-                    className="absolute inset-0 flex items-center justify-center bg-white/5"
+                    className="absolute inset-0 flex items-center justify-center bg-transparent"
                     style={{
                       display:
                         p.profilePicture || p.profileImage ? "none" : "flex",
@@ -114,12 +114,11 @@ export default function PlayersSection({
                     </div>
                   </div>
 
-                  {/* Gradient Overlay for text readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-[#000000]/60 to-transparent" />
+                  {/* No background or gradient */}
 
                   {/* Primary Sport badge - Top Right */}
                   <div
-                    className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-bold text-primary bg-black/60 backdrop-blur-md border border-primary/20 z-10"
+                    className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full text-[8px] font-bold text-primary bg-black/60 backdrop-blur-md border border-primary/20 z-10"
                     style={{ fontFamily: "'Inter', sans-serif" }}
                   >
                     {primarySport}
@@ -129,7 +128,7 @@ export default function PlayersSection({
                   <div className="absolute bottom-0 left-0 right-0 p-2 flex flex-col z-10">
                     {/* Player Name */}
                     <h3
-                      className="text-white text-sm font-bold line-clamp-1 mb-0.5"
+                      className="text-white text-xs font-bold line-clamp-1 mb-0.5"
                       style={{ fontFamily: "'Inter', sans-serif" }}
                     >
                       {p.name || "Anonymous"}
@@ -137,20 +136,20 @@ export default function PlayersSection({
 
                     {/* Location: City */}
                     <p
-                      className="text-white/60 text-xs font-medium line-clamp-1 mb-3"
+                      className="text-white/60 text-[10px] font-medium line-clamp-1 mb-2.5"
                       style={{ fontFamily: "'Inter', sans-serif" }}
                     >
                       {locationText}
                     </p>
 
                     {/* Follow / Message Row */}
-                    <div className="w-full flex items-center gap-2">
+                    <div className="w-full flex items-center gap-1.5">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleFollowToggle(playerId);
                         }}
-                        className={`flex-1 h-8 rounded-lg text-xs font-bold transition-all active:scale-95 flex items-center justify-center ${
+                        className={`flex-1 h-7 rounded-md text-[10px] font-bold transition-all active:scale-95 flex items-center justify-center ${
                           isFollowing
                             ? "text-white bg-white/10 border border-white/10 hover:bg-white/20"
                             : "text-background bg-primary hover:brightness-110"
@@ -167,10 +166,10 @@ export default function PlayersSection({
                             navigate(`/messages?userId=${playerId}`)
                           );
                         }}
-                        className="w-8 h-8 rounded-lg text-white bg-white/10 border border-white/10 hover:bg-white/20 active:scale-95 transition-all flex items-center justify-center shrink-0"
+                        className="w-7 h-7 rounded-md text-white bg-white/10 border border-white/10 hover:bg-white/20 active:scale-95 transition-all flex items-center justify-center shrink-0"
                         title="Message"
                       >
-                        <MessageCircle size={14} className="shrink-0" />
+                        <MessageCircle size={12} className="shrink-0" />
                       </button>
                     </div>
                   </div>

@@ -444,7 +444,7 @@ export default function FindProfessionals() {
         <div className="max-w-7xl mx-auto">
           <form
             onSubmit={handleSearch}
-            className="relative mb-6"
+            className="relative mb-6 px-2 md:px-0"
             ref={filterMenuRef}
           >
             <div className="flex items-center rounded-full border border-white/10 bg-[#262626] shadow-lg transition-colors focus-within:border-primary/70 hover:bg-[#303030]">
@@ -544,7 +544,7 @@ export default function FindProfessionals() {
           </form>
 
           {/* Ads Space */}
-          <div className="px-1 md:px-0">
+          <div className="px-2 md:px-0">
             <div className="w-full h-[180px] sm:h-[240px] rounded-[16px] overflow-hidden mb-6 relative cursor-pointer group bg-card shadow-[0px_8px_24px_rgba(179,220,38,0.15)] border border-[rgba(255,255,255,0.08)]">
               <img
                 src="/pro-banner.png"
@@ -677,7 +677,7 @@ export default function FindProfessionals() {
             }
             setShowMatchModal(true);
           }}
-          className="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-gradient-to-r from-primary to-primary text-black font-black text-[10px] uppercase tracking-widest shadow-[0_8px_32px_rgba(85,222,232,0.3)] hover:shadow-[0_8px_40px_rgba(85,222,232,0.5)] hover:scale-105 active:scale-95 transition-all duration-300 group"
+          className="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-1.5 px-4 py-2.5 rounded-[12px] bg-gradient-to-r from-primary to-primary text-black font-black text-[10px] uppercase tracking-widest shadow-[0_8px_32px_rgba(85,222,232,0.3)] hover:shadow-[0_8px_40px_rgba(85,222,232,0.5)] hover:scale-105 active:scale-95 transition-all duration-300 group"
         >
           <Zap size={14} className="group-hover:animate-pulse" />
           Find Pro's

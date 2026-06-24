@@ -194,7 +194,7 @@ const NotificationsPage = () => {
 
   // ── UI Layer: Render ─────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-black pt-2 md:pt-24 pb-20 px-0 sm:px-4 font-inter">
+    <div className="min-h-screen bg-black pt-2 md:pt-24 pb-20 px-4 font-inter">
       <div className="max-w-4xl mx-auto space-y-4">
         {/* ── Header ──────────────────────────────────────────────── */}
         <div className="flex items-center gap-4 mb-4">

@@ -34,6 +34,9 @@ const PostItem = React.memo(
     const [commentInput, setCommentInput] = useState("");
     const [activeDropdown, setActiveDropdown] = useState(false);
     const [activeMediaIndex, setActiveMediaIndex] = useState(0);
+    const [isCaptionExpanded, setIsCaptionExpanded] = useState(false);
+    const combinedLength = (post.title?.length || 0) + (post.content?.length || 0);
+    const isLongCaption = combinedLength > 150;
 
     const handleMediaScroll = (e) => {
       if (!e.target) return;
@@ -265,13 +268,23 @@ const PostItem = React.memo(
           </div>
         </div>
 
-        {/* Caption */}
+                {/* Caption */}
         {(post.title || post.content) && (
-          <div className="text-[13.5px] font-medium leading-relaxed px-4 pb-3">
-            {post.title && <span className="font-bold mr-2">{post.title}</span>}
-            <span className="text-white/90 whitespace-pre-wrap">
-              {post.content}
-            </span>
+          <div className="text-[12px] font-medium leading-relaxed px-4 pb-3">
+            <div className={`${!isCaptionExpanded && isLongCaption ? "line-clamp-4" : ""} whitespace-pre-wrap break-words`}>
+              {post.title && <span className="font-bold mr-2">{post.title}</span>}
+              <span className="text-white/90">
+                {post.content}
+              </span>
+            </div>
+            {isLongCaption && (
+              <button 
+                onClick={() => setIsCaptionExpanded(!isCaptionExpanded)}
+                className="text-primary font-bold mt-1 text-[12px] hover:underline"
+              >
+                {isCaptionExpanded ? "See less" : "See more"}
+              </button>
+            )}
           </div>
         )}
 
@@ -521,10 +534,10 @@ const PostItem = React.memo(
         )}
 
         {/* Action Bar */}
-        <div className="flex items-center justify-between border-t border-white/10 bg-background px-2 py-1">
+        <div className="flex items-center gap-5 border-t border-white/10 bg-background px-4 py-3">
           <button
             onClick={handleLike}
-            className="flex-1 flex items-center justify-center gap-2 py-2 transition-colors group"
+            className="flex items-center gap-2 transition-colors group"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -554,39 +567,36 @@ const PostItem = React.memo(
                 d="M4 21h1V8H4c-1.1 0-2 .9-2 2v9c0 1.1.9 2 2 2M20 8h-6.61l1.12-3.37c.2-.61.1-1.28-.27-1.8c-.38-.52-.98-.83-1.62-.83h-.61c-.3 0-.58.13-.77.36L7.01 7.44V21h10.31a2 2 0 0 0 1.87-1.3l2.76-7.35c.04-.11.06-.23.06-.35v-2c0-1.1-.9-2-2-2Z"
               />
             </svg>
-            {post.likes?.length > 0 && (
-              <span className="text-[13px] font-bold text-foreground group-hover:text-white transition-colors">
-                {post.likes.length}
-              </span>
-            )}
+            <span className="text-[12px] font-bold text-foreground group-hover:text-white transition-colors">
+              {post.likes?.length || 0}
+            </span>
           </button>
           <button
             onClick={() => setExpandedComments(!expandedComments)}
-            className="flex-1 flex items-center justify-center gap-2 py-2 transition-colors group"
+            className="flex items-center gap-2 transition-colors group"
           >
             <img
               src={CommentIcon}
               alt="Comment"
               className="w-[18px] h-[18px] object-contain transition-all duration-200 opacity-70 group-hover:opacity-100 brightness-0 invert"
             />
-            {(post.totalComments > 0 || post.comments?.length > 0) && (
-              <span className="text-[13px] font-bold text-foreground group-hover:text-white transition-colors">
-                {post.totalComments || post.comments.length}
-              </span>
-            )}
+            <span className="text-[12px] font-bold text-foreground group-hover:text-white transition-colors">
+              {post.totalComments || post.comments?.length || 0}
+            </span>
           </button>
           <button
             onClick={(e) => {
               e.stopPropagation();
               onSharePost(postId);
             }}
-            className="flex-1 flex items-center justify-center py-2 transition-colors group"
+            className="flex items-center gap-2 transition-colors group"
           >
             <img
               src={ShareIcon}
               alt="Share"
               className="w-[18px] h-[18px] object-contain transition-all duration-200 opacity-70 group-hover:opacity-100 brightness-0 invert"
             />
+            <span className="text-[12px] font-bold text-foreground group-hover:text-white transition-colors">Share</span>
           </button>
         </div>
 

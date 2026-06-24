@@ -16,7 +16,7 @@ import { useDispatch } from "react-redux";
 import { updateUser } from "../../../redux/slices/authSlice";
 import { searchLocations } from "../../utils/locationService";
 import { Button, Input, Select, Textarea } from "@kridaz/ui";
-
+import ImageCropperModal from "./ImageCropperModal";
 
 export default function EditProfileModal({ isOpen, onClose, user }) {
   const [formData, setFormData] = useState({
@@ -34,6 +34,10 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [isSearchingLocation, setIsSearchingLocation] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  
+  // Cropper states
+  const [imageToCrop, setImageToCrop] = useState(null);
+  const [cropType, setCropType] = useState(null); // 'profile' | 'banner'
 
   // Phone OTP States
   const [showOtpModal, setShowOtpModal] = useState(false);
@@ -139,7 +143,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
     return () => clearTimeout(timer);
   }, [formData.username, user?.username]);
 
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -148,26 +152,16 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("profilePicture", file);
-
-    setUploading(true);
-    try {
-      const response = await axiosInstance.post(
-        "/api/user/auth/profile-picture",
-        formData
-      );
-
-      dispatch(updateUser({ profilePicture: response.data.profilePicture }));
-      toast.success("Profile picture updated!");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to upload image");
-    } finally {
-      setUploading(false);
-    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageToCrop(reader.result);
+      setCropType("profile");
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
   };
 
-  const handleBannerUpload = async (e) => {
+  const handleBannerUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -176,22 +170,44 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
       return;
     }
 
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageToCrop(reader.result);
+      setCropType("banner");
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleCropComplete = async (croppedBlob) => {
+    if (!croppedBlob) return;
+    
     const formData = new FormData();
-    formData.append("bannerPicture", file);
-
-    setBannerUploading(true);
+    const isProfile = cropType === "profile";
+    const fieldName = isProfile ? "profilePicture" : "bannerPicture";
+    const endpoint = isProfile ? "/api/user/auth/profile-picture" : "/api/user/auth/banner-picture";
+    
+    formData.append(fieldName, croppedBlob, `cropped-${cropType}.jpg`);
+    
+    if (isProfile) setUploading(true);
+    else setBannerUploading(true);
+    
     try {
-      const response = await axiosInstance.post(
-        "/api/user/auth/banner-picture",
-        formData
-      );
-
-      dispatch(updateUser({ bannerPicture: response.data.bannerPicture }));
-      toast.success("Banner picture updated!");
+      const response = await axiosInstance.post(endpoint, formData);
+      if (isProfile) {
+        dispatch(updateUser({ profilePicture: response.data.profilePicture }));
+        toast.success("Profile picture updated!");
+      } else {
+        dispatch(updateUser({ bannerPicture: response.data.bannerPicture }));
+        toast.success("Banner picture updated!");
+      }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to upload banner");
+      toast.error(error.response?.data?.message || `Failed to upload ${cropType}`);
     } finally {
-      setBannerUploading(false);
+      if (isProfile) setUploading(false);
+      else setBannerUploading(false);
+      setImageToCrop(null);
+      setCropType(null);
     }
   };
 
@@ -283,6 +299,19 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
         className="absolute inset-0 bg-black/90 backdrop-blur-md animate-in fade-in duration-300"
         onClick={onClose}
       />
+
+      {/* Image Cropper Modal */}
+      {imageToCrop && (
+        <ImageCropperModal
+          imageSrc={imageToCrop}
+          aspect={cropType === "profile" ? 1 : 16 / 9}
+          onCropComplete={handleCropComplete}
+          onClose={() => {
+            setImageToCrop(null);
+            setCropType(null);
+          }}
+        />
+      )}
 
       {/* Modal Container */}
       <div className="relative w-full max-w-xl bg-card border border-white/[0.08] rounded-[16px] overflow-hidden shadow-[0px_4px_16px_rgba(0,0,0,0.4)] animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">

@@ -1,6 +1,5 @@
 import React from "react";
-import { Heart, MapPin, Star } from "lucide-react";import { Button } from "@kridaz/ui";
-
+import { Heart, MapPin, Star } from "lucide-react";
 
 const VenueCard = ({ t, onClick }) => {
   return (
@@ -31,12 +30,15 @@ const VenueCard = ({ t, onClick }) => {
 
         {/* Heart Icon top right */}
         <div className="absolute top-4 right-4 z-10">
-          <Button
-            className="w-6 h-6 rounded-full bg-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
-            onClick={(e) => e.preventDefault()}
+          <button
+            className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:scale-110 transition-transform shadow-md border-0 outline-none p-0 cursor-pointer"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
           >
-            <Heart size={12} className="text-gray-800" strokeWidth={2} />
-          </Button>
+            <Heart size={16} className="text-green-600" strokeWidth={2} />
+          </button>
         </div>
 
         {/* Bottom Details Section */}

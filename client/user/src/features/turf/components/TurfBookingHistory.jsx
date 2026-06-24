@@ -275,24 +275,24 @@ const TurfBookingHistory = () => {
             </h2>
           </div>
 
-          <div className="flex flex-nowrap overflow-x-auto scrollbar-hide gap-2 pb-1 max-w-full shrink-0">
+          <div className="flex gap-1.5 shrink-0 w-full xl:w-auto">
             <Button
               onClick={() => setBookingSubTab("venues")}
-              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${bookingSubTab === "venues" ? "bg-primary text-black border-primary shadow-[0_4px_12px_rgba(204,255,0,0.2)]" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
+              className={`flex-1 px-2 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[8px] border transition-all ${bookingSubTab === "venues" ? "bg-primary text-black border-primary" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
             >
               Venue Bookings
             </Button>
             <Button
               onClick={() => setBookingSubTab("games")}
-              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${bookingSubTab === "games" ? "bg-primary text-black border-primary shadow-[0_4px_12px_rgba(204,255,0,0.2)]" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
+              className={`flex-1 px-2 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[8px] border transition-all ${bookingSubTab === "games" ? "bg-primary text-black border-primary" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
             >
               Joined Games
             </Button>
             <Button
               onClick={() => setBookingSubTab("professionals")}
-              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${bookingSubTab === "professionals" ? "bg-primary text-black border-primary shadow-[0_4px_12px_rgba(204,255,0,0.2)]" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
+              className={`flex-1 px-2 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[8px] border transition-all ${bookingSubTab === "professionals" ? "bg-primary text-black border-primary" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
             >
-              Hired Professionals
+              Hired Pros
             </Button>
           </div>
         </div>

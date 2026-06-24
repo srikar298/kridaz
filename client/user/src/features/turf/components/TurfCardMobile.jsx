@@ -323,9 +323,9 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
   };
 
   return (
-    <div className="w-full h-auto bg-card rounded-[16px] overflow-hidden border border-[rgba(255,255,255,0.08)] font-inter shadow-[0px_8px_24px_rgba(85,222,232,0.10)] flex flex-col relative z-10 isolate">
-      {/* ── Top Image Header (16:9 ratio) ── */}
-      <div className="relative w-full aspect-video shrink-0 group bg-[#0a0a0a]">
+    <div className="w-full h-auto bg-card rounded-[16px] overflow-hidden border border-[rgba(255,255,255,0.08)] font-inter  flex flex-col relative z-10 isolate">
+      {/* ── Top Image Header (2.4:1 ratio) ── */}
+      <div className="relative w-full aspect-[2.4/1] shrink-0 group bg-[#0a0a0a]">
         <div
           ref={scrollContainerRef}
           className="absolute inset-0 flex overflow-x-auto snap-x snap-mandatory no-scrollbar"
@@ -363,29 +363,29 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
         </div>
 
         {/* Action Buttons Overlay */}
-        <div className="absolute top-4 right-4 z-20 flex flex-col items-end gap-2">
-          <Button
+        <div className="absolute top-3 right-3 z-20 flex flex-row items-center gap-1.5">
+          <button
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               navigate(to);
             }}
-            className="flex items-center justify-center px-3 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-black/80 transition-colors text-[11px] font-bold"
+            className="flex items-center justify-center w-7 h-7 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-black/80 transition-colors outline-none cursor-pointer p-0"
           >
-            About
-          </Button>
-          <Button
+            <Info size={12} />
+          </button>
+          <button
             onClick={toggleWishlist}
-            className="flex items-center justify-center w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-black/80 transition-colors"
+            className="flex items-center justify-center w-7 h-7 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-black/80 transition-colors outline-none cursor-pointer p-0"
           >
             <Heart
-              size={14}
+              size={12}
               className={
                 isWishlisted ? "fill-red-500 text-red-500" : "text-white"
               }
             />
-          </Button>
-          <Button
+          </button>
+          <button
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -404,10 +404,10 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                 toast.success("Link copied to clipboard");
               }
             }}
-            className="flex items-center justify-center w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-black/80 transition-colors"
+            className="flex items-center justify-center w-7 h-7 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-black/80 transition-colors outline-none cursor-pointer p-0"
           >
-            <Share2 size={14} />
-          </Button>
+            <Share2 size={12} />
+          </button>
         </div>
 
         {/* Pagination Dots */}
@@ -424,24 +424,24 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
       </div>
 
       {/* ── Content Area (Fills remaining height) ── */}
-      <div className="flex-1 p-[16px] flex flex-col justify-start gap-[16px] bg-transparent shrink-0 overflow-hidden">
+      <div className="flex-1 p-3.5 flex flex-col justify-start gap-3 bg-transparent shrink-0 overflow-hidden">
         {/* Title and Rating Row */}
         <div className="flex justify-between items-start gap-3">
           <div className="min-w-0 flex-1">
-            <h2 className="text-[18px] font-[700] font-inter tracking-normal text-foreground leading-[28px] mb-1 truncate">
+            <h2 className="text-[13.5px] font-[700] font-inter tracking-normal text-foreground leading-snug mb-1 truncate">
               {turf.name}
             </h2>
-            <div className="flex items-center gap-1.5 text-[rgba(255,255,255,0.70)] mt-0.5">
-              <MapPin size={12} className="text-primary shrink-0" />
-              <p className="text-[12px] font-[400] leading-[16px] truncate">
+            <div className="flex items-center gap-1 text-[rgba(255,255,255,0.70)] mt-0.5">
+              <MapPin size={9} className="text-primary shrink-0" />
+              <p className="text-[10px] font-[400] leading-[14px] truncate">
                 {turf.location || turf.city || "Location unavailable"}
               </p>
             </div>
           </div>
           <div className="flex flex-col items-end shrink-0">
-            <div className="flex items-center gap-1 text-primary">
-              <Star size={14} className="fill-primary" />
-              <span className="text-[18px] font-[700] leading-none">
+            <div className="flex items-center gap-0.5 text-primary">
+              <Star size={12} className="fill-primary" />
+              <span className="text-[13px] font-[700] leading-none">
                 {rating.toFixed(1)}
               </span>
             </div>
@@ -449,66 +449,66 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
         </div>
 
         {/* Date Selector */}
-        <div className="flex flex-col gap-[8px]">
-          <div className="grid grid-cols-5 gap-[8px]">
+        <div className="flex flex-col gap-1.5">
+          <div className="grid grid-cols-5 gap-1.5">
             {dates.slice(0, 4).map((d, idx) => {
               const isSelected = selectedDate.dateNum === d.dateNum;
               return (
-                <Button
+                <button
                   key={idx}
                   onClick={() => setSelectedDate(d)}
-                  className={`flex flex-col items-center justify-center w-full py-2 px-1 rounded-[12px] border transition-all min-h-[52px] ${
+                  className={`flex flex-col items-center justify-center w-full py-1.5 px-0.5 rounded-[10px] border transition-all min-h-[44px] outline-none cursor-pointer ${
                     isSelected
                       ? "border-none bg-primary text-background"
                       : "border-[rgba(255,255,255,0.08)] bg-transparent text-[rgba(255,255,255,0.70)] hover:text-foreground"
                   }`}
                 >
-                  <span className="text-[10px] font-[400] leading-tight">
+                  <span className="text-[9px] font-[400] leading-tight">
                     {d.dayName.substring(0, 3)}
                   </span>
-                  <span className="text-[13px] font-[600] leading-tight mt-0.5">
+                  <span className="text-[11px] font-[600] leading-tight mt-0.5">
                     {d.dateNum}
                   </span>
-                </Button>
+                </button>
               );
             })}
-            <Button
+            <button
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsDateTimeDrawerOpen(true);
               }}
-              className="flex flex-col items-center justify-center w-full py-2 px-1 rounded-[12px] border border-[rgba(255,255,255,0.08)] bg-transparent text-[rgba(255,255,255,0.70)] hover:text-foreground transition-all group min-h-[52px]"
+              className="flex flex-col items-center justify-center w-full py-1.5 px-0.5 rounded-[10px] border border-[rgba(255,255,255,0.08)] bg-transparent text-[rgba(255,255,255,0.70)] hover:text-foreground transition-all group min-h-[44px] outline-none cursor-pointer"
             >
               <Calendar
-                size={16}
+                size={14}
                 className="group-hover:scale-110 transition-transform"
               />
-            </Button>
+            </button>
           </div>
         </div>
 
         {/* Time Slot Selector */}
-        <div className="flex flex-col gap-[8px]">
+        <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-foreground">
-              <Clock size={12} />
-              <h4 className="text-[14px] font-[600] leading-[20px]">
+              <Clock size={11} />
+              <h4 className="text-[12px] font-[600] leading-[18px]">
                 Select time slot
               </h4>
             </div>
           </div>
-          <div className="flex flex-nowrap overflow-x-auto no-scrollbar gap-[12px] pb-1">
+          <div className="flex flex-nowrap overflow-x-auto no-scrollbar gap-2 pb-1">
             {displaySlots.length > 0 ? (
               displaySlots.map((slot, idx) => {
                 const isSelected = selectedSlot === slot;
                 const isBooked = isTimeSlotBooked(slot);
                 return (
-                  <Button
+                  <button
                     key={idx}
                     disabled={isBooked}
                     onClick={() => !isBooked && setSelectedSlot(slot)}
-                    className={`shrink-0 relative px-3 py-1.5 rounded-[12px] border transition-all text-[11px] font-[600] flex items-center justify-center whitespace-nowrap ${
+                    className={`shrink-0 relative h-7 px-2.5 rounded-[8px] border transition-all text-[10px] font-[600] flex items-center justify-center whitespace-nowrap outline-none cursor-pointer ${
                       isBooked
                         ? "bg-card border-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.3)] cursor-not-allowed"
                         : isSelected
@@ -517,11 +517,11 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                     }`}
                   >
                     {slot}
-                  </Button>
+                  </button>
                 );
               })
             ) : (
-              <div className="text-[12px] text-[rgba(255,255,255,0.70)] py-1.5 px-1 italic">
+              <div className="text-[11px] text-[rgba(255,255,255,0.70)] py-1 px-0.5 italic">
                 No slots available
               </div>
             )}
@@ -529,12 +529,12 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
         </div>
 
         {/* Book Now Button & Footer */}
-        <div className="flex flex-col gap-[12px] mt-auto pt-[12px]">
-          <Button
+        <div className="flex flex-col gap-2 mt-auto pt-2">
+          <button
             onClick={handleBookNow}
-            className={`w-full font-[700] text-[16px] h-[52px] rounded-[12px] flex items-center justify-center transition-all ${
+            className={`w-full font-[700] text-[13px] h-[40px] rounded-[10px] flex items-center justify-center transition-all outline-none cursor-pointer ${
               selectedSlot
-                ? "bg-gradient-to-r from-secondary to-primary text-background shadow-[0px_8px_24px_rgba(191,243,103,0.15)]"
+                ? "bg-gradient-to-r from-secondary to-primary text-background  border-none"
                 : "bg-card text-foreground border border-[rgba(255,255,255,0.08)] opacity-40 cursor-not-allowed"
             }`}
           >
@@ -549,7 +549,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                     : "Book Now"
                 : "Select a Time Slot"}
             </span>
-          </Button>
+          </button>
         </div>
       </div>
 
@@ -764,7 +764,7 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
                 }}
                 className={`w-full mt-auto font-[700] text-[16px] h-[52px] rounded-[12px] flex items-center justify-center transition-all shrink-0 ${
                   selectedSlot
-                    ? "bg-primary text-black shadow-[0px_8px_24px_rgba(191,243,103,0.15)]"
+                    ? "bg-primary text-black "
                     : "bg-card text-foreground border border-[rgba(255,255,255,0.08)] opacity-40"
                 }`}
               >

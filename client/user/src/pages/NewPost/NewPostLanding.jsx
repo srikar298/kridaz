@@ -460,12 +460,12 @@ const NewPostLanding = () => {
       {/* Bottom Controls Area */}
       <div className="absolute bottom-0 left-0 w-full z-20 flex flex-col items-center pb-6 pointer-events-auto">
         {/* Post Type Selector */}
-        <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-full p-1.5 flex gap-1 shadow-2xl mb-4">
+        <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-[8px] p-1.5 flex gap-1 shadow-2xl mb-4">
           {POST_TYPES.map((type) => (
             <Button
               key={type}
               onClick={() => handleTabSwitch(type)}
-              className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
+              className={`px-6 py-2 rounded-[6px] text-sm font-semibold transition-all duration-300 ${
                 activeTab === type
                   ? "bg-white text-black shadow-md scale-105"
                   : "text-white/70 hover:text-white hover:bg-white/10"
@@ -481,10 +481,10 @@ const NewPostLanding = () => {
           {/* Upload Button */}
           <Button
             onClick={handleGalleryUpload}
-            className={`absolute transition-all duration-300 flex items-center justify-center gap-1 hover:bg-white/10 bg-black/60 backdrop-blur-md border border-white/20 rounded-full shadow-xl left-4 px-2.5 py-1 z-10`}
+            className={`absolute transition-all duration-300 flex items-center justify-center gap-1 hover:bg-white/10 bg-black/60 backdrop-blur-md border border-white/20 rounded-[8px] shadow-xl left-4 px-2.5 py-1 z-10`}
           >
             <div
-              className={`w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center`}
+              className={`w-6 h-6 rounded-[6px] bg-primary/10 flex items-center justify-center`}
             >
               {activeTab === "Reel" ? (
                 <Video size={12} className="text-primary" />

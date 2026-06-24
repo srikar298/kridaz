@@ -51,7 +51,7 @@ const SavedPage = () => {
         <p className="text-zinc-500 max-w-sm mx-auto text-sm">{message}</p>
         <Button
           onClick={() => navigate("/venues")}
-          className="mt-6 px-6 py-2.5 rounded-full bg-zinc-800 text-white font-semibold hover:bg-zinc-700 transition-colors"
+          className="mt-6 px-6 py-2.5 rounded-[12px] bg-zinc-800 text-white font-semibold hover:bg-zinc-700 transition-colors"
         >
           Explore Now
         </Button>
@@ -72,7 +72,7 @@ const SavedPage = () => {
           </p>
           <Button
             onClick={() => navigate("/login")}
-            className="mt-6 px-8 py-3 rounded-full bg-primary text-black font-bold hover:brightness-110 transition-all uppercase tracking-wider text-xs"
+            className="mt-6 px-8 py-3 rounded-[12px] bg-primary text-black font-bold hover:brightness-110 transition-all uppercase tracking-wider text-xs"
           >
             Log In Now
           </Button>
@@ -122,11 +122,10 @@ const SavedPage = () => {
         <div className="max-w-5xl mx-auto px-4 py-4 sm:py-6">
           <div className="mb-4 sm:mb-6">
             <div>
-              <h1 className="text-2xl sm:text-4xl font-black uppercase tracking-tighter flex items-center gap-3">
-                <Bookmark className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+              <h1 className="text-lg font-black uppercase tracking-tighter">
                 Saved Items
               </h1>
-              <p className="text-xs sm:text-sm text-zinc-500 font-medium tracking-wide uppercase mt-1">
+              <p className="text-[10px] text-zinc-500 font-medium tracking-widest uppercase mt-0.5">
                 Your personal collection
               </p>
             </div>
@@ -142,13 +141,13 @@ const SavedPage = () => {
                 <Button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-none flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold tracking-wide uppercase transition-all duration-300 ${
+                  className={`flex-none flex items-center gap-1.5 px-3 py-1.5 rounded-[12px] text-[11px] font-bold tracking-wide uppercase transition-all duration-300 ${
                     isActive
                       ? "bg-gradient-to-r from-primary to-primary text-black shadow-[0_0_15px_rgba(191,243,103,0.3)]"
                       : "bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700"
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-3 h-3" />
                   {tab.label}
                 </Button>
               );

@@ -93,7 +93,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
           <div className="flex items-center gap-2 shrink-0">
             <Button
               onClick={() => setIsStartScoringOpen(true)}
-              className="flex items-center justify-center px-4 h-8 bg-primary text-background rounded-[16px] hover:scale-105 shadow-md shadow-primary/20 transition-all duration-300 shrink-0"
+              className="flex items-center justify-center px-4 h-8 min-h-0 bg-primary text-background rounded-[16px] hover:scale-105 shadow-md shadow-primary/20 transition-all duration-300 shrink-0"
               title="Start Scoring"
             >
               <span className="text-[10px] font-[800] uppercase tracking-widest font-inter">
@@ -103,7 +103,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
             <div className="relative">
               <Button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-8 h-8 flex items-center justify-center bg-card text-foreground border border-[rgba(255,255,255,0.08)] rounded-[8px] hover:bg-[rgba(255,255,255,0.08)] hover:scale-105 transition-all duration-300 shrink-0"
+                className="w-8 h-8 min-h-0 flex items-center justify-center bg-card text-foreground border border-[rgba(255,255,255,0.08)] rounded-[8px] hover:bg-[rgba(255,255,255,0.08)] hover:scale-105 transition-all duration-300 shrink-0"
                 title="Add New"
               >
                 <Plus
@@ -132,12 +132,12 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                             onCreateTeam();
                             setIsDropdownOpen(false);
                           }}
-                          className="px-4 py-2.5 text-left text-[14px] text-[rgba(255,255,255,0.70)] hover:text-foreground hover:bg-[rgba(255,255,255,0.08)] font-[500] font-inter transition-colors"
+                          className="w-full justify-start h-auto min-h-0 px-4 py-2.5 text-left text-[14px] text-[rgba(255,255,255,0.70)] hover:text-foreground hover:bg-[rgba(255,255,255,0.08)] font-[500] font-inter transition-colors"
                         >
-                          <span className="text-primary font-[800] text-[10px] uppercase tracking-wider block mb-0.5">
-                            My Teams
-                          </span>
-                          Create New Squad
+                          <div className="flex flex-col items-start">
+    <span className="text-primary font-[800] text-[10px] uppercase tracking-wider mb-0.5">My Teams</span>
+    <span>Create New Squad</span>
+  </div>
                         </Button>
                         <div className="h-px bg-[rgba(255,255,255,0.08)] w-full" />
                         <Button
@@ -145,12 +145,12 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                             setIsAddOpponentOpen(true);
                             setIsDropdownOpen(false);
                           }}
-                          className="px-4 py-2.5 text-left text-[14px] text-[rgba(255,255,255,0.70)] hover:text-foreground hover:bg-[rgba(255,255,255,0.08)] font-[500] font-inter transition-colors"
+                          className="w-full justify-start h-auto min-h-0 px-4 py-2.5 text-left text-[14px] text-[rgba(255,255,255,0.70)] hover:text-foreground hover:bg-[rgba(255,255,255,0.08)] font-[500] font-inter transition-colors"
                         >
-                          <span className="text-primary font-[800] text-[10px] uppercase tracking-wider block mb-0.5">
-                            Opponents
-                          </span>
-                          Add Rival Team
+                          <div className="flex flex-col items-start">
+    <span className="text-primary font-[800] text-[10px] uppercase tracking-wider mb-0.5">Opponents</span>
+    <span>Add Rival Team</span>
+  </div>
                         </Button>
                         <div className="h-px bg-[rgba(255,255,255,0.08)] w-full" />
                         <Button
@@ -158,12 +158,12 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                             setIsStartScoringOpen(true);
                             setIsDropdownOpen(false);
                           }}
-                          className="px-4 py-2.5 text-left text-[14px] text-[rgba(255,255,255,0.70)] hover:text-foreground hover:bg-[rgba(255,255,255,0.08)] font-[500] font-inter transition-colors"
+                          className="w-full justify-start h-auto min-h-0 px-4 py-2.5 text-left text-[14px] text-[rgba(255,255,255,0.70)] hover:text-foreground hover:bg-[rgba(255,255,255,0.08)] font-[500] font-inter transition-colors"
                         >
-                          <span className="text-[rgba(255,255,255,0.70)] font-[800] text-[10px] uppercase tracking-wider block mb-0.5">
-                            Matches
-                          </span>
-                          Start Scoring Match
+                          <div className="flex flex-col items-start">
+    <span className="text-[rgba(255,255,255,0.70)] font-[800] text-[10px] uppercase tracking-wider mb-0.5">Matches</span>
+    <span>Start Scoring Match</span>
+  </div>
                         </Button>
                       </div>
                     </motion.div>

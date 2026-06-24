@@ -453,8 +453,26 @@ const TurfDetails = () => {
         >
           {/* VenueOverviewSection */}
           <div className="w-full flex-none space-y-4 lg:space-y-6">
-            {/* Back Button */}
-            <GlobalBackButton />
+            {/* Header Actions: Back, Like, Share */}
+            <div className="flex items-center justify-between w-full px-4 md:px-2">
+              <GlobalBackButton className="!ml-0" />
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={toggleFavorite}
+                  className={`flex items-center justify-center w-10 h-10 rounded-full bg-card hover:bg-[#1a1a1a] transition-colors shrink-0 shadow-lg outline-none cursor-pointer border ${isFavorite ? "border-primary text-primary" : "border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)] hover:text-white"}`}
+                >
+                  <Heart
+                    className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`}
+                  />
+                </button>
+                <button
+                  onClick={handleShare}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-card border border-[rgba(255,255,255,0.08)] hover:bg-[#1a1a1a] transition-colors text-[rgba(255,255,255,0.70)] hover:text-white shrink-0 shadow-lg outline-none cursor-pointer"
+                >
+                  <Share2 className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
 
             {/* Venue Big Heading */}
             <h1 className="text-[28px] md:text-[32px] font-[700] leading-tight text-foreground px-4 md:px-2 font-inter">
@@ -462,42 +480,42 @@ const TurfDetails = () => {
             </h1>
 
             {/* Quick Info Bar */}
-            <div className="flex flex-wrap items-center justify-start md:justify-between gap-y-3 gap-x-4 text-[12px] font-[400] leading-[16px] text-[rgba(255,255,255,0.70)] px-4 md:px-2 font-inter w-full">
-              <div className="flex items-center gap-2 shrink-0">
-                <Star
-                  className="w-4 h-4"
-                  style={{
-                    stroke: "url(#theme-gradient)",
-                    fill: "url(#theme-gradient)",
-                  }}
-                />
-                <span className="text-primary font-[700]">
-                  {averageRating ? averageRating.toFixed(1) : "5.0"}
-                </span>
-                <span>({reviews?.length || 0} REVIEWS)</span>
+            <div className="flex flex-col gap-y-2 text-[12px] font-[400] leading-[16px] text-[rgba(255,255,255,0.70)] px-4 md:px-2 font-inter w-full">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                <div className="flex items-center gap-2 shrink-0">
+                  <Star
+                    className="w-4 h-4"
+                    style={{
+                      stroke: "url(#theme-gradient)",
+                      fill: "url(#theme-gradient)",
+                    }}
+                  />
+                  <span className="text-primary font-[700]">
+                    {averageRating ? averageRating.toFixed(1) : "5.0"}
+                  </span>
+                  <span>({reviews?.length || 0} REVIEWS)</span>
+                </div>
+                <div className="w-px h-3 bg-zinc-800 hidden md:block" />
+                <div
+                  onClick={() => setIsPoliciesModalOpen(true)}
+                  className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors group shrink-0"
+                >
+                  <ShieldCheck
+                    className="w-4 h-4"
+                    style={{ stroke: "url(#theme-gradient)" }}
+                  />
+                  <span className="text-[rgba(255,255,255,0.70)] group-hover:text-primary transition-colors font-medium">
+                    View Policies
+                  </span>
+                </div>
               </div>
-              <div className="w-px h-3 bg-zinc-800" />
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-start gap-2">
                 <MapPin
-                  className="w-4 h-4"
+                  className="w-4 h-4 shrink-0 mt-0.5"
                   style={{ stroke: "url(#theme-gradient)" }}
                 />
-                <span className="text-[rgba(255,255,255,0.70)] font-medium">
-                  {turf.city || turf.location?.split(",")[0]} ,{" "}
-                  {turf.state || "DODA"}
-                </span>
-              </div>
-              <div className="w-px h-3 bg-zinc-800" />
-              <div
-                onClick={() => setIsPoliciesModalOpen(true)}
-                className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors group shrink-0"
-              >
-                <ShieldCheck
-                  className="w-4 h-4"
-                  style={{ stroke: "url(#theme-gradient)" }}
-                />
-                <span className="text-[rgba(255,255,255,0.70)] group-hover:text-primary transition-colors font-medium">
-                  View Policies
+                <span className="text-[rgba(255,255,255,0.70)] font-medium leading-snug line-clamp-2">
+                  {turf.location || [turf.city, turf.state].filter(Boolean).join(", ") || "DODA"}
                 </span>
               </div>
             </div>
@@ -570,26 +588,6 @@ const TurfDetails = () => {
                       </Button>
                     </>
                   )}
-
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-
-                  {/* Like and Share Actions */}
-                  <div className="absolute top-4 right-4 z-40 flex items-center gap-3">
-                    <Button
-                      onClick={toggleFavorite}
-                      className={`p-3 rounded-[8px] bg-black/40 backdrop-blur-md border ${isFavorite ? "border-primary text-primary" : "border-white/10 text-white"} hover:bg-primary hover:text-black hover:border-transparent transition-all shadow-lg`}
-                    >
-                      <Heart
-                        className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`}
-                      />
-                    </Button>
-                    <Button
-                      onClick={handleShare}
-                      className="p-3 rounded-[8px] bg-black/40 backdrop-blur-md border border-white/10 text-white hover:bg-primary hover:text-black hover:border-transparent transition-all shadow-lg"
-                    >
-                      <Share2 className="w-5 h-5" />
-                    </Button>
-                  </div>
                 </div>
 
                 {/* Image Thumbnails */}
@@ -731,7 +729,7 @@ const TurfDetails = () => {
                   <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-inter">
                     FACILITIES
                   </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     {turf.facilities?.map((facility, index) => (
                       <div
                         key={index}

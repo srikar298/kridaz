@@ -304,14 +304,14 @@ const CreatePostPage = () => {
           </div>
 
           {mediaPreviews.length > 0 && (
-            <div className="flex gap-2 overflow-x-auto pb-2 min-h-0 w-full shrink-0">
+            <div className="flex gap-3 overflow-x-auto pb-2 min-h-0 w-full shrink-0 snap-x snap-mandatory scrollbar-hide">
               {mediaPreviews.map((preview, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, scale: 0.97, y: 5 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.97, y: -5 }}
-                  className="relative h-32 w-32 rounded-2xl overflow-hidden border border-white/10 group shadow-lg shrink-0 bg-neutral-900"
+                  className={`relative ${mediaPreviews.length === 1 ? "w-full" : "w-[85%]"} aspect-[4/5] rounded-2xl overflow-hidden border border-white/10 group shadow-lg shrink-0 snap-center bg-neutral-900`}
                 >
                   <img
                     src={preview}
@@ -332,9 +332,9 @@ const CreatePostPage = () => {
                         setMediaFiles(newFiles);
                         setMediaPreviews(newPreviews);
                       }}
-                      className="absolute top-2 right-2 p-1.5 bg-black/75 rounded-full text-white transition-colors cursor-pointer z-10"
+                      className="absolute top-3 right-3 p-2 bg-black/60 backdrop-blur-md rounded-full text-white transition-colors cursor-pointer z-10 hover:bg-red-500/80"
                     >
-                      <X size={14} />
+                      <X size={16} />
                     </motion.button>
                   )}
                 </motion.div>
@@ -406,7 +406,7 @@ const CreatePostPage = () => {
                 disabled={
                   isPublishing || (!content.trim() && mediaFiles.length === 0)
                 }
-                className="bg-primary text-black px-6 py-3 rounded-xl font-black uppercase tracking-wider text-sm flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#a5db4b]"
+                className="bg-primary text-black px-6 py-3 rounded-xl font-black uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-100 disabled:bg-primary/20 disabled:text-black/80 hover:bg-[#a5db4b]"
               >
                 {isPublishing ? (
                   <Loader2 size={16} className="animate-spin" />

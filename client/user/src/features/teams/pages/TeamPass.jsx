@@ -112,7 +112,7 @@ const TeamPass = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white py-12 px-4 flex flex-col items-center overflow-x-hidden">
+    <div className="min-h-screen bg-black text-white pt-4 pb-12 px-4 flex flex-col items-center overflow-x-hidden">
       <div className="w-full max-w-[480px] relative">
         {/* Background Glows */}
         <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/5 blur-[100px] rounded-full pointer-events-none" />
@@ -129,7 +129,7 @@ const TeamPass = () => {
                 alt=""
               />
               <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-background/60 to-background" />
-              <div className="absolute inset-x-8 top-8 flex items-center justify-between z-10">
+              <div className="absolute inset-x-6 top-5 flex items-center justify-between z-10">
                 <div>
                   <h3
                     className="text-xl font-black tracking-tighter text-primary"
@@ -152,7 +152,7 @@ const TeamPass = () => {
             </div>
 
             {/* Team Identity Area */}
-            <div className="px-8 py-8 flex items-center gap-6">
+            <div className="px-6 py-6 flex items-start gap-4">
               <div className="w-28 h-28 rounded-[8px] bg-black border border-white/10 p-1.5 overflow-hidden shrink-0 shadow-2xl">
                 <div className="w-full h-full rounded-[8px] bg-card flex items-center justify-center overflow-hidden">
                   {team.logo ? (
@@ -184,7 +184,7 @@ const TeamPass = () => {
             </div>
 
             {/* Metadata Grid (Styled as individual boxes) */}
-            <div className="px-8 pb-4">
+            <div className="px-6 pb-4">
               <div className="grid grid-cols-2 gap-4">
                 {[
                   {
@@ -227,7 +227,7 @@ const TeamPass = () => {
             </div>
 
             {/* About Team Section */}
-            <div className="px-8 py-4">
+            <div className="px-6 py-4">
               <div className="bg-white/[0.02] border border-white/5 rounded-[8px] p-6 relative overflow-hidden">
                 <div className="relative z-10 space-y-3">
                   <div className="flex items-center gap-2 text-white/30">
@@ -255,7 +255,7 @@ const TeamPass = () => {
             </div>
 
             {/* QR Scan Section (Enhanced Glow) */}
-            <div className="px-8 py-6">
+            <div className="px-6 py-4">
               <div className="bg-white/[0.02] border border-white/5 rounded-[8px] p-8 flex flex-col md:flex-row items-center gap-10">
                 {/* QR Frame with Pulse Glow */}
                 <div className="relative p-2">
@@ -289,7 +289,7 @@ const TeamPass = () => {
                         Scan to Join Team
                       </h4>
                     </div>
-                    <p className="text-[10px] text-white/40 font-medium leading-relaxed">
+                    <p className="text-[10px] text-white/40 leading-relaxed" style={SUBHEADING_STYLE}>
                       Scan this pass to view team details and join the squad
                     </p>
                   </div>
@@ -318,27 +318,27 @@ const TeamPass = () => {
             </div>
 
             {/* Main Action Area */}
-            <div className="px-8 pb-10 space-y-4">
+            <div className="px-6 pb-6 space-y-3">
               <Button
                 onClick={handleJoinTeam}
                 disabled={isJoining}
-                className="w-full flex items-center justify-center gap-4 py-6 rounded-[8px] bg-primary text-black font-black uppercase text-[14px] tracking-[0.2em] transition-all hover:scale-[1.01] active:scale-[0.99] shadow-[0_15px_40px_rgba(85,222,232,0.4)] relative group overflow-hidden"
+                className="w-full flex items-center justify-center gap-3 py-4 rounded-[8px] bg-primary text-black font-black uppercase text-[14px] tracking-[0.2em] transition-all hover:scale-[1.01] active:scale-[0.99] relative group overflow-hidden"
               >
                 <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700 skew-x-12" />
                 {isJoining ? (
-                  <Loader2 size={24} className="animate-spin" />
+                  <Loader2 size={24} className="animate-spin relative z-10" />
                 ) : (
-                  <>
-                    <UserPlus size={22} strokeWidth={3} />
+                  <span className="relative z-10 flex items-center justify-center gap-3 w-full">
+                    <UserPlus size={20} strokeWidth={3} />
                     Join This Team
-                  </>
+                  </span>
                 )}
               </Button>
 
               <div className="grid grid-cols-2 gap-4">
                 <Button
                   onClick={() => window.print()}
-                  className="flex items-center justify-center gap-3 py-4 rounded-[8px] bg-white/[0.03] border border-white/5 text-white/40 font-black uppercase text-[10px] tracking-widest hover:bg-white/5 hover:text-white transition-all"
+                  className="flex items-center justify-center gap-2 py-3 rounded-[8px] bg-white/[0.03] border border-white/5 text-white/40 font-black uppercase text-[10px] tracking-widest hover:bg-white/5 hover:text-white transition-all"
                 >
                   <Download size={16} /> Save Pass
                 </Button>
@@ -347,7 +347,7 @@ const TeamPass = () => {
                     navigator.clipboard.writeText(window.location.href);
                     toast.success("Invite link copied!");
                   }}
-                  className="flex items-center justify-center gap-3 py-4 rounded-[8px] bg-white/[0.03] border border-white/5 text-white/40 font-black uppercase text-[10px] tracking-widest hover:bg-white/5 hover:text-white transition-all"
+                  className="flex items-center justify-center gap-2 py-3 rounded-[8px] bg-white/[0.03] border border-white/5 text-white/40 font-black uppercase text-[10px] tracking-widest hover:bg-white/5 hover:text-white transition-all"
                 >
                   <Share2 size={16} /> Copy Link
                 </Button>

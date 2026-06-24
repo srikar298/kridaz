@@ -599,7 +599,7 @@ const CreateTeamModal = ({ isOpen, onClose, onSuccess }) => {
                   type="submit"
                   disabled={isSubmitDisabled}
                   style={{ fontFamily: "'Inter', sans-serif" }}
-                  className="flex-[2] py-2.5 bg-gradient-to-r from-primary to-primary hover:brightness-[1.04] text-black font-black uppercase tracking-wider rounded-[8px] shadow-lg shadow-[var(--primary)]/10 hover:shadow-[var(--primary)]/15 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 active:translate-y-0 text-xs"
+                  className="flex-[2] py-2.5 bg-gradient-to-r from-primary to-primary hover:brightness-[1.04] !text-black font-black uppercase tracking-wider rounded-[8px] shadow-lg shadow-[var(--primary)]/10 hover:shadow-[var(--primary)]/15 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 active:translate-y-0 text-xs"
                 >
                   {isCreating ? (
                     <>

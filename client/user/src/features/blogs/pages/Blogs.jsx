@@ -6,6 +6,10 @@ import axios from "axios";import { Button, Input } from "@kridaz/ui";
 
 const PRI = "var(--primary)";
 const BDR = "var(--border)";
+const HEADING_STYLE = {
+  fontFamily: "'Open Sans', sans-serif",
+  fontWeight: 900,
+};
 const SUBHEADING_STYLE = {
   fontFamily: "'Inter 28pt Light', sans-serif",
   fontWeight: 300,
@@ -81,20 +85,21 @@ const Blogs = () => {
     <div className="min-h-screen bg-black text-white pt-4 pb-24 px-6">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-16">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
           <div className="max-w-2xl">
             <Link
               to="/"
-              className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.3em] mb-6"
+              className="inline-flex items-center gap-1.5 text-white/40 hover:text-white transition-colors text-[10px] font-bold uppercase tracking-[0.25em] mb-3"
             >
               <ArrowLeft size={14} /> Back to Home
             </Link>
-            <h1 className="font-display text-6xl md:text-8xl uppercase leading-[0.85] tracking-tighter">
-              The <span style={{ color: PRI }}>Playbook</span> <br />
-              <span className="text-white/20 italic">Stories & Insights</span>
+            <h1 className="text-3xl uppercase leading-tight tracking-tighter" style={HEADING_STYLE}>
+              The <span style={{ color: PRI }}>Playbook</span>
+              <br />
+              <span className="text-white/20 text-2xl" style={SUBHEADING_STYLE}>Stories & Insights</span>
             </h1>
             <p
-              className="text-gray-500 text-xs uppercase tracking-[0.3em] mt-6 leading-relaxed"
+              className="text-gray-500 text-[10px] uppercase tracking-[0.25em] mt-3 leading-relaxed"
               style={SUBHEADING_STYLE}
             >
               Discover the latest in sports, fitness, and venue management from
@@ -113,7 +118,7 @@ const Blogs = () => {
               placeholder="SEARCH ARTICLES..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-[8px] py-4 pl-12 pr-4 text-sm font-mono focus:outline-none focus:border-primary transition-all placeholder:text-white/10 uppercase tracking-widest"
+              className="w-full bg-white/5 border border-white/10 rounded-[8px] py-2.5 pl-10 pr-3 text-xs font-mono focus:outline-none focus:border-primary transition-all placeholder:text-white/10 uppercase tracking-widest"
             />
           </div>
         </div>
@@ -121,7 +126,7 @@ const Blogs = () => {
         {/* Featured Posts / Grid */}
         {filteredBlogs.length === 0 ? (
           <div className="py-32 text-center">
-            <p className="text-white/20 font-display text-4xl uppercase italic">
+            <p className="text-white/20 text-2xl uppercase tracking-widest" style={HEADING_STYLE}>
               No articles found
             </p>
             <Button
@@ -163,7 +168,7 @@ const Blogs = () => {
 
                   {/* Title */}
                   <div className="mt-auto">
-                    <h3 className="font-display text-3xl md:text-4xl text-white leading-[0.9] uppercase italic mb-6 group-hover:text-primary transition-colors">
+                    <h3 className="text-xl text-white leading-tight uppercase mb-4 group-hover:text-primary transition-colors" style={HEADING_STYLE}>
                       {blog.title}
                     </h3>
 
