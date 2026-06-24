@@ -240,7 +240,6 @@ const LocationVenuePicker = ({ isOpen, onClose, onSelect, onBookSlot }) => {
                   )}
                 </div>
               )}
-              )}
             </div>
             </>
             ) : (
