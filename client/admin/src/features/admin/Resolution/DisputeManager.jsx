@@ -311,7 +311,7 @@ const DisputeManager = () => {
                   {/* Venue Card */}
                   <div className="bg-card border border-white/10 rounded-[8px] p-6 group hover:border-orange-500/20 transition-all">
                     <div className="flex items-center gap-4 mb-6">
-                      <div className="w-12 h-12 rounded-[8px] bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20 group-hover:scale-110 transition-transform">
+                      <div className="w-12 h-12 rounded-[8px] bg-purple-500/10 flex items-center justify-center text-purple-500 border border-purple-500/20 group-hover:scale-110 transition-transform">
                         <Building size={24} />
                       </div>
                       <div>

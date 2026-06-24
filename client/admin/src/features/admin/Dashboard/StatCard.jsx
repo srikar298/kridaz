@@ -32,7 +32,7 @@ const StatCard = ({
       </div>
 
       {Icon && (
-        <div className="w-8 h-8 md:w-12 md:h-12 flex items-center justify-center bg-white/5 rounded-lg md:rounded-[8px] border border-white/5 group-hover:border-secondary/30 transition-all">
+        <div className="w-8 h-8 md:w-12 md:h-12 flex items-center justify-center bg-black rounded-lg md:rounded-[8px] border border-white/5 group-hover:border-primary/30 transition-all">
           <Icon
             className="text-secondary group-hover:scale-110 transition-transform"
             size={16}

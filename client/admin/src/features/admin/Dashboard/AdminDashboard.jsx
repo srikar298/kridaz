@@ -101,7 +101,7 @@ export default function AdminDashboard() {
     };
   });
 
-  const COLORS = ["var(--primary)", "var(--success)", "#3B82F6", "#6366F1"];
+  const COLORS = ["var(--primary)", "var(--success)", "#F59E0B", "#10B981"];
 
   return (
     <div className="p-4 lg:p-10 space-y-8 lg:space-y-12 animate-fade-in pt-2 pb-24 lg:pb-12 bg-background relative">
@@ -330,11 +330,11 @@ const StatsCard = ({
   >
     <Icon className="absolute -right-4 -bottom-4 w-20 h-20 text-white/[0.02] group-hover:text-white/[0.04] transition-colors" />
     <div className="flex items-center justify-between mb-5 relative z-10">
-      <div className="w-10 h-10 bg-primary/10 rounded-[6px] text-primary flex items-center justify-center border border-primary/20 shadow-sm">
+      <div className="w-10 h-10 bg-black rounded-[6px] text-primary flex items-center justify-center border border-primary/20 shadow-sm">
         <Icon size={20} />
       </div>
       <div
-        className={`px-2 py-0.5 rounded-[6px] text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 ${trend === "Stable" || trend === "Optimal" ? "bg-blue-500/10 text-blue-400 border border-blue-500/20" : trendNegative ? "bg-red-500/10 text-red-400 border border-red-500/20" : "bg-primary/10 text-primary border border-primary/20"}`}
+        className={`px-2 py-0.5 rounded-[6px] text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 ${trend === "Stable" || trend === "Optimal" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : trendNegative ? "bg-red-500/10 text-red-400 border border-red-500/20" : "bg-primary/10 text-primary border border-primary/20"}`}
       >
         {trend}
       </div>
@@ -391,7 +391,7 @@ const ModerationItem = ({
     className={`flex items-center justify-between p-3 bg-white/[0.02] border border-white/5 rounded-[8px] hover:border-primary/30 transition-all ${onClick ? "cursor-pointer hover:bg-primary/5" : ""}`}
   >
     <div className="flex items-center gap-3">
-      <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+      <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center border border-white/5">
         <Icon className="w-4 h-4 text-primary" />
       </div>
       <span className="text-[11px] font-bold text-gray-400 uppercase tracking-tight">

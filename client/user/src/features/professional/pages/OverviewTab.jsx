@@ -321,7 +321,7 @@ const OverviewTab = ({ role, profile }) => {
               Bookings
             </span>
             <div className="relative inline-flex items-center">
-              <Select
+              <select
                 value={bookingsTimeline}
                 onChange={(e) => setBookingsTimeline(e.target.value)}
                 className="appearance-none bg-transparent text-[11px] text-muted-foreground font-semibold uppercase tracking-wider pr-4 outline-none cursor-pointer hover:text-white transition-colors z-10 text-right"
@@ -338,7 +338,7 @@ const OverviewTab = ({ role, profile }) => {
                 <option className="bg-[#141414] text-white" value="All Time">
                   All Time
                 </option>
-              </Select>
+              </select>
               <ChevronDown
                 size={12}
                 className="text-muted-foreground absolute right-0 pointer-events-none"
@@ -390,7 +390,7 @@ const OverviewTab = ({ role, profile }) => {
           </div>
           <div className="mt-2 flex items-center border-t border-border pt-2">
             <div className="relative inline-flex items-center w-full">
-              <Select
+              <select
                 value={earningsTimeline}
                 onChange={(e) => setEarningsTimeline(e.target.value)}
                 className="appearance-none bg-transparent text-[11px] text-muted-foreground font-semibold uppercase tracking-wider pr-4 outline-none cursor-pointer hover:text-white transition-colors z-10 w-full"
@@ -407,7 +407,7 @@ const OverviewTab = ({ role, profile }) => {
                 <option className="bg-[#141414] text-white" value="All Time">
                   All Time
                 </option>
-              </Select>
+              </select>
               <ChevronDown
                 size={12}
                 className="text-muted-foreground absolute right-0 pointer-events-none"
@@ -455,7 +455,7 @@ const OverviewTab = ({ role, profile }) => {
           </div>
           <div className="mt-2 flex items-center border-t border-border pt-2">
             <div className="relative inline-flex items-center w-full">
-              <Select
+              <select
                 value={ratingTimeline}
                 onChange={(e) => setRatingTimeline(e.target.value)}
                 className="appearance-none bg-transparent text-[11px] text-muted-foreground font-semibold uppercase tracking-wider pr-4 outline-none cursor-pointer hover:text-white transition-colors z-10 w-full"
@@ -472,7 +472,7 @@ const OverviewTab = ({ role, profile }) => {
                 <option className="bg-[#141414] text-white" value="All Time">
                   All Time
                 </option>
-              </Select>
+              </select>
               <ChevronDown
                 size={12}
                 className="text-muted-foreground absolute right-0 pointer-events-none"
@@ -765,7 +765,7 @@ const OverviewTab = ({ role, profile }) => {
                 Bookings vs Income
               </h3>
               <div className="relative inline-flex items-center">
-                <Select
+                <select
                   value={graphTimeline}
                   onChange={(e) => setGraphTimeline(e.target.value)}
                   className="appearance-none bg-transparent text-[11px] text-muted-foreground font-semibold uppercase tracking-wider pr-4 outline-none cursor-pointer hover:text-white transition-colors z-10"
@@ -785,7 +785,7 @@ const OverviewTab = ({ role, profile }) => {
                   <option className="bg-[#141414] text-white" value="All Time">
                     All Time
                   </option>
-                </Select>
+                </select>
                 <ChevronDown
                   size={12}
                   className="text-muted-foreground absolute right-0 pointer-events-none"

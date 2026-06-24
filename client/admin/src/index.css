@@ -6,8 +6,8 @@
 
 /* ── App Specific Overrides ─────────────────────────────────────── */
 :root {
-  --primary: var(--secondary);
-  --primary-glow: rgba(85, 222, 232, 0.4);
-  --primary-dark: #00b4c2;
-  --secondary: var(--primary);
+  --primary: #bff367;        /* Neon green/lime as primary */
+  --primary-glow: rgba(191, 243, 103, 0.4);
+  --primary-dark: #a2d152;
+  --secondary: #00c187;      /* Success green as secondary */
 }
