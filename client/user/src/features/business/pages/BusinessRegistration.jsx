@@ -15,7 +15,8 @@ import {
   Upload,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { searchLocations } from "@user/utils/locationService";import { Button, Input } from "@kridaz/ui";
+import { searchLocations } from "@user/utils/locationService";
+import { Button, Input } from "@kridaz/ui";
 
 
 const PRI = "var(--primary)";

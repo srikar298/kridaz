@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import useVenueOwnerBookings from "@hooks/venue-owner/useVenueOwnerBookings";
 import BookingsSkeleton from "./BookingsSkeleton";
-import { format } from "date-fns";import { Button, Select } from "@kridaz/ui";
+import { format } from "date-fns";
+import { Button, Select } from "@kridaz/ui";
 
 import {
   ArrowUpDown,

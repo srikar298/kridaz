@@ -79,7 +79,8 @@ import {
 } from "../../../redux/api/professionalApi";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "@redux/slices/authSlice.js";
-import { useSocket } from "@context/SocketContext";import { Button, Input, Select } from "@kridaz/ui";
+import { useSocket } from "@context/SocketContext";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 const OverviewTab = ({ role, profile }) => {

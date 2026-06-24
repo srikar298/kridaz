@@ -7,7 +7,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useSelector } from "react-redux";
-import axios from "axios";import { Button, Textarea } from "@kridaz/ui";
+import axios from "axios";
+import { Button, Textarea } from "@kridaz/ui";
 
 
 const ReviewsTab = ({ role }) => {

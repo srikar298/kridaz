@@ -2,7 +2,8 @@ import { useState } from "react";
 import { X, Loader2, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useReportPostMutation } from "@redux/api/communityApi";
-import toast from "react-hot-toast";import { Button, Input, Textarea } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button, Input, Textarea } from "@kridaz/ui";
 
 
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };

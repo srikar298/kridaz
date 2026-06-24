@@ -1,5 +1,6 @@
 import React from "react";
-import { Users, AlertTriangle, Calendar, IndianRupee } from "lucide-react";import { Button } from "@kridaz/ui";
+import { Users, AlertTriangle, Calendar, IndianRupee } from "lucide-react";
+import { Button } from "@kridaz/ui";
 
 
 const OverviewTab = ({ tournament }) => {

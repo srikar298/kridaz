@@ -10,7 +10,8 @@ import {
   X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TurfCardMobile, VenueCard } from "../../features/turf";import { Button } from "@kridaz/ui";
+import { TurfCardMobile, VenueCard } from "../../features/turf";
+import { Button } from "@kridaz/ui";
 
 
 const BDR = "var(--border)";

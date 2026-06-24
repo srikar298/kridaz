@@ -12,7 +12,8 @@ import {
   Filter,
   ChevronDown,
 } from "lucide-react";
-import toast from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button, Input } from "@kridaz/ui";
 
 
 const VerificationCenter = () => {

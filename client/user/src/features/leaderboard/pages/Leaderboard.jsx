@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Trophy, LayoutGrid } from "lucide-react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";import { Button, Select } from "@kridaz/ui";
+import { useNavigate } from "react-router-dom";
+import { Button, Select } from "@kridaz/ui";
 
 
 const PRI = "var(--primary)";

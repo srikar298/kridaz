@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Calendar, MapPin, User, Trophy, Clock, Info } from "lucide-react";
-import { useGetMyOnDemandBookingsQuery } from "../../../redux/api/professionalApi";import { Button } from "@kridaz/ui";
+import { useGetMyOnDemandBookingsQuery } from "../../../redux/api/professionalApi";
+import { Button } from "@kridaz/ui";
 
 
 const BookingsTab = ({ role }) => {

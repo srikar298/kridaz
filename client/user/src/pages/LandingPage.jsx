@@ -25,7 +25,8 @@ import Dock from "../shared/components/ui/Dock";
 import ComparisonTable from "../shared/components/ui/ComparisonTable";
 import Masonry from "@components/ui/Masonry";
 import MobileMasonrySlider from "@components/ui/MobileMasonrySlider";
-import TestimonialMarquee from "./HomeSections/TestimonialMarquee";import { Button } from "@kridaz/ui";
+import TestimonialMarquee from "./HomeSections/TestimonialMarquee";
+import { Button } from "@kridaz/ui";
 
 
 // Menu items for CardNav

@@ -38,7 +38,8 @@ import {
 import toast from "react-hot-toast";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
 import { StartScoringModal, ScoringMatchCard } from "@features/scoring";
-import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";import { Button } from "@kridaz/ui";
+import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";
+import { Button } from "@kridaz/ui";
 
 
 const PRI = "var(--primary)";

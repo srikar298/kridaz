@@ -28,7 +28,8 @@ import {
 import { useListGamesQuery } from "@redux/api/gamesApi";
 import { useGetProfessionalsListQuery } from "@redux/api/professionalApi";
 import { useGetUserBookingsQuery } from "@redux/api/userApi";
-import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";import { Button } from "@kridaz/ui";
+import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";
+import { Button } from "@kridaz/ui";
 
 import {
   ChevronLeft,

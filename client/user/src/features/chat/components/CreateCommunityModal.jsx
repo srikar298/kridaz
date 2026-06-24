@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useCreateGroupChatMutation } from "@redux/api/chatApi";
-import { Globe, X, ChevronRight, Camera } from "lucide-react";import { Button, Input, Textarea } from "@kridaz/ui";
+import { Globe, X, ChevronRight, Camera } from "lucide-react";
+import { Button, Input, Textarea } from "@kridaz/ui";
 
 
 const CreateCommunityModal = ({ isOpen, onClose, onSuccess }) => {

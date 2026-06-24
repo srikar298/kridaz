@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Lock, Loader2, X } from "lucide-react";import { Button, Input } from "@kridaz/ui";
+import { Lock, Loader2, X } from "lucide-react";
+import { Button, Input } from "@kridaz/ui";
 
 
 const ScoringPasswordModal = ({

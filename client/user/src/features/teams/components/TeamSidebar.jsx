@@ -8,7 +8,8 @@ import { Plus, Users, Search, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AddOpponentModal from "./AddOpponentModal";
 import { StartScoringModal } from "@features/scoring";
-import { useLocation, useNavigate } from "react-router-dom";import { Button, Input } from "@kridaz/ui";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Button, Input } from "@kridaz/ui";
 
 
 const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {

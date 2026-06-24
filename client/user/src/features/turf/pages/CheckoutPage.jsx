@@ -28,7 +28,8 @@ import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { handlePayment, createOrder } from "@infrastructure/razorpay";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button, Input } from "@kridaz/ui";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import { Button, Input } from "@kridaz/ui";
 
 
 const SUBHEADING_STYLE = {

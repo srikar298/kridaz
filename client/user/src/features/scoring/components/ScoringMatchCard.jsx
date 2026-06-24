@@ -1,7 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Trophy, Clock, Tv, Activity, Play, Eye } from "lucide-react";
-import { useNavigate } from "react-router-dom";import { Button } from "@kridaz/ui";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@kridaz/ui";
 
 
 const ScoringMatchCard = ({ match }) => {

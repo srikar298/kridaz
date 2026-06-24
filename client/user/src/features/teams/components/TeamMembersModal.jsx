@@ -1,7 +1,8 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Users, Shield, ExternalLink } from "lucide-react";
-import { useNavigate } from "react-router-dom";import { Button } from "@kridaz/ui";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@kridaz/ui";
 
 
 const TeamMembersModal = ({ isOpen, onClose, team }) => {

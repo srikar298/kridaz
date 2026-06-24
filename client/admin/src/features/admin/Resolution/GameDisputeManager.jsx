@@ -7,7 +7,8 @@ import {
   User,
   Users,
 } from "lucide-react";
-import useGameDisputes from "@hooks/admin/useGameDisputes";import { Button, Input } from "@kridaz/ui";
+import useGameDisputes from "@hooks/admin/useGameDisputes";
+import { Button, Input } from "@kridaz/ui";
 
 
 const GameDisputeManager = () => {

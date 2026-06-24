@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";import { Button } from "@kridaz/ui";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@kridaz/ui";
 
 
 const POSITIONS = [

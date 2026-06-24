@@ -24,7 +24,8 @@ import {
 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { toast } from "react-hot-toast";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 
 export default function StreamSetup() {

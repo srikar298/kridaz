@@ -1,5 +1,6 @@
 import React from "react";
-import { Search, IndianRupee, CalendarDays, X } from "lucide-react";import { Button, Input } from "@kridaz/ui";
+import { Search, IndianRupee, CalendarDays, X } from "lucide-react";
+import { Button, Input } from "@kridaz/ui";
 
 
 const inputCls =

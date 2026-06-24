@@ -1,6 +1,7 @@
 import React from "react";
 import { AlertCircle, CheckCircle, XCircle, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";import { Button, Input } from "@kridaz/ui";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button, Input } from "@kridaz/ui";
 
 
 const ConfirmationPopup = ({

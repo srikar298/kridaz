@@ -27,7 +27,8 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
 import { getDynamicProfileRoute } from "@utils/routeUtils";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button } from "@kridaz/ui";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import { Button } from "@kridaz/ui";
 
 
 /**

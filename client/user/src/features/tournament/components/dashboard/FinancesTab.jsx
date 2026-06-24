@@ -1,4 +1,5 @@
-import React from "react";import { Button } from "@kridaz/ui";
+import React from "react";
+import { Button } from "@kridaz/ui";
 
 import {
   Wallet,

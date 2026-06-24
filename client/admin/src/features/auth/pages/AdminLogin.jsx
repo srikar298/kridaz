@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { login } from "../../../redux/slices/authSlice";
 import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
-import { ArrowRight, ShieldCheck, Lock, User, Terminal } from "lucide-react";import { Button, Input } from "@kridaz/ui";
+import { ArrowRight, ShieldCheck, Lock, User, Terminal } from "lucide-react";
+import { Button, Input } from "@kridaz/ui";
 
 
 export default function AdminLogin() {

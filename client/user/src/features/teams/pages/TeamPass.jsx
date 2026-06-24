@@ -21,7 +21,8 @@ import {
 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";import { Button } from "@kridaz/ui";
+import { useSelector } from "react-redux";
+import { Button } from "@kridaz/ui";
 
 
 const PRI = "var(--primary)";

@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { gsap } from "gsap";import { Button } from "@kridaz/ui";
+import { gsap } from "gsap";
+import { Button } from "@kridaz/ui";
 
 
 import "./Masonry.css";

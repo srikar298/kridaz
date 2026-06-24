@@ -17,7 +17,8 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { updateUser, login } from "@redux/slices/authSlice";
 import { searchLocations, fetchCountryCodes } from "@utils/locationService";
-import { useGoogleLogin } from "@react-oauth/google";import { Button, Input, Select } from "@kridaz/ui";
+import { useGoogleLogin } from "@react-oauth/google";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 const getNameFromEmail = (email) => {

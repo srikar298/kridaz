@@ -1,7 +1,8 @@
 import { X, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGetPostByIdQuery } from "@redux/api/communityApi";
-import PostItem from "./PostItem";import { Button } from "@kridaz/ui";
+import PostItem from "./PostItem";
+import { Button } from "@kridaz/ui";
 
 
 const PostDetailModal = ({

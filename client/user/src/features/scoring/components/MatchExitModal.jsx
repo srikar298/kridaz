@@ -11,7 +11,8 @@ import {
   HelpCircle,
   CheckSquare,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";import { Button } from "@kridaz/ui";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@kridaz/ui";
 
 
 const MatchExitModal = ({ isOpen, onClose, onConfirm }) => {

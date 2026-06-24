@@ -24,7 +24,8 @@ import {
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useSocket } from "@context/SocketContext";
 import { formatDistanceToNow } from "date-fns";
-import useNotifications from "@hooks/shared/useNotifications";import { Button } from "@kridaz/ui";
+import useNotifications from "@hooks/shared/useNotifications";
+import { Button } from "@kridaz/ui";
 
 const PRI = "var(--primary)";
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };

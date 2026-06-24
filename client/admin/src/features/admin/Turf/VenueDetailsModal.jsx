@@ -13,7 +13,8 @@ import {
   Globe,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { format } from "date-fns";import { Button } from "@kridaz/ui";
+import { format } from "date-fns";
+import { Button } from "@kridaz/ui";
 
 
 const VenueDetailsModal = ({ isOpen, onClose, turf, onApprove, onReject }) => {

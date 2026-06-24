@@ -6,7 +6,8 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
-import axiosInstance from "../../../infrastructure/axios";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import axiosInstance from "../../../infrastructure/axios";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 
 const SupportTab = ({ role }) => {

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Search, Plus, Copy } from "lucide-react";
 import toast from "react-hot-toast";
-import useAddVenueInvite from "./useAddVenueInvite";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import useAddVenueInvite from "./useAddVenueInvite";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 
 const AddVenueInvite = () => {

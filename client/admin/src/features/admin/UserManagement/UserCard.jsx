@@ -9,7 +9,8 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import Avatar from "react-avatar";
-import { useNavigate } from "react-router-dom";import { Button, Input } from "@kridaz/ui";
+import { useNavigate } from "react-router-dom";
+import { Button, Input } from "@kridaz/ui";
 
 
 const UserCard = ({ user, onToggleStatus, onDelete, isSelected, onSelect }) => {

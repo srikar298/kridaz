@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, Eye, ThumbsUp, ArrowLeft, Search } from "lucide-react";
-import axios from "axios";import { Button, Input } from "@kridaz/ui";
+import axios from "axios";
+import { Button, Input } from "@kridaz/ui";
 
 
 const PRI = "var(--primary)";

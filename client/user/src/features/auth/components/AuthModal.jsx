@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useAuthModal } from "../../../context/AuthModalContext";
 import Login from "../pages/Login";
-import SignUp from "../pages/SignUp";import { Button } from "@kridaz/ui";
+import SignUp from "../pages/SignUp";
+import { Button } from "@kridaz/ui";
 
 
 const AuthModal = () => {

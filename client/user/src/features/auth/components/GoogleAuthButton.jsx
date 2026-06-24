@@ -24,7 +24,8 @@ const GoogleIcon = () => (
   </svg>
 );
 
-import { Capacitor } from "@capacitor/core";import { Button } from "@kridaz/ui";
+import { Capacitor } from "@capacitor/core";
+import { Button } from "@kridaz/ui";
 
 
 const GoogleAuthButton = ({

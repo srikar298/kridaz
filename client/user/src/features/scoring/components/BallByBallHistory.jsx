@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { Shield } from "lucide-react";import { Button } from "@kridaz/ui";
+import { Shield } from "lucide-react";
+import { Button } from "@kridaz/ui";
 
 
 const ballColor = (ball) => {

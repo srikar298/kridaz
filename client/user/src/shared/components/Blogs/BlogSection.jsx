@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, Eye, ThumbsUp, Share2 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
-import axios from "axios";import { Button } from "@kridaz/ui";
+import axios from "axios";
+import { Button } from "@kridaz/ui";
 
 
 const PRI = "var(--primary)";

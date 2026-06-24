@@ -43,7 +43,8 @@ import {
   useUnfollowPlayerMutation,
 } from "@redux/api/userApi";
 import { useGetTurfsQuery, useGetTurfDetailsQuery } from "@redux/api/turfApi";
-import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";import { useGetMarketingContentQuery } from "@redux/api/featuresApi";
+import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";
+import { useGetMarketingContentQuery } from "@redux/api/featuresApi";
 import { Button, Input } from "@kridaz/ui";
 
 const LIQUID_COLORS = {

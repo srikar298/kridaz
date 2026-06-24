@@ -8,7 +8,8 @@ import {
   useLikePostMutation,
   useAddPostCommentMutation,
 } from "@redux/api/communityApi";
-import toast from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button, Input } from "@kridaz/ui";
 
 
 const getPostId = (post) => post?._id || post?.id;

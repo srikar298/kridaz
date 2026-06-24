@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useGetSavedTurfsQuery } from "@redux/api/turfApi";
 import TurfCardMobile from "../../turf/components/TurfCardMobile";
-import TurfCardSkeleton from "@components/ui/TurfCardSkeleton";import { Button } from "@kridaz/ui";
+import TurfCardSkeleton from "@components/ui/TurfCardSkeleton";
+import { Button } from "@kridaz/ui";
 
 
 const SavedPage = () => {

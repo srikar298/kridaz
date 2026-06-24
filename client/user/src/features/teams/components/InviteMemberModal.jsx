@@ -18,7 +18,8 @@ import {
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { countryCodes } from "../../../utils/countryCodes";
-import { useEffect } from "react";import { Button, Input, Select } from "@kridaz/ui";
+import { useEffect } from "react";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {

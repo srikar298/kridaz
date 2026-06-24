@@ -14,7 +14,8 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import GroupInfoModal from "./GroupInfoModal";
 import { Plus, Users, MessageSquare, Globe } from "lucide-react";
-import AddGroupToCommunityModal from "./AddGroupToCommunityModal";import { Button, Input } from "@kridaz/ui";
+import AddGroupToCommunityModal from "./AddGroupToCommunityModal";
+import { Button, Input } from "@kridaz/ui";
 
 
 const ChatWindow = ({ chat, onBack, onSelectChat, prefillMessage }) => {

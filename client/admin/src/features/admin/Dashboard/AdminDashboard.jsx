@@ -27,7 +27,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import useDashboardData from "@hooks/admin/useDashboardData";
-import DashboardSkeleton from "./AdminDashboardSkeleton";import { Button } from "@kridaz/ui";
+import DashboardSkeleton from "./AdminDashboardSkeleton";
+import { Button } from "@kridaz/ui";
 
 
 export default function AdminDashboard() {

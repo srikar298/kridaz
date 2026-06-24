@@ -18,7 +18,8 @@ import {
 import useProfessionals from "@hooks/admin/useProfessionals";
 import ConfirmationModal from "@components/shared/ConfirmationModal";
 
-import axiosInstance from "@hooks/useAxiosInstance";import { Button } from "@kridaz/ui";
+import axiosInstance from "@hooks/useAxiosInstance";
+import { Button } from "@kridaz/ui";
 
 
 const ProfessionalDetailsPage = () => {

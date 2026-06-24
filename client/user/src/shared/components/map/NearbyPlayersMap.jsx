@@ -12,7 +12,8 @@ import L from "leaflet";
 import { Navigation } from "lucide-react";
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
-import { formatDistanceToNow } from "date-fns";import { Button } from "@kridaz/ui";
+import { formatDistanceToNow } from "date-fns";
+import { Button } from "@kridaz/ui";
 
 
 // Fix default icon issue in Leaflet with Vite

@@ -1,5 +1,6 @@
 import React from "react";
-import { Search } from "lucide-react";import { Input } from "@kridaz/ui";
+import { Search } from "lucide-react";
+import { Input } from "@kridaz/ui";
 
 
 const OwnerRequestSearch = ({ searchTerm, handleSearch }) => {

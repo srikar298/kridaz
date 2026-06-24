@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { toast } from "react-hot-toast";
-import { Loader2, MessageSquare, Phone, User, Check, X } from "lucide-react";import { Button } from "@kridaz/ui";
+import { Loader2, MessageSquare, Phone, User, Check, X } from "lucide-react";
+import { Button } from "@kridaz/ui";
 
 
 const InquiriesTab = () => {

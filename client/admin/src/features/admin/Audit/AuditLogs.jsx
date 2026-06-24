@@ -8,7 +8,8 @@ import {
   Globe,
   Info,
 } from "lucide-react";
-import useAuditLogs from "@hooks/admin/useAuditLogs";import { Input } from "@kridaz/ui";
+import useAuditLogs from "@hooks/admin/useAuditLogs";
+import { Input } from "@kridaz/ui";
 
 
 const AuditLogs = () => {

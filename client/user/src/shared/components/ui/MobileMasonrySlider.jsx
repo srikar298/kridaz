@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";import { Button } from "@kridaz/ui";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@kridaz/ui";
 
 
 const MobileMasonrySlider = ({ items }) => {

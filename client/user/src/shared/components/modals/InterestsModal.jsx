@@ -1,7 +1,8 @@
 ﻿import { useState } from "react";
 import { X, Trophy, Check, Loader2 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
-import toast from "react-hot-toast";import { Button } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button } from "@kridaz/ui";
 
 
 const SPORTS = [

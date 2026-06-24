@@ -12,7 +12,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-hot-toast";import { Button, Input, Select } from "@kridaz/ui";
+import { toast } from "react-hot-toast";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 import {

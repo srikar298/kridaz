@@ -18,7 +18,8 @@ import {
 } from "lucide-react";
 import { logout } from "@redux/slices/authSlice.js";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "@hooks/useAxiosInstance";import { Button, Input } from "@kridaz/ui";
+import axiosInstance from "@hooks/useAxiosInstance";
+import { Button, Input } from "@kridaz/ui";
 
 
 const DashboardProfile = () => {

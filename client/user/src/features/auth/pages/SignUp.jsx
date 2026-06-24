@@ -17,7 +17,8 @@ import { searchLocations, fetchCountryCodes } from "@utils/locationService";
 import { login } from "@redux/slices/authSlice";
 import { Capacitor } from "@capacitor/core";
 
-import { useAuthModal } from "../../../context/AuthModalContext";import { Button, Input, Select } from "@kridaz/ui";
+import { useAuthModal } from "../../../context/AuthModalContext";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 const SUBHEADING_STYLE = {

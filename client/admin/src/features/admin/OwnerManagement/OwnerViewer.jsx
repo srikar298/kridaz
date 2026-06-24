@@ -15,7 +15,8 @@ import {
   X,
 } from "lucide-react";
 import CountUp from "react-countup";
-import ConfirmationModal from "@components/shared/ConfirmationModal";import { Button, Input } from "@kridaz/ui";
+import ConfirmationModal from "@components/shared/ConfirmationModal";
+import { Button, Input } from "@kridaz/ui";
 
 
 const OwnerViewer = () => {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MessageSquare, Search, Send, User, ChevronRight } from "lucide-react";
-import useSupport from "@hooks/admin/useSupport";import { Button, Input } from "@kridaz/ui";
+import useSupport from "@hooks/admin/useSupport";
+import { Button, Input } from "@kridaz/ui";
 
 
 const SupportCenter = () => {

@@ -1,5 +1,6 @@
 import React from "react";
-import { Settings, Save, Trash2, AlertTriangle } from "lucide-react";import { Button, Input, Textarea } from "@kridaz/ui";
+import { Settings, Save, Trash2, AlertTriangle } from "lucide-react";
+import { Button, Input, Textarea } from "@kridaz/ui";
 
 
 const SettingsTab = ({ tournament }) => {

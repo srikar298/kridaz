@@ -33,7 +33,8 @@ import { useSelector } from "react-redux";
 import useVenueOwnerDashboard from "@hooks/venue-owner/useVenueOwnerDashboard";
 import DashboardSkeleton from "./DashboardSkeleton";
 import OccupancyHeatmap from "./OccupancyHeatmap";
-import PeakHoursChart from "./PeakHoursChart";import { Button, Select } from "@kridaz/ui";
+import PeakHoursChart from "./PeakHoursChart";
+import { Button, Select } from "@kridaz/ui";
 
 
 const VenueOwnerDashboard = () => {

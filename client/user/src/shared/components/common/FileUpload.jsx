@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Upload, X, CheckCircle, AlertCircle, FileText } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
-import toast from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button, Input } from "@kridaz/ui";
 
 
 const FileUpload = ({

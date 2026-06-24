@@ -18,7 +18,8 @@ import useSimilarRecommendations from "@hooks/useSimilarRecommendations";
 import TurfCard from "./TurfCard.jsx";
 import { useGetSavedTurfsQuery, useToggleTurfLikeMutation } from "@redux/api/turfApi";
 import toast from "react-hot-toast";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button } from "@kridaz/ui";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import { Button } from "@kridaz/ui";
 
 import {
   MapPin,

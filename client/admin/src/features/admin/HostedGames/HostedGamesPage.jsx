@@ -16,7 +16,8 @@ import {
 import axiosInstance from "@hooks/useAxiosInstance";
 import HostedGamesSkeleton from "./HostedGamesSkeleton";
 import { useNavigate } from "react-router-dom";
-import ConfirmationModal from "@components/shared/ConfirmationModal";import { Button, Input, Select } from "@kridaz/ui";
+import ConfirmationModal from "@components/shared/ConfirmationModal";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 const HostedGamesPage = () => {

@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";import { Button } from "@kridaz/ui";
+import { ChevronLeft } from "lucide-react";
+import { Button } from "@kridaz/ui";
 
 
 const GlobalBackButton = ({ className = "" }) => {

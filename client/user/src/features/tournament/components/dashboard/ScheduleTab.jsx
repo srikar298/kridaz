@@ -6,7 +6,8 @@ import {
 } from "../../../../redux/api/tournamentApi";
 import { toast } from "react-hot-toast";
 import { format, parseISO } from "date-fns";
-import KnockoutSchedulerModal from "./KnockoutSchedulerModal";import { Button, Input } from "@kridaz/ui";
+import KnockoutSchedulerModal from "./KnockoutSchedulerModal";
+import { Button, Input } from "@kridaz/ui";
 
 
 const ScheduleTab = ({ tournament }) => {

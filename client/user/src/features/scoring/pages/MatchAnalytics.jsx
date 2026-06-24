@@ -34,7 +34,8 @@ import useCricketScoring from "../hooks/useCricketScoring";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import BallByBallHistory from "../components/BallByBallHistory";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button, Select } from "@kridaz/ui";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import { Button, Select } from "@kridaz/ui";
 
 
 // ─── Team badge rendering component ────────────────────────────────────────────

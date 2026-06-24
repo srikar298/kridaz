@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";import { Button, Input } from "@kridaz/ui";
+import { motion } from "framer-motion";
+import { Button, Input } from "@kridaz/ui";
 
 import {
   Lock,

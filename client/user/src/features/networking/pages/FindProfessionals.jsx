@@ -24,7 +24,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { fetchStates, fetchCities } from "@utils/locationService";
-import { useSocket } from "@context/SocketContext";import { Button, Input, Select } from "@kridaz/ui";
+import { useSocket } from "@context/SocketContext";
+import { Button, Input, Select } from "@kridaz/ui";
 
 import {
   useCreateMatchRequestMutation,

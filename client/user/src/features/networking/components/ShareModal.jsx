@@ -7,7 +7,8 @@ import {
   Copy,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import toast from "react-hot-toast";import { Button } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button } from "@kridaz/ui";
 
 
 const sharePlatforms = [

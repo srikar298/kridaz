@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "@hooks/useAxiosInstance";
-import { toast } from "react-hot-toast";import { Button, Input, Select } from "@kridaz/ui";
+import { toast } from "react-hot-toast";
+import { Button, Input, Select } from "@kridaz/ui";
 
 import {
   Plus,

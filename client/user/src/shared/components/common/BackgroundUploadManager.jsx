@@ -20,7 +20,8 @@ import {
   useConfirmStoryUploadMutation,
 } from "@redux/api/communityApi";
 import { uploadFileToR2 } from "@utils/mediaUpload";
-import toast from "react-hot-toast";import { Button } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button } from "@kridaz/ui";
 
 
 const BackgroundUploadManager = () => {

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { X, Shield, ShieldOff, Search, Crown } from "lucide-react";import { Button, Input } from "@kridaz/ui";
+import { X, Shield, ShieldOff, Search, Crown } from "lucide-react";
+import { Button, Input } from "@kridaz/ui";
 
 import {
   useMakeGroupAdminMutation,

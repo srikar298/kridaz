@@ -6,7 +6,8 @@ import {
   ArrowRight,
   Upload,
 } from "lucide-react";
-import { useUploadTournamentPosterMutation } from "../../../redux/api/tournamentApi";import { Button, Input, Textarea } from "@kridaz/ui";
+import { useUploadTournamentPosterMutation } from "../../../redux/api/tournamentApi";
+import { Button, Input, Textarea } from "@kridaz/ui";
 
 
 const Step1Cover = ({ formData, onNext, isLoading, tournamentId }) => {

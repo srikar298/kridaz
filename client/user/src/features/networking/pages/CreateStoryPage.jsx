@@ -17,7 +17,8 @@ import {
 import { startUpload } from "@redux/slices/mediaUploadSlice";
 import { uploadFileToR2 } from "@utils/mediaUpload";
 import toast from "react-hot-toast";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };

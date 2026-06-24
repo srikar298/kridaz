@@ -63,7 +63,8 @@ import {
   reverseGeocode,
 } from "../../../shared/utils/locationService";
 import { countryCodes } from "../../../utils/countryCodes";
-import CreateTeamModal from "../../teams/components/CreateTeamModal";import { Button, Input, Select } from "@kridaz/ui";
+import CreateTeamModal from "../../teams/components/CreateTeamModal";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 // ─── Static Data ─────────────────────────────────────────────────────────────

@@ -16,7 +16,8 @@ import {
   useHandleOpponentRequestMutation,
   useHandleJoinRequestMutation,
 } from "@redux/api/teamApi";
-import toast from "react-hot-toast";import { Button } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button } from "@kridaz/ui";
 
 
 const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {

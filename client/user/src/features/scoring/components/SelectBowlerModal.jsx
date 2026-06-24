@@ -1,6 +1,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Zap, ChevronRight } from "lucide-react";import { Button } from "@kridaz/ui";
+import { Zap, ChevronRight } from "lucide-react";
+import { Button } from "@kridaz/ui";
 
 
 /**

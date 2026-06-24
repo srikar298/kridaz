@@ -9,7 +9,8 @@ import {
   searchLocations,
 } from "@utils/locationService";
 import { Search, Plus } from "lucide-react";
-import toast from "react-hot-toast";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 
 const EditTurf = () => {

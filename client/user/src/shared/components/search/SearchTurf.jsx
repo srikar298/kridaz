@@ -8,7 +8,8 @@ import {
   Loader2,
   Search,
 } from "lucide-react";
-import { fetchStates, fetchCities } from "@utils/locationService";import { Button, Input } from "@kridaz/ui";
+import { fetchStates, fetchCities } from "@utils/locationService";
+import { Button, Input } from "@kridaz/ui";
 
 
 /**

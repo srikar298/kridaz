@@ -28,7 +28,8 @@ import {
   Search,
   Trophy,
 } from "lucide-react";
-import toast from "react-hot-toast";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 
 const ALL_SPORTS = [

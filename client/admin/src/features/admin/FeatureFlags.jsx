@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { toast } from "react-hot-toast";
-import { Activity, Server } from "lucide-react";import { Button } from "@kridaz/ui";
+import { Activity, Server } from "lucide-react";
+import { Button } from "@kridaz/ui";
 
 
 export const FeatureFlags = () => {

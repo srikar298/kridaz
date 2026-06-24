@@ -23,7 +23,8 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axiosInstance from "@hooks/useAxiosInstance.js";
 import ScrollToTop from "@components/common/ScrollToTop";
-import toast from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button, Input } from "@kridaz/ui";
 
 
 const GRADIENT = "linear-gradient(90deg, var(--primary) 0%, var(--primary) 100%)";

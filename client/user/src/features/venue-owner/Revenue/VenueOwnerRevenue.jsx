@@ -21,7 +21,8 @@ import useVenueOwnerRevenue from "@hooks/venue-owner/useVenueOwnerRevenue";
 import useOwnerWallet from "@hooks/venue-owner/useOwnerWallet";
 import DashboardSkeleton from "../Dashboard/DashboardSkeleton";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";import { Button, Input } from "@kridaz/ui";
+import { useSelector } from "react-redux";
+import { Button, Input } from "@kridaz/ui";
 
 
 /**

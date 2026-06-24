@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import React from "react";
-import { AuroraBackground } from "./aurora-background";import { Button } from "@kridaz/ui";
+import { AuroraBackground } from "./aurora-background";
+import { Button } from "@kridaz/ui";
 
 
 export function AuroraBackgroundDemo() {

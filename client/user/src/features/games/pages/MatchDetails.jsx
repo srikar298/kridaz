@@ -16,7 +16,8 @@ import {
 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { toast } from "react-hot-toast";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button } from "@kridaz/ui";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import { Button } from "@kridaz/ui";
 
 
 const MatchDetails = () => {

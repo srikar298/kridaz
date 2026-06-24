@@ -1,6 +1,7 @@
 import React from "react";
 import useErrorLogs from "@hooks/admin/useErrorLogs";
-import { ExternalLink, CheckCircle, AlertTriangle } from "lucide-react";import { Button } from "@kridaz/ui";
+import { ExternalLink, CheckCircle, AlertTriangle } from "lucide-react";
+import { Button } from "@kridaz/ui";
 
 
 const ErrorLogs = () => {

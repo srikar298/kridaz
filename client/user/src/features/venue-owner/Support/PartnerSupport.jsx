@@ -11,7 +11,8 @@ import {
 import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
 
-import { useSelector } from "react-redux";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import { useSelector } from "react-redux";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 
 const PartnerSupport = () => {

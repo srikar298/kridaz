@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { updateUser } from "@redux/slices/authSlice";
-import { loadRazorpay } from "@infrastructure/razorpay";import { Button, Input } from "@kridaz/ui";
+import { loadRazorpay } from "@infrastructure/razorpay";
+import { Button, Input } from "@kridaz/ui";
 
 
 const SUBHEADING_STYLE = {

@@ -66,7 +66,8 @@ import { StoryViewer } from "@features/networking";
 import EditProfileModal from "@components/modals/EditProfileModal";
 import RequestProModal from "../components/RequestProModal";
 import { useSocket } from "@context/SocketContext";
-import { isProfessionalRole, getDynamicProfileRoute } from "@utils/routeUtils";import { Button, Input, Select } from "@kridaz/ui";
+import { isProfessionalRole, getDynamicProfileRoute } from "@utils/routeUtils";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 const PRI = "var(--primary)"; // New primary lime accent matching the gradient vibrant stop

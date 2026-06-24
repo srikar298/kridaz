@@ -29,7 +29,8 @@ import {
 } from "lucide-react";
 import ConfirmModal from "@components/modals/ConfirmModal";
 import AddGroupToCommunityModal from "./AddGroupToCommunityModal";
-import ManageCommunityAdminsModal from "./ManageCommunityAdminsModal";import { Button, Input } from "@kridaz/ui";
+import ManageCommunityAdminsModal from "./ManageCommunityAdminsModal";
+import { Button, Input } from "@kridaz/ui";
 
 
 const ChatSidebar = ({
