@@ -113,11 +113,11 @@ const Login = ({ isModal = false }) => {
       className={`relative z-10 w-full flex flex-col flex-1 h-full transition-all duration-700 ${mounted ? "opacity-100" : "opacity-0"}`}
     >
       {/* Logo */}
-      <div className="absolute top-12 w-full flex justify-center z-50">
+      <div className="absolute top-[38%] left-6 -translate-y-1/2 z-50">
         <img
           src="/logo1.png"
           alt="Logo"
-          className="h-10 w-auto object-contain drop-shadow-2xl"
+          className="h-20 w-auto object-contain drop-shadow-2xl"
         />
       </div>
 

@@ -392,10 +392,10 @@ const SignUp = ({ isModal = false }) => {
                       <Select
                         value={countryCode}
                         onChange={(e) => setCountryCode(e.target.value)}
-                        className="bg-card border border-white/5 focus:border-[#D2F40E]/50 focus:shadow-[0_0_10px_rgba(210,244,14,0.1)] rounded-[8px] h-11 px-2 text-white text-sm outline-none transition-all cursor-pointer w-[90px] appearance-none text-center"
+                        className="bg-card border border-white/5 focus:border-[#D2F40E]/50 focus:shadow-[0_0_10px_rgba(210,244,14,0.1)] rounded-[8px] h-11 px-2 text-white text-sm outline-none transition-all cursor-pointer w-[75px] flex-shrink-0 appearance-none text-center"
                       >
                         <option value="+91" className="text-black">
-                          IN (+91)
+                          +91
                         </option>
                         {countryCodeOptions.map((c, i) => (
                           <option
@@ -403,7 +403,7 @@ const SignUp = ({ isModal = false }) => {
                             value={c.dial_code}
                             className="text-black"
                           >
-                            {c.code} ({c.dial_code})
+                            {c.dial_code}
                           </option>
                         ))}
                       </Select>
@@ -445,7 +445,7 @@ const SignUp = ({ isModal = false }) => {
                     <div className="text-center">
                       <p className="text-[14px] text-white/60">
                         Already have an account?{" "}
-                        <Button
+                        <button
                           type="button"
                           onClick={() => {
                             if (isModal) {
@@ -454,10 +454,10 @@ const SignUp = ({ isModal = false }) => {
                               navigate("/login");
                             }
                           }}
-                          className="text-[#C8F53B] font-semibold hover:text-[#D2F40E] drop-shadow-[0_0_4px_rgba(200,245,59,0.3)] transition-all"
+                          className="text-[#C8F53B] font-semibold hover:text-[#D2F40E] drop-shadow-[0_0_4px_rgba(200,245,59,0.3)] transition-all bg-transparent border-0 outline-none p-0 cursor-pointer inline"
                         >
                           Login
-                        </Button>
+                        </button>
                       </p>
                     </div>
                   </div>

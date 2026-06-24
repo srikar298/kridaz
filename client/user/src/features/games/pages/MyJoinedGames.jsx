@@ -293,11 +293,23 @@ const MyJoinedGames = () => {
                           </Button>
                         )}
                       </div>
-                      <h2 className="text-2xl font-black mt-1 uppercase tracking-tighter font-open-sans">
-                        {game.gameMode === "QUICK"
-                          ? `${game.gameType} Quick Match`
-                          : `${game.teams?.teamA?.name || "TBD"} vs ${game.teams?.teamB?.name || "TBD"}`}
-                      </h2>
+                      {game.gameMode === "QUICK" ? (
+                        <h2 className="text-lg font-black mt-2 uppercase tracking-tighter font-open-sans">
+                          {game.gameType} Quick Match
+                        </h2>
+                      ) : (
+                        <div className="flex flex-col items-start mt-2 font-open-sans tracking-tighter w-full pr-2 overflow-hidden">
+                          <span className="text-[14px] sm:text-lg font-black uppercase text-white leading-tight truncate w-full" title={game.teams?.teamA?.name}>
+                            {game.teams?.teamA?.name || "TBD"}
+                          </span>
+                          <span className="text-[11px] sm:text-sm font-black text-primary uppercase tracking-widest my-0.5">
+                            VS
+                          </span>
+                          <span className="text-[14px] sm:text-lg font-black uppercase text-white leading-tight truncate w-full" title={game.teams?.teamB?.name}>
+                            {game.teams?.teamB?.name || "TBD"}
+                          </span>
+                        </div>
+                      )}
                     </div>
                     <div className="text-right">
                       <p
@@ -340,7 +352,7 @@ const MyJoinedGames = () => {
                             >
                               {game.turf?.name ||
                                 game.customVenue ||
-                                game.enue?.name ||
+                                game.ground?.name ||
                                 "Self-Arranged"}
                               {game.turf?.location && (
                                 <span className="text-neutral-500 text-[10px] hidden md:inline ml-1">
@@ -360,7 +372,7 @@ const MyJoinedGames = () => {
                             >
                               {game.turf?.name ||
                                 game.customVenue ||
-                                game.enue?.name ||
+                                game.ground?.name ||
                                 "Self-Arranged"}
                               {game.turf?.location && (
                                 <span className="text-neutral-500 text-[10px] hidden md:inline ml-1">
@@ -449,9 +461,9 @@ const MyJoinedGames = () => {
                         <p className="text-xs font-black text-white">
                           {game.groundCost || 0} Coins
                         </p>
-                        {(game.turf?.name || game.enue?.name) && (
+                        {(game.turf?.name || game.ground?.name) && (
                           <p className="text-[8px] text-primary truncate max-w-full px-2 mt-0.5">
-                            {game.turf?.name || game.enue?.name}
+                            {game.turf?.name || game.ground?.name}
                           </p>
                         )}
                       </div>

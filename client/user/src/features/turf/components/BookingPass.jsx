@@ -366,7 +366,7 @@ const BookingPass = () => {
                     {/* Contacts */}
                     <div className="space-y-0.5">
                       <p className="text-[6px] font-bold text-zinc-500 uppercase tracking-widest">
-                        On-enue Support
+                        On-Ground Support
                       </p>
                       {turf.managerContacts &&
                       turf.managerContacts.length > 0 ? (

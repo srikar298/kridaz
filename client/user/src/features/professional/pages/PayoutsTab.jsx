@@ -267,20 +267,22 @@ const PayoutsTab = ({ role }) => {
             </div>
 
             <div className="flex bg-black p-1 rounded-xl border border-border gap-2 w-full sm:max-w-xs">
-              <Button
+              <button
                 type="button"
                 onClick={() => setPayoutMode("BANK")}
-                className={`flex-1 font-bold text-xs py-2 rounded-lg transition-all uppercase tracking-wider ${payoutMode === "BANK" ? "bg-card text-primary" : "text-muted-foreground hover:text-white"}`}
+                style={payoutMode === "BANK" ? { backgroundColor: "var(--primary)", color: "#000" } : { backgroundColor: "transparent" }}
+                className={`flex-1 font-bold text-xs py-2 rounded-lg transition-all uppercase tracking-wider outline-none border-none ${payoutMode === "BANK" ? "" : "text-muted-foreground hover:text-white"}`}
               >
                 Bank Account
-              </Button>
-              <Button
+              </button>
+              <button
                 type="button"
                 onClick={() => setPayoutMode("UPI")}
-                className={`flex-1 font-bold text-xs py-2 rounded-lg transition-all uppercase tracking-wider ${payoutMode === "UPI" ? "bg-card text-primary" : "text-muted-foreground hover:text-white"}`}
+                style={payoutMode === "UPI" ? { backgroundColor: "var(--primary)", color: "#000" } : { backgroundColor: "transparent" }}
+                className={`flex-1 font-bold text-xs py-2 rounded-lg transition-all uppercase tracking-wider outline-none border-none ${payoutMode === "UPI" ? "" : "text-muted-foreground hover:text-white"}`}
               >
                 UPI ID
-              </Button>
+              </button>
             </div>
 
             <form
@@ -364,15 +366,16 @@ const PayoutsTab = ({ role }) => {
               )}
 
               <div className="md:col-span-2 pt-2 flex flex-col sm:flex-row gap-3 min-w-0 w-full">
-                <Button
+                <button
                   type="submit"
                   disabled={isSavingDetails}
-                  className="w-full md:w-auto px-4 sm:px-8 bg-primary hover:bg-[#aee057] text-black font-extrabold rounded-xl py-3.5 transition-all text-xs sm:text-sm shadow-[0_0_20px_rgba(191,243,103,0.15)] uppercase tracking-wider whitespace-normal break-words"
+                  style={{ backgroundColor: "var(--primary)", color: "#000" }}
+                  className="w-full md:w-auto px-4 sm:px-8 font-extrabold rounded-xl py-3.5 transition-all text-xs sm:text-sm shadow-[0_0_20px_rgba(191,243,103,0.15)] uppercase tracking-wider whitespace-normal break-words outline-none border-none hover:brightness-110 disabled:opacity-50"
                 >
                   {isSavingDetails
                     ? "Saving Configuration..."
                     : "Submit for Verification"}
-                </Button>
+                </button>
               </div>
             </form>
           </div>
@@ -426,14 +429,15 @@ const PayoutsTab = ({ role }) => {
                 Edit Bank details
               </Button>
 
-              <Button
+              <button
                 onClick={() => setIsWithdrawModalOpen(true)}
                 disabled={walletBalance <= 0 || kycStatus !== "VERIFIED"}
-                className="flex-1 md:flex-initial px-6 py-3 bg-primary hover:bg-[#aee057] disabled:bg-neutral-800 disabled:text-neutral-500 text-black font-extrabold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(191,243,103,0.1)]"
+                style={{ backgroundColor: "var(--primary)", color: "#000" }}
+                className="flex-1 md:flex-initial px-6 py-3 font-extrabold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(191,243,103,0.1)] outline-none border-none hover:brightness-110 disabled:opacity-50"
               >
                 <ArrowUpRight size={15} />
                 Withdrawal
-              </Button>
+              </button>
             </div>
           </div>
         )}
@@ -448,17 +452,17 @@ const PayoutsTab = ({ role }) => {
               <span className="text-[8px] text-muted-foreground font-bold uppercase tracking-wider truncate">
                 Usable Balance
               </span>
-              <Button
+              <button
                 onClick={() =>
                   setActiveDescCard(
                     activeDescCard === "usable" ? null : "usable"
                   )
                 }
-                className="text-gray-500 hover:text-white transition-colors"
+                className="text-gray-500 hover:text-white transition-colors outline-none bg-transparent border-0 p-0 shrink-0"
                 title="View Details"
               >
                 <Info size={11} />
-              </Button>
+              </button>
             </div>
             <h2 className="text-xl font-black text-primary tracking-tight" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
               ₹{walletBalance.toFixed(2)}
@@ -478,17 +482,17 @@ const PayoutsTab = ({ role }) => {
               <span className="text-[8px] text-muted-foreground font-bold uppercase tracking-wider truncate">
                 Reserved Escrow
               </span>
-              <Button
+              <button
                 onClick={() =>
                   setActiveDescCard(
                     activeDescCard === "reserved" ? null : "reserved"
                   )
                 }
-                className="text-gray-500 hover:text-white transition-colors"
+                className="text-gray-500 hover:text-white transition-colors outline-none bg-transparent border-0 p-0 shrink-0"
                 title="View Details"
               >
                 <Info size={11} />
-              </Button>
+              </button>
             </div>
             <h2 className="text-xl font-bold text-white tracking-tight" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
               ₹{reservedBalance.toFixed(2)}
@@ -509,17 +513,17 @@ const PayoutsTab = ({ role }) => {
               <span className="text-[8px] text-muted-foreground font-bold uppercase tracking-wider truncate">
                 Conflict Balance
               </span>
-              <Button
+              <button
                 onClick={() =>
                   setActiveDescCard(
                     activeDescCard === "dispute" ? null : "dispute"
                   )
                 }
-                className="text-gray-500 hover:text-white transition-colors"
+                className="text-gray-500 hover:text-white transition-colors outline-none bg-transparent border-0 p-0 shrink-0"
                 title="View Details"
               >
                 <Info size={11} />
-              </Button>
+              </button>
             </div>
             <h2 className="text-xl font-bold text-white tracking-tight" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
               ₹{disputeBalance.toFixed(2)}
@@ -540,35 +544,35 @@ const PayoutsTab = ({ role }) => {
               <span className="text-[8px] text-muted-foreground font-bold uppercase tracking-wider truncate">
                 Lifetime Earnings
               </span>
-              <Button
+              <button
                 onClick={() =>
                   setActiveDescCard(
                     activeDescCard === "lifetime" ? null : "lifetime"
                   )
                 }
-                className="text-gray-500 hover:text-white transition-colors"
+                className="text-gray-500 hover:text-white transition-colors outline-none bg-transparent border-0 p-0 shrink-0"
                 title="View Details"
               >
                 <Info size={11} />
-              </Button>
+              </button>
             </div>
             <div className="flex flex-col items-center gap-1 w-full">
               <h2 className="text-xl font-bold text-white tracking-tight" style={{ fontFamily: "'Nunito', 'Quicksand', sans-serif" }}>
                 ₹{getFilteredLifetimeEarning().toLocaleString()}
               </h2>
               {/* Filter Dropdown */}
-              <Select
+              <select
                 value={earningsFilter}
                 onChange={(e) => setEarningsFilter(e.target.value)}
-                className="bg-black/60 border border-border text-[8px] font-bold text-white rounded px-1.5 py-0.5 focus:outline-none focus:border-primary transition-all cursor-pointer w-fit max-w-[90%] text-center mx-auto"
+                className="bg-black border border-white/10 text-[9px] font-bold text-gray-300 rounded px-2 py-1 focus:outline-none focus:border-primary transition-all cursor-pointer w-fit max-w-[90%] text-center mx-auto shadow-xl"
               >
-                <option value="ALL_TIME">All Time</option>
-                <option value="TODAY">Today's Journey</option>
-                <option value="7_DAYS">Last 7 Days</option>
-                <option value="THIS_MONTH">This Month</option>
-                <option value="LAST_MONTH">Last Month</option>
-                <option value="CUSTOM">Custom Range</option>
-              </Select>
+                <option value="ALL_TIME" className="bg-black text-gray-300">All Time</option>
+                <option value="TODAY" className="bg-black text-gray-300">Today's Journey</option>
+                <option value="7_DAYS" className="bg-black text-gray-300">Last 7 Days</option>
+                <option value="THIS_MONTH" className="bg-black text-gray-300">This Month</option>
+                <option value="LAST_MONTH" className="bg-black text-gray-300">Last Month</option>
+                <option value="CUSTOM" className="bg-black text-gray-300">Custom Range</option>
+              </select>
             </div>
           </div>
 
@@ -754,17 +758,18 @@ const PayoutsTab = ({ role }) => {
                 >
                   Cancel
                 </Button>
-                <Button
+                <button
                   type="submit"
                   disabled={
                     isSubmittingPayout ||
                     !withdrawAmount ||
                     parseFloat(withdrawAmount) > walletBalance
                   }
-                  className="flex-1 bg-primary hover:bg-[#aee057] disabled:bg-neutral-800 disabled:text-neutral-500 text-black font-extrabold rounded-xl py-3.5 transition-all text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(191,243,103,0.15)]"
+                  style={!(isSubmittingPayout || !withdrawAmount || parseFloat(withdrawAmount) > walletBalance) ? { backgroundColor: "var(--primary)", color: "#000" } : {}}
+                  className="flex-1 disabled:bg-neutral-800 disabled:text-neutral-500 font-extrabold rounded-xl py-3.5 transition-all text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(191,243,103,0.15)] outline-none border-none hover:brightness-110 disabled:opacity-50"
                 >
                   {isSubmittingPayout ? "Processing..." : "Confirm Request"}
-                </Button>
+                </button>
               </div>
             </form>
           </div>

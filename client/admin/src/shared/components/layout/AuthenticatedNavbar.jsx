@@ -37,7 +37,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
   const user = useSelector((state) => state?.auth?.user);
   const role = useSelector((state) => state?.auth?.role);
   const isScorer = role?.toLowerCase().includes("scorer");
-  const themeColor = isScorer ? "#00C187" : "#55DEE8";
+  const themeColor = isScorer ? "#00C187" : "#bff367";
 
   const {
     notifications,
@@ -111,7 +111,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
       case "PAYMENT":
         return <CreditCard size={14} className="text-green-500" />;
       case "SUPPORT":
-        return <MessageSquare size={14} className="text-blue-500" />;
+        return <MessageSquare size={14} className="text-purple-500" />;
       case "WITHDRAWAL":
         return <AlertTriangle size={14} className="text-orange-500" />;
       case "REVIEW":

@@ -49,10 +49,10 @@ const GlobalSearch = () => {
   const [triggerGetFeed, { data: feedData, isFetching: postsLoading }] =
     useLazyGetCommunityFeedQuery();
 
-  // Popular enues query
+  // Popular grounds query
   const { data: popularGroundsData, isLoading: groundsLoading } =
     useGetGroundsQuery({});
-  const popularGrounds = popularGroundsData?.enues?.slice(0, 5) || [];
+  const popularGrounds = popularGroundsData?.grounds?.slice(0, 5) || [];
 
   // Default Latest Posts query (when not searching)
   const { data: defaultFeedData, isLoading: defaultPostsLoading } =
@@ -165,7 +165,7 @@ const GlobalSearch = () => {
     return (
       <div
         key={post._id || post.id}
-        className="bg-background border border-white/5 rounded-[8px] p-5 space-y-4"
+        className="bg-transparent p-0 space-y-4"
       >
         {/* Post Header */}
         <div className="flex items-center justify-between">
@@ -189,7 +189,7 @@ const GlobalSearch = () => {
               </div>
             </div>
           </Link>
-          <Button className="text-white/40 hover:text-white transition-colors p-2">
+          <Button className="text-white/40 hover:text-white transition-colors p-1 bg-transparent border-none shadow-none hover:bg-transparent">
             <MoreVertical size={18} />
           </Button>
         </div>
@@ -225,7 +225,7 @@ const GlobalSearch = () => {
         {/* Action Bar */}
         <div className="flex items-center justify-between pt-1">
           <div className="flex items-center gap-5">
-            <Button className="flex items-center gap-2 group">
+            <Button className="flex items-center gap-2 group bg-transparent border-none p-0 hover:bg-transparent shadow-none">
               <ThumbsUp
                 size={20}
                 className="text-white/70 group-hover:text-primary transition-colors"
@@ -234,7 +234,7 @@ const GlobalSearch = () => {
                 {post.likes?.length || 0}
               </span>
             </Button>
-            <Button className="flex items-center gap-2 group">
+            <Button className="flex items-center gap-2 group bg-transparent border-none p-0 hover:bg-transparent shadow-none">
               <MessageCircle
                 size={20}
                 className="text-white/70 group-hover:text-primary transition-colors"
@@ -243,7 +243,7 @@ const GlobalSearch = () => {
                 {post.comments?.length || post.totalComments || 0}
               </span>
             </Button>
-            <Button className="flex items-center gap-2 group">
+            <Button className="flex items-center gap-2 group bg-transparent border-none p-0 hover:bg-transparent shadow-none">
               <Send
                 size={18}
                 className="text-white/70 group-hover:text-primary transition-colors"
@@ -294,7 +294,7 @@ const GlobalSearch = () => {
           )}
           <Button
             onClick={() => setIsFilterOpen(true)}
-            className="absolute right-3 p-2 bg-white/5 hover:bg-white/10 rounded-lg text-primary transition-colors"
+            className="absolute right-3 p-2 text-primary transition-colors bg-transparent hover:scale-110"
           >
             <SlidersHorizontal size={18} />
           </Button>
@@ -307,7 +307,7 @@ const GlobalSearch = () => {
               <Button
                 key={filter}
                 onClick={() => setActiveQuickFilter(filter)}
-                className={`whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all border ${
+                className={`whitespace-nowrap px-4 py-1.5 rounded-[6px] text-xs font-bold uppercase tracking-wider transition-all border ${
                   activeQuickFilter === filter
                     ? "bg-primary/10 text-primary border-primary/30 shadow-[0_0_15px_rgba(191,243,103,0.15)]"
                     : "bg-white/5 text-white/50 border-white/10 hover:border-white/20 hover:text-white/80"
@@ -327,7 +327,7 @@ const GlobalSearch = () => {
                   <Button
                     key={role}
                     onClick={() => handleToggleRole(role)}
-                    className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 border ${
+                    className={`whitespace-nowrap px-3.5 py-1 rounded-[6px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 border ${
                       isSelected
                         ? "bg-primary/15 border-primary text-primary"
                         : "bg-white/5 text-white/50 border-white/10 hover:border-white/20 hover:text-white/80"
@@ -350,7 +350,7 @@ const GlobalSearch = () => {
                   <Button
                     key={type}
                     onClick={() => handleToggleVenueType(type)}
-                    className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 border ${
+                    className={`whitespace-nowrap px-3.5 py-1 rounded-[6px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 border ${
                       isSelected
                         ? "bg-primary/15 border-primary text-primary"
                         : "bg-white/5 text-white/50 border-white/10 hover:border-white/20 hover:text-white/80"
@@ -561,7 +561,7 @@ const GlobalSearch = () => {
                 >
                   Popular Near You
                 </h3>
-                <Button className="text-xs font-bold text-primary hover:underline">
+                <Button className="text-xs font-bold text-primary hover:underline bg-transparent border-none shadow-none p-0 hover:bg-transparent">
                   View All
                 </Button>
               </div>
@@ -577,7 +577,7 @@ const GlobalSearch = () => {
                 </div>
               ) : popularGrounds.length > 0 ? (
                 <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 snap-x">
-                  {popularGrounds.map((enue) => (
+                  {popularGrounds.map((ground) => (
                     <div
                       key={ground._id}
                       className="min-w-[240px] w-[240px] h-[320px] shrink-0 snap-start"
@@ -585,7 +585,7 @@ const GlobalSearch = () => {
                       <VenueCard
                         t={ground}
                         onClick={() =>
-                          navigate(`/venue/${enue._id || enue.id}`)
+                          navigate(`/venue/${ground._id || ground.id}`)
                         }
                       />
                     </div>
@@ -607,7 +607,7 @@ const GlobalSearch = () => {
                 >
                   Latest Posts
                 </h3>
-                <Button className="text-xs font-bold text-primary hover:underline">
+                <Button className="text-xs font-bold text-primary hover:underline bg-transparent border-none shadow-none p-0 hover:bg-transparent">
                   View All
                 </Button>
               </div>

@@ -422,16 +422,16 @@ const ChatSidebar = ({
           </h2>
         </div>
         <div className="relative" ref={addMenuRef}>
-          <Button
+          <button
             onClick={() => setIsAddMenuOpen(!isAddMenuOpen)}
-            className={`w-10 h-10 ${isAddMenuOpen ? "bg-primary text-black" : "bg-primary/10 text-primary"} hover:bg-primary hover:text-black rounded-[8px] transition-all flex items-center justify-center group`}
+            className={`w-10 h-10 ${isAddMenuOpen ? "bg-primary text-black" : "bg-primary/10 text-primary"} hover:bg-primary hover:text-black rounded-[8px] transition-all flex items-center justify-center group outline-none`}
             title="Add New"
           >
             <Plus
               size={20}
-              className={`${isAddMenuOpen ? "rotate-45" : ""} transition-transform duration-300`}
+              className={`${isAddMenuOpen ? "rotate-45" : ""} transition-transform duration-300 group-hover:text-black`}
             />
-          </Button>
+          </button>
 
           {isAddMenuOpen && (
             <div className="absolute right-0 top-12 w-56 bg-card border border-white/5 rounded-[8px] shadow-2xl py-2 z-50 animate-scale-up overflow-hidden">
@@ -631,7 +631,7 @@ const ChatSidebar = ({
                   return (
                     <div key={chat._id} className="relative group/chat">
                       <div className="relative">
-                        <Button
+                        <button
                           onClick={() => {
                             if (chat.isCommunity) {
                               const announcementGroup = chats.find(
@@ -650,7 +650,7 @@ const ChatSidebar = ({
                               onSelectChat(chat);
                             }
                           }}
-                          className={`w-full flex items-center gap-3 px-3 py-3 rounded-[8px] transition-all ${chat.isCommunity ? "pr-20" : "pr-12"} ${isSelected || (chat.isCommunity && isChildSelected) ? "bg-primary/10 border border-primary/20" : "hover:bg-white/[0.03] border border-transparent"}`}
+                          className={`w-full h-auto min-h-[4.5rem] flex items-center gap-3 px-3 py-4 rounded-[8px] transition-all outline-none text-left ${chat.isCommunity ? "pr-20" : "pr-12"} ${isSelected || (chat.isCommunity && isChildSelected) ? "bg-primary/10 border border-primary/20" : "hover:bg-white/[0.03] border border-transparent"}`}
                         >
                           <div className="relative shrink-0">
                             {renderAvatar(chat)}
@@ -696,7 +696,7 @@ const ChatSidebar = ({
                                   />
                                 )}
                                 <p
-                                  className={`text-xs truncate ${isTypingInChat ? "text-primary font-medium italic" : isSelected ? "text-primary/60" : unreadCount > 0 ? "text-white/70 font-medium" : "text-white/40 group-hover:text-white/60"}`}
+                                  className={`text-xs truncate ${isTypingInChat ? "text-primary font-medium italic" : isSelected ? "text-primary/80" : unreadCount > 0 ? "text-white/90 font-medium" : "text-white/60 group-hover:text-white/80"}`}
                                 >
                                   {isTypingInChat
                                     ? "typing..."
@@ -714,7 +714,7 @@ const ChatSidebar = ({
                               )}
                             </div>
                           </div>
-                        </Button>
+                        </button>
 
                         {/* Right Side Controls: Chevron (for Communities) & 3-Dot (always visible) */}
                         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 z-10">

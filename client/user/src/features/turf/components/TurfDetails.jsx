@@ -480,7 +480,7 @@ const TurfDetails = () => {
             </h1>
 
             {/* Quick Info Bar */}
-            <div className="flex flex-wrap items-center justify-start md:justify-between gap-y-3 gap-x-4 text-[12px] font-[400] leading-[16px] text-[rgba(255,255,255,0.70)] px-4 md:px-2 font-inter w-full">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-y-2.5 sm:gap-x-4 text-[12px] font-[400] leading-[16px] text-[rgba(255,255,255,0.70)] px-4 md:px-2 font-inter w-full">
               <div className="flex items-center gap-2 shrink-0">
                 <Star
                   className="w-4 h-4"
@@ -494,18 +494,17 @@ const TurfDetails = () => {
                 </span>
                 <span>({reviews?.length || 0} REVIEWS)</span>
               </div>
-              <div className="w-px h-3 bg-zinc-800" />
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="hidden sm:block w-px h-3 bg-zinc-800" />
+              <div className="flex items-start gap-2 min-w-0">
                 <MapPin
-                  className="w-4 h-4"
+                  className="w-4 h-4 shrink-0 mt-0.5"
                   style={{ stroke: "url(#theme-gradient)" }}
                 />
-                <span className="text-[rgba(255,255,255,0.70)] font-medium">
-                  {turf.city || turf.location?.split(",")[0]} ,{" "}
-                  {turf.state || "DODA"}
+                <span className="text-[rgba(255,255,255,0.70)] font-medium leading-snug line-clamp-2">
+                  {turf.location || [turf.city, turf.state].filter(Boolean).join(", ") || "DODA"}
                 </span>
               </div>
-              <div className="w-px h-3 bg-zinc-800" />
+              <div className="hidden sm:block w-px h-3 bg-zinc-800" />
               <div
                 onClick={() => setIsPoliciesModalOpen(true)}
                 className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors group shrink-0"
@@ -702,7 +701,7 @@ const TurfDetails = () => {
                     </div>
                   </div>
 
-                  {/* enue Composition */}
+                  {/* Ground Composition */}
                   <div className="space-y-4">
                     <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-inter">
                       GROUND COMPOSITION

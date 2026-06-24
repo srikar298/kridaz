@@ -204,7 +204,7 @@ export default function VenueOwnerPromotions() {
                     Code
                   </th>
                   <th className="px-6 py-4 text-[10px] font-bold text-white/70 uppercase tracking-widest">
-                    enue
+                    Ground
                   </th>
                   <th className="px-6 py-4 text-[10px] font-bold text-white/70 uppercase tracking-widest">
                     Discount
@@ -243,7 +243,7 @@ export default function VenueOwnerPromotions() {
                       </td>
                       <td className="px-6 py-4">
                         <span className="text-xs text-white/70">
-                          {promo.turfName || "All enues"}
+                          {promo.turfName || "All Grounds"}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -359,7 +359,7 @@ export default function VenueOwnerPromotions() {
 
                 <div>
                   <label className="block text-[10px] font-bold text-white/70 uppercase tracking-widest mb-2">
-                    Target enue
+                    Target Ground
                   </label>
                   <Select
                     value={newPromo.turfId}
@@ -368,7 +368,7 @@ export default function VenueOwnerPromotions() {
                     }
                     className="w-full bg-card border border-white/10 text-white px-4 py-2.5 rounded-[16px] text-sm focus:outline-none focus:border-primary/50"
                   >
-                    <option value="all">Universal (All My enues)</option>
+                    <option value="all">Universal (All My Grounds)</option>
                     {turfs.map((t) => (
                       <option key={t._id} value={t._id}>
                         {t.name}

@@ -182,7 +182,7 @@ export default function JoinGamesSection({
                   (g.teams?.teamB?.slots?.length || 0);
               const hostInitial = g.host?.name?.[0]?.toUpperCase() || "?";
               const bgImg =
-                g.enue?.images?.[0] ||
+                g.ground?.images?.[0] ||
                 "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=600&q=80";
 
               const gameDate = g.date ? new Date(g.date) : null;
@@ -322,7 +322,7 @@ export default function JoinGamesSection({
                         <div className="flex items-center gap-1.5 mt-1.5">
                           <MapPin size={10} className="text-primary" />
                           <span className="text-[10px] text-white/50 truncate">
-                            {g.enue?.name || g.city || "Self-Arranged Venue"}
+                            {g.ground?.name || g.city || "Self-Arranged Venue"}
                           </span>
                         </div>
                       </div>

@@ -188,7 +188,7 @@ const StoryViewer = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black animate-in fade-in duration-300">
       <div
         className="relative w-full h-full max-w-lg md:h-[90vh] md:rounded-[8px] overflow-hidden shadow-2xl flex flex-col bg-black"
         onTouchStart={onTouchStart}
@@ -198,13 +198,13 @@ const StoryViewer = ({
         {/* Close Button */}
         <Button
           onClick={onClose}
-          className="absolute top-6 right-6 z-[210] p-2 bg-black/40 hover:bg-black/60 text-white rounded-[8px] transition-all backdrop-blur-md"
+          className="absolute top-6 right-6 z-[1110] p-2 bg-black/40 hover:bg-black/60 text-white rounded-[8px] transition-all backdrop-blur-md"
         >
           <X size={24} />
         </Button>
 
         {/* Progress Bars */}
-        <div className="absolute top-4 left-6 right-6 z-[210] flex gap-1">
+        <div className="absolute top-4 left-6 right-6 z-[1110] flex gap-1">
           {storyGroup.stories.map((_, idx) => (
             <div
               key={idx}
@@ -281,7 +281,7 @@ const StoryViewer = ({
         </div>
 
         {/* Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent flex items-center gap-4 z-[210]">
+        <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent flex items-center gap-4 z-[1110]">
           <Link
             to={`/profile/${storyGroup.user.id || storyGroup.user._id}`}
             className="w-10 h-10 rounded-full border-2 border-primary overflow-hidden hover:opacity-80 transition-opacity shrink-0"
@@ -351,7 +351,7 @@ const StoryViewer = ({
         {/* Viewers List Overlay */}
         {showViewers && (
           <div
-            className="absolute inset-0 z-[220] bg-black/90 backdrop-blur-xl animate-in slide-in-from-bottom duration-300 flex flex-col"
+            className="absolute inset-0 z-[1120] bg-black/90 backdrop-blur-xl animate-in slide-in-from-bottom duration-300 flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6 border-b border-white/10 flex items-center justify-between bg-black/40">

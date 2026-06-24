@@ -136,17 +136,6 @@ export const AdBannerSection = ({ banners = [] }) => {
           {isVideo && (
             <div className="absolute top-4 right-4 z-40 flex items-center gap-2">
               <button
-                onClick={togglePlay}
-                className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:text-[#D2F40E] transition-all"
-                title={isPlaying ? "Pause" : "Play"}
-              >
-                {isPlaying ? (
-                  <Pause size={14} />
-                ) : (
-                  <Play size={14} className="fill-current" />
-                )}
-              </button>
-              <button
                 onClick={toggleMute}
                 className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:text-[#D2F40E] transition-all"
                 title={isMuted ? "Unmute" : "Mute"}

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ChevronDown, HelpCircle, Search } from "lucide-react";import { Input } from "@kridaz/ui";
+import { ChevronDown, HelpCircle, Search } from "lucide-react";
+import { Input } from "@kridaz/ui";
 
 
 const GRAD = "linear-gradient(135deg, var(--primary) 0%, var(--primary) 100%)";

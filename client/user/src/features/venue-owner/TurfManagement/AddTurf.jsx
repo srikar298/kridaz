@@ -404,7 +404,7 @@ const AddTurf = () => {
                 >
                   <option value="">Select Category</option>
                   <option value="Turf">Venue</option>
-                  <option value="Ground">Venue</option>
+                  <option value="Ground">Ground</option>
                   <option value="Court">Court</option>
                   <option value="Stadium">Stadium</option>
                 </Select>
@@ -413,7 +413,7 @@ const AddTurf = () => {
               <div className="form-control col-span-1">
                 <label className="label mb-2">
                   <span className="text-[8px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest ml-1">
-                    enue Composition
+                    Ground Composition
                   </span>
                 </label>
                 <Select
@@ -422,7 +422,7 @@ const AddTurf = () => {
                   value=""
                 >
                   <option value="" disabled>
-                    Select enue Types
+                    Select Ground Types
                   </option>
                   {groundTypeOptions.map((o) => (
                     <option

@@ -25,10 +25,10 @@ const SelectVenueModal = ({ isOpen, onClose, gameId, onVenueSelected }) => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/hosted-game/enues?query=${query}`,
+        `${import.meta.env.VITE_API_URL}/api/hosted-game/grounds?query=${query}`,
         { withCredentials: true }
       );
-      setResults(res.data.enues || []);
+      setResults(res.data.grounds || []);
     } catch (err) {
       console.error("Search failed:", err);
     } finally {
@@ -84,7 +84,7 @@ const SelectVenueModal = ({ isOpen, onClose, gameId, onVenueSelected }) => {
                   Select Venue
                 </h3>
                 <p className="text-xs text-neutral-500 font-bold uppercase tracking-widest">
-                  Search available enues
+                  Search available grounds
                 </p>
               </div>
               <Button
@@ -123,7 +123,7 @@ const SelectVenueModal = ({ isOpen, onClose, gameId, onVenueSelected }) => {
                     </p>
                   </div>
                 ) : results.length > 0 ? (
-                  results.map((enue) => (
+                  results.map((ground) => (
                     <div
                       key={ground._id}
                       className="flex items-center justify-between p-3 bg-neutral-800/40 border border-neutral-800 rounded-[8px] hover:border-neutral-700 transition-all group"
@@ -134,19 +134,19 @@ const SelectVenueModal = ({ isOpen, onClose, gameId, onVenueSelected }) => {
                         </div>
                         <div>
                           <p className="text-sm font-black uppercase tracking-tight text-white">
-                            {enue.name}
+                            {ground.name}
                           </p>
                           <div className="flex items-center gap-1 text-[10px] text-neutral-500 font-bold uppercase">
-                            {enue.city}, {enue.state}
+                            {ground.city}, {ground.state}
                           </div>
                         </div>
                       </div>
                       <Button
-                        onClick={() => handleSelect(enue._id)}
-                        disabled={selectingId === enue._id}
+                        onClick={() => handleSelect(ground._id)}
+                        disabled={selectingId === ground._id}
                         className="px-4 py-2 bg-yellow-500 text-black text-[10px] font-black rounded-[8px] uppercase hover:scale-105 transition-all disabled:opacity-50 disabled:scale-100"
                       >
-                        {selectingId === enue._id ? (
+                        {selectingId === ground._id ? (
                           <Loader2 size={14} className="animate-spin" />
                         ) : (
                           "Select"

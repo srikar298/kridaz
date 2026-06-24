@@ -40,7 +40,7 @@ const SupportCenter = () => {
       case "MEDIUM":
         return "text-yellow-500 bg-yellow-500/10";
       default:
-        return "text-blue-500 bg-blue-500/10";
+        return "text-purple-500 bg-purple-500/10";
     }
   };
 
@@ -49,7 +49,7 @@ const SupportCenter = () => {
       case "RESOLVED":
         return "text-green-500 bg-green-500/10";
       case "IN_PROGRESS":
-        return "text-blue-500 bg-blue-500/10";
+        return "text-purple-500 bg-purple-500/10";
       case "CLOSED":
         return "text-gray-500 bg-gray-500/10";
       default:
@@ -296,7 +296,7 @@ const SupportCenter = () => {
                       disabled={
                         processingId === selectedTicket._id || !replyText.trim()
                       }
-                      className="bg-secondary text-black p-3 rounded-[8px] hover:bg-[#b3ff00] transition-all disabled:opacity-50 shadow-[0_0_15px_rgba(85, 222, 232,0.3)]"
+                      className="bg-secondary text-black p-3 rounded-[8px] hover:bg-[#b3ff00] transition-all disabled:opacity-50 shadow-[0_0_15px_rgba(191,243,103,0.3)]"
                     >
                       <Send size={18} />
                     </Button>

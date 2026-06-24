@@ -345,7 +345,7 @@ const ProfessionalDetailsPage = () => {
                     <p className="text-gray-400 text-xs uppercase tracking-widest font-bold mb-3">
                       In Progress
                     </p>
-                    <p className="text-3xl font-bold text-blue-400">
+                    <p className="text-3xl font-bold text-purple-400">
                       ₹{profile?.inProgressBalance?.toFixed(2) || "0.00"}
                     </p>
                   </div>
@@ -481,12 +481,12 @@ const ProfessionalDetailsPage = () => {
                       >
                         {/* Status Indicator */}
                         <div
-                          className={`absolute top-0 right-0 w-16 h-16 rounded-bl-3xl rounded-tr-xl opacity-20 transition-opacity group-hover:opacity-40 ${match.status === "COMPLETED" ? "bg-green-500" : match.status === "CANCELLED" ? "bg-red-500" : "bg-blue-500"}`}
+                          className={`absolute top-0 right-0 w-16 h-16 rounded-bl-3xl rounded-tr-xl opacity-20 transition-opacity group-hover:opacity-40 ${match.status === "COMPLETED" ? "bg-green-500" : match.status === "CANCELLED" ? "bg-red-500" : "bg-purple-500"}`}
                         ></div>
 
                         <div className="flex items-center gap-3 mb-4">
                           <span
-                            className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-widest border ${match.status === "COMPLETED" ? "bg-green-500/10 text-green-400 border-green-500/30" : match.status === "CANCELLED" ? "bg-red-500/10 text-red-400 border-red-500/30" : "bg-blue-500/10 text-blue-400 border-blue-500/30"}`}
+                            className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-widest border ${match.status === "COMPLETED" ? "bg-green-500/10 text-green-400 border-green-500/30" : match.status === "CANCELLED" ? "bg-red-500/10 text-red-400 border-red-500/30" : "bg-purple-500/10 text-purple-400 border-purple-500/30"}`}
                           >
                             {match.status}
                           </span>

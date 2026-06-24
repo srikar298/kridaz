@@ -52,9 +52,9 @@ const ShareTurfModal = ({ isOpen, onClose, turf }) => {
   const handleShare = async () => {
     if (selectedUsers.length === 0 || !turf) return;
 
-    // Construct the message content with enue details and URL
+    // Construct the message content with ground details and URL
     const turfUrl = `${window.location.origin}/turf/${turf._id}`;
-    const content = `Check out this enue: ${turf.name}\n=��� ${turf.city || turf.location || "Location"}\n=�Ʀ Starting Rs ${turf.pricePerHour || 800}/hr\n\nLink: ${turfUrl}`;
+    const content = `Check out this ground: ${turf.name}\n=��� ${turf.city || turf.location || "Location"}\n=�Ʀ Starting Rs ${turf.pricePerHour || 800}/hr\n\nLink: ${turfUrl}`;
     const media =
       turf.images?.[0] || turf.image
         ? [{ url: turf.images?.[0] || turf.image, type: "image" }]
@@ -86,7 +86,7 @@ const ShareTurfModal = ({ isOpen, onClose, turf }) => {
       >
         <div className="flex items-center justify-between p-4 border-b border-white/10 shrink-0">
           <h2 className="text-white font-black tracking-wider uppercase text-lg">
-            Share enue
+            Share Ground
           </h2>
           <Button
             onClick={onClose}

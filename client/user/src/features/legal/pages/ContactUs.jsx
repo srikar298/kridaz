@@ -1,4 +1,5 @@
-import React, { useState } from "react";import { Button, Input, Textarea } from "@kridaz/ui";
+import React, { useState } from "react";
+import { Button, Input, Textarea } from "@kridaz/ui";
 
 import {
   Mail,
