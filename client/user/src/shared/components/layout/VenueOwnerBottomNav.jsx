@@ -19,7 +19,7 @@ const VenueOwnerBottomNav = () => {
   const mainNavItems = [
     { to: "/venue-owner", label: "Dashboard", icon: LayoutGrid },
     { to: "/venue-owner/bookings", label: "Bookings", icon: BookOpen },
-    { to: "/venue-owner/turfs", label: "Grounds", icon: MapPin },
+    { to: "/venue-owner/turfs", label: "enues", icon: MapPin },
     { to: "/venue-owner/customers", label: "Customers", icon: Users },
     { to: "/venue-owner/intelligence", label: "Intelligence", icon: BarChart3 },
     { to: "/venue-owner/revenue", label: "Revenue", icon: IndianRupee },

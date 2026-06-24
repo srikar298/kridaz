@@ -647,12 +647,12 @@ const MatchAnalytics = () => {
       liveScore.state ||
       liveScore.location ||
       "Location Unspecified";
-    const ground =
+    const enue =
       liveScore.customVenue ||
       liveScore.turf?.name ||
-      liveScore.ground?.name ||
-      liveScore.ground ||
-      "Local Ground";
+      liveScore.enue?.name ||
+      liveScore.enue ||
+      "Local enue";
     const professionals =
       liveScore.professionals || liveScore.customProfessionals || [];
 
@@ -844,10 +844,10 @@ const MatchAnalytics = () => {
                 </div>
                 <div className="overflow-hidden">
                   <div className="text-[10px] text-gray-500 font-black uppercase tracking-wider">
-                    Ground
+                    enue
                   </div>
                   <div className="text-sm font-bold text-white/90 truncate">
-                    {ground}
+                    {enue}
                   </div>
                 </div>
               </Button>
@@ -1253,7 +1253,7 @@ const MatchAnalytics = () => {
                     <span className="text-sm font-bold text-white truncate block">
                       {scoring?.game?.customVenue ||
                         scoring?.game?.turf?.name ||
-                        "Local Ground"}
+                        "Local enue"}
                     </span>
                   </div>
                   <div>

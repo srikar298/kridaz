@@ -112,7 +112,7 @@ export default function FindProfessionals() {
   const [matchStartTime, setMatchStartTime] = useState("");
   const [matchEndTime, setMatchEndTime] = useState("");
   const [expiresInSeconds, setExpiresInSeconds] = useState(40);
-  const [grounds, setGrounds] = useState([]);
+  const [enues, setGrounds] = useState([]);
   const [loadingGrounds, setLoadingGrounds] = useState(false);
 
   // RTK Query Mutations & Queries
@@ -154,7 +154,7 @@ export default function FindProfessionals() {
     return () => document.body.removeAttribute("data-hide-bottom-nav");
   }, [showMatchModal]);
 
-  // Load States & Grounds
+  // Load States & enues
   useEffect(() => {
     loadStates();
     fetchGrounds();
@@ -215,7 +215,7 @@ export default function FindProfessionals() {
       const res = await axiosInstance.get("/api/user/turf/all");
       setGrounds(res.data.turfs || []);
     } catch (err) {
-      console.error("Error loading grounds:", err);
+      console.error("Error loading enues:", err);
     } finally {
       setLoadingGrounds(false);
     }
@@ -373,7 +373,7 @@ export default function FindProfessionals() {
       !selectedGroundId &&
       (!customLocation.latitude || !customLocation.longitude)
     ) {
-      toast.error("Please select a ground or capture custom geolocation");
+      toast.error("Please select a enue or capture custom geolocation");
       return;
     }
 
@@ -822,8 +822,8 @@ export default function FindProfessionals() {
                       }}
                       className="w-full bg-black border border-white/10 rounded-lg p-3 pr-24 text-xs font-bold text-white focus:border-primary outline-none appearance-none"
                     >
-                      <option value="">-- Choose Venue/Ground --</option>
-                      {grounds.map((g) => (
+                      <option value="">-- Choose Venue/enue --</option>
+                      {enues.map((g) => (
                         <option key={g._id} value={g._id}>
                           {g.name} - {g.city}, {g.state}
                         </option>

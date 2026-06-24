@@ -52,7 +52,7 @@ const MOCK_TEAM_IMAGES = [
     url: "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&q=80",
   },
   {
-    label: "Cricket Ground",
+    label: "Cricket Venue",
     url: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=800&q=80",
   },
   {
@@ -371,7 +371,7 @@ const HostGame = () => {
     }
   }, [searchParams]);
 
-  const [grounds, setGrounds] = useState([]);
+  const [enues, setGrounds] = useState([]);
   const [umpires, setUmpires] = useState([]);
   const [selectedGround, setSelectedGround] = useState(null);
   const [selectedUmpire, setSelectedUmpire] = useState(null);
@@ -594,9 +594,9 @@ const HostGame = () => {
       const res = await axiosInstance.get(
         `/api/hosted-game/grounds?city=${gameData.city}&state=${gameData.state}&sportType=${gameData.gameType}`
       );
-      setGrounds(res.data.grounds);
+      setGrounds(res.data.enues);
     } catch (err) {
-      toast.error("Failed to fetch grounds");
+      toast.error("Failed to fetch enues");
     }
   };
 
@@ -647,7 +647,7 @@ const HostGame = () => {
                 : turf.pricePerHour,
             }));
           })
-          .catch((err) => console.error("Error fetching ground details:", err));
+          .catch((err) => console.error("Error fetching enue details:", err));
       }
 
       if (
@@ -806,6 +806,8 @@ const HostGame = () => {
         ...gameData,
         date: finalDate,
         time: finalTime,
+        groundId: gameData.groundId || null,
+        isPlatformBooking: !!gameData.groundId,
         ...(gameData.gameMode === "QUICK"
           ? {
             teamA: {
@@ -1568,7 +1570,7 @@ const HostGame = () => {
                 )}
 
                 
-                {/* Grounds */}
+                {/* enues */}
               {gameData.requestType === "GBNO" ? (
                 <section className="space-y-4">
                   <div className="flex items-center justify-between gap-2">

@@ -39,7 +39,7 @@ const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter,
   limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB limit to prevent OOM DoS
+    fileSize: 200 * 1024 * 1024, // 200MB limit to support video uploads
   },
 });
 

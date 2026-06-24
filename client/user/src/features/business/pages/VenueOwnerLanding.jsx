@@ -481,7 +481,7 @@ export default function VenueOwnerLanding() {
                   </h3>
                   <p className="text-white/50 text-sm mt-4 font-sans leading-relaxed">
                     Grant specific dashboard permissions to managers, accounts,
-                    and ground staff.
+                    and enue staff.
                   </p>
                 </div>
               </div>

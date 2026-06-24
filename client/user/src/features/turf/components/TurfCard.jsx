@@ -110,7 +110,7 @@ const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
       await navigator.clipboard.writeText(shareUrl);
 
       // Try using Toast or standard fallback alert
-      alert("Ground detail link copied to clipboard!");
+      alert("enue detail link copied to clipboard!");
 
       await axiosInstance.post("/api/user/turf/user/share", {
         turfId: targetId,

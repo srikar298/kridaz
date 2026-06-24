@@ -17,7 +17,7 @@ import { Plus, Users, MessageSquare, Globe } from "lucide-react";
 import AddGroupToCommunityModal from "./AddGroupToCommunityModal";import { Button, Input } from "@kridaz/ui";
 
 
-const ChatWindow = ({ chat, onBack, onSelectChat }) => {
+const ChatWindow = ({ chat, onBack, onSelectChat, prefillMessage }) => {
   const { user } = useSelector((state) => state.auth);
   const { socket, isUserOnline, getLastSeen } = useSocket();
   const navigate = useNavigate();
@@ -54,6 +54,15 @@ const ChatWindow = ({ chat, onBack, onSelectChat }) => {
       setMessages(data);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (prefillMessage && chat && !message) {
+      setMessage(prefillMessage);
+      const url = new URL(window.location);
+      url.searchParams.delete('prefill');
+      window.history.replaceState({}, '', url);
+    }
+  }, [prefillMessage, chat, message]);
 
   // Redirect community view to Announcements page automatically
   useEffect(() => {

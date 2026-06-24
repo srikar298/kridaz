@@ -29,7 +29,7 @@ const ComparisonTable = () => {
           >
             <MapPin className="text-primary w-6 h-6 mb-3 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300" />
             <h3 className="text-lg font-bold text-white mb-1 font-poppins">
-              Venue & Ground Booking
+              Venue & enue Booking
             </h3>
             <p className="text-white/70 text-xs max-w-xs leading-relaxed">
               Find, compare, and book premium sports venues near you instantly

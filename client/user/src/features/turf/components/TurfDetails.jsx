@@ -221,6 +221,7 @@ const TurfDetails = () => {
     handleTimeSelection,
     isTimeSlotBooked,
     totalPrice,
+    duration = 1,
     loading: bookingLoading,
   } = useReservation();
 
@@ -233,9 +234,26 @@ const TurfDetails = () => {
           const returnUrl = new URL(returnTo, window.location.origin);
           returnUrl.searchParams.set("groundId", turf._id);
           returnUrl.searchParams.set("date", selectedDate.toISOString());
-          returnUrl.searchParams.set("time", selectedStartTime);
+          
+          let startTimeStr = typeof selectedStartTime === 'object' ? selectedStartTime.startTime : selectedStartTime;
+          returnUrl.searchParams.set("time", startTimeStr);
+
+          // Calculate end time
+          let endTimeStr = "";
+          if (startTimeStr && typeof startTimeStr === 'string') {
+            try {
+              let [hours, minutes] = startTimeStr.split(":");
+              hours = parseInt(hours, 10);
+              let endHours = (hours + duration) % 24;
+              endTimeStr = `${String(endHours).padStart(2, "0")}:${minutes.replace(/[^0-9]/g, "")}`;
+            } catch(e) {}
+          }
+          if (endTimeStr) {
+            returnUrl.searchParams.set("endTime", endTimeStr);
+          }
+
           returnUrl.searchParams.set("price", totalPrice || turf.pricePerHour);
-          navigate(returnUrl.pathname + returnUrl.search);
+          navigate(returnUrl.pathname + returnUrl.search, { replace: true });
         } else {
           navigate(`/checkout/${turf._id}`, {
             state: {
@@ -287,10 +305,10 @@ const TurfDetails = () => {
             Venue Not Found
           </h2>
           <Link
-            to="/venues"
+            to={searchParams.get("returnTo") || "/venues"}
             className="inline-flex items-center gap-2 bg-primary text-black px-6 py-3 rounded-[6px] font-bold"
           >
-            <ChevronLeft className="w-5 h-5" /> Back to Discovery
+            <ChevronLeft className="w-5 h-5" /> Back
           </Link>
         </div>
       </div>
@@ -684,7 +702,7 @@ const TurfDetails = () => {
                     </div>
                   </div>
 
-                  {/* Ground Composition */}
+                  {/* enue Composition */}
                   <div className="space-y-4">
                     <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-inter">
                       GROUND COMPOSITION

@@ -340,7 +340,7 @@ const MyJoinedGames = () => {
                             >
                               {game.turf?.name ||
                                 game.customVenue ||
-                                game.ground?.name ||
+                                game.enue?.name ||
                                 "Self-Arranged"}
                               {game.turf?.location && (
                                 <span className="text-neutral-500 text-[10px] hidden md:inline ml-1">
@@ -360,7 +360,7 @@ const MyJoinedGames = () => {
                             >
                               {game.turf?.name ||
                                 game.customVenue ||
-                                game.ground?.name ||
+                                game.enue?.name ||
                                 "Self-Arranged"}
                               {game.turf?.location && (
                                 <span className="text-neutral-500 text-[10px] hidden md:inline ml-1">
@@ -449,9 +449,9 @@ const MyJoinedGames = () => {
                         <p className="text-xs font-black text-white">
                           {game.groundCost || 0} Coins
                         </p>
-                        {(game.turf?.name || game.ground?.name) && (
+                        {(game.turf?.name || game.enue?.name) && (
                           <p className="text-[8px] text-primary truncate max-w-full px-2 mt-0.5">
-                            {game.turf?.name || game.ground?.name}
+                            {game.turf?.name || game.enue?.name}
                           </p>
                         )}
                       </div>

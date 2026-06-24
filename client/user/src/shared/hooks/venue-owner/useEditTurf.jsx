@@ -63,7 +63,7 @@ const editTurfSchema = z
       .min(1, "At least one sport type is required"),
     groundTypes: z
       .array(z.string())
-      .min(1, "At least one ground type is required"),
+      .min(1, "At least one enue type is required"),
     facilities: z.array(z.string()).min(1, "At least one facility is required"),
     slotDuration: z.coerce
       .number({ required_error: "Slot duration is required" })
@@ -418,7 +418,7 @@ export default function useEditTurf(turfId) {
   };
 
   const removeGroundType = (type) => {
-    setGroundTypes(groundTypes.filter((ground) => ground !== type));
+    setGroundTypes(groundTypes.filter((enue) => enue !== type));
   };
 
   const addFacility = (item) => {

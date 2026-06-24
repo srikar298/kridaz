@@ -194,7 +194,7 @@ const MatchDetailModal = ({ isOpen, onClose, match, userId }) => {
               {match.name || "Match Details"}
             </h2>
             <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-              {match.turf?.name || match.customVenue || "Local Ground"} •{" "}
+              {match.turf?.name || match.customVenue || "Local enue"} •{" "}
               {new Date(match.date).toLocaleDateString("en-GB")}
             </p>
           </div>
@@ -865,7 +865,7 @@ export default function Profile() {
           );
         }
       } catch (err) {
-        console.error("Error fetching grounds:", err);
+        console.error("Error fetching enues:", err);
       }
     };
     fetchGrounds();
@@ -985,7 +985,7 @@ export default function Profile() {
                   professional.businessDetails?.availabilityTimings ||
                   professional.availabilityTimings,
                 preferredLocations: professional.businessDetails
-                  ?.preferredLocations || { grounds: [], customLocations: [] },
+                  ?.preferredLocations || { enues: [], customLocations: [] },
                 certifications: parsedCertifications,
                 portfolio: parsedPortfolio,
                 structuredAchievements: parsedStructuredAchievements,
@@ -1973,12 +1973,12 @@ export default function Profile() {
                           {/* Platform Venues */}
                           <div className="bg-black/30 border border-white/5 rounded-lg p-5 space-y-3">
                             <p className="text-[9px] font-black text-neutral-500 uppercase tracking-widest flex items-center gap-1.5">
-                              <Building size={12} /> Active Platform Grounds
+                              <Building size={12} /> Active Platform enues
                             </p>
                             <div className="flex flex-wrap gap-1.5">
-                              {pro.preferredLocations?.grounds?.map(
+                              {pro.preferredLocations?.enues?.map(
                                 (groundId) => {
-                                  const gObj = grounds.find(
+                                  const gObj = enues.find(
                                     (g) => g.id === groundId
                                   );
                                   if (!gObj) return null;
@@ -1992,8 +1992,8 @@ export default function Profile() {
                                   );
                                 }
                               )}
-                              {(!pro.preferredLocations?.grounds ||
-                                pro.preferredLocations.grounds.length ===
+                              {(!pro.preferredLocations?.enues ||
+                                pro.preferredLocations.enues.length ===
                                   0) && (
                                 <p className="text-xs text-white/30 italic">
                                   No specific active turf linked.
@@ -2486,7 +2486,7 @@ export default function Profile() {
                             match.turf?.city ||
                             match.customVenue ||
                             match.city ||
-                            "Local Ground";
+                            "Local enue";
                           const minutesLive = match.liveStartedAt
                             ? Math.floor(
                                 (Date.now() -
@@ -2643,7 +2643,7 @@ export default function Profile() {
                                     />{" "}
                                     {match.turf?.name ||
                                       match.customVenue ||
-                                      "Local Ground"}
+                                      "Local enue"}
                                   </p>
                                 </div>
                                 <div className="flex items-center gap-3 shrink-0 self-end md:self-auto">

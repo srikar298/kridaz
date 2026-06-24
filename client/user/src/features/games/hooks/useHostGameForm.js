@@ -21,7 +21,7 @@ export const MOCK_TEAM_IMAGES = [
     url: "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&q=80",
   },
   {
-    label: "Cricket Ground",
+    label: "Cricket Venue",
     url: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=800&q=80",
   },
   {
@@ -103,7 +103,7 @@ const useHostGameForm = () => {
     teamB: { name: "", slots: [], image: MOCK_TEAM_IMAGES[1].url },
   });
 
-  const [grounds, setGrounds] = useState([]);
+  const [enues, setGrounds] = useState([]);
   const [umpires, setUmpires] = useState([]);
   const [streamers, setStreamers] = useState([]);
   const [selectedGround, setSelectedGround] = useState(null);
@@ -247,7 +247,7 @@ const useHostGameForm = () => {
         state: gameData.state,
         sportType: gameData.gameType,
       }).unwrap();
-      setGrounds(groundsRes.grounds || []);
+      setGrounds(groundsRes.enues || []);
 
       const umpiresRes = await triggerGetUmpires({
         city: gameData.city,
@@ -264,7 +264,7 @@ const useHostGameForm = () => {
       setStreamers(streamersRes.streamers || []);
     } catch (err) {
       toast.error(
-        "Failed to fetch matchmaking assets (grounds/umpires/streamers)"
+        "Failed to fetch matchmaking assets (enues/umpires/streamers)"
       );
     }
   }, [

@@ -609,12 +609,12 @@ const OverviewTab = ({ role, profile }) => {
 
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground uppercase tracking-wider">
-                    Location / Ground
+                    Location / enue
                   </span>
                   <div className="flex items-center gap-2 mt-1">
                     <MapPin size={16} className="text-primary" />
                     <span className="text-sm font-medium">
-                      {activeBooking.ground?.name ||
+                      {activeBooking.enue?.name ||
                         activeBooking.customLocation?.address ||
                         "Custom Location"}
                     </span>

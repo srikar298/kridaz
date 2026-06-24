@@ -52,7 +52,7 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
       const res = await axiosInstance.get("/api/owner/turf/owner/all");
       setTurfs(res.data || []);
     } catch (err) {
-      toast.error("Failed to load grounds");
+      toast.error("Failed to load enues");
     }
   };
 
@@ -264,7 +264,7 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
                 </label>
                 {loading ? (
                   <div className="py-10 text-center animate-pulse text-[10px] font-black text-white/70 uppercase tracking-widest font-inter">
-                    Accessing Ground Feed...
+                    Accessing enue Feed...
                   </div>
                 ) : (
                   <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">

@@ -22,7 +22,7 @@ export default function ReportIssueFlowModal({ booking, onClose, onSuccess }) {
 
   const predefinedReasons = [
     "Rain / Bad Weather",
-    "Ground Not Playable",
+    "Venue Not Playable",
     "Water Logging",
     "Venue Closed / Unavailable",
     "Double booked by owner",

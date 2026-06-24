@@ -52,7 +52,7 @@ const MOCK_TEAM_IMAGES = [
     url: "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&q=80",
   },
   {
-    label: "Cricket Ground",
+    label: "Cricket Venue",
     url: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=800&q=80",
   },
   {
@@ -316,6 +316,10 @@ const QuickMatchWizard = () => {
       genderPreference: storedData.genderPreference || "Co-ed (Mixed)",
       ageGroup: storedData.ageGroup || "Any Age",
       equipmentStatus: storedData.equipmentStatus || "Everyone brings their own",
+      opponentType: storedData.opponentType || "SINGLE",
+      hostTeamId: storedData.hostTeamId || "",
+      opponentTargetPlayers: storedData.opponentTargetPlayers || 2,
+      manualGroundCost: storedData.manualGroundCost || "",
     }
     : {
       requestType: "MATCH",
@@ -323,6 +327,7 @@ const QuickMatchWizard = () => {
       gameMode: "QUICK", // QUICK, PROFESSIONAL, or HIRING
       date: "",
       time: "",
+      endTime: "",
       quickPlayerCount: 2,
       splitCostWithMultiplePlayers: false,
       descriptionTags: "",
@@ -338,6 +343,11 @@ const QuickMatchWizard = () => {
       teamA: { name: "", slots: [], image: MOCK_TEAM_IMAGES[0].url },
       teamB: { name: "", slots: [], image: MOCK_TEAM_IMAGES[1].url },
       bookingId: "",
+      opponentType: "SINGLE",
+      hostTeamId: "",
+      opponentTargetPlayers: 2,
+      manualGroundCost: "",
+      isPlatformBooking: false,
       matchPreferences: {
         budget: "",
         budgetType: "Per Match",
@@ -374,7 +384,7 @@ const QuickMatchWizard = () => {
     }
   }, [searchParams]);
 
-  const [grounds, setGrounds] = useState([]);
+  const [enues, setGrounds] = useState([]);
   const [umpires, setUmpires] = useState([]);
   const [selectedGround, setSelectedGround] = useState(null);
   const [selectedUmpire, setSelectedUmpire] = useState(null);
@@ -397,7 +407,8 @@ const QuickMatchWizard = () => {
 
   // Clock picker state
   const [showDateTimePicker, setShowDateTimePicker] = useState(false);
-  const [showClock, setShowClock] = useState(false); // Legacy, can be removed later
+  const [showEndDateTimePicker, setShowEndDateTimePicker] = useState(false);
+  const [isFlexible, setIsFlexible] = useState(false); // Legacy, can be removed later
   const [clockHour, setClockHour] = useState(9);
   const [clockMinute, setClockMinute] = useState(0);
   const [clockAmPm, setClockAmPm] = useState("AM");
@@ -413,7 +424,20 @@ const QuickMatchWizard = () => {
         }) + `, ${gameData.time} local time`
       );
     }
-    return "Select Date & Time";
+    return "Select Date & Start Time";
+  };
+
+  const displayEndDateTime = () => {
+    if (gameData.date && gameData.endTime) {
+      const d = new Date(`${gameData.date}T${gameData.endTime}`);
+      if (isNaN(d.getTime())) return `${gameData.date}, ${gameData.endTime}`;
+      return d.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }) + `, ${gameData.endTime} local time`
+    }
+    return "Select End Time";
   };
 
   // Team Fill state
@@ -597,9 +621,9 @@ const QuickMatchWizard = () => {
       const res = await axiosInstance.get(
         `/api/hosted-game/grounds?city=${gameData.city}&state=${gameData.state}&sportType=${gameData.gameType}`
       );
-      setGrounds(res.data.grounds);
+      setGrounds(res.data.enues);
     } catch (err) {
-      toast.error("Failed to fetch grounds");
+      toast.error("Failed to fetch enues");
     }
   };
 
@@ -615,7 +639,7 @@ const QuickMatchWizard = () => {
   };
 
   useEffect(() => {
-    if (step === 3 && gameData.gameType) {
+    if (step === 2 && gameData.gameType) {
       fetchGrounds();
       fetchUmpires();
     }
@@ -623,7 +647,7 @@ const QuickMatchWizard = () => {
 
   // Handle return from Venue/Professional selection
   useEffect(() => {
-    if (step === 3) {
+    if (step === 2) {
       const urlGroundId = searchParams.get("groundId");
       const urlUmpireId = searchParams.get("umpireId");
       const urlDate = searchParams.get("date");
@@ -645,12 +669,14 @@ const QuickMatchWizard = () => {
                 ? new Date(urlDate).toISOString().split("T")[0]
                 : prev.date,
               time: urlTime || prev.time,
+              endTime: searchParams.get("endTime") || prev.endTime,
               groundPrice: searchParams.get("price")
                 ? Number(searchParams.get("price"))
                 : turf.pricePerHour,
+              isPlatformBooking: !!searchParams.get("price"),
             }));
           })
-          .catch((err) => console.error("Error fetching ground details:", err));
+          .catch((err) => console.error("Error fetching venue details:", err));
       }
 
       if (
@@ -693,33 +719,42 @@ const QuickMatchWizard = () => {
       "PRACTICE",
     ].includes(gameData.requestType);
 
-  const groundCost =
+  const displayGroundCost =
     isStandalonePost
       ? 0
-      : gameData.groundPrice !== undefined
+      : gameData.manualGroundCost
+        ? parseFloat(gameData.manualGroundCost)
+        : gameData.groundPrice !== undefined
         ? gameData.groundPrice
         : selectedGround?.pricePerHour || 0;
-  const subTotal = groundCost + (selectedUmpire?.price || 0);
+
+  const displayUmpireCost = selectedUmpire?.price || 0;
+  const displayTotalCost = displayGroundCost + displayUmpireCost;
+
+  const platformGroundCost = gameData.isPlatformBooking ? displayGroundCost : 0;
+  const platformSubTotal = platformGroundCost + displayUmpireCost;
+
   const discountAmount = couponData?.discountAmount || 0;
   const platformFee = couponData
     ? couponData.platformFee
-    : (subTotal - discountAmount) * 0.015;
-  const totalCost = couponData
+    : Math.max(0, platformSubTotal - discountAmount) * 0.015;
+    
+  const walletReservationCost = couponData
     ? couponData.finalCost
     : isStandalonePost
       ? 0
-      : subTotal > 0
-        ? subTotal - discountAmount + platformFee
+      : platformSubTotal > 0
+        ? platformSubTotal - discountAmount + platformFee
         : 0;
 
   useEffect(() => {
     if (gameData.splitCostWithMultiplePlayers && gameData.quickPlayerCount > 0) {
-      const charge = Math.ceil(totalCost / gameData.quickPlayerCount);
+      const charge = Math.ceil(displayTotalCost / gameData.quickPlayerCount);
       if (gameData.perPlayerCharge !== charge) {
         setGameData((prev) => ({ ...prev, perPlayerCharge: charge }));
       }
     }
-  }, [totalCost, gameData.splitCostWithMultiplePlayers, gameData.quickPlayerCount]);
+  }, [displayTotalCost, gameData.splitCostWithMultiplePlayers, gameData.quickPlayerCount]);
 
   const handleValidateCoupon = async () => {
     if (!couponCode) return;
@@ -728,7 +763,7 @@ const QuickMatchWizard = () => {
     try {
       const res = await axiosInstance.post("/api/hosted-game/validate-coupon", {
         code: couponCode,
-        groundCost: groundCost,
+        groundCost: platformGroundCost,
         umpireCost: selectedUmpire?.price || 0,
       });
       if (res.data.success) {
@@ -813,13 +848,15 @@ const QuickMatchWizard = () => {
           ? new Date().toISOString()
           : gameData.date;
       const finalTime = isFlexible && !gameData.time ? "TBD" : gameData.time;
+      const finalEndTime = isFlexible && !gameData.endTime ? "TBD" : gameData.endTime;
 
       const payload = {
         ...gameData,
         date: finalDate,
         time: finalTime,
+        endTime: finalEndTime,
         groundId: gameData.groundId || null, // Prevent stale IDs from causing backend cost mismatch
-        groundPrice: groundCost, // Explicitly pass groundCost to align backend with frontend
+        groundPrice: displayGroundCost, // Explicitly pass groundCost to align backend with frontend
         matchPreferences: {
           ...gameData.matchPreferences,
           experienceLevel: gameData.experienceLevel,
@@ -831,7 +868,7 @@ const QuickMatchWizard = () => {
           autoApprovePlayers: gameData.autoApprovePlayers,
           splitCostWithMultiplePlayers: gameData.splitCostWithMultiplePlayers,
         },
-        ...(gameData.gameMode === "QUICK"
+        ...(gameData.gameMode === "QUICK" && gameData.opponentType !== "TEAM"
           ? {
             teamA: {
               ...gameData.teamA,
@@ -839,6 +876,9 @@ const QuickMatchWizard = () => {
             },
           }
           : {}),
+        opponentType: gameData.opponentType,
+        hostTeamId: gameData.opponentType === "TEAM" ? gameData.hostTeamId : undefined,
+        opponentTargetPlayers: gameData.opponentType === "TEAM" ? gameData.opponentTargetPlayers : undefined,
         couponCode: couponData ? couponCode : undefined,
         customUmpireData: customUmpireData.name ? customUmpireData : undefined,
       };
@@ -971,7 +1011,7 @@ const QuickMatchWizard = () => {
             </p>
           </div>
           <div className="hidden md:flex gap-2 shrink-0">
-            {[1, 2, 3, 4, 5].map((s) => (
+            {[1, 2].map((s) => (
               <div
                 key={s}
                 className={`w-8 h-1.5 rounded-full transition-all duration-500 ${step >= s ? "bg-gradient-to-r from-secondary to-primary" : "bg-card"}`}
@@ -1100,45 +1140,118 @@ const QuickMatchWizard = () => {
                     </AnimatePresence>
                   </section>
 
-                  <section className="space-y-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
-                      <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
-                        Date & Time
-                      </label>
-                    </div>
-                    <div className="relative">
-                      <Button
-                        type="button"
-                        onClick={() => setShowDateTimePicker(true)}
-                        className="w-full flex items-center justify-between bg-background border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-2.5 px-3 text-[11px] font-bold transition-all text-white"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Calendar size={18} className="text-cyan-400" />
-                          <span
-                            className={
-                              gameData.date && gameData.time
-                                ? "text-white"
-                                : "text-white/70"
-                            }
-                          >
-                            {displayFullDateTime()}
+                  {gameData.isPlatformBooking ? (
+                    <section className="space-y-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
+                        <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
+                          Slot Details
+                        </label>
+                      </div>
+                      <div className="flex flex-col gap-2 p-3 bg-card border border-white/10 rounded-[16px]">
+                        <div className="flex justify-between items-center">
+                          <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Date</span>
+                          <span className="text-[11px] font-bold text-white">
+                            {gameData.date ? new Date(gameData.date).toLocaleDateString() : 'N/A'}
                           </span>
                         </div>
-                        <ChevronDown size={16} className="text-white/70" />
-                      </Button>
+                        <div className="flex justify-between items-center">
+                          <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Time</span>
+                          <span className="text-[11px] font-bold text-white">
+                            {gameData.time || 'N/A'} - {gameData.endTime || 'N/A'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Slot Price</span>
+                          <span className="text-[11px] font-bold text-cyan-400">
+                            ₹{gameData.groundPrice || selectedGround?.pricePerHour || 0}
+                          </span>
+                        </div>
+                      </div>
+                    </section>
+                  ) : (
+                    <>
+                      <section className="space-y-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
+                          <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
+                            Date & Time
+                          </label>
+                        </div>
+                        <div className="relative">
+                          <Button
+                            type="button"
+                            onClick={() => setShowDateTimePicker(true)}
+                            className="w-full flex items-center justify-between bg-background border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-2.5 px-3 text-[11px] font-bold transition-all text-white"
+                          >
+                            <div className="flex items-center gap-3">
+                              <Calendar size={18} className="text-cyan-400" />
+                              <span
+                                className={
+                                  gameData.date && gameData.time
+                                    ? "text-white"
+                                    : "text-white/70"
+                                }
+                              >
+                                {displayFullDateTime()}
+                              </span>
+                            </div>
+                            <ChevronDown size={16} className="text-white/70" />
+                          </Button>
 
-                      <MaterialDateTimePicker
-                        isOpen={showDateTimePicker}
-                        onClose={() => setShowDateTimePicker(false)}
-                        initialDate={gameData.date || null}
-                        initialTime={gameData.time || null}
-                        onSelect={(date, time) => {
-                          setGameData({ ...gameData, date, time });
-                        }}
-                      />
-                    </div>
-                  </section>
+                          <MaterialDateTimePicker
+                            isOpen={showDateTimePicker}
+                            onClose={() => setShowDateTimePicker(false)}
+                            initialDate={gameData.date || null}
+                            initialTime={gameData.time || null}
+                            onSelect={(date, time) => {
+                              setGameData({ ...gameData, date, time });
+                            }}
+                          />
+                        </div>
+                      </section>
+
+                      <section className="space-y-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
+                          <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
+                            End Time
+                          </label>
+                        </div>
+                        <div className="relative">
+                          <Button
+                            type="button"
+                            onClick={() => setShowEndDateTimePicker(true)}
+                            className="w-full flex items-center justify-between bg-background border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-2.5 px-3 text-[11px] font-bold transition-all text-white"
+                          >
+                            <div className="flex items-center gap-3">
+                              <Clock size={18} className="text-cyan-400" />
+                              <span
+                                className={
+                                  gameData.date && gameData.endTime
+                                    ? "text-white"
+                                    : "text-white/70"
+                                }
+                              >
+                                {displayEndDateTime()}
+                              </span>
+                            </div>
+                            <ChevronDown size={16} className="text-white/70" />
+                          </Button>
+
+                          <MaterialDateTimePicker
+                            isOpen={showEndDateTimePicker}
+                            onClose={() => setShowEndDateTimePicker(false)}
+                            initialDate={gameData.date || null}
+                            initialTime={gameData.endTime || null}
+                            onSelect={(date, time) => {
+                              setGameData({ ...gameData, date, endTime: time });
+                            }}
+                          />
+                        </div>
+                      </section>
+                    </>
+                  )}
                 </div>
 
                 <section className="space-y-4" ref={locationRef}>
@@ -1166,35 +1279,56 @@ const QuickMatchWizard = () => {
                           <p className="flex text-[10px] sm:text-[11px] text-white/70 mb-2 sm:mb-3 items-center gap-1 font-medium truncate">
                             <MapPin size={12} className="flex-shrink-0" /> <span className="truncate">{selectedGround.location || selectedGround.address || selectedGround.city}</span>
                           </p>
-                          <div className="flex flex-wrap gap-2 mb-3">
-                            {gameData.date && (
-                              <span className="px-2 py-1 bg-background rounded text-[9px] sm:text-[10px] text-cyan-400 font-bold uppercase">
-                                {new Date(gameData.date).toLocaleDateString()}
-                              </span>
-                            )}
-                            {gameData.time && (
-                              <span className="px-2 py-1 bg-background rounded text-[9px] sm:text-[10px] text-lime-400 font-bold uppercase">
-                                {gameData.time}
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center justify-between mt-2 sm:mt-4">
-                            <span className="text-primary font-black text-xs sm:text-sm">
-                              ₹
-                              {gameData.groundPrice !== undefined
-                                ? gameData.groundPrice
-                                : selectedGround.pricePerHour}
-                            </span>
+                          {gameData.isPlatformBooking ? (
+                            <div className="flex flex-col gap-3 mb-2">
+                              <div className="flex flex-wrap gap-2">
+                                {gameData.date && (
+                                  <span className="px-2 py-1 bg-background rounded text-[9px] sm:text-[10px] text-cyan-400 font-bold uppercase">
+                                    {new Date(gameData.date).toLocaleDateString()}
+                                  </span>
+                                )}
+                                {gameData.time && (
+                                  <span className="px-2 py-1 bg-background rounded text-[9px] sm:text-[10px] text-lime-400 font-bold uppercase">
+                                    {gameData.time}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex flex-col gap-1">
+                                <span className="text-[10px] text-white/50 uppercase font-bold">Slot Price (₹)</span>
+                                <div className="px-3 py-2 bg-background border border-white/10 rounded-[8px] text-xs font-bold text-primary w-fit">
+                                  ₹{gameData.groundPrice || selectedGround.pricePerHour || "0"}
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col gap-1 mb-2">
+                              <span className="text-[10px] text-white/50 uppercase font-bold">Manual Amount Paid (₹)</span>
+                              <Input
+                                type="number"
+                                placeholder={selectedGround.pricePerHour?.toString() || "0"}
+                                value={gameData.manualGroundCost || ""}
+                                onChange={(e) => setGameData({ ...gameData, manualGroundCost: e.target.value, groundPrice: parseFloat(e.target.value) || 0 })}
+                                className="w-24 bg-background border border-white/10 rounded-[8px] p-2 text-xs text-white"
+                              />
+                            </div>
+                          )}
                             <Button
                               onClick={() => {
+                                setSearchParams((prev) => {
+                                  const params = new URLSearchParams(prev);
+                                  params.delete("groundId");
+                                  params.delete("price");
+                                  params.delete("date");
+                                  params.delete("time");
+                                  return params;
+                                }, { replace: true });
                                 setSelectedGround(null);
-                                setGameData({ ...gameData, groundId: null });
+                                setGameData({ ...gameData, groundId: null, groundPrice: undefined, manualGroundCost: "", isPlatformBooking: false });
                               }}
-                              className="px-3 sm:px-4 py-1.5 sm:py-2 bg-background text-white/70 hover:text-white rounded-[16px] text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-colors"
+                              className="px-3 sm:px-4 py-1.5 sm:py-2 bg-background text-white/70 hover:text-white rounded-[16px] text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-colors h-fit self-end"
                             >
                               Remove
                             </Button>
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -1221,18 +1355,28 @@ const QuickMatchWizard = () => {
                     isOpen={isLocationModalOpen}
                     onClose={() => setIsLocationModalOpen(false)}
                     onSelect={(data) => {
+                      setSearchParams((prev) => {
+                        const params = new URLSearchParams(prev);
+                        params.delete("groundId");
+                        params.delete("price");
+                        params.delete("date");
+                        params.delete("time");
+                        return params;
+                      }, { replace: true });
                       setGameData({
                         ...gameData,
                         customLocation: data.displayName,
                         city: data.city,
                         state: data.state,
                         groundId: data.type === 'VENUE' ? data.venueId : null,
+                        isPlatformBooking: false,
                       });
                       if (data.type === 'VENUE' && data.venue) {
                         setSelectedGround(data.venue);
                       } else {
                         setSelectedGround(null);
                       }
+                      setIsLocationModalOpen(false);
                     }}
                     onBookSlot={(venue) => {
                       const updatedGameData = {
@@ -1244,7 +1388,7 @@ const QuickMatchWizard = () => {
                       };
                       setGameData(updatedGameData);
                       sessionStorage.setItem("hostGameData_quick", JSON.stringify(updatedGameData));
-                      navigate(`/venues?returnTo=${encodeURIComponent(`/host-game?step=3&city=${venue.city}&state=${venue.state}`)}`);
+                      navigate(`/venue/${venue.id || venue._id}?returnTo=${encodeURIComponent(`/host-game/quick?step=2&city=${venue.city}&state=${venue.state}`)}`);
                     }}
                   />
                 </section>
@@ -1288,6 +1432,7 @@ const QuickMatchWizard = () => {
                                 ...gameData.matchPreferences,
                                 needOpponent: e.target.checked,
                               },
+                              opponentType: e.target.checked ? "SINGLE" : "SINGLE",
                             })
                           }
                           className="w-4 h-4 rounded border-white/20 text-cyan-400 focus:ring-0 focus:ring-offset-0 bg-background"
@@ -1300,6 +1445,130 @@ const QuickMatchWizard = () => {
                         </label>
                       </div>
                     </div>
+
+                    {gameData.matchPreferences?.needOpponent && (
+                      <div className="space-y-4 mt-4 bg-background border border-white/10 p-4 rounded-[16px]">
+                        <div className="flex items-center gap-4">
+                          <label className="flex items-center gap-2 cursor-pointer text-xs text-white">
+                            <input
+                              type="radio"
+                              name="opponentType"
+                              value="SINGLE"
+                              checked={gameData.opponentType === "SINGLE"}
+                              onChange={(e) => setGameData({ ...gameData, opponentType: e.target.value, autoApprovePlayers: true })}
+                              className="w-4 h-4 text-cyan-400 bg-card border-white/20 focus:ring-0"
+                            />
+                            Find Individual Players
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer text-xs text-white">
+                            <input
+                              type="radio"
+                              name="opponentType"
+                              value="TEAM"
+                              checked={gameData.opponentType === "TEAM"}
+                              onChange={(e) => setGameData({ ...gameData, opponentType: e.target.value, autoApprovePlayers: false })}
+                              className="w-4 h-4 text-cyan-400 bg-card border-white/20 focus:ring-0"
+                            />
+                            Challenge a Team
+                          </label>
+                        </div>
+
+                        {gameData.opponentType === "TEAM" && (
+                          <div className="space-y-4 mt-3 pt-3 border-t border-white/10">
+                            <div className="flex flex-col gap-2">
+                              <div className="flex justify-between items-center">
+                                <label className="text-[10px] text-white/70 uppercase font-bold tracking-wider">
+                                  Select Your Team
+                                </label>
+                                {myTeams.length === 0 && (
+                                  <button
+                                    onClick={() => navigate("/my-teams")}
+                                    className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider hover:underline"
+                                  >
+                                    + Create Team
+                                  </button>
+                                )}
+                              </div>
+                              <Select
+                                value={gameData.hostTeamId}
+                                onChange={(e) => setGameData({ ...gameData, hostTeamId: e.target.value })}
+                                className="w-full bg-card border border-white/10 rounded-[12px] p-3 text-xs text-white"
+                              >
+                                {myTeams.length === 0 ? (
+                                  <option value="">-- No teams found. Please create one. --</option>
+                                ) : (
+                                  <>
+                                    <option value="">-- Choose your team --</option>
+                                    {myTeams.map(t => (
+                                      <option key={t._id} value={t._id}>{t.name}</option>
+                                    ))}
+                                  </>
+                                )}
+                              </Select>
+                            </div>
+                            
+                            <div className="flex flex-col gap-2">
+                              <label className="text-[10px] text-white/70 uppercase font-bold tracking-wider">
+                                Opponent Team Target Players (Total slot available for opponents)
+                              </label>
+                              <Input
+                                type="number"
+                                min={2}
+                                value={gameData.opponentTargetPlayers}
+                                onChange={(e) => setGameData({ ...gameData, opponentTargetPlayers: parseInt(e.target.value) || 2 })}
+                                className="w-full bg-card border border-white/10 rounded-[12px] p-3 text-xs text-white"
+                              />
+                            </div>
+
+                            {((selectedGround && selectedGround.pricePerHour > 0) || (gameData.groundPrice > 0)) && (
+                              <div className="flex flex-col gap-3 mt-4 pt-3 border-t border-white/10">
+                                <label className="flex items-center gap-2 cursor-pointer text-xs text-white">
+                                  <input
+                                    type="checkbox"
+                                    checked={gameData.matchPreferences?.splitCost || false}
+                                    onChange={(e) => setGameData({
+                                      ...gameData,
+                                      matchPreferences: {
+                                        ...gameData.matchPreferences,
+                                        splitCost: e.target.checked,
+                                        advancePercentage: e.target.checked ? 30 : undefined
+                                      }
+                                    })}
+                                    className="w-4 h-4 text-cyan-400 bg-card border-white/20 rounded focus:ring-0"
+                                  />
+                                  <span className="font-bold">Split Cost with Opponent Team?</span>
+                                </label>
+
+                                {gameData.matchPreferences?.splitCost && (
+                                  <div className="flex flex-col gap-2">
+                                    <label className="text-[10px] text-white/70 uppercase font-bold tracking-wider">
+                                      Advance Percentage Required (%)
+                                    </label>
+                                    <Input
+                                      type="number"
+                                      min={1}
+                                      max={100}
+                                      value={gameData.matchPreferences?.advancePercentage || 30}
+                                      onChange={(e) => setGameData({ 
+                                        ...gameData, 
+                                        matchPreferences: {
+                                          ...gameData.matchPreferences,
+                                          advancePercentage: parseInt(e.target.value) || 30
+                                        } 
+                                      })}
+                                      className="w-full bg-card border border-white/10 rounded-[12px] p-3 text-xs text-white"
+                                    />
+                                    <p className="text-[10px] text-white/50">
+                                      Opponent Captain will pay this % of the split cost to reserve their spot. Remaining collected from team.
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </section>
                 )}
 
@@ -1449,7 +1718,7 @@ const QuickMatchWizard = () => {
                 )}
 
                 
-                {/* Grounds */}
+                {/* enues */}
               {gameData.requestType === "GBNO" ? (
                 <section className="space-y-4">
                   <div className="flex items-center justify-between gap-2">
@@ -1514,74 +1783,78 @@ const QuickMatchWizard = () => {
                       </h3>
                     </div>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-3 bg-background p-2.5 rounded-[16px] border border-white/10 justify-between">
-                        <div className="flex flex-col text-left">
-                          <span className="text-[9px] font-black uppercase text-white/70 tracking-wider">
-                            Total Players
-                          </span>
-                          <span className="text-[8px] text-white/70 font-medium">
-                            Pool including you
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <Button
-                            type="button"
-                            onClick={() =>
-                              setGameData((prev) => ({
-                                ...prev,
-                                quickPlayerCount: Math.max(
-                                  2,
-                                  prev.quickPlayerCount - 1
-                                ),
-                              }))
-                            }
-                            className="w-5 h-5 rounded-full bg-card border border-primary/20 text-primary flex items-center justify-center hover:bg-primary/10 transition-colors"
-                          >
-                            <Minus size={14} />
-                          </Button>
-                          <span className="text-lg font-black text-white w-6 text-center select-none tabular-nums">
-                            {gameData.quickPlayerCount || 2}
-                          </span>
-                          <Button
-                            type="button"
-                            onClick={() =>
-                              setGameData((prev) => ({
-                                ...prev,
-                                quickPlayerCount: Math.min(
-                                  22,
-                                  prev.quickPlayerCount + 1
-                                ),
-                              }))
-                            }
-                            className="w-5 h-5 rounded-full bg-card border border-primary/20 text-primary flex items-center justify-center hover:bg-primary/10 transition-colors"
-                          >
-                            <Plus size={14} />
-                          </Button>
-                        </div>
-                      </div>
+                      {gameData.opponentType !== "TEAM" && (
+                        <>
+                          <div className="flex items-center gap-3 bg-background p-2.5 rounded-[16px] border border-white/10 justify-between">
+                            <div className="flex flex-col text-left">
+                              <span className="text-[9px] font-black uppercase text-white/70 tracking-wider">
+                                Total Players
+                              </span>
+                              <span className="text-[8px] text-white/70 font-medium">
+                                Pool including you
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <Button
+                                type="button"
+                                onClick={() =>
+                                  setGameData((prev) => ({
+                                    ...prev,
+                                    quickPlayerCount: Math.max(
+                                      2,
+                                      prev.quickPlayerCount - 1
+                                    ),
+                                  }))
+                                }
+                                className="w-5 h-5 rounded-full bg-card border border-primary/20 text-primary flex items-center justify-center hover:bg-primary/10 transition-colors"
+                              >
+                                <Minus size={14} />
+                              </Button>
+                              <span className="text-lg font-black text-white w-6 text-center select-none tabular-nums">
+                                {gameData.quickPlayerCount || 2}
+                              </span>
+                              <Button
+                                type="button"
+                                onClick={() =>
+                                  setGameData((prev) => ({
+                                    ...prev,
+                                    quickPlayerCount: Math.min(
+                                      22,
+                                      prev.quickPlayerCount + 1
+                                    ),
+                                  }))
+                                }
+                                className="w-5 h-5 rounded-full bg-card border border-primary/20 text-primary flex items-center justify-center hover:bg-primary/10 transition-colors"
+                              >
+                                <Plus size={14} />
+                              </Button>
+                            </div>
+                          </div>
 
-                      {/* Split Cost Toggle */}
-                      <div className="flex items-center justify-between bg-background p-3 rounded-[16px] border border-white/10">
-                        <div className="flex flex-col text-left">
-                          <span className="text-[9px] font-black uppercase text-white/70 tracking-wider">
-                            Split Cost
-                          </span>
-                          <span className="text-[8px] text-white/50 font-medium mt-0.5">
-                            Divide venue price among players
-                          </span>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={gameData.splitCostWithMultiplePlayers}
-                            onChange={(e) =>
-                              setGameData({ ...gameData, splitCostWithMultiplePlayers: e.target.checked })
-                            }
-                            className="sr-only peer"
-                          />
-                          <div className="w-9 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
-                        </label>
-                      </div>
+                          {/* Split Cost Toggle */}
+                          <div className="flex items-center justify-between bg-background p-3 rounded-[16px] border border-white/10">
+                            <div className="flex flex-col text-left">
+                              <span className="text-[9px] font-black uppercase text-white/70 tracking-wider">
+                                Split Cost
+                              </span>
+                              <span className="text-[8px] text-white/50 font-medium mt-0.5">
+                                Divide venue price among players
+                              </span>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={gameData.splitCostWithMultiplePlayers}
+                                onChange={(e) =>
+                                  setGameData({ ...gameData, splitCostWithMultiplePlayers: e.target.checked })
+                                }
+                                className="sr-only peer"
+                              />
+                              <div className="w-9 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                          </div>
+                        </>
+                      )}
 
                       {/* Experience Level */}
                       <div className="flex flex-col gap-2">
@@ -1739,10 +2012,8 @@ const QuickMatchWizard = () => {
                         gameData.gameMode === "HIRING"
                       ) {
                         handleCreateGame();
-                      } else if (gameData.gameMode === "QUICK") {
-                        initQuickSlots();
-                        updateStep(3);
                       } else {
+                        initQuickSlots();
                         updateStep(2);
                       }
                     }}
@@ -1751,7 +2022,7 @@ const QuickMatchWizard = () => {
                         gameData.requestType === "MATCH") ||
                       !gameData.gameType ||
                       (!gameData.matchPreferences?.isDateFlexible &&
-                        (!gameData.date || !gameData.time)) ||
+                        (!gameData.date || !gameData.time || !gameData.endTime)) ||
                       !gameData.city ||
                       !gameData.state ||
                       loading ||
@@ -1773,298 +2044,8 @@ const QuickMatchWizard = () => {
           </motion.div>
         )}
 
-        {/* Step 4: Setup (Professional) */}
-
-
-
-        {/* Step 4: Team Configuration (Professional Only) */}
-        {step === 2 && gameData.gameMode === "PROFESSIONAL" && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-10"
-          >
-            {/* Team Selection Tabs */}
-            <div className="flex p-1 bg-card border border-white/10 rounded-[16px] max-w-sm mx-auto mb-3">
-              {["teamA", "teamB"].map((tab) => (
-                <Button
-                  key={tab}
-                  onClick={() => setActiveTeamTab(tab)}
-                  className={`flex-1 py-3 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-[16px] transition-all relative ${
-                    activeTeamTab === tab
-                      ? "text-black"
-                      : "text-white/70 hover:text-white"
-                  }`}
-                >
-                  {activeTeamTab === tab && (
-                    <motion.div
-                      layoutId="activeTeamTabIndicator"
-                      className="absolute inset-0 bg-gradient-to-r from-secondary to-primary rounded-[16px]"
-                      transition={{
-                        type: "spring",
-                        bounce: 0.2,
-                        duration: 0.6,
-                      }}
-                    />
-                  )}
-                  <span className="relative z-10">
-                    {tab === "teamA" ? "Team A" : "Team B"}
-                  </span>
-                </Button>
-              ))}
-            </div>
-
-            <div className="bg-card border border-white/10 rounded-[16px] p-4 sm:p-6 overflow-hidden">
-              <AnimatePresence mode="wait">
-                {[activeTeamTab].map((teamKey) => (
-                  <motion.div
-                    key={teamKey}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.2 }}
-                    className="space-y-5"
-                  >
-                    {/* Team Header */}
-                    <div className="flex items-center justify-between gap-5">
-                      <div className="flex items-center gap-5">
-                        <div
-                          className={`w-14 h-14 rounded-[16px] flex items-center justify-center font-black text-2xl overflow-hidden ${teamKey === "teamA" ? "bg-blue-500/10 text-blue-500" : "bg-red-500/10 text-red-500"}`}
-                        >
-                          {gameData[teamKey].logo ? (
-                            <img
-                              src={gameData[teamKey].logo}
-                              alt="Team Logo"
-                              className="w-full h-full object-cover"
-                            />
-                          ) : teamKey === "teamA" ? (
-                            "A"
-                          ) : (
-                            "B"
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <label className="text-[10px] font-black text-white/70 uppercase tracking-widest block mb-1">
-                            Team Name
-                          </label>
-                          <Input
-                            className="bg-transparent text-2xl font-black border-none outline-none focus:ring-0 w-full p-0 tracking-tight"
-                            placeholder={
-                              teamKey === "teamA"
-                                ? "Enter Home Team Name"
-                                : "Enter Away Team Name"
-                            }
-                            value={gameData[teamKey].name}
-                            onChange={(e) =>
-                              setGameData({
-                                ...gameData,
-                                [teamKey]: {
-                                  ...gameData[teamKey],
-                                  name: e.target.value,
-                                },
-                              })
-                            }
-                          />
-                        </div>
-                      </div>
-                      <Button
-                        onClick={() => {
-                          setFillingTeamKey(teamKey);
-                          setShowTeamFillModal(true);
-                        }}
-                        className="px-4 h-[40px] bg-gradient-to-r from-secondary to-primary rounded-[16px] text-background font-bold uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-lg"
-                        title="Add Team"
-                      >
-                        Add Team
-                      </Button>
-                    </div>
-
-                    {/* Team Image Upload */}
-                    <div className="space-y-3">
-                      <label className="text-[10px] font-black text-white/70 uppercase tracking-widest block">
-                        Card Background Image
-                      </label>
-
-                      {/* Preview + Upload Row */}
-                      <div className="flex items-center gap-3">
-                        {/* Preview */}
-                        <div
-                          className="relative w-28 h-18 shrink-0 rounded-[16px] overflow-hidden border border-white/10 bg-card"
-                          style={{ height: "70px" }}
-                        >
-                          <img
-                            src={gameData[teamKey].image}
-                            alt="preview"
-                            className="w-full h-full object-cover"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                        </div>
-
-                        {/* Upload button */}
-                        <label
-                          htmlFor={`img-upload-${teamKey}`}
-                          className="flex-1 flex flex-col items-center justify-center gap-2 p-4 border-2 border-dashed border-primary/30 rounded-[16px] cursor-pointer hover:border-primary/60 hover:bg-primary/5 transition-all group"
-                        >
-                          <div className="w-5 h-5 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-all">
-                            <ImageIcon
-                              size={16}
-                              className="text-primary group-hover:text-primary transition-colors"
-                            />
-                          </div>
-                          <span className="text-[10px] font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent uppercase tracking-widest">
-                            {gameData[teamKey].imageName
-                              ? "Change Photo"
-                              : "Upload Photo"}
-                          </span>
-                          {gameData[teamKey].imageName && (
-                            <span className="text-[8px] text-white/30 truncate max-w-[120px]">
-                              {gameData[teamKey].imageName}
-                            </span>
-                          )}
-                          <Input
-                            id={`img-upload-${teamKey}`}
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => handleTeamImageUpload(teamKey, e)}
-                          />
-                        </label>
-                      </div>
-
-                      {/* Quick-select presets */}
-                      <div className="space-y-2">
-                        <p className="text-[8px] font-black text-neutral-600 uppercase tracking-widest">
-                          Or choose a preset
-                        </p>
-                        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                          {MOCK_TEAM_IMAGES.map((img) => (
-                            <Button
-                              key={img.url}
-                              onClick={() =>
-                                setGameData((prev) => ({
-                                  ...prev,
-                                  [teamKey]: {
-                                    ...prev[teamKey],
-                                    image: img.url,
-                                    imageName: null,
-                                  },
-                                }))
-                              }
-                              className={`relative rounded-[16px] overflow-hidden border-2 transition-all shrink-0 w-20 aspect-video ${gameData[teamKey].image === img.url ? "border-primary shadow-[0_0_10px_rgba(204,255,0,0.3)]" : "border-transparent hover:border-white/20"}`}
-                            >
-                              <img
-                                src={img.url}
-                                alt={img.label}
-                                className="w-full h-full object-cover"
-                              />
-                              {gameData[teamKey].image === img.url && (
-                                <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                                  <CheckCircle2
-                                    size={14}
-                                    className="text-primary"
-                                  />
-                                </div>
-                              )}
-                              <p className="absolute bottom-0 left-0 right-0 bg-black/70 text-[6px] font-black text-white text-center py-0.5 uppercase">
-                                {img.label}
-                              </p>
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Slots */}
-                    <div className="space-y-3">
-                      {gameData[teamKey].slots.map((slot, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center gap-3 group"
-                        >
-                          <div
-                            className={`flex-1 flex items-center gap-3 bg-card border ${slot.userId || slot.customPlayer ? "border-primary/50 bg-primary/5" : "border-white/10"} p-4 rounded-[16px] group-hover:border-primary/30 transition-all`}
-                          >
-                            <Input
-                              className="bg-transparent text-xs font-black uppercase tracking-widest outline-none w-full"
-                              value={slot.role}
-                              onChange={(e) =>
-                                updateSlotRole(teamKey, idx, e.target.value)
-                              }
-                            />
-                            {slot.userId || slot.customPlayer ? (
-                              <div className="flex items-center gap-2">
-                                <span className="text-[10px] sm:text-xs font-bold text-white truncate max-w-[100px] sm:max-w-[150px]">
-                                  {slot.name ||
-                                    slot.customPlayer?.name ||
-                                    slot.customPlayer?.email}
-                                </span>
-                                <span className="text-[9px] font-black text-black uppercase tracking-tighter bg-primary px-2 py-1 rounded shrink-0">
-                                  FILLED
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="text-[9px] font-black text-neutral-600 uppercase tracking-tighter bg-card px-2 py-1 rounded shrink-0">
-                                OPEN
-                              </span>
-                            )}
-                          </div>
-                          <Button
-                            onClick={() => {
-                              if (slot.userId || slot.customPlayer) {
-                                const newSlots = [...gameData[teamKey].slots];
-                                newSlots[idx] = {
-                                  role: slot.role,
-                                  status: "OPEN",
-                                };
-                                setGameData({
-                                  ...gameData,
-                                  [teamKey]: {
-                                    ...gameData[teamKey],
-                                    slots: newSlots,
-                                  },
-                                });
-                              } else {
-                                removeSlot(teamKey, idx);
-                              }
-                            }}
-                            className="p-3 text-neutral-600 hover:text-red-500 transition-colors bg-card rounded-[16px] border border-white/10 shrink-0"
-                          >
-                            <Trash2 size={16} />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-
-                    <Button
-                      onClick={() => addSlot(teamKey)}
-                      className="w-full py-4 border-2 border-dashed border-white/10 rounded-[16px] text-white/70 text-xs font-black uppercase tracking-widest hover:border-primary/30 hover:text-primary transition-all flex items-center justify-center gap-2 bg-card/30"
-                    >
-                      <Plus size={16} /> Add More Slots
-                    </Button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-
-            <div className="flex gap-3">
-              <Button
-                onClick={() => updateStep(1)}
-                className="flex-1 h-[40px] flex items-center justify-center bg-card text-white/70 font-bold rounded-[16px] border border-white/10 hover:border-white/20 transition-all text-xs font-open-sans uppercase tracking-wider"
-              >
-                Back
-              </Button>
-              <Button
-                onClick={() => updateStep(3)}
-                className="flex-[2] h-[40px] bg-gradient-to-r from-secondary to-primary text-background font-bold rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all text-xs shadow-[0_8px_24px_rgba(191,243,103,0.15)] font-open-sans uppercase tracking-wider"
-              >
-                PREVIEW MATCH
-              </Button>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Step 5: Preview & Finalize */}
-        {step === 3 && (
+        {/* Step 2: Preview & Finalize */}
+        {step === 2 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -2185,7 +2166,7 @@ const QuickMatchWizard = () => {
                   Entry Charge per Player
                 </span>
                 <p className="text-[10px] text-white/50 font-medium italic font-inter">
-                  Recommended: Total Cost ({totalCost}) / Total Players
+                  Recommended: Total Cost ({displayTotalCost}) / Total Players
                 </p>
               </div>
               <div className="flex items-center gap-2 bg-black p-2 rounded-[16px] border border-white/10 shrink-0">
@@ -2208,35 +2189,36 @@ const QuickMatchWizard = () => {
             </div>
 
             {/* Billing Summary & Coupon */}
-            <div className="bg-card border border-white/10 rounded-[16px] overflow-hidden">
-              <div className="p-3 border-b border-white/10/50 flex items-center gap-3 bg-card/20">
-                <Receipt className="text-primary w-5 h-5" />
-                <h3 className="text-sm font-black uppercase tracking-widest text-white font-open-sans">
-                  Checkout Summary
-                </h3>
-              </div>
-
-              <div className="p-3 space-y-3">
-                <div className="space-y-3 text-sm font-medium text-white/70 font-inter">
-                  <div className="flex justify-between items-center">
-                    <span>Venue Cost</span>
-                    <span className="text-white font-bold">
-                      {subTotal} coins
-                    </span>
-                  </div>
-                  {discountAmount > 0 && (
-                    <div className="flex justify-between items-center text-primary">
-                      <span>Discount Applied</span>
-                      <span className="font-bold">-{discountAmount} coins</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between items-center">
-                    <span>Platform Fee (1.5%)</span>
-                    <span className="text-white font-bold">
-                      {platformFee.toFixed(2)} coins
-                    </span>
-                  </div>
+            {walletReservationCost > 0 && (
+              <div className="bg-card border border-white/10 rounded-[16px] overflow-hidden">
+                <div className="p-3 border-b border-white/10/50 flex items-center gap-3 bg-card/20">
+                  <Receipt className="text-primary w-5 h-5" />
+                  <h3 className="text-sm font-black uppercase tracking-widest text-white font-open-sans">
+                    Checkout Summary
+                  </h3>
                 </div>
+
+                <div className="p-3 space-y-3">
+                  <div className="space-y-3 text-sm font-medium text-white/70 font-inter">
+                    <div className="flex justify-between items-center">
+                      <span>Venue Cost</span>
+                      <span className="text-white font-bold">
+                        {platformSubTotal} coins
+                      </span>
+                    </div>
+                    {discountAmount > 0 && (
+                      <div className="flex justify-between items-center text-primary">
+                        <span>Discount Applied</span>
+                        <span className="font-bold">-{discountAmount} coins</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center">
+                      <span>Platform Fee (1.5%)</span>
+                      <span className="text-white font-bold">
+                        {platformFee.toFixed(2)} coins
+                      </span>
+                    </div>
+                  </div>
 
                 {/* Coupon Input */}
                 <div className="pt-4 border-t border-white/10/50">
@@ -2298,21 +2280,28 @@ const QuickMatchWizard = () => {
                 <div className="flex items-center gap-2 text-black">
                   <Coins size={24} className="text-black" />
                   <span className="font-black text-2xl font-open-sans tracking-tight">
-                    {totalCost.toFixed(2)}
+                    {walletReservationCost.toFixed(2)}
                   </span>
                 </div>
               </div>
             </div>
+            )}
             {/* Action Buttons */}
             <div className="flex gap-3 pt-2">
               <Button
-                onClick={() => updateStep(2)}
+                onClick={() => updateStep(1)}
                 className="flex-[0.8] h-[40px] bg-card text-white/70 font-black rounded-[16px] border border-white/10 hover:border-white/10 hover:text-white transition-all text-[11px] uppercase tracking-widest font-open-sans flex items-center justify-center"
               >
                 Back
               </Button>
               <Button
-                onClick={() => setShowConfirm(true)}
+                onClick={() => {
+                  if (walletReservationCost > 0) {
+                    setShowConfirm(true);
+                  } else {
+                    handleCreateGame();
+                  }
+                }}
                 className="flex-[2] h-[40px] bg-gradient-to-r from-secondary to-primary text-background font-bold rounded-[16px] hover:scale-[1.01] active:scale-[0.99] transition-all text-xs sm:text-xs font-open-sans uppercase tracking-widest shadow-[0_8px_24px_rgba(191,243,103,0.15)] flex justify-center items-center gap-3"
               >
                 CONFIRM <ArrowRight size={20} />
@@ -2571,7 +2560,7 @@ const QuickMatchWizard = () => {
               </h2>
               <p className="text-white/70 font-medium mb-10 leading-relaxed text-[14px] font-inter">
                 Hosting this game will reserve{" "}
-                <span className="text-white font-black">{totalCost} coins</span>{" "}
+                <span className="text-white font-black">{walletReservationCost.toFixed(2)} coins</span>{" "}
                 from your wallet. It will be deducted only when the match is
                 confirmed.
               </p>
@@ -2599,7 +2588,7 @@ const QuickMatchWizard = () => {
 
       <CoinAnimation
         show={showCoinAnim}
-        amount={totalCost}
+        amount={walletReservationCost}
         onComplete={() => {
           setShowCoinAnim(false);
           toast.success("Match Hosted Successfully!");

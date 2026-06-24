@@ -118,7 +118,7 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
               {game.gameMode} Matchup
             </span>
             <h3 className="text-xl md:text-2xl font-bold text-white mb-2 leading-tight">
-              {game.ground?.name || "Venue TBD"}
+              {game.enue?.name || "Venue TBD"}
             </h3>
           </div>
           <Button
@@ -264,7 +264,7 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
             </div>
           )}
 
-          {/* Grounds / Umpires / Streamers requested */}
+          {/* enues / Umpires / Streamers requested */}
           <div className="space-y-3 pt-4 border-t border-white/5">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Professional Staff & Equipment
@@ -273,7 +273,7 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
               <div className="p-3 rounded-[8px] bg-slate-800/40 border border-white/5 text-xs">
                 <span className="text-slate-500 block">Assigned Pitch</span>
                 <span className="font-semibold text-slate-200 block mt-0.5 truncate">
-                  {game.ground?.name || "Venue TBD"}
+                  {game.enue?.name || "Venue TBD"}
                 </span>
               </div>
               <div className="p-3 rounded-[8px] bg-slate-800/40 border border-white/5 text-xs">

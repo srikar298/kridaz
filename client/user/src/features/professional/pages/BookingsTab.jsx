@@ -251,10 +251,10 @@ const BookingsTab = ({ role }) => {
                       Venue Location
                     </span>
                     <h5 className="text-xs font-bold text-white truncate">
-                      {booking.ground?.name || "Custom Ground / Court"}
+                      {booking.enue?.name || "Custom enue / Court"}
                     </h5>
                     <p className="text-[11px] text-gray-400 mt-1 leading-relaxed line-clamp-2">
-                      {booking.ground?.location ||
+                      {booking.enue?.location ||
                         booking.customLocation?.address ||
                         "Location Address not available"}
                     </p>

@@ -52,7 +52,7 @@ const MOCK_TEAM_IMAGES = [
     url: "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&q=80",
   },
   {
-    label: "Cricket Ground",
+    label: "Cricket Venue",
     url: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=800&q=80",
   },
   {
@@ -374,7 +374,7 @@ const ProMatchWizard = () => {
     }
   }, [searchParams]);
 
-  const [grounds, setGrounds] = useState([]);
+  const [enues, setGrounds] = useState([]);
   const [umpires, setUmpires] = useState([]);
   const [selectedGround, setSelectedGround] = useState(null);
   const [selectedUmpire, setSelectedUmpire] = useState(null);
@@ -597,9 +597,9 @@ const ProMatchWizard = () => {
       const res = await axiosInstance.get(
         `/api/hosted-game/grounds?city=${gameData.city}&state=${gameData.state}&sportType=${gameData.gameType}`
       );
-      setGrounds(res.data.grounds);
+      setGrounds(res.data.enues);
     } catch (err) {
-      toast.error("Failed to fetch grounds");
+      toast.error("Failed to fetch enues");
     }
   };
 
@@ -648,9 +648,10 @@ const ProMatchWizard = () => {
               groundPrice: searchParams.get("price")
                 ? Number(searchParams.get("price"))
                 : turf.pricePerHour,
+              isPlatformBooking: !!searchParams.get("price"),
             }));
           })
-          .catch((err) => console.error("Error fetching ground details:", err));
+          .catch((err) => console.error("Error fetching venue details:", err));
       }
 
       if (
@@ -810,6 +811,7 @@ const ProMatchWizard = () => {
         date: finalDate,
         time: finalTime,
         groundId: gameData.groundId || null, // Prevent stale IDs from causing backend cost mismatch
+        isPlatformBooking: !!gameData.groundId, // PRO match always books the enue via platform if selected
         ...(gameData.gameMode === "QUICK"
           ? {
             teamA: {
@@ -1083,45 +1085,76 @@ const ProMatchWizard = () => {
                     </AnimatePresence>
                   </section>
 
-                  <section className="space-y-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
-                      <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
-                        Date & Time
-                      </label>
-                    </div>
-                    <div className="relative">
-                      <Button
-                        type="button"
-                        onClick={() => setShowDateTimePicker(true)}
-                        className="w-full flex items-center justify-between bg-background border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-2.5 px-3 text-[11px] font-bold transition-all text-white"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Calendar size={18} className="text-cyan-400" />
-                          <span
-                            className={
-                              gameData.date && gameData.time
-                                ? "text-white"
-                                : "text-white/70"
-                            }
-                          >
-                            {displayFullDateTime()}
+                  {gameData.isPlatformBooking ? (
+                    <section className="space-y-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
+                        <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
+                          Slot Details
+                        </label>
+                      </div>
+                      <div className="flex flex-col gap-2 p-3 bg-card border border-white/10 rounded-[16px]">
+                        <div className="flex justify-between items-center">
+                          <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Date</span>
+                          <span className="text-[11px] font-bold text-white">
+                            {gameData.date ? new Date(gameData.date).toLocaleDateString() : 'N/A'}
                           </span>
                         </div>
-                        <ChevronDown size={16} className="text-white/70" />
-                      </Button>
+                        <div className="flex justify-between items-center">
+                          <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Time</span>
+                          <span className="text-[11px] font-bold text-white">
+                            {gameData.time || 'N/A'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Slot Price</span>
+                          <span className="text-[11px] font-bold text-cyan-400">
+                            ₹{gameData.groundPrice || selectedGround?.pricePerHour || 0}
+                          </span>
+                        </div>
+                      </div>
+                    </section>
+                  ) : (
+                    <section className="space-y-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
+                        <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
+                          Date & Time
+                        </label>
+                      </div>
+                      <div className="relative">
+                        <Button
+                          type="button"
+                          onClick={() => setShowDateTimePicker(true)}
+                          className="w-full flex items-center justify-between bg-background border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-2.5 px-3 text-[11px] font-bold transition-all text-white"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Calendar size={18} className="text-cyan-400" />
+                            <span
+                              className={
+                                gameData.date && gameData.time
+                                  ? "text-white"
+                                  : "text-white/70"
+                              }
+                            >
+                              {displayFullDateTime()}
+                            </span>
+                          </div>
+                          <ChevronDown size={16} className="text-white/70" />
+                        </Button>
 
-                      <MaterialDateTimePicker
-                        isOpen={showDateTimePicker}
-                        onClose={() => setShowDateTimePicker(false)}
-                        initialDate={gameData.date || null}
-                        initialTime={gameData.time || null}
-                        onSelect={(date, time) => {
-                          setGameData({ ...gameData, date, time });
-                        }}
-                      />
-                    </div>
-                  </section>
+                        <MaterialDateTimePicker
+                          isOpen={showDateTimePicker}
+                          onClose={() => setShowDateTimePicker(false)}
+                          initialDate={gameData.date || null}
+                          initialTime={gameData.time || null}
+                          onSelect={(date, time) => {
+                            setGameData({ ...gameData, date, time });
+                          }}
+                        />
+                      </div>
+                    </section>
+                  )}
                 </div>
 
                 <section className="space-y-4" ref={locationRef}>
@@ -1170,6 +1203,14 @@ const ProMatchWizard = () => {
                             </span>
                             <Button
                               onClick={() => {
+                                setSearchParams((prev) => {
+                                  const params = new URLSearchParams(prev);
+                                  params.delete("groundId");
+                                  params.delete("price");
+                                  params.delete("date");
+                                  params.delete("time");
+                                  return params;
+                                }, { replace: true });
                                 setSelectedGround(null);
                                 setGameData({ ...gameData, groundId: null });
                               }}
@@ -1204,6 +1245,14 @@ const ProMatchWizard = () => {
                     isOpen={isLocationModalOpen}
                     onClose={() => setIsLocationModalOpen(false)}
                     onSelect={(data) => {
+                      setSearchParams((prev) => {
+                        const params = new URLSearchParams(prev);
+                        params.delete("groundId");
+                        params.delete("price");
+                        params.delete("date");
+                        params.delete("time");
+                        return params;
+                      }, { replace: true });
                       setGameData({
                         ...gameData,
                         customLocation: data.displayName,
@@ -1216,6 +1265,7 @@ const ProMatchWizard = () => {
                       } else {
                         setSelectedGround(null);
                       }
+                      setIsLocationModalOpen(false);
                     }}
                     onBookSlot={(venue) => {
                       const updatedGameData = {
@@ -1227,7 +1277,7 @@ const ProMatchWizard = () => {
                       };
                       setGameData(updatedGameData);
                       sessionStorage.setItem("hostGameData_pro", JSON.stringify(updatedGameData));
-                      navigate(`/venues?returnTo=${encodeURIComponent(`/host-game?step=3&city=${venue.city}&state=${venue.state}`)}`);
+                      navigate(`/venue/${venue.id || venue._id}?returnTo=${encodeURIComponent(`/host-game?step=3&city=${venue.city}&state=${venue.state}`)}`);
                     }}
                   />
                 </section>
@@ -1432,7 +1482,7 @@ const ProMatchWizard = () => {
                 )}
 
                 
-                {/* Grounds */}
+                {/* enues */}
               {gameData.requestType === "GBNO" ? (
                 <section className="space-y-4">
                   <div className="flex items-center justify-between gap-2">

@@ -197,9 +197,14 @@ export const initCronJobs = () => {
     await autoEndExpiredMatches();
   });
 
-  // â”€â”€ Every Hour: Auto-settle hosted games 24h after start â”€â”€â”€â”€â”€â”€â”€
+  // ── Every Hour: Auto-settle hosted games 24h after start ───
   nodeCron.schedule("0 * * * *", async () => {
     await autoSettleHostedGames();
+  });
+
+  // ── Every Hour: Auto-charge captain shortfalls 1h before match ───
+  nodeCron.schedule("0 * * * *", async () => {
+    await autoChargeCaptainShortfalls();
   });
 
   // ── Every Minute: Auto-expire pending match offers (60s timeout) ──
@@ -260,6 +265,121 @@ export const initCronJobs = () => {
 /**
  * Automatically finalize matches that have been running for longer than their allowed duration.
  */
+export const autoChargeCaptainShortfalls = async () => {
+  logger.info("[CRON] Checking for TEAM matches starting in 1 hour with shortfalls...");
+  try {
+    const now = new Date();
+    // 1 hour from now
+    const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+    // Add a window of 1 hour to prevent duplicate runs
+    const cutoffFuture = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+
+    const upcomingGames = await prisma.hostedGame.findMany({
+      where: {
+        gameType: "SCORING_MATCH", // Quick Matches are usually scoring matches? No, could be non-scoring
+        date: { gte: now, lte: cutoffFuture },
+        status: { in: ["SCHEDULED", "OPEN"] }
+      },
+      include: {
+        slots: true,
+        teams: true,
+      },
+    });
+
+    const { default: WalletService } = await import("../services/wallet.service.js");
+
+    let processedCount = 0;
+
+    for (const game of upcomingGames) {
+      if (game.matchPreferences?.opponentType !== "TEAM") continue;
+
+      const scheduledStart = new Date(game.date);
+      if (game.time && game.time !== "TBD") {
+        const timeParts = game.time.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+        if (timeParts) {
+          let hours = parseInt(timeParts[1], 10);
+          const minutes = parseInt(timeParts[2], 10);
+          const ampm = timeParts[3]?.toUpperCase();
+          if (ampm === "PM" && hours < 12) hours += 12;
+          if (ampm === "AM" && hours === 12) hours = 0;
+          scheduledStart.setHours(hours, minutes, 0, 0);
+        }
+      }
+
+      // We want to run this exactly when there is 1 hour or less until match start
+      const timeToStart = scheduledStart.getTime() - now.getTime();
+      if (timeToStart > 0 && timeToStart <= 60 * 60 * 1000) {
+         
+         const prefs = game.matchPreferences;
+         if (prefs.shortfallProcessed) continue; // Already processed
+
+         const applications = Array.isArray(prefs.applications) ? prefs.applications : [];
+         const acceptedApp = applications.find(app => app.status === "APPROVED");
+         if (!acceptedApp) continue;
+
+         const advance = acceptedApp.advancePaid || 0;
+         const advanceRefunded = acceptedApp.advanceRefunded || 0;
+         const currentAdvanceHeld = Math.max(0, advance - advanceRefunded);
+         
+         const targetPlayers = parseInt(prefs.opponentTargetPlayers) || 2;
+         const memberCharge = acceptedApp.totalRequired / targetPlayers;
+         
+         const teamB = game.teams.find(t => t.linkedTeamId === acceptedApp.teamId);
+         if (!teamB) continue;
+
+         const memberSlots = game.slots.filter(s => s.teamId === teamB.id && s.userId && s.userId !== acceptedApp.captainId && s.paymentStatus === "RESERVED").length;
+         const teamCollected = currentAdvanceHeld + (memberSlots * memberCharge);
+
+         if (teamCollected < acceptedApp.totalRequired) {
+            const shortfall = acceptedApp.totalRequired - teamCollected;
+            logger.info(`[CRON] Game ${game.id} has a team shortfall of ${shortfall}. Charging captain ${acceptedApp.captainId}...`);
+
+            try {
+              await prisma.$transaction(async (tx) => {
+                 // Try to reserve from Captain's wallet
+                 await WalletService.reserve(acceptedApp.captainId, "user", shortfall, tx);
+                 
+                 // Mark as processed
+                 const updatedPrefs = { ...prefs, shortfallProcessed: true, captainChargedShortfall: shortfall };
+                 await tx.hostedGame.update({
+                   where: { id: game.id },
+                   data: { matchPreferences: updatedPrefs }
+                 });
+
+                 await tx.walletTransaction.create({
+                    data: {
+                      userId: acceptedApp.captainId,
+                      amount: shortfall,
+                      type: "ESCROW",
+                      status: "RESERVED",
+                      description: "Auto-charged team shortfall 1 hr before match"
+                    }
+                 });
+                 processedCount++;
+              });
+            } catch (err) {
+               logger.error(`[CRON] Failed to charge captain ${acceptedApp.captainId} for shortfall in game ${game.id}:`, err);
+               // If Captain has no funds, game might have to be cancelled or flagged. For now we just log it.
+            }
+         } else {
+            // No shortfall, just mark as processed
+            await prisma.hostedGame.update({
+               where: { id: game.id },
+               data: { matchPreferences: { ...prefs, shortfallProcessed: true } }
+            });
+         }
+      }
+    }
+
+    if (processedCount > 0) {
+      logger.info(`[CRON] Shortfall check complete — processed ${processedCount} games.`);
+    }
+
+  } catch (err) {
+    logger.error("[CRON] Error during captain shortfall charging:", err);
+  }
+};
+
 export const autoEndExpiredMatches = async () => {
   logger.info("[CRON] Checking for expired live matches to auto-end...");
   try {
@@ -341,21 +461,61 @@ export const autoSettleHostedGames = async () => {
     const now = new Date();
 
     for (const game of pendingGames) {
-      const [hours, minutes] = (game.time || "00:00").split(":").map(Number);
       const scheduledStart = new Date(game.date);
-      scheduledStart.setHours(hours || 0, minutes || 0, 0, 0);
+      let scheduledEnd = new Date(game.date);
+      
+      if (game.endTime && game.endTime !== "TBD") {
+        const timeParts = game.endTime.match(/(\d+):(\d+)\s(AM|PM)/i);
+        if (timeParts) {
+          let hours = parseInt(timeParts[1], 10);
+          const minutes = parseInt(timeParts[2], 10);
+          const ampm = timeParts[3].toUpperCase();
+          if (ampm === "PM" && hours < 12) hours += 12;
+          if (ampm === "AM" && hours === 12) hours = 0;
+          scheduledEnd.setHours(hours, minutes, 0, 0);
+        }
+      } else {
+        // Fallback if no endTime (backward compatibility)
+        const [hours, minutes] = (game.time || "00:00").split(":").map(Number);
+        scheduledEnd.setHours(hours || 0, minutes || 0, 0, 0);
+        scheduledEnd.setHours(scheduledEnd.getHours() + 4); // assume 4 hours duration
+      }
 
+      // 6 hours after the end time
       const cutoffTime = new Date(
-        scheduledStart.getTime() + 24 * 60 * 60 * 1000
+        scheduledEnd.getTime() + 6 * 60 * 60 * 1000
       );
 
       if (now > cutoffTime) {
         logger.info(
-          `[CRON] Auto-settling game ${game.id} 24 hours passed since scheduled start.`
+          `[CRON] Auto-settling game ${game.id} 6 hours passed since match end.`
         );
         try {
           await prisma.$transaction(async (tx) => {
-            const amountToPayout = Number(game.escrowAmount);
+            let amountToPayout = Number(game.escrowAmount || 0);
+
+            // Handle TEAM match opponent funds that are stored in RESERVED
+            const isTeamMatch = game.matchPreferences?.opponentType === "TEAM";
+            if (isTeamMatch) {
+              const prefs = game.matchPreferences;
+              const applications = Array.isArray(prefs.applications) ? prefs.applications : [];
+              const acceptedApp = applications.find(app => app.status === "APPROVED");
+              if (acceptedApp) {
+                const advance = acceptedApp.advancePaid || 0;
+                const advanceRefunded = acceptedApp.advanceRefunded || 0;
+                const currentAdvanceHeld = Math.max(0, advance - advanceRefunded);
+                
+                const targetPlayers = parseInt(prefs.opponentTargetPlayers) || 2;
+                const memberCharge = acceptedApp.totalRequired / targetPlayers;
+                
+                const teamB = game.teams.find(t => t.linkedTeamId === acceptedApp.teamId);
+                if (teamB) {
+                  const memberSlots = game.slots.filter(s => s.teamId === teamB.id && s.userId && s.userId !== acceptedApp.captainId && s.paymentStatus === "RESERVED").length;
+                  const teamCollected = currentAdvanceHeld + (memberSlots * memberCharge);
+                  amountToPayout += teamCollected;
+                }
+              }
+            }
 
             await tx.hostedGame.update({
               where: { id: game.id },

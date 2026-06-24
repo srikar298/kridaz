@@ -290,7 +290,7 @@ export default function ProfessionalProfile() {
       const prof = res.data.professional;
 
       const preferred = prof.businessDetails?.preferredLocations || {
-        grounds: [],
+        enues: [],
         customLocations: [],
       };
 
@@ -386,7 +386,7 @@ export default function ProfessionalProfile() {
       const res = await axiosInstance.get("/api/user/turf/all");
       setGrounds(res.data.turfs || res.data || []);
     } catch (err) {
-      console.error("Error fetching grounds:", err);
+      console.error("Error fetching enues:", err);
     }
   };
 
@@ -559,7 +559,7 @@ export default function ProfessionalProfile() {
 
   // Toggle selection of platform listed grounds
   const toggleGroundSelection = (groundId) => {
-    const currentGrounds = formData.preferredLocations?.grounds || [];
+    const currentGrounds = formData.preferredLocations?.enues || [];
     let updated;
     if (currentGrounds.includes(groundId)) {
       updated = currentGrounds.filter((id) => id !== groundId);
@@ -571,7 +571,7 @@ export default function ProfessionalProfile() {
       ...formData,
       preferredLocations: {
         ...formData.preferredLocations,
-        grounds: updated,
+        enues: updated,
       },
     });
   };
@@ -948,7 +948,7 @@ export default function ProfessionalProfile() {
       !formData.languages.includes(l)
   );
 
-  const filteredGrounds = grounds.filter(
+  const filteredGrounds = enues.filter(
     (g) =>
       !groundSearch ||
       g.name.toLowerCase().includes(groundSearch.toLowerCase()) ||
@@ -2033,7 +2033,7 @@ export default function ProfessionalProfile() {
                         className="w-full bg-card border border-white/5 rounded-lg pl-3 pr-8 py-2.5 text-xs text-neutral-400 outline-none focus:border-white/10 transition-colors font-medium flex items-center justify-between cursor-pointer"
                       >
                         <span className="text-white font-semibold">
-                          {(formData.preferredLocations?.grounds?.length || 0) +
+                          {(formData.preferredLocations?.enues?.length || 0) +
                             (formData.preferredLocations?.customLocations?.reduce(
                               (acc, curr) => acc + curr.cities.length,
                               0
@@ -2052,7 +2052,7 @@ export default function ProfessionalProfile() {
                                   size={12}
                                   style={{ color: themeColor }}
                                 />{" "}
-                                Choose Venue/Ground
+                                Choose Venue/enue
                               </p>
 
                               {/* Mini search inside dropdown for venues */}
@@ -2077,10 +2077,10 @@ export default function ProfessionalProfile() {
                               </div>
 
                               <div className="space-y-1 max-h-56 overflow-y-auto custom-scrollbar">
-                                {filteredGrounds.map((ground) => {
+                                {filteredGrounds.map((enue) => {
                                   const isSelected =
-                                    formData.preferredLocations?.grounds?.includes(
-                                      ground.id
+                                    formData.preferredLocations?.enues?.includes(
+                                      enue.id
                                     );
                                   return (
                                     <Button
@@ -2088,16 +2088,16 @@ export default function ProfessionalProfile() {
                                       type="button"
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        toggleGroundSelection(ground.id);
+                                        toggleGroundSelection(enue.id);
                                       }}
                                       className={`w-full flex justify-between items-center px-3 py-2.5 text-left text-xs rounded hover:bg-white/[0.04] transition-colors ${isSelected ? "bg-white/[0.02]" : ""}`}
                                     >
                                       <div>
                                         <p className="font-bold text-white uppercase tracking-wide">
-                                          {ground.name}
+                                          {enue.name}
                                         </p>
                                         <p className="text-[9px] text-neutral-500 uppercase tracking-widest mt-0.5">
-                                          {ground.city}, {ground.state}
+                                          {enue.city}, {enue.state}
                                         </p>
                                       </div>
                                       <Input
@@ -2239,16 +2239,16 @@ export default function ProfessionalProfile() {
 
                     {/* Selected Preferred Locations List Chips */}
                     <div className="space-y-2 pt-1">
-                      {/* Selected Grounds Chips */}
-                      {formData.preferredLocations?.grounds?.length > 0 && (
+                      {/* Selected enues Chips */}
+                      {formData.preferredLocations?.enues?.length > 0 && (
                         <div className="space-y-1">
                           <span className="text-[8px] font-bold text-neutral-500 uppercase tracking-widest block">
-                            Covered Platform Grounds
+                            Covered Platform enues
                           </span>
                           <div className="flex flex-wrap gap-1">
-                            {formData.preferredLocations.grounds.map(
+                            {formData.preferredLocations.enues.map(
                               (groundId) => {
-                                const gObj = grounds.find(
+                                const gObj = enues.find(
                                   (g) => g.id === groundId
                                 );
                                 if (!gObj) return null;

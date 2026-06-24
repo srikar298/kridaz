@@ -89,8 +89,8 @@ const BALL_TYPES = [
 ];
 
 const GROUND_TYPES = [
-  { value: "OUTDOOR", label: "Outdoor Ground", emoji: "🌳" },
-  { value: "INDOOR", label: "Indoor Ground", emoji: "🏟️" },
+  { value: "OUTDOOR", label: "Outdoor Venue", emoji: "🌳" },
+  { value: "INDOOR", label: "Indoor Venue", emoji: "🏟️" },
   { value: "TURF", label: "Artificial Turf", emoji: "🟩" },
 ];
 
@@ -1300,7 +1300,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                     }
                   />
                   <span className="truncate">
-                    {groundsData?.grounds?.find(
+                    {groundsData?.enues?.find(
                       (g) => g.id === formData.venueId
                     )?.name ||
                       prebookedTurfs.find(
@@ -1326,7 +1326,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                     exit={{ opacity: 0, height: 0 }}
                     className="overflow-hidden mt-2 bg-card border border-white/10 rounded-[12px] p-3 space-y-3 z-50 shadow-2xl relative"
                   >
-                    {/* Dedicated search bar for listed grounds */}
+                    {/* Dedicated search bar for listed enues */}
                     <div className="relative">
                       <Search
                         className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
@@ -1350,7 +1350,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                       )}
                     </div>
 
-                    {/* Scrollable list of grounds filtered ONLY by this search bar */}
+                    {/* Scrollable list of enues filtered ONLY by this search bar */}
                     <div className="max-h-52 overflow-y-auto space-y-3 pr-1 scrollbar-hide">
                       {isLoadingGrounds ? (
                         <div className="flex justify-center py-4">
@@ -1388,7 +1388,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                               );
                             }) || [];
 
-                          // Exclude prebooked grounds from the listed grounds section to prevent double display
+                          // Exclude prebooked enues from the listed enues section to prevent double display
                           const prebookedIds = new Set(
                             prebookedTurfs.map((g) => g.id || g._id)
                           );
@@ -1404,7 +1404,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                           if (!hasPrebooked && !hasListed) {
                             return (
                               <div className="text-center py-6 text-[10px] font-bold text-white/30 uppercase tracking-wider">
-                                No matching grounds or turfs found
+                                No matching enues or turfs found
                               </div>
                             );
                           }
@@ -1491,7 +1491,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
 
                           return (
                             <div className="space-y-4">
-                              {/* Prebooked grounds section */}
+                              {/* Prebooked enues section */}
                               {hasPrebooked && (
                                 <div className="space-y-1.5">
                                   <div className="flex items-center gap-1.5 px-1">
@@ -1500,7 +1500,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                                       className="text-primary"
                                     />
                                     <span className="text-[9px] font-black uppercase tracking-widest text-primary">
-                                      Your Prebooked Grounds
+                                      Your Prebooked enues
                                     </span>
                                   </div>
                                   <div className="space-y-1">
@@ -1511,7 +1511,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                                 </div>
                               )}
 
-                              {/* Standard listed grounds section */}
+                              {/* Standard listed enues section */}
                               {hasListed && (
                                 <div className="space-y-1.5">
                                   {hasPrebooked && (
@@ -1929,10 +1929,10 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                 </Select>
               </div>
 
-              {/* Ground Type */}
+              {/* enue Type */}
               <div className="space-y-1">
                 <label htmlFor="groundType" className={labelClass}>
-                  Ground Type
+                  enue Type
                 </label>
                 <Select
                   id="groundType"
@@ -2898,7 +2898,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                     {formData.customVenue
                       ? formData.customVenue
                       : formData.venueId
-                        ? groundsData?.grounds?.find(
+                        ? groundsData?.enues?.find(
                             (g) => g.id === formData.venueId
                           )?.name || "Sports Venue"
                         : "Select Venue"}
@@ -3088,7 +3088,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                 onClick={() => setShowMatchSettingsPopup(true)}
                 className="w-full bg-card border border-white/10 rounded-[12px] px-4 py-3 text-left text-white focus:outline-none focus:border-secondary/30 transition-all text-sm font-semibold"
               >
-                <span className="block truncate">{`${BALL_TYPES.find((b) => b.value === formData.ballType)?.label || "Tennis Ball"} · ${GROUND_TYPES.find((g) => g.value === formData.groundType)?.label || "Outdoor Ground"} · ${PITCH_TYPES.find((p) => p.value === formData.pitchType)?.label || "Turf"} · ${MATCH_TIMINGS.find((m) => m.value === formData.matchTiming)?.label || "Day Match"}`}</span>
+                <span className="block truncate">{`${BALL_TYPES.find((b) => b.value === formData.ballType)?.label || "Tennis Ball"} · ${GROUND_TYPES.find((g) => g.value === formData.groundType)?.label || "Outdoor enue"} · ${PITCH_TYPES.find((p) => p.value === formData.pitchType)?.label || "Turf"} · ${MATCH_TIMINGS.find((m) => m.value === formData.matchTiming)?.label || "Day Match"}`}</span>
               </Button>
             </div>
           </div>
@@ -3470,7 +3470,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                           <Input
                             type="text"
                             className={inputClass}
-                            placeholder="e.g. Lords Cricket Ground"
+                            placeholder="e.g. Lords Cricket Venue"
                             value={customVenueNameInput}
                             onChange={(e) =>
                               setCustomVenueNameInput(e.target.value)
@@ -3860,7 +3860,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                         ) : (
                           (() => {
                             const filteredVenues =
-                              groundsData?.grounds?.filter(
+                              groundsData?.enues?.filter(
                                 (g) =>
                                   (!venueStateFilter ||
                                     g.state === venueStateFilter) &&

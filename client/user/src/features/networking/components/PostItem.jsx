@@ -275,6 +275,82 @@ const PostItem = React.memo(
           </div>
         )}
 
+        {/* Looking For Details */}
+        {post.postType === "LOOKING_FOR" && post.metadata && (
+          <div className="px-4 pb-3 flex flex-col gap-2 text-[13px]">
+             <div className="bg-white/5 border border-white/10 rounded-[12px] p-3 space-y-2">
+                <div className="flex justify-between items-start mb-2">
+                   <div>
+                     <div className="text-[14px] font-bold text-white uppercase">{post.metadata.subcategory} - {post.metadata.category}</div>
+                     <div className="text-[12px] text-muted-foreground mt-0.5">{post.metadata.lookingFor}</div>
+                   </div>
+                   <span className="bg-primary/20 text-primary px-2 py-1 rounded-full text-[10px] font-bold uppercase shrink-0">
+                     Looking For
+                   </span>
+                </div>
+                
+                {post.metadata.roles && post.metadata.roles.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    {post.metadata.roles.map(r => (
+                       <span key={r} className="bg-white/10 text-white px-2 py-1 rounded-[6px] text-[11px] font-bold">
+                         {r}
+                       </span>
+                    ))}
+                  </div>
+                )}
+                
+                {post.metadata.location?.address && (
+                  <div className="flex items-center gap-2 text-[12px] text-white/80">
+                    <span className="font-bold shrink-0">Location:</span> 
+                    <span className="truncate">{post.metadata.location.address}</span>
+                  </div>
+                )}
+                
+                {(post.metadata.date || post.metadata.time || post.metadata.duration) && (
+                   <div className="flex items-center gap-2 text-[12px] text-white/80">
+                      <span className="font-bold">When:</span> 
+                      {post.metadata.date && new Date(post.metadata.date).toLocaleDateString()} 
+                      {post.metadata.time && ` at ${post.metadata.time}`}
+                      {post.metadata.duration && ` (${post.metadata.duration})`}
+                   </div>
+                )}
+                
+                {post.metadata.budget && (
+                   <div className="flex items-center gap-2 text-[12px] text-white/80">
+                      <span className="font-bold">Budget:</span> {post.metadata.budget}
+                   </div>
+                )}
+                
+                {post.metadata.experienceLevel && (
+                   <div className="flex items-center gap-2 text-[12px] text-white/80">
+                      <span className="font-bold">Experience:</span> {post.metadata.experienceLevel}
+                   </div>
+                )}
+             </div>
+             
+             {/* Contact Button */}
+             {post.metadata.contactPreference && (
+               <div className="mt-2 flex gap-2">
+                 {post.metadata.contactPreference === "Kridaz DM" && (
+                   <Button onClick={() => window.location.href = `/messages/${post.adminId?.id || post.authorId || post.author?._id}`} className="w-full bg-primary text-black font-bold h-9">
+                     Message Kridaz DM
+                   </Button>
+                 )}
+                 {post.metadata.contactPreference === "Call" && (
+                   <Button onClick={() => window.location.href = `tel:${post.adminId?.phone || post.author?.phone || post.author?.phoneNumber}`} className="w-full bg-primary text-black font-bold h-9">
+                     Call {post.adminId?.phone || post.author?.phone || post.author?.phoneNumber || "User"}
+                   </Button>
+                 )}
+                 {post.metadata.contactPreference === "WhatsApp" && (
+                   <Button onClick={() => window.open(`https://wa.me/${(post.adminId?.phone || post.author?.phone || post.author?.phoneNumber || "").replace(/\D/g,'')}`, '_blank')} className="w-full bg-[#25D366] text-white font-bold h-9">
+                     WhatsApp {post.adminId?.phone || post.author?.phone || post.author?.phoneNumber || "User"}
+                   </Button>
+                 )}
+               </div>
+             )}
+          </div>
+        )}
+
         {/* Media Display */}
         {post.mediaUrls && post.mediaUrls.length > 0 ? (
           <div className="relative w-full pb-[125%] bg-[#050505] group overflow-hidden">

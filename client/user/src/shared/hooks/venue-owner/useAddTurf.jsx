@@ -296,14 +296,14 @@ export default function useAddTurf() {
 
   const addGroundType = (type) => {
     const ground = typeof type === "string" ? type : newGroundType;
-    if (ground && !groundTypes.includes(ground)) {
-      setGroundTypes([...groundTypes, ground]);
+    if (ground && !groundTypes.includes(enue)) {
+      setGroundTypes([...groundTypes, enue]);
       setNewGroundType("");
     }
   };
 
   const removeGroundType = (type) => {
-    setGroundTypes(groundTypes.filter((ground) => ground !== type));
+    setGroundTypes(groundTypes.filter((enue) => enue !== type));
   };
 
   const addFacility = (item) => {

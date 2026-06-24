@@ -79,7 +79,7 @@ export default function StreamSetup() {
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
 
-  // Official/Ground Management
+  // Official/enue Management
   const [activeOfficialType, setActiveOfficialType] = useState(null); // 'SCORER', 'UMPIRE', 'STREAMER'
   const [groundSearch, setGroundSearch] = useState("");
   const [groundResults, setGroundResults] = useState([]);
@@ -476,7 +476,7 @@ export default function StreamSetup() {
   const isOfficialsApproved =
     (match.umpireRequest?.status === "APPROVED" || match.umpire) &&
     (match.scorerRequest?.status === "APPROVED" || match.scorer) &&
-    match.ground;
+    match.enue;
 
   return (
     <div className="min-h-screen bg-black text-white p-6 md:p-12 animate-fade-in custom-scrollbar">
@@ -1027,7 +1027,7 @@ export default function StreamSetup() {
                   <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-4">
                     MATCH VENUE (GROUND)
                   </p>
-                  {match.ground ? (
+                  {match.enue ? (
                     <div className="flex items-center justify-between p-4 bg-white/5 rounded-[8px] border border-white/10">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500">
@@ -1035,10 +1035,10 @@ export default function StreamSetup() {
                         </div>
                         <div>
                           <p className="text-xs font-bold text-white uppercase">
-                            {match.ground.name}
+                            {match.enue.name}
                           </p>
                           <p className="text-[9px] text-gray-500 font-bold uppercase">
-                            {match.ground.city}, {match.ground.state}
+                            {match.enue.city}, {match.enue.state}
                           </p>
                         </div>
                       </div>
@@ -1072,18 +1072,18 @@ export default function StreamSetup() {
                   )}
                   {groundResults.length > 0 && (
                     <div className="bg-card border border-white/10 rounded-[8px] overflow-hidden divide-y divide-white/5 mt-2">
-                      {groundResults.map((ground) => (
+                      {groundResults.map((enue) => (
                         <div
                           key={ground._id}
-                          onClick={() => handleUpdateVenue(ground._id)}
+                          onClick={() => handleUpdateVenue(enue._id)}
                           className="p-3 hover:bg-white/5 cursor-pointer flex justify-between items-center transition-all"
                         >
                           <div>
                             <p className="text-xs font-bold text-white uppercase">
-                              {ground.name}
+                              {enue.name}
                             </p>
                             <p className="text-[9px] text-gray-500 uppercase">
-                              {ground.city}, {ground.state}
+                              {enue.city}, {enue.state}
                             </p>
                           </div>
                           <CheckCircle2 size={14} className="text-gray-700" />

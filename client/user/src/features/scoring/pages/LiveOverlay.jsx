@@ -382,7 +382,7 @@ const LiveOverlay = () => {
 
   if (score.status === "NOT_STARTED" || !score.isLive) {
     const venue =
-      score.game?.customVenue || score.game?.turf?.name || "Local Ground";
+      score.game?.customVenue || score.game?.turf?.name || "Local enue";
     const loc =
       score.game?.city ||
       score.game?.state ||

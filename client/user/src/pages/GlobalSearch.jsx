@@ -49,10 +49,10 @@ const GlobalSearch = () => {
   const [triggerGetFeed, { data: feedData, isFetching: postsLoading }] =
     useLazyGetCommunityFeedQuery();
 
-  // Popular grounds query
+  // Popular enues query
   const { data: popularGroundsData, isLoading: groundsLoading } =
     useGetGroundsQuery({});
-  const popularGrounds = popularGroundsData?.grounds?.slice(0, 5) || [];
+  const popularGrounds = popularGroundsData?.enues?.slice(0, 5) || [];
 
   // Default Latest Posts query (when not searching)
   const { data: defaultFeedData, isLoading: defaultPostsLoading } =
@@ -577,7 +577,7 @@ const GlobalSearch = () => {
                 </div>
               ) : popularGrounds.length > 0 ? (
                 <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 snap-x">
-                  {popularGrounds.map((ground) => (
+                  {popularGrounds.map((enue) => (
                     <div
                       key={ground._id}
                       className="min-w-[240px] w-[240px] h-[320px] shrink-0 snap-start"
@@ -585,7 +585,7 @@ const GlobalSearch = () => {
                       <VenueCard
                         t={ground}
                         onClick={() =>
-                          navigate(`/venue/${ground._id || ground.id}`)
+                          navigate(`/venue/${enue._id || enue.id}`)
                         }
                       />
                     </div>

@@ -197,21 +197,13 @@ export const getCommunityStats = async (req, res) => {
 
 export const createPost = async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, postType = "STANDARD", metadata } = req.body;
     const rawId = req.user?.id || req.admin?.id;
     const creatorId = await resolveUserId(rawId);
 
     if (!creatorId) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
-
-    let imageUrl = "";
-    // Note: uploadToCloudinary was removed from imports in previous step if it wasn't used,
-    // but I'll keep the logic if it's still needed.
-    // Wait, I removed it but didn't replace it. I'll use R2 or Cloudinary if available.
-    // The previous code had it. I'll re-add it or use the R2 logic.
-    // For now, let's assume the user still wants Cloudinary for some cases or I should use R2.
-    // The confirmPost used CDN URL.
 
     const post = await prisma.post.create({
       data: {
@@ -220,6 +212,8 @@ export const createPost = async (req, res) => {
         content,
         mediaType: "text",
         status: "ready",
+        postType,
+        metadata,
       },
       include: {
         author: {
@@ -334,7 +328,7 @@ export const getPosts = async (req, res) => {
     const rawId = req.user?.id || req.admin?.id;
     const userId = await resolveUserId(rawId);
 
-    const { search, page = 1, limit = 10, following, lat, lng } = req.query;
+    const { search, page = 1, limit = 10, following, lat, lng, excludeType, postType } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const take = parseInt(limit);
 
@@ -379,6 +373,18 @@ export const getPosts = async (req, res) => {
 
     const conditions = [];
     conditions.push({ OR: statusOr });
+
+    if (excludeType) {
+      conditions.push({
+        postType: { not: excludeType }
+      });
+    }
+
+    if (postType) {
+      conditions.push({
+        postType: postType
+      });
+    }
 
     if (authorFilter) {
       conditions.push(authorFilter);

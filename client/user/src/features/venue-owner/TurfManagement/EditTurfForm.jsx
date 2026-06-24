@@ -251,21 +251,21 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
               </InputWrapper>
 
               <div className="grid grid-cols-2 gap-6">
-                <InputWrapper label="Ground DNA" icon={Tag}>
+                <InputWrapper label="Venue DNA" icon={Tag}>
                   <div className="flex flex-wrap gap-2 mb-3 min-h-[40px] p-3 bg-[#050505] border border-white/10 rounded-[16px]">
                     {watch("groundTypes")?.length > 0 ? (
-                      watch("groundTypes").map((ground) => (
+                      watch("groundTypes").map((enue) => (
                         <span
                           key={ground}
                           className="px-2 md:px-3 py-1 bg-white/5 text-white border border-white/10 rounded-[16px] text-[10px] font-bold uppercase tracking-wider flex items-center gap-2 group/tag animate-scale-in"
                         >
-                          {ground}
+                          {enue}
                           <Button
                             type="button"
                             onClick={() =>
                               setValue(
                                 "groundTypes",
-                                watch("groundTypes").filter((g) => g !== ground)
+                                watch("groundTypes").filter((g) => g !== enue)
                               )
                             }
                             className="hover:text-primary transition-colors"

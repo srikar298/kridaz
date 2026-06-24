@@ -438,7 +438,7 @@ const TurfBookingHistory = () => {
                         Recommended Arenas Near You
                       </h3>
                       <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest font-inter">
-                        Handpicked grounds matching your recent game history
+                        Handpicked enues matching your recent game history
                       </p>
                     </div>
 
@@ -485,7 +485,7 @@ const TurfBookingHistory = () => {
                         Trending Arenas Near You
                       </h3>
                       <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest font-inter">
-                        Highly frequented grounds & elite hubs active in your
+                        Highly frequented enues & elite hubs active in your
                         city
                       </p>
                     </div>
@@ -623,7 +623,7 @@ const TurfBookingHistory = () => {
                                 <MapPin size={12} className="text-primary" />{" "}
                                 {game.turf?.name ||
                                   game.customVenue ||
-                                  "Local Ground"}
+                                  "Local enue"}
                               </div>
                             </div>
                           </div>
@@ -729,7 +729,7 @@ const TurfBookingHistory = () => {
                                     Venue/Location
                                   </span>
                                   <span className="text-xs font-bold text-white block truncate">
-                                    {req.ground?.name ||
+                                    {req.enue?.name ||
                                       req.customLocation?.address ||
                                       "Custom Coords"}
                                   </span>
@@ -807,7 +807,7 @@ const TurfBookingHistory = () => {
                                     Venue/Location
                                   </span>
                                   <span className="text-xs font-bold text-white block truncate">
-                                    {req.ground?.name ||
+                                    {req.enue?.name ||
                                       req.customLocation?.address ||
                                       "Custom Coords"}
                                   </span>
@@ -933,7 +933,7 @@ const TurfBookingHistory = () => {
                                 <div className="flex justify-between">
                                   <span className="text-white/40">Venue:</span>
                                   <span className="text-white font-bold max-w-[180px] truncate">
-                                    {booking.ground?.name ||
+                                    {booking.enue?.name ||
                                       booking.customLocation?.address ||
                                       "Custom location"}
                                   </span>
@@ -1012,7 +1012,7 @@ const TurfBookingHistory = () => {
                                           turf: {
                                             name:
                                               booking.professional?.name ||
-                                              booking.ground?.name ||
+                                              booking.enue?.name ||
                                               "Professional Service",
                                           },
                                         })
