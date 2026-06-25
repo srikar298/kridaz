@@ -54,6 +54,7 @@ export const searchLocations = async (query) => {
     );
     return response.data.map((item) => ({
       display_name: item.display_name,
+      address: item.address,
       city:
         item.address.city ||
         item.address.town ||
@@ -61,6 +62,7 @@ export const searchLocations = async (query) => {
         item.address.suburb ||
         "",
       state: item.address.state || "",
+      country: item.address.country || "India",
       postcode: item.address.postcode || "",
       suburb: item.address.suburb || item.address.neighbourhood || "",
       road: item.address.road || "",
@@ -71,6 +73,49 @@ export const searchLocations = async (query) => {
     console.error("Error searching locations:", error);
     return [];
   }
+};
+
+export const formatLocation = (suggestion) => {
+  if (!suggestion) return "";
+  
+  if (typeof suggestion === "string") {
+    return suggestion;
+  }
+
+  const addr = suggestion.address || {};
+  
+  // Find a generalized city/district candidate
+  const city = addr.city || 
+               addr.town || 
+               addr.village || 
+               addr.municipality || 
+               addr.district ||
+               addr.county || 
+               addr.state_district || 
+               "";
+               
+  const state = addr.state || suggestion.state || "";
+  const country = addr.country || suggestion.country || "India";
+  
+  if (city && state) {
+    return `${city}, ${state}, ${country}`;
+  }
+  
+  if (suggestion.display_name) {
+    const parts = suggestion.display_name.split(",").map(p => p.trim());
+    const filteredParts = parts.filter(p => !/^\d{5,6}$/.test(p));
+    
+    if (filteredParts.length >= 3) {
+      const countryPart = filteredParts[filteredParts.length - 1];
+      const statePart = filteredParts[filteredParts.length - 2];
+      const cityPart = filteredParts[filteredParts.length - 3];
+      return `${cityPart}, ${statePart}, ${countryPart}`;
+    } else {
+      return filteredParts.join(", ");
+    }
+  }
+  
+  return [city, state, country].filter(Boolean).join(", ");
 };
 
 export const reverseGeocode = async (lat, lon) => {

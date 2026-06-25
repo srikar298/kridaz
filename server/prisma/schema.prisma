@@ -101,6 +101,7 @@ model User {
 
   ownedTournaments    Tournament[]         @relation("TournamentOwner")
   tournamentOfficials TournamentOfficial[]
+  gameApplications    GameApplication[]
 
   @@index([role])
   @@index([latitude, longitude])
@@ -527,6 +528,7 @@ model HostedGame {
   tournament            Tournament?          @relation(fields: [tournamentId], references: [id])
   tournamentStage       String? // GROUP, QUARTER_FINAL, SEMI_FINAL, FINAL
   tournamentPoolId      String? // Links back to TournamentPool if it's a group match
+  gameApplications      GameApplication[]
 }
 
 model GameTeam {
@@ -741,6 +743,7 @@ model Team {
   Team_A                   Team[]                @relation("TeamOpponents")
   Team_B                   Team[]                @relation("TeamOpponents")
   tournamentTeams          TournamentTeam[]
+  gameApplications         GameApplication[]
 }
 
 model TeamMember {
@@ -1712,4 +1715,21 @@ model ProfessionalInquiry {
 
   user User @relation("InquirySender", fields: [userId], references: [id])
   pro  User @relation("InquiryReceiver", fields: [proId], references: [id])
+}
+
+model GameApplication {
+  id            String   @id @default(uuid())
+  gameId        String
+  teamId        String
+  captainId     String
+  status        String   @default("PENDING")
+  totalRequired     Float    @default(0)
+  guarantorReleased Float    @default(0)
+  message       String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  game    HostedGame @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  team    Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  captain User       @relation(fields: [captainId], references: [id])
 }

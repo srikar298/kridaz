@@ -14,6 +14,8 @@ import {
   updateTeam,
   deleteTeam,
   handleJoinRequest,
+  updateMemberRole,
+  removeMember,
 } from "../team.controller.js";
 import { authenticate } from "../../../middleware/auth.middleware.js";
 import upload from "../../../middleware/uploads/upload.middleware.js";
@@ -231,5 +233,33 @@ router.put("/:id", upload.single("image"), updateTeam);
  *         description: Team deleted
  */
 router.delete("/:id", deleteTeam);
+
+/**
+ * @swagger
+ * /team/{id}/members/{memberId}/role:
+ *   put:
+ *     summary: Update team member role
+ *     tags: [Team]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Role updated successfully
+ */
+router.put("/:id/members/:memberId/role", updateMemberRole);
+
+/**
+ * @swagger
+ * /team/{id}/members/{memberId}:
+ *   delete:
+ *     summary: Remove a member from the team
+ *     tags: [Team]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Member removed successfully
+ */
+router.delete("/:id/members/:memberId", removeMember);
 
 export default router;

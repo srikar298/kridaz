@@ -8,6 +8,7 @@ import {
   validateCoupon,
   downloadInvoice,
   cancelBooking,
+  payBalance,
 } from "../booking.controller.js";
 import {
   createOrderSchema,
@@ -221,6 +222,7 @@ router.get("/get-bookings", verifyToken, getUserBookings);
  *         description: Booking not found
  */
 router.post("/cancel/:id", verifyToken, cancelBooking);
+router.post("/pay-balance", verifyToken, payBalance);
 
 /**
  * @swagger

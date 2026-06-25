@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import { useGetMyTeamsQuery } from "@redux/api/teamApi";
 import CoinAnimation from "@components/CoinAnimation";
-import { searchLocations } from "@utils/locationService";
+import { searchLocations, formatLocation } from "@utils/locationService";
 import LocationVenuePicker from "../../../shared/components/modals/LocationVenuePicker";
 import { Button, Input, Select, Textarea } from "@kridaz/ui";
 import { useRef } from "react";
@@ -430,7 +430,7 @@ const ProMatchWizard = () => {
       let slotIdx = 1; // Start from slot 2 (index 1) as slot 1 is host
 
       team.members.forEach((member) => {
-        if (slotIdx < newSlots.length && member.user?._id !== user?._id) {
+        if (slotIdx < newSlots.length && member.user?._id !== (user?.id || user?._id)) {
           if (member.user) {
             newSlots[slotIdx] = {
               ...newSlots[slotIdx],
@@ -582,9 +582,10 @@ const ProMatchWizard = () => {
   const handleSelectLocation = (suggestion) => {
     const cityName = suggestion.city || suggestion.display_name.split(",")[0];
     const stateName = suggestion.state || "";
+    const formatted = formatLocation(suggestion);
     setGameData({
       ...gameData,
-      customLocation: suggestion.display_name,
+      customLocation: formatted,
       city: cityName,
       state: stateName
     });
@@ -757,7 +758,7 @@ const ProMatchWizard = () => {
     // First slot is always the host
     slots.push({
       role: "Player",
-      userId: user?._id,
+      userId: user?.id || user?._id,
       name: user?.name,
       profilePicture: user?.profilePicture,
       status: "JOINED",
@@ -835,7 +836,7 @@ const ProMatchWizard = () => {
           gameData.quickSlotsData.forEach((slot) => {
             if (
               slot.userId &&
-              slot.userId !== user?._id &&
+              slot.userId !== (user?.id || user?._id) &&
               slot.status === "HELD"
             ) {
               invitedUserIds.push(slot.userId);
@@ -846,7 +847,7 @@ const ProMatchWizard = () => {
             gameData[teamKey].slots.forEach((slot) => {
               if (
                 slot.userId &&
-                slot.userId !== user?._id &&
+                slot.userId !== (user?.id || user?._id) &&
                 slot.status === "HELD"
               ) {
                 invitedUserIds.push(slot.userId);
@@ -1635,15 +1636,15 @@ const ProMatchWizard = () => {
                         </div>
                       </div>
 
-                      {/* Description Tags */}
+                      {/* Description */}
                       <div className="flex flex-col gap-2">
                         <span className="text-[9px] font-black uppercase text-white/70 tracking-wider px-1">
-                          Description Tags
+                          Description
                         </span>
-                        <input
-                          type="text"
-                          placeholder="e.g. Friendly, Competitive, Weekend"
-                          className="w-full bg-background border border-white/10 rounded-[12px] p-3 text-[11px] text-white focus:border-primary/50 focus:outline-none transition-colors"
+                        <textarea
+                          rows="3"
+                          placeholder="Add detailed description, rules, or anything else..."
+                          className="w-full bg-background border border-white/10 rounded-[12px] p-3 text-[11px] text-white focus:border-primary/50 focus:outline-none transition-colors resize-none"
                           value={gameData.descriptionTags}
                           onChange={(e) => setGameData({ ...gameData, descriptionTags: e.target.value })}
                         />

@@ -7,7 +7,7 @@ import {
   Navigation,
   Loader2,
 } from "lucide-react";
-import { searchLocations } from "@utils/locationService";
+import { searchLocations, formatLocation } from "@utils/locationService";
 import { Button, Input } from "@kridaz/ui";
 
 
@@ -117,13 +117,14 @@ const SearchPlayers = ({ onSearch, userLocation }) => {
   }, [sport, selectedLocation]);
 
   const handleSelectLocation = (suggestion) => {
-    setLocationInput(suggestion.display_name);
+    const formatted = formatLocation(suggestion);
+    setLocationInput(formatted);
     setSelectedLocation({
       city: suggestion.city,
       state: suggestion.state,
       lat: suggestion.lat,
       lng: suggestion.lng,
-      display_name: suggestion.display_name,
+      display_name: formatted,
     });
     setShowSuggestions(false);
   };

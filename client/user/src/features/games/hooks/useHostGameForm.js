@@ -148,7 +148,7 @@ const useHostGameForm = () => {
       let slotIdx = 1; // Start from slot 2 (index 1) as slot 1 is host
 
       team.members.forEach((member) => {
-        if (slotIdx < newSlots.length && member.user?._id !== user?._id) {
+        if (slotIdx < newSlots.length && member.user?._id !== (user?.id || user?._id)) {
           if (member.user) {
             newSlots[slotIdx] = {
               ...newSlots[slotIdx],
@@ -308,7 +308,7 @@ const useHostGameForm = () => {
     const slots = [];
     slots.push({
       role: "Player",
-      userId: user?._id,
+      userId: user?.id || user?._id,
       name: user?.name,
       status: "JOINED",
     });

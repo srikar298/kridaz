@@ -150,7 +150,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
           <div className="flex-1 w-full">
             <div className="flex items-center flex-wrap gap-3 mb-1">
               <h1
-                className="text-2xl md:text-4xl font-bold text-white tracking-tight break-all"
+                className="text-2xl md:text-4xl font-bold text-white tracking-tight break-words"
                 style={{ fontFamily: "'Open Sans', sans-serif" }}
               >
                 {team.name}

@@ -266,19 +266,19 @@ export const initCronJobs = () => {
  * Automatically finalize matches that have been running for longer than their allowed duration.
  */
 export const autoChargeCaptainShortfalls = async () => {
-  logger.info("[CRON] Checking for TEAM matches starting in 1 hour with shortfalls...");
+  logger.info("[CRON] Checking for TEAM matches starting in 24 hours with split-cost settlements...");
   try {
     const now = new Date();
-    // 1 hour from now
-    const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
-    // Add a window of 1 hour to prevent duplicate runs
-    const cutoffFuture = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+    // 24 hours from now (plus a buffer of 2 hours for safety window)
+    const cutoffFuture = new Date(now.getTime() + 26 * 60 * 60 * 1000);
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
 
     const upcomingGames = await prisma.hostedGame.findMany({
       where: {
-        gameType: "SCORING_MATCH", // Quick Matches are usually scoring matches? No, could be non-scoring
-        date: { gte: now, lte: cutoffFuture },
-        status: { in: ["SCHEDULED", "OPEN"] }
+        date: { gte: todayStart, lte: cutoffFuture },
+        status: { in: ["ACTIVE", "SCHEDULED", "OPEN"] }
       },
       include: {
         slots: true,
@@ -291,7 +291,9 @@ export const autoChargeCaptainShortfalls = async () => {
     let processedCount = 0;
 
     for (const game of upcomingGames) {
-      if (game.matchPreferences?.opponentType !== "TEAM") continue;
+      const prefs = game.matchPreferences || {};
+      if (prefs.opponentType !== "TEAM" || !prefs.splitCost) continue;
+      if (prefs.opponentShareSettled) continue; // Already settled and transferred
 
       const scheduledStart = new Date(game.date);
       if (game.time && game.time !== "TBD") {
@@ -306,77 +308,115 @@ export const autoChargeCaptainShortfalls = async () => {
         }
       }
 
-      // We want to run this exactly when there is 1 hour or less until match start
+      // Check if the match starts within 24 hours
       const timeToStart = scheduledStart.getTime() - now.getTime();
-      if (timeToStart > 0 && timeToStart <= 60 * 60 * 1000) {
-         
-         const prefs = game.matchPreferences;
-         if (prefs.shortfallProcessed) continue; // Already processed
-
+      if (timeToStart > 0 && timeToStart <= 24 * 60 * 60 * 1000) {
          const applications = Array.isArray(prefs.applications) ? prefs.applications : [];
          const acceptedApp = applications.find(app => app.status === "APPROVED");
          if (!acceptedApp) continue;
 
-         const advance = acceptedApp.advancePaid || 0;
-         const advanceRefunded = acceptedApp.advanceRefunded || 0;
-         const currentAdvanceHeld = Math.max(0, advance - advanceRefunded);
-         
-         const targetPlayers = parseInt(prefs.opponentTargetPlayers) || 2;
-         const memberCharge = acceptedApp.totalRequired / targetPlayers;
-         
          const teamB = game.teams.find(t => t.linkedTeamId === acceptedApp.teamId);
          if (!teamB) continue;
 
-         const memberSlots = game.slots.filter(s => s.teamId === teamB.id && s.userId && s.userId !== acceptedApp.captainId && s.paymentStatus === "RESERVED").length;
-         const teamCollected = currentAdvanceHeld + (memberSlots * memberCharge);
+         const totalReq = Number(acceptedApp.totalRequired || 0);
+         const targetPlayers = parseInt(prefs.opponentTargetPlayers) || 2;
+         const perPlayerCharge = totalReq / targetPlayers;
 
-         if (teamCollected < acceptedApp.totalRequired) {
-            const shortfall = acceptedApp.totalRequired - teamCollected;
-            logger.info(`[CRON] Game ${game.id} has a team shortfall of ${shortfall}. Charging captain ${acceptedApp.captainId}...`);
+         // Find all joined players on team B (excluding the captain) who have a reserve
+         const memberSlots = game.slots.filter(
+           s => s.teamId === teamB.id &&
+                s.userId &&
+                s.userId !== acceptedApp.captainId &&
+                s.status === "JOINED" &&
+                s.paymentStatus === "RESERVED"
+         );
 
-            try {
-              await prisma.$transaction(async (tx) => {
-                 // Try to reserve from Captain's wallet
-                 await WalletService.reserve(acceptedApp.captainId, "user", shortfall, tx);
-                 
-                 // Mark as processed
-                 const updatedPrefs = { ...prefs, shortfallProcessed: true, captainChargedShortfall: shortfall };
-                 await tx.hostedGame.update({
-                   where: { id: game.id },
-                   data: { matchPreferences: updatedPrefs }
-                 });
+         const membersPaidTotal = memberSlots.length * perPlayerCharge;
+         const shortfall = totalReq - membersPaidTotal; // Remaining portion guaranteed by captain
 
-                 await tx.walletTransaction.create({
-                    data: {
-                      userId: acceptedApp.captainId,
-                      amount: shortfall,
-                      type: "ESCROW",
-                      status: "RESERVED",
-                      description: "Auto-charged team shortfall 1 hr before match"
-                    }
-                 });
-                 processedCount++;
+         logger.info(`[CRON] Settling Team B split cost for game ${game.id}. Total required: ${totalReq}, members paid: ${membersPaidTotal}, captain shortfall debit: ${shortfall}.`);
+
+         try {
+           await prisma.$transaction(async (tx) => {
+              // 1. Debit joined opponent team members' reserved slot fees
+              for (const slot of memberSlots) {
+                await WalletService.release(slot.userId, "user", perPlayerCharge, true, tx);
+                await tx.walletTransaction.create({
+                  data: {
+                    userId: slot.userId,
+                    amount: perPlayerCharge,
+                    type: "DEBIT",
+                    status: "SUCCESS",
+                    description: `Deducted team share for match ${game.shortId || game.id}`,
+                  },
+                });
+                await tx.gameSlot.update({
+                  where: { id: slot.id },
+                  data: { paymentStatus: "CAPTURED" },
+                });
+              }
+
+              // 2. Debit captain's remaining guarantor reserve (shortfall)
+              if (shortfall > 0) {
+                await WalletService.release(acceptedApp.captainId, "user", shortfall, true, tx);
+                await tx.walletTransaction.create({
+                  data: {
+                    userId: acceptedApp.captainId,
+                    amount: shortfall,
+                    type: "DEBIT",
+                    status: "SUCCESS",
+                    description: `Guarantor shortfall charge for opponent team in match ${game.shortId || game.id}`,
+                  },
+                });
+              }
+
+              // Update the captain's gameSlot payment status
+              const captainSlot = game.slots.find(s => s.userId === acceptedApp.captainId && s.teamId === teamB.id);
+              if (captainSlot) {
+                await tx.gameSlot.update({
+                  where: { id: captainSlot.id },
+                  data: { paymentStatus: "CAPTURED" },
+                });
+              }
+
+              // 3. Credit the total ₹5,000 to the host's wallet
+              await WalletService.credit(game.hostId, "user", totalReq, tx);
+              await tx.walletTransaction.create({
+                data: {
+                  userId: game.hostId,
+                  amount: totalReq,
+                  type: "ESCROW_PAYOUT",
+                  status: "SUCCESS",
+                  description: `Received opponent team split cost from Team ${acceptedApp.teamName} for match ${game.shortId || game.id}`,
+                },
               });
-            } catch (err) {
-               logger.error(`[CRON] Failed to charge captain ${acceptedApp.captainId} for shortfall in game ${game.id}:`, err);
-               // If Captain has no funds, game might have to be cancelled or flagged. For now we just log it.
-            }
-         } else {
-            // No shortfall, just mark as processed
-            await prisma.hostedGame.update({
-               where: { id: game.id },
-               data: { matchPreferences: { ...prefs, shortfallProcessed: true } }
-            });
+
+              // 4. Mark as settled in match preferences
+              const updatedPrefs = {
+                ...prefs,
+                shortfallProcessed: true,
+                captainChargedShortfall: shortfall - perPlayerCharge, // shortfall minus captain's own share
+                opponentShareSettled: true,
+              };
+
+              await tx.hostedGame.update({
+                where: { id: game.id },
+                data: { matchPreferences: updatedPrefs }
+              });
+
+              processedCount++;
+           });
+         } catch (err) {
+            logger.error(`[CRON] Failed to settle split cost for opponent team B in game ${game.id}:`, err);
          }
       }
     }
 
     if (processedCount > 0) {
-      logger.info(`[CRON] Shortfall check complete — processed ${processedCount} games.`);
+      logger.info(`[CRON] Split-cost settlement sweep complete — processed ${processedCount} games.`);
     }
-
   } catch (err) {
-    logger.error("[CRON] Error during captain shortfall charging:", err);
+    logger.error("[CRON] Error during 24h split-cost settlement:", err);
   }
 };
 
@@ -496,7 +536,7 @@ export const autoSettleHostedGames = async () => {
 
             // Handle TEAM match opponent funds that are stored in RESERVED
             const isTeamMatch = game.matchPreferences?.opponentType === "TEAM";
-            if (isTeamMatch) {
+            if (isTeamMatch && !game.matchPreferences?.opponentShareSettled) {
               const prefs = game.matchPreferences;
               const applications = Array.isArray(prefs.applications) ? prefs.applications : [];
               const acceptedApp = applications.find(app => app.status === "APPROVED");

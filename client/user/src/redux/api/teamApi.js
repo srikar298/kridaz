@@ -121,6 +121,27 @@ export const teamApi = baseApi.injectEndpoints({
         "Team",
       ],
     }),
+    updateMemberRole: builder.mutation({
+      query: ({ teamId, memberId, role }) => ({
+        url: `/api/team/${teamId}/members/${memberId}/role`,
+        method: "PUT",
+        body: { role },
+      }),
+      invalidatesTags: (result, error, { teamId }) => [
+        { type: "Team", id: teamId },
+        "Team",
+      ],
+    }),
+    removeMember: builder.mutation({
+      query: ({ teamId, memberId }) => ({
+        url: `/api/team/${teamId}/members/${memberId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, { teamId }) => [
+        { type: "Team", id: teamId },
+        "Team",
+      ],
+    }),
   }),
 });
 
@@ -143,4 +164,6 @@ export const {
   useLazySearchPlayersQuery,
   useInviteMemberMutation,
   useAddCustomMemberMutation,
+  useUpdateMemberRoleMutation,
+  useRemoveMemberMutation,
 } = teamApi;

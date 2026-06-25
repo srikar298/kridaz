@@ -3,6 +3,8 @@ import { prisma } from "../../config/prisma.js";
 import { uploadToR2 } from "../../utils/r2Upload.js";
 import { createUniqueTeamCode } from "./team.service.js";
 import { updateGeoPoint } from "../../utils/geo.util.js";
+import { getIO } from "../../config/socket.js";
+import { SOCKET } from "@kridaz/shared-constants/socketEvents";
 import logger from "../../utils/logger.js";
 import generateQRCode from "../../utils/generateQRCode.js";
 import { sanitizeUser } from "../../utils/sanitizeUser.js";
@@ -628,6 +630,22 @@ export const getTeamById = async (req, res) => {
             },
           },
         },
+        gameApplications: {
+          include: {
+            game: {
+              select: {
+                id: true,
+                gameType: true,
+                date: true,
+                time: true,
+                groundCost: true,
+                host: { select: { name: true } },
+                turf: { select: { name: true, city: true } }
+              }
+            },
+            captain: { select: { name: true, id: true } }
+          }
+        },
         opponentRequestsReceived: {
           include: {
             from: {
@@ -983,6 +1001,57 @@ export const requestOpponent = async (req, res) => {
       },
     });
 
+    try {
+      // Send a message in chat
+      let chat = await prisma.chat.findFirst({
+        where: {
+          isGroupChat: false,
+          AND: [
+            { participants: { some: { userId: req.user.id } } },
+            { participants: { some: { userId: targetTeam.ownerId } } },
+          ],
+        },
+      });
+
+      if (!chat) {
+        chat = await prisma.chat.create({
+          data: {
+            chatName: "sender",
+            isGroupChat: false,
+            participants: {
+              create: [
+                { userId: req.user.id, onModel: "User", isPending: false },
+                { userId: targetTeam.ownerId, onModel: "User", isPending: false },
+              ],
+            },
+          },
+        });
+      }
+
+      const senderParticipant = await prisma.chatParticipant.findFirst({
+        where: { chatId: chat.id, userId: req.user.id },
+      });
+
+      if (senderParticipant) {
+        const message = await prisma.message.create({
+          data: {
+            chatId: chat.id,
+            senderUserId: req.user.id,
+            senderModel: "User",
+            content: `Hi! My team "${myTeam.name}" has sent an opponent request to your team "${targetTeam.name}". Check your team dashboard to accept!`,
+            readBy: { connect: { id: senderParticipant.id } },
+          },
+        });
+
+        await prisma.chat.update({
+          where: { id: chat.id },
+          data: { latestMessageId: message.id },
+        });
+      }
+    } catch (msgErr) {
+      logger.error("Failed to send opponent request chat message:", msgErr);
+    }
+
     return res.status(200).json({
       success: true,
       message: `Opponent request sent to team "${targetTeam.name}"`,
@@ -1124,6 +1193,68 @@ export const inviteMembers = async (req, res) => {
           },
         });
 
+        // Send Kridaz platform message
+        try {
+          let chat = await prisma.chat.findFirst({
+            where: {
+              isGroupChat: false,
+              AND: [
+                { participants: { some: { userId: req.user.id } } },
+                { participants: { some: { userId: invitee.userId } } },
+              ],
+            },
+          });
+
+          if (!chat) {
+            chat = await prisma.chat.create({
+              data: {
+                chatName: "sender",
+                isGroupChat: false,
+                participants: {
+                  create: [
+                    { userId: req.user.id, onModel: "User", isPending: false },
+                    { userId: invitee.userId, onModel: "User", isPending: false },
+                  ],
+                },
+              },
+            });
+          }
+
+          const senderParticipant = await prisma.chatParticipant.findFirst({
+            where: { chatId: chat.id, userId: req.user.id },
+          });
+
+          const message = await prisma.message.create({
+            data: {
+              chatId: chat.id,
+              senderUserId: req.user.id,
+              senderModel: "User",
+              content: `I've invited you to join my team "${team.name}"!`,
+              readBy: { connect: { id: senderParticipant.id } },
+            },
+            include: {
+              senderUser: { select: { id: true, name: true, profilePicture: true, email: true } },
+              chat: { include: { participants: { include: { user: { select: { id: true, name: true, profilePicture: true } } } } } },
+            },
+          });
+
+          await prisma.chat.update({
+            where: { id: chat.id },
+            data: { latestMessageId: message.id },
+          });
+
+          const io = getIO();
+          if (io) {
+            message.chat.participants.forEach((p) => {
+              const uid = p.userId || p.ownerId;
+              if (uid === req.user.id) return;
+              io.to(uid).emit(SOCKET.MESSAGE_RECEIVED, message);
+            });
+          }
+        } catch (msgErr) {
+          console.error("Failed to send invite message:", msgErr);
+        }
+
         results.push({ user: invitee.userId, status: "invited" });
       } else {
         // Invite non-registered user
@@ -1174,6 +1305,68 @@ export const inviteMembers = async (req, res) => {
               metadata: { teamId: team.id },
             },
           });
+
+          // Send Kridaz platform message
+          try {
+            let chat = await prisma.chat.findFirst({
+              where: {
+                isGroupChat: false,
+                AND: [
+                  { participants: { some: { userId: req.user.id } } },
+                  { participants: { some: { userId: existingUser.id } } },
+                ],
+              },
+            });
+
+            if (!chat) {
+              chat = await prisma.chat.create({
+                data: {
+                  chatName: "sender",
+                  isGroupChat: false,
+                  participants: {
+                    create: [
+                      { userId: req.user.id, onModel: "User", isPending: false },
+                      { userId: existingUser.id, onModel: "User", isPending: false },
+                    ],
+                  },
+                },
+              });
+            }
+
+            const senderParticipant = await prisma.chatParticipant.findFirst({
+              where: { chatId: chat.id, userId: req.user.id },
+            });
+
+            const message = await prisma.message.create({
+              data: {
+                chatId: chat.id,
+                senderUserId: req.user.id,
+                senderModel: "User",
+                content: `I've invited you to join my team "${team.name}"!`,
+                readBy: { connect: { id: senderParticipant.id } },
+              },
+              include: {
+                senderUser: { select: { id: true, name: true, profilePicture: true, email: true } },
+                chat: { include: { participants: { include: { user: { select: { id: true, name: true, profilePicture: true } } } } } },
+              },
+            });
+
+            await prisma.chat.update({
+              where: { id: chat.id },
+              data: { latestMessageId: message.id },
+            });
+
+            const io = getIO();
+            if (io) {
+              message.chat.participants.forEach((p) => {
+                const uid = p.userId || p.ownerId;
+                if (uid === req.user.id) return;
+                io.to(uid).emit(SOCKET.MESSAGE_RECEIVED, message);
+              });
+            }
+          } catch (msgErr) {
+            console.error("Failed to send invite message:", msgErr);
+          }
 
           results.push({
             user: existingUser.id,
@@ -1473,6 +1666,105 @@ export const getOpponentTeams = async (req, res) => {
     });
   } catch (error) {
     logger.error("Get opponent teams error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @route   PUT /api/team/:id/members/:memberId/role
+// @desc    Update a team member's role
+export const updateMemberRole = async (req, res) => {
+  try {
+    const { id, memberId } = req.params;
+    const { role } = req.body; // e.g., "CAPTAIN", "PLAYER"
+    const userId = req.user.id;
+
+    if (!["CAPTAIN", "PLAYER"].includes(role)) {
+      return res.status(400).json({ success: false, message: "Invalid role specified." });
+    }
+
+    const team = await prisma.team.findUnique({
+      where: { id },
+      include: { members: true },
+    });
+
+    if (!team) {
+      return res.status(404).json({ success: false, message: "Team not found." });
+    }
+
+    if (team.ownerId !== userId) {
+      return res.status(403).json({ success: false, message: "Only the admin can change roles." });
+    }
+
+    const targetMember = team.members.find((m) => m.id === memberId);
+    if (!targetMember) {
+      return res.status(404).json({ success: false, message: "Member not found in this team." });
+    }
+
+    // Check Captain limit if making a captain
+    if (role === "CAPTAIN" && targetMember.role !== "CAPTAIN") {
+      const currentCaptains = team.members.filter((m) => m.role === "CAPTAIN").length;
+      if (currentCaptains >= 2) {
+        return res.status(400).json({
+          success: false,
+          message: "Maximum of 2 captains allowed per team.",
+        });
+      }
+    }
+
+    const updatedMember = await prisma.teamMember.update({
+      where: { id: memberId },
+      data: { role },
+      include: {
+        user: { select: { id: true, name: true, profilePicture: true } },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Member role updated to ${role}.`,
+      member: updatedMember,
+    });
+  } catch (error) {
+    logger.error("Update member role error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @route   DELETE /api/team/:id/members/:memberId
+// @desc    Remove a member from the team
+export const removeMember = async (req, res) => {
+  try {
+    const { id, memberId } = req.params;
+    const userId = req.user.id;
+
+    const team = await prisma.team.findUnique({
+      where: { id },
+    });
+
+    if (!team) {
+      return res.status(404).json({ success: false, message: "Team not found." });
+    }
+
+    // Must be admin or the user themselves
+    const member = await prisma.teamMember.findUnique({ where: { id: memberId } });
+    if (!member) {
+      return res.status(404).json({ success: false, message: "Member not found." });
+    }
+
+    if (team.ownerId !== userId && member.userId !== userId) {
+      return res.status(403).json({ success: false, message: "Not authorized to remove this member." });
+    }
+
+    await prisma.teamMember.delete({
+      where: { id: memberId },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Member removed successfully.",
+    });
+  } catch (error) {
+    logger.error("Remove member error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

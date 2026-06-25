@@ -201,3 +201,22 @@ export const getAdminAllBookings = asyncHandler(async (req, res) => {
     },
   });
 });
+
+/**
+ * Processes remaining booking balance payment via user's wallet.
+ */
+export const payBalance = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { bookingId } = req.body;
+  
+  if (!bookingId) {
+    return res.status(400).json({ message: "bookingId is required" });
+  }
+
+  const booking = await bookingService.payBookingBalance(userId, bookingId);
+  return res.status(200).json({
+    success: true,
+    message: "Remaining balance paid successfully.",
+    bookingId: booking.id,
+  });
+});

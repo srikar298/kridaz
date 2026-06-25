@@ -180,7 +180,7 @@ const JoinGameDetails = () => {
         {
           gameId: game.id,
           teamId,
-          status,
+          action: status,
         }
       );
       if (res.data.success) {
@@ -488,6 +488,83 @@ const JoinGameDetails = () => {
               </div>
             )}
 
+          {/* Match Configuration & Guidelines Section */}
+          <div className="max-w-4xl mx-auto mb-8 bg-neutral-900/50 border border-white/5 rounded-[8px] p-6 shadow-2xl space-y-6 text-left">
+            <div className="flex items-center gap-2 pb-3 border-b border-white/[0.08]">
+              <Trophy size={18} className="text-primary" />
+              <h3 className="font-open-sans text-base font-black text-white uppercase tracking-tight">
+                Match Settings & Guidelines
+              </h3>
+            </div>
+
+            {/* Quick Match Specs Bento Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-black/40 border border-white/5 p-3 rounded-[8px] flex flex-col justify-between">
+                <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Experience Level</span>
+                <span className="text-sm font-black text-white">{game.matchPreferences?.experienceLevel || "Any Level"}</span>
+              </div>
+              <div className="bg-black/40 border border-white/5 p-3 rounded-[8px] flex flex-col justify-between">
+                <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Game Vibe</span>
+                <span className="text-sm font-black text-white">{game.matchPreferences?.gameVibe || "Casual / Fun"}</span>
+              </div>
+              <div className="bg-black/40 border border-white/5 p-3 rounded-[8px] flex flex-col justify-between">
+                <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Demographics</span>
+                <span className="text-sm font-black text-white">
+                  {game.matchPreferences?.genderPreference || "Co-ed (Mixed)"}
+                  {game.matchPreferences?.ageGroup && game.matchPreferences.ageGroup !== "Any Age" ? ` (${game.matchPreferences.ageGroup})` : ""}
+                </span>
+              </div>
+              <div className="bg-black/40 border border-white/5 p-3 rounded-[8px] flex flex-col justify-between">
+                <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Equipment</span>
+                <span className="text-sm font-black text-white">
+                  {game.matchPreferences?.equipmentStatus || "Everyone brings their own"}
+                </span>
+              </div>
+            </div>
+
+            {/* Config rules row */}
+            <div className="flex flex-wrap gap-3">
+              <div className={`px-3 py-1.5 rounded-[6px] border text-[11px] font-bold uppercase tracking-wider flex items-center gap-2 ${game.matchPreferences?.autoApprovePlayers ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-amber-500/10 border-amber-500/20 text-amber-400"}`}>
+                <div className={`w-1.5 h-1.5 rounded-full ${game.matchPreferences?.autoApprovePlayers ? "bg-emerald-400" : "bg-amber-400"}`} />
+                {game.matchPreferences?.autoApprovePlayers ? "Auto-Approval Enabled" : "Manual Approval Required"}
+              </div>
+              <div className={`px-3 py-1.5 rounded-[6px] border text-[11px] font-bold uppercase tracking-wider flex items-center gap-2 ${game.matchPreferences?.splitCostWithMultiplePlayers ? "bg-cyan-500/10 border-cyan-500/20 text-cyan-400" : "bg-neutral-500/10 border-neutral-500/20 text-neutral-400"}`}>
+                <div className={`w-1.5 h-1.5 rounded-full ${game.matchPreferences?.splitCostWithMultiplePlayers ? "bg-cyan-400" : "bg-white/40"}`} />
+                {game.matchPreferences?.splitCostWithMultiplePlayers ? "Split Cost Match" : "Host Sponsored"}
+              </div>
+              {game.matchPreferences?.opponentType && (
+                <div className="px-3 py-1.5 rounded-[6px] bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-bold uppercase tracking-wider flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                  {game.matchPreferences.opponentType === "TEAM" ? "Challenging a Team" : "Individual Roster Slots"}
+                </div>
+              )}
+            </div>
+
+            {/* Description / Requirements Text */}
+            {(game.description || game.matchPreferences?.requirements) && (
+              <div className="space-y-2 pt-2 border-t border-white/[0.06] text-left">
+                <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider block">Host's Notes</span>
+                <p className="text-sm font-medium text-white/80 italic leading-relaxed">
+                  "{game.description || game.matchPreferences?.requirements}"
+                </p>
+              </div>
+            )}
+
+            {/* Description Tags */}
+            {game.matchPreferences?.descriptionTags && (
+              <div className="space-y-2 pt-2 border-t border-white/[0.06]">
+                <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider block">Description Tags</span>
+                <div className="flex flex-wrap gap-2">
+                  {game.matchPreferences.descriptionTags.split(",").map((tag, idx) => (
+                    <span key={idx} className="px-2.5 py-1 rounded bg-primary/10 text-primary border border-primary/20 text-xs font-medium">
+                      #{tag.trim()}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Slot Grid Container */}
           <div className="max-w-4xl mx-auto bg-neutral-900/50 border border-white/5 rounded-[8px] p-6 shadow-2xl">
             {game.gameMode === "QUICK" &&
@@ -604,11 +681,11 @@ const JoinGameDetails = () => {
                             <h4 className="text-sm font-bold text-white uppercase tracking-widest mb-4">
                               Pending Applications
                             </h4>
-                            {game.matchPreferences?.applications?.filter(
+                            {(game?.gameApplications || []).filter(
                               (a) => a.status === "PENDING"
                             ).length > 0 ? (
                               <div className="space-y-3 max-w-sm mx-auto">
-                                {game.matchPreferences.applications
+                                {(game?.gameApplications || [])
                                   .filter((a) => a.status === "PENDING")
                                   .map((app) => (
                                     <div
@@ -665,34 +742,87 @@ const JoinGameDetails = () => {
                             )}
                           </div>
                         ) : (
-                          <div className="bg-black border border-white/10 rounded-[8px] p-6 text-center flex flex-col items-center">
-                            <ShieldCheck
-                              size={40}
-                              className="text-primary/40 mb-4"
-                            />
-                            <h4 className="text-sm font-bold text-white uppercase tracking-widest mb-2">
-                              Challenge this Team
-                            </h4>
-                            <p className="text-white/40 text-xs mb-6 max-w-sm mx-auto">
-                              Gather your squad and challenge the host's team.
-                              You will need to reserve the required entry coins
-                              for your team.
-                            </p>
-                            {game.matchPreferences?.applications?.some(
-                              (a) => a.captainId === currentUserId
-                            ) ? (
-                              <span className="text-primary font-bold text-xs uppercase bg-primary/10 px-4 py-2 rounded-full border border-primary/20">
-                                Application Pending
-                              </span>
-                            ) : (
-                              <Button
-                                onClick={() => setShowTeamApplyModal(true)}
-                                className="bg-primary text-black hover:bg-primary/90 font-black uppercase text-xs px-6 py-3 rounded-[8px] shadow-[0_0_15px_rgba(191,243,103,0.3)] transition-all"
-                              >
-                                Apply as Opponent
-                              </Button>
+                          <>
+                            <div className="bg-black border border-white/10 rounded-[8px] p-6 text-center flex flex-col items-center">
+                              <ShieldCheck
+                                size={40}
+                                className="text-primary/40 mb-4"
+                              />
+                              <h4 className="text-sm font-bold text-white uppercase tracking-widest mb-2">
+                                Challenge this Team
+                              </h4>
+                              <p className="text-white/40 text-xs mb-6 max-w-sm mx-auto">
+                                Gather your squad and challenge the host's team.
+                                You will need to reserve the required entry coins
+                                for your team.
+                              </p>
+                              {(() => {
+                                const myApp = (game?.gameApplications || []).find(
+                                  (a) => a.captainId === currentUserId
+                                );
+                                if (myApp?.status === "PENDING") {
+                                  return (
+                                    <span className="text-primary font-bold text-xs uppercase bg-primary/10 px-4 py-2 rounded-full border border-primary/20">
+                                      Application Pending
+                                    </span>
+                                  );
+                                }
+                                if (myApp?.status === "REJECTED") {
+                                  return (
+                                    <span className="text-red-500 font-bold text-xs uppercase bg-red-500/10 px-4 py-2 rounded-full border border-red-500/20">
+                                      Application Rejected
+                                    </span>
+                                  );
+                                }
+                                if (myApp?.status === "APPROVED") {
+                                  return (
+                                    <span className="text-green-500 font-bold text-xs uppercase bg-green-500/10 px-4 py-2 rounded-full border border-green-500/20">
+                                      Application Approved
+                                    </span>
+                                  );
+                                }
+                                return (
+                                  <Button
+                                    onClick={() => setShowTeamApplyModal(true)}
+                                    className="bg-primary text-black hover:bg-primary/90 font-black uppercase text-xs px-6 py-3 rounded-[8px] shadow-[0_0_15px_rgba(191,243,103,0.3)] transition-all"
+                                  >
+                                    Apply as Opponent
+                                  </Button>
+                                );
+                              })()}
+                            </div>
+
+                            {/* Show applied teams to non-hosts too */}
+                            {(game?.gameApplications || []).filter((a) => a.status === "PENDING").length > 0 && (
+                              <div className="bg-neutral-900 border border-white/5 rounded-[8px] p-4 mt-4">
+                                <h4 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">
+                                  Teams that applied
+                                </h4>
+                                <div className="space-y-2">
+                                  {(game?.gameApplications || [])
+                                    .filter((a) => a.status === "PENDING")
+                                    .map((app) => (
+                                      <div
+                                        key={app.teamId}
+                                        onClick={() => navigate(`/team/${app.teamId}`)}
+                                        className="flex items-center gap-3 bg-black p-2 rounded-[6px] border border-white/5 cursor-pointer hover:border-white/20 transition-colors"
+                                      >
+                                        {app.teamLogo ? (
+                                          <img src={app.teamLogo} className="w-6 h-6 rounded-full object-cover" />
+                                        ) : (
+                                          <div className="w-6 h-6 rounded-full bg-neutral-800 flex items-center justify-center font-bold text-[8px] text-white">
+                                            {app.teamName?.[0] || "T"}
+                                          </div>
+                                        )}
+                                        <span className="text-white text-[11px] font-bold uppercase truncate">
+                                          {app.teamName || "Opponent Team"}
+                                        </span>
+                                      </div>
+                                    ))}
+                                </div>
+                              </div>
                             )}
-                          </div>
+                          </>
                         )}
                       </div>
                     );
@@ -711,7 +841,7 @@ const JoinGameDetails = () => {
                       </div>
 
                       {teamKey === "teamB" && game?.matchPreferences?.opponentType === "TEAM" && (() => {
-                         const acceptedApp = game.matchPreferences.applications?.find(a => a.status === "APPROVED");
+                         const acceptedApp = (game?.gameApplications || []).find(a => a.status === "APPROVED");
                          if(!acceptedApp) return null;
                          const advancePaid = acceptedApp.advancePaid || 0;
                          const advanceRefunded = acceptedApp.advanceRefunded || 0;
@@ -869,8 +999,9 @@ const JoinGameDetails = () => {
               <p className="text-white/60 mb-6 text-xs leading-relaxed">
                 Select your team to apply. If accepted,{" "}
                 <span className="text-primary font-black">
-                  {(game.matchPreferences?.opponentTargetPlayers || 0) *
-                    (game.perPlayerCharge || 0)}{" "}
+                  {game.matchPreferences?.splitCost
+                    ? Math.ceil(Number(game.groundCost || 0) / 2)
+                    : 0}{" "}
                   Coins
                 </span>{" "}
                 will be reserved from your wallet for your team.
@@ -881,21 +1012,30 @@ const JoinGameDetails = () => {
                   Select Your Team
                 </label>
                 <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
-                  {myTeamsData?.data?.length > 0 ? (
-                    myTeamsData.data.map((t) => (
-                      <div
-                        key={t.id}
-                        onClick={() => setSelectedTeamId(t.id)}
-                        className={`flex items-center gap-3 p-3 rounded-[8px] cursor-pointer border transition-colors ${selectedTeamId === t.id ? "bg-primary/10 border-primary" : "bg-neutral-900 border-white/5 hover:border-white/20"}`}
+                  {(() => {
+                    const eligibleTeams = myTeamsData?.teams?.filter(t => {
+                      const currentUserId = currentUser?.id || currentUser?._id;
+                      if (t.ownerId === currentUserId) return true;
+                      return t.members?.some(
+                        m => (m.userId === currentUserId || m.user?.id === currentUserId || m.user?._id === currentUserId) && m.role === "CAPTAIN"
+                      );
+                    }) || [];
+                    
+                    return eligibleTeams.length > 0 ? (
+                      eligibleTeams.map((t) => (
+                        <div
+                        key={t.id || t._id}
+                        onClick={() => setSelectedTeamId(t.id || t._id)}
+                        className={`flex items-center gap-3 p-3 rounded-[8px] cursor-pointer border transition-colors ${selectedTeamId === (t.id || t._id) ? "bg-primary/10 border-primary" : "bg-neutral-900 border-white/5 hover:border-white/20"}`}
                       >
                         <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-[10px] font-bold overflow-hidden">
-                          {t.logo ? (
+                          {(t.image || t.logo) ? (
                             <img
-                              src={t.logo}
+                              src={t.image || t.logo}
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            t.name[0]
+                            t.name?.[0]
                           )}
                         </div>
                         <span className="text-sm font-bold text-white truncate">
@@ -905,9 +1045,10 @@ const JoinGameDetails = () => {
                     ))
                   ) : (
                     <p className="text-xs text-white/40">
-                      You don't manage any teams yet. Create one first.
+                      You don't have any eligible teams (Admin/Captain) yet. Create one or request promotion.
                     </p>
-                  )}
+                  );
+                })()}
                 </div>
               </div>
 

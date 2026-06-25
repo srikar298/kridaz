@@ -132,7 +132,7 @@ const GameCard = ({ game, onSelect, actionButton }) => {
               : game.gameMode === "HIRING"
                 ? `Looking for ${game.requestType?.replace("NEED_", "").replace("_", " ")}`
                 : game.gameMode === "LOOKING_FOR"
-                  ? "Looking for Players"
+                  ? game.name || "Looking for Players"
                   : game.name ||
                     game.customVenue ||
                     game.turf?.name ||
@@ -384,23 +384,101 @@ const GameCard = ({ game, onSelect, actionButton }) => {
             </div>
           </div>
         ) : (
-          <div className="space-y-1.5 mt-3">
-            <div className="flex justify-between items-center text-[11px]">
-              <span className="text-white/50 flex items-center gap-1">
-                <Users className="h-3 w-3" />
-                Roster Spots
-              </span>
-              <span className="font-bold text-white/80">
-                {filledSlots} / {totalSlots} Filled
-              </span>
+          game.gameMode === "QUICK" ? (
+            <div className="space-y-3 mt-3">
+              {/* Roster progress bar */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center text-[11px]">
+                  <span className="text-white/50 flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    Roster Spots
+                  </span>
+                  <span className="font-bold text-white/80">
+                    {filledSlots} / {totalSlots} Filled
+                  </span>
+                </div>
+                <div className="h-1.5 w-full bg-card rounded-full overflow-hidden border border-white/5">
+                  <div
+                    className="h-full bg-primary transition-all duration-500"
+                    style={{ width: `${fillPercentage}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Quick Match Attributes Grid */}
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/5 text-[10px] text-white/70">
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-bold text-primary uppercase tracking-widest">Experience</span>
+                  <span className="font-bold text-white truncate">{game.matchPreferences?.experienceLevel || "Any"}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-bold text-primary uppercase tracking-widest">Intensity</span>
+                  <span className="font-bold text-white truncate">{game.matchPreferences?.gameVibe || "Casual / Fun"}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-bold text-primary uppercase tracking-widest">Preference</span>
+                  <span className="font-bold text-white truncate">{game.matchPreferences?.genderPreference || "Co-ed"}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-bold text-primary uppercase tracking-widest">Equipment</span>
+                  <span className="font-bold text-white truncate">
+                    {game.matchPreferences?.equipmentStatus === "Everyone brings their own" || game.matchPreferences?.equipmentStatus?.toLowerCase().includes("bring") 
+                      ? "Bring Own" 
+                      : "Provided"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Config badges row */}
+              <div className="flex flex-wrap gap-1 pt-1.5 border-t border-white/5">
+                <span className={`px-2 py-0.5 rounded-[4px] border text-[8px] font-black uppercase tracking-wider ${game.matchPreferences?.autoApprovePlayers ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-amber-500/10 border-amber-500/20 text-amber-400"}`}>
+                  {game.matchPreferences?.autoApprovePlayers ? "Auto Join" : "Req Join"}
+                </span>
+                <span className={`px-2 py-0.5 rounded-[4px] border text-[8px] font-black uppercase tracking-wider ${game.matchPreferences?.splitCostWithMultiplePlayers ? "bg-cyan-500/10 border-cyan-500/20 text-cyan-400" : "bg-neutral-500/10 border-neutral-500/20 text-neutral-400"}`}>
+                  {game.matchPreferences?.splitCostWithMultiplePlayers ? "Split Cost" : "Host Paid"}
+                </span>
+                {game.matchPreferences?.opponentType && (
+                  <span className="px-2 py-0.5 rounded-[4px] bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[8px] font-black uppercase tracking-wider">
+                    {game.matchPreferences.opponentType === "TEAM" ? "Vs Team" : "Vs Individuals"}
+                  </span>
+                )}
+                {game.matchPreferences?.ageGroup && game.matchPreferences?.ageGroup !== "Any Age" && (
+                  <span className="px-2 py-0.5 rounded-[4px] bg-white/5 border border-white/10 text-white/70 text-[8px] font-black uppercase tracking-wider">
+                    {game.matchPreferences.ageGroup}
+                  </span>
+                )}
+              </div>
+              
+              {/* Description Tags */}
+              {game.matchPreferences?.descriptionTags && (
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {game.matchPreferences.descriptionTags.split(",").map((tag, idx) => (
+                    <span key={idx} className="px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[8px] font-medium">
+                      #{tag.trim()}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="h-1.5 w-full bg-card rounded-full overflow-hidden border border-white/5">
-              <div
-                className="h-full bg-primary transition-all duration-500"
-                style={{ width: `${fillPercentage}%` }}
-              />
+          ) : (
+            <div className="space-y-1.5 mt-3">
+              <div className="flex justify-between items-center text-[11px]">
+                <span className="text-white/50 flex items-center gap-1">
+                  <Users className="h-3 w-3" />
+                  Roster Spots
+                </span>
+                <span className="font-bold text-white/80">
+                  {filledSlots} / {totalSlots} Filled
+                </span>
+              </div>
+              <div className="h-1.5 w-full bg-card rounded-full overflow-hidden border border-white/5">
+                <div
+                  className="h-full bg-primary transition-all duration-500"
+                  style={{ width: `${fillPercentage}%` }}
+                />
+              </div>
             </div>
-          </div>
+          )
         )}
 
         {/* Professional Assets requested */}

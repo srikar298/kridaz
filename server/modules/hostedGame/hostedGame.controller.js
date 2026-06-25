@@ -18,6 +18,7 @@ import { getIO } from "../../config/socket.js";
 import { liveStateService } from "../../services/liveState.service.js";
 import SocialService from "../../services/social.service.js";
 const fullGameInclude = {
+  gameApplications: true,
   host: { select: { id: true, name: true, profilePicture: true } },
   turf: {
     select: { id: true, name: true, city: true, state: true, images: true },
@@ -478,13 +479,17 @@ export const createHostedGame = async (req, res) => {
       let streamerCost = 0;
 
       const isPlatformBooking = req.body.isPlatformBooking === true;
+      let turfRecord = null;
 
       if (finalGroundId && !isStandalonePost && isPlatformBooking) {
-        const g = await tx.turf.findUnique({ where: { id: finalGroundId } });
+        turfRecord = await tx.turf.findUnique({
+          where: { id: finalGroundId },
+          include: { owner: true }
+        });
         groundCost =
           groundPrice !== undefined
             ? Number(groundPrice)
-            : Number(g?.pricePerHour || 0);
+            : Number(turfRecord?.pricePerHour || 0);
       } else if (finalGroundId && !isPlatformBooking) {
         // Just record the manually agreed price for display purposes, do not charge the wallet
         groundCost = groundPrice !== undefined ? Number(groundPrice) : 0;
@@ -506,33 +511,84 @@ export const createHostedGame = async (req, res) => {
 
       const totalCost = groundCost + umpireCost + streamerCost;
 
-      // 2. Check Balance & Reserve Coins (Only if cost > 0 and it's a platform booking)
-      const reservationCost = isPlatformBooking ? totalCost : (umpireCost + streamerCost); // Manual ground budget is NOT reserved
+      const hostPaymentType = req.body.hostPaymentType || req.body.paymentType || "FULL";
+      const hostAdvancePercentage = Number(req.body.hostAdvancePercentage || req.body.advancePercentage || 100);
 
-      if (reservationCost > 0) {
+      let hostGroundPaid = groundCost;
+      let hostGroundBalance = 0;
+
+      if (isPlatformBooking && hostPaymentType === "PARTIAL" && hostAdvancePercentage < 100) {
+        hostGroundPaid = Math.round((groundCost * hostAdvancePercentage) / 100);
+        hostGroundBalance = groundCost - hostGroundPaid;
+      }
+
+      const officialReservationCost = umpireCost + streamerCost;
+      const totalAmountRequired = isPlatformBooking ? (hostGroundPaid + officialReservationCost) : officialReservationCost;
+
+      if (totalAmountRequired > 0) {
         const usableBalance = await WalletService.getUsableBalance(
           hostId,
           "user",
           tx
         );
-        if (usableBalance < reservationCost) {
+        if (usableBalance < totalAmountRequired) {
           const error = new Error(
-            `Insufficient coins. Total cost is ${reservationCost}, you have ${usableBalance}. Please top up minimum ₹${Math.ceil(reservationCost - usableBalance)}.`
+            `Insufficient coins. Total cost required is ${totalAmountRequired} (Ground Paid: ${isPlatformBooking ? hostGroundPaid : 0}, Officials reserved: ${officialReservationCost}), you have ${usableBalance}. Please top up.`
           );
           error.status = 400;
           throw error;
         }
 
-        await WalletService.reserve(hostId, "user", reservationCost, tx);
+        // Debit the ground fee immediately if platform booking
+        if (isPlatformBooking && hostGroundPaid > 0) {
+          await WalletService.debit(hostId, "user", hostGroundPaid, tx);
 
-        await tx.walletTransaction.create({
-          data: {
-            userId: hostId,
-            amount: reservationCost,
-            type: "HOST_GAME",
-            status: "RESERVED",
-            description: `Reserved for hosting ${gameType} game at ${date}`,
-          },
+          await tx.walletTransaction.create({
+            data: {
+              userId: hostId,
+              amount: hostGroundPaid,
+              type: "DEBIT",
+              status: "SUCCESS",
+              description: `Ground booking payment for hosted game`,
+            },
+          });
+        }
+
+        // Reserve umpire & streamer fees
+        if (officialReservationCost > 0) {
+          await WalletService.reserve(hostId, "user", officialReservationCost, tx);
+
+          await tx.walletTransaction.create({
+            data: {
+              userId: hostId,
+              amount: officialReservationCost,
+              type: "HOST_GAME",
+              status: "RESERVED",
+              description: `Reserved for umpire and streamer in hosted game`,
+            },
+          });
+        }
+      }
+
+      // Create owner revenue records for initial payment
+      let gstAmountCalc = 0;
+      let platformFee = 0;
+      let ownerRevenue = 0;
+
+      if (isPlatformBooking && turfRecord && turfRecord.owner && hostGroundPaid > 0) {
+        const settingsDoc = await tx.systemSetting.findUnique({ where: { key: "PAYOUT_CONFIG" } });
+        const settings = settingsDoc?.value || {};
+        const gstPercentage = Number(settings.gstPercentage || 0);
+        const platformFeePercentage = Number(settings.platformFeePercentage || 5);
+
+        gstAmountCalc = Math.round(groundCost * (gstPercentage / (100 + gstPercentage)));
+        const baseAmount = groundCost - gstAmountCalc;
+        platformFee = Math.round(baseAmount * (platformFeePercentage / 100));
+        ownerRevenue = hostGroundPaid - platformFee - gstAmountCalc;
+
+        await tx.ownerProfile.update({
+          where: { id: turfRecord.owner.id },
+          data: { pendingBalance: { increment: ownerRevenue } },
         });
       }
 
@@ -611,10 +667,11 @@ export const createHostedGame = async (req, res) => {
             turfId: finalGroundId,
             startTime: adjustedStartTime,
             endTime: adjustedEndTime,
+            price: groundCost,
           },
         });
 
-        await tx.booking.create({
+        const newBooking = await tx.booking.create({
           data: {
             userId: hostId,
             turfId: finalGroundId,
@@ -622,12 +679,25 @@ export const createHostedGame = async (req, res) => {
             playStartTime: adjustedStartTime,
             playEndTime: adjustedEndTime,
             totalPrice: groundCost,
-            paidAmount: groundCost,
-            balanceAmount: 0,
+            paidAmount: hostGroundPaid,
+            balanceAmount: hostGroundBalance,
+            advanceAmount: hostGroundPaid,
+            paymentType: hostPaymentType === "PARTIAL" ? "PARTIAL" : "FULL",
             paymentMethod: "WALLET",
             status: "CONFIRMED",
             bookingSource: "HOSTED_GAME",
+            orderId: "WALLET",
+            paymentId: `WAL_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+            paymentStatus: "SUCCESS",
+            platformFee,
+            gstAmount: gstAmountCalc,
+            ownerRevenue,
           },
+        });
+
+        await tx.hostedGame.update({
+          where: { id: hostedGame.id },
+          data: { bookingId: newBooking.id }
         });
       }
 
@@ -858,6 +928,7 @@ export const getAllHostedGames = async (req, res) => {
     const skip = page ? (parseInt(page) - 1) * take : 0;
 
     const compactGameInclude = {
+      gameApplications: true,
       host: { select: { id: true, name: true, profilePicture: true } },
       turf: {
         select: { id: true, name: true, city: true, state: true, images: true },
@@ -3095,18 +3166,32 @@ export const applyAsOpponentTeam = async (req, res) => {
          throw new BadRequestError("An opponent team has already been accepted.", { code: "BAD_REQUEST" });
       }
 
-      const applications = Array.isArray(prefs.applications) ? prefs.applications : [];
-      if (applications.some(app => app.teamId === teamId)) {
+      const existingApp = await tx.gameApplication.findFirst({ where: { gameId, teamId } });
+      if (existingApp) {
          throw new BadRequestError("Your team has already applied.", { code: "BAD_REQUEST" });
       }
 
-      const teamData = await tx.team.findUnique({ where: { id: teamId } });
+      const teamData = await tx.team.findUnique({
+        where: { id: teamId },
+        include: { members: true },
+      });
+      if (!teamData) {
+        throw new NotFoundError("Team not found.", { code: "ENTITY_NOT_FOUND" });
+      }
+
+      // Verify that the user (captainId) is either the owner or a CAPTAIN
+      if (teamData.ownerId !== captainId) {
+        const member = teamData.members.find((m) => m.userId === captainId);
+        if (!member || member.role !== "CAPTAIN") {
+          throw new BadRequestError("Only the Team Admin or a Captain can apply for games.", { code: "BAD_REQUEST" });
+        }
+      }
 
       const targetPlayers = parseInt(prefs.opponentTargetPlayers) || 2;
-      let totalAmount = targetPlayers * Number(game.perPlayerCharge || 0);
+      let totalAmount = 0;
 
       if (prefs.splitCost) {
-        const groundCost = Number(game.manualGroundCost || game.groundPrice || 0);
+        const groundCost = Number(game.groundCost || 0);
         totalAmount = groundCost / 2;
       }
 
@@ -3115,44 +3200,34 @@ export const applyAsOpponentTeam = async (req, res) => {
         advanceAmount = (totalAmount * Number(prefs.advancePercentage)) / 100;
       }
 
-      if (advanceAmount > 0) {
+      if (totalAmount > 0) {
         const usableBalance = await WalletService.getUsableBalance(captainId, "user", tx);
         if (usableBalance < totalAmount) {
            throw new BadRequestError(`You need at least ₹${totalAmount} in your wallet to act as the team guarantor.`, { code: "BAD_REQUEST" });
         }
 
-        await WalletService.reserve(captainId, "user", advanceAmount, tx);
+        await WalletService.reserve(captainId, "user", totalAmount, tx);
 
         await tx.walletTransaction.create({
           data: {
             userId: captainId,
-            amount: advanceAmount,
+            amount: totalAmount,
             type: "JOIN_GAME",
             status: "RESERVED",
-            description: `Advance paid for team application to ${game.gameType} game.`,
+            description: `Guarantor reserve for team application to ${game.gameType} game.`,
           },
         });
       }
 
-      const newApp = {
-        teamId,
-        teamName: teamData?.name || "Unknown Team",
-        teamLogo: teamData?.logo || null,
-        captainId,
-        status: "PENDING",
-        advancePaid: advanceAmount,
-        totalRequired: totalAmount,
-        appliedAt: new Date().toISOString()
-      };
-
-      const updatedPrefs = {
-        ...prefs,
-        applications: [...applications, newApp]
-      };
-
-      await tx.hostedGame.update({
-        where: { id: gameId },
-        data: { matchPreferences: updatedPrefs }
+      const newApp = await tx.gameApplication.create({
+        data: {
+          gameId,
+          teamId,
+          captainId,
+          status: "PENDING",
+          totalRequired: totalAmount,
+          guarantorReleased: 0
+        }
       });
 
       NotificationService.sendInApp({
@@ -3164,6 +3239,57 @@ export const applyAsOpponentTeam = async (req, res) => {
         relatedId: game.id,
         onModel: "HostedGame",
       });
+
+      try {
+        // Send a message in chat
+        let chat = await tx.chat.findFirst({
+          where: {
+            isGroupChat: false,
+            AND: [
+              { participants: { some: { userId: captainId } } },
+              { participants: { some: { userId: game.hostId } } },
+            ],
+          },
+        });
+
+        if (!chat) {
+          chat = await tx.chat.create({
+            data: {
+              chatName: "sender",
+              isGroupChat: false,
+              participants: {
+                create: [
+                  { userId: captainId, onModel: "User", isPending: false },
+                  { userId: game.hostId, onModel: "User", isPending: false },
+                ],
+              },
+            },
+          });
+        }
+
+        const senderParticipant = await tx.chatParticipant.findFirst({
+          where: { chatId: chat.id, userId: captainId },
+        });
+
+        if (senderParticipant) {
+          const message = await tx.message.create({
+            data: {
+              chatId: chat.id,
+              senderUserId: captainId,
+              senderModel: "User",
+              content: `Hi! My team "${teamData.name}" has applied to play against you in your ${game.gameType} game on ${new Date(game.date).toLocaleDateString()}. Please check your game applications!`,
+              readBy: { connect: { id: senderParticipant.id } },
+            },
+          });
+
+          await tx.chat.update({
+            where: { id: chat.id },
+            data: { latestMessageId: message.id },
+          });
+        }
+      } catch (msgErr) {
+        logger.error("Failed to send game application chat message:", msgErr);
+      }
 
       return { newApp };
     });
@@ -3196,31 +3322,27 @@ export const manageOpponentApplication = async (req, res) => {
       if (!game) throw new NotFoundError("Game not found", { code: "ENTITY_NOT_FOUND" });
       if (game.hostId !== hostId) throw new BadRequestError("Only the host can manage applications", { code: "BAD_REQUEST" });
 
-      const prefs = game.matchPreferences || {};
-      const applications = Array.isArray(prefs.applications) ? prefs.applications : [];
-      const targetApp = applications.find(app => app.teamId === teamId);
+      const targetApp = await tx.gameApplication.findFirst({ where: { gameId, teamId } });
 
       if (!targetApp) throw new NotFoundError("Application not found", { code: "ENTITY_NOT_FOUND" });
       if (targetApp.status !== "PENDING") throw new BadRequestError(`Application is already ${targetApp.status}`, { code: "BAD_REQUEST" });
 
       if (action === "REJECT") {
-        targetApp.status = "REJECTED";
-        
-        await tx.hostedGame.update({
-          where: { id: gameId },
-          data: { matchPreferences: { ...prefs, applications } }
+        await tx.gameApplication.update({
+          where: { id: targetApp.id },
+          data: { status: "REJECTED" }
         });
 
-        // Refund the advance if it was paid
-        if (targetApp.advancePaid > 0) {
-           await WalletService.release(targetApp.captainId, "user", targetApp.advancePaid, false, tx);
+        // Refund the full guarantor reserve if it was paid
+        if (targetApp.totalRequired > 0) {
+           await WalletService.release(targetApp.captainId, "user", targetApp.totalRequired, false, tx);
            await tx.walletTransaction.create({
              data: {
                userId: targetApp.captainId,
-               amount: targetApp.advancePaid,
+               amount: targetApp.totalRequired,
                type: "REFUND",
                status: "COMPLETED",
-               description: `Refund of advance for rejected team application to ${game.gameType} game.`,
+               description: `Refund of guarantor reserve for rejected team application to ${game.gameType} game.`,
              },
            });
         }
@@ -3243,38 +3365,42 @@ export const manageOpponentApplication = async (req, res) => {
          throw new BadRequestError("An opponent team has already been accepted.", { code: "BAD_REQUEST" });
       }
 
+      const prefs = game.matchPreferences || {};
       const targetPlayers = parseInt(prefs.opponentTargetPlayers) || 2;
       const totalAmount = targetApp.totalRequired || 0;
-      const advancePaid = targetApp.advancePaid || 0;
 
       // When APPROVED, we just update status and create slots. 
-      // The advance was already reserved during application.
+      // The guarantor amount was already reserved during application.
 
-      applications.forEach(app => {
-        if (app.teamId === teamId) {
-           app.status = "APPROVED";
-        } else if (app.status === "PENDING") {
-           app.status = "REJECTED";
-           // Auto-refund other pending apps
-           if (app.advancePaid > 0) {
-             WalletService.release(app.captainId, "user", app.advancePaid, false, tx).catch(console.error);
-             tx.walletTransaction.create({
-               data: {
-                 userId: app.captainId,
-                 amount: app.advancePaid,
-                 type: "REFUND",
-                 status: "COMPLETED",
-                 description: `Refund of advance since another team was accepted.`,
-               },
-             }).catch(console.error);
-           }
+      await tx.gameApplication.update({
+        where: { id: targetApp.id },
+        data: { status: "APPROVED" }
+      });
+
+      const otherApps = await tx.gameApplication.findMany({
+        where: { gameId, status: "PENDING", id: { not: targetApp.id } }
+      });
+
+      for (const app of otherApps) {
+        await tx.gameApplication.update({
+          where: { id: app.id },
+          data: { status: "REJECTED" }
+        });
+        
+        // Auto-refund other pending apps (releasing their full guarantor reserve)
+        if (app.totalRequired > 0) {
+          WalletService.release(app.captainId, "user", app.totalRequired, false, tx).catch(console.error);
+          tx.walletTransaction.create({
+            data: {
+              userId: app.captainId,
+              amount: app.totalRequired,
+              type: "REFUND",
+              status: "COMPLETED",
+              description: `Refund of guarantor reserve since another team was accepted.`,
+            },
+          }).catch(console.error);
         }
-      });
-
-      await tx.hostedGame.update({
-        where: { id: gameId },
-        data: { matchPreferences: { ...prefs, applications } }
-      });
+      }
 
       const teamData = await tx.team.findUnique({ where: { id: teamId } });
       await tx.gameTeam.update({
@@ -3293,7 +3419,7 @@ export const manageOpponentApplication = async (req, res) => {
           userId: targetApp.captainId,
           role: "Captain",
           status: "JOINED",
-          paymentStatus: advancePaid > 0 ? "RESERVED" : "NONE",
+          paymentStatus: totalAmount > 0 ? "RESERVED" : "NONE",
           addedById: targetApp.captainId
         }
       });
@@ -3345,7 +3471,7 @@ export const payTeamShare = async (req, res) => {
     const txResult = await runInTransaction(async ({ tx }) => {
       const game = await tx.hostedGame.findUnique({
         where: { id: gameId },
-        include: { slots: true }
+        include: { slots: true, teams: true }
       });
 
       if (!game) throw new NotFoundError("Game not found", { code: "ENTITY_NOT_FOUND" });
@@ -3357,13 +3483,21 @@ export const payTeamShare = async (req, res) => {
       }
 
       const prefs = game.matchPreferences || {};
-      const applications = Array.isArray(prefs.applications) ? prefs.applications : [];
-      const acceptedApp = applications.find(app => app.teamId === game.teams?.find(t=>t.id === teamId)?.linkedTeamId && app.status === "APPROVED");
+      const linkedTeamId = game.teams?.find(t=>t.id === teamId)?.linkedTeamId;
+      const acceptedApp = linkedTeamId 
+        ? await tx.gameApplication.findFirst({ where: { gameId, teamId: linkedTeamId, status: "APPROVED" } })
+        : null;
       
-      let perPlayerCharge = Number(game.perPlayerCharge || 0);
-      if (acceptedApp && acceptedApp.totalRequired) {
-        const targetPlayers = parseInt(prefs.opponentTargetPlayers) || 2;
-        perPlayerCharge = acceptedApp.totalRequired / targetPlayers;
+      let perPlayerCharge = 0;
+      if (prefs.opponentType === "TEAM") {
+        if (prefs.splitCost && acceptedApp && acceptedApp.totalRequired) {
+          const targetPlayers = parseInt(prefs.opponentTargetPlayers) || 2;
+          perPlayerCharge = acceptedApp.totalRequired / targetPlayers;
+        } else {
+          perPlayerCharge = 0;
+        }
+      } else {
+        perPlayerCharge = Number(game.perPlayerCharge || 0);
       }
 
       if (perPlayerCharge > 0) {
@@ -3394,66 +3528,34 @@ export const payTeamShare = async (req, res) => {
         }
       });
 
-      // Auto-reimburse captain if we collected enough
-      if (acceptedApp) {
-        // Calculate total collected from team B
-        const teamBSlots = await tx.gameSlot.findMany({
-          where: { gameId: game.id, teamId, status: "JOINED", paymentStatus: "RESERVED" }
-        });
+      // Auto-reimburse captain by releasing a portion of their guarantor reserve
+      if (acceptedApp && userId !== acceptedApp.captainId) {
+        // Every time a new team member joins, we release their share from the captain's reserve
+        const amountToRelease = perPlayerCharge;
         
-        let totalCollected = teamBSlots.length * perPlayerCharge;
-        const advance = acceptedApp.advancePaid || 0;
-        const totalReq = acceptedApp.totalRequired || 0;
-
-        // If total collected from members (excluding captain's advance) + advance exceeds total required + captain's share...
-        // Actually, advance covers multiple shares. Captain only owes 1 share.
-        // Total collected so far includes the advance (but advance is held by captain).
-        // Let's count actual members joined (which includes captain if they took a slot).
-        // Wait, captain is in `teamBSlots` with paymentStatus = RESERVED (because advance was reserved).
-        // The captain's slot doesn't have the amount, but we know total members joined.
+        // Ensure we don't release more than the guarantor commitment minus captain's own share
+        const maxReleasable = acceptedApp.totalRequired - perPlayerCharge;
+        const currentReleased = acceptedApp.guarantorReleased || 0;
         
-        // Let's just track how much the members have paid vs the advance.
-        // E.g. total 5000. Advance 1500. Captain share 500. Captain overpaid 1000.
-        // Every time a member pays 500, we check if total pool (Advance + member payments) > 5000.
-        // Let's count non-captain member payments:
-        const nonCaptainSlots = teamBSlots.filter(s => s.userId !== acceptedApp.captainId).length;
-        const membersPaidTotal = nonCaptainSlots * perPlayerCharge;
+        const actualRelease = Math.min(amountToRelease, maxReleasable - currentReleased);
         
-        const currentPool = advance + membersPaidTotal;
-        const targetPool = totalReq;
-
-        if (currentPool > targetPool) {
-           const currentRefunded = acceptedApp.advanceRefunded || 0;
-           // The captain should not be refunded more than (advance - perPlayerCharge)
-           const maxRefundable = Math.max(0, advance - perPlayerCharge);
-           
-           // We only want to refund the delta created by THIS payment
-           // Because we run this every time a member pays.
-           // The newly created excess is `currentPool - targetPool`.
-           // But since we just added `perPlayerCharge` to the pool, the new excess generated by this transaction is at most `perPlayerCharge`.
-           const newExcess = Math.min(perPlayerCharge, currentPool - targetPool);
-           
-           // Make sure we don't refund more than maxRefundable overall
-           const amountToRefund = Math.min(newExcess, maxRefundable - currentRefunded);
-           
-           if (amountToRefund > 0) {
-              await WalletService.release(acceptedApp.captainId, "user", amountToRefund, false, tx);
-              await tx.walletTransaction.create({
-                 data: {
-                   userId: acceptedApp.captainId,
-                   amount: amountToRefund,
-                   type: "REFUND",
-                   status: "COMPLETED",
-                   description: `Auto-reimbursement from team member payment for ${game.gameType} game.`
-                 }
-              });
-              
-              acceptedApp.advanceRefunded = currentRefunded + amountToRefund;
-              await tx.hostedGame.update({
-                where: { id: gameId },
-                data: { matchPreferences: { ...prefs, applications } }
-              });
-           }
+        if (actualRelease > 0) {
+          await WalletService.release(acceptedApp.captainId, "user", actualRelease, false, tx);
+          
+          await tx.walletTransaction.create({
+            data: {
+              userId: acceptedApp.captainId,
+              amount: actualRelease,
+              type: "REFUND",
+              status: "COMPLETED",
+              description: `Released guarantor reserve from opponent team member join for ${game.gameType} game.`
+            }
+          });
+          
+          await tx.gameApplication.update({
+            where: { id: acceptedApp.id },
+            data: { guarantorReleased: currentReleased + actualRelease }
+          });
         }
       }
 

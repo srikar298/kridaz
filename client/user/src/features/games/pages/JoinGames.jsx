@@ -18,7 +18,7 @@ import {
   X,
   MessageCircle,
 } from "lucide-react";
-import { searchLocations } from "@utils/locationService";
+import { searchLocations, formatLocation } from "@utils/locationService";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
 import GameCard from "../components/GameCard";
 import LookingForDetailModal from "../components/LookingForDetailModal";
@@ -73,7 +73,9 @@ const JoinGames = () => {
             gameMode: "LOOKING_FOR",
             sport: p.metadata?.sportLabel || p.metadata?.subcategory || "Sport",
             requestType: "LOOKING_FOR",
-            name: p.metadata?.lookingFor || p.title || p.content || "Looking for Players",
+            name: p.metadata?.roles?.length
+              ? `Looking for ${p.metadata.roles.join(", ")}`
+              : (p.metadata?.lookingFor || p.title || p.content || "Looking for Players"),
             host: p.adminId || p.author || { name: "Player" },
             creator: p.adminId || p.author || { name: "Player" },
             hostId: p.authorId || p.author?._id || p.adminId?.id,
@@ -239,8 +241,9 @@ const JoinGames = () => {
   const handleSelectLocation = (suggestion) => {
     const cityName = suggestion.city || suggestion.display_name.split(",")[0];
     const stateName = suggestion.state || "";
+    const formatted = formatLocation(suggestion);
     
-    setLocationSearchInput(suggestion.display_name);
+    setLocationSearchInput(formatted);
     setSelectedCity(cityName);
     setSelectedState(stateName);
     setShowLocationSuggestions(false);

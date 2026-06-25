@@ -23,7 +23,7 @@ import {
   Clock,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { fetchStates, fetchCities } from "@utils/locationService";
+import { fetchStates, fetchCities, formatLocation } from "@utils/locationService";
 import { useSocket } from "@context/SocketContext";
 import { Button, Input, Select } from "@kridaz/ui";
 
@@ -284,7 +284,9 @@ export default function FindProfessionals() {
             { headers: { "Accept-Language": "en" } }
           );
           const data = await res.json();
-          if (data.display_name) address = data.display_name;
+          if (data.display_name) {
+            address = formatLocation(data);
+          }
         } catch {
           // Keep the GPS coordinates if reverse geocoding is unavailable.
         }
@@ -321,18 +323,20 @@ export default function FindProfessionals() {
       } catch {
         setLocationResults([]);
       } finally {
-        setLocationSearching(false);
+      setLocationSearching(false);
       }
     }, 400);
   }, []);
 
   const handleSelectLocation = (place) => {
+    const formatted = formatLocation(place);
+
     setCustomLocation({
       latitude: place.lat,
       longitude: place.lon,
-      address: place.display_name,
+      address: formatted,
     });
-    setLocationQuery(place.display_name);
+    setLocationQuery(formatted);
     setShowLocationDropdown(false);
     setLocationResults([]);
     setShowLocationSearchModal(false);

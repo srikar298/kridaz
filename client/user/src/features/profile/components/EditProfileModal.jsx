@@ -13,7 +13,7 @@ import toast from "react-hot-toast";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useDispatch } from "react-redux";
 import { updateUser } from "@redux/slices/authSlice";
-import { searchLocations } from "@utils/locationService";
+import { searchLocations, formatLocation } from "@utils/locationService";
 import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 
@@ -104,7 +104,8 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
   }, []);
 
   const handleSelectLocation = (suggestion) => {
-    setFormData({ ...formData, location: suggestion.display_name });
+    const formatted = formatLocation(suggestion);
+    setFormData({ ...formData, location: formatted });
     setShowSuggestions(false);
   };
 

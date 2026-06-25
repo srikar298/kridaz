@@ -698,6 +698,38 @@ export const findBookingDetailsById = async (id) => {
   });
 
   if (hostedGame) {
+    if (hostedGame.bookingId) {
+      const linkedBooking = await prisma.booking.findUnique({
+        where: { id: hostedGame.bookingId },
+        include: {
+          timeSlot: true,
+          turf: {
+            include: {
+              owner: {
+                include: { user: true },
+              },
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              name: true,
+              profilePicture: true,
+              email: true,
+              phone: true,
+            },
+          },
+        },
+      });
+      if (linkedBooking) {
+        return {
+          ...linkedBooking,
+          isGameTicket: true,
+          hostedGameId: hostedGame.id,
+        };
+      }
+    }
+
     let startTime;
     if (hostedGame.time && hostedGame.time.includes(":")) {
       const [startHour, startMinute] = hostedGame.time.split(":");
@@ -1229,4 +1261,87 @@ export const findAdminBookings = async (filters) => {
   ]);
 
   return { bookings, total };
+};
+
+/**
+ * Processes remaining balance payment from a user's wallet for a partial booking.
+ * @param {string} userId - User ID.
+ * @param {string} bookingId - Booking ID.
+ * @returns {Promise<object>} The updated booking record.
+ */
+export const payBookingBalance = async (userId, bookingId) => {
+  return await prisma.$transaction(async (tx) => {
+    const booking = await tx.booking.findUnique({
+      where: { id: bookingId },
+      include: {
+        turf: {
+          include: {
+            owner: true,
+          },
+        },
+      },
+    });
+
+    if (!booking) {
+      throw new NotFoundError("Booking not found.", {
+        code: "BOOKING_NOT_FOUND",
+      });
+    }
+
+    if (booking.userId !== userId) {
+      throw new ForbiddenError("Unauthorized to pay balance for this booking.", {
+        code: "UNAUTHORIZED",
+      });
+    }
+
+    const balanceAmount = Number(booking.balanceAmount || 0);
+    if (balanceAmount <= 0) {
+      throw new BadRequestError("This booking has no outstanding balance.", {
+        code: "NO_BALANCE_OUTSTANDING",
+      });
+    }
+
+    const wallet = await WalletService.getWallet(userId, "user");
+    if (wallet.usableBalance < balanceAmount) {
+      throw new BadRequestError(`Insufficient wallet balance. Remaining balance is ₹${balanceAmount}, you have ${wallet.usableBalance}.`, {
+        code: "INSUFFICIENT_WALLET_BALANCE",
+      });
+    }
+
+    // Debit remaining balance from wallet
+    await WalletService.debit(userId, "user", balanceAmount, tx);
+
+    // Update owner profile pending balance with the additional revenue
+    if (booking.turf?.owner) {
+      await tx.ownerProfile.update({
+        where: { id: booking.turf.owner.id },
+        data: { pendingBalance: { increment: balanceAmount } },
+      });
+    }
+
+    // Update the booking details
+    const updatedBooking = await tx.booking.update({
+      where: { id: bookingId },
+      data: {
+        paidAmount: { increment: balanceAmount },
+        balanceAmount: 0,
+        paymentType: "FULL",
+        ownerRevenue: { increment: balanceAmount },
+      },
+    });
+
+    // Create Wallet transaction for balance payment
+    await tx.walletTransaction.create({
+      data: {
+        userId,
+        amount: balanceAmount,
+        type: "DEBIT",
+        status: "SUCCESS",
+        description: `Paid remaining balance for booking at ${booking.turf.name}`,
+        bookingId: booking.id,
+      },
+    });
+
+    return updatedBooking;
+  });
 };

@@ -16,7 +16,7 @@ import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { updateUser, login } from "@redux/slices/authSlice";
-import { searchLocations, fetchCountryCodes } from "@utils/locationService";
+import { searchLocations, fetchCountryCodes, formatLocation } from "@utils/locationService";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Button, Input, Select } from "@kridaz/ui";
 
@@ -501,11 +501,14 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
 
   const handleSelectLocation = (suggestion) => {
     skipNextLocationSearch.current = true;
+    const cityName = suggestion.city || suggestion.display_name.split(",")[0].trim();
+    const stateName = suggestion.state || "";
+    const formatted = formatLocation(suggestion);
     setFormData({
       ...formData,
-      location: suggestion.display_name,
-      city: suggestion.city || suggestion.display_name.split(",")[0].trim(),
-      state: suggestion.state || "",
+      location: formatted,
+      city: cityName,
+      state: stateName,
     });
     setShowSuggestions(false);
   };

@@ -27,6 +27,7 @@ import {
   Crown,
   Ticket,
   X,
+  MoreVertical,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -34,6 +35,8 @@ import {
   useRequestToJoinMutation,
   useGetMyTeamsQuery,
   useRequestOpponentMutation,
+  useUpdateMemberRoleMutation,
+  useRemoveMemberMutation,
 } from "@redux/api/teamApi";
 import toast from "react-hot-toast";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
@@ -134,12 +137,15 @@ const TeamProfile = () => {
   const [requestJoin, { isLoading: isJoining }] = useRequestToJoinMutation();
   const [requestOpponent, { isLoading: isChallenging }] =
     useRequestOpponentMutation();
+  const [updateMemberRole] = useUpdateMemberRoleMutation();
+  const [removeMember] = useRemoveMemberMutation();
 
   const [showChallengeModal, setShowChallengeModal] = useState(false);
   const [showSquadModal, setShowSquadModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showScoringModal, setShowScoringModal] = useState(false);
   const [selectedMyTeam, setSelectedMyTeam] = useState("");
+  const [activeMemberMenu, setActiveMemberMenu] = useState(null);
 
   if (isLoading) {
     return (
@@ -248,6 +254,31 @@ const TeamProfile = () => {
         navigator.clipboard.writeText(window.location.href);
         toast.success("Link copied!");
       });
+  };
+
+  const handleUpdateRole = async (memberId, newRole) => {
+    gateInteraction(async () => {
+      try {
+        await updateMemberRole({ teamId: id, memberId, role: newRole }).unwrap();
+        toast.success(`Role updated to ${newRole}`);
+        setActiveMemberMenu(null);
+      } catch (err) {
+        toast.error(err.data?.message || "Failed to update role");
+      }
+    });
+  };
+
+  const handleRemoveMember = async (memberId) => {
+    gateInteraction(async () => {
+      if (!window.confirm("Are you sure you want to remove this member?")) return;
+      try {
+        await removeMember({ teamId: id, memberId }).unwrap();
+        toast.success("Member removed");
+        setActiveMemberMenu(null);
+      } catch (err) {
+        toast.error(err.data?.message || "Failed to remove member");
+      }
+    });
   };
 
   return (
@@ -797,8 +828,56 @@ const TeamProfile = () => {
                   {displayMembers.map((member, i) => (
                     <div
                       key={i}
-                      className="bg-white/[0.02] border border-white/5 rounded-[8px] p-2 sm:p-4 flex flex-col items-center gap-2 sm:gap-3 hover:border-primary/20 transition-all text-center"
+                      className="relative bg-white/[0.02] border border-white/5 rounded-[8px] p-2 sm:p-4 flex flex-col items-center gap-2 sm:gap-3 hover:border-primary/20 transition-all text-center group"
                     >
+                      {isOwner && member.id && (
+                        <div className="absolute top-2 right-2">
+                          <button
+                            onClick={() =>
+                              setActiveMemberMenu(
+                                activeMemberMenu === member.id ? null : member.id
+                              )
+                            }
+                            className="p-1 text-white/50 hover:text-white transition-colors"
+                          >
+                            <MoreVertical size={14} />
+                          </button>
+                          <AnimatePresence>
+                            {activeMemberMenu === member.id && (
+                              <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                className="absolute right-0 top-6 w-32 bg-[#1A1A1A] border border-white/10 rounded-[8px] shadow-xl z-50 overflow-hidden text-left"
+                              >
+                                {member.role !== "CAPTAIN" && (
+                                  <button
+                                    onClick={() => handleUpdateRole(member.id, "CAPTAIN")}
+                                    className="w-full px-3 py-2 text-[10px] font-bold text-white hover:bg-white/5 transition-colors uppercase tracking-widest text-left border-b border-white/5"
+                                  >
+                                    Make Captain
+                                  </button>
+                                )}
+                                {member.role === "CAPTAIN" && (
+                                  <button
+                                    onClick={() => handleUpdateRole(member.id, "PLAYER")}
+                                    className="w-full px-3 py-2 text-[10px] font-bold text-white/60 hover:bg-white/5 transition-colors uppercase tracking-widest text-left border-b border-white/5"
+                                  >
+                                    Remove Captain
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => handleRemoveMember(member.id)}
+                                  className="w-full px-3 py-2 text-[10px] font-bold text-red-500 hover:bg-red-500/10 transition-colors uppercase tracking-widest text-left"
+                                >
+                                  Remove Player
+                                </button>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      )}
+                      
                       <div className="relative">
                         <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-primary p-0.5 overflow-hidden">
                           <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
