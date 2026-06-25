@@ -53,6 +53,15 @@ const startWorker = async () => {
       await import("./queues/notification.queue.js");
     trackQueue("notifications", notificationQueue);
 
+    // Initialize Game Application Worker
+    import("./queues/processors/gameApplication.processor.js").then(() => {
+      logger.info("[WORKER_PROCESS] Game Application BullMQ worker initialized.");
+    });
+
+    const { gameApplicationQueue } =
+      await import("./queues/gameApplication.queue.js");
+    trackQueue("game_applications", gameApplicationQueue);
+
     // Drain dead-letter queue for BullMQ fallback
     try {
       const { drainDeadLetter } = await import("./utils/deadLetter.js");
@@ -158,6 +167,9 @@ const shutdown = async (signal) => {
         ),
         import("./queues/notification.queue.js")
           .then(({ notificationQueue }) => notificationQueue.close())
+          .catch(() => {}),
+        import("./queues/gameApplication.queue.js")
+          .then(({ gameApplicationQueue }) => gameApplicationQueue?.close?.())
           .catch(() => {}),
         import("./queues/settlement.queue.js")
           .then(({ settlementQueue }) => settlementQueue?.close?.())

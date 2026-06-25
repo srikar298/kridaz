@@ -196,7 +196,7 @@ const GameCard = ({ game, onSelect, actionButton }) => {
             <span>
               {game.matchPreferences?.isDateFlexible
                 ? "Flexible Time"
-                : game.time || "TBD"}
+                : `${game.time || "TBD"}${game.endTime ? ` - ${game.endTime}` : ''}`}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -206,7 +206,7 @@ const GameCard = ({ game, onSelect, actionButton }) => {
           {game.gameMode !== "LOOKING_FOR" && (
             <div className="flex items-center gap-1.5 font-semibold text-primary">
               <Coins className="h-3.5 w-3.5 shrink-0" />
-              <span>{game.perPlayerCharge || "Free"}</span>
+              <span>{game.perSeatCharge ? `₹${game.perSeatCharge}/seat` : game.perPlayerCharge ? `₹${game.perPlayerCharge}/player` : "Free"}</span>
             </div>
           )}
         </div>
@@ -336,52 +336,93 @@ const GameCard = ({ game, onSelect, actionButton }) => {
             )}
           </div>
         ) : isTeamVsTeam ? (
-          <div className="flex items-center justify-between mt-3">
-            <div className="flex flex-col items-start gap-1 max-w-[40%]">
-              <div className="flex items-center gap-2">
-                {game.teams?.teamA?.image ? (
-                  <img
-                    src={game.teams.teamA.image}
-                    className="w-7 h-7 rounded-full border border-white/10 shrink-0 object-cover bg-card"
-                    alt={game.teams.teamA?.name || "Team A"}
-                  />
-                ) : (
-                  <div className="w-7 h-7 rounded-full border border-white/10 shrink-0 bg-neutral-800 flex items-center justify-center text-[10px] font-bold text-white/50 uppercase">
-                    {(game.teams?.teamA?.name || "A").charAt(0)}
-                  </div>
-                )}
-                <span className="text-[11px] font-bold text-white truncate">
-                  {game.teams?.teamA?.name || "Team A"}
+          <div className="flex flex-col mt-3">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col items-start gap-1 max-w-[40%]">
+                <div className="flex items-center gap-2">
+                  {game.teams?.teamA?.image ? (
+                    <img
+                      src={game.teams.teamA.image}
+                      className="w-7 h-7 rounded-full border border-white/10 shrink-0 object-cover bg-card"
+                      alt={game.teams.teamA?.name || "Team A"}
+                    />
+                  ) : (
+                    <div className="w-7 h-7 rounded-full border border-white/10 shrink-0 bg-neutral-800 flex items-center justify-center text-[10px] font-bold text-white/50 uppercase">
+                      {(game.teams?.teamA?.name || "A").charAt(0)}
+                    </div>
+                  )}
+                  <span className="text-[11px] font-bold text-white truncate">
+                    {game.teams?.teamA?.name || "Team A"}
+                  </span>
+                </div>
+                <span className="text-[10px] text-white/50">
+                  {teamAFilled}/{teamATotal} Filled
                 </span>
               </div>
-              <span className="text-[10px] text-white/50">
-                {teamAFilled}/{teamATotal} Filled
+              <span className="text-[9px] font-black text-white/30 uppercase tracking-widest shrink-0 px-2">
+                VS
               </span>
-            </div>
-            <span className="text-[9px] font-black text-white/30 uppercase tracking-widest shrink-0 px-2">
-              VS
-            </span>
-            <div className="flex flex-col items-end gap-1 max-w-[40%]">
-              <div className="flex items-center gap-2 flex-row-reverse">
-                {game.teams?.teamB?.image ? (
-                  <img
-                    src={game.teams.teamB.image}
-                    className="w-7 h-7 rounded-full border border-white/10 shrink-0 object-cover bg-card"
-                    alt={game.teams.teamB?.name || "Team B"}
-                  />
-                ) : (
-                  <div className="w-7 h-7 rounded-full border border-white/10 shrink-0 bg-neutral-800 flex items-center justify-center text-[10px] font-bold text-white/50 uppercase">
-                    {(game.teams?.teamB?.name || "B").charAt(0)}
-                  </div>
-                )}
-                <span className="text-[11px] font-bold text-white truncate text-right">
-                  {game.teams?.teamB?.name || "Team B"}
+              <div className="flex flex-col items-end gap-1 max-w-[40%]">
+                <div className="flex items-center gap-2 flex-row-reverse">
+                  {game.teams?.teamB?.image ? (
+                    <img
+                      src={game.teams.teamB.image}
+                      className="w-7 h-7 rounded-full border border-white/10 shrink-0 object-cover bg-card"
+                      alt={game.teams.teamB?.name || "Team B"}
+                    />
+                  ) : (
+                    <div className="w-7 h-7 rounded-full border border-white/10 shrink-0 bg-neutral-800 flex items-center justify-center text-[10px] font-bold text-white/50 uppercase">
+                      {(game.teams?.teamB?.name || "B").charAt(0)}
+                    </div>
+                  )}
+                  <span className="text-[11px] font-bold text-white truncate text-right">
+                    {game.teams?.teamB?.name || "Team B"}
+                  </span>
+                </div>
+                <span className="text-[10px] text-white/50">
+                  {teamBFilled}/{teamBTotal} Filled
                 </span>
               </div>
-              <span className="text-[10px] text-white/50">
-                {teamBFilled}/{teamBTotal} Filled
-              </span>
             </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-3 mt-3 border-t border-white/5 text-[10px] text-white/70">
+              <div className="flex flex-col">
+                <span className="text-[9px] font-bold text-primary uppercase tracking-widest">Experience</span>
+                <span className="font-bold text-white truncate">{game.matchPreferences?.experienceLevel || "Any"}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[9px] font-bold text-primary uppercase tracking-widest">Preference</span>
+                <span className="font-bold text-white truncate">{game.matchPreferences?.genderPreference || "Co-ed"}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[9px] font-bold text-primary uppercase tracking-widest">Age Group</span>
+                <span className="font-bold text-white truncate">{game.matchPreferences?.ageGroup || "Any Age"}</span>
+              </div>
+              {game.oversPerInnings && (
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-bold text-primary uppercase tracking-widest">Overs</span>
+                  <span className="font-bold text-white truncate">{game.oversPerInnings} per innings</span>
+                </div>
+              )}
+            </div>
+            
+            {game.matchPreferences?.descriptionTags && (
+              <div className="flex flex-wrap gap-1 mt-1">
+                {game.matchPreferences.descriptionTags.split(",").map((tag, idx) => (
+                  <span key={idx} className="px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[8px] font-medium">
+                    #{tag.trim()}
+                  </span>
+                ))}
+              </div>
+            )}
+            
+            {game.description && (
+              <div className="mt-2 border-t border-white/5 pt-2">
+                <p className="text-[10px] text-white/70 italic line-clamp-2">
+                  "{game.description}"
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           game.gameMode === "QUICK" ? (

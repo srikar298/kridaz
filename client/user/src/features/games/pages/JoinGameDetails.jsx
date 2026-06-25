@@ -356,10 +356,16 @@ const JoinGameDetails = () => {
 
           <div className="max-w-4xl mx-auto mb-8">
             <h1 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter leading-none mb-4 font-open-sans">
-              Match{" "}
-              <span className="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
-                Intelligence
-              </span>
+              {game.name ? (
+                <span>{game.name}</span>
+              ) : (
+                <>
+                  Match{" "}
+                  <span className="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
+                    Intelligence
+                  </span>
+                </>
+              )}
             </h1>
 
             {/* Clean Meta Info Bar */}
@@ -372,7 +378,7 @@ const JoinGameDetails = () => {
                     month: "short",
                     year: "numeric",
                   })}{" "}
-                  <span className="text-primary">{game.time}</span>
+                  <span className="text-primary">{game.time}{game.endTime ? ` - ${game.endTime}` : ''}</span>
                 </span>
               </div>
 
@@ -520,6 +526,44 @@ const JoinGameDetails = () => {
                   {game.matchPreferences?.equipmentStatus || "Everyone brings their own"}
                 </span>
               </div>
+              {game.format && (
+                <div className="bg-black/40 border border-white/5 p-3 rounded-[8px] flex flex-col justify-between">
+                  <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Format</span>
+                  <span className="text-sm font-black text-white">{game.format}</span>
+                </div>
+              )}
+              {game.ballType && (
+                <div className="bg-black/40 border border-white/5 p-3 rounded-[8px] flex flex-col justify-between">
+                  <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Ball Type</span>
+                  <span className="text-sm font-black text-white">{game.ballType}</span>
+                </div>
+              )}
+              {game.groundType && (
+                <div className="bg-black/40 border border-white/5 p-3 rounded-[8px] flex flex-col justify-between">
+                  <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Ground Type</span>
+                  <span className="text-sm font-black text-white">{game.groundType}</span>
+                </div>
+              )}
+              {game.oversPerInnings && (
+                <div className="bg-black/40 border border-white/5 p-3 rounded-[8px] flex flex-col justify-between">
+                  <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Overs Per Innings</span>
+                  <span className="text-sm font-black text-white">{game.oversPerInnings} Overs</span>
+                </div>
+              )}
+              {game.maxMembers > 0 && (
+                <div className="bg-black/40 border border-white/5 p-3 rounded-[8px] flex flex-col justify-between">
+                  <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Players Per Team</span>
+                  <span className="text-sm font-black text-white">{game.maxMembers} Players</span>
+                </div>
+              )}
+              {(game.perSeatCharge || game.perPlayerCharge) ? (
+                <div className="bg-black/40 border border-white/5 p-3 rounded-[8px] flex flex-col justify-between">
+                  <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Entry Fee</span>
+                  <span className="text-sm font-black text-white">
+                    {game.perSeatCharge ? `₹${game.perSeatCharge}/seat` : `₹${game.perPlayerCharge}/player`}
+                  </span>
+                </div>
+              ) : null}
             </div>
 
             {/* Config rules row */}
@@ -564,6 +608,60 @@ const JoinGameDetails = () => {
               </div>
             )}
           </div>
+
+          {/* Venue Card */}
+          {game.turf && (
+            <div className="max-w-4xl mx-auto mb-8 bg-neutral-900/50 border border-white/5 rounded-[8px] overflow-hidden shadow-2xl">
+              <div className="p-4 border-b border-white/[0.08] flex items-center gap-2">
+                <MapPin size={16} className="text-primary" />
+                <h3 className="font-open-sans text-base font-black text-white uppercase tracking-tight">Venue Details</h3>
+              </div>
+              <div className="p-4 sm:p-6 flex flex-col md:flex-row gap-6">
+                {/* Image Slider */}
+                <div className="w-full md:w-1/2 rounded-[16px] overflow-hidden flex gap-2 overflow-x-auto snap-x snap-mandatory custom-scrollbar relative">
+                  {(game.turf.images && game.turf.images.length > 0) ? (
+                    game.turf.images.map((img, idx) => (
+                      <div key={idx} className="min-w-full snap-center relative aspect-video">
+                        <img
+                          src={img}
+                          alt={game.turf.name}
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="min-w-full snap-center relative aspect-video bg-neutral-800 flex items-center justify-center">
+                      <span className="text-white/40 text-xs font-bold uppercase">No Image Available</span>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Venue Info */}
+                <div className="flex-1 flex flex-col justify-center">
+                  <h4 className="text-xl font-black text-white mb-2">{game.turf.name}</h4>
+                  <p className="text-sm text-white/60 mb-4 flex items-start gap-2">
+                    <MapPin size={16} className="text-white/40 mt-0.5 shrink-0" />
+                    <span>{game.turf.location || game.turf.address || game.turf.city}</span>
+                  </p>
+                  
+                  <div className="flex flex-wrap gap-3">
+                    {game.isPlatformBooking && game.groundCost > 0 && (
+                      <div className="bg-black/40 border border-white/5 px-4 py-2 rounded-[8px]">
+                        <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider block mb-1">Turf Price</span>
+                        <span className="text-sm font-black text-primary">₹{game.groundCost}</span>
+                      </div>
+                    )}
+                    {game.isPlatformBooking && (
+                      <div className="bg-primary/10 border border-primary/20 px-4 py-2 rounded-[8px] flex items-center gap-2">
+                        <ShieldCheck size={16} className="text-primary" />
+                        <span className="text-xs font-bold text-primary uppercase tracking-widest">Platform Booked</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Slot Grid Container */}
           <div className="max-w-4xl mx-auto bg-neutral-900/50 border border-white/5 rounded-[8px] p-6 shadow-2xl">
@@ -666,7 +764,10 @@ const JoinGameDetails = () => {
                   const teamKey = activeTeamTab;
                   const team = game.teams?.[teamKey] || { slots: [] };
                   const isOpponentTeamPending =
-                    teamKey === "teamB" && !game.teams?.teamB?.linkedTeamId;
+                    teamKey === "teamB" && 
+                    !game.teams?.teamB?.linkedTeamId &&
+                    game.gameMode !== "PROFESSIONAL" && 
+                    game.gameMode !== "PRO";
 
                   if (isOpponentTeamPending) {
                     return (

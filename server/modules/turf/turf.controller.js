@@ -14,6 +14,7 @@ import logger from "../../utils/logger.js";
 import { getGroundRecommendations } from "../../services/recommendation.service.js";
 import { computeLowestHourlyRate } from "../../utils/turfPricing.js";
 import { wrapped } from "../../utils/envelope.js";
+import { meiliClient } from "../../config/search.js";
 
 // --- USER OPERATIONS ---
 
@@ -89,35 +90,42 @@ export const getAllTurfs = async (req, res) => {
       async () => {
         let resultTurfs = [];
 
-        if (lat && lng) {
-          const r = radius ? parseFloat(radius) : 40000000;
-          resultTurfs = await findNearby(
-            "Turf",
-            parseFloat(lat),
-            parseFloat(lng),
-            r,
-            {
-              where,
-              take,
-              select: turfSelect,
-            }
-          );
-
-          // Fallback to fetch other approved turfs (including those without coordinates) if list is not full
-          if (resultTurfs.length < take) {
-            const foundIds = resultTurfs.map((t) => t.id);
-            const fallbackTurfs = await prisma.turf.findMany({
-              where: {
-                ...where,
-                id: { notIn: foundIds },
-              },
-              select: turfSelect,
-              take: take - resultTurfs.length,
-              orderBy: { createdAt: "desc" },
-            });
-            resultTurfs = [...resultTurfs, ...fallbackTurfs];
+        // --- Meilisearch Integration ---
+        try {
+          const index = meiliClient.index('turfs');
+          const filters = ["isActive = true"];
+          
+          if (isVal(state)) filters.push(`state = '${state}'`);
+          if (isVal(city)) filters.push(`city = '${city}'`);
+          
+          if (lat && lng) {
+            const r = radius ? parseFloat(radius) : 40000; // meters
+            filters.push(`_geoRadius(${lat}, ${lng}, ${r})`);
           }
-        } else {
+
+          const searchQuery = (isVal(searchTerm) && searchTerm !== "All") ? searchTerm : "";
+
+          const searchRes = await index.search(searchQuery, {
+            filter: filters,
+            limit: take,
+            offset: skip,
+            sort: lat && lng ? [`_geoPoint(${lat}, ${lng}):asc`] : []
+          });
+
+          const turfIds = searchRes.hits.map(h => h.id);
+
+          if (turfIds.length > 0) {
+            const rawTurfs = await prisma.turf.findMany({
+              where: { id: { in: turfIds }, status: "approved" },
+              select: turfSelect
+            });
+            
+            // Restore Meilisearch sorting order
+            resultTurfs = rawTurfs.sort((a, b) => turfIds.indexOf(a.id) - turfIds.indexOf(b.id));
+          }
+        } catch (searchError) {
+          logger.warn("Meilisearch failed, falling back to basic Prisma query", searchError);
+          // Fallback if Meilisearch is down
           resultTurfs = await prisma.turf.findMany({
             where,
             select: turfSelect,
@@ -125,18 +133,8 @@ export const getAllTurfs = async (req, res) => {
             skip,
             orderBy: { createdAt: "desc" },
           });
-
-          if (isVal(city)) {
-            const targetCity = city.toLowerCase().trim();
-            resultTurfs.sort((a, b) => {
-              const isACity = a.city?.toLowerCase().trim() === targetCity;
-              const isBCity = b.city?.toLowerCase().trim() === targetCity;
-              if (isACity && !isBCity) return -1;
-              if (!isACity && isBCity) return 1;
-              return 0;
-            });
-          }
         }
+
 
         // Fetch today's booked timeslots count for these turfs in batch
         const turfIds = resultTurfs.map((t) => t.id);
@@ -606,6 +604,27 @@ export const turfRegister = async (req, res) => {
     }
 
     await invalidateCache("turfs:list:*");
+
+    // Sync to Meilisearch
+    try {
+      const index = meiliClient.index('turfs');
+      await index.addDocuments([{
+        id: newTurf.id,
+        name: newTurf.name,
+        address: newTurf.address || newTurf.location,
+        city: newTurf.city,
+        state: newTurf.state,
+        zipcode: newTurf.zipcode,
+        pricePerHour: newTurf.pricePerHour,
+        isActive: newTurf.isActive,
+        isPlatformBooking: newTurf.isPlatformBooking,
+        createdAtTimestamp: new Date(newTurf.createdAt).getTime(),
+        _geo: newTurf.latitude && newTurf.longitude ? { lat: newTurf.latitude, lng: newTurf.longitude } : undefined,
+        images: newTurf.images || []
+      }]);
+    } catch (e) {
+      logger.error("Meilisearch sync failed on register", e);
+    }
 
     return res.status(201).json({
       success: true,
@@ -1116,7 +1135,37 @@ export const adminApproveTurf = async (req, res) => {
       data: updateData,
     });
 
+    if (updatedTurf.latitude && updatedTurf.longitude) {
+      await updateGeoPoint(
+        "Turf",
+        updatedTurf.id,
+        updatedTurf.latitude,
+        updatedTurf.longitude
+      );
+    }
+
     await invalidateCache("turfs:list:*");
+    await invalidateCache(`turfs:id:${id}`);
+
+    // Sync to Meilisearch
+    try {
+      const index = meiliClient.index('turfs');
+      await index.updateDocuments([{
+        id: updatedTurf.id,
+        name: updatedTurf.name,
+        address: updatedTurf.address || updatedTurf.location,
+        city: updatedTurf.city,
+        state: updatedTurf.state,
+        zipcode: updatedTurf.zipcode,
+        pricePerHour: updatedTurf.pricePerHour,
+        isActive: updatedTurf.isActive,
+        isPlatformBooking: updatedTurf.isPlatformBooking,
+        _geo: updatedTurf.latitude && updatedTurf.longitude ? { lat: updatedTurf.latitude, lng: updatedTurf.longitude } : undefined,
+        images: updatedTurf.images || []
+      }]);
+    } catch (e) {
+      logger.error("Meilisearch sync failed on edit", e);
+    }
 
     return res.status(200).json({
       success: true,

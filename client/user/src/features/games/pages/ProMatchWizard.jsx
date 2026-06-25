@@ -269,6 +269,29 @@ const SPORT_ICONS = {
   ),
 };
 
+const SPORT_CONFIGS = {
+  Cricket: {
+    formats: ["T20", "ODI", "Test", "Box Cricket", "Other"],
+    ballTypes: ["Leather", "Tennis", "Tape", "Other"],
+    groundTypes: ["Turf", "Matting", "Cement", "Other"],
+  },
+  Football: {
+    formats: ["5-a-side", "7-a-side", "11-a-side", "Other"],
+    ballTypes: ["Standard (Size 5)", "Futsal", "Other"],
+    groundTypes: ["Grass", "Artificial Turf", "Indoor", "Other"],
+  },
+  Basketball: {
+    formats: ["3v3", "5v5", "Other"],
+    ballTypes: ["Size 7", "Size 6", "Other"],
+    groundTypes: ["Indoor Wood", "Outdoor Concrete", "Other"],
+  },
+  Tennis: {
+    formats: ["Singles", "Doubles", "Other"],
+    ballTypes: ["Standard", "Pressureless", "Other"],
+    groundTypes: ["Hard", "Clay", "Grass", "Other"],
+  },
+};
+
 const ProMatchWizard = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -310,12 +333,19 @@ const ProMatchWizard = () => {
       quickPlayerCount: storedData.quickPlayerCount || 2,
       splitCostWithMultiplePlayers: storedData.splitCostWithMultiplePlayers || false,
       descriptionTags: storedData.descriptionTags || "",
+      format: storedData.format || "",
+      ballType: storedData.ballType || "",
+      groundType: storedData.groundType || "",
       experienceLevel: storedData.experienceLevel || "Any",
       gameVibe: storedData.gameVibe || "Casual / Fun",
       autoApprovePlayers: storedData.autoApprovePlayers !== undefined ? storedData.autoApprovePlayers : true,
       genderPreference: storedData.genderPreference || "Co-ed (Mixed)",
       ageGroup: storedData.ageGroup || "Any Age",
       equipmentStatus: storedData.equipmentStatus || "Everyone brings their own",
+      duration: storedData.duration || "120",
+      name: storedData.name || "",
+      maxMembers: storedData.maxMembers || 11,
+      oversPerInnings: storedData.oversPerInnings || 20,
     }
     : {
       requestType: "MATCH",
@@ -323,9 +353,16 @@ const ProMatchWizard = () => {
       gameMode: "PROFESSIONAL", // QUICK, PROFESSIONAL, or HIRING
       date: "",
       time: "",
+      duration: "120", // Default 2 hours
+      name: "",
+      maxMembers: 11,
+      oversPerInnings: 20,
       quickPlayerCount: 2,
       splitCostWithMultiplePlayers: false,
       descriptionTags: "",
+      format: "",
+      ballType: "",
+      groundType: "",
       experienceLevel: "Any",
       gameVibe: "Casual / Fun",
       autoApprovePlayers: true,
@@ -374,8 +411,6 @@ const ProMatchWizard = () => {
     }
   }, [searchParams]);
 
-  const [enues, setGrounds] = useState([]);
-  const [umpires, setUmpires] = useState([]);
   const [selectedGround, setSelectedGround] = useState(null);
   const [selectedUmpire, setSelectedUmpire] = useState(null);
 
@@ -397,6 +432,7 @@ const ProMatchWizard = () => {
 
   // Clock picker state
   const [showDateTimePicker, setShowDateTimePicker] = useState(false);
+  const [showEndDateTimePicker, setShowEndDateTimePicker] = useState(false);
   const [showClock, setShowClock] = useState(false); // Legacy, can be removed later
   const [clockHour, setClockHour] = useState(9);
   const [clockMinute, setClockMinute] = useState(0);
@@ -593,94 +629,63 @@ const ProMatchWizard = () => {
   };
 
 
-  const fetchGrounds = async () => {
-    try {
-      const res = await axiosInstance.get(
-        `/api/hosted-game/grounds?city=${gameData.city}&state=${gameData.state}&sportType=${gameData.gameType}`
-      );
-      setGrounds(res.data.enues);
-    } catch (err) {
-      toast.error("Failed to fetch enues");
-    }
-  };
-
-  const fetchUmpires = async () => {
-    try {
-      const res = await axiosInstance.get(
-        `/api/hosted-game/umpires?city=${gameData.city}&state=${gameData.state}&gameType=${gameData.gameType}`
-      );
-      setUmpires(res.data.umpires);
-    } catch (err) {
-      toast.error("Failed to fetch umpires");
-    }
-  };
-
-  useEffect(() => {
-    if (step === 3 && gameData.gameType) {
-      fetchGrounds();
-      fetchUmpires();
-    }
-  }, [step, gameData.gameType, gameData.city, gameData.state]);
-
   // Handle return from Venue/Professional selection
   useEffect(() => {
-    if (step === 3) {
-      const urlGroundId = searchParams.get("groundId");
-      const urlUmpireId = searchParams.get("umpireId");
-      const urlDate = searchParams.get("date");
-      const urlTime = searchParams.get("time");
+    const urlGroundId = searchParams.get("groundId");
+    const urlUmpireId = searchParams.get("umpireId");
+    const urlDate = searchParams.get("date");
+    const urlTime = searchParams.get("time");
 
-      if (
-        urlGroundId &&
-        (!selectedGround || selectedGround._id !== urlGroundId)
-      ) {
-        axiosInstance
-          .get(`/api/user/turf/details/${urlGroundId}`)
-          .then((res) => {
-            const turf = res.data.turf || res.data;
-            setSelectedGround(turf);
-            setGameData((prev) => ({
-              ...prev,
-              groundId: turf._id,
-              date: urlDate
-                ? new Date(urlDate).toISOString().split("T")[0]
-                : prev.date,
-              time: urlTime || prev.time,
-              groundPrice: searchParams.get("price")
-                ? Number(searchParams.get("price"))
-                : turf.pricePerHour,
-              isPlatformBooking: !!searchParams.get("price"),
-            }));
-          })
-          .catch((err) => console.error("Error fetching venue details:", err));
-      }
-
-      if (
-        urlUmpireId &&
-        (!selectedUmpire || selectedUmpire._id !== urlUmpireId)
-      ) {
-        axiosInstance
-          .get(
-            `/api/professional/details/${urlUmpireId}?date=${urlDate || new Date().toISOString()}`
-          )
-          .then((res) => {
-            const pro = res.data.professional;
-            setSelectedUmpire(pro);
-            setGameData((prev) => ({
-              ...prev,
-              umpireId: pro._id,
-              date: urlDate
-                ? new Date(urlDate).toISOString().split("T")[0]
-                : prev.date,
-              time: urlTime || prev.time,
-            }));
-          })
-          .catch((err) =>
-            console.error("Error fetching professional details:", err)
-          );
-      }
+    if (
+      urlGroundId &&
+      (!selectedGround || selectedGround._id !== urlGroundId)
+    ) {
+      axiosInstance
+        .get(`/api/user/turf/details/${urlGroundId}`)
+        .then((res) => {
+          const turf = res.data.turf || res.data;
+          setSelectedGround(turf);
+          setGameData((prev) => ({
+            ...prev,
+            groundId: turf._id,
+            date: urlDate
+              ? new Date(urlDate).toISOString().split("T")[0]
+              : prev.date,
+            time: urlTime || prev.time,
+            groundPrice: searchParams.get("price")
+              ? Number(searchParams.get("price"))
+              : turf.pricePerHour,
+            isPlatformBooking: !!searchParams.get("price"),
+          }));
+        })
+        .catch((err) => console.error("Error fetching venue details:", err));
     }
-  }, [step, searchParams, selectedGround, selectedUmpire]);
+
+    if (
+      urlUmpireId &&
+      (!selectedUmpire || selectedUmpire._id !== urlUmpireId)
+    ) {
+      axiosInstance
+        .get(
+          `/api/professional/details/${urlUmpireId}?date=${urlDate || new Date().toISOString()}`
+        )
+        .then((res) => {
+          const pro = res.data.professional;
+          setSelectedUmpire(pro);
+          setGameData((prev) => ({
+            ...prev,
+            umpireId: pro._id,
+            date: urlDate
+              ? new Date(urlDate).toISOString().split("T")[0]
+              : prev.date,
+            time: urlTime || prev.time,
+          }));
+        })
+        .catch((err) =>
+          console.error("Error fetching professional details:", err)
+        );
+    }
+  }, [searchParams, selectedGround, selectedUmpire]);
 
   const isStandalonePost =
     gameData.gameMode === "HIRING" ||
@@ -696,11 +701,13 @@ const ProMatchWizard = () => {
     ].includes(gameData.requestType);
 
   const groundCost =
-    isStandalonePost
+    isStandalonePost || !gameData.isPlatformBooking
       ? 0
-      : gameData.groundPrice !== undefined
-        ? gameData.groundPrice
-        : selectedGround?.pricePerHour || 0;
+      : (gameData.date && gameData.time)
+        ? gameData.groundPrice !== undefined
+          ? gameData.groundPrice
+          : selectedGround?.pricePerHour || 0
+        : 0;
   const subTotal = groundCost + (selectedUmpire?.price || 0);
   const discountAmount = couponData?.discountAmount || 0;
   const platformFee = couponData
@@ -807,12 +814,35 @@ const ProMatchWizard = () => {
           : gameData.date;
       const finalTime = isFlexible && !gameData.time ? "TBD" : gameData.time;
 
+      let finalEndTime = null;
+      if (finalTime && finalTime !== "TBD" && gameData.duration) {
+        try {
+          const [hours, minutes] = finalTime.split(":").map(Number);
+          const totalMins = hours * 60 + minutes + parseInt(gameData.duration);
+          const endHours = Math.floor(totalMins / 60) % 24;
+          const endMins = totalMins % 60;
+          finalEndTime = `${String(endHours).padStart(2, "0")}:${String(endMins).padStart(2, "0")}`;
+        } catch (e) {
+           console.error("Error calculating end time", e);
+        }
+      }
+
+      let finalTeamB = { ...gameData.teamB };
+      if (
+        (gameData.gameMode === "PRO" || gameData.gameMode === "PROFESSIONAL") &&
+        (!finalTeamB.slots || finalTeamB.slots.length === 0)
+      ) {
+        finalTeamB.slots = Array(gameData.maxMembers || 11).fill({ role: "Player", status: "OPEN" });
+      }
+
       const payload = {
         ...gameData,
+        teamB: finalTeamB,
         date: finalDate,
         time: finalTime,
+        endTime: finalEndTime,
         groundId: gameData.groundId || null, // Prevent stale IDs from causing backend cost mismatch
-        isPlatformBooking: !!gameData.groundId, // PRO match always books the enue via platform if selected
+        isPlatformBooking: !!gameData.isPlatformBooking,
         ...(gameData.gameMode === "QUICK"
           ? {
             teamA: {
@@ -978,6 +1008,23 @@ const ProMatchWizard = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-5 pt-5 border-t border-white/10 mt-5"
               >
+                {/* Match Title */}
+                <div className="mb-2">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
+                    <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
+                      Match Title
+                    </label>
+                  </div>
+                  <Input
+                    type="text"
+                    placeholder="e.g. Sunday League Final (Optional)"
+                    value={gameData.name || ""}
+                    onChange={(e) => setGameData({ ...gameData, name: e.target.value })}
+                    className="w-full bg-background border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-3 px-4 text-sm text-white focus:border-cyan-400 outline-none transition-all"
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <section>
                     <div className="flex items-center gap-2 mb-3">
@@ -1120,28 +1167,37 @@ const ProMatchWizard = () => {
                       <div className="flex items-center gap-2 mb-3">
                         <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
                         <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
-                          Date & Time
+                          Start & End Time Selection
                         </label>
                       </div>
-                      <div className="relative">
+                      <div className="grid grid-cols-2 gap-2 relative">
                         <Button
                           type="button"
                           onClick={() => setShowDateTimePicker(true)}
-                          className="w-full flex items-center justify-between bg-background border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-2.5 px-3 text-[11px] font-bold transition-all text-white"
+                          className="w-full flex items-center justify-between bg-background border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-2.5 px-3 text-[11px] font-bold transition-all text-white h-[42px]"
                         >
-                          <div className="flex items-center gap-3">
-                            <Calendar size={18} className="text-cyan-400" />
+                          <div className="flex items-center gap-2 overflow-hidden">
+                            <Calendar size={18} className="text-cyan-400 flex-shrink-0" />
                             <span
-                              className={
-                                gameData.date && gameData.time
-                                  ? "text-white"
-                                  : "text-white/70"
-                              }
+                              className={`truncate ${gameData.date && gameData.time ? "text-white" : "text-white/70"}`}
                             >
-                              {displayFullDateTime()}
+                              {gameData.date && gameData.time ? `${gameData.date} ${gameData.time}` : "Select"}
                             </span>
                           </div>
-                          <ChevronDown size={16} className="text-white/70" />
+                        </Button>
+                        <Button
+                          type="button"
+                          onClick={() => setShowEndDateTimePicker(true)}
+                          className="w-full flex items-center justify-between bg-background border border-white/10 hover:border-cyan-400/60 rounded-[16px] py-2.5 px-3 text-[11px] font-bold transition-all text-white h-[42px]"
+                        >
+                          <div className="flex items-center gap-2 overflow-hidden">
+                            <Clock size={18} className="text-cyan-400 flex-shrink-0" />
+                            <span
+                              className={`truncate ${gameData.endDate && gameData.endTime ? "text-white" : "text-white/70"}`}
+                            >
+                              {gameData.endDate && gameData.endTime ? `${gameData.endDate} ${gameData.endTime}` : "Select End Time"}
+                            </span>
+                          </div>
                         </Button>
 
                         <MaterialDateTimePicker
@@ -1151,6 +1207,15 @@ const ProMatchWizard = () => {
                           initialTime={gameData.time || null}
                           onSelect={(date, time) => {
                             setGameData({ ...gameData, date, time });
+                          }}
+                        />
+                        <MaterialDateTimePicker
+                          isOpen={showEndDateTimePicker}
+                          onClose={() => setShowEndDateTimePicker(false)}
+                          initialDate={gameData.endDate || null}
+                          initialTime={gameData.endTime || null}
+                          onSelect={(endDate, endTime) => {
+                            setGameData({ ...gameData, endDate, endTime });
                           }}
                         />
                       </div>
@@ -1183,25 +1248,29 @@ const ProMatchWizard = () => {
                           <p className="flex text-[10px] sm:text-[11px] text-white/70 mb-2 sm:mb-3 items-center gap-1 font-medium truncate">
                             <MapPin size={12} className="flex-shrink-0" /> <span className="truncate">{selectedGround.location || selectedGround.address || selectedGround.city}</span>
                           </p>
-                          <div className="flex flex-wrap gap-2 mb-3">
-                            {gameData.date && (
-                              <span className="px-2 py-1 bg-background rounded text-[9px] sm:text-[10px] text-cyan-400 font-bold uppercase">
-                                {new Date(gameData.date).toLocaleDateString()}
+                          {gameData.isPlatformBooking && (
+                            <div className="flex flex-wrap gap-2 mb-3">
+                              {gameData.date && (
+                                <span className="px-2 py-1 bg-background rounded text-[9px] sm:text-[10px] text-cyan-400 font-bold uppercase">
+                                  {new Date(gameData.date).toLocaleDateString()}
+                                </span>
+                              )}
+                              {gameData.time && (
+                                <span className="px-2 py-1 bg-background rounded text-[9px] sm:text-[10px] text-lime-400 font-bold uppercase">
+                                  {gameData.time}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          <div className={`flex items-center mt-2 sm:mt-4 ${gameData.isPlatformBooking ? 'justify-between' : 'justify-end'}`}>
+                            {gameData.isPlatformBooking && (gameData.date && gameData.time) && (
+                              <span className="text-primary font-black text-xs sm:text-sm">
+                                ₹
+                                {gameData.groundPrice !== undefined
+                                  ? gameData.groundPrice
+                                  : selectedGround?.pricePerHour}
                               </span>
                             )}
-                            {gameData.time && (
-                              <span className="px-2 py-1 bg-background rounded text-[9px] sm:text-[10px] text-lime-400 font-bold uppercase">
-                                {gameData.time}
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center justify-between mt-2 sm:mt-4">
-                            <span className="text-primary font-black text-xs sm:text-sm">
-                              ₹
-                              {gameData.groundPrice !== undefined
-                                ? gameData.groundPrice
-                                : selectedGround.pricePerHour}
-                            </span>
                             <Button
                               onClick={() => {
                                 setSearchParams((prev) => {
@@ -1278,7 +1347,7 @@ const ProMatchWizard = () => {
                       };
                       setGameData(updatedGameData);
                       sessionStorage.setItem("hostGameData_pro", JSON.stringify(updatedGameData));
-                      navigate(`/venue/${venue.id || venue._id}?returnTo=${encodeURIComponent(`/host-game?step=3&city=${venue.city}&state=${venue.state}`)}`);
+                      navigate(`/venue/${venue.id || venue._id}?returnTo=${encodeURIComponent(`/host-game/pro?step=1&city=${venue.city}&state=${venue.state}`)}`);
                     }}
                   />
                 </section>
@@ -1310,33 +1379,160 @@ const ProMatchWizard = () => {
                         </label>
                       </div>
 
-                      <div className="flex items-center gap-3 bg-card border border-white/10 rounded-[16px] p-3 flex-1">
-                        <Input
-                          type="checkbox"
-                          id="need-opponent"
-                          checked={gameData.matchPreferences?.needOpponent || false}
-                          onChange={(e) =>
-                            setGameData({
-                              ...gameData,
-                              matchPreferences: {
-                                ...gameData.matchPreferences,
-                                needOpponent: e.target.checked,
-                              },
-                            })
-                          }
-                          className="w-4 h-4 rounded border-white/20 text-cyan-400 focus:ring-0 focus:ring-offset-0 bg-background"
-                        />
-                        <label
-                          htmlFor="need-opponent"
-                          className="text-xs text-white font-bold cursor-pointer"
-                        >
-                          Need Opponent?
-                        </label>
-                      </div>
                     </div>
                   </section>
                 )}
 
+                {/* Dynamic Sport Fields */}
+                {gameData.gameType && SPORT_CONFIGS[gameData.gameType] && (
+                  <section className="space-y-4 mt-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
+                      <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
+                        Match Specifications
+                      </label>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {SPORT_CONFIGS[gameData.gameType].formats && (
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[10px] text-white/50 uppercase">Match Format</label>
+                          <Select
+                            value={gameData.format || ""}
+                            onChange={(e) => setGameData({ ...gameData, format: e.target.value })}
+                            className="w-full bg-card border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-secondary outline-none transition-all"
+                          >
+                            <option value="">Select Format</option>
+                            {SPORT_CONFIGS[gameData.gameType].formats.map(fmt => (
+                              <option key={fmt} value={fmt}>{fmt}</option>
+                            ))}
+                          </Select>
+                        </div>
+                      )}
+                      {SPORT_CONFIGS[gameData.gameType].ballTypes && (
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[10px] text-white/50 uppercase">Ball Type</label>
+                          <Select
+                            value={gameData.ballType || ""}
+                            onChange={(e) => setGameData({ ...gameData, ballType: e.target.value })}
+                            className="w-full bg-card border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-secondary outline-none transition-all"
+                          >
+                            <option value="">Select Ball</option>
+                            {SPORT_CONFIGS[gameData.gameType].ballTypes.map(bt => (
+                              <option key={bt} value={bt}>{bt}</option>
+                            ))}
+                          </Select>
+                        </div>
+                      )}
+                      {SPORT_CONFIGS[gameData.gameType].groundTypes && (
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[10px] text-white/50 uppercase">Ground / Surface</label>
+                          <Select
+                            value={gameData.groundType || ""}
+                            onChange={(e) => setGameData({ ...gameData, groundType: e.target.value })}
+                            className="w-full bg-card border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-secondary outline-none transition-all"
+                          >
+                            <option value="">Select Surface</option>
+                            {SPORT_CONFIGS[gameData.gameType].groundTypes.map(gt => (
+                              <option key={gt} value={gt}>{gt}</option>
+                            ))}
+                          </Select>
+                        </div>
+                      )}
+                      {gameData.gameType === "Cricket" && (
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[10px] text-white/50 uppercase">Overs per Innings</label>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="90"
+                            value={gameData.oversPerInnings || 20}
+                            onChange={(e) => setGameData({ ...gameData, oversPerInnings: parseInt(e.target.value) || 20 })}
+                            className="w-full bg-card border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-secondary outline-none transition-all"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                )}
+
+                {/* Description / Custom Rules */}
+                <section className="space-y-4 mt-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
+                    <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
+                      Description / Custom Rules
+                    </label>
+                  </div>
+                  <Textarea
+                    placeholder="Add any specific rules, match details, or custom instructions here..."
+                    value={gameData.descriptionTags || ""}
+                    onChange={(e) => setGameData({ ...gameData, descriptionTags: e.target.value })}
+                    rows={3}
+                    className="w-full bg-card border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-secondary outline-none transition-all resize-none"
+                  />
+                </section>
+
+                {/* Player Preferences & Max Players */}
+                <section className="space-y-4 mt-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-[2.5px] h-[14px] bg-gradient-to-b from-secondary to-primary rounded-full" />
+                    <label className="text-[10px] font-bold text-white uppercase tracking-widest block">
+                      Player Preferences & Squad Size
+                    </label>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] text-white/50 uppercase">Max Players</label>
+                      <Input
+                        type="number"
+                        min="2"
+                        max="50"
+                        value={gameData.maxMembers || 11}
+                        onChange={(e) => setGameData({ ...gameData, maxMembers: parseInt(e.target.value) || 11 })}
+                        className="w-full bg-card border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-secondary outline-none transition-all"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] text-white/50 uppercase">Experience</label>
+                      <Select
+                        value={gameData.experienceLevel || "Any"}
+                        onChange={(e) => setGameData({ ...gameData, experienceLevel: e.target.value })}
+                        className="w-full bg-card border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-secondary outline-none transition-all"
+                      >
+                        <option value="Any">Any Level</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                        <option value="Professional">Professional</option>
+                      </Select>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] text-white/50 uppercase">Gender</label>
+                      <Select
+                        value={gameData.genderPreference || "Co-ed (Mixed)"}
+                        onChange={(e) => setGameData({ ...gameData, genderPreference: e.target.value })}
+                        className="w-full bg-card border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-secondary outline-none transition-all"
+                      >
+                        <option value="Co-ed (Mixed)">Co-ed (Mixed)</option>
+                        <option value="Men Only">Men Only</option>
+                        <option value="Women Only">Women Only</option>
+                      </Select>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] text-white/50 uppercase">Age</label>
+                      <Select
+                        value={gameData.ageGroup || "Any Age"}
+                        onChange={(e) => setGameData({ ...gameData, ageGroup: e.target.value })}
+                        className="w-full bg-card border border-white/10 rounded-[16px] py-3 px-4 text-sm text-white focus:border-secondary outline-none transition-all"
+                      >
+                        <option value="Any Age">Any</option>
+                        <option value="Under 18">Under 18</option>
+                        <option value="18-35">18-35</option>
+                        <option value="35+">35+</option>
+                      </Select>
+                    </div>
+                  </div>
+                </section>
 
                 {gameData.requestType === "LOOKING_FOR" && (
                   <section className="space-y-4 mt-4">
@@ -2242,6 +2438,7 @@ const ProMatchWizard = () => {
             </div>
 
             {/* Billing Summary & Coupon */}
+            {(totalCost > 0 || subTotal > 0) && (
             <div className="bg-card border border-white/10 rounded-[16px] overflow-hidden">
               <div className="p-3 border-b border-white/10/50 flex items-center gap-3 bg-card/20">
                 <Receipt className="text-primary w-5 h-5" />
@@ -2337,6 +2534,7 @@ const ProMatchWizard = () => {
                 </div>
               </div>
             </div>
+            )}
 
             {/* Action Buttons */}
             <div className="flex gap-3 pt-2">

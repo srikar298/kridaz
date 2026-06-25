@@ -11,6 +11,7 @@ import { randomUUID } from "crypto";
 import NotificationService from "../../services/notification.service.js";
 import { generateShortId } from "../scoring/scoring.utils.js";
 import { runInTransaction } from "../../utils/transaction.js";
+import { gameApplicationQueue } from "../../queues/gameApplication.queue.js";
 import { generateUserToken } from "../../utils/generateJwtToken.js";
 import WalletService from "../../services/wallet.service.js";
 import logger from "../../utils/logger.js";
@@ -430,6 +431,7 @@ export const createHostedGame = async (req, res) => {
         umpire,
         streamer,
         perPlayerCharge,
+        perSeatCharge,
         teamA,
         teamB,
         city,
@@ -445,6 +447,15 @@ export const createHostedGame = async (req, res) => {
         opponentType = "SINGLE",
         hostTeamId,
         opponentTargetPlayers,
+        format,
+        ballType,
+        groundType,
+        oversPerInnings,
+        maxMembers,
+        experienceLevel,
+        genderPreference,
+        ageGroup,
+        descriptionTags,
       } = req.body;
 
       logger.info("Game Data:", {
@@ -605,18 +616,28 @@ export const createHostedGame = async (req, res) => {
           turfId: finalGroundId,
           umpireId: finalUmpireId,
           streamerId: finalStreamerId,
-          perPlayerCharge,
+          perPlayerCharge: perPlayerCharge ? Number(perPlayerCharge) : 0,
+          perSeatCharge: perSeatCharge ? Number(perSeatCharge) : 0,
           groundCost,
           umpireCost,
           streamerCost,
           totalCost,
           gameMode,
           requestType: requestType || "MATCH",
+          format,
+          ballType,
+          groundType,
+          oversPerInnings: oversPerInnings ? parseInt(oversPerInnings) : 20,
+          maxMembers: maxMembers ? parseInt(maxMembers) : 11,
           matchPreferences: {
             ...(matchPreferences || {}),
             opponentType,
             hostTeamId,
             opponentTargetPlayers,
+            experienceLevel,
+            genderPreference,
+            ageGroup,
+            descriptionTags,
           },
           city,
           state,
@@ -2470,9 +2491,9 @@ export const getHostedGameById = async (req, res) => {
   }
 };
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Phase 2B â€” Assign a Quick Game slot to an existing registered user (host only)
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────────────────────────────────────────────────
+// Phase 2B — Assign a Quick Game slot to an existing registered user (host only)
+// ──────────────────────────────────────────────────────────────────────────────────────────────────
 export const assignQuickSlot = async (req, res) => {
   try {
     const hostId = req.user.id || req.user.user;
@@ -2515,9 +2536,9 @@ export const assignQuickSlot = async (req, res) => {
   }
 };
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Phase 2C â€” Invite an off-platform custom player to a Quick Game slot
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────────────────────────────────────────────────
+// Phase 2C — Invite an off-platform custom player to a Quick Game slot
+// ──────────────────────────────────────────────────────────────────────────────────────────────────
 export const inviteCustomPlayer = async (req, res) => {
   try {
     const hostId = req.user.id || req.user.user;
@@ -2582,9 +2603,9 @@ export const inviteCustomPlayer = async (req, res) => {
   }
 };
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Phase 2D â€” Verify an invitation token (for the invite page)
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────────────────────────────────────────────────
+// Phase 2D — Verify an invitation token (for the invite page)
+// ──────────────────────────────────────────────────────────────────────────────────────────────────
 export const verifyInviteToken = async (req, res) => {
   try {
     const { token } = req.query;
@@ -2644,9 +2665,9 @@ export const verifyInviteToken = async (req, res) => {
   }
 };
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Phase 2E â€” Return followers + following for the slot picker popup
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────────────────────────────────────────────────
+// Phase 2E — Return followers + following for the slot picker popup
+// ──────────────────────────────────────────────────────────────────────────────────────────────────
 export const getFollowersForSlot = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -2672,7 +2693,7 @@ export const getFollowersForSlot = async (req, res) => {
 };
 
 // -----------------------------------------------------------------------------
-// Phase 2F â€” Claim an invited slot (called by the invited user)
+// Phase 2F — Claim an invited slot (called by the invited user)
 // -----------------------------------------------------------------------------
 export const claimInviteSlot = async (req, res) => {
   let updatedRole = null;

@@ -1397,30 +1397,31 @@ const HostGame = () => {
                           Is this a practice match?
                         </label>
                       </div>
-
-                      <div className="flex items-center gap-3 bg-card border border-white/10 rounded-[16px] p-3 flex-1">
-                        <Input
-                          type="checkbox"
-                          id="need-opponent"
-                          checked={gameData.matchPreferences?.needOpponent || false}
-                          onChange={(e) =>
-                            setGameData({
-                              ...gameData,
-                              matchPreferences: {
-                                ...gameData.matchPreferences,
-                                needOpponent: e.target.checked,
-                              },
-                            })
-                          }
-                          className="w-4 h-4 rounded border-white/20 text-cyan-400 focus:ring-0 focus:ring-offset-0 bg-background"
-                        />
-                        <label
-                          htmlFor="need-opponent"
-                          className="text-xs text-white font-bold cursor-pointer"
-                        >
-                          Need Opponent?
-                        </label>
-                      </div>
+                      {gameData.gameMode !== "PROFESSIONAL" && (
+                        <div className="flex items-center gap-3 bg-card border border-white/10 rounded-[16px] p-3 flex-1">
+                          <Input
+                            type="checkbox"
+                            id="need-opponent"
+                            checked={gameData.matchPreferences?.needOpponent || false}
+                            onChange={(e) =>
+                              setGameData({
+                                ...gameData,
+                                matchPreferences: {
+                                  ...gameData.matchPreferences,
+                                  needOpponent: e.target.checked,
+                                },
+                              })
+                            }
+                            className="w-4 h-4 rounded border-white/20 text-cyan-400 focus:ring-0 focus:ring-offset-0 bg-background"
+                          />
+                          <label
+                            htmlFor="need-opponent"
+                            className="text-xs text-white font-bold cursor-pointer"
+                          >
+                            Need Opponent?
+                          </label>
+                        </div>
+                      )}
                     </div>
                   </section>
                 )}

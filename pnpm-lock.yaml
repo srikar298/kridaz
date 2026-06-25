@@ -563,6 +563,9 @@ importers:
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.3
+      meilisearch:
+        specifier: ^0.58.0
+        version: 0.58.0
       mongoose:
         specifier: ^9.6.2
         version: 9.6.2
@@ -8537,6 +8540,10 @@ packages:
   media-typer@0.3.0:
     resolution: {integrity: sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==}
     engines: {node: '>= 0.6'}
+
+  meilisearch@0.58.0:
+    resolution: {integrity: sha512-MXFlU+JVG2I3tDI4brS3UHxEv2fjOROP24TPP16c8dGHTulb1kxMgXvKP0x4ImvUcsVVJFi4QXP0JNDS/TaWaw==}
+    engines: {node: ^20.19.0 || >=22.12.0}
 
   mem@8.1.1:
     resolution: {integrity: sha512-qFCFUDs7U3b8mBDPyz5EToEKoAkgCzqquIgi9nkkR9bixxOVOre+09lbuH7+9Kn2NFpm56M3GUWVbU2hQgdACA==}
@@ -22498,6 +22505,8 @@ snapshots:
   mdn-data@2.0.30: {}
 
   media-typer@0.3.0: {}
+
+  meilisearch@0.58.0: {}
 
   mem@8.1.1:
     dependencies:
