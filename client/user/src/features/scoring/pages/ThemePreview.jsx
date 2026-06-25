@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { NeonClassicPack, SportsNetworkPack } from "../themes";import { Button } from "@kridaz/ui";
+import { NeonClassicPack, SportsNetworkPack } from "../themes";
+import { Button } from "@kridaz/ui";
 
 
 const THEME_MAP = {

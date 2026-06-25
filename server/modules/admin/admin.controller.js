@@ -1559,14 +1559,40 @@ export const resolveDispute = async (req, res) => {
         });
       }
 
-      const totalPaidSlots = game.slots.filter(
-        (s) => s.status === "JOINED" && s.userId
-      ).length;
-      const totalAmountCollected =
-        Number(game.perPlayerCharge) * totalPaidSlots;
+      const isTeamMatch = game.matchPreferences?.opponentType === "TEAM";
+      let totalAmountCollected = 0;
+
+      if (isTeamMatch) {
+         const prefs = game.matchPreferences || {};
+         const applications = Array.isArray(prefs.applications) ? prefs.applications : [];
+         const acceptedApp = applications.find(app => app.status === "APPROVED");
+         if (acceptedApp) {
+             const advance = acceptedApp.advancePaid || 0;
+             const advanceRefunded = acceptedApp.advanceRefunded || 0;
+             const currentAdvanceHeld = Math.max(0, advance - advanceRefunded);
+             
+             const targetPlayers = parseInt(prefs.opponentTargetPlayers) || 2;
+             const memberCharge = acceptedApp.totalRequired / targetPlayers;
+             
+             const teamB = game.teams.find(t => t.linkedTeamId === acceptedApp.teamId);
+             if (teamB) {
+                const memberSlots = game.slots.filter(s => s.teamId === teamB.id && s.userId && s.userId !== acceptedApp.captainId && s.paymentStatus === "RESERVED").length;
+                totalAmountCollected = currentAdvanceHeld + (memberSlots * memberCharge);
+             } else {
+                totalAmountCollected = currentAdvanceHeld;
+             }
+         }
+      } else {
+        const totalPaidSlots = game.slots.filter(
+          (s) => s.status === "JOINED" && s.userId
+        ).length;
+        totalAmountCollected = Number(game.perPlayerCharge) * totalPaidSlots;
+      }
 
       if (action === "TRANSFER_TO_HOST") {
         if (totalAmountCollected > 0) {
+          // If we want to be fully robust, we would release(shouldDebit=true) for players here.
+          // But maintaining legacy compatibility, we just credit the host.
           await WalletService.credit(
             game.hostId,
             "user",
@@ -1589,13 +1615,20 @@ export const resolveDispute = async (req, res) => {
         if (refunds && refunds.length > 0) {
           for (const refund of refunds) {
             const { userId, amount } = refund;
-            if (amount > game.perPlayerCharge) {
+            
+            const maxRefund = isTeamMatch ? totalAmountCollected : game.perPlayerCharge;
+            if (amount > maxRefund) {
               throw new BadRequestError("Refund amount cannot exceed limit", {
                 code: "VALIDATION_ERROR",
               });
             }
 
-            await WalletService.credit(userId, "user", amount, tx);
+            if (isTeamMatch) {
+              await WalletService.release(userId, "user", amount, false, tx);
+            } else {
+              await WalletService.credit(userId, "user", amount, tx);
+            }
+
             await tx.walletTransaction.create({
               data: {
                 userId,

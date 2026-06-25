@@ -10,7 +10,8 @@ import {
   Area,
 } from "recharts";
 import { Calendar, TrendingUp } from "lucide-react";
-import axiosInstance from "@hooks/useAxiosInstance";import { Select } from "@kridaz/ui";
+import axiosInstance from "@hooks/useAxiosInstance";
+import { Select } from "@kridaz/ui";
 
 
 const PeakHoursChart = () => {

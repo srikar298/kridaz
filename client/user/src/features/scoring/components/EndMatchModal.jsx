@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, Lock, Loader2 } from "lucide-react";
-import axiosInstance from "@hooks/useAxiosInstance";import { Button, Input } from "@kridaz/ui";
+import axiosInstance from "@hooks/useAxiosInstance";
+import { Button, Input } from "@kridaz/ui";
 
 
 const THEME_COLOR = "var(--success)";

@@ -6,6 +6,7 @@ import {
   verifyOtp,
   loginStep1,
   googleAuth,
+  appleAuth,
   getMe,
   logout,
   logoutAll,
@@ -105,6 +106,15 @@ router.post("/login", authLimiter, validate(userLoginSchema), login);
  *     tags: [Auth]
  */
 router.post("/google-auth", authLimiter, googleAuth);
+
+/**
+ * @swagger
+ * /auth/apple-auth:
+ *   post:
+ *     summary: Apple Sign-In Login/Register
+ *     tags: [Auth]
+ */
+router.post("/apple-auth", authLimiter, appleAuth);
 
 /**
  * @swagger

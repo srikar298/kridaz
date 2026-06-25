@@ -162,6 +162,7 @@ const CommunityFeed = ({
         page: pageNumber,
         limit: 10,
         sort: sortOrder,
+        excludeType: "LOOKING_FOR",
       };
 
       if (isSearch) {

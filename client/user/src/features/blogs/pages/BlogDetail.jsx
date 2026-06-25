@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";import { Button } from "@kridaz/ui";
+import axios from "axios";
+import { Button } from "@kridaz/ui";
 
 import {
   ArrowLeft,

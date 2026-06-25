@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-hot-toast";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import { toast } from "react-hot-toast";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 import {
   Users,

@@ -6,7 +6,8 @@ import {
 import { format } from "date-fns";
 import { ShieldAlert, Trash2, ExternalLink, RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";import { Button } from "@kridaz/ui";
+import { Link } from "react-router-dom";
+import { Button } from "@kridaz/ui";
 
 
 const ReelReports = () => {

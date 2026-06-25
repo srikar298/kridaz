@@ -198,7 +198,7 @@ const TrustScoreHistory = () => {
                             {event.booking && (
                               <div className="mt-2 text-[10px] text-gray-500 font-bold uppercase tracking-wider flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded w-max">
                                 <Clock size={10} /> Venue:{" "}
-                                {event.booking.ground?.name ||
+                                {event.booking.enue?.name ||
                                   "Custom location"}{" "}
                                 | Organizer:{" "}
                                 {event.booking.user?.name || "Client"}

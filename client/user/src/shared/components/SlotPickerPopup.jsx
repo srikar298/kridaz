@@ -12,7 +12,8 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
-import { toast } from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
+import { toast } from "react-hot-toast";
+import { Button, Input } from "@kridaz/ui";
 
 
 const SlotPickerPopup = ({ isOpen, onClose, onSelect, gameId, slotId }) => {

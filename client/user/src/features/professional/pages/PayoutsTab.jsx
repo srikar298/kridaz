@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "axios";import { Button, Input, Select } from "@kridaz/ui";
+import axios from "axios";
+import { Button, Input, Select } from "@kridaz/ui";
 
 import {
   BarChart,

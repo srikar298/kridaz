@@ -13,7 +13,8 @@ import {
   useLazyFindTeamByCodeQuery,
   useRequestOpponentMutation,
 } from "@redux/api/teamApi";
-import toast from "react-hot-toast";import { Button, Input, Select } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 const AddOpponentModal = ({ isOpen, onClose, myTeams }) => {

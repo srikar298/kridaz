@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ArrowRight, ArrowLeft, Trophy, Medal, Star } from "lucide-react";import { Button, Input } from "@kridaz/ui";
+import { ArrowRight, ArrowLeft, Trophy, Medal, Star } from "lucide-react";
+import { Button, Input } from "@kridaz/ui";
 
 
 const Step7Awards = ({ formData, onNext, onBack, isLoading }) => {

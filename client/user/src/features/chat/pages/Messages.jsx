@@ -12,6 +12,7 @@ const Messages = () => {
   const location = useLocation();
   const userIdParam = searchParams.get("userId");
   const chatIdParam = searchParams.get("chatId");
+  const prefillParam = searchParams.get("prefill");
   const [selectedChat, setSelectedChat] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCommunityModalOpen, setIsCommunityModalOpen] = useState(false);
@@ -107,6 +108,7 @@ const Messages = () => {
           chat={selectedChat}
           onBack={() => handleSelectChat(null)}
           onSelectChat={handleSelectChat}
+          prefillMessage={prefillParam}
         />
       </div>
 

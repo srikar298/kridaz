@@ -11,7 +11,8 @@ import {
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@redux/slices/authSlice.js";
-import { useNavigate } from "react-router-dom";import { Button } from "@kridaz/ui";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@kridaz/ui";
 
 
 const ProfessionalSidebar = ({

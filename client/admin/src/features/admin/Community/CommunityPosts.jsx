@@ -6,7 +6,8 @@ import {
   useGetPostReportsQuery,
   useDeleteAdminPostMutation,
 } from "@redux/api/communityApi";
-import { format } from "date-fns";import { Button } from "@kridaz/ui";
+import { format } from "date-fns";
+import { Button } from "@kridaz/ui";
 
 
 const CommunityPosts = () => {

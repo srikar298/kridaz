@@ -5,7 +5,8 @@ import { ChevronLeft, Camera } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSocket } from "@context/SocketContext";
 import { useDispatch, useSelector } from "react-redux";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button } from "@kridaz/ui";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import { Button } from "@kridaz/ui";
 
 
 const ReelsFeed = () => {

@@ -11,7 +11,8 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Navigation } from "lucide-react";import { Button } from "@kridaz/ui";
+import { Navigation } from "lucide-react";
+import { Button } from "@kridaz/ui";
 
 
 // Fix Leaflet default icon issues

@@ -11,8 +11,8 @@ import {
   Image as ImageIcon,
   Activity as BellIcon,
 } from "lucide-react";
-import PushComposer from "./PushComposer";import { Button, Input } from "@kridaz/ui";
-
+import PushComposer from "./PushComposer";
+import { Button, Input } from "@kridaz/ui";
 
 export const MarketingManagement = () => {
   const [activeTab, setActiveTab] = useState("banners");
@@ -88,9 +88,20 @@ export const MarketingManagement = () => {
     setIsModalOpen(true);
   };
 
+  const MAX_FILE_SIZE_MB = 200;
+  const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+        toast.error(
+          `File too large (${sizeMB}MB). Maximum allowed size is ${MAX_FILE_SIZE_MB}MB.`
+        );
+        e.target.value = "";
+        return;
+      }
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
       setFormData((prev) => ({ ...prev, imageUrl: "", videoUrl: "" }));

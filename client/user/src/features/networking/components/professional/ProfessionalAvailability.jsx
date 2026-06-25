@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { format, addDays, startOfToday, parse } from "date-fns";
-import ClockPicker from "@components/common/ClockPicker";import { Button } from "@kridaz/ui";
+import ClockPicker from "@components/common/ClockPicker";
+import { Button } from "@kridaz/ui";
 
 
 /**

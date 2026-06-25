@@ -16,7 +16,8 @@ import {
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import HireOfficialModal from "@components/official/HireOfficialModal";
-import SelectVenueModal from "@components/official/SelectVenueModal";import { Button, Input, Select } from "@kridaz/ui";
+import SelectVenueModal from "@components/official/SelectVenueModal";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 const SUBHEADING_STYLE = {

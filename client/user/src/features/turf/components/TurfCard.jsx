@@ -10,7 +10,8 @@ import {
   Timer,
   MessageSquareShare,
 } from "lucide-react";
-import axiosInstance from "@hooks/useAxiosInstance";import { Button } from "@kridaz/ui";
+import axiosInstance from "@hooks/useAxiosInstance";
+import { Button } from "@kridaz/ui";
 
 
 const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
@@ -193,22 +194,22 @@ const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
       <div className="absolute top-3 md:top-5 right-3 md:right-5 z-20 flex flex-col gap-2">
         <Button
           onClick={toggleWishlist}
-          className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-black/50 backdrop-blur-md border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300 min-h-0"
+          className="p-2 md:p-2.5 rounded-[8px] bg-black/40 backdrop-blur-md border border-white/10 hover:bg-gradient-to-r hover:from-primary hover:to-primary transition-all duration-300 group/heart"
         >
           <Heart
             size={14}
             md:size={18}
-            className={`transition-all duration-300 ${isWishlisted ? "fill-red-500 text-red-500" : "text-white"}`}
+            className={`transition-all duration-300 ${isWishlisted ? "fill-red-500 text-red-500 scale-110" : "text-white group-hover/heart:scale-110 group-hover/heart:text-black"}`}
           />
         </Button>
         <Button
           onClick={handleShare}
-          className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-black/50 backdrop-blur-md border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300 min-h-0"
+          className="p-2 md:p-2.5 rounded-[8px] bg-black/40 backdrop-blur-md border border-white/10 hover:bg-gradient-to-r hover:from-primary hover:to-primary transition-all duration-300 group/share"
         >
           <MessageSquareShare
             size={14}
             md:size={18}
-            className="text-white transition-all duration-300"
+            className="text-white transition-all duration-300 group-hover/share:scale-110 group-hover/share:text-black"
           />
         </Button>
       </div>

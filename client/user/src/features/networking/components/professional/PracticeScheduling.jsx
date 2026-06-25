@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
-import { format, addDays, subDays } from "date-fns";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import { format, addDays, subDays } from "date-fns";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 
 export default function PracticeScheduling() {

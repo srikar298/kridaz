@@ -7,7 +7,8 @@ import {
   Trophy,
   Loader2,
 } from "lucide-react";
-import { fetchStates, fetchCities } from "../../utils/locationService";import { Button } from "@kridaz/ui";
+import { fetchStates, fetchCities } from "../../utils/locationService";
+import { Button } from "@kridaz/ui";
 
 
 /**

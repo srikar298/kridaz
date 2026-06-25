@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Trophy, LayoutGrid } from "lucide-react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";import { Button, Select } from "@kridaz/ui";
+import { useNavigate } from "react-router-dom";
+import { Button, Select } from "@kridaz/ui";
 
 
 const PRI = "var(--primary)";
@@ -143,7 +144,7 @@ const Leaderboard = () => {
               ))}
             </div>
 
-            <div className="flex items-center justify-center mb-4 px-2">
+            <div className="flex items-center justify-end mb-4 px-2">
               <div className="flex gap-2">
                 <Select className="bg-transparent text-gray-500 text-xs outline-none cursor-pointer">
                   <option>All Time</option>
@@ -189,7 +190,7 @@ const Leaderboard = () => {
                     }
                     className="flex items-center bg-white/[0.03] border border-white/5 rounded-[12px] p-4 hover:bg-white/[0.05] transition-all cursor-pointer shadow-lg relative"
                   >
-                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <div className="flex items-center gap-4 flex-1">
                       <div className="relative w-14 h-14 rounded-full flex-shrink-0">
                         <img
                           src={
@@ -205,7 +206,7 @@ const Leaderboard = () => {
                           </span>
                         )}
                       </div>
-                      <div className="flex flex-col justify-center flex-1 min-w-0">
+                      <div className="flex flex-col justify-center">
                         <div className="flex items-center gap-1.5">
                           <h3 className="text-white text-[15px] font-medium leading-tight truncate max-w-[120px]">
                             {player.name}
@@ -281,7 +282,7 @@ const Leaderboard = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="text-[32px] font-light text-white ml-4 w-12 text-right shrink-0">
+                    <div className="text-[32px] font-light text-white ml-4 w-12 text-right">
                       {idx + 1}
                     </div>
                   </motion.div>

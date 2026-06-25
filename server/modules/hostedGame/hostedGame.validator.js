@@ -17,7 +17,7 @@ export const createHostedGameSchema = z.object({
       .int()
       .min(2, "Player count must be at least 2")
       .nullish(),
-    gameMode: z.enum(["PROFESSIONAL", "FRIENDLY", "QUICK", "HIRING"]).nullish(),
+    gameMode: z.enum(["PROFESSIONAL", "FRIENDLY", "QUICK", "HIRING", "LOOKING_FOR"]).nullish(),
     groundId: z.string().nullish(),
     umpireId: z.string().nullish(),
     streamerId: z.string().nullish(),

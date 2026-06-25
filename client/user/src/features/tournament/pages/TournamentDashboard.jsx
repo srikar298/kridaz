@@ -22,7 +22,8 @@ import ScheduleTab from "../components/dashboard/ScheduleTab";
 import MarketingTab from "../components/dashboard/MarketingTab";
 import OfficialsTab from "../components/dashboard/OfficialsTab";
 import FinancesTab from "../components/dashboard/FinancesTab";
-import SettingsTab from "../components/dashboard/SettingsTab";import { Button } from "@kridaz/ui";
+import SettingsTab from "../components/dashboard/SettingsTab";
+import { Button } from "@kridaz/ui";
 
 
 const TABS = [

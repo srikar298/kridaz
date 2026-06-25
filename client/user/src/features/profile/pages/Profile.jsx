@@ -66,7 +66,8 @@ import { StoryViewer } from "@features/networking";
 import EditProfileModal from "@components/modals/EditProfileModal";
 import RequestProModal from "../components/RequestProModal";
 import { useSocket } from "@context/SocketContext";
-import { isProfessionalRole, getDynamicProfileRoute } from "@utils/routeUtils";import { Button, Input, Select } from "@kridaz/ui";
+import { isProfessionalRole, getDynamicProfileRoute } from "@utils/routeUtils";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 const PRI = "var(--primary)"; // New primary lime accent matching the gradient vibrant stop
@@ -1277,13 +1278,20 @@ export default function Profile() {
                   )}
                 </div>
 
-                {isOwnProfile && (
+                {isOwnProfile ? (
                   <button
                     onClick={() => setIsEditModalOpen(true)}
                     className="profile-avatar-edit-btn absolute bottom-2 right-2 w-9 h-9 bg-gradient-to-br from-secondary to-primary rounded-full border-[4px] border-black flex items-center justify-center text-black hover:scale-110 transition-all shadow-lg z-20 outline-none"
                   >
                     <Edit2 size={16} strokeWidth={3} />
                   </button>
+                ) : (
+                  isUserOnline(targetUserId) && (
+                    <span
+                      className="absolute bottom-2 right-2 h-7 w-7 rounded-full border-[4px] border-black bg-gradient-to-br from-primary to-primary shadow-[0_0_16px_rgba(191,243,103,0.8)] md:h-8 md:w-8"
+                      aria-label="Online"
+                    />
+                  )
                 )}
               </div>
             </div>

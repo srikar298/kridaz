@@ -11,7 +11,8 @@ import {
 import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
 import { Capacitor } from "@capacitor/core";
-import { useSelector } from "react-redux";import { Button, Input } from "@kridaz/ui";
+import { useSelector } from "react-redux";
+import { Button, Input } from "@kridaz/ui";
 
 
 const ForgotPassword = () => {

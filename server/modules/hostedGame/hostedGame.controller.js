@@ -421,6 +421,7 @@ export const createHostedGame = async (req, res) => {
         gameType,
         date,
         time,
+        endTime,
         groundId,
         umpireId,
         streamerId,
@@ -440,6 +441,9 @@ export const createHostedGame = async (req, res) => {
         customUmpireData, // { name, email, phone }
         requestType,
         matchPreferences,
+        opponentType = "SINGLE",
+        hostTeamId,
+        opponentTargetPlayers,
       } = req.body;
 
       logger.info("Game Data:", {
@@ -447,6 +451,7 @@ export const createHostedGame = async (req, res) => {
         requestType,
         date,
         time,
+        endTime,
         groundId,
         umpireId,
         city,
@@ -472,12 +477,17 @@ export const createHostedGame = async (req, res) => {
       let umpireCost = 0;
       let streamerCost = 0;
 
-      if (finalGroundId && !isStandalonePost) {
+      const isPlatformBooking = req.body.isPlatformBooking === true;
+
+      if (finalGroundId && !isStandalonePost && isPlatformBooking) {
         const g = await tx.turf.findUnique({ where: { id: finalGroundId } });
         groundCost =
           groundPrice !== undefined
             ? Number(groundPrice)
             : Number(g?.pricePerHour || 0);
+      } else if (finalGroundId && !isPlatformBooking) {
+        // Just record the manually agreed price for display purposes, do not charge the wallet
+        groundCost = groundPrice !== undefined ? Number(groundPrice) : 0;
       }
 
       if (finalUmpireId) {
@@ -496,27 +506,29 @@ export const createHostedGame = async (req, res) => {
 
       const totalCost = groundCost + umpireCost + streamerCost;
 
-      // 2. Check Balance & Reserve Coins (Only if cost > 0)
-      if (totalCost > 0) {
+      // 2. Check Balance & Reserve Coins (Only if cost > 0 and it's a platform booking)
+      const reservationCost = isPlatformBooking ? totalCost : (umpireCost + streamerCost); // Manual ground budget is NOT reserved
+
+      if (reservationCost > 0) {
         const usableBalance = await WalletService.getUsableBalance(
           hostId,
           "user",
           tx
         );
-        if (usableBalance < totalCost) {
+        if (usableBalance < reservationCost) {
           const error = new Error(
-            `Insufficient coins. Total cost is ${totalCost}, you have ${usableBalance}. Please top up minimum ₹500.`
+            `Insufficient coins. Total cost is ${reservationCost}, you have ${usableBalance}. Please top up minimum ₹${Math.ceil(reservationCost - usableBalance)}.`
           );
           error.status = 400;
           throw error;
         }
 
-        await WalletService.reserve(hostId, "user", totalCost, tx);
+        await WalletService.reserve(hostId, "user", reservationCost, tx);
 
         await tx.walletTransaction.create({
           data: {
             userId: hostId,
-            amount: totalCost,
+            amount: reservationCost,
             type: "HOST_GAME",
             status: "RESERVED",
             description: `Reserved for hosting ${gameType} game at ${date}`,
@@ -533,6 +545,7 @@ export const createHostedGame = async (req, res) => {
           gameType,
           date: new Date(date),
           time,
+          endTime,
           turfId: finalGroundId,
           umpireId: finalUmpireId,
           streamerId: finalStreamerId,
@@ -543,7 +556,12 @@ export const createHostedGame = async (req, res) => {
           totalCost,
           gameMode,
           requestType: requestType || "MATCH",
-          matchPreferences,
+          matchPreferences: {
+            ...(matchPreferences || {}),
+            opponentType,
+            hostTeamId,
+            opponentTargetPlayers,
+          },
           city,
           state,
           shortId: generateShortId(),
@@ -559,8 +577,8 @@ export const createHostedGame = async (req, res) => {
         },
       });
 
-      // 5.5 Create Actual Turf Booking if finalGroundId exists and it's not a standalone post
-      if (finalGroundId && !isStandalonePost) {
+      // 5.5 Create Actual Turf Booking if finalGroundId exists and it's a platform booking
+      if (finalGroundId && !isStandalonePost && isPlatformBooking) {
         const turfDate = new Date(date);
         let adjustedStartTime = new Date(turfDate);
         let adjustedEndTime = new Date(turfDate);
@@ -574,6 +592,18 @@ export const createHostedGame = async (req, res) => {
           if (ampm === "AM" && hours === 12) hours = 0;
           adjustedStartTime.setHours(hours, minutes, 0, 0);
           adjustedEndTime.setHours(hours + 1, minutes, 0, 0); // 1 hour default
+        }
+
+        if (endTime) {
+          const endParts = endTime.match(/(\d+):(\d+)\s(AM|PM)/i);
+          if (endParts) {
+            let eHours = parseInt(endParts[1], 10);
+            const eMinutes = parseInt(endParts[2], 10);
+            const eAmpm = endParts[3].toUpperCase();
+            if (eAmpm === "PM" && eHours < 12) eHours += 12;
+            if (eAmpm === "AM" && eHours === 12) eHours = 0;
+            adjustedEndTime.setHours(eHours, eMinutes, 0, 0);
+          }
         }
 
         const timeSlot = await tx.timeSlot.create({
@@ -602,7 +632,7 @@ export const createHostedGame = async (req, res) => {
       }
 
       // 6. Create Teams & Slots
-      if (isQuick) {
+      if (isQuick && opponentType === "SINGLE") {
         // QUICK Mode: Flat slots
         const count = parseInt(playerCount) || quickSlotsData.length || 5;
 
@@ -658,6 +688,48 @@ export const createHostedGame = async (req, res) => {
             },
           });
         }
+      } else if (isQuick && opponentType === "TEAM") {
+        // QUICK Mode with TEAM OPPONENT: Team A vs Team B structure
+        
+        // 1. Fetch Host's Team
+        let hostTeamData = null;
+        if (hostTeamId) {
+          hostTeamData = await tx.team.findUnique({ where: { id: hostTeamId } });
+        }
+
+        // 2. Create Team A
+        const teamA = await tx.gameTeam.create({
+          data: {
+            gameId: hostedGame.id,
+            name: hostTeamData?.name || "Host Team",
+            teamKey: "teamA",
+            image: hostTeamData?.logo || null,
+            linkedTeamId: hostTeamId || null,
+          },
+        });
+
+        // 3. Add Host to Team A
+        await tx.gameSlot.create({
+          data: {
+            gameId: hostedGame.id,
+            teamId: teamA.id,
+            userId: hostId,
+            role: "Captain",
+            status: "JOINED",
+            addedById: hostId,
+          },
+        });
+
+        // 4. Create Team B Placeholder
+        await tx.gameTeam.create({
+          data: {
+            gameId: hostedGame.id,
+            name: "Opponent Team (TBD)",
+            teamKey: "teamB",
+            image: null,
+            linkedTeamId: null,
+          },
+        });
       } else {
         // PROFESSIONAL Mode: Team A vs Team B
         const teams = [
@@ -896,7 +968,7 @@ export const joinHostedGame = async (req, res) => {
         tx
       );
       if (usableBalance < perPlayerCharge) {
-        const error = new Error("Insufficient coins to join this game.");
+        const error = new Error(`Insufficient coins to join this game. Cost is ${perPlayerCharge}, you have ${usableBalance}. Please top up minimum ₹${Math.ceil(perPlayerCharge - usableBalance)}.`);
         error.status = 400;
         throw error;
       }
@@ -2990,3 +3062,411 @@ export const validateCoupon = async (req, res) => {
       .json({ message: error.message || "Failed to validate coupon" });
   }
 };
+
+export const applyAsOpponentTeam = async (req, res) => {
+  try {
+    const txResult = await runInTransaction(async ({ tx }) => {
+      const captainId = req.user.id;
+      const { gameId, teamId } = req.body;
+
+      if (!gameId || !teamId) {
+        throw new BadRequestError("Game ID and Team ID are required.", { code: "BAD_REQUEST" });
+      }
+
+      const game = await tx.hostedGame.findUnique({
+        where: { id: gameId },
+        include: { teams: true }
+      });
+
+      if (!game) throw new NotFoundError("Game not found", { code: "ENTITY_NOT_FOUND" });
+      if (game.gameMode !== "QUICK") throw new BadRequestError("Not a quick game", { code: "BAD_REQUEST" });
+
+      const prefs = game.matchPreferences || {};
+      if (prefs.opponentType !== "TEAM") {
+        throw new BadRequestError("This game is not looking for a team opponent.", { code: "BAD_REQUEST" });
+      }
+
+      if (game.hostId === captainId) {
+        throw new BadRequestError("You cannot apply to your own game.", { code: "BAD_REQUEST" });
+      }
+
+      const teamB = game.teams.find(t => t.teamKey === "teamB");
+      if (teamB && teamB.linkedTeamId) {
+         throw new BadRequestError("An opponent team has already been accepted.", { code: "BAD_REQUEST" });
+      }
+
+      const applications = Array.isArray(prefs.applications) ? prefs.applications : [];
+      if (applications.some(app => app.teamId === teamId)) {
+         throw new BadRequestError("Your team has already applied.", { code: "BAD_REQUEST" });
+      }
+
+      const teamData = await tx.team.findUnique({ where: { id: teamId } });
+
+      const targetPlayers = parseInt(prefs.opponentTargetPlayers) || 2;
+      let totalAmount = targetPlayers * Number(game.perPlayerCharge || 0);
+
+      if (prefs.splitCost) {
+        const groundCost = Number(game.manualGroundCost || game.groundPrice || 0);
+        totalAmount = groundCost / 2;
+      }
+
+      let advanceAmount = 0;
+      if (prefs.splitCost && prefs.advancePercentage) {
+        advanceAmount = (totalAmount * Number(prefs.advancePercentage)) / 100;
+      }
+
+      if (advanceAmount > 0) {
+        const usableBalance = await WalletService.getUsableBalance(captainId, "user", tx);
+        if (usableBalance < totalAmount) {
+           throw new BadRequestError(`You need at least ₹${totalAmount} in your wallet to act as the team guarantor.`, { code: "BAD_REQUEST" });
+        }
+
+        await WalletService.reserve(captainId, "user", advanceAmount, tx);
+
+        await tx.walletTransaction.create({
+          data: {
+            userId: captainId,
+            amount: advanceAmount,
+            type: "JOIN_GAME",
+            status: "RESERVED",
+            description: `Advance paid for team application to ${game.gameType} game.`,
+          },
+        });
+      }
+
+      const newApp = {
+        teamId,
+        teamName: teamData?.name || "Unknown Team",
+        teamLogo: teamData?.logo || null,
+        captainId,
+        status: "PENDING",
+        advancePaid: advanceAmount,
+        totalRequired: totalAmount,
+        appliedAt: new Date().toISOString()
+      };
+
+      const updatedPrefs = {
+        ...prefs,
+        applications: [...applications, newApp]
+      };
+
+      await tx.hostedGame.update({
+        where: { id: gameId },
+        data: { matchPreferences: updatedPrefs }
+      });
+
+      NotificationService.sendInApp({
+        recipientId: game.hostId,
+        senderId: captainId,
+        type: "TEAM_OPPONENT_APPLICATION",
+        title: "New Team Application",
+        message: "A team has applied to play against your team.",
+        relatedId: game.id,
+        onModel: "HostedGame",
+      });
+
+      return { newApp };
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Applied successfully. Waiting for host approval.",
+    });
+  } catch (error) {
+    logger.error("Error in applyAsOpponentTeam:", error);
+    return res.status(error.status || 500).json({ message: error.message });
+  }
+};
+
+export const manageOpponentApplication = async (req, res) => {
+  try {
+    const txResult = await runInTransaction(async ({ tx }) => {
+      const hostId = req.user.id;
+      const { gameId, teamId, action } = req.body;
+
+      if (!gameId || !teamId || !["APPROVE", "REJECT"].includes(action)) {
+        throw new BadRequestError("gameId, teamId and valid action are required", { code: "BAD_REQUEST" });
+      }
+
+      const game = await tx.hostedGame.findUnique({
+        where: { id: gameId },
+        include: { teams: { include: { slots: true } } }
+      });
+
+      if (!game) throw new NotFoundError("Game not found", { code: "ENTITY_NOT_FOUND" });
+      if (game.hostId !== hostId) throw new BadRequestError("Only the host can manage applications", { code: "BAD_REQUEST" });
+
+      const prefs = game.matchPreferences || {};
+      const applications = Array.isArray(prefs.applications) ? prefs.applications : [];
+      const targetApp = applications.find(app => app.teamId === teamId);
+
+      if (!targetApp) throw new NotFoundError("Application not found", { code: "ENTITY_NOT_FOUND" });
+      if (targetApp.status !== "PENDING") throw new BadRequestError(`Application is already ${targetApp.status}`, { code: "BAD_REQUEST" });
+
+      if (action === "REJECT") {
+        targetApp.status = "REJECTED";
+        
+        await tx.hostedGame.update({
+          where: { id: gameId },
+          data: { matchPreferences: { ...prefs, applications } }
+        });
+
+        // Refund the advance if it was paid
+        if (targetApp.advancePaid > 0) {
+           await WalletService.release(targetApp.captainId, "user", targetApp.advancePaid, false, tx);
+           await tx.walletTransaction.create({
+             data: {
+               userId: targetApp.captainId,
+               amount: targetApp.advancePaid,
+               type: "REFUND",
+               status: "COMPLETED",
+               description: `Refund of advance for rejected team application to ${game.gameType} game.`,
+             },
+           });
+        }
+
+        NotificationService.sendInApp({
+          recipientId: targetApp.captainId,
+          senderId: hostId,
+          type: "TEAM_OPPONENT_REJECTED",
+          title: "Application Rejected",
+          message: "Your team's application was rejected by the host.",
+          relatedId: game.id,
+          onModel: "HostedGame",
+        });
+
+        return { status: "REJECTED" };
+      }
+
+      const teamB = game.teams.find(t => t.teamKey === "teamB");
+      if (teamB && teamB.linkedTeamId) {
+         throw new BadRequestError("An opponent team has already been accepted.", { code: "BAD_REQUEST" });
+      }
+
+      const targetPlayers = parseInt(prefs.opponentTargetPlayers) || 2;
+      const totalAmount = targetApp.totalRequired || 0;
+      const advancePaid = targetApp.advancePaid || 0;
+
+      // When APPROVED, we just update status and create slots. 
+      // The advance was already reserved during application.
+
+      applications.forEach(app => {
+        if (app.teamId === teamId) {
+           app.status = "APPROVED";
+        } else if (app.status === "PENDING") {
+           app.status = "REJECTED";
+           // Auto-refund other pending apps
+           if (app.advancePaid > 0) {
+             WalletService.release(app.captainId, "user", app.advancePaid, false, tx).catch(console.error);
+             tx.walletTransaction.create({
+               data: {
+                 userId: app.captainId,
+                 amount: app.advancePaid,
+                 type: "REFUND",
+                 status: "COMPLETED",
+                 description: `Refund of advance since another team was accepted.`,
+               },
+             }).catch(console.error);
+           }
+        }
+      });
+
+      await tx.hostedGame.update({
+        where: { id: gameId },
+        data: { matchPreferences: { ...prefs, applications } }
+      });
+
+      const teamData = await tx.team.findUnique({ where: { id: teamId } });
+      await tx.gameTeam.update({
+        where: { id: teamB.id },
+        data: {
+          name: teamData?.name || "Opponent Team",
+          image: teamData?.logo || null,
+          linkedTeamId: teamId
+        }
+      });
+
+      await tx.gameSlot.create({
+        data: {
+          gameId: game.id,
+          teamId: teamB.id,
+          userId: targetApp.captainId,
+          role: "Captain",
+          status: "JOINED",
+          paymentStatus: advancePaid > 0 ? "RESERVED" : "NONE",
+          addedById: targetApp.captainId
+        }
+      });
+
+      for (let i = 1; i < targetPlayers; i++) {
+        await tx.gameSlot.create({
+          data: {
+            gameId: game.id,
+            teamId: teamB.id,
+            role: "Player",
+            status: "OPEN",
+            paymentStatus: "NONE",
+            addedById: targetApp.captainId
+          }
+        });
+      }
+
+      NotificationService.sendInApp({
+        recipientId: targetApp.captainId,
+        senderId: hostId,
+        type: "TEAM_OPPONENT_APPROVED",
+        title: "Application Approved!",
+        message: "Your team's application was accepted! Coins have been reserved.",
+        relatedId: game.id,
+        onModel: "HostedGame",
+      });
+
+      return { status: "APPROVED" };
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `Application successfully ${txResult.status.toLowerCase()}.`,
+    });
+  } catch (error) {
+    return res.status(error.status || 500).json({ message: error.message });
+  }
+};
+
+export const payTeamShare = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { gameId, teamId } = req.body;
+
+    if (!gameId || !teamId) {
+      throw new BadRequestError("gameId and teamId are required", { code: "BAD_REQUEST" });
+    }
+
+    const txResult = await runInTransaction(async ({ tx }) => {
+      const game = await tx.hostedGame.findUnique({
+        where: { id: gameId },
+        include: { slots: true }
+      });
+
+      if (!game) throw new NotFoundError("Game not found", { code: "ENTITY_NOT_FOUND" });
+
+      // Find an OPEN slot for this user
+      const slot = game.slots.find(s => s.teamId === teamId && s.status === "OPEN");
+      if (!slot) {
+        throw new BadRequestError("No open slots available for this team", { code: "BAD_REQUEST" });
+      }
+
+      const prefs = game.matchPreferences || {};
+      const applications = Array.isArray(prefs.applications) ? prefs.applications : [];
+      const acceptedApp = applications.find(app => app.teamId === game.teams?.find(t=>t.id === teamId)?.linkedTeamId && app.status === "APPROVED");
+      
+      let perPlayerCharge = Number(game.perPlayerCharge || 0);
+      if (acceptedApp && acceptedApp.totalRequired) {
+        const targetPlayers = parseInt(prefs.opponentTargetPlayers) || 2;
+        perPlayerCharge = acceptedApp.totalRequired / targetPlayers;
+      }
+
+      if (perPlayerCharge > 0) {
+        const usableBalance = await WalletService.getUsableBalance(userId, "user", tx);
+        if (usableBalance < perPlayerCharge) {
+           throw new BadRequestError(`You need at least ₹${perPlayerCharge} to join this team.`, { code: "BAD_REQUEST" });
+        }
+
+        await WalletService.reserve(userId, "user", perPlayerCharge, tx);
+
+        await tx.walletTransaction.create({
+          data: {
+            userId,
+            amount: perPlayerCharge,
+            type: "JOIN_GAME",
+            status: "RESERVED",
+            description: `Reserved for team share joining ${game.gameType} game`,
+          },
+        });
+      }
+
+      await tx.gameSlot.update({
+        where: { id: slot.id },
+        data: {
+          userId,
+          status: "JOINED",
+          paymentStatus: perPlayerCharge > 0 ? "RESERVED" : "NONE"
+        }
+      });
+
+      // Auto-reimburse captain if we collected enough
+      if (acceptedApp) {
+        // Calculate total collected from team B
+        const teamBSlots = await tx.gameSlot.findMany({
+          where: { gameId: game.id, teamId, status: "JOINED", paymentStatus: "RESERVED" }
+        });
+        
+        let totalCollected = teamBSlots.length * perPlayerCharge;
+        const advance = acceptedApp.advancePaid || 0;
+        const totalReq = acceptedApp.totalRequired || 0;
+
+        // If total collected from members (excluding captain's advance) + advance exceeds total required + captain's share...
+        // Actually, advance covers multiple shares. Captain only owes 1 share.
+        // Total collected so far includes the advance (but advance is held by captain).
+        // Let's count actual members joined (which includes captain if they took a slot).
+        // Wait, captain is in `teamBSlots` with paymentStatus = RESERVED (because advance was reserved).
+        // The captain's slot doesn't have the amount, but we know total members joined.
+        
+        // Let's just track how much the members have paid vs the advance.
+        // E.g. total 5000. Advance 1500. Captain share 500. Captain overpaid 1000.
+        // Every time a member pays 500, we check if total pool (Advance + member payments) > 5000.
+        // Let's count non-captain member payments:
+        const nonCaptainSlots = teamBSlots.filter(s => s.userId !== acceptedApp.captainId).length;
+        const membersPaidTotal = nonCaptainSlots * perPlayerCharge;
+        
+        const currentPool = advance + membersPaidTotal;
+        const targetPool = totalReq;
+
+        if (currentPool > targetPool) {
+           const currentRefunded = acceptedApp.advanceRefunded || 0;
+           // The captain should not be refunded more than (advance - perPlayerCharge)
+           const maxRefundable = Math.max(0, advance - perPlayerCharge);
+           
+           // We only want to refund the delta created by THIS payment
+           // Because we run this every time a member pays.
+           // The newly created excess is `currentPool - targetPool`.
+           // But since we just added `perPlayerCharge` to the pool, the new excess generated by this transaction is at most `perPlayerCharge`.
+           const newExcess = Math.min(perPlayerCharge, currentPool - targetPool);
+           
+           // Make sure we don't refund more than maxRefundable overall
+           const amountToRefund = Math.min(newExcess, maxRefundable - currentRefunded);
+           
+           if (amountToRefund > 0) {
+              await WalletService.release(acceptedApp.captainId, "user", amountToRefund, false, tx);
+              await tx.walletTransaction.create({
+                 data: {
+                   userId: acceptedApp.captainId,
+                   amount: amountToRefund,
+                   type: "REFUND",
+                   status: "COMPLETED",
+                   description: `Auto-reimbursement from team member payment for ${game.gameType} game.`
+                 }
+              });
+              
+              acceptedApp.advanceRefunded = currentRefunded + amountToRefund;
+              await tx.hostedGame.update({
+                where: { id: gameId },
+                data: { matchPreferences: { ...prefs, applications } }
+              });
+           }
+        }
+      }
+
+      return { status: "JOINED" };
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Successfully paid share and joined team slot.",
+    });
+  } catch (error) {
+    logger.error("Error in payTeamShare:", error);
+    return res.status(error.status || 500).json({ message: error.message });
+  }
+};
+

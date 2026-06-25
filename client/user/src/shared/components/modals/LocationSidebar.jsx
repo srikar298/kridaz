@@ -15,7 +15,8 @@ import {
   setUserLocation,
   setLocationStatus,
 } from "@redux/slices/uiSlice";
-import { motion, AnimatePresence } from "framer-motion";import { Button, Input } from "@kridaz/ui";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button, Input } from "@kridaz/ui";
 
 
 const LocationSidebar = () => {

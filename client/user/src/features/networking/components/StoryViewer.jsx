@@ -6,7 +6,8 @@ import React, {
   useCallback,
 } from "react";
 import { X, Trash2, Eye, Calendar, User as UserIcon } from "lucide-react";
-import { Link } from "react-router-dom";import { Button } from "@kridaz/ui";
+import { Link } from "react-router-dom";
+import { Button } from "@kridaz/ui";
 
 
 const StoryVideoPlayer = ({ src, onDurationReady }) => {

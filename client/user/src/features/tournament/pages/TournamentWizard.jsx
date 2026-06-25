@@ -25,7 +25,8 @@ import Step4Venues from "../components/Step4Venues";
 import Step5Teams from "../components/Step5Teams";
 import Step6Officials from "../components/Step6Officials";
 import Step7Awards from "../components/Step7Awards";
-import Step8Review from "../components/Step8Review";import { Button } from "@kridaz/ui";
+import Step8Review from "../components/Step8Review";
+import { Button } from "@kridaz/ui";
 
 
 const STEPS = [

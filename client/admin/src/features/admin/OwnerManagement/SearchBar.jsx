@@ -1,5 +1,6 @@
 import React from "react";
-import { Search, Command } from "lucide-react";import { Input } from "@kridaz/ui";
+import { Search, Command } from "lucide-react";
+import { Input } from "@kridaz/ui";
 
 
 const SearchBar = ({ searchTerm, handleSearch }) => {

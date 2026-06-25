@@ -45,7 +45,8 @@ import EndMatchModal from "../components/EndMatchModal";
 import MatchReportModal from "../components/MatchReportModal";
 import MatchExitModal from "../components/MatchExitModal";
 import cricketLoadingGif from "../../../assets/cricket-loading.gif";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button, Input, Select } from "@kridaz/ui";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:6001";

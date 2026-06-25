@@ -1,5 +1,6 @@
 import { X, Trash2 } from "lucide-react";
-import { motion } from "framer-motion";import { Button } from "@kridaz/ui";
+import { motion } from "framer-motion";
+import { Button } from "@kridaz/ui";
 
 
 const DeleteConfirmModal = ({ onClose, onConfirm, isDeleting }) => {

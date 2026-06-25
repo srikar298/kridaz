@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Calendar, MapPin, User, Trophy, Clock, Info } from "lucide-react";
-import { useGetMyOnDemandBookingsQuery } from "../../../redux/api/professionalApi";import { Button } from "@kridaz/ui";
+import { useGetMyOnDemandBookingsQuery } from "../../../redux/api/professionalApi";
+import { Button } from "@kridaz/ui";
 
 
 const BookingsTab = ({ role }) => {
@@ -104,32 +105,32 @@ const BookingsTab = ({ role }) => {
   return (
     <div className="space-y-6 text-white font-inter">
       {/* Tab Selectors */}
-      <div className="border-b border-card pb-1 overflow-hidden w-full">
-        <div className="flex justify-between w-full text-center gap-1 sm:gap-2">
-          <button
+      <div className="border-b border-card pb-1 overflow-x-auto no-scrollbar">
+        <div className="flex w-full min-w-max sm:min-w-0 sm:grid sm:grid-cols-4 text-center">
+          <Button
             onClick={() => setActiveSubTab("active")}
-            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[9px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all bg-transparent outline-none ${activeSubTab === "active" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "active" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
           >
             Active ({activeBookings.length})
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setActiveSubTab("history")}
-            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[9px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all bg-transparent outline-none ${activeSubTab === "history" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "history" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
           >
             History ({completedBookings.length})
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setActiveSubTab("nonAccepted")}
-            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[9px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all bg-transparent outline-none ${activeSubTab === "nonAccepted" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "nonAccepted" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
           >
             Rejected ({nonAcceptedBookings.length})
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setActiveSubTab("skipped")}
-            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[9px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all bg-transparent outline-none ${activeSubTab === "skipped" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
+            className={`flex-1 whitespace-nowrap px-4 pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeSubTab === "skipped" ? "text-primary border-primary" : "text-gray-500 border-transparent hover:text-white"}`}
           >
             Skipped ({skippedBookings.length})
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -251,10 +252,10 @@ const BookingsTab = ({ role }) => {
                       Venue Location
                     </span>
                     <h5 className="text-xs font-bold text-white truncate">
-                      {booking.ground?.name || "Custom Ground / Court"}
+                      {booking.enue?.name || "Custom enue / Court"}
                     </h5>
                     <p className="text-[11px] text-gray-400 mt-1 leading-relaxed line-clamp-2">
-                      {booking.ground?.location ||
+                      {booking.enue?.location ||
                         booking.customLocation?.address ||
                         "Location Address not available"}
                     </p>

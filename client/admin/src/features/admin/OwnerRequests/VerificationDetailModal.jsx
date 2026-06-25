@@ -19,7 +19,8 @@ import {
   Database,
   AlertCircle,
 } from "lucide-react";
-import axiosInstance from "@hooks/useAxiosInstance";import { Button } from "@kridaz/ui";
+import axiosInstance from "@hooks/useAxiosInstance";
+import { Button } from "@kridaz/ui";
 
 
 const VerificationDetailModal = ({

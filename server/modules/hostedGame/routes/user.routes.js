@@ -366,7 +366,36 @@ router.post("/invite-custom-player", verifyUser, controller.inviteCustomPlayer);
  */
 router.post("/claim-slot", verifyUser, controller.claimInviteSlot);
 
+/**
+ * @swagger
+ * /hosted-game/apply-opponent-team:
+ *   post:
+ *     summary: Apply as Opponent Team
+ *     tags: [HostedGame]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Applied successfully
+ */
+router.post("/apply-opponent-team", verifyUser, controller.applyAsOpponentTeam);
+
+/**
+ * @swagger
+ * /hosted-game/manage-opponent-application:
+ *   post:
+ *     summary: Manage Opponent Team Application (Approve/Reject)
+ *     tags: [HostedGame]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Application managed
+ */
+router.post("/manage-opponent-application", verifyUser, controller.manageOpponentApplication);
+
 // ── Umpire specific ────────────────────────────────────────────────────────
+
 
 /**
  * @swagger
@@ -582,5 +611,29 @@ router.post(
  *         description: Venue updated
  */
 router.post("/update-venue", verifyUser, controller.updateVenue);
+
+/**
+ * @swagger
+ * /hosted-game/pay-team-share:
+ *   post:
+ *     summary: Pay share to join a team slot
+ *     tags: [HostedGame]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Share paid and joined
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [gameId, teamId]
+ *             properties:
+ *               gameId: { type: string }
+ *               teamId: { type: string }
+ */
+router.post("/pay-team-share", verifyUser, controller.payTeamShare);
 
 export default router;

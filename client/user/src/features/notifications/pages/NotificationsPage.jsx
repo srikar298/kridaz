@@ -24,7 +24,8 @@ import {
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useSocket } from "@context/SocketContext";
 import { formatDistanceToNow } from "date-fns";
-import useNotifications from "@hooks/shared/useNotifications";import { Button } from "@kridaz/ui";
+import useNotifications from "@hooks/shared/useNotifications";
+import { Button } from "@kridaz/ui";
 
 const PRI = "var(--primary)";
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
@@ -194,7 +195,7 @@ const NotificationsPage = () => {
 
   // ── UI Layer: Render ─────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-black pt-2 md:pt-24 pb-20 px-4 font-inter">
+    <div className="min-h-screen bg-black pt-2 md:pt-24 pb-20 px-0 sm:px-4 font-inter">
       <div className="max-w-4xl mx-auto space-y-4">
         {/* ── Header ──────────────────────────────────────────────── */}
         <div className="flex items-center gap-4 mb-4">

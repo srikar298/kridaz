@@ -12,7 +12,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
-import { useNavigate } from "react-router-dom";import { Button, Textarea } from "@kridaz/ui";
+import { useNavigate } from "react-router-dom";
+import { Button, Textarea } from "@kridaz/ui";
 
 
 /**

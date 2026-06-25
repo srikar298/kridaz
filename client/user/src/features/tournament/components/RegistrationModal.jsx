@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import { X, Check, Users, IndianRupee, AlertCircle } from "lucide-react";
 import { useGetMyTeamsQuery } from "../../../redux/api/teamApi";
 import { useRegisterForTournamentMutation } from "../../../redux/api/tournamentApi";
-import { toast } from "react-hot-toast";import { Button } from "@kridaz/ui";
+import { toast } from "react-hot-toast";
+import { Button } from "@kridaz/ui";
 
 
 const RegistrationModal = ({ tournament, onClose }) => {

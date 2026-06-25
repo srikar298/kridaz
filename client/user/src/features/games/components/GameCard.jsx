@@ -6,9 +6,12 @@ import {
   Coins,
   TrendingUp,
   ShieldCheck,
+  Share2,
 } from "lucide-react";
 import moment from "moment";
+import { toast } from "react-hot-toast";
 
+import React, { useState } from "react";
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
 const SUBHEADING_STYLE = {
   fontFamily: "'Inter 28pt Light', sans-serif",
@@ -16,6 +19,7 @@ const SUBHEADING_STYLE = {
 };
 
 const GameCard = ({ game, onSelect, actionButton }) => {
+  const [isDescExpanded, setIsDescExpanded] = useState(false);
   // Calculate slots progress
   let totalSlots = 0;
   let filledSlots = 0;
@@ -25,11 +29,29 @@ const GameCard = ({ game, onSelect, actionButton }) => {
   let teamBFilled = 0;
 
   if (game.gameMode === "QUICK") {
-    totalSlots = game.quickSlotsData?.length || 0;
-    filledSlots =
-      game.quickSlotsData?.filter(
+    if (game.matchPreferences?.opponentType === "TEAM" || (game.teams?.teamA && game.teams?.teamB)) {
+      const teamA = game.teams?.teamA;
+      const teamB = game.teams?.teamB;
+      const slotsA = teamA?.slots || [];
+      const slotsB = teamB?.slots || [];
+      teamATotal = slotsA.length || 1;
+      teamBTotal = game.matchPreferences?.opponentTargetPlayers || slotsB.length || 0;
+      teamAFilled = slotsA.filter(
         (s) => s.status === "JOINED" || s.status === "HELD"
-      ).length || 0;
+      ).length;
+      teamBFilled = slotsB.filter(
+        (s) => s.status === "JOINED" || s.status === "HELD"
+      ).length;
+      totalSlots = teamATotal + teamBTotal;
+      filledSlots = teamAFilled + teamBFilled;
+    } else {
+      const qSlots = game.quickSlots || game.slots || game.quickSlotsData || [];
+      totalSlots = qSlots.length;
+      filledSlots =
+        qSlots.filter(
+          (s) => s.status === "JOINED" || s.status === "HELD"
+        ).length;
+    }
   } else {
     const teamA = game.teams?.teamA;
     const teamB = game.teams?.teamB;
@@ -48,10 +70,11 @@ const GameCard = ({ game, onSelect, actionButton }) => {
   }
 
   const fillPercentage = totalSlots > 0 ? (filledSlots / totalSlots) * 100 : 0;
+  const isTeamVsTeam = game.gameMode === "PROFESSIONAL" || (game.gameMode === "QUICK" && game.teams?.teamA && game.teams?.teamB);
 
   return (
     <div
-      className="group bg-card rounded-[16px] border border-white/10 hover:border-primary hover:shadow-[0_8px_30px_rgba(191,243,103,0.15)] transition-all duration-300 cursor-pointer overflow-hidden flex flex-col h-full p-4"
+      className={`group bg-card rounded-[16px] border border-white/10 hover:border-primary hover:shadow-[0_8px_30px_rgba(191,243,103,0.15)] transition-all duration-300 overflow-hidden flex flex-col h-full p-4 ${onSelect ? "cursor-pointer" : ""}`}
       onClick={() => onSelect && onSelect(game)}
     >
       {/* Content */}
@@ -81,9 +104,11 @@ const GameCard = ({ game, onSelect, actionButton }) => {
                   ? "LOOKING FOR TEAM"
                   : game.requestType === "NET_BOWLERS"
                     ? "NET BOWLERS"
-                    : game.gameMode === "HIRING"
+                  : game.gameMode === "HIRING"
                       ? "PRO WANTED"
-                      : game.gameMode}
+                      : game.gameMode === "LOOKING_FOR"
+                        ? "LOOKING FOR"
+                        : game.gameMode}
               </span>
             )}
           </div>
@@ -106,10 +131,12 @@ const GameCard = ({ game, onSelect, actionButton }) => {
               ? `Player Available: ${game.host?.name || "Unknown"}`
               : game.gameMode === "HIRING"
                 ? `Looking for ${game.requestType?.replace("NEED_", "").replace("_", " ")}`
-                : game.name ||
-                  game.customVenue ||
-                  game.turf?.name ||
-                  `${game.sport || "Match"} Event`}
+                : game.gameMode === "LOOKING_FOR"
+                  ? "Looking for Players"
+                  : game.name ||
+                    game.customVenue ||
+                    game.turf?.name ||
+                    `${game.sport || "Match"} Event`}
           </h3>
           <p
             className="text-[11px] font-medium text-white/40 mt-0.5 flex items-center gap-1.5"
@@ -149,7 +176,7 @@ const GameCard = ({ game, onSelect, actionButton }) => {
         </div>
 
         {/* Date, Time, Charge */}
-        <div className="grid grid-cols-2 gap-y-2 gap-x-4 py-3 border-y border-white/5 text-[12px] text-white/70">
+        <div className={`grid ${game.gameMode === "LOOKING_FOR" ? "grid-cols-2" : "grid-cols-2"} gap-y-2 gap-x-4 py-3 border-y border-white/5 text-[12px] text-white/70`}>
           <div className="flex items-center gap-1.5">
             <Calendar className="h-3.5 w-3.5 text-white/40" />
             <span className="truncate">
@@ -174,12 +201,14 @@ const GameCard = ({ game, onSelect, actionButton }) => {
           </div>
           <div className="flex items-center gap-1.5">
             <MapPin className="h-3.5 w-3.5 text-white/40" />
-            <span className="truncate">{game.city || "Any City"}</span>
+            <span className="truncate">{game.locationStr || game.city || "Any City"}</span>
           </div>
-          <div className="flex items-center gap-1.5 font-semibold text-primary">
-            <Coins className="h-3.5 w-3.5 shrink-0" />
-            <span>{game.perPlayerCharge || "Free"}</span>
-          </div>
+          {game.gameMode !== "LOOKING_FOR" && (
+            <div className="flex items-center gap-1.5 font-semibold text-primary">
+              <Coins className="h-3.5 w-3.5 shrink-0" />
+              <span>{game.perPlayerCharge || "Free"}</span>
+            </div>
+          )}
         </div>
 
         {/* Roster & Slot Progress or Teams */}
@@ -190,6 +219,75 @@ const GameCard = ({ game, onSelect, actionButton }) => {
               Available to join a team as{" "}
               {game.matchPreferences?.role || "Player"}
             </span>
+          </div>
+        ) : game.gameMode === "LOOKING_FOR" ? (
+          <div className="mt-3 bg-secondary/10 border border-secondary/20 p-3 rounded-[8px] flex flex-col gap-2.5">
+            {/* Attributes Grid */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="flex flex-col">
+                <span className="text-[9px] font-bold text-secondary uppercase tracking-widest block">
+                  Experience
+                </span>
+                <span className="font-bold text-white text-[11px] truncate">
+                  {game.experienceLevel || "Any"}
+                </span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[9px] font-bold text-secondary uppercase tracking-widest block">
+                  Scope
+                </span>
+                <span className="font-bold text-white text-[11px] truncate">
+                  {game.requirementScope || "Any"}
+                </span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[9px] font-bold text-secondary uppercase tracking-widest block">
+                  Demographic
+                </span>
+                <span className="font-bold text-white text-[11px] truncate">
+                  {game.genderPreference || "Any"}, {game.ageGroup || "Any Age"}
+                </span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[9px] font-bold text-secondary uppercase tracking-widest block">
+                  Budget
+                </span>
+                <span className="font-bold text-white text-[11px] truncate">
+                  {game.budget ? `₹${game.budget}` : "Negotiable/Free"}
+                </span>
+              </div>
+            </div>
+
+            {/* Roles */}
+            {game.descriptionTags && (
+              <div className="flex flex-wrap gap-1 mt-1">
+                {game.descriptionTags.split(",").map((role, idx) => (
+                  <span key={idx} className="px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/30 text-[9px] font-bold">
+                    {role.trim()}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Description */}
+            {game.description && (
+              <div className="border-t border-white/5 pt-2 mt-0.5">
+                <p className={`text-[10px] text-white/70 italic ${!isDescExpanded ? "line-clamp-2" : ""}`}>
+                  "{game.description}"
+                </p>
+                {game.description.length > 80 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsDescExpanded(!isDescExpanded);
+                    }}
+                    className="text-primary text-[9px] font-bold mt-1 uppercase tracking-wider hover:underline"
+                  >
+                    {isDescExpanded ? "Show less" : "Read more"}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         ) : game.gameMode === "HIRING" ? (
           <div className="mt-3 bg-secondary/10 border border-secondary/20 p-3 rounded-[8px] flex flex-col gap-2">
@@ -237,7 +335,7 @@ const GameCard = ({ game, onSelect, actionButton }) => {
               </div>
             )}
           </div>
-        ) : game.gameMode === "PROFESSIONAL" ? (
+        ) : isTeamVsTeam ? (
           <div className="flex items-center justify-between mt-3">
             <div className="flex flex-col items-start gap-1 max-w-[40%]">
               <div className="flex items-center gap-2">
@@ -324,11 +422,24 @@ const GameCard = ({ game, onSelect, actionButton }) => {
         )}
 
         {/* Action button layer */}
-        {actionButton && (
-          <div className="mt-3 flex gap-2">
-            <div className="flex-1">{actionButton}</div>
-          </div>
-        )}
+        <div className="mt-3 flex gap-2">
+          {actionButton && <div className="flex-1">{actionButton}</div>}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              const shareLink = game.isPost
+                ? `${window.location.origin}/join-games?lookingForPostId=${game.id || game._id}`
+                : `${window.location.origin}/join-games/${game.id || game._id}`;
+              navigator.clipboard.writeText(shareLink);
+              toast.success("Share link copied to clipboard!");
+            }}
+            className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-[12px] text-white transition-all flex items-center justify-center"
+            title="Share"
+          >
+            <Share2 size={14} />
+          </button>
+        </div>
       </div>
     </div>
   );

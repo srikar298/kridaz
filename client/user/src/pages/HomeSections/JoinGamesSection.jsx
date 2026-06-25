@@ -1,7 +1,8 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MapPin, ChevronRight, Info, Share2, Users } from "lucide-react";
-import toast from "react-hot-toast";import { Button, Select } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button, Select } from "@kridaz/ui";
 
 
 const GRAD = "linear-gradient(90deg, var(--primary) 0%, var(--primary) 100%)";

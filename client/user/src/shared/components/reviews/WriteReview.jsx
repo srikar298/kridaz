@@ -1,5 +1,6 @@
 ﻿import { Star } from "lucide-react";
-import { useState } from "react";import { Button, Textarea } from "@kridaz/ui";
+import { useState } from "react";
+import { Button, Textarea } from "@kridaz/ui";
 
 
 const WriteReview = ({

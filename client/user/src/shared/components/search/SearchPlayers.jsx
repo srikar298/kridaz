@@ -7,7 +7,8 @@ import {
   Navigation,
   Loader2,
 } from "lucide-react";
-import { searchLocations } from "@utils/locationService";import { Button, Input } from "@kridaz/ui";
+import { searchLocations } from "@utils/locationService";
+import { Button, Input } from "@kridaz/ui";
 
 
 const SPORTS_LIST = [

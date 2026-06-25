@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ArrowRight, ArrowLeft, ShieldCheck, CreditCard } from "lucide-react";import { Button, Input } from "@kridaz/ui";
+import { ArrowRight, ArrowLeft, ShieldCheck, CreditCard } from "lucide-react";
+import { Button, Input } from "@kridaz/ui";
 
 
 const Step6Officials = ({ formData, onNext, onBack, isLoading }) => {

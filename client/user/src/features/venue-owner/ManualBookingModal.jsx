@@ -14,7 +14,8 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { restoreAuth, logout } from "@redux/slices/authSlice";
 import toast from "react-hot-toast";
-import { format, parseISO } from "date-fns";import { Button, Input } from "@kridaz/ui";
+import { format, parseISO } from "date-fns";
+import { Button, Input } from "@kridaz/ui";
 
 
 const ManualBookingModal = ({ isOpen, onClose }) => {

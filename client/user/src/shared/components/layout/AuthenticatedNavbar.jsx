@@ -27,7 +27,8 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
 import { getDynamicProfileRoute } from "@utils/routeUtils";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button } from "@kridaz/ui";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import { Button } from "@kridaz/ui";
 
 
 /**
@@ -334,14 +335,14 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
           <div className="flex items-center justify-between gap-3">
             {/* Left: Online / Offline Toggle */}
             <div className="flex items-center gap-3 flex-1 min-w-0 pr-4">
-              <button
+              <Button
                 onClick={handleToggleOnline}
                 disabled={isToggling}
                 title={isOnline ? "Go Offline" : "Go Online"}
-                className={`relative w-12 h-6 rounded-full border transition-all duration-300 shrink-0 outline-none ${
+                className={`relative w-12 h-6 rounded-full border transition-all duration-300 shrink-0 ${
                   isOnline
-                    ? "border-primary/40 bg-black"
-                    : "border-white/10 bg-black"
+                    ? "border-primary/40 bg-primary/15"
+                    : "border-white/10 bg-white/5"
                 } ${isToggling ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:opacity-90 active:scale-95"}`}
               >
                 {/* Track glow when online */}
@@ -364,7 +365,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
                     className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-black" : "bg-gray-600"}`}
                   />
                 </span>
-              </button>
+              </Button>
               <div className="flex flex-col gap-0.5 flex-1 min-w-0">
                 <span
                   className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest truncate"

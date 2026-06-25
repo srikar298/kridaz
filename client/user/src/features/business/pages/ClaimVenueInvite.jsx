@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import usePartnerSignUpForm from "@features/auth/hooks/usePartnerSignUpForm";
-import toast from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button, Input } from "@kridaz/ui";
 
 
 const ClaimVenueInvite = () => {

@@ -4,7 +4,8 @@ import UserSkeleton from "./UserSkeleton";
 import UserCard from "./UserCard";
 import SearchInput from "./SearchInput";
 import { Trash2, Ban, CheckCircle, X } from "lucide-react";
-import ConfirmationModal from "@components/shared/ConfirmationModal";import { Button, Input } from "@kridaz/ui";
+import ConfirmationModal from "@components/shared/ConfirmationModal";
+import { Button, Input } from "@kridaz/ui";
 
 
 const UserPage = () => {

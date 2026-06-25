@@ -12,7 +12,8 @@ import {
   FileText,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import RegistrationModal from "../components/RegistrationModal";import { Button } from "@kridaz/ui";
+import RegistrationModal from "../components/RegistrationModal";
+import { Button } from "@kridaz/ui";
 
 
 const TournamentPublicPage = () => {

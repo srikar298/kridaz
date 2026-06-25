@@ -1,5 +1,6 @@
 ﻿import React from "react";
-import { AlertTriangle, X } from "lucide-react";import { Button } from "@kridaz/ui";
+import { AlertTriangle, X } from "lucide-react";
+import { Button } from "@kridaz/ui";
 
 
 const ConfirmationModal = ({

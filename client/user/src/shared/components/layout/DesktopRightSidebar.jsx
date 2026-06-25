@@ -43,7 +43,9 @@ import {
   useUnfollowPlayerMutation,
 } from "@redux/api/userApi";
 import { useGetTurfsQuery, useGetTurfDetailsQuery } from "@redux/api/turfApi";
-import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";import { Button, Input } from "@kridaz/ui";
+import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";
+import { useGetMarketingContentQuery } from "@redux/api/featuresApi";
+import { Button, Input } from "@kridaz/ui";
 
 const LIQUID_COLORS = {
   color1: "var(--foreground)",
@@ -149,6 +151,8 @@ export default function DesktopRightSidebar({
       { skip: !showHomeWidgets }
     );
   const suggestedPlayers = playersData?.players || [];
+
+  const { data: marketingContent } = useGetMarketingContentQuery(undefined, { skip: !showHomeWidgets });
 
   // 2. Nearby Venues (RTK Query)
   const { data: turfsData, isLoading: loadingVenues } = useGetTurfsQuery(
@@ -264,30 +268,87 @@ export default function DesktopRightSidebar({
           {/* ── HOME & GENERAL PORTAL VIEW WIDGETS ── */}
           {showHomeWidgets && (
             <>
-              {/* Host Your Venues CTA */}
-              <Link
-                to="/host"
-                className="relative block overflow-hidden rounded-2xl w-full aspect-video shadow-[0_4px_20px_rgba(0,0,0,0.5)] group border border-white/[0.05] hover:border-primary/50 transition-all duration-300 my-0"
-              >
-                {/* Background Image */}
-                <div
-                  className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
-                  style={{
-                    backgroundImage: "url('/host-venue-bg-custom-2.png')",
-                  }}
-                />
+              {/* Promotions & Host Your Venues CTA */}
+              <div className="space-y-4">
+                {/* Dynamic Promotions */}
+                {(marketingContent?.banners || [])
+                  .filter((b) => b.type === "PROMOTION" && b.isActive)
+                  .sort((a, b) => a.order - b.order)
+                  .map((promo) => {
+                    const Wrapper = promo.targetUrl ? "a" : "div";
+                    const wrapperProps = promo.targetUrl
+                      ? {
+                          href: promo.targetUrl,
+                          target: "_blank",
+                          rel: "noopener noreferrer",
+                        }
+                      : {};
 
-                {/* Content Container (Left 40%) */}
-                <div className="relative z-10 w-[45%] h-full p-4 flex flex-col justify-center gap-1.5 pl-5">
-                  <h3 className="text-[16px] leading-tight font-black text-white uppercase drop-shadow-lg">
-                    Host Your Venue
-                  </h3>
-                  <p className="text-[9px] font-medium text-white/90 leading-snug drop-shadow-md">
-                    Partner with us to list your turf and manage bookings
-                    seamlessly.
-                  </p>
-                </div>
-              </Link>
+                    return (
+                      <Wrapper
+                        key={promo._id || promo.id}
+                        {...wrapperProps}
+                        className="relative block overflow-hidden rounded-2xl w-full aspect-video shadow-[0_4px_20px_rgba(0,0,0,0.5)] group border border-white/[0.05] hover:border-primary/50 transition-all duration-300 my-0 cursor-pointer"
+                      >
+                        {promo.videoUrl ? (
+                          <video
+                            src={promo.videoUrl}
+                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                          />
+                        ) : (
+                          <div
+                            className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
+                            style={{
+                              backgroundImage: `url('${promo.imageUrl || ""}')`,
+                            }}
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-black/40"></div>
+                        <div className="relative z-10 w-[70%] h-full p-4 flex flex-col justify-center gap-1.5 pl-5">
+                          <h3 className="text-[16px] leading-tight font-black text-white uppercase drop-shadow-lg">
+                            {promo.title}
+                          </h3>
+                          {promo.description && (
+                            <p className="text-[10px] font-medium text-white/90 leading-snug drop-shadow-md">
+                              {promo.description}
+                            </p>
+                          )}
+                        </div>
+                      </Wrapper>
+                    );
+                  })}
+
+                {/* Static Fallback */}
+                {(marketingContent?.banners || []).filter(
+                  (b) => b.type === "PROMOTION" && b.isActive
+                ).length === 0 && (
+                  <Link
+                    to="/host"
+                    className="relative block overflow-hidden rounded-2xl w-full aspect-video shadow-[0_4px_20px_rgba(0,0,0,0.5)] group border border-white/[0.05] hover:border-primary/50 transition-all duration-300 my-0"
+                  >
+                    <div
+                      className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
+                      style={{
+                        backgroundImage: "url('/host-venue-bg-custom-2.png')",
+                      }}
+                    />
+
+                    <div className="relative z-10 w-[45%] h-full p-4 flex flex-col justify-center gap-1.5 pl-5">
+                      <h3 className="text-[16px] leading-tight font-black text-white uppercase drop-shadow-lg">
+                        Host Your Venue
+                      </h3>
+                      <p className="text-[9px] font-medium text-white/90 leading-snug drop-shadow-md">
+                        Partner with us to list your turf and manage bookings
+                        seamlessly.
+                      </p>
+                    </div>
+                  </Link>
+                )}
+              </div>
 
               {/* Live Now */}
               {isLoggedIn &&

@@ -1,7 +1,8 @@
 import * as Sentry from "@sentry/react";
 import React, { useState } from "react";
 import { X, Check, Sparkles, Palette, RefreshCw, Circle } from "lucide-react";
-import toast from "react-hot-toast";import { Button } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button } from "@kridaz/ui";
 
 const THEMES = [
   {

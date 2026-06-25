@@ -18,7 +18,8 @@ import ConfirmationModal from "@components/shared/ConfirmationModal";
 
 import Turf from "./Turf";
 import TurfSkeleton from "./TurfSkeleton";
-import { format } from "date-fns";import { Button } from "@kridaz/ui";
+import { format } from "date-fns";
+import { Button } from "@kridaz/ui";
 
 
 const TurfList = () => {

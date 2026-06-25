@@ -6,7 +6,8 @@ import {
   Sparkles,
   SwitchCamera,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";import { Button } from "@kridaz/ui";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@kridaz/ui";
 
 
 const POST_TYPES = ["Post", "Reel", "Story"];

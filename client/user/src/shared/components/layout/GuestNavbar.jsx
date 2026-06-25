@@ -13,7 +13,8 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@redux/slices/authSlice.js";
 import { useNavigate } from "react-router-dom";
-import { useScrollDirection } from "@hooks/useScrollDirection.js";import { Button } from "@kridaz/ui";
+import { useScrollDirection } from "@hooks/useScrollDirection.js";
+import { Button } from "@kridaz/ui";
 
 
 const GuestNavbar = () => {

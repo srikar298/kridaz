@@ -27,7 +27,8 @@ import insightsMobile from "../../../assets/insights-mobile.png";
 import financesDesktop from "../../../assets/finances-desktop.png";
 import financesMobile from "../../../assets/finances-mobile.png";
 import reachDesktop from "../../../assets/reach-desktop.png";
-import reachMobile from "../../../assets/reach-mobile.png";import { Button, Input } from "@kridaz/ui";
+import reachMobile from "../../../assets/reach-mobile.png";
+import { Button, Input } from "@kridaz/ui";
 
 
 const GRADIENT = "linear-gradient(90deg, var(--primary) 0%, var(--primary) 100%)";
@@ -481,7 +482,7 @@ export default function VenueOwnerLanding() {
                   </h3>
                   <p className="text-white/50 text-sm mt-4 font-sans leading-relaxed">
                     Grant specific dashboard permissions to managers, accounts,
-                    and ground staff.
+                    and enue staff.
                   </p>
                 </div>
               </div>

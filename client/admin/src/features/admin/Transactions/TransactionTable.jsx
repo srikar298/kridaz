@@ -1,6 +1,7 @@
 import React from "react";
 import Avatar from "react-avatar";
-import { ChevronUp, ChevronDown } from "lucide-react";import { Button } from "@kridaz/ui";
+import { ChevronUp, ChevronDown } from "lucide-react";
+import { Button } from "@kridaz/ui";
 
 
 const TransactionTable = ({

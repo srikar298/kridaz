@@ -13,7 +13,8 @@ import toast from "react-hot-toast";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useDispatch } from "react-redux";
 import { updateUser } from "@redux/slices/authSlice";
-import { searchLocations } from "@utils/locationService";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import { searchLocations } from "@utils/locationService";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 
 export default function EditProfileModal({ isOpen, onClose, user }) {

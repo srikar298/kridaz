@@ -1,5 +1,6 @@
 import React from "react";
-import { FileText, CheckCircle2 } from "lucide-react";import { Input } from "@kridaz/ui";
+import { FileText, CheckCircle2 } from "lucide-react";
+import { Input } from "@kridaz/ui";
 
 
 const DocumentUpload = ({ label, id, onFileSelect, selectedFile }) => {

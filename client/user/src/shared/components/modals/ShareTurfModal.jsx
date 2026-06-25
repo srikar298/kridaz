@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { X, Search, Check, Send } from "lucide-react";import { Button, Input } from "@kridaz/ui";
+import { X, Search, Check, Send } from "lucide-react";
+import { Button, Input } from "@kridaz/ui";
 
 import {
   useGetFollowersFollowingQuery,

@@ -19,7 +19,8 @@ import useBanking from "@hooks/venue-owner/useBanking";
 import useVenueOwnerDashboard from "@hooks/venue-owner/useVenueOwnerDashboard";
 import useOwnerWallet from "@hooks/venue-owner/useOwnerWallet";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";import { Button, Input, Select } from "@kridaz/ui";
+import { useSelector } from "react-redux";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 /**

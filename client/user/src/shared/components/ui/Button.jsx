@@ -1,4 +1,5 @@
-import { cn } from "../../lib/utils.js";import { Button } from "@kridaz/ui";
+import { cn } from "../../lib/utils.js";
+import { Button } from "@kridaz/ui";
 
 
 const Button = ({ children, loading, className, ...props }) => {

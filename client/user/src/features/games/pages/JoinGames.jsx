@@ -21,6 +21,7 @@ import {
 import { searchLocations } from "@utils/locationService";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
 import GameCard from "../components/GameCard";
+import LookingForDetailModal from "../components/LookingForDetailModal";
 import { Button, Input, Select } from "@kridaz/ui";
 
 
@@ -46,6 +47,7 @@ const JoinGames = () => {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [selectedLookingForPost, setSelectedLookingForPost] = useState(null);
 
   const fetchGames = async (city = "", state = "", sport = "All Sports") => {
     try {
@@ -56,7 +58,60 @@ const JoinGames = () => {
       if (sport !== "All Sports") params.append("gameType", sport);
 
       const res = await axiosInstance.get(`/api/hosted-game/list?${params.toString()}`);
-      setGames(res.data.games || []);
+      const hostedGames = res.data.games || [];
+
+      // Fetch Looking For posts from community
+      let lookingForPosts = [];
+      try {
+        const commRes = await axiosInstance.get('/api/user/community?postType=LOOKING_FOR&limit=100');
+        const posts = commRes.data.posts || [];
+        lookingForPosts = posts
+          .map(p => ({
+            id: p.id || p._id,
+            _id: p.id || p._id,
+            isPost: true,
+            gameMode: "LOOKING_FOR",
+            sport: p.metadata?.sportLabel || p.metadata?.subcategory || "Sport",
+            requestType: "LOOKING_FOR",
+            name: p.metadata?.lookingFor || p.title || p.content || "Looking for Players",
+            host: p.adminId || p.author || { name: "Player" },
+            creator: p.adminId || p.author || { name: "Player" },
+            hostId: p.authorId || p.author?._id || p.adminId?.id,
+            createdAt: p.createdAt,
+            date: p.metadata?.date,
+            time: p.metadata?.time,
+            city: p.metadata?.city || p.metadata?.locationStr?.split(",")[0] || "",
+            state: p.metadata?.state || "",
+            locationStr: p.metadata?.locationStr || "",
+            requirementScope: p.metadata?.requirementScope || "",
+            budget: p.metadata?.budget || "",
+            experienceLevel: p.metadata?.experienceLevel || "Any",
+            genderPreference: p.metadata?.genderPreference || "Any",
+            ageGroup: p.metadata?.ageGroup || "Any",
+            perPlayerCharge: p.metadata?.budget ? `₹${p.metadata.budget}` : "Free",
+            matchPreferences: {
+              role: p.metadata?.roles?.join(", "),
+              contactPreference: p.metadata?.contactPreference
+            },
+            descriptionTags: p.metadata?.roles?.join(", ") || "",
+            description: p.metadata?.description || p.content
+          }));
+
+        if (city) {
+          lookingForPosts = lookingForPosts.filter(p => p.city?.toLowerCase().includes(city.toLowerCase()));
+        }
+        if (state) {
+          lookingForPosts = lookingForPosts.filter(p => p.state?.toLowerCase().includes(state.toLowerCase()));
+        }
+        if (sport && sport !== "All Sports") {
+          lookingForPosts = lookingForPosts.filter(p => p.sport?.toLowerCase() === sport.toLowerCase());
+        }
+      } catch (e) {
+        console.error("Failed to fetch Looking For posts:", e);
+      }
+
+      const combined = [...hostedGames, ...lookingForPosts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setGames(combined);
     } catch (err) {
       toast.error("Failed to fetch games");
     } finally {
@@ -109,6 +164,23 @@ const JoinGames = () => {
     const token = params.get("inviteToken");
     if (token) {
       handleVerifyInvite(token);
+    }
+    
+    // Check if redirect from post creation
+    const lookingForPostId = params.get("lookingForPostId");
+    if (lookingForPostId) {
+      // Need to find this post in games after fetching
+      setTimeout(() => {
+        setGames((prev) => {
+          const post = prev.find(p => p.id === lookingForPostId || p._id === lookingForPostId);
+          if (post) setSelectedLookingForPost(post);
+          return prev;
+        });
+        
+        // Remove param
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      }, 2000);
     }
   }, []);
 
@@ -246,7 +318,7 @@ const JoinGames = () => {
       game.gameType?.toLowerCase().includes(searchLower) || false;
     const turfMatch =
       game.turf?.name?.toLowerCase().includes(searchLower) ||
-      game.ground?.name?.toLowerCase().includes(searchLower) ||
+      game.enue?.name?.toLowerCase().includes(searchLower) ||
       false;
     const cityMatch = game.city?.toLowerCase().includes(searchLower) || false;
     const nameMatch = game.name?.toLowerCase().includes(searchLower) || false;
@@ -577,17 +649,45 @@ const JoinGames = () => {
                 <GameCard
                   key={game.id || game._id}
                   game={game}
-                  onSelect={(selectedGame) =>
-                    navigate(
-                      `/join-games/${selectedGame.id || selectedGame._id}`
-                    )
+                  onSelect={
+                    game.isPost
+                      ? () => setSelectedLookingForPost(game)
+                      : game.gameMode?.toUpperCase() === "HIRING" ||
+                        [
+                          "NEED_UMPIRE",
+                          "NEED_SCORER",
+                          "NEED_STREAMER",
+                          "NEED_COACH",
+                          "LOOKING_FOR_TEAM",
+                        ].includes(game.requestType)
+                          ? undefined
+                          : (selectedGame) =>
+                              navigate(
+                                `/join-games/${selectedGame.id || selectedGame._id}`
+                              )
                   }
                   actionButton={
-                    !isHost && currentUserId ? (
+                    game.isPost ? (
                       <Button
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/messages?userId=${hostId}`);
+                          setSelectedLookingForPost(game);
+                        }}
+                        className="w-full flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-secondary to-primary text-black rounded-[12px] text-xs font-bold transition-all"
+                      >
+                        View Post details
+                      </Button>
+                    ) : !isHost && currentUserId ? (
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          let url = `/messages?userId=${hostId}`;
+                          if (game.gameMode === "LOOKING_FOR" || game.requestType === "LOOKING_FOR_TEAM") {
+                            const sportName = game.sport?.name || game.sport || "this game";
+                            const prefillMsg = encodeURIComponent(`Hi, I saw your 'Looking For' post for ${sportName}. I am interested!`);
+                            url += `&prefill=${prefillMsg}`;
+                          }
+                          navigate(url);
                         }}
                         className="w-full flex items-center justify-center gap-2 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-[12px] text-xs font-bold text-white transition-all"
                       >
@@ -605,6 +705,16 @@ const JoinGames = () => {
           )}
         </div>
       </div>
+
+      <AnimatePresence>
+        {selectedLookingForPost && (
+          <LookingForDetailModal 
+            post={selectedLookingForPost} 
+            onClose={() => setSelectedLookingForPost(null)} 
+            currentUserId={user?.id || user?._id}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

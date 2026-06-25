@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";import { Button, Input } from "@kridaz/ui";
+import { X } from "lucide-react";
+import { Button, Input } from "@kridaz/ui";
 
 
 export default function PenaltyModal({ matchData, onClose, onConfirm }) {

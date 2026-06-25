@@ -7,7 +7,8 @@ import {
   CheckCircle,
   ExternalLink,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";import { Button, Input } from "@kridaz/ui";
+import { useNavigate } from "react-router-dom";
+import { Button, Input } from "@kridaz/ui";
 
 
 const OwnerCard = ({

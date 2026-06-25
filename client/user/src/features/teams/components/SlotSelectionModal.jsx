@@ -8,7 +8,8 @@ import {
   Mail,
   ChevronRight,
 } from "lucide-react";
-import { useGetMyTeamsQuery } from "@redux/api/teamApi";import { Button, Input } from "@kridaz/ui";
+import { useGetMyTeamsQuery } from "@redux/api/teamApi";
+import { Button, Input } from "@kridaz/ui";
 
 
 const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {

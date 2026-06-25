@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";import { Input, Select } from "@kridaz/ui";
+import { ArrowRight } from "lucide-react";
+import { Input, Select } from "@kridaz/ui";
 
 
 const FadeInUp = ({ children, delay = 0, className = "" }) => (

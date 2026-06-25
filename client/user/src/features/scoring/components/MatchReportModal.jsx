@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { X, FileText, Clock, User, ShieldAlert, Zap } from "lucide-react";import { Button } from "@kridaz/ui";
+import { X, FileText, Clock, User, ShieldAlert, Zap } from "lucide-react";
+import { Button } from "@kridaz/ui";
 
 const THEME_COLOR = "var(--success)";
 export default function MatchReportModal({

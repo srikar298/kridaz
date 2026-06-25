@@ -1,5 +1,6 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
-import { gsap } from "gsap";import { Button } from "@kridaz/ui";
+import { gsap } from "gsap";
+import { Button } from "@kridaz/ui";
 
 import "./StaggeredMenu.css";
 

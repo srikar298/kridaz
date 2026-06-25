@@ -9,7 +9,8 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUpdateTournamentMutation } from "../../../redux/api/tournamentApi";
-import { toast } from "react-hot-toast";import { Button } from "@kridaz/ui";
+import { toast } from "react-hot-toast";
+import { Button } from "@kridaz/ui";
 
 
 const Step8Review = ({ formData, onBack, tournamentId }) => {

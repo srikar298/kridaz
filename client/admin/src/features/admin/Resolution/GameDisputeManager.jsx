@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import {
   ShieldAlert,
   CheckCircle,
@@ -7,7 +7,8 @@ import {
   User,
   Users,
 } from "lucide-react";
-import useGameDisputes from "@hooks/admin/useGameDisputes";import { Button, Input } from "@kridaz/ui";
+import useGameDisputes from "@hooks/admin/useGameDisputes";
+import { Button, Input } from "@kridaz/ui";
 
 
 const GameDisputeManager = () => {
@@ -226,7 +227,7 @@ const GameDisputeManager = () => {
                                   <Input
                                     type="number"
                                     min="0"
-                                    max={selectedGame.perPlayerCharge}
+                                    max={selectedGame.matchPreferences?.opponentType === "TEAM" ? 999999 : selectedGame.perPlayerCharge}
                                     placeholder="0"
                                     className="w-20 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-white text-right focus:outline-none focus:border-orange-500 font-bold"
                                     value={refundInputs[slot.user?.id] || ""}

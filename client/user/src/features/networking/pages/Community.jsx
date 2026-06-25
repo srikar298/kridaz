@@ -9,7 +9,8 @@ import { setUserLocation, setLocationStatus } from "@redux/slices/uiSlice";
 
 import StoriesSection from "../components/StoriesSection";
 import CommunityFeed from "../components/CommunityFeed";
-import ReelsView from "../components/ReelsView";import { Button, Input } from "@kridaz/ui";
+import ReelsView from "../components/ReelsView";
+import { Button, Input } from "@kridaz/ui";
 
 
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };

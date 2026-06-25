@@ -16,7 +16,8 @@ import {
 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { toast } from "react-hot-toast";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button } from "@kridaz/ui";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import { Button } from "@kridaz/ui";
 
 
 const MatchDetails = () => {
@@ -132,7 +133,7 @@ const MatchDetails = () => {
                 </div>
                 <div className="flex items-center gap-2 text-sm font-bold text-gray-400">
                   <MapPin size={16} className="text-primary" />{" "}
-                  {game.ground?.name || game.customVenue || "Self-Arranged"}
+                  {game.enue?.name || game.customVenue || "Self-Arranged"}
                 </div>
               </div>
             </div>
@@ -350,7 +351,7 @@ const MatchDetails = () => {
                 <MapPin size={16} className="text-primary" /> Venue Details
               </h3>
 
-              {game.ground ? (
+              {game.enue ? (
                 <div className="space-y-4">
                   <div className="w-full h-40 bg-neutral-800 rounded-[8px] overflow-hidden border border-white/5">
                     <img
@@ -363,10 +364,10 @@ const MatchDetails = () => {
                   </div>
                   <div>
                     <p className="font-black uppercase tracking-tight">
-                      {game.ground.name}
+                      {game.enue.name}
                     </p>
                     <p className="text-xs text-gray-400 font-bold uppercase tracking-tight">
-                      {game.ground.location}
+                      {game.enue.location}
                     </p>
                   </div>
                   <Button className="w-full py-3 bg-white/5 hover:bg-white/10 rounded-[8px] text-[10px] font-black uppercase tracking-widest transition-all">

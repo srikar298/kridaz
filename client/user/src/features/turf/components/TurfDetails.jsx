@@ -18,7 +18,8 @@ import useSimilarRecommendations from "@hooks/useSimilarRecommendations";
 import TurfCard from "./TurfCard.jsx";
 import { useGetSavedTurfsQuery, useToggleTurfLikeMutation } from "@redux/api/turfApi";
 import toast from "react-hot-toast";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button } from "@kridaz/ui";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import { Button } from "@kridaz/ui";
 
 import {
   MapPin,
@@ -221,6 +222,7 @@ const TurfDetails = () => {
     handleTimeSelection,
     isTimeSlotBooked,
     totalPrice,
+    duration = 1,
     loading: bookingLoading,
   } = useReservation();
 
@@ -233,9 +235,26 @@ const TurfDetails = () => {
           const returnUrl = new URL(returnTo, window.location.origin);
           returnUrl.searchParams.set("groundId", turf._id);
           returnUrl.searchParams.set("date", selectedDate.toISOString());
-          returnUrl.searchParams.set("time", selectedStartTime);
+          
+          let startTimeStr = typeof selectedStartTime === 'object' ? selectedStartTime.startTime : selectedStartTime;
+          returnUrl.searchParams.set("time", startTimeStr);
+
+          // Calculate end time
+          let endTimeStr = "";
+          if (startTimeStr && typeof startTimeStr === 'string') {
+            try {
+              let [hours, minutes] = startTimeStr.split(":");
+              hours = parseInt(hours, 10);
+              let endHours = (hours + duration) % 24;
+              endTimeStr = `${String(endHours).padStart(2, "0")}:${minutes.replace(/[^0-9]/g, "")}`;
+            } catch(e) {}
+          }
+          if (endTimeStr) {
+            returnUrl.searchParams.set("endTime", endTimeStr);
+          }
+
           returnUrl.searchParams.set("price", totalPrice || turf.pricePerHour);
-          navigate(returnUrl.pathname + returnUrl.search);
+          navigate(returnUrl.pathname + returnUrl.search, { replace: true });
         } else {
           navigate(`/checkout/${turf._id}`, {
             state: {
@@ -287,10 +306,10 @@ const TurfDetails = () => {
             Venue Not Found
           </h2>
           <Link
-            to="/venues"
+            to={searchParams.get("returnTo") || "/venues"}
             className="inline-flex items-center gap-2 bg-primary text-black px-6 py-3 rounded-[6px] font-bold"
           >
-            <ChevronLeft className="w-5 h-5" /> Back to Discovery
+            <ChevronLeft className="w-5 h-5" /> Back
           </Link>
         </div>
       </div>
@@ -453,26 +472,8 @@ const TurfDetails = () => {
         >
           {/* VenueOverviewSection */}
           <div className="w-full flex-none space-y-4 lg:space-y-6">
-            {/* Header Actions: Back, Like, Share */}
-            <div className="flex items-center justify-between w-full px-4 md:px-2">
-              <GlobalBackButton className="!ml-0" />
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={toggleFavorite}
-                  className={`flex items-center justify-center w-10 h-10 rounded-full bg-card hover:bg-[#1a1a1a] transition-colors shrink-0 shadow-lg outline-none cursor-pointer border ${isFavorite ? "border-primary text-primary" : "border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)] hover:text-white"}`}
-                >
-                  <Heart
-                    className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`}
-                  />
-                </button>
-                <button
-                  onClick={handleShare}
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-card border border-[rgba(255,255,255,0.08)] hover:bg-[#1a1a1a] transition-colors text-[rgba(255,255,255,0.70)] hover:text-white shrink-0 shadow-lg outline-none cursor-pointer"
-                >
-                  <Share2 className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
+            {/* Back Button */}
+            <GlobalBackButton />
 
             {/* Venue Big Heading */}
             <h1 className="text-[28px] md:text-[32px] font-[700] leading-tight text-foreground px-4 md:px-2 font-inter">
@@ -480,42 +481,41 @@ const TurfDetails = () => {
             </h1>
 
             {/* Quick Info Bar */}
-            <div className="flex flex-col gap-y-2 text-[12px] font-[400] leading-[16px] text-[rgba(255,255,255,0.70)] px-4 md:px-2 font-inter w-full">
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                <div className="flex items-center gap-2 shrink-0">
-                  <Star
-                    className="w-4 h-4"
-                    style={{
-                      stroke: "url(#theme-gradient)",
-                      fill: "url(#theme-gradient)",
-                    }}
-                  />
-                  <span className="text-primary font-[700]">
-                    {averageRating ? averageRating.toFixed(1) : "5.0"}
-                  </span>
-                  <span>({reviews?.length || 0} REVIEWS)</span>
-                </div>
-                <div className="w-px h-3 bg-zinc-800 hidden md:block" />
-                <div
-                  onClick={() => setIsPoliciesModalOpen(true)}
-                  className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors group shrink-0"
-                >
-                  <ShieldCheck
-                    className="w-4 h-4"
-                    style={{ stroke: "url(#theme-gradient)" }}
-                  />
-                  <span className="text-[rgba(255,255,255,0.70)] group-hover:text-primary transition-colors font-medium">
-                    View Policies
-                  </span>
-                </div>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-y-2.5 sm:gap-x-4 text-[12px] font-[400] leading-[16px] text-[rgba(255,255,255,0.70)] px-4 md:px-2 font-inter w-full">
+              <div className="flex items-center gap-2 shrink-0">
+                <Star
+                  className="w-4 h-4"
+                  style={{
+                    stroke: "url(#theme-gradient)",
+                    fill: "url(#theme-gradient)",
+                  }}
+                />
+                <span className="text-primary font-[700]">
+                  {averageRating ? averageRating.toFixed(1) : "5.0"}
+                </span>
+                <span>({reviews?.length || 0} REVIEWS)</span>
               </div>
-              <div className="flex items-start gap-2">
+              <div className="hidden sm:block w-px h-3 bg-zinc-800" />
+              <div className="flex items-start gap-2 min-w-0">
                 <MapPin
                   className="w-4 h-4 shrink-0 mt-0.5"
                   style={{ stroke: "url(#theme-gradient)" }}
                 />
                 <span className="text-[rgba(255,255,255,0.70)] font-medium leading-snug line-clamp-2">
                   {turf.location || [turf.city, turf.state].filter(Boolean).join(", ") || "DODA"}
+                </span>
+              </div>
+              <div className="hidden sm:block w-px h-3 bg-zinc-800" />
+              <div
+                onClick={() => setIsPoliciesModalOpen(true)}
+                className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors group shrink-0"
+              >
+                <ShieldCheck
+                  className="w-4 h-4"
+                  style={{ stroke: "url(#theme-gradient)" }}
+                />
+                <span className="text-[rgba(255,255,255,0.70)] group-hover:text-primary transition-colors font-medium">
+                  View Policies
                 </span>
               </div>
             </div>
@@ -588,6 +588,26 @@ const TurfDetails = () => {
                       </Button>
                     </>
                   )}
+
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+
+                  {/* Like and Share Actions */}
+                  <div className="absolute top-4 right-4 z-40 flex items-center gap-3">
+                    <Button
+                      onClick={toggleFavorite}
+                      className={`p-3 rounded-[8px] bg-black/40 backdrop-blur-md border ${isFavorite ? "border-primary text-primary" : "border-white/10 text-white"} hover:bg-primary hover:text-black hover:border-transparent transition-all shadow-lg`}
+                    >
+                      <Heart
+                        className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`}
+                      />
+                    </Button>
+                    <Button
+                      onClick={handleShare}
+                      className="p-3 rounded-[8px] bg-black/40 backdrop-blur-md border border-white/10 text-white hover:bg-primary hover:text-black hover:border-transparent transition-all shadow-lg"
+                    >
+                      <Share2 className="w-5 h-5" />
+                    </Button>
+                  </div>
                 </div>
 
                 {/* Image Thumbnails */}
@@ -729,7 +749,7 @@ const TurfDetails = () => {
                   <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-inter">
                     FACILITIES
                   </h2>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {turf.facilities?.map((facility, index) => (
                       <div
                         key={index}

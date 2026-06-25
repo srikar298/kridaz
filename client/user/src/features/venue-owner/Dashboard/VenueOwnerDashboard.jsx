@@ -33,7 +33,8 @@ import { useSelector } from "react-redux";
 import useVenueOwnerDashboard from "@hooks/venue-owner/useVenueOwnerDashboard";
 import DashboardSkeleton from "./DashboardSkeleton";
 import OccupancyHeatmap from "./OccupancyHeatmap";
-import PeakHoursChart from "./PeakHoursChart";import { Button, Select } from "@kridaz/ui";
+import PeakHoursChart from "./PeakHoursChart";
+import { Button, Select } from "@kridaz/ui";
 
 
 const VenueOwnerDashboard = () => {
@@ -248,7 +249,7 @@ const VenueOwnerDashboard = () => {
                               {booking?.user?.name ||
                                 booking?.guestDetails?.name ||
                                 "Guest"}{" "}
-                              booked {booking?.turf?.name || "a ground"}
+                              booked {booking?.turf?.name || "a enue"}
                             </p>
                             <p className="text-[8px] lg:text-[10px] font-medium text-white/70 uppercase mt-1 flex items-center gap-1">
                               <Clock

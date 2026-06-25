@@ -4,7 +4,8 @@ import {
   useGetStandingsQuery,
   useManualScheduleMutation,
 } from "../../../../redux/api/tournamentApi";
-import { toast } from "react-hot-toast";import { Button, Input, Select } from "@kridaz/ui";
+import { toast } from "react-hot-toast";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 const KnockoutSchedulerModal = ({ tournament, onClose }) => {

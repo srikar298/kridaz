@@ -8,7 +8,8 @@ import {
   Globe,
   Info,
 } from "lucide-react";
-import useAuditLogs from "@hooks/admin/useAuditLogs";import { Input } from "@kridaz/ui";
+import useAuditLogs from "@hooks/admin/useAuditLogs";
+import { Input } from "@kridaz/ui";
 
 
 const AuditLogs = () => {
@@ -27,7 +28,7 @@ const AuditLogs = () => {
       case "FINANCE":
         return "text-green-500 bg-green-500/10 border-green-500/20";
       case "RESOLUTION":
-        return "text-emerald-500 bg-emerald-500/10 border-emerald-500/20";
+        return "text-blue-500 bg-blue-500/10 border-blue-500/20";
       case "USER_MANAGEMENT":
         return "text-purple-500 bg-purple-500/10 border-purple-500/20";
       default:
@@ -175,7 +176,7 @@ const AuditLogs = () => {
         {/* Security Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-card border border-white/10 p-6 rounded-[8px] flex items-start gap-4">
-            <div className="w-10 h-10 bg-emerald-500/10 rounded-[8px] flex items-center justify-center text-emerald-500 border border-emerald-500/20">
+            <div className="w-10 h-10 bg-blue-500/10 rounded-[8px] flex items-center justify-center text-blue-500 border border-blue-500/20">
               <HardDrive size={20} />
             </div>
             <div>

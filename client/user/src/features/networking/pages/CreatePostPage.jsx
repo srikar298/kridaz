@@ -22,7 +22,8 @@ import {
   useLazyGetCommunityUploadUrlQuery,
   useConfirmCommunityPostMutation,
 } from "@redux/api/communityApi";
-import { uploadFileToR2 } from "@utils/mediaUpload";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import { uploadFileToR2 } from "@utils/mediaUpload";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };

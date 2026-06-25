@@ -7,7 +7,8 @@ import {
   ArrowRight,
   ArrowLeft,
 } from "lucide-react";
-import useDispute from "@hooks/useDispute";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import useDispute from "@hooks/useDispute";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 
 export default function ReportIssueFlowModal({ booking, onClose, onSuccess }) {
@@ -22,7 +23,7 @@ export default function ReportIssueFlowModal({ booking, onClose, onSuccess }) {
 
   const predefinedReasons = [
     "Rain / Bad Weather",
-    "Ground Not Playable",
+    "Venue Not Playable",
     "Water Logging",
     "Venue Closed / Unavailable",
     "Double booked by owner",

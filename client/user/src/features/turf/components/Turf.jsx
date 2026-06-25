@@ -16,7 +16,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import useRecommendations from "@hooks/useRecommendations";
-import { setFilters } from "@redux/slices/turfSlice";import { Button, Input } from "@kridaz/ui";
+import { setFilters } from "@redux/slices/turfSlice";
+import { Button, Input } from "@kridaz/ui";
 
 
 /**

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronRight, Users } from "lucide-react";import { Button } from "@kridaz/ui";
+import { X, ChevronRight, Users } from "lucide-react";
+import { Button } from "@kridaz/ui";
 
 
 /**

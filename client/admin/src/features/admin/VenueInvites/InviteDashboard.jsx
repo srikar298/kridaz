@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Copy, RotateCw, XCircle, Plus } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "@hooks/useAxiosInstance";import { Button } from "@kridaz/ui";
+import axiosInstance from "@hooks/useAxiosInstance";
+import { Button } from "@kridaz/ui";
 
 
 const InviteDashboard = () => {

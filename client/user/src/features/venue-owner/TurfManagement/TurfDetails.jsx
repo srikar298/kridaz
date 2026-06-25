@@ -28,7 +28,8 @@ import {
 import useTurfDetails from "@hooks/venue-owner/useTurfDetails";
 import DashboardSkeleton from "../Dashboard/DashboardSkeleton";
 import toast from "react-hot-toast";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button } from "@kridaz/ui";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import { Button } from "@kridaz/ui";
 
 
 // Booking Information Popup
@@ -776,17 +777,17 @@ export default function TurfDetails() {
               <div className="space-y-4">
                 <div>
                   <p className="text-[10px] text-[#444] font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
-                    Ground Composition
+                    enue Composition
                     {pending.groundTypes && <PendingBadge />}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {(pending.groundTypes || turf.groundTypes || []).map(
-                      (ground, i) => (
+                      (enue, i) => (
                         <span
                           key={i}
                           className={`px-2 py-1 border rounded-[10px] text-[12px] font-medium uppercase snap-start ${pending.groundTypes ? "bg-amber-500/5 border-amber-500/20 text-amber-500" : "bg-card border-white/10 text-white"}`}
                         >
-                          {ground}
+                          {enue}
                         </span>
                       )
                     )}

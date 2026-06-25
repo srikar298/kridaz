@@ -1,5 +1,6 @@
 import React from "react";
-import { ShieldCheck, Search, PlusCircle, CheckCircle2 } from "lucide-react";import { Button } from "@kridaz/ui";
+import { ShieldCheck, Search, PlusCircle, CheckCircle2 } from "lucide-react";
+import { Button } from "@kridaz/ui";
 
 
 const OfficialsTab = ({ tournament }) => {

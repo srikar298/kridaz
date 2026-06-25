@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, User, X, Loader2, MapPin } from "lucide-react";
 import axios from "axios";
-import { toast } from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
+import { toast } from "react-hot-toast";
+import { Button, Input } from "@kridaz/ui";
 
 
 const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent }) => {

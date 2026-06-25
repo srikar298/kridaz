@@ -63,7 +63,8 @@ import {
   reverseGeocode,
 } from "../../../shared/utils/locationService";
 import { countryCodes } from "../../../utils/countryCodes";
-import CreateTeamModal from "../../teams/components/CreateTeamModal";import { Button, Input, Select } from "@kridaz/ui";
+import CreateTeamModal from "../../teams/components/CreateTeamModal";
+import { Button, Input, Select } from "@kridaz/ui";
 
 
 // ─── Static Data ─────────────────────────────────────────────────────────────
@@ -89,8 +90,8 @@ const BALL_TYPES = [
 ];
 
 const GROUND_TYPES = [
-  { value: "OUTDOOR", label: "Outdoor Ground", emoji: "🌳" },
-  { value: "INDOOR", label: "Indoor Ground", emoji: "🏟️" },
+  { value: "OUTDOOR", label: "Outdoor Venue", emoji: "🌳" },
+  { value: "INDOOR", label: "Indoor Venue", emoji: "🏟️" },
   { value: "TURF", label: "Artificial Turf", emoji: "🟩" },
 ];
 
@@ -1265,7 +1266,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                   type="button"
                   onClick={handleDetectLiveLocation}
                   disabled={isDetectingLocation}
-                  className="px-4 h-11 bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 rounded-[12px] text-white hover:text-secondary font-semibold text-sm transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:!text-black/50 flex-shrink-0"
+                  className="px-4 h-11 bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 rounded-[12px] text-white hover:text-secondary font-semibold text-sm transition-all flex items-center justify-center gap-2 group disabled:opacity-50 flex-shrink-0"
                 >
                   {isDetectingLocation && (
                     <Loader2
@@ -1286,7 +1287,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
               <Button
                 type="button"
                 onClick={() => setShowGroundsDropdown(!showGroundsDropdown)}
-                className={`w-full h-auto flex items-center justify-between p-3.5 rounded-[12px] border text-sm font-semibold transition-all text-left ${
+                className={`w-full flex items-center justify-between p-3.5 rounded-[12px] border text-sm font-semibold transition-all text-left ${
                   formData.venueId
                     ? "bg-secondary/10 border-secondary/30 text-secondary"
                     : "bg-white/[0.03] border-white/10 text-white/60 hover:border-white/20"
@@ -1300,7 +1301,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                     }
                   />
                   <span className="truncate">
-                    {groundsData?.grounds?.find(
+                    {groundsData?.enues?.find(
                       (g) => g.id === formData.venueId
                     )?.name ||
                       prebookedTurfs.find(
@@ -1326,7 +1327,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                     exit={{ opacity: 0, height: 0 }}
                     className="overflow-hidden mt-2 bg-card border border-white/10 rounded-[12px] p-3 space-y-3 z-50 shadow-2xl relative"
                   >
-                    {/* Dedicated search bar for listed grounds */}
+                    {/* Dedicated search bar for listed enues */}
                     <div className="relative">
                       <Search
                         className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
@@ -1350,7 +1351,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                       )}
                     </div>
 
-                    {/* Scrollable list of grounds filtered ONLY by this search bar */}
+                    {/* Scrollable list of enues filtered ONLY by this search bar */}
                     <div className="max-h-52 overflow-y-auto space-y-3 pr-1 scrollbar-hide">
                       {isLoadingGrounds ? (
                         <div className="flex justify-center py-4">
@@ -1388,7 +1389,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                               );
                             }) || [];
 
-                          // Exclude prebooked grounds from the listed grounds section to prevent double display
+                          // Exclude prebooked enues from the listed enues section to prevent double display
                           const prebookedIds = new Set(
                             prebookedTurfs.map((g) => g.id || g._id)
                           );
@@ -1404,7 +1405,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                           if (!hasPrebooked && !hasListed) {
                             return (
                               <div className="text-center py-6 text-[10px] font-bold text-white/30 uppercase tracking-wider">
-                                No matching grounds or turfs found
+                                No matching enues or turfs found
                               </div>
                             );
                           }
@@ -1491,7 +1492,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
 
                           return (
                             <div className="space-y-4">
-                              {/* Prebooked grounds section */}
+                              {/* Prebooked enues section */}
                               {hasPrebooked && (
                                 <div className="space-y-1.5">
                                   <div className="flex items-center gap-1.5 px-1">
@@ -1500,7 +1501,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                                       className="text-primary"
                                     />
                                     <span className="text-[9px] font-black uppercase tracking-widest text-primary">
-                                      Your Prebooked Grounds
+                                      Your Prebooked enues
                                     </span>
                                   </div>
                                   <div className="space-y-1">
@@ -1511,7 +1512,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                                 </div>
                               )}
 
-                              {/* Standard listed grounds section */}
+                              {/* Standard listed enues section */}
                               {hasListed && (
                                 <div className="space-y-1.5">
                                   {hasPrebooked && (
@@ -1929,10 +1930,10 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                 </Select>
               </div>
 
-              {/* Ground Type */}
+              {/* enue Type */}
               <div className="space-y-1">
                 <label htmlFor="groundType" className={labelClass}>
-                  Ground Type
+                  enue Type
                 </label>
                 <Select
                   id="groundType"
@@ -2394,7 +2395,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                             selectPlayer(p);
                           }
                         }}
-                        className={`w-full h-auto flex items-center justify-between p-3 rounded-[12px] border transition-all text-left ${isAdded ? "bg-primary/10 border-primary/30" : "bg-white/5 hover:bg-white/10 border-transparent hover:border-white/10"}`}
+                        className={`w-full flex items-center justify-between p-3 rounded-[12px] border transition-all text-left ${isAdded ? "bg-primary/10 border-primary/30" : "bg-white/5 hover:bg-white/10 border-transparent hover:border-white/10"}`}
                       >
                         <div className="flex items-center gap-3">
                           {p.profilePicture ? (
@@ -2898,7 +2899,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                     {formData.customVenue
                       ? formData.customVenue
                       : formData.venueId
-                        ? groundsData?.grounds?.find(
+                        ? groundsData?.enues?.find(
                             (g) => g.id === formData.venueId
                           )?.name || "Sports Venue"
                         : "Select Venue"}
@@ -2981,12 +2982,12 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
 
               <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x">
                 {/* Umpires */}
-                <div className="min-w-[110px] flex-1 bg-card border border-white/5 rounded-xl py-1.5 px-3 flex flex-col items-center gap-1 snap-start relative">
+                <div className="min-w-[110px] flex-1 bg-card border border-white/5 rounded-xl py-2 px-3 flex flex-col items-center gap-1.5 snap-start relative">
                   <div className="absolute inset-0 bg-secondary/5 rounded-xl opacity-0 hover:opacity-100 transition-opacity" />
                   <div className="text-secondary relative z-10">
-                    <UserCheck size={20} strokeWidth={1.5} />
+                    <UserCheck size={24} strokeWidth={1.5} />
                   </div>
-                  <div className="text-center relative z-10">
+                  <div className="text-center relative z-10 mb-1">
                     <div className="text-white text-[10px] font-bold tracking-widest uppercase mt-1">
                       Umpires
                     </div>
@@ -2997,19 +2998,19 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                       setProRoleFilter("UMPIRE");
                       setShowProfessionalsPopup(true);
                     }}
-                    className="mt-1 text-secondary hover:scale-110 transition-transform relative z-10 p-1 bg-transparent border-0"
+                    className="w-full py-1.5 rounded-lg border border-secondary/30 hover:bg-secondary/10 text-secondary text-[10px] font-bold tracking-wider transition-colors mt-2 relative z-10"
                   >
-                    <Plus size={18} strokeWidth={3} />
+                    ADD
                   </Button>
                 </div>
 
                 {/* Scorer */}
-                <div className="min-w-[110px] flex-1 bg-card border border-white/5 rounded-xl py-1.5 px-3 flex flex-col items-center gap-1 snap-start relative">
+                <div className="min-w-[110px] flex-1 bg-card border border-white/5 rounded-xl py-2 px-3 flex flex-col items-center gap-1.5 snap-start relative">
                   <div className="absolute inset-0 bg-primary/5 rounded-xl opacity-0 hover:opacity-100 transition-opacity" />
                   <div className="text-primary relative z-10">
-                    <ClipboardList size={20} strokeWidth={1.5} />
+                    <ClipboardList size={24} strokeWidth={1.5} />
                   </div>
-                  <div className="text-center relative z-10">
+                  <div className="text-center relative z-10 mb-1">
                     <div className="text-white text-[10px] font-bold tracking-widest uppercase mt-1">
                       Scorer
                     </div>
@@ -3020,19 +3021,19 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                       setProRoleFilter("SCORER");
                       setShowProfessionalsPopup(true);
                     }}
-                    className="mt-1 text-primary hover:scale-110 transition-transform relative z-10 p-1 bg-transparent border-0"
+                    className="w-full py-1.5 rounded-lg border border-primary/30 hover:bg-primary/10 text-primary text-[10px] font-bold tracking-wider transition-colors mt-2 relative z-10"
                   >
-                    <Plus size={18} strokeWidth={3} />
+                    ADD
                   </Button>
                 </div>
 
                 {/* Streamer */}
-                <div className="min-w-[110px] flex-1 bg-card border border-white/5 rounded-xl py-1.5 px-3 flex flex-col items-center gap-1 snap-start relative">
+                <div className="min-w-[110px] flex-1 bg-card border border-white/5 rounded-xl py-2 px-3 flex flex-col items-center gap-1.5 snap-start relative">
                   <div className="absolute inset-0 bg-[#A855F7]/5 rounded-xl opacity-0 hover:opacity-100 transition-opacity" />
                   <div className="text-[#A855F7] relative z-10">
-                    <Radio size={20} strokeWidth={1.5} />
+                    <Radio size={24} strokeWidth={1.5} />
                   </div>
-                  <div className="text-center relative z-10">
+                  <div className="text-center relative z-10 mb-1">
                     <div className="text-white text-[10px] font-bold tracking-widest uppercase mt-1">
                       Streamer
                     </div>
@@ -3043,19 +3044,19 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                       setProRoleFilter("STREAMER");
                       setShowProfessionalsPopup(true);
                     }}
-                    className="mt-1 text-[#A855F7] hover:scale-110 transition-transform relative z-10 p-1 bg-transparent border-0"
+                    className="w-full py-1.5 rounded-lg border border-[#A855F7]/30 hover:bg-[#A855F7]/10 text-[#A855F7] text-[10px] font-bold tracking-wider transition-colors mt-2 relative z-10"
                   >
-                    <Plus size={18} strokeWidth={3} />
+                    ADD
                   </Button>
                 </div>
 
                 {/* Commentator */}
-                <div className="min-w-[110px] flex-1 bg-card border border-white/5 rounded-xl py-1.5 px-3 flex flex-col items-center gap-1 snap-start relative">
+                <div className="min-w-[110px] flex-1 bg-card border border-white/5 rounded-xl py-2 px-3 flex flex-col items-center gap-1.5 snap-start relative">
                   <div className="absolute inset-0 bg-[#EC4899]/5 rounded-xl opacity-0 hover:opacity-100 transition-opacity" />
                   <div className="text-[#EC4899] relative z-10">
-                    <Mic size={20} strokeWidth={1.5} />
+                    <Mic size={24} strokeWidth={1.5} />
                   </div>
-                  <div className="text-center relative z-10">
+                  <div className="text-center relative z-10 mb-1">
                     <div className="text-white text-[10px] font-bold tracking-widest uppercase mt-1">
                       Commentator
                     </div>
@@ -3066,9 +3067,9 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                       setProRoleFilter("COMMENTATOR");
                       setShowProfessionalsPopup(true);
                     }}
-                    className="mt-1 text-[#EC4899] hover:scale-110 transition-transform relative z-10 p-1 bg-transparent border-0"
+                    className="w-full py-1.5 rounded-lg border border-[#EC4899]/30 hover:bg-[#EC4899]/10 text-[#EC4899] text-[10px] font-bold tracking-wider transition-colors mt-2 relative z-10"
                   >
-                    <Plus size={18} strokeWidth={3} />
+                    ADD
                   </Button>
                 </div>
               </div>
@@ -3088,7 +3089,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                 onClick={() => setShowMatchSettingsPopup(true)}
                 className="w-full bg-card border border-white/10 rounded-[12px] px-4 py-3 text-left text-white focus:outline-none focus:border-secondary/30 transition-all text-sm font-semibold"
               >
-                <span className="block truncate">{`${BALL_TYPES.find((b) => b.value === formData.ballType)?.label || "Tennis Ball"} · ${GROUND_TYPES.find((g) => g.value === formData.groundType)?.label || "Outdoor Ground"} · ${PITCH_TYPES.find((p) => p.value === formData.pitchType)?.label || "Turf"} · ${MATCH_TIMINGS.find((m) => m.value === formData.matchTiming)?.label || "Day Match"}`}</span>
+                <span className="block truncate">{`${BALL_TYPES.find((b) => b.value === formData.ballType)?.label || "Tennis Ball"} · ${GROUND_TYPES.find((g) => g.value === formData.groundType)?.label || "Outdoor enue"} · ${PITCH_TYPES.find((p) => p.value === formData.pitchType)?.label || "Turf"} · ${MATCH_TIMINGS.find((m) => m.value === formData.matchTiming)?.label || "Day Match"}`}</span>
               </Button>
             </div>
           </div>
@@ -3308,28 +3309,28 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
 
               {/* Persistent Add Custom Venue / Pro Button */}
               <div className="flex gap-3 p-4 pb-6 border-t border-white/10 bg-black flex-shrink-0">
-                <button
+                <Button
                   onClick={step > 1 ? handlePrev : handleClose}
-                  className="px-6 py-3 rounded-[12px] border border-white/10 text-white font-bold hover:bg-white/5 hover:border-white/20 transition-all flex items-center gap-2 text-xs uppercase tracking-widest outline-none"
+                  className="px-6 py-3 rounded-[12px] border border-white/10 text-white font-bold hover:bg-white/5 hover:border-white/20 transition-all flex items-center gap-2 text-xs uppercase tracking-widest"
                 >
                   <ChevronLeft size={14} /> Back
-                </button>
+                </Button>
                 {step < STEPS.length ? (
-                  <button
+                  <Button
                     onClick={handleNext}
                     disabled={!canGoNext()}
-                    className="flex-1 py-3 px-4 rounded-[12px] bg-gradient-to-r from-secondary to-primary text-black font-black hover:opacity-90 hover:scale-[1.02] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 uppercase text-xs tracking-widest disabled:opacity-40 disabled:cursor-not-allowed disabled:!text-black/50 shadow-lg shadow-[var(--secondary)]/20 outline-none"
+                    className="flex-1 py-3 px-4 rounded-[12px] bg-gradient-to-r from-secondary to-primary text-black font-black hover:opacity-90 hover:scale-[1.02] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 uppercase text-xs tracking-widest disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-[var(--secondary)]/20"
                   >
                     <>
                       Next <ChevronRight size={14} />
                     </>
-                  </button>
+                  </Button>
                 ) : (
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setShowPasswordPopup(true)}
                     disabled={isLoading || !canGoNext()}
-                    className="flex-1 py-3 px-4 rounded-[12px] bg-gradient-to-r from-secondary to-primary text-black font-black hover:opacity-90 hover:scale-[1.02] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 uppercase text-xs tracking-widest disabled:opacity-40 disabled:cursor-not-allowed disabled:!text-black/50 shadow-lg shadow-[var(--secondary)]/20 outline-none"
+                    className="flex-1 py-3 px-4 rounded-[12px] bg-gradient-to-r from-secondary to-primary text-black font-black hover:opacity-90 hover:scale-[1.02] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 uppercase text-xs tracking-widest disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-[var(--secondary)]/20"
                   >
                     {isLoading ? (
                       <>
@@ -3341,7 +3342,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                         <Trophy size={16} /> Create Match
                       </>
                     )}
-                  </button>
+                  </Button>
                 )}
               </div>
             </motion.div>
@@ -3424,7 +3425,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                           formData.scoringPassword.trim() === "" ||
                           formData.scoringPassword.length < 6
                         }
-                        className="flex-[1.5] py-3 bg-gradient-to-r from-secondary to-primary text-black rounded-[12px] text-[11px] font-black uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-50 disabled:!text-black/50 flex items-center justify-center gap-2 shadow-lg shadow-[var(--secondary)]/10"
+                        className="flex-[1.5] py-3 bg-gradient-to-r from-secondary to-primary text-black rounded-[12px] text-[11px] font-black uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-[var(--secondary)]/10"
                       >
                         {isLoading ? (
                           <Loader2 size={14} className="animate-spin" />
@@ -3460,10 +3461,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                     <div className="w-12 h-1 bg-white/20 rounded-full mx-auto mb-6" />
                     <div className="flex flex-col">
                       <div className="flex justify-between items-center mb-6">
-                        <h3 
-                          className="text-lg font-black text-white uppercase tracking-wider"
-                          style={{ fontFamily: "'Open Sans', sans-serif" }}
-                        >
+                        <h3 className="text-lg font-black text-white uppercase tracking-wider">
                           Add Custom Venue
                         </h3>
                       </div>
@@ -3473,7 +3471,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                           <Input
                             type="text"
                             className={inputClass}
-                            placeholder="e.g. Lords Cricket Ground"
+                            placeholder="e.g. Lords Cricket Venue"
                             value={customVenueNameInput}
                             onChange={(e) =>
                               setCustomVenueNameInput(e.target.value)
@@ -3519,7 +3517,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                             setShowCustomVenuePopup(false);
                           }}
                           disabled={!customVenueNameInput.trim()}
-                          className="flex-1 py-4 rounded-[12px] bg-gradient-to-r from-secondary to-primary !text-black font-black uppercase tracking-wider disabled:opacity-50 hover:opacity-90 transition-opacity shadow-lg shadow-[var(--secondary)]/20"
+                          className="flex-1 py-4 rounded-[12px] bg-gradient-to-r from-secondary to-primary text-black font-black uppercase tracking-wider disabled:opacity-50 hover:opacity-90 transition-opacity shadow-lg shadow-[var(--secondary)]/20"
                         >
                           Add Venue
                         </Button>
@@ -3836,19 +3834,19 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                                 location: "",
                               }))
                             }
-                            className="w-full h-auto flex items-center justify-between p-4 rounded-[12px] border border-dashed transition-all text-left bg-card border-white/20 hover:border-white/40 group relative overflow-hidden"
+                            className="w-full flex items-center justify-between p-4 rounded-[12px] border border-dashed transition-all text-left bg-card border-white/20 hover:border-white/40 group relative overflow-hidden"
                           >
                             <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                            <div className="flex items-start gap-4 relative z-10 min-w-0">
-                              <div className="w-10 h-10 rounded-[12px] bg-white/5 flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform flex-shrink-0 mt-0.5">
+                            <div className="flex items-center gap-4 relative z-10">
+                              <div className="w-10 h-10 rounded-[12px] bg-white/5 flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform">
                                 <MapPin size={18} className="text-white/60" />
                               </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="font-black text-white text-sm tracking-wide break-words whitespace-normal leading-tight">
+                              <div>
+                                <div className="font-black text-white text-sm tracking-wide flex items-center gap-2">
                                   {formData.customVenue}
                                 </div>
-                                <div className="text-xs text-white/40 mt-1 break-words whitespace-normal leading-tight">
+                                <div className="text-xs text-white/40 mt-0.5">
                                   {formData.location || "Custom Location"}
                                 </div>
                               </div>
@@ -3863,7 +3861,7 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                         ) : (
                           (() => {
                             const filteredVenues =
-                              groundsData?.grounds?.filter(
+                              groundsData?.enues?.filter(
                                 (g) =>
                                   (!venueStateFilter ||
                                     g.state === venueStateFilter) &&
@@ -3909,22 +3907,22 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                                   setShowVenuePopup(false);
                                   setShowGroundsDropdown(false);
                                 }}
-                                className={`w-full h-auto flex items-center justify-between p-3 rounded-[12px] border transition-all text-left ${formData.venueId === g.id ? "bg-secondary/10 border-secondary" : "bg-white/5 border-white/10 hover:border-white/20"}`}
+                                className={`w-full flex items-center justify-between p-3 rounded-[12px] border transition-all text-left ${formData.venueId === g.id ? "bg-secondary/10 border-secondary" : "bg-white/5 border-white/10 hover:border-white/20"}`}
                               >
-                                <div className="flex items-start gap-3 min-w-0 flex-1 pr-2">
+                                <div className="flex items-center gap-3">
                                   <MapPin
                                     size={18}
-                                    className={`flex-shrink-0 mt-0.5 ${
+                                    className={
                                       formData.venueId === g.id
                                         ? "text-secondary"
                                         : "text-white/40"
-                                    }`}
+                                    }
                                   />
-                                  <div className="min-w-0 flex-1">
-                                    <div className="font-bold text-white text-sm break-words whitespace-normal leading-tight">
+                                  <div>
+                                    <div className="font-bold text-white text-sm">
                                       {g.name}
                                     </div>
-                                    <div className="text-[10px] text-white/40 mt-1 break-words whitespace-normal leading-tight">
+                                    <div className="text-[10px] text-white/40">
                                       {g.city}
                                     </div>
                                   </div>

@@ -1,0 +1,697 @@
+[
+  {
+    "module": "Core",
+    "name": "GlobalSearch",
+    "type": "Screen"
+  },
+  {
+    "module": "Core",
+    "name": "Home",
+    "type": "Modal"
+  },
+  {
+    "module": "Core",
+    "name": "DashboardHero",
+    "type": "Modal"
+  },
+  {
+    "module": "Core",
+    "name": "JoinGamesSection",
+    "type": "Screen"
+  },
+  {
+    "module": "Core",
+    "name": "LandingHeroTemplate",
+    "type": "Screen"
+  },
+  {
+    "module": "Core",
+    "name": "PlayersSection",
+    "type": "Screen"
+  },
+  {
+    "module": "Core",
+    "name": "ProfessionalsSection",
+    "type": "Screen"
+  },
+  {
+    "module": "Core",
+    "name": "SocialArenaSection",
+    "type": "Screen"
+  },
+  {
+    "module": "Core",
+    "name": "TestimonialMarquee",
+    "type": "Screen"
+  },
+  {
+    "module": "Core",
+    "name": "VenuesSection",
+    "type": "Modal"
+  },
+  {
+    "module": "Core",
+    "name": "LandingPage",
+    "type": "Screen"
+  },
+  {
+    "module": "Core",
+    "name": "NewPostLanding",
+    "type": "Screen"
+  },
+  {
+    "module": "auth",
+    "name": "AuthModal",
+    "type": "Modal"
+  },
+  {
+    "module": "auth",
+    "name": "ForgotPassword",
+    "type": "Screen"
+  },
+  {
+    "module": "auth",
+    "name": "Login",
+    "type": "Modal"
+  },
+  {
+    "module": "auth",
+    "name": "SignUp",
+    "type": "Modal"
+  },
+  {
+    "module": "blogs",
+    "name": "BlogDetail",
+    "type": "Screen"
+  },
+  {
+    "module": "blogs",
+    "name": "Blogs",
+    "type": "Screen"
+  },
+  {
+    "module": "business",
+    "name": "BusinessRegistration",
+    "type": "Modal"
+  },
+  {
+    "module": "business",
+    "name": "ClaimVenueInvite",
+    "type": "Screen"
+  },
+  {
+    "module": "business",
+    "name": "ProfessionalLanding",
+    "type": "Modal"
+  },
+  {
+    "module": "business",
+    "name": "VenueOwnerLanding",
+    "type": "Modal"
+  },
+  {
+    "module": "chat",
+    "name": "AddGroupToCommunityModal",
+    "type": "Modal"
+  },
+  {
+    "module": "chat",
+    "name": "ChatSidebar",
+    "type": "Modal"
+  },
+  {
+    "module": "chat",
+    "name": "ChatWindow",
+    "type": "Modal"
+  },
+  {
+    "module": "chat",
+    "name": "CreateCommunityModal",
+    "type": "Modal"
+  },
+  {
+    "module": "chat",
+    "name": "CreateGroupModal",
+    "type": "Modal"
+  },
+  {
+    "module": "chat",
+    "name": "GroupInfoModal",
+    "type": "Modal"
+  },
+  {
+    "module": "chat",
+    "name": "ManageCommunityAdminsModal",
+    "type": "Modal"
+  },
+  {
+    "module": "chat",
+    "name": "Messages",
+    "type": "Modal"
+  },
+  {
+    "module": "games",
+    "name": "GameDetailsModal",
+    "type": "Modal"
+  },
+  {
+    "module": "games",
+    "name": "LookingForDetailModal",
+    "type": "Modal"
+  },
+  {
+    "module": "games",
+    "name": "HostGame",
+    "type": "Modal"
+  },
+  {
+    "module": "games",
+    "name": "HostGameLanding",
+    "type": "Screen"
+  },
+  {
+    "module": "games",
+    "name": "JoinGameDetails",
+    "type": "Modal"
+  },
+  {
+    "module": "games",
+    "name": "JoinGames",
+    "type": "Modal"
+  },
+  {
+    "module": "games",
+    "name": "LookingForWizard",
+    "type": "Modal"
+  },
+  {
+    "module": "games",
+    "name": "MatchDetails",
+    "type": "Screen"
+  },
+  {
+    "module": "games",
+    "name": "MyHostedGames",
+    "type": "Modal"
+  },
+  {
+    "module": "games",
+    "name": "MyJoinedGames",
+    "type": "Modal"
+  },
+  {
+    "module": "games",
+    "name": "ProMatchWizard",
+    "type": "Modal"
+  },
+  {
+    "module": "games",
+    "name": "QuickMatchWizard",
+    "type": "Modal"
+  },
+  {
+    "module": "leaderboard",
+    "name": "Leaderboard",
+    "type": "Screen"
+  },
+  {
+    "module": "legal",
+    "name": "ContactUs",
+    "type": "Screen"
+  },
+  {
+    "module": "legal",
+    "name": "DataDeletionInstructions",
+    "type": "Screen"
+  },
+  {
+    "module": "legal",
+    "name": "FAQ",
+    "type": "Screen"
+  },
+  {
+    "module": "legal",
+    "name": "PrivacyPolicy",
+    "type": "Screen"
+  },
+  {
+    "module": "legal",
+    "name": "TermsOfService",
+    "type": "Screen"
+  },
+  {
+    "module": "networking",
+    "name": "CommunityFeed",
+    "type": "Modal"
+  },
+  {
+    "module": "networking",
+    "name": "DeleteConfirmModal",
+    "type": "Modal"
+  },
+  {
+    "module": "networking",
+    "name": "PostDetailModal",
+    "type": "Modal"
+  },
+  {
+    "module": "networking",
+    "name": "PracticeScheduling",
+    "type": "Modal"
+  },
+  {
+    "module": "networking",
+    "name": "ProfessionalCustomers",
+    "type": "Modal"
+  },
+  {
+    "module": "networking",
+    "name": "ReportModal",
+    "type": "Modal"
+  },
+  {
+    "module": "networking",
+    "name": "ShareModal",
+    "type": "Modal"
+  },
+  {
+    "module": "networking",
+    "name": "Community",
+    "type": "Modal"
+  },
+  {
+    "module": "networking",
+    "name": "CreatePostPage",
+    "type": "Screen"
+  },
+  {
+    "module": "networking",
+    "name": "CreateStoryPage",
+    "type": "Screen"
+  },
+  {
+    "module": "networking",
+    "name": "FindPlayers",
+    "type": "Screen"
+  },
+  {
+    "module": "networking",
+    "name": "FindProfessionals",
+    "type": "Modal"
+  },
+  {
+    "module": "notifications",
+    "name": "NotificationsPage",
+    "type": "Screen"
+  },
+  {
+    "module": "partner-profile",
+    "name": "DashboardProfile",
+    "type": "Screen"
+  },
+  {
+    "module": "professional",
+    "name": "BookingsTab",
+    "type": "Screen"
+  },
+  {
+    "module": "professional",
+    "name": "OverviewTab",
+    "type": "Modal"
+  },
+  {
+    "module": "professional",
+    "name": "PayoutsTab",
+    "type": "Modal"
+  },
+  {
+    "module": "professional",
+    "name": "ProfessionalDashboard",
+    "type": "Screen"
+  },
+  {
+    "module": "professional",
+    "name": "ReviewsTab",
+    "type": "Screen"
+  },
+  {
+    "module": "professional",
+    "name": "SupportTab",
+    "type": "Screen"
+  },
+  {
+    "module": "professional",
+    "name": "TrustScoreHistory",
+    "type": "Screen"
+  },
+  {
+    "module": "profile",
+    "name": "EditProfileModal",
+    "type": "Modal"
+  },
+  {
+    "module": "profile",
+    "name": "RequestProModal",
+    "type": "Modal"
+  },
+  {
+    "module": "profile",
+    "name": "Profile",
+    "type": "Modal"
+  },
+  {
+    "module": "reels",
+    "name": "ReelItem",
+    "type": "Modal"
+  },
+  {
+    "module": "reels",
+    "name": "ReelAnalytics",
+    "type": "Screen"
+  },
+  {
+    "module": "reels",
+    "name": "ReelsFeed",
+    "type": "Screen"
+  },
+  {
+    "module": "reels",
+    "name": "UploadReel",
+    "type": "Screen"
+  },
+  {
+    "module": "saved",
+    "name": "SavedPage",
+    "type": "Screen"
+  },
+  {
+    "module": "scoring",
+    "name": "CustomRunsModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "DeleteMatchModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "EndMatchModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "ExtraRunsModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "FieldingPositionModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "InningsSetupModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "MatchExitModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "MatchReportModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "PenaltyModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "ScoringPasswordModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "SelectBowlerModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "StartScoringModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "TickerThemeStoreModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "TossModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "VisualWagonWheelModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "WicketModal",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "LiveOverlay",
+    "type": "Screen"
+  },
+  {
+    "module": "scoring",
+    "name": "MatchAnalytics",
+    "type": "Screen"
+  },
+  {
+    "module": "scoring",
+    "name": "MatchDetails",
+    "type": "Screen"
+  },
+  {
+    "module": "scoring",
+    "name": "ScoringApp",
+    "type": "Modal"
+  },
+  {
+    "module": "scoring",
+    "name": "ThemePreview",
+    "type": "Screen"
+  },
+  {
+    "module": "teams",
+    "name": "AddOpponentModal",
+    "type": "Modal"
+  },
+  {
+    "module": "teams",
+    "name": "CreateTeamModal",
+    "type": "Modal"
+  },
+  {
+    "module": "teams",
+    "name": "InviteMemberModal",
+    "type": "Modal"
+  },
+  {
+    "module": "teams",
+    "name": "SlotSelectionModal",
+    "type": "Modal"
+  },
+  {
+    "module": "teams",
+    "name": "TeamMembersModal",
+    "type": "Modal"
+  },
+  {
+    "module": "teams",
+    "name": "TeamSidebar",
+    "type": "Modal"
+  },
+  {
+    "module": "teams",
+    "name": "TeamPass",
+    "type": "Screen"
+  },
+  {
+    "module": "teams",
+    "name": "TeamProfile",
+    "type": "Modal"
+  },
+  {
+    "module": "teams",
+    "name": "Teams",
+    "type": "Modal"
+  },
+  {
+    "module": "tournament",
+    "name": "KnockoutSchedulerModal",
+    "type": "Modal"
+  },
+  {
+    "module": "tournament",
+    "name": "ScheduleTab",
+    "type": "Modal"
+  },
+  {
+    "module": "tournament",
+    "name": "RegistrationModal",
+    "type": "Modal"
+  },
+  {
+    "module": "tournament",
+    "name": "TournamentDashboard",
+    "type": "Modal"
+  },
+  {
+    "module": "tournament",
+    "name": "TournamentPublicPage",
+    "type": "Modal"
+  },
+  {
+    "module": "tournament",
+    "name": "TournamentWizard",
+    "type": "Screen"
+  },
+  {
+    "module": "turf",
+    "name": "BookingPass",
+    "type": "Modal"
+  },
+  {
+    "module": "turf",
+    "name": "TurfBookingHistory",
+    "type": "Modal"
+  },
+  {
+    "module": "turf",
+    "name": "TurfCardMobile",
+    "type": "Modal"
+  },
+  {
+    "module": "turf",
+    "name": "TurfDetails",
+    "type": "Modal"
+  },
+  {
+    "module": "turf",
+    "name": "BookingInvoice",
+    "type": "Screen"
+  },
+  {
+    "module": "turf",
+    "name": "CheckoutPage",
+    "type": "Screen"
+  },
+  {
+    "module": "venue-owner",
+    "name": "VenueBanking",
+    "type": "Modal"
+  },
+  {
+    "module": "venue-owner",
+    "name": "OccupancyHeatmap",
+    "type": "Modal"
+  },
+  {
+    "module": "venue-owner",
+    "name": "ManualBookingModal",
+    "type": "Modal"
+  },
+  {
+    "module": "venue-owner",
+    "name": "VenueOwnerPromotions",
+    "type": "Modal"
+  },
+  {
+    "module": "venue-owner",
+    "name": "VenueOwnerRevenue",
+    "type": "Modal"
+  },
+  {
+    "module": "venue-owner",
+    "name": "TurfDetails",
+    "type": "Modal"
+  },
+  {
+    "module": "wallet",
+    "name": "Wallet",
+    "type": "Screen"
+  },
+  {
+    "module": "Shared",
+    "name": "CoinDeductionModal",
+    "type": "Modal"
+  },
+  {
+    "module": "Shared",
+    "name": "ConfirmModal",
+    "type": "Modal"
+  },
+  {
+    "module": "Shared",
+    "name": "EditProfileModal",
+    "type": "Modal"
+  },
+  {
+    "module": "Shared",
+    "name": "ForwardModal",
+    "type": "Modal"
+  },
+  {
+    "module": "Shared",
+    "name": "ImageCropperModal",
+    "type": "Modal"
+  },
+  {
+    "module": "Shared",
+    "name": "InterestsModal",
+    "type": "Modal"
+  },
+  {
+    "module": "Shared",
+    "name": "LocationSidebar",
+    "type": "Modal"
+  },
+  {
+    "module": "Shared",
+    "name": "LoginModal",
+    "type": "Modal"
+  },
+  {
+    "module": "Shared",
+    "name": "NetworkModal",
+    "type": "Modal"
+  },
+  {
+    "module": "Shared",
+    "name": "OnboardingModal",
+    "type": "Modal"
+  },
+  {
+    "module": "Shared",
+    "name": "ShareTurfModal",
+    "type": "Modal"
+  },
+  {
+    "module": "Disputes",
+    "name": "RaiseDisputeModal",
+    "type": "Modal"
+  },
+  {
+    "module": "Disputes",
+    "name": "ReportIssueFlowModal",
+    "type": "Modal"
+  }
+]

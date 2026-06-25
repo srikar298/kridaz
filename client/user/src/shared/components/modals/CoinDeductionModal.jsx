@@ -25,7 +25,8 @@ import {
   loadRazorpay,
 } from "@infrastructure/razorpay";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";import { Button, Input } from "@kridaz/ui";
+import { Link } from "react-router-dom";
+import { Button, Input } from "@kridaz/ui";
 
 
 const CoinDeductionModal = ({

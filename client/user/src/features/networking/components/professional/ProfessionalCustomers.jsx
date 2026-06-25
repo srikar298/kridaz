@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { Search, Plus, User, Phone, Mail, Loader2, Users } from "lucide-react";
-import toast from "react-hot-toast";import { Button, Input, Textarea } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button, Input, Textarea } from "@kridaz/ui";
 
 
 export default function ProfessionalCustomers() {

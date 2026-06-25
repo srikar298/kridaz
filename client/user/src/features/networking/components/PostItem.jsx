@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { MoreVertical, ShieldCheck, Video } from "lucide-react";
 import CommentIcon from "../../../assets/icons/comment_icon.png";
@@ -8,7 +8,8 @@ import {
   useLikePostMutation,
   useAddPostCommentMutation,
 } from "@redux/api/communityApi";
-import toast from "react-hot-toast";import { Button, Input } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button, Input } from "@kridaz/ui";
 
 
 const getPostId = (post) => post?._id || post?.id;
@@ -34,9 +35,18 @@ const PostItem = React.memo(
     const [commentInput, setCommentInput] = useState("");
     const [activeDropdown, setActiveDropdown] = useState(false);
     const [activeMediaIndex, setActiveMediaIndex] = useState(0);
+
     const [isCaptionExpanded, setIsCaptionExpanded] = useState(false);
-    const combinedLength = (post.title?.length || 0) + (post.content?.length || 0);
-    const isLongCaption = combinedLength > 150;
+    const [hasMoreCaption, setHasMoreCaption] = useState(false);
+    const captionRef = useRef(null);
+
+    useEffect(() => {
+      if (captionRef.current) {
+        setHasMoreCaption(
+          captionRef.current.scrollHeight > captionRef.current.clientHeight
+        );
+      }
+    }, [post.content, post.title]);
 
     const handleMediaScroll = (e) => {
       if (!e.target) return;
@@ -221,12 +231,12 @@ const PostItem = React.memo(
             />
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[13px] font-bold text-white transition-colors">
+                <span className="text-[12px] font-bold text-white transition-colors">
                   {post.adminId?.name || post.author?.name || "Player"}
                 </span>
                 <ShieldCheck size={14} className="text-primary" />
               </div>
-              <div className="text-[11px] font-bold text-muted-foreground mt-0.5">
+              <div className="text-[10px] font-medium text-muted-foreground mt-0.5">
                 {getFormattedTime(post.createdAt)}
               </div>
             </div>
@@ -268,23 +278,102 @@ const PostItem = React.memo(
           </div>
         </div>
 
-                {/* Caption */}
+        {/* Caption */}
         {(post.title || post.content) && (
-          <div className="text-[12px] font-medium leading-relaxed px-4 pb-3">
-            <div className={`${!isCaptionExpanded && isLongCaption ? "line-clamp-4" : ""} whitespace-pre-wrap break-words`}>
-              {post.title && <span className="font-bold mr-2">{post.title}</span>}
-              <span className="text-white/90">
-                {post.content}
-              </span>
+          <div className="text-[13px] font-normal leading-snug px-4 pb-3">
+            <div
+              ref={captionRef}
+              className={`text-white/90 whitespace-pre-wrap ${
+                !isCaptionExpanded ? "line-clamp-2" : ""
+              }`}
+            >
+              {post.title && <span className="font-semibold mr-1.5 text-white">{post.title}</span>}
+              {post.content}
             </div>
-            {isLongCaption && (
-              <button 
+            {hasMoreCaption && (
+              <button
                 onClick={() => setIsCaptionExpanded(!isCaptionExpanded)}
-                className="text-primary font-bold mt-1 text-[12px] hover:underline"
+                className="text-primary font-semibold mt-1 text-[11px] hover:underline block focus:outline-none border-0 bg-transparent p-0"
               >
-                {isCaptionExpanded ? "See less" : "See more"}
+                {isCaptionExpanded ? "Read less" : "Read more"}
               </button>
             )}
+          </div>
+        )}
+
+        {/* Looking For Details */}
+        {post.postType === "LOOKING_FOR" && post.metadata && (
+          <div className="px-4 pb-3 flex flex-col gap-2 text-[12px]">
+             <div className="bg-white/5 border border-white/10 rounded-[12px] p-3 space-y-2">
+                <div className="flex justify-between items-start mb-2">
+                   <div>
+                     <div className="text-[13px] font-bold text-white uppercase">{post.metadata.subcategory} - {post.metadata.category}</div>
+                     <div className="text-[11px] text-muted-foreground mt-0.5">{post.metadata.lookingFor}</div>
+                   </div>
+                   <span className="bg-primary/20 text-primary px-2 py-1 rounded-full text-[10px] font-bold uppercase shrink-0">
+                     Looking For
+                   </span>
+                </div>
+                
+                {post.metadata.roles && post.metadata.roles.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    {post.metadata.roles.map(r => (
+                       <span key={r} className="bg-white/10 text-white px-2 py-1 rounded-[6px] text-[11px] font-bold">
+                         {r}
+                       </span>
+                    ))}
+                  </div>
+                )}
+                
+                {post.metadata.location?.address && (
+                  <div className="flex items-center gap-2 text-[12px] text-white/80">
+                    <span className="font-bold shrink-0">Location:</span> 
+                    <span className="truncate">{post.metadata.location.address}</span>
+                  </div>
+                )}
+                
+                {(post.metadata.date || post.metadata.time || post.metadata.duration) && (
+                   <div className="flex items-center gap-2 text-[12px] text-white/80">
+                      <span className="font-bold">When:</span> 
+                      {post.metadata.date && new Date(post.metadata.date).toLocaleDateString()} 
+                      {post.metadata.time && ` at ${post.metadata.time}`}
+                      {post.metadata.duration && ` (${post.metadata.duration})`}
+                   </div>
+                )}
+                
+                {post.metadata.budget && (
+                   <div className="flex items-center gap-2 text-[12px] text-white/80">
+                      <span className="font-bold">Budget:</span> {post.metadata.budget}
+                   </div>
+                )}
+                
+                {post.metadata.experienceLevel && (
+                   <div className="flex items-center gap-2 text-[12px] text-white/80">
+                      <span className="font-bold">Experience:</span> {post.metadata.experienceLevel}
+                   </div>
+                )}
+             </div>
+             
+             {/* Contact Button */}
+             {post.metadata.contactPreference && (
+               <div className="mt-2 flex gap-2">
+                 {post.metadata.contactPreference === "Kridaz DM" && (
+                   <Button onClick={() => window.location.href = `/messages/${post.adminId?.id || post.authorId || post.author?._id}`} className="w-full bg-primary text-black font-bold h-9">
+                     Message Kridaz DM
+                   </Button>
+                 )}
+                 {post.metadata.contactPreference === "Call" && (
+                   <Button onClick={() => window.location.href = `tel:${post.adminId?.phone || post.author?.phone || post.author?.phoneNumber}`} className="w-full bg-primary text-black font-bold h-9">
+                     Call {post.adminId?.phone || post.author?.phone || post.author?.phoneNumber || "User"}
+                   </Button>
+                 )}
+                 {post.metadata.contactPreference === "WhatsApp" && (
+                   <Button onClick={() => window.open(`https://wa.me/${(post.adminId?.phone || post.author?.phone || post.author?.phoneNumber || "").replace(/\D/g,'')}`, '_blank')} className="w-full bg-[#25D366] text-white font-bold h-9">
+                     WhatsApp {post.adminId?.phone || post.author?.phone || post.author?.phoneNumber || "User"}
+                   </Button>
+                 )}
+               </div>
+             )}
           </div>
         )}
 
@@ -468,7 +557,7 @@ const PostItem = React.memo(
 
         {/* Likes Summary */}
         {post.likes?.length > 0 && (
-          <div className="flex items-center gap-2 text-[11px] font-medium text-white/50 px-4 py-3">
+          <div className="flex items-center gap-2 text-[10px] font-medium text-white/50 px-4 py-2.5">
             <div className="flex -space-x-1.5 shrink-0">
               {post.likes.slice(0, 3).map((likeUser, i) => (
                 <div
@@ -491,7 +580,7 @@ const PostItem = React.memo(
                 </div>
               ))}
             </div>
-            <p className="text-[11px] text-white/50 font-medium">
+            <p className="text-[10px] text-white/50 font-medium">
               {post.likes.length === 1 && (
                 <span>
                   Liked by{" "}
@@ -534,10 +623,10 @@ const PostItem = React.memo(
         )}
 
         {/* Action Bar */}
-        <div className="flex items-center gap-5 border-t border-white/10 bg-background px-4 py-3">
+        <div className="flex items-center justify-between border-t border-white/10 bg-background px-2 py-1">
           <button
             onClick={handleLike}
-            className="flex items-center gap-2 transition-colors group"
+            className="flex-1 flex items-center justify-center gap-2 py-2 transition-colors group"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -567,36 +656,39 @@ const PostItem = React.memo(
                 d="M4 21h1V8H4c-1.1 0-2 .9-2 2v9c0 1.1.9 2 2 2M20 8h-6.61l1.12-3.37c.2-.61.1-1.28-.27-1.8c-.38-.52-.98-.83-1.62-.83h-.61c-.3 0-.58.13-.77.36L7.01 7.44V21h10.31a2 2 0 0 0 1.87-1.3l2.76-7.35c.04-.11.06-.23.06-.35v-2c0-1.1-.9-2-2-2Z"
               />
             </svg>
-            <span className="text-[12px] font-bold text-foreground group-hover:text-white transition-colors">
-              {post.likes?.length || 0}
-            </span>
+            {post.likes?.length > 0 && (
+              <span className="text-[12px] font-bold text-foreground group-hover:text-white transition-colors">
+                {post.likes.length}
+              </span>
+            )}
           </button>
           <button
             onClick={() => setExpandedComments(!expandedComments)}
-            className="flex items-center gap-2 transition-colors group"
+            className="flex-1 flex items-center justify-center gap-2 py-2 transition-colors group"
           >
             <img
               src={CommentIcon}
               alt="Comment"
               className="w-[18px] h-[18px] object-contain transition-all duration-200 opacity-70 group-hover:opacity-100 brightness-0 invert"
             />
-            <span className="text-[12px] font-bold text-foreground group-hover:text-white transition-colors">
-              {post.totalComments || post.comments?.length || 0}
-            </span>
+            {(post.totalComments > 0 || post.comments?.length > 0) && (
+              <span className="text-[12px] font-bold text-foreground group-hover:text-white transition-colors">
+                {post.totalComments || post.comments.length}
+              </span>
+            )}
           </button>
           <button
             onClick={(e) => {
               e.stopPropagation();
               onSharePost(postId);
             }}
-            className="flex items-center gap-2 transition-colors group"
+            className="flex-1 flex items-center justify-center py-2 transition-colors group"
           >
             <img
               src={ShareIcon}
               alt="Share"
               className="w-[18px] h-[18px] object-contain transition-all duration-200 opacity-70 group-hover:opacity-100 brightness-0 invert"
             />
-            <span className="text-[12px] font-bold text-foreground group-hover:text-white transition-colors">Share</span>
           </button>
         </div>
 
@@ -618,7 +710,7 @@ const PostItem = React.memo(
                       return (
                         <div
                           key={comment.id || comment._id}
-                          className="flex items-start gap-2 text-[12px] leading-relaxed"
+                          className="flex items-start gap-2 text-[11px] leading-normal"
                         >
                           <Link
                             to={`/profile/${commentUser?.id || commentUser?._id}`}
@@ -642,7 +734,7 @@ const PostItem = React.memo(
                   </div>
                 )}
                 {post.comments?.length === 0 && (
-                  <p className="text-[12px] text-white/30 italic">
+                  <p className="text-[11px] text-white/30 italic">
                     No comments yet. Be the first!
                   </p>
                 )}
@@ -657,7 +749,7 @@ const PostItem = React.memo(
                   <Input
                     type="text"
                     placeholder="Add a comment..."
-                    className="flex-1 bg-transparent text-[12px] font-medium outline-none text-white placeholder:text-muted-foreground"
+                    className="flex-1 bg-transparent text-[11px] font-medium outline-none text-white placeholder:text-muted-foreground"
                     value={commentInput}
                     onChange={(e) => setCommentInput(e.target.value)}
                     onKeyDown={(e) => {
@@ -667,7 +759,7 @@ const PostItem = React.memo(
                   <button
                     onClick={handleAddComment}
                     disabled={!commentInput.trim()}
-                    className={`text-[12px] font-bold px-3 py-1.5 rounded-full transition-all ${
+                    className={`text-[11px] font-bold px-3 py-1.5 rounded-full transition-all ${
                       commentInput.trim()
                         ? "bg-primary text-black hover:bg-primary/80 cursor-pointer"
                         : "bg-card text-muted-foreground cursor-not-allowed"

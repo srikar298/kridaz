@@ -447,6 +447,7 @@ model HostedGame {
   gameMode              String               @default("PROFESSIONAL")
   date                  DateTime
   time                  String
+  endTime               String?
   turfId                String?
   umpireId              String?
   scorerId              String?
@@ -905,6 +906,8 @@ model Post {
   mediaUrls   String[]
   placeholder String?
   status      String       @default("ready")
+  postType    String       @default("STANDARD")
+  metadata    Json?
   hashtags    String[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @default(now()) @updatedAt
@@ -915,6 +918,7 @@ model Post {
 
   @@index([authorId])
   @@index([status])
+  @@index([postType])
 }
 
 model Comment {
@@ -1706,6 +1710,6 @@ model ProfessionalInquiry {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user        User     @relation("InquirySender", fields: [userId], references: [id])
-  pro         User     @relation("InquiryReceiver", fields: [proId], references: [id])
+  user User @relation("InquirySender", fields: [userId], references: [id])
+  pro  User @relation("InquiryReceiver", fields: [proId], references: [id])
 }

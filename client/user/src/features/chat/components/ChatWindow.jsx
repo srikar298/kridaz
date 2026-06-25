@@ -14,10 +14,11 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import GroupInfoModal from "./GroupInfoModal";
 import { Plus, Users, MessageSquare, Globe } from "lucide-react";
-import AddGroupToCommunityModal from "./AddGroupToCommunityModal";import { Button, Input } from "@kridaz/ui";
+import AddGroupToCommunityModal from "./AddGroupToCommunityModal";
+import { Button, Input } from "@kridaz/ui";
 
 
-const ChatWindow = ({ chat, onBack, onSelectChat }) => {
+const ChatWindow = ({ chat, onBack, onSelectChat, prefillMessage }) => {
   const { user } = useSelector((state) => state.auth);
   const { socket, isUserOnline, getLastSeen } = useSocket();
   const navigate = useNavigate();
@@ -54,6 +55,15 @@ const ChatWindow = ({ chat, onBack, onSelectChat }) => {
       setMessages(data);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (prefillMessage && chat && !message) {
+      setMessage(prefillMessage);
+      const url = new URL(window.location);
+      url.searchParams.delete('prefill');
+      window.history.replaceState({}, '', url);
+    }
+  }, [prefillMessage, chat, message]);
 
   // Redirect community view to Announcements page automatically
   useEffect(() => {
@@ -481,12 +491,12 @@ const ChatWindow = ({ chat, onBack, onSelectChat }) => {
             </Button>
           )}
           {!isSelectionMode && (
-            <button
+            <Button
               onClick={() => {
                 setIsSearchOpen(!isSearchOpen);
                 if (isSearchOpen) setMessageSearchQuery("");
               }}
-              className={`p-2 transition-colors rounded-full outline-none ${isSearchOpen ? "bg-white/[0.1] text-white" : "text-white/60 hover:text-white hover:bg-white/[0.05]"}`}
+              className={`p-2 transition-colors rounded-full ${isSearchOpen ? "bg-white/[0.1] text-white" : "text-white/60 hover:text-white hover:bg-white/[0.05]"}`}
             >
               <svg
                 className="w-5 h-5"
@@ -501,16 +511,16 @@ const ChatWindow = ({ chat, onBack, onSelectChat }) => {
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
-            </button>
+            </Button>
           )}
-          <button
+          <Button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className={`p-2 transition-colors rounded-full outline-none ${isDropdownOpen ? "bg-white/[0.1] text-white" : "text-white/60 hover:text-white hover:bg-white/[0.05]"}`}
+            className={`p-2 transition-colors rounded-full ${isDropdownOpen ? "bg-white/[0.1] text-white" : "text-white/60 hover:text-white hover:bg-white/[0.05]"}`}
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 7a2 2 0 1 0-.001-4.001A2 2 0 0 0 12 7zm0 2a2 2 0 1 0-.001 3.999A2 2 0 0 0 12 9zm0 6a2 2 0 1 0-.001 3.999A2 2 0 0 0 12 15z" />
             </svg>
-          </button>
+          </Button>
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
@@ -1151,13 +1161,13 @@ const ChatWindow = ({ chat, onBack, onSelectChat }) => {
                 placeholder="Type a message..."
                 className="flex-1 bg-transparent border-none text-white py-2.5 focus:ring-0 focus:outline-none text-sm placeholder:text-white/40"
               />
-              <button
+              <Button
                 type="submit"
                 disabled={!message.trim()}
-                className="w-10 h-10 p-0 flex items-center justify-center bg-primary text-black rounded-full hover:scale-105 active:scale-95 transition-all disabled:scale-100 disabled:!bg-white/10 disabled:!text-white/40 outline-none"
+                className="p-2 bg-primary text-black rounded-full hover:scale-105 active:scale-95 transition-all disabled:opacity-30 disabled:scale-100 disabled:bg-white/10 disabled:text-white/30"
               >
                 <svg
-                  className="w-5 h-5 ml-0.5"
+                  className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -1169,7 +1179,7 @@ const ChatWindow = ({ chat, onBack, onSelectChat }) => {
                     d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
                   />
                 </svg>
-              </button>
+              </Button>
             </div>
           </form>
         ) : (

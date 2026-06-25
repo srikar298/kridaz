@@ -28,7 +28,8 @@ import {
   Search,
   Trophy,
 } from "lucide-react";
-import toast from "react-hot-toast";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import toast from "react-hot-toast";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 
 const ALL_SPORTS = [
@@ -290,7 +291,7 @@ export default function ProfessionalProfile() {
       const prof = res.data.professional;
 
       const preferred = prof.businessDetails?.preferredLocations || {
-        grounds: [],
+        enues: [],
         customLocations: [],
       };
 
@@ -386,7 +387,7 @@ export default function ProfessionalProfile() {
       const res = await axiosInstance.get("/api/user/turf/all");
       setGrounds(res.data.turfs || res.data || []);
     } catch (err) {
-      console.error("Error fetching grounds:", err);
+      console.error("Error fetching enues:", err);
     }
   };
 
@@ -559,7 +560,7 @@ export default function ProfessionalProfile() {
 
   // Toggle selection of platform listed grounds
   const toggleGroundSelection = (groundId) => {
-    const currentGrounds = formData.preferredLocations?.grounds || [];
+    const currentGrounds = formData.preferredLocations?.enues || [];
     let updated;
     if (currentGrounds.includes(groundId)) {
       updated = currentGrounds.filter((id) => id !== groundId);
@@ -571,7 +572,7 @@ export default function ProfessionalProfile() {
       ...formData,
       preferredLocations: {
         ...formData.preferredLocations,
-        grounds: updated,
+        enues: updated,
       },
     });
   };
@@ -948,7 +949,7 @@ export default function ProfessionalProfile() {
       !formData.languages.includes(l)
   );
 
-  const filteredGrounds = grounds.filter(
+  const filteredGrounds = enues.filter(
     (g) =>
       !groundSearch ||
       g.name.toLowerCase().includes(groundSearch.toLowerCase()) ||
@@ -963,15 +964,15 @@ export default function ProfessionalProfile() {
     );
 
   const StepIndicator = () => (
-    <div className="flex items-center justify-between sm:justify-start sm:gap-4 mb-6 w-full pb-1 overflow-x-auto no-scrollbar">
+    <div className="flex items-center gap-4 mb-6 overflow-x-auto no-scrollbar pb-1">
       {[1, 2, 3].map((step) => (
-        <button
+        <Button
           key={step}
           onClick={() => jumpToStep(step)}
-          className="flex items-center gap-1.5 sm:gap-3 group text-left outline-none shrink-0 bg-transparent border-0 p-0"
+          className="flex items-center gap-3 group text-left outline-none shrink-0"
         >
           <div
-            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-[6px] sm:rounded-lg flex items-center justify-center text-[8px] sm:text-[9px] font-black transition-all duration-300 ${
+            className={`w-8 h-8 rounded-lg flex items-center justify-center text-[9px] font-black transition-all duration-300 ${
               currentStep === step
                 ? `text-black`
                 : currentStep > step
@@ -995,17 +996,17 @@ export default function ProfessionalProfile() {
                 currentStep === step ? `0 0 15px ${themeColor}33` : "none",
             }}
           >
-            {currentStep > step ? <CheckCircle2 size={14} className="sm:w-4 sm:h-4" /> : `0${step}`}
+            {currentStep > step ? <CheckCircle2 size={16} /> : `0${step}`}
           </div>
-          <div>
+          <div className="hidden sm:block">
             <p
-              className={`text-[6px] sm:text-[7px] font-black uppercase tracking-[0.2em] transition-colors font-inter leading-none`}
+              className={`text-[7px] font-black uppercase tracking-[0.2em] transition-colors font-inter leading-none`}
               style={{ color: currentStep === step ? themeColor : "#444" }}
             >
               PHASE {step}
             </p>
             <p
-              className={`text-[8px] sm:text-[10px] font-black uppercase tracking-widest transition-colors font-inter mt-0.5 ${currentStep === step ? "text-white" : "text-neutral-700 group-hover:text-white/60"}`}
+              className={`text-[10px] font-black uppercase tracking-widest transition-colors font-inter mt-0.5 ${currentStep === step ? "text-white" : "text-neutral-700 group-hover:text-white/60"}`}
             >
               {step === 1
                 ? "Profile Details"
@@ -1014,8 +1015,8 @@ export default function ProfessionalProfile() {
                   : "Work Portfolio"}
             </p>
           </div>
-          {step < 3 && <div className="hidden sm:block w-6 h-[1px] bg-white/5" />}
-        </button>
+          {step < 3 && <div className="w-6 h-[1px] bg-white/5" />}
+        </Button>
       ))}
     </div>
   );
@@ -1352,11 +1353,11 @@ export default function ProfessionalProfile() {
                       {showLocationResults && locationResults.length > 0 && (
                         <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-white/10 rounded-lg shadow-2xl max-h-52 overflow-y-auto z-[150] custom-scrollbar">
                           {locationResults.map((result, idx) => (
-                            <button
+                            <Button
                               key={idx}
                               type="button"
                               onClick={() => selectLocation(result)}
-                              className="w-full text-left px-3 py-2.5 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 flex items-start gap-2 bg-transparent outline-none border-none"
+                              className="w-full text-left px-3 py-2.5 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 flex items-start gap-2"
                             >
                               <MapPin
                                 size={12}
@@ -1365,7 +1366,7 @@ export default function ProfessionalProfile() {
                               <span className="text-[11px] text-white/80 font-medium leading-snug">
                                 {result.display_name}
                               </span>
-                            </button>
+                            </Button>
                           ))}
                         </div>
                       )}
@@ -1385,7 +1386,7 @@ export default function ProfessionalProfile() {
                             .filter(Boolean)
                             .join(", ")}
                         </span>
-                        <button
+                        <Button
                           type="button"
                           onClick={() => {
                             setFormData({
@@ -1397,10 +1398,10 @@ export default function ProfessionalProfile() {
                             });
                             setLocationSearchQuery("");
                           }}
-                          className="ml-auto text-neutral-500 hover:text-red-400 transition-colors bg-transparent border-0 p-0 outline-none"
+                          className="ml-auto text-neutral-500 hover:text-red-400 transition-colors"
                         >
                           <X size={14} />
-                        </button>
+                        </Button>
                       </div>
                     )}
 
@@ -1701,28 +1702,28 @@ export default function ProfessionalProfile() {
                             }}
                             onFocus={() => setShowLanguagesDropdown(true)}
                           />
-                          <button
+                          <Button
                             type="button"
                             onClick={() => addLanguage()}
-                            className="w-8 h-8 rounded-md flex items-center justify-center shrink-0 transition-transform active:scale-95 outline-none border-none p-0"
+                            className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-transform active:scale-95"
                             style={{ backgroundColor: themeColor }}
                           >
-                            <Plus size={16} color="#000" />
-                          </button>
+                            <Plus size={18} color="#000" />
+                          </Button>
                         </div>
 
                         {showLanguagesDropdown &&
                           filteredLanguages.length > 0 && (
                             <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-white/10 rounded-[8px] shadow-2xl z-[100] max-h-64 overflow-y-auto custom-scrollbar">
                               {filteredLanguages.map((lang) => (
-                                <button
+                                <Button
                                   key={lang}
                                   type="button"
                                   onClick={() => addLanguage(lang)}
-                                  className="w-full px-4 py-2.5 text-left text-[10px] text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 font-bold uppercase tracking-wider bg-transparent outline-none border-none"
+                                  className="w-full px-4 py-2.5 text-left text-[10px] text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 font-bold uppercase tracking-wider"
                                 >
                                   {lang}
-                                </button>
+                                </Button>
                               ))}
                             </div>
                           )}
@@ -1735,13 +1736,13 @@ export default function ProfessionalProfile() {
                             className="px-3 py-1.5 bg-white/[0.04] border border-white/5 rounded-[6px] text-[8px] font-black text-white flex items-center gap-2 uppercase tracking-widest"
                           >
                             {lang}
-                            <button
+                            <Button
                               type="button"
                               onClick={() => removeLanguage(lang)}
-                              className="text-neutral-600 hover:text-red-500 transition-colors bg-transparent border-0 p-0 outline-none"
+                              className="text-neutral-600 hover:text-red-500 transition-colors"
                             >
                               <X size={10} />
-                            </button>
+                            </Button>
                           </span>
                         ))}
                       </div>
@@ -1766,27 +1767,27 @@ export default function ProfessionalProfile() {
                             }}
                             onFocus={() => setShowSportsDropdown(true)}
                           />
-                          <button
+                          <Button
                             type="button"
                             onClick={() => addGameType()}
-                            className="w-8 h-8 rounded-md flex items-center justify-center shrink-0 transition-transform active:scale-95 outline-none border-none p-0"
+                            className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-transform active:scale-95"
                             style={{ backgroundColor: themeColor }}
                           >
-                            <Plus size={16} color="#000" />
-                          </button>
+                            <Plus size={18} color="#000" />
+                          </Button>
                         </div>
 
                         {showSportsDropdown && filteredSports.length > 0 && (
                           <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-white/10 rounded-[8px] shadow-2xl z-[100] max-h-64 overflow-y-auto custom-scrollbar">
                             {filteredSports.map((sport) => (
-                              <button
+                              <Button
                                 key={sport}
                                 type="button"
                                 onClick={() => addGameType(sport)}
-                                className="w-full px-4 py-2.5 text-left text-[10px] text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 font-black uppercase tracking-wider bg-transparent outline-none border-none"
+                                className="w-full px-4 py-2.5 text-left text-[10px] text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 font-black uppercase tracking-wider"
                               >
                                 {sport}
-                              </button>
+                              </Button>
                             ))}
                           </div>
                         )}
@@ -1799,13 +1800,13 @@ export default function ProfessionalProfile() {
                             className="px-3 py-1.5 bg-white/[0.04] border border-white/5 rounded-[6px] text-[8px] font-black text-white flex items-center gap-2 uppercase tracking-widest"
                           >
                             {type}
-                            <button
+                            <Button
                               type="button"
                               onClick={() => removeGameType(type)}
-                              className="text-neutral-600 hover:text-red-500 transition-colors bg-transparent border-0 p-0 outline-none flex items-center justify-center"
+                              className="text-neutral-600 hover:text-red-500 transition-colors"
                             >
                               <X size={10} />
-                            </button>
+                            </Button>
                           </span>
                         ))}
                       </div>
@@ -1828,14 +1829,14 @@ export default function ProfessionalProfile() {
                               (e.preventDefault(), addMatchFormat())
                             }
                           />
-                          <button
+                          <Button
                             type="button"
                             onClick={() => addMatchFormat()}
-                            className="w-8 h-8 rounded-md flex items-center justify-center shrink-0 transition-transform active:scale-95 outline-none border-none p-0"
+                            className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-transform active:scale-95"
                             style={{ backgroundColor: themeColor }}
                           >
-                            <Plus size={16} color="#000" />
-                          </button>
+                            <Plus size={18} color="#000" />
+                          </Button>
                         </div>
                       </div>
 
@@ -1846,13 +1847,13 @@ export default function ProfessionalProfile() {
                             className="px-3 py-1.5 bg-white/[0.04] border border-white/5 rounded-[6px] text-[8px] font-black text-white flex items-center gap-2 uppercase tracking-widest"
                           >
                             {fmt}
-                            <button
+                            <Button
                               type="button"
                               onClick={() => removeMatchFormat(fmt)}
-                              className="text-neutral-600 hover:text-red-500 transition-colors bg-transparent border-0 p-0 outline-none flex items-center justify-center"
+                              className="text-neutral-600 hover:text-red-500 transition-colors"
                             >
                               <X size={10} />
-                            </button>
+                            </Button>
                           </span>
                         ))}
                       </div>
@@ -2033,7 +2034,7 @@ export default function ProfessionalProfile() {
                         className="w-full bg-card border border-white/5 rounded-lg pl-3 pr-8 py-2.5 text-xs text-neutral-400 outline-none focus:border-white/10 transition-colors font-medium flex items-center justify-between cursor-pointer"
                       >
                         <span className="text-white font-semibold">
-                          {(formData.preferredLocations?.grounds?.length || 0) +
+                          {(formData.preferredLocations?.enues?.length || 0) +
                             (formData.preferredLocations?.customLocations?.reduce(
                               (acc, curr) => acc + curr.cities.length,
                               0
@@ -2052,7 +2053,7 @@ export default function ProfessionalProfile() {
                                   size={12}
                                   style={{ color: themeColor }}
                                 />{" "}
-                                Choose Venue/Ground
+                                Choose Venue/enue
                               </p>
 
                               {/* Mini search inside dropdown for venues */}
@@ -2077,10 +2078,10 @@ export default function ProfessionalProfile() {
                               </div>
 
                               <div className="space-y-1 max-h-56 overflow-y-auto custom-scrollbar">
-                                {filteredGrounds.map((ground) => {
+                                {filteredGrounds.map((enue) => {
                                   const isSelected =
-                                    formData.preferredLocations?.grounds?.includes(
-                                      ground.id
+                                    formData.preferredLocations?.enues?.includes(
+                                      enue.id
                                     );
                                   return (
                                     <Button
@@ -2088,16 +2089,16 @@ export default function ProfessionalProfile() {
                                       type="button"
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        toggleGroundSelection(ground.id);
+                                        toggleGroundSelection(enue.id);
                                       }}
                                       className={`w-full flex justify-between items-center px-3 py-2.5 text-left text-xs rounded hover:bg-white/[0.04] transition-colors ${isSelected ? "bg-white/[0.02]" : ""}`}
                                     >
                                       <div>
                                         <p className="font-bold text-white uppercase tracking-wide">
-                                          {ground.name}
+                                          {enue.name}
                                         </p>
                                         <p className="text-[9px] text-neutral-500 uppercase tracking-widest mt-0.5">
-                                          {ground.city}, {ground.state}
+                                          {enue.city}, {enue.state}
                                         </p>
                                       </div>
                                       <Input
@@ -2239,16 +2240,16 @@ export default function ProfessionalProfile() {
 
                     {/* Selected Preferred Locations List Chips */}
                     <div className="space-y-2 pt-1">
-                      {/* Selected Grounds Chips */}
-                      {formData.preferredLocations?.grounds?.length > 0 && (
+                      {/* Selected enues Chips */}
+                      {formData.preferredLocations?.enues?.length > 0 && (
                         <div className="space-y-1">
                           <span className="text-[8px] font-bold text-neutral-500 uppercase tracking-widest block">
-                            Covered Platform Grounds
+                            Covered Platform enues
                           </span>
                           <div className="flex flex-wrap gap-1">
-                            {formData.preferredLocations.grounds.map(
+                            {formData.preferredLocations.enues.map(
                               (groundId) => {
-                                const gObj = grounds.find(
+                                const gObj = enues.find(
                                   (g) => g.id === groundId
                                 );
                                 if (!gObj) return null;
@@ -2523,16 +2524,16 @@ export default function ProfessionalProfile() {
             {/* Navigation Buttons */}
             <div className="flex items-center justify-end gap-3 pt-6 border-t border-white/5">
               {currentStep > 1 && (
-                <button
+                <Button
                   onClick={prevStep}
-                  className="px-5 h-10 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-neutral-400 active:scale-95 outline-none"
+                  className="px-5 h-10 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-neutral-400 active:scale-95"
                 >
                   <ChevronLeft size={14} /> Previous
-                </button>
+                </Button>
               )}
-              <button
+              <Button
                 onClick={nextStep}
-                className="px-8 h-10 rounded-lg text-[9px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:brightness-110 outline-none border-0"
+                className="px-8 h-10 rounded-lg text-[9px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:brightness-110"
                 style={{ backgroundColor: themeColor, color: "#000" }}
               >
                 {currentStep === 3 ? (
@@ -2545,7 +2546,7 @@ export default function ProfessionalProfile() {
                     <ChevronRight size={14} />
                   </>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -2645,13 +2646,13 @@ export default function ProfessionalProfile() {
                       </div>
                     </div>
 
-                    <button
+                    <Button
                       onClick={addCertification}
-                      className="w-full h-12 text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-lg transition-transform active:scale-95 flex items-center justify-center gap-2 outline-none border-0"
+                      className="w-full h-12 text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-lg transition-transform active:scale-95 flex items-center justify-center gap-2"
                       style={{ backgroundColor: themeColor }}
                     >
                       <Plus size={16} /> Integrate credential
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -2689,12 +2690,12 @@ export default function ProfessionalProfile() {
                             <Award size={24} className="text-neutral-900" />
                           )}
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/item:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                            <button
+                            <Button
                               onClick={() => removeCertification(idx)}
-                              className="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center transition-all hover:scale-105 outline-none border-0"
+                              className="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center transition-all hover:scale-105"
                             >
                               <Trash2 size={16} />
-                            </button>
+                            </Button>
                           </div>
                         </div>
                         <div className="p-3 space-y-1">
@@ -2762,13 +2763,13 @@ export default function ProfessionalProfile() {
                       })
                     }
                   />
-                  <button
+                  <Button
                     onClick={addStructuredAchievement}
-                    className="w-10 h-10 rounded-lg shadow-xl flex items-center justify-center shrink-0 transition-transform active:scale-95 mx-auto sm:mx-0 outline-none border-none p-0"
+                    className="w-10 h-10 rounded-lg shadow-xl flex items-center justify-center shrink-0 transition-transform active:scale-95 mx-auto sm:mx-0"
                     style={{ backgroundColor: themeColor }}
                   >
                     <Plus size={20} color="#000" />
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -2793,12 +2794,12 @@ export default function ProfessionalProfile() {
                         {ach.description}
                       </p>
                     </div>
-                    <button
+                    <Button
                       onClick={() => removeStructuredAchievement(idx)}
-                      className="text-neutral-700 hover:text-red-500 transition-colors shrink-0 ml-2 outline-none bg-transparent border-0 p-0"
+                      className="text-neutral-700 hover:text-red-500 transition-colors shrink-0 ml-2"
                     >
                       <Trash2 size={13} />
-                    </button>
+                    </Button>
                   </div>
                 ))}
                 {(!formData.structuredAchievements ||
@@ -2815,20 +2816,20 @@ export default function ProfessionalProfile() {
 
             {/* Adjusted Navigation */}
             <div className="flex items-center justify-end gap-3 pt-6 border-t border-white/5">
-              <button
+              <Button
                 onClick={prevStep}
-                className="px-5 h-10 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-neutral-400 active:scale-95 outline-none"
+                className="px-5 h-10 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-neutral-400 active:scale-95"
               >
                 <ChevronLeft size={14} /> Previous
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={nextStep}
-                className="px-8 h-10 rounded-lg text-[9px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:brightness-110 outline-none border-0"
+                className="px-8 h-10 rounded-lg text-[9px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:brightness-110"
                 style={{ backgroundColor: themeColor, color: "#000" }}
               >
                 <Zap size={14} /> Next Phase (PHASE 3){" "}
                 <ChevronRight size={14} />
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -2861,7 +2862,7 @@ export default function ProfessionalProfile() {
 
                   <div className="space-y-6">
                     <div className="flex bg-black p-1 rounded-lg border border-white/5">
-                      <button
+                      <Button
                         onClick={() =>
                           setNewPortfolioItem({
                             ...newPortfolioItem,
@@ -2878,8 +2879,8 @@ export default function ProfessionalProfile() {
                         }}
                       >
                         Photos
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() =>
                           setNewPortfolioItem({
                             ...newPortfolioItem,
@@ -2896,7 +2897,7 @@ export default function ProfessionalProfile() {
                         }}
                       >
                         Videos
-                      </button>
+                      </Button>
                     </div>
 
                     <div className="space-y-1.5">
@@ -3000,13 +3001,13 @@ export default function ProfessionalProfile() {
                       </div>
                     )}
 
-                    <button
+                    <Button
                       onClick={addPortfolioItem}
-                      className="w-full h-12 text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-lg transition-transform active:scale-95 flex items-center justify-center gap-2 outline-none border-0"
+                      className="w-full h-12 text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-lg transition-transform active:scale-95 flex items-center justify-center gap-2"
                       style={{ backgroundColor: themeColor }}
                     >
                       <Plus size={16} /> Integrate portfolio
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -3049,12 +3050,12 @@ export default function ProfessionalProfile() {
                             </div>
                           )}
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/item:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                            <button
+                            <Button
                               onClick={() => removePortfolioItem(idx)}
-                              className="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center transition-all hover:scale-105 outline-none border-0"
+                              className="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center transition-all hover:scale-105"
                             >
                               <Trash2 size={16} />
-                            </button>
+                            </Button>
                           </div>
                         </div>
                         <div className="p-3 space-y-1">
@@ -3084,16 +3085,16 @@ export default function ProfessionalProfile() {
 
             {/* Adjusted Navigation */}
             <div className="flex items-center justify-end gap-3 pt-6 border-t border-white/5">
-              <button
+              <Button
                 onClick={prevStep}
-                className="px-5 h-10 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-neutral-400 active:scale-95 outline-none"
+                className="px-5 h-10 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-neutral-400 active:scale-95"
               >
                 <ChevronLeft size={14} /> Previous
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleUpdate}
                 disabled={loading}
-                className="px-8 h-10 rounded-lg text-[9px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:brightness-110 font-bold outline-none border-0 disabled:opacity-50"
+                className="px-8 h-10 rounded-lg text-[9px] font-black uppercase tracking-[0.3em] transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:brightness-110 font-bold"
                 style={{ backgroundColor: themeColor, color: "#000" }}
               >
                 {loading ? (
@@ -3102,7 +3103,7 @@ export default function ProfessionalProfile() {
                   <CheckCircle2 size={14} />
                 )}{" "}
                 Finalize Profile
-              </button>
+              </Button>
             </div>
           </div>
         )}

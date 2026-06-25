@@ -5,7 +5,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { startUpload } from "@redux/slices/mediaUploadSlice";
-import GlobalBackButton from "@/shared/components/GlobalBackButton";import { Button, Input, Select, Textarea } from "@kridaz/ui";
+import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
 
 const UploadReel = () => {
