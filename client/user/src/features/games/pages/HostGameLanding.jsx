@@ -23,6 +23,7 @@ export default function HostGameLanding() {
       icon: <Trophy size={20} className="text-[#FFD700]" />,
       desc: "League, Knockout, IPL Style",
       route: "/tournament/create",
+      disabled: true,
     },
     {
       id: "QUICK_MATCH",
@@ -48,6 +49,8 @@ export default function HostGameLanding() {
   ];
 
   const handleTileClick = (tile) => {
+    if (tile.disabled) return;
+
     if (!user?.city || !user?.state) {
       toast(
         (t) => (
@@ -107,16 +110,20 @@ export default function HostGameLanding() {
                 type="button"
                 key={tile.id}
                 onClick={() => handleTileClick(tile)}
-                className="group relative rounded-[16px] p-[1.5px] transition-all duration-300 cursor-pointer overflow-hidden text-center flex flex-col text-left"
+                className={`group relative rounded-[16px] p-[1.5px] transition-all duration-300 overflow-hidden text-center flex flex-col text-left ${
+                  tile.disabled ? "cursor-not-allowed opacity-80" : "cursor-pointer"
+                }`}
               >
                 {/* Gradient Border Overlay - Only visible on hover */}
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
+                {!tile.disabled && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[16px]" />
+                )}
 
                 {/* Normal Border Overlay - Fades out on hover */}
-                <div className="absolute inset-0 border-[1.5px] border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[16px]" />
+                <div className={`absolute inset-0 border-[1.5px] border-white/10 ${!tile.disabled ? "group-hover:opacity-0" : ""} transition-opacity duration-300 rounded-[16px]`} />
 
                 <div className="relative bg-background rounded-[15px] p-3 sm:p-4 h-full w-full flex flex-col items-center justify-center">
-                  <div className="w-10 h-10 rounded-full bg-card text-white/70 flex items-center justify-center mb-2 group-hover:text-primary transition-colors">
+                  <div className={`w-10 h-10 rounded-full bg-card text-white/70 flex items-center justify-center mb-2 transition-colors ${!tile.disabled ? "group-hover:text-primary" : ""}`}>
                     {tile.icon}
                   </div>
                   <h3
@@ -131,6 +138,13 @@ export default function HostGameLanding() {
                   >
                     {tile.desc}
                   </p>
+                  {tile.disabled && (
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px] flex items-center justify-center rounded-[15px] z-10">
+                      <span className="transform -rotate-12 border border-primary text-primary font-black text-[10px] px-2 py-1 tracking-widest uppercase rounded">
+                        Coming Soon
+                      </span>
+                    </div>
+                  )}
                 </div>
               </button>
             ))}
