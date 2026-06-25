@@ -20,6 +20,7 @@ import { useGetSavedTurfsQuery, useToggleTurfLikeMutation } from "@redux/api/tur
 import toast from "react-hot-toast";
 import GlobalBackButton from "@/shared/components/GlobalBackButton";
 import { Button } from "@kridaz/ui";
+import { useScrollDirection } from "@hooks/useScrollDirection";
 
 import {
   MapPin,
@@ -88,6 +89,7 @@ const TurfDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { scrollDirection } = useScrollDirection();
   const { loading, turfs } = useTurfData();
   const { averageRating, reviews } = useReviews(id);
   const { gateInteraction } = useLoginOnDemand();
@@ -328,7 +330,7 @@ const TurfDetails = () => {
     <div className="w-full bg-card rounded-[8px] border border-[rgba(255,255,255,0.08)] p-4 md:p-6 flex flex-col shadow-2xl overflow-hidden h-auto max-h-[600px] lg:max-h-[800px]">
       {/* Select Date */}
       <div className="space-y-4 shrink-0">
-        <h3 className="text-[16px] font-medium text-white tracking-wide uppercase font-inter">
+        <h3 className="text-[12px] font-medium text-white tracking-wide uppercase font-open-sans">
           Select Date
         </h3>
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
@@ -341,21 +343,21 @@ const TurfDetails = () => {
             return (
               <div
                 key={dateStr}
-                className={`flex-none rounded-[12px] p-[1.5px] transition-all duration-300 ${isActive ? "bg-primary shadow-[0_0_15px_rgba(191,243,103,0.2)]" : "bg-transparent"}`}
-                style={{ width: "72px", height: "80px" }}
+                className={`flex-none rounded-[10px] p-[1.5px] transition-all duration-300 ${isActive ? "bg-primary shadow-[0_0_15px_rgba(191,243,103,0.2)]" : "bg-transparent"}`}
+                style={{ width: "56px", height: "64px" }}
               >
                 <Button
                   onClick={() => handleDateChange(date)}
-                  className={`w-full h-full p-0 rounded-[10px] border-none overflow-hidden ${isActive ? "bg-[#1C1C1C]" : "bg-border hover:bg-[#333333]"}`}
+                  className={`w-full h-full p-0 rounded-[8px] border-none overflow-hidden ${isActive ? "bg-[#1C1C1C]" : "bg-border hover:bg-[#333333]"}`}
                 >
                   <div className="flex flex-col items-center justify-center w-full h-full gap-0.5">
                     <span
-                      className={`text-[24px] font-bold leading-none tracking-tight ${isActive ? "text-white" : "text-zinc-200"}`}
+                      className={`text-[18px] font-bold leading-none tracking-tight ${isActive ? "text-white" : "text-zinc-200"}`}
                     >
                       {String(date.getDate()).padStart(2, "0")}
                     </span>
                     <span
-                      className={`text-[12px] font-medium ${isActive ? "text-primary" : "text-[rgba(255,255,255,0.70)]"}`}
+                      className={`text-[9px] font-medium ${isActive ? "text-primary" : "text-[rgba(255,255,255,0.70)]"}`}
                     >
                       {date.toLocaleDateString("en-US", { weekday: "short" })}
                     </span>
@@ -369,10 +371,10 @@ const TurfDetails = () => {
 
       {/* Select Time Slot */}
       <div className="space-y-4 mt-6 flex-1 overflow-y-auto pr-2 scrollbar-hide">
-        <h3 className="text-[16px] font-medium text-white tracking-wide uppercase font-inter">
+        <h3 className="text-[12px] font-medium text-white tracking-wide uppercase font-open-sans">
           Select Preferred Time Slot
         </h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 pb-4">
+        <div className="grid grid-cols-2 gap-2 pb-4">
           {availableTimes.length > 0 ? (
             availableTimes.map((slot, idx) => {
               const time = slot.startTime;
@@ -380,13 +382,14 @@ const TurfDetails = () => {
               const isSelected = selectedStartTime === time;
               const isAvailable = !isBooked;
 
-              // Format time to look like image 2 if it's just a start time
               let displayTime = time;
-              if (!time.includes("-") && time.includes(":")) {
+              if (slot.endTime) {
+                displayTime = `${slot.startTime} - ${slot.endTime}`;
+              } else if (!time.includes("-") && time.includes(":")) {
                 try {
                   let [hours, minutes] = time.split(":");
                   hours = parseInt(hours, 10);
-                  let endHours = (hours + 1) % 24;
+                  let endHours = (hours + duration) % 24;
                   let endHoursStr = String(endHours).padStart(2, "0");
                   let minutesStr = minutes.replace(/[^0-9]/g, "");
                   displayTime = `${hours.toString().padStart(2, "0")}:${minutesStr} - ${endHoursStr}:${minutesStr}`;
@@ -403,7 +406,7 @@ const TurfDetails = () => {
                   <Button
                     disabled={!isAvailable}
                     onClick={() => handleTimeSelection(time)}
-                    className={`w-full h-full py-[8.5px] px-2 rounded-[6.5px] text-[13px] font-[600] tracking-wide transition-all duration-300 font-inter ${isSelected ? "bg-[#1C1C1C] text-white" : isAvailable ? "bg-border text-zinc-300 hover:bg-[#333333]" : "bg-card text-[rgba(255,255,255,0.70)] cursor-not-allowed opacity-50"}`}
+                    className={`w-full h-full py-[4px] px-1 rounded-[6px] text-[9px] sm:text-[10px] font-[600] tracking-wide transition-all duration-300 font-inter whitespace-nowrap overflow-hidden text-ellipsis ${isSelected ? "bg-[#1C1C1C] text-white" : isAvailable ? "bg-border text-zinc-300 hover:bg-[#333333]" : "bg-card text-[rgba(255,255,255,0.70)] cursor-not-allowed opacity-50"}`}
                   >
                     {displayTime}
                   </Button>
@@ -411,7 +414,7 @@ const TurfDetails = () => {
               );
             })
           ) : (
-            <div className="col-span-3 py-10 text-center bg-card rounded-[8px] border border-[rgba(255,255,255,0.08)]">
+            <div className="w-full py-10 text-center bg-card rounded-[8px] border border-[rgba(255,255,255,0.08)]">
               <Clock className="w-8 h-8 text-[rgba(255,255,255,0.70)] mx-auto mb-2" />
               <p className="text-[13px] font-medium text-[rgba(255,255,255,0.70)]">
                 No Slots Available
@@ -424,17 +427,17 @@ const TurfDetails = () => {
       {/* Price & Proceed */}
       <div className="mt-auto pt-4 border-t border-[rgba(255,255,255,0.08)]/80 flex items-center justify-between gap-4 shrink-0">
         <div className="space-y-0">
-          <p className="text-[11px] font-medium uppercase text-[rgba(255,255,255,0.70)] mb-1">
+          <p className="text-[10px] font-medium uppercase text-[rgba(255,255,255,0.70)] mb-1">
             Price
           </p>
-          <p className="text-2xl font-bold text-white leading-none">
+          <p className="text-lg font-bold text-white leading-none">
             ₹{totalPrice || turf.pricePerHour}
           </p>
         </div>
         <Button
           onClick={handleReservation}
           disabled={bookingLoading || !selectedStartTime}
-          className="w-full md:w-[340px] h-[58px] rounded-[16px] font-inter text-[18px] font-[700] leading-[28px] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:bg-[#1a1a1a] disabled:text-[rgba(255,255,255,0.3)] disabled:shadow-none disabled:pointer-events-none bg-primary text-black shadow-[0px_8px_24px_rgba(191,243,103,0.15)]"
+          className="w-[120px] md:w-[140px] shrink-0 h-[40px] rounded-[10px] font-inter text-[14px] font-[700] leading-[28px] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:bg-[#1a1a1a] disabled:text-[rgba(255,255,255,0.3)] disabled:shadow-none disabled:pointer-events-none bg-primary !text-black shadow-[0px_8px_24px_rgba(191,243,103,0.15)]"
         >
           {bookingLoading
             ? "..."
@@ -472,11 +475,29 @@ const TurfDetails = () => {
         >
           {/* VenueOverviewSection */}
           <div className="w-full flex-none space-y-4 lg:space-y-6">
-            {/* Back Button */}
-            <GlobalBackButton />
+            {/* Top Actions Row */}
+            <div className="flex items-center justify-between w-full pr-4 md:pr-0">
+              <GlobalBackButton className="!w-8 !h-8 !min-h-0 [&>svg]:!w-4 [&>svg]:!h-4" />
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={toggleFavorite}
+                  className={`w-8 h-8 min-h-0 p-0 rounded-full bg-card border ${isFavorite ? "border-primary text-primary" : "border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)]"} hover:bg-[#1a1a1a] hover:text-white transition-colors shadow-lg flex items-center justify-center`}
+                >
+                  <Heart
+                    className={`w-4 h-4 ${isFavorite ? "fill-current" : ""}`}
+                  />
+                </Button>
+                <Button
+                  onClick={handleShare}
+                  className="w-8 h-8 min-h-0 p-0 rounded-full bg-card border border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)] hover:bg-[#1a1a1a] hover:text-white transition-colors shadow-lg flex items-center justify-center"
+                >
+                  <Share2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
 
             {/* Venue Big Heading */}
-            <h1 className="text-[28px] md:text-[32px] font-[700] leading-tight text-foreground px-4 md:px-2 font-inter">
+            <h1 className="text-[28px] md:text-[32px] font-[700] leading-tight text-foreground px-4 md:px-2 font-open-sans">
               {turf.name}
             </h1>
 
@@ -591,23 +612,7 @@ const TurfDetails = () => {
 
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
 
-                  {/* Like and Share Actions */}
-                  <div className="absolute top-4 right-4 z-40 flex items-center gap-3">
-                    <Button
-                      onClick={toggleFavorite}
-                      className={`p-3 rounded-[8px] bg-black/40 backdrop-blur-md border ${isFavorite ? "border-primary text-primary" : "border-white/10 text-white"} hover:bg-primary hover:text-black hover:border-transparent transition-all shadow-lg`}
-                    >
-                      <Heart
-                        className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`}
-                      />
-                    </Button>
-                    <Button
-                      onClick={handleShare}
-                      className="p-3 rounded-[8px] bg-black/40 backdrop-blur-md border border-white/10 text-white hover:bg-primary hover:text-black hover:border-transparent transition-all shadow-lg"
-                    >
-                      <Share2 className="w-5 h-5" />
-                    </Button>
-                  </div>
+                  {/* Like and Share Actions removed from here */}
                 </div>
 
                 {/* Image Thumbnails */}
@@ -653,9 +658,9 @@ const TurfDetails = () => {
                 )}
                 {/* Desktop Map Section */}
                 <div className="hidden lg:block pt-4 w-full">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-[16px] font-[600] leading-[24px] text-foreground font-inter">
-                      Location & Directions
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-open-sans">
+                      LOCATION & DIRECTIONS
                     </h2>
                     <div className="flex items-center gap-2 font-black text-[rgba(255,255,255,0.70)]">
                       <MapPin className="w-5 h-5" />
@@ -664,7 +669,7 @@ const TurfDetails = () => {
                       </span>
                     </div>
                   </div>
-                  <div className="rounded-[8px] overflow-hidden border border-[rgba(255,255,255,0.08)] shadow-2xl h-[350px] relative group w-full">
+                  <div className="rounded-[8px] overflow-hidden border border-[rgba(255,255,255,0.08)] shadow-2xl h-[200px] relative group w-full">
                     <VenueMap turf={turf} />
                     <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors pointer-events-none" />
                   </div>
@@ -676,7 +681,7 @@ const TurfDetails = () => {
                 <div className="flex flex-wrap items-start gap-10">
                   {/* Sports Available */}
                   <div className="space-y-4">
-                    <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-inter">
+                    <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-open-sans">
                       SPORTS AVAILABLE
                     </h2>
                     <div className="flex flex-wrap gap-2">
@@ -704,7 +709,7 @@ const TurfDetails = () => {
 
                   {/* Ground Composition */}
                   <div className="space-y-4">
-                    <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-inter">
+                    <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-open-sans">
                       GROUND COMPOSITION
                     </h2>
                     <div className="flex flex-wrap gap-3">
@@ -721,7 +726,7 @@ const TurfDetails = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-2.5">
                     <div className="w-1 h-5 bg-gradient-to-b from-primary to-primary rounded-full" />
-                    <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-inter">
+                    <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-open-sans">
                       PERSONNEL & SUPPORT
                     </h2>
                   </div>
@@ -746,10 +751,10 @@ const TurfDetails = () => {
 
                 {/* Facilities */}
                 <div className="space-y-4">
-                  <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-inter">
+                  <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-open-sans">
                     FACILITIES
                   </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {turf.facilities?.map((facility, index) => (
                       <div
                         key={index}
@@ -771,11 +776,11 @@ const TurfDetails = () => {
 
                 {/* About Venue */}
                 <div className="space-y-4">
-                  <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-inter">
+                  <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-open-sans">
                     ABOUT VENUE
                   </h2>
                   <div
-                    className={`text-[rgba(255,255,255,0.70)] text-sm font-inter leading-relaxed whitespace-pre-line font-medium break-all ${!isDescExpanded ? "line-clamp-4" : ""}`}
+                    className={`text-[rgba(255,255,255,0.70)] text-xs font-inter leading-relaxed whitespace-pre-line font-medium break-all ${!isDescExpanded ? "line-clamp-4" : ""}`}
                   >
                     {turf.description ||
                       "No description available for this venue."}
@@ -794,9 +799,9 @@ const TurfDetails = () => {
 
             {/* Map Section Before Reviews */}
             <div className="lg:hidden pt-8 px-4 md:px-0 border-t border-[rgba(255,255,255,0.08)] mt-8 w-full">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-[16px] font-[600] leading-[24px] text-foreground font-inter">
-                  Location & Directions
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-open-sans">
+                  LOCATION & DIRECTIONS
                 </h2>
                 <div className="flex items-center gap-2 font-black text-[rgba(255,255,255,0.70)]">
                   <MapPin className="w-5 h-5" />
@@ -805,7 +810,7 @@ const TurfDetails = () => {
                   </span>
                 </div>
               </div>
-              <div className="rounded-[8px] overflow-hidden border border-[rgba(255,255,255,0.08)] shadow-2xl h-[350px] relative group w-full">
+              <div className="rounded-[8px] overflow-hidden border border-[rgba(255,255,255,0.08)] shadow-2xl h-[200px] relative group w-full">
                 <VenueMap turf={turf} />
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors pointer-events-none" />
               </div>
@@ -814,14 +819,14 @@ const TurfDetails = () => {
             {/* Similar Arenas Nearby Section */}
             {(similarLoading || (similarTurfs && similarTurfs.length > 0)) && (
               <div className="pt-8 px-4 md:px-0 border-t border-[rgba(255,255,255,0.08)] animate-fade-in">
-                <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                   <div className="relative">
-                    <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-primary rounded-full shadow-[0_0_20px_rgba(179,220,38,0.4)] hidden md:block"></div>
-                    <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter leading-none font-inter">
+                    <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-primary rounded-full shadow-[0_0_20px_rgba(179,220,38,0.4)] hidden md:block"></div>
+                    <h3 className="text-lg md:text-xl font-black text-white uppercase tracking-tighter leading-none font-open-sans">
                       SIMILAR{" "}
                       <span className="text-primary">ARENAS NEARBY</span>
                     </h3>
-                    <p className="text-[10px] md:text-xs font-bold text-white/40 uppercase tracking-[0.3em] mt-2 font-inter">
+                    <p className="text-[9px] md:text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] mt-2 font-inter">
                       ML Proximity Recommendations • Similar Surface & Sports
                     </p>
                   </div>
@@ -865,10 +870,10 @@ const TurfDetails = () => {
             )}
 
             {/* Reviews Section */}
-            <div className="pt-8 border-t border-[rgba(255,255,255,0.08)] mt-8">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-[16px] font-[600] leading-[24px] text-foreground font-inter">
-                  Athlete Reviews
+            <div className="pt-8 px-4 md:px-0 border-t border-[rgba(255,255,255,0.08)] mt-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-[14px] font-[700] tracking-widest uppercase leading-[24px] text-foreground font-open-sans">
+                  ATHLETE REVIEWS
                 </h2>
                 <div className="flex items-center gap-2 font-black">
                   <Star
@@ -893,7 +898,11 @@ const TurfDetails = () => {
       </div>
 
       {/* Sticky Book Button for Mobile & Desktop */}
-      <div className="fixed bottom-20 lg:bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent z-50 pointer-events-none flex justify-center pb-6">
+      <div 
+        className={`fixed bottom-20 lg:bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent z-50 pointer-events-none flex justify-center pb-6 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          scrollDirection === "down" ? "translate-y-20 lg:translate-y-0" : "translate-y-0"
+        }`}
+      >
         <Button
           onClick={() => setIsBookingModalOpen(true)}
           className="pointer-events-auto bg-primary text-black w-full max-w-md h-[56px] rounded-[16px] font-inter text-[18px] font-[700] leading-[28px] shadow-[0px_8px_24px_rgba(191,243,103,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
@@ -925,12 +934,12 @@ const TurfDetails = () => {
                   <h2 className="text-[18px] font-[700] text-white">
                     Book Slot
                   </h2>
-                  <Button
+                  <button
                     onClick={() => setIsBookingModalOpen(false)}
-                    className="text-[rgba(255,255,255,0.70)] hover:text-white bg-white/5 rounded-full p-2 transition-colors"
+                    className="text-[rgba(255,255,255,0.70)] hover:text-white bg-transparent p-0 border-none outline-none transition-colors"
                   >
                     <X className="w-5 h-5" />
-                  </Button>
+                  </button>
                 </div>
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-0">
                   {bookingSelectorContent}
@@ -1030,7 +1039,7 @@ const PoliciesModal = ({ isOpen, onClose, rules, turfName }) => {
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
                   <ShieldCheck className="w-6 h-6 text-primary" />
                 </div>
-                <h2 className="text-[16px] font-[600] leading-[24px] text-foreground font-inter">
+                <h2 className="text-[16px] font-[600] leading-[24px] text-foreground font-open-sans">
                   Venue Policies
                 </h2>
               </div>

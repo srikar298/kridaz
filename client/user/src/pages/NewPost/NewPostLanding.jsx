@@ -6,7 +6,7 @@ import {
   Sparkles,
   SwitchCamera,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@kridaz/ui";
 
 
@@ -14,6 +14,7 @@ const POST_TYPES = ["Post", "Reel", "Story"];
 
 const NewPostLanding = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const mediaRecorderRef = useRef(null);
@@ -22,7 +23,7 @@ const NewPostLanding = () => {
 
   const [stream, setStream] = useState(null);
   const streamRef = useRef(null);
-  const [activeTab, setActiveTab] = useState("Reel");
+  const [activeTab, setActiveTab] = useState(location.state?.defaultTab || "Reel");
   const [facingMode, setFacingMode] = useState("environment");
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);

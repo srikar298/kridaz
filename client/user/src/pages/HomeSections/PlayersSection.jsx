@@ -151,7 +151,7 @@ export default function PlayersSection({
                         }}
                         className={`flex-1 h-7 rounded-md text-[10px] font-bold transition-all active:scale-95 flex items-center justify-center ${
                           isFollowing
-                            ? "text-white bg-white/10 border border-white/10 hover:bg-white/20"
+                            ? "text-zinc-300 bg-card border border-white/5 hover:bg-white/5"
                             : "text-background bg-primary hover:brightness-110"
                         }`}
                         style={{ fontFamily: "'Inter', sans-serif" }}

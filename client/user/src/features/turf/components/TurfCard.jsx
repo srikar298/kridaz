@@ -194,22 +194,12 @@ const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
       <div className="absolute top-3 md:top-5 right-3 md:right-5 z-20 flex flex-col gap-2">
         <Button
           onClick={toggleWishlist}
-          className="p-2 md:p-2.5 rounded-[8px] bg-black/40 backdrop-blur-md border border-white/10 hover:bg-gradient-to-r hover:from-primary hover:to-primary transition-all duration-300 group/heart"
+          className="w-8 h-8 md:w-10 md:h-10 min-h-0 flex items-center justify-center rounded-full bg-white border-2 border-primary shadow-lg transition-all duration-300 group/heart p-0"
         >
           <Heart
-            size={14}
-            md:size={18}
-            className={`transition-all duration-300 ${isWishlisted ? "fill-red-500 text-red-500 scale-110" : "text-white group-hover/heart:scale-110 group-hover/heart:text-black"}`}
-          />
-        </Button>
-        <Button
-          onClick={handleShare}
-          className="p-2 md:p-2.5 rounded-[8px] bg-black/40 backdrop-blur-md border border-white/10 hover:bg-gradient-to-r hover:from-primary hover:to-primary transition-all duration-300 group/share"
-        >
-          <MessageSquareShare
-            size={14}
-            md:size={18}
-            className="text-white transition-all duration-300 group-hover/share:scale-110 group-hover/share:text-black"
+            size={16}
+            strokeWidth={2.5}
+            className={`transition-all duration-300 ${isWishlisted ? "fill-primary text-primary scale-110" : "text-[#95cc2a] group-hover/heart:scale-110"}`}
           />
         </Button>
       </div>
@@ -219,15 +209,15 @@ const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
         <div className="absolute inset-y-0 inset-x-2 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
           <Button
             onClick={prevImage}
-            className="p-1.5 md:p-2 bg-black/40 hover:bg-primary hover:text-black backdrop-blur-sm rounded-[8px] text-white transition-all border border-white/10"
+            className="w-7 h-7 md:w-8 md:h-8 min-h-0 p-0 flex items-center justify-center bg-black/40 hover:bg-primary hover:text-black backdrop-blur-sm rounded-full text-white transition-all border border-white/10"
           >
-            <ChevronLeft size={14} md:size={16} />
+            <ChevronLeft size={16} />
           </Button>
           <Button
             onClick={nextImage}
-            className="p-1.5 md:p-2 bg-black/40 hover:bg-primary hover:text-black backdrop-blur-sm rounded-[8px] text-white transition-all border border-white/10"
+            className="w-7 h-7 md:w-8 md:h-8 min-h-0 p-0 flex items-center justify-center bg-black/40 hover:bg-primary hover:text-black backdrop-blur-sm rounded-full text-white transition-all border border-white/10"
           >
-            <ChevronRight size={14} md:size={16} />
+            <ChevronRight size={16} />
           </Button>
         </div>
       )}

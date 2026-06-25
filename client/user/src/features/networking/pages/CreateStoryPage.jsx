@@ -8,6 +8,7 @@ import {
   Plus,
   ShieldCheck,
   ChevronDown,
+  Camera,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -306,6 +307,7 @@ const CreateStoryPage = () => {
           {/* Bottom Actions Bar */}
           <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-auto">
             <div className="flex items-center gap-2">
+              {/* Gallery Button */}
               <div className="relative">
                 <motion.button
                   type="button"
@@ -317,7 +319,7 @@ const CreateStoryPage = () => {
                     color: "var(--primary)",
                   }}
                   whileTap={{ scale: 0.95 }}
-                  className="p-3 bg-white/5 border border-white/10 rounded-xl text-neutral-400 hover:text-primary transition-all flex items-center justify-center cursor-pointer"
+                  className="p-3 bg-white/5 border border-white/10 rounded-xl text-white hover:text-primary transition-all flex items-center justify-center cursor-pointer"
                   title="Upload Photo/Video"
                 >
                   <ImageIcon size={20} />
@@ -326,9 +328,29 @@ const CreateStoryPage = () => {
                   type="file"
                   multiple
                   onChange={handleStoryMediaChange}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  className="absolute inset-0 opacity-0 cursor-pointer z-10"
                   accept="image/*,video/*"
                 />
+              </div>
+
+              {/* Camera Button */}
+              <div className="relative">
+                <motion.button
+                  type="button"
+                  style={SUBHEADING_STYLE}
+                  whileHover={{
+                    scale: 1.05,
+                    backgroundColor: "rgba(85,222,232,0.08)",
+                    border: "1px solid rgba(85,222,232,0.2)",
+                    color: "var(--primary)",
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => navigate("/new-post", { state: { defaultTab: "Story" } })}
+                  className="p-3 bg-white/5 border border-white/10 rounded-xl text-white hover:text-primary transition-all flex items-center justify-center cursor-pointer"
+                  title="Open Camera"
+                >
+                  <Camera size={20} />
+                </motion.button>
               </div>
             </div>
 
@@ -339,8 +361,8 @@ const CreateStoryPage = () => {
                   isPublishing ||
                   (!content.trim() && mediaPreviews.length === 0)
                 }
-                style={SUBHEADING_STYLE}
-                className="bg-primary text-black px-6 py-3 rounded-xl font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm cursor-pointer hover:bg-[#a5db4b]"
+                style={{ fontWeight: 900, color: "black", fontFamily: "'Inter', sans-serif" }}
+                className="bg-primary !text-black px-6 py-3 rounded-xl uppercase tracking-wider flex items-center justify-center gap-2 transition-all disabled:!opacity-100 disabled:bg-primary/50 disabled:!text-black disabled:cursor-not-allowed text-sm cursor-pointer hover:bg-[#a5db4b]"
               >
                 {isPublishing ? (
                   <Loader2 size={16} className="animate-spin" />

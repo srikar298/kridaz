@@ -58,7 +58,7 @@ const Reviews = ({ turfId }) => {
                   <div className="flex items-center gap-4 pt-4 border-t border-zinc-800/50">
                     <Link
                       to={`/profile/${review.user?.id || review.user?._id}`}
-                      className="w-10 h-10 rounded-[8px] bg-zinc-800 border border-zinc-700 flex items-center justify-center text-primary font-black text-sm uppercase group-hover:bg-primary group-hover:text-black transition-all duration-300 overflow-hidden relative z-10"
+                      className="w-10 h-10 rounded-[8px] bg-zinc-800 border border-zinc-700 flex items-center justify-center text-primary font-black text-sm uppercase group-hover:bg-primary group-hover:!text-black transition-all duration-300 overflow-hidden relative z-10"
                     >
                       {review.user?.profilePicture ? (
                         <img
