@@ -13,17 +13,9 @@ import { toast } from "react-hot-toast";
 import { Button } from "@kridaz/ui";
 
 
-const Step8Review = ({ formData, onBack, tournamentId }) => {
+const Step9Review = ({ formData, onBack, tournamentId }) => {
   const navigate = useNavigate();
   const [updateTournament, { isLoading }] = useUpdateTournamentMutation();
-  const [useWallet, setUseWallet] = useState(true);
-
-  // Mock platform fee calculation (e.g. 5% of prize pool or flat fee)
-  const platformFee = 999;
-  const walletBalance = 2500; // Mock wallet balance, replace with actual RTK query
-
-  const canAfford = walletBalance >= platformFee;
-
   const handlePublish = async () => {
     try {
       await updateTournament({
@@ -89,45 +81,7 @@ const Step8Review = ({ formData, onBack, tournamentId }) => {
         </div>
       </section>
 
-      {/* Wallet Payment Section */}
-      <section className="space-y-4">
-        <h3 className="text-sm font-black text-white/90 uppercase tracking-widest">
-          Platform Fee
-        </h3>
 
-        <div
-          className={`p-4 rounded-xl border transition-all ${useWallet ? "bg-card border-primary" : "bg-card border-white/5"}`}
-        >
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-card flex items-center justify-center">
-                <Wallet size={18} className="text-primary" />
-              </div>
-              <div>
-                <p className="font-bold text-white text-sm">
-                  Pay from KRIDAZ Wallet
-                </p>
-                <p className="text-[10px] text-white/50">
-                  Balance: â‚¹{walletBalance}
-                </p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-sm font-black text-[#FFD700]">
-                â‚¹{platformFee}
-              </p>
-              <p className="text-[10px] text-white/50">Listing Fee</p>
-            </div>
-          </div>
-
-          {!canAfford && (
-            <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-xs">
-              <AlertTriangle size={14} />
-              Insufficient balance. Please recharge your wallet.
-            </div>
-          )}
-        </div>
-      </section>
 
       {/* Bottom Fixed Action Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/90 to-transparent pt-12 pb-6 px-4 z-40">
@@ -141,7 +95,7 @@ const Step8Review = ({ formData, onBack, tournamentId }) => {
 
           <Button
             onClick={handlePublish}
-            disabled={!canAfford || isLoading}
+            disabled={isLoading}
             className="flex items-center gap-2 bg-primary text-black font-black px-8 py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-xs"
           >
             {isLoading ? "Publishing..." : "Publish Tournament"}
@@ -153,4 +107,4 @@ const Step8Review = ({ formData, onBack, tournamentId }) => {
   );
 };
 
-export default Step8Review;
+export default Step9Review;

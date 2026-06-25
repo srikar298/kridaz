@@ -5,6 +5,7 @@ import {
   getTournamentStandings,
   createManualScheduledGame,
 } from "./scheduler.service.js";
+import { uploadToR2 } from "../../utils/r2Upload.js";
 
 /**
  * @desc    Create a draft tournament (Step 1)
@@ -13,7 +14,11 @@ import {
  */
 export const createTournament = async (req, res, next) => {
   try {
-    const { name, sport, format, details, numberOfWinners } = req.body;
+    const { 
+      name, sport, format, details, numberOfWinners,
+      logoUrl, organizerName, organizerNumber, organizerEmail,
+      startDate, endDate, category, ballType, pitchType, matchType, maxTeams
+    } = req.body;
     const userId = req.user.id;
 
     // Create a new draft tournament
@@ -23,6 +28,17 @@ export const createTournament = async (req, res, next) => {
         sport,
         format,
         details,
+        logoUrl,
+        organizerName,
+        organizerNumber,
+        organizerEmail,
+        startDate,
+        endDate,
+        category,
+        ballType,
+        pitchType,
+        matchType,
+        maxTeams,
         numberOfWinners: numberOfWinners || 1,
         status: "DRAFT",
         currentStep: 1,
@@ -175,8 +191,8 @@ export const uploadPoster = async (req, res, next) => {
       throw new ForbiddenError("Not authorized");
     }
 
-    // req.file.path comes from the multer upload middleware (R2/S3)
-    const posterUrl = req.file.path;
+    const folder = "kridaz/tournaments/posters";
+    const posterUrl = await uploadToR2(req.file.buffer, folder, req.file.mimetype);
 
     const updatedTournament = await prisma.tournament.update({
       where: { id },
@@ -187,6 +203,50 @@ export const uploadPoster = async (req, res, next) => {
       success: true,
       data: updatedTournament,
       message: "Poster uploaded successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Upload tournament logo
+ * @route   POST /api/tournament/:id/logo
+ * @access  Private (Tournament Owner)
+ */
+export const uploadLogo = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    if (!req.file) {
+      throw new BadRequestError("No file uploaded");
+    }
+
+    const tournament = await prisma.tournament.findUnique({
+      where: { id },
+    });
+
+    if (!tournament) {
+      throw new NotFoundError("Tournament not found");
+    }
+
+    if (tournament.ownerId !== userId) {
+      throw new ForbiddenError("Not authorized");
+    }
+
+    const folder = "kridaz/tournaments/logos";
+    const logoUrl = await uploadToR2(req.file.buffer, folder, req.file.mimetype);
+
+    const updatedTournament = await prisma.tournament.update({
+      where: { id },
+      data: { logoUrl },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: updatedTournament,
+      message: "Logo uploaded successfully",
     });
   } catch (error) {
     next(error);

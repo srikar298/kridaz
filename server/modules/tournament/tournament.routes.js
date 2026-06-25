@@ -5,6 +5,7 @@ import {
   getTournamentById,
   updateTournament,
   uploadPoster,
+  uploadLogo,
   getPublicTournament,
   registerForTournament,
   autoScheduleGroupStage,
@@ -47,6 +48,12 @@ router.post(
   "/:id/poster",
   upload.single("image"), // Uses existing Cloudinary image upload middleware
   uploadPoster
+);
+
+router.post(
+  "/:id/logo",
+  upload.single("image"),
+  uploadLogo
 );
 
 export default router;

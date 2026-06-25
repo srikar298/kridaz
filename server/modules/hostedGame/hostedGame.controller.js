@@ -2366,19 +2366,41 @@ export const updateVenue = async (req, res) => {
 
 export const searchOfficials = async (req, res) => {
   try {
-    const { query } = req.query;
-    if (!query) return res.status(200).json({ success: true, officials: [] });
+    const { query, role } = req.query;
+
+    const whereClause = {};
+
+    if (query && query.length >= 1) {
+      const orConditions = [
+        { name: { contains: query, mode: "insensitive" } },
+        { username: { contains: query, mode: "insensitive" } },
+        { email: { contains: query, mode: "insensitive" } },
+        { phone: { contains: query, mode: "insensitive" } },
+      ];
+
+      const validRoles = [
+        "USER", "VENUE_OWNER", "OWNER", "ADMIN", "UMPIRE", "LIMITED_UMPIRE",
+        "COACH", "SCORER", "STREAMER", "SYSTEM", "ANONYMOUS", "COMMENTATOR", "CHEERLEADER"
+      ];
+      
+      const queryUpper = query.toUpperCase();
+      const matchedRoles = validRoles.filter(r => r.includes(queryUpper));
+      if (matchedRoles.length > 0) {
+        orConditions.push({ role: { in: matchedRoles } });
+      }
+
+      whereClause.OR = orConditions;
+    } else if (role) {
+      // If no text query is provided, default to showing ONLY users with the officially requested role
+      whereClause.role = role.toUpperCase();
+    } else {
+      // No query and no role, don't return all users
+      return res.status(200).json({ success: true, officials: [] });
+    }
 
     // Search in User model (Postgres)
     const users = await prisma.user.findMany({
-      where: {
-        OR: [
-          { name: { contains: query, mode: "insensitive" } },
-          { username: { contains: query, mode: "insensitive" } },
-          { email: { contains: query, mode: "insensitive" } },
-          { phone: { contains: query, mode: "insensitive" } },
-        ],
-      },
+      where: whereClause,
       select: {
         id: true,
         name: true,
@@ -2393,7 +2415,7 @@ export const searchOfficials = async (req, res) => {
 
     // Map them for frontend
     const officials = users.map((u) => ({
-      id: u.id,
+      _id: u.id, // Ensure frontend gets _id as it expects user._id
       name: u.name,
       username: u.username || u.email.split("@")[0],
       profilePicture: u.profilePicture,

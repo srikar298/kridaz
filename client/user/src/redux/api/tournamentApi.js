@@ -4,23 +4,23 @@ export const tournamentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createTournament: builder.mutation({
       query: (data) => ({
-        url: "/tournament",
+        url: "/api/tournament",
         method: "POST",
         body: data,
       }),
       invalidatesTags: ["Tournament"],
     }),
     getMyTournaments: builder.query({
-      query: () => "/tournament/my-tournaments",
+      query: () => "/api/tournament/my-tournaments",
       providesTags: ["Tournament"],
     }),
     getTournamentById: builder.query({
-      query: (id) => `/tournament/${id}`,
+      query: (id) => `/api/tournament/${id}`,
       providesTags: (result, error, id) => [{ type: "Tournament", id }],
     }),
     updateTournament: builder.mutation({
       query: ({ id, ...data }) => ({
-        url: `/tournament/${id}`,
+        url: `/api/tournament/${id}`,
         method: "PATCH",
         body: data,
       }),
@@ -31,19 +31,27 @@ export const tournamentApi = baseApi.injectEndpoints({
     }),
     uploadTournamentPoster: builder.mutation({
       query: ({ id, formData }) => ({
-        url: `/tournament/${id}/poster`,
+        url: `/api/tournament/${id}/poster`,
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: "Tournament", id }],
+    }),
+    uploadTournamentLogo: builder.mutation({
+      query: ({ id, formData }) => ({
+        url: `/api/tournament/${id}/logo`,
         method: "POST",
         body: formData,
       }),
       invalidatesTags: (result, error, { id }) => [{ type: "Tournament", id }],
     }),
     getPublicTournament: builder.query({
-      query: (id) => `/tournament/public/${id}`,
+      query: (id) => `/api/tournament/public/${id}`,
       providesTags: (result, error, id) => [{ type: "Tournament", id }],
     }),
     registerForTournament: builder.mutation({
       query: ({ id, data }) => ({
-        url: `/tournament/${id}/register`,
+        url: `/api/tournament/${id}/register`,
         method: "POST",
         body: data,
       }),
@@ -54,7 +62,7 @@ export const tournamentApi = baseApi.injectEndpoints({
     }),
     autoScheduleGroupStage: builder.mutation({
       query: ({ id, data }) => ({
-        url: `/tournament/${id}/schedule/auto`,
+        url: `/api/tournament/${id}/schedule/auto`,
         method: "POST",
         body: data,
       }),
@@ -62,18 +70,18 @@ export const tournamentApi = baseApi.injectEndpoints({
     }),
     manualSchedule: builder.mutation({
       query: ({ id, data }) => ({
-        url: `/tournament/${id}/schedule/manual`,
+        url: `/api/tournament/${id}/schedule/manual`,
         method: "POST",
         body: data,
       }),
       invalidatesTags: (result, error, { id }) => [{ type: "Tournament", id }],
     }),
     getStandings: builder.query({
-      query: (id) => `/tournament/${id}/standings`,
+      query: (id) => `/api/tournament/${id}/standings`,
       providesTags: (result, error, id) => [{ type: "Standings", id }],
     }),
     getTournamentMatches: builder.query({
-      query: (id) => `/tournament/${id}/matches`,
+      query: (id) => `/api/tournament/${id}/matches`,
       providesTags: (result, error, id) => [{ type: "TournamentMatches", id }],
     }),
   }),
@@ -85,6 +93,7 @@ export const {
   useGetTournamentByIdQuery,
   useUpdateTournamentMutation,
   useUploadTournamentPosterMutation,
+  useUploadTournamentLogoMutation,
   useGetPublicTournamentQuery,
   useRegisterForTournamentMutation,
   useAutoScheduleGroupStageMutation,

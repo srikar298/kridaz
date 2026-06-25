@@ -2836,7 +2836,7 @@ const ProMatchWizard = () => {
         onComplete={() => {
           setShowCoinAnim(false);
           toast.success("Match Hosted Successfully!");
-          navigate("/my-hosted-games");
+          navigate("/joingame-history?tab=hosted-game");
         }}
       />
 

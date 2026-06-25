@@ -1626,6 +1626,17 @@ model Tournament {
   prizePool       Decimal              @default(0) @db.Decimal(10, 2)
   numberOfWinners Int                  @default(1)
   posterUrl       String?
+  logoUrl         String?
+  organizerName   String?
+  organizerNumber String?
+  organizerEmail  String?
+  startDate       DateTime?
+  endDate         DateTime?
+  category        String? // Open, Corporate, Community, etc.
+  ballType        String?
+  pitchType       String?
+  matchType       String?
+  maxTeams        Int?
   status          String               @default("DRAFT") // DRAFT, PUBLISHED, COMPLETED
   currentStep     Int                  @default(1)
   details         Json? // Store unstructured details for draft

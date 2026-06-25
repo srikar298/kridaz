@@ -814,18 +814,6 @@ export default function Home() {
                         }}
                       />
                     )}
-                    {/* Dark overlay for readability */}
-                    <div className="absolute inset-0 bg-black/40"></div>
-                    <div className="relative z-10 w-[70%] h-full p-4 flex flex-col justify-center gap-1.5 pl-5">
-                      <h3 className="text-[16px] leading-tight font-black text-white uppercase drop-shadow-lg">
-                        {promo.title}
-                      </h3>
-                      {promo.description && (
-                        <p className="text-[10px] font-medium text-white/90 leading-snug drop-shadow-md">
-                          {promo.description}
-                        </p>
-                      )}
-                    </div>
                   </Wrapper>
                 );
               })}

@@ -3,12 +3,14 @@ import { ArrowRight, ArrowLeft, Trophy, Medal, Star } from "lucide-react";
 import { Button, Input } from "@kridaz/ui";
 
 
-const Step7Awards = ({ formData, onNext, onBack, isLoading }) => {
+const Step8Awards = ({ formData, onNext, onBack, isLoading }) => {
   const [localData, setLocalData] = useState({
     prizePool: formData.prizePool || "",
     details: {
+      ...formData.details,
       winnerPrize: formData.details?.winnerPrize || "",
       runnerUpPrize: formData.details?.runnerUpPrize || "",
+      winningPrize: formData.details?.winningPrize || "Cash",
       individualAwards: formData.details?.individualAwards || {
         manOfTheSeries: true,
         bestBowler: true,
@@ -27,6 +29,13 @@ const Step7Awards = ({ formData, onNext, onBack, isLoading }) => {
     setLocalData((prev) => ({
       ...prev,
       details: { ...prev.details, [name]: value ? Number(value) : "" },
+    }));
+  };
+
+  const handlePrizeTypeChange = (type) => {
+    setLocalData((prev) => ({
+      ...prev,
+      details: { ...prev.details, winningPrize: type },
     }));
   };
 
@@ -83,53 +92,81 @@ const Step7Awards = ({ formData, onNext, onBack, isLoading }) => {
       <section className="space-y-4">
         <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
           <Trophy size={16} className="text-[#FFD700]" />
-          Cash Prizes
+          Prizes & Awards
         </h2>
 
-        <div className="space-y-4">
-          <div>
-            <label className="text-xs text-white/50 block mb-2">
-              Total Prize Pool (â‚¹)
-            </label>
-            <Input
-              type="number"
-              name="prizePool"
-              value={localData.prizePool}
-              onChange={handleNumChange}
-              placeholder="e.g. 100000"
-              className="w-full bg-card border border-[#FFD700]/30 rounded-xl px-4 py-4 text-lg font-black text-[#FFD700] focus:outline-none focus:border-[#FFD700] transition-colors text-center"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs text-white/50 block mb-2">
-                Winner Prize
-              </label>
-              <Input
-                type="number"
-                name="winnerPrize"
-                value={localData.details.winnerPrize}
-                onChange={handleDetailsNumChange}
-                placeholder="â‚¹"
-                className="w-full bg-card border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"
-              />
-            </div>
-            <div>
-              <label className="text-xs text-white/50 block mb-2">
-                Runner Up Prize
-              </label>
-              <Input
-                type="number"
-                name="runnerUpPrize"
-                value={localData.details.runnerUpPrize}
-                onChange={handleDetailsNumChange}
-                placeholder="â‚¹"
-                className="w-full bg-card border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"
-              />
-            </div>
+        <div className="space-y-3">
+          <p className="text-xs text-white/50">Prize Type</p>
+          <div className="flex gap-3">
+            <Button
+              onClick={() => handlePrizeTypeChange("Cash")}
+              className={`flex-1 p-4 rounded-xl border text-center transition-all ${
+                localData.details.winningPrize === "Cash"
+                  ? "bg-[#FFD700] border-[#FFD700] text-black font-black"
+                  : "bg-card border-white/10 text-white/70 hover:border-white/30 font-bold"
+              }`}
+            >
+              Cash Prize
+            </Button>
+            <Button
+              onClick={() => handlePrizeTypeChange("Trophy")}
+              className={`flex-1 p-4 rounded-xl border text-center transition-all ${
+                localData.details.winningPrize === "Trophy"
+                  ? "bg-[#FFD700] border-[#FFD700] text-black font-black"
+                  : "bg-card border-white/10 text-white/70 hover:border-white/30 font-bold"
+              }`}
+            >
+              Trophy Only
+            </Button>
           </div>
         </div>
+
+        {localData.details.winningPrize === "Cash" && (
+          <div className="space-y-4 mt-6">
+            <div>
+              <label className="text-xs text-white/50 block mb-2">
+                Total Prize Pool (₹)
+              </label>
+              <Input
+                type="number"
+                name="prizePool"
+                value={localData.prizePool}
+                onChange={handleNumChange}
+                placeholder="e.g. 100000"
+                className="w-full bg-card border border-[#FFD700]/30 rounded-xl px-4 py-4 text-lg font-black text-[#FFD700] focus:outline-none focus:border-[#FFD700] transition-colors text-center"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-white/50 block mb-2">
+                  Winner Prize
+                </label>
+                <Input
+                  type="number"
+                  name="winnerPrize"
+                  value={localData.details.winnerPrize}
+                  onChange={handleDetailsNumChange}
+                  placeholder="₹"
+                  className="w-full bg-card border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-white/50 block mb-2">
+                  Runner Up Prize
+                </label>
+                <Input
+                  type="number"
+                  name="runnerUpPrize"
+                  value={localData.details.runnerUpPrize}
+                  onChange={handleDetailsNumChange}
+                  placeholder="₹"
+                  className="w-full bg-card border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
       <section className="space-y-4 pt-4 border-t border-white/5">
@@ -181,4 +218,4 @@ const Step7Awards = ({ formData, onNext, onBack, isLoading }) => {
   );
 };
 
-export default Step7Awards;
+export default Step8Awards;

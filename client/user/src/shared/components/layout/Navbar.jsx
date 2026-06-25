@@ -993,23 +993,13 @@ const Navbar = () => {
                             </span>
                           </Link>
                           <Link
-                            to="/my-joined-games"
+                            to="/joingame-history"
                             onClick={() => dispatch(closeMainSidebar())}
                             className="flex items-center gap-3 p-3 rounded-[8px] hover:bg-white/5 text-white/70 hover:text-white transition-all"
                           >
                             <Trophy size={18} className="text-white/40" />
                             <span className="text-sm font-semibold">
-                              My Joined Matches
-                            </span>
-                          </Link>
-                          <Link
-                            to="/my-hosted-games"
-                            onClick={() => dispatch(closeMainSidebar())}
-                            className="flex items-center gap-3 p-3 rounded-[8px] hover:bg-white/5 text-white/70 hover:text-white transition-all"
-                          >
-                            <Target size={18} className="text-white/40" />
-                            <span className="text-sm font-semibold">
-                              My Hosted Games
+                              Game History
                             </span>
                           </Link>
                           <Link

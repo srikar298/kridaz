@@ -12,35 +12,48 @@ import {
   Settings,
   ArrowLeft,
   QrCode,
+  List,
+  BarChart,
+  Award,
+  Image as ImageIcon,
+  Info,
+  MapPin
 } from "lucide-react";
 import { useGetTournamentByIdQuery } from "../../../redux/api/tournamentApi";
+import { QRCodeSVG } from "qrcode.react";
 
-// Import Tabs
-import OverviewTab from "../components/dashboard/OverviewTab";
+import MatchesTab from "../components/dashboard/MatchesTab";
 import TeamsTab from "../components/dashboard/TeamsTab";
-import ScheduleTab from "../components/dashboard/ScheduleTab";
-import MarketingTab from "../components/dashboard/MarketingTab";
-import OfficialsTab from "../components/dashboard/OfficialsTab";
-import FinancesTab from "../components/dashboard/FinancesTab";
-import SettingsTab from "../components/dashboard/SettingsTab";
+import PointsTab from "../components/dashboard/PointsTab";
+import StatsTab from "../components/dashboard/StatsTab";
+import HeroesTab from "../components/dashboard/HeroesTab";
+import GalleryTab from "../components/dashboard/GalleryTab";
+import AboutTab from "../components/dashboard/AboutTab";
+import LeaderboardTab from "../components/dashboard/LeaderboardTab";
+import SponsorsTab from "../components/dashboard/SponsorsTab";
+import LiveMatchesTab from "../components/dashboard/LiveMatchesTab";
 import { Button } from "@kridaz/ui";
+import { PlayCircle } from "lucide-react";
 
 
 const TABS = [
-  { id: "overview", label: "Overview", icon: <Trophy size={16} /> },
+  { id: "live-matches", label: "Live Matches", icon: <PlayCircle size={16} /> },
+  { id: "matches", label: "Matches", icon: <Calendar size={16} /> },
   { id: "teams", label: "Teams", icon: <Users size={16} /> },
-  { id: "schedule", label: "Schedule", icon: <Calendar size={16} /> },
-  { id: "marketing", label: "Marketing", icon: <Megaphone size={16} /> },
-  { id: "officials", label: "Officials", icon: <ShieldCheck size={16} /> },
-  { id: "finances", label: "Finances", icon: <Wallet size={16} /> },
-  { id: "settings", label: "Settings", icon: <Settings size={16} /> },
+  { id: "points", label: "Points", icon: <List size={16} /> },
+  { id: "leaderboard", label: "Leaderboard", icon: <Trophy size={16} /> },
+  { id: "stats", label: "Stats", icon: <BarChart size={16} /> },
+  { id: "heroes", label: "Heroes", icon: <Award size={16} /> },
+  { id: "sponsors", label: "Sponsors", icon: <Megaphone size={16} /> },
+  { id: "gallery", label: "Gallery", icon: <ImageIcon size={16} /> },
+  { id: "about", label: "About", icon: <Info size={16} /> },
 ];
 
 const TournamentDashboard = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const currentTab = searchParams.get("tab") || "overview";
+  const currentTab = searchParams.get("tab") || "matches";
 
   const [showShareModal, setShowShareModal] = useState(false);
 
@@ -55,22 +68,28 @@ const TournamentDashboard = () => {
     const props = { tournament };
 
     switch (currentTab) {
-      case "overview":
-        return <OverviewTab {...props} />;
+      case "live-matches":
+        return <LiveMatchesTab {...props} />;
+      case "matches":
+        return <MatchesTab {...props} />;
       case "teams":
         return <TeamsTab {...props} />;
-      case "schedule":
-        return <ScheduleTab {...props} />;
-      case "marketing":
-        return <MarketingTab {...props} />;
-      case "officials":
-        return <OfficialsTab {...props} />;
-      case "finances":
-        return <FinancesTab {...props} />;
-      case "settings":
-        return <SettingsTab {...props} />;
+      case "points":
+        return <PointsTab {...props} />;
+      case "leaderboard":
+        return <LeaderboardTab {...props} />;
+      case "stats":
+        return <StatsTab {...props} />;
+      case "heroes":
+        return <HeroesTab {...props} />;
+      case "sponsors":
+        return <SponsorsTab {...props} />;
+      case "gallery":
+        return <GalleryTab {...props} />;
+      case "about":
+        return <AboutTab {...props} />;
       default:
-        return <OverviewTab {...props} />;
+        return <MatchesTab {...props} />;
     }
   };
 
@@ -149,7 +168,7 @@ const TournamentDashboard = () => {
 
         <div className="relative z-10 max-w-5xl mx-auto px-4 pt-4">
           <Button
-            onClick={() => navigate("/my-hosted-games")}
+            onClick={() => navigate("/joingame-history?tab=hosted-tournament")}
             className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-white transition-colors mb-6"
           >
             <ArrowLeft size={20} />
@@ -179,9 +198,23 @@ const TournamentDashboard = () => {
                 <h1 className="text-3xl md:text-4xl font-black uppercase tracking-wide leading-tight mb-2">
                   {tournament.name}
                 </h1>
-                <p className="text-sm text-white/60 font-bold tracking-widest uppercase">
+                <p className="text-sm text-white/60 font-bold tracking-widest uppercase mb-2">
                   {tournament.sport} • {tournament.type} • {tournament.format}
                 </p>
+                {tournament.organizerName && (
+                  <div className="flex items-center gap-4 text-xs text-white/50 font-medium">
+                    <span className="flex items-center gap-1">
+                      <Users size={12} className="text-primary" />
+                      {tournament.organizerName}
+                    </span>
+                    {tournament.organizerNumber && (
+                      <span className="flex items-center gap-1">
+                        <Share2 size={12} className="text-primary" />
+                        {tournament.organizerNumber}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -263,11 +296,15 @@ const TournamentDashboard = () => {
               {tournament.name}.
             </p>
 
-            <div className="w-48 h-48 bg-white rounded-xl mx-auto mb-6 p-2 flex items-center justify-center">
-              {/* Mock QR Code */}
-              <div className="w-full h-full border-4 border-black border-dashed flex items-center justify-center text-black/20 font-bold text-xs">
-                QR CODE
-              </div>
+            <div className="w-48 h-48 bg-white rounded-xl mx-auto mb-6 p-4 flex items-center justify-center shadow-lg">
+              <QRCodeSVG
+                value={`https://kridaz.com/t/${tournament.id}`}
+                size={160}
+                bgColor={"#ffffff"}
+                fgColor={"#050505"}
+                level={"H"}
+                includeMargin={false}
+              />
             </div>
 
             <Button className="w-full bg-[#25D366] text-white font-bold py-3 rounded-full flex items-center justify-center gap-2 mb-3">

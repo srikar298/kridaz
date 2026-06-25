@@ -1,21 +1,14 @@
 import React, { useState } from "react";
 import { Button, Input, Select } from "@kridaz/ui";
+import { ArrowRight, ArrowLeft, Users, Coins, Percent, AlertCircle } from "lucide-react";
 
-import {
-  ArrowRight,
-  ArrowLeft,
-  Users,
-  Coins,
-  Percent,
-  AlertCircle,
-} from "lucide-react";
-
-const Step5Teams = ({ formData, onNext, onBack, isLoading }) => {
+const Step6Teams = ({ formData, onNext, onBack, isLoading }) => {
   const [localData, setLocalData] = useState({
-    entryFee: formData.entryFee || "",
+    registrationFee: formData.registrationFee || "",
     advanceFee: formData.advanceFee || "",
     discount: formData.discount || "",
     details: {
+      ...formData.details,
       allowWaitlist: formData.details?.allowWaitlist || false,
       ageLimit: formData.details?.ageLimit || "Open",
       allowPros: formData.details?.allowPros ?? true,
@@ -42,8 +35,7 @@ const Step5Teams = ({ formData, onNext, onBack, isLoading }) => {
     onNext(localData);
   };
 
-  // Basic validation
-  const isValid = localData.entryFee !== "" && localData.entryFee >= 0;
+  const isValid = localData.registrationFee !== "" && localData.registrationFee >= 0;
 
   return (
     <div className="space-y-8 animate-fade-in pb-20">
@@ -56,12 +48,12 @@ const Step5Teams = ({ formData, onNext, onBack, isLoading }) => {
         <div className="space-y-4">
           <div>
             <label className="text-xs text-white/50 block mb-2">
-              Entry Fee per Team (â‚¹)
+              Registration Fee per Team (₹)
             </label>
             <Input
               type="number"
-              name="entryFee"
-              value={localData.entryFee}
+              name="registrationFee"
+              value={localData.registrationFee}
               onChange={handleNumChange}
               placeholder="e.g. 5000"
               className="w-full bg-card border border-white/5 rounded-xl px-4 py-4 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"
@@ -232,4 +224,4 @@ const Step5Teams = ({ formData, onNext, onBack, isLoading }) => {
   );
 };
 
-export default Step5Teams;
+export default Step6Teams;

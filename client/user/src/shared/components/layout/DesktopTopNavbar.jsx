@@ -282,23 +282,13 @@ export default function DesktopTopNavbar({
                             </span>
                           </Link>
                           <Link
-                            to="/my-joined-games"
+                            to="/joingame-history"
                             onClick={() => setIsSidebarOpen(false)}
                             className="flex items-center gap-3 p-2.5 rounded-[8px] hover:bg-white/5 text-white/75 hover:text-white transition-all"
                           >
                             <Trophy size={16} className="text-white/40" />
                             <span className="text-xs font-semibold">
-                              My Joined Matches
-                            </span>
-                          </Link>
-                          <Link
-                            to="/my-hosted-games"
-                            onClick={() => setIsSidebarOpen(false)}
-                            className="flex items-center gap-3 p-2.5 rounded-[8px] hover:bg-white/5 text-white/75 hover:text-white transition-all"
-                          >
-                            <Target size={16} className="text-white/40" />
-                            <span className="text-xs font-semibold">
-                              My Hosted Games
+                              Game History
                             </span>
                           </Link>
                           <Link

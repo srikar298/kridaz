@@ -44,6 +44,8 @@ const TeamsTab = ({ tournament }) => {
           />
           <Input
             type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search teams or captains..."
             className="w-full bg-card border border-white/5 rounded-full pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-colors"
           />
@@ -66,7 +68,10 @@ const TeamsTab = ({ tournament }) => {
 
         {/* Table Body */}
         <div className="divide-y divide-white/5">
-          {teams.map((team) => (
+          {teams.filter(team => 
+            team.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            team.captain.toLowerCase().includes(searchQuery.toLowerCase())
+          ).map((team) => (
             <div
               key={team.id}
               className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 items-center hover:bg-white/5 transition-colors"

@@ -122,6 +122,9 @@ export const getAllTurfs = async (req, res) => {
             
             // Restore Meilisearch sorting order
             resultTurfs = rawTurfs.sort((a, b) => turfIds.indexOf(a.id) - turfIds.indexOf(b.id));
+          } else {
+            // Force fallback if meilisearch is out of sync or returns 0 results
+            throw new Error("Meilisearch returned 0 results, attempting Prisma fallback");
           }
         } catch (searchError) {
           logger.warn("Meilisearch failed, falling back to basic Prisma query", searchError);

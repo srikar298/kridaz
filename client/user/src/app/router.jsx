@@ -126,6 +126,9 @@ const MyHostedGames = lazy(() =>
 const MyJoinedGames = lazy(() =>
   import("@features/games").then((m) => ({ default: m.MyJoinedGames }))
 );
+const GamesHistory = lazy(() =>
+  import("@features/games").then((m) => ({ default: m.GamesHistory }))
+);
 const FindProfessionals = lazy(() =>
   import("@features/networking").then((m) => ({ default: m.FindProfessionals }))
 );
@@ -795,24 +798,22 @@ const router = createBrowserRouter([
       { path: "facebook-connected", element: <Navigate to="/" replace /> },
       { path: "facebook-error", element: <Navigate to="/" replace /> },
       {
-        path: "my-hosted-games",
+        path: "joingame-history",
         element: (
           <ProtectedRoute>
             <S>
-              <MyHostedGames />
+              <GamesHistory />
             </S>
           </ProtectedRoute>
         ),
       },
       {
+        path: "my-hosted-games",
+        element: <Navigate to="/joingame-history?tab=hosted-game" replace />,
+      },
+      {
         path: "my-joined-games",
-        element: (
-          <ProtectedRoute>
-            <S>
-              <MyJoinedGames />
-            </S>
-          </ProtectedRoute>
-        ),
+        element: <Navigate to="/joingame-history?tab=joined-game" replace />,
       },
       {
         path: "match/:matchId",

@@ -10,6 +10,7 @@ import {
   Activity,
   Minus,
   Plus,
+  Users
 } from "lucide-react";
 
 const SPORTS = [
@@ -42,13 +43,33 @@ const BALL_TYPES = [
   "Plastic",
   "Box Cricket",
 ];
+const CATEGORIES = [
+  "Open",
+  "Corporate",
+  "Community",
+  "School",
+  "College/University",
+  "Series",
+  "Others",
+];
+const PITCH_TYPES = ["Rough", "Semi Turf", "Astroturf", "Matting"];
+const MATCH_TYPES = [
+  "Limited Overs",
+  "Box Turf Cricket",
+  "Pair Cricket",
+  "Test Match",
+  "The 100",
+];
 
-const Step2Config = ({ formData, onNext, onBack, isLoading }) => {
+const Step3Config = ({ formData, onNext, onBack, isLoading }) => {
   const [localData, setLocalData] = useState({
     sport: formData.sport || "Cricket",
+    category: formData.category || "Open",
     type: formData.type || "Knockout",
     format: formData.format || "T20",
     ballType: formData.ballType || "Tennis",
+    pitchType: formData.pitchType || "Turf",
+    matchType: formData.matchType || "Limited Overs",
     maxTeams: formData.maxTeams || 8,
     minPlayersPerTeam: formData.minPlayersPerTeam || 11,
     maxPlayersPerTeam: formData.maxPlayersPerTeam || 15,
@@ -129,6 +150,14 @@ const Step2Config = ({ formData, onNext, onBack, isLoading }) => {
 
       <section className="space-y-4">
         <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
+          <Users size={16} className="text-primary" />
+          Category
+        </h2>
+        {renderSelectChips(CATEGORIES, localData.category, "category")}
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
           <Trophy size={16} className="text-primary" />
           Tournament Type
         </h2>
@@ -148,13 +177,31 @@ const Step2Config = ({ formData, onNext, onBack, isLoading }) => {
       </section>
 
       {localData.sport === "Cricket" && (
-        <section className="space-y-4">
-          <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
-            <Shield size={16} className="text-[#FFD700]" />
-            Ball Type
-          </h2>
-          {renderSelectChips(BALL_TYPES, localData.ballType, "ballType")}
-        </section>
+        <>
+          <section className="space-y-4">
+            <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
+              <Shield size={16} className="text-[#FFD700]" />
+              Ball Type
+            </h2>
+            {renderSelectChips(BALL_TYPES, localData.ballType, "ballType")}
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
+              <Activity size={16} className="text-[#FFD700]" />
+              Pitch Type
+            </h2>
+            {renderSelectChips(PITCH_TYPES, localData.pitchType, "pitchType")}
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-2">
+              <Flag size={16} className="text-[#FFD700]" />
+              Match Type
+            </h2>
+            {renderSelectChips(MATCH_TYPES, localData.matchType, "matchType")}
+          </section>
+        </>
       )}
 
       <section className="space-y-4 pt-4 border-t border-white/5">
@@ -203,4 +250,4 @@ const Step2Config = ({ formData, onNext, onBack, isLoading }) => {
   );
 };
 
-export default Step2Config;
+export default Step3Config;

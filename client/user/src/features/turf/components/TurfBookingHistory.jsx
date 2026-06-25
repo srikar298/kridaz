@@ -30,7 +30,6 @@ import useSimilarRecommendations from "@hooks/useSimilarRecommendations";
 import useRecommendations from "@hooks/useRecommendations";
 import { TurfCard } from "@features/turf";
 import axiosInstance from "@hooks/useAxiosInstance";
-import { useGetMyJoinedGamesQuery } from "@redux/api/gamesApi";
 import {
   useGetUserOnDemandBookingsQuery,
   useCreateMatchRequestMutation,
@@ -149,7 +148,7 @@ const TurfBookingHistory = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const rawTab = searchParams.get("subTab") || "venues";
-  const validTabs = ["venues", "games", "professionals"];
+  const validTabs = ["venues", "professionals"];
   const subTabParam = validTabs.includes(rawTab) ? rawTab : "venues";
   const [bookingSubTab, setBookingSubTabState] = useState(subTabParam);
 
@@ -170,11 +169,6 @@ const TurfBookingHistory = () => {
       setBookingSubTabState(subTabParam);
     }
   }, [subTabParam]);
-
-  // Load Joined Games
-  const { data: joinedGamesData, isLoading: loadingJoinedGames } =
-    useGetMyJoinedGamesQuery();
-  const joinedGames = joinedGamesData?.games || [];
 
   // Load On-Demand Match Requests & Bookings
   const {
@@ -282,12 +276,6 @@ const TurfBookingHistory = () => {
               className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${bookingSubTab === "venues" ? "bg-primary text-black border-primary shadow-[0_4px_12px_rgba(204,255,0,0.2)]" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
             >
               Venue Bookings
-            </Button>
-            <Button
-              onClick={() => setBookingSubTab("games")}
-              className={`px-3 py-2 shrink-0 rounded-[6px] font-black uppercase tracking-wider text-[9px] sm:text-[10px] border transition-all ${bookingSubTab === "games" ? "bg-primary text-black border-primary shadow-[0_4px_12px_rgba(204,255,0,0.2)]" : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"}`}
-            >
-              Joined Games
             </Button>
             <Button
               onClick={() => setBookingSubTab("professionals")}
@@ -523,144 +511,6 @@ const TurfBookingHistory = () => {
                     )}
                   </div>
                 )}
-            </div>
-          )}
-
-          {bookingSubTab === "games" && (
-            <div className="space-y-4">
-              {loadingJoinedGames ? (
-                <div className="text-center py-12 bg-background rounded-[8px] border border-white/5">
-                  <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto mb-2" />
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
-                    Loading Joined Games...
-                  </p>
-                </div>
-              ) : joinedGames.length === 0 ? (
-                <div className="bg-card p-16 rounded-[8px] border border-white/5 text-center flex flex-col items-center justify-center">
-                  <div className="w-14 h-14 rounded-full bg-card flex items-center justify-center text-gray-500 mb-4">
-                    <Zap size={24} />
-                  </div>
-                  <h2 className="text-lg font-black text-white uppercase tracking-tight">
-                    No Joined Games
-                  </h2>
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2">
-                    You haven&apos;t joined any match lobbies or training games
-                    yet.
-                  </p>
-                </div>
-              ) : (
-                joinedGames.map((game) => {
-                  const statusColors = {
-                    JOINED:
-                      "text-primary bg-primary/10 border-primary/20",
-                    PENDING:
-                      "text-yellow-500 bg-yellow-500/10 border-yellow-500/20",
-                    CANCELLED: "text-red-500 bg-red-500/10 border-red-500/20",
-                  };
-                  const statusText = game.mySlotStatus || "JOINED";
-                  const statusClass =
-                    statusColors[statusText] ||
-                    "text-gray-400 bg-white/5 border-white/10";
-
-                  return (
-                    <div
-                      key={game._id}
-                      className="group relative rounded-[8px] p-[1px] transition-all duration-300 cursor-pointer overflow-hidden"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[8px]" />
-                      <div className="absolute inset-0 border border-white/10 group-hover:opacity-0 transition-opacity duration-300 rounded-[8px]" />
-
-                      <div className="relative bg-background rounded-[8px] p-4 flex flex-col md:flex-row gap-6 w-full">
-                        <div className="w-full md:w-48 h-32 shrink-0 rounded-[8px] overflow-hidden bg-white/5 flex items-center justify-center relative">
-                          {game.turf?.images?.[0] ? (
-                            <img
-                              src={game.turf.images[0]}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                              alt=""
-                            />
-                          ) : (
-                            <div className="flex flex-col items-center gap-2">
-                              <Zap className="w-8 h-8 text-primary" />
-                              <span className="text-[8px] font-black uppercase text-gray-600 tracking-widest">
-                                {game.gameType || "CRICKET"}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="flex-1 flex flex-col justify-between py-1">
-                          <div>
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="px-1.5 py-0.5 bg-primary/10 text-primary rounded text-[8px] font-black uppercase tracking-widest border border-primary/20">
-                                {game.gameType || "CRICKET"}
-                              </span>
-                              {game.format && (
-                                <span className="px-1.5 py-0.5 bg-white/5 text-white rounded text-[8px] font-black uppercase tracking-widest border border-white/10">
-                                  {game.format}
-                                </span>
-                              )}
-                              <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">
-                                ID: #{game._id?.slice(-5).toUpperCase()}
-                              </span>
-                            </div>
-                            <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">
-                              {game.name || `${game.gameType} Practice Match`}
-                            </h3>
-                            <div className="flex flex-wrap items-center gap-4 text-[9px] font-black text-gray-500 uppercase tracking-widest">
-                              <div className="flex items-center gap-1.5">
-                                <Clock size={12} className="text-primary" />{" "}
-                                {game.time}
-                              </div>
-                              <div className="flex items-center gap-1.5">
-                                <Calendar
-                                  size={12}
-                                  className="text-primary"
-                                />{" "}
-                                {new Date(game.date).toLocaleDateString(
-                                  "en-GB"
-                                )}
-                              </div>
-                              <div className="flex items-center gap-1.5">
-                                <MapPin size={12} className="text-primary" />{" "}
-                                {game.turf?.name ||
-                                  game.customVenue ||
-                                  "Local Ground"}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-2 mt-4">
-                            <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
-                              Role:{" "}
-                              <span className="text-white font-black">
-                                {game.myRole || "Player"}
-                              </span>
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col justify-between items-end py-1 shrink-0 border-t md:border-t-0 md:border-l border-white/5 pt-4 md:pt-0 md:pl-6 min-w-[120px]">
-                          <div className="text-right">
-                            <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-1">
-                              Entry Fee
-                            </p>
-                            <p className="text-xl font-black text-white">
-                              {Number(game.perPlayerCharge) > 0
-                                ? `₹${game.perPlayerCharge}`
-                                : "Free"}
-                            </p>
-                          </div>
-                          <div
-                            className={`px-3 py-1 rounded-[8px] text-[8px] font-black uppercase tracking-widest border ${statusClass}`}
-                          >
-                            {statusText}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
             </div>
           )}
 

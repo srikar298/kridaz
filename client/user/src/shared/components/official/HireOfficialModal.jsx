@@ -6,19 +6,23 @@ import { toast } from "react-hot-toast";
 import { Button, Input } from "@kridaz/ui";
 
 
-const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent }) => {
+const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent, onSelect }) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [invitingId, setInvitingId] = useState(null);
 
   useEffect(() => {
+    // Initial fetch for officials when the modal opens
+    if (isOpen) {
+      handleSearch();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
     const searchTimeout = setTimeout(() => {
-      if (query.length >= 3) {
-        handleSearch();
-      } else {
-        setResults([]);
-      }
+      // If there's a query, wait 500ms before searching
+      handleSearch();
     }, 500);
 
     return () => clearTimeout(searchTimeout);
@@ -28,7 +32,7 @@ const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent }) => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/hosted-game/search-officials?query=${query}`,
+        `${import.meta.env.VITE_API_URL}/api/hosted-game/search-officials?query=${query}&role=${role}`,
         { withCredentials: true }
       );
       setResults(res.data.officials || []);
@@ -39,14 +43,20 @@ const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent }) => {
     }
   };
 
-  const handleInvite = async (officialId) => {
-    setInvitingId(officialId);
+  const handleInvite = async (official) => {
+    if (!gameId && onSelect) {
+      onSelect(official, role);
+      onClose();
+      return;
+    }
+    
+    setInvitingId(official._id);
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/hosted-game/invite-official`,
         {
           gameId,
-          officialId,
+          officialId: official._id,
           type: role.toUpperCase(),
         },
         { withCredentials: true }
@@ -54,7 +64,7 @@ const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent }) => {
 
       if (res.data.success) {
         toast.success(`Invitation sent to ${role}!`);
-        onInviteSent();
+        if (onInviteSent) onInviteSent();
         onClose();
       }
     } catch (err) {
@@ -107,7 +117,7 @@ const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent }) => {
                 />
                 <Input
                   type="text"
-                  placeholder="Type 3+ characters to search..."
+                  placeholder="Type to search..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   className="w-full bg-neutral-800 border border-neutral-700 rounded-[8px] py-3 pl-12 pr-4 text-sm focus:outline-none focus:border-yellow-500 transition-all"
@@ -154,19 +164,19 @@ const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent }) => {
                         </div>
                       </div>
                       <Button
-                        onClick={() => handleInvite(user._id)}
+                        onClick={() => handleInvite(user)}
                         disabled={invitingId === user._id}
                         className="px-4 py-2 bg-yellow-500 text-black text-[10px] font-black rounded-[8px] uppercase hover:scale-105 transition-all disabled:opacity-50 disabled:scale-100"
                       >
                         {invitingId === user._id ? (
                           <Loader2 size={14} className="animate-spin" />
                         ) : (
-                          "Invite"
+                          !gameId && onSelect ? "Select" : "Invite"
                         )}
                       </Button>
                     </div>
                   ))
-                ) : query.length >= 3 ? (
+                ) : query.length >= 1 ? (
                   <div className="py-10 text-center opacity-50">
                     <Search
                       className="mx-auto mb-2 text-neutral-600"

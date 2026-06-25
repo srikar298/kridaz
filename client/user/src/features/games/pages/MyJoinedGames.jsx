@@ -34,7 +34,7 @@ const isWithin24HoursOfStart = (gameDate, gameTime) => {
   return timeDiff >= 0 && timeDiff <= 86400000;
 };
 
-const MyJoinedGames = () => {
+const MyJoinedGames = ({ embedded = false }) => {
   const [joinedGames, setJoinedGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -169,15 +169,19 @@ const MyJoinedGames = () => {
     );
 
   return (
-    <div className="min-h-screen bg-neutral-900 text-white p-4 pb-24">
-      <div className="max-w-4xl mx-auto mb-8">
-        <h1 className="text-3xl font-black tracking-tighter font-open-sans text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary mb-2 uppercase">
-          MY JOINED MATCHES
-        </h1>
-        <p className="text-neutral-400 text-[20px]" style={SUBHEADING_STYLE}>
-          Games you&apos;ve requested to join or have already joined
-        </p>
-      </div>
+    <div className={embedded ? "text-white" : "min-h-screen bg-neutral-900 text-white p-4 pb-24"}>
+      {!embedded && (
+        <>
+          <div className="max-w-4xl mx-auto mb-8">
+            <h1 className="text-3xl font-black tracking-tighter font-open-sans text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary mb-2 uppercase">
+              MY JOINED MATCHES
+            </h1>
+            <p className="text-neutral-400 text-[20px]" style={SUBHEADING_STYLE}>
+              Games you&apos;ve requested to join or have already joined
+            </p>
+          </div>
+        </>
+      )}
 
       <div className="max-w-4xl mx-auto mb-6 flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">

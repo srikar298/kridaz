@@ -6,6 +6,7 @@ import JoinGames from "./pages/JoinGames";
 import MyHostedGames from "./pages/MyHostedGames";
 import MyJoinedGames from "./pages/MyJoinedGames";
 import JoinGameDetails from "./pages/JoinGameDetails";
+import GamesHistory from "./pages/GamesHistory";
 
 export {
   HostGameLanding,
@@ -16,5 +17,6 @@ export {
   MyHostedGames,
   MyJoinedGames,
   JoinGameDetails,
+  GamesHistory,
 };
 export { default as GameCard } from "./components/GameCard.jsx";
