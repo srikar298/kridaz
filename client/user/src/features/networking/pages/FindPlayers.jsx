@@ -56,7 +56,8 @@ const PlayerCard = ({
       .slice(0, 2) || "??";
 
   const city = player.city ? player.city.split(",")[0].trim() : "Nearby";
-  const locationText = city;
+  const country = player.country || "India";
+  const locationText = `${city}, ${country}`;
   const primarySport =
     player.preferredSport ||
     (player.sportTypes && player.sportTypes[0]) ||
@@ -98,7 +99,7 @@ const PlayerCard = ({
 
       {/* Primary Sport badge - Top Right */}
       <div
-        className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-bold text-primary bg-black/60 backdrop-blur-md border border-primary/20 z-10"
+        className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full text-[8px] font-bold text-primary bg-black/60 backdrop-blur-md border border-primary/20 z-10"
         style={{ fontFamily: "'Inter', sans-serif" }}
       >
         {primarySport}
@@ -108,7 +109,7 @@ const PlayerCard = ({
       <div className="absolute bottom-0 left-0 right-0 p-2 flex flex-col z-10">
         {/* Player Name */}
         <h3
-          className="text-white text-sm font-bold line-clamp-1 mb-0.5"
+          className="text-white text-xs font-bold line-clamp-1 mb-0.5"
           style={{ fontFamily: "'Inter', sans-serif" }}
         >
           {player.name || "Anonymous"}
@@ -116,20 +117,20 @@ const PlayerCard = ({
 
         {/* Location: City */}
         <p
-          className="text-white/60 text-xs font-medium line-clamp-1 mb-3"
+          className="text-white/60 text-[10px] font-medium line-clamp-1 mb-2.5"
           style={{ fontFamily: "'Inter', sans-serif" }}
         >
           {locationText}
         </p>
 
         {/* Follow / Message Row */}
-        <div className="w-full flex items-center gap-2">
+        <div className="w-full flex items-center gap-1.5">
           <button
             onClick={(e) => {
               e.stopPropagation();
               handleFollowToggle(playerId);
             }}
-            className={`flex-1 h-8 rounded-lg text-xs font-bold transition-all active:scale-95 flex items-center justify-center ${
+            className={`flex-1 h-7 rounded-md text-[10px] font-bold transition-all active:scale-95 flex items-center justify-center ${
               isFollowing
                 ? "text-white bg-white/10 border border-white/10 hover:bg-white/20"
                 : "text-background bg-primary hover:brightness-110"
@@ -144,10 +145,10 @@ const PlayerCard = ({
               e.stopPropagation();
               gateInteraction(() => navigate(`/messages?userId=${playerId}`));
             }}
-            className="w-8 h-8 rounded-lg text-white bg-white/10 border border-white/10 hover:bg-white/20 active:scale-95 transition-all flex items-center justify-center shrink-0"
+            className="w-7 h-7 rounded-md text-white bg-white/10 border border-white/10 hover:bg-white/20 active:scale-95 transition-all flex items-center justify-center shrink-0"
             title="Message"
           >
-            <MessageCircle size={14} className="shrink-0" />
+            <MessageCircle size={12} className="shrink-0" />
           </button>
         </div>
       </div>
@@ -181,21 +182,21 @@ const TeamCard = ({ team, navigate }) => {
 
       {/* Sport chip - Top Left */}
       <div
-        className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold text-primary bg-black/60 backdrop-blur-md border border-primary/20 z-10"
+        className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[8px] font-bold text-primary bg-black/60 backdrop-blur-md border border-primary/20 z-10"
         style={{ fontFamily: "'Inter', sans-serif" }}
       >
         {team.sportType || "Team"}
       </div>
 
       {/* Bottom Content */}
-      <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col z-10">
-        <div className="flex items-center gap-3 mb-2">
+      <div className="absolute bottom-0 left-0 right-0 p-2 flex flex-col z-10">
+        <div className="flex items-center gap-2 mb-1.5">
           {/* Avatar */}
-          <div className="w-12 h-12 rounded-full border border-primary/20 overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-full border border-primary/20 overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
             {team.logo ? (
               <img src={team.logo} alt="" className="w-full h-full object-cover" />
             ) : (
-              <span className="text-primary font-bold text-lg">
+              <span className="text-primary font-bold text-base">
                 {team.name?.charAt(0).toUpperCase()}
               </span>
             )}
@@ -203,39 +204,39 @@ const TeamCard = ({ team, navigate }) => {
           
           <div className="flex-1 min-w-0">
             <h3
-              className="text-white text-sm font-bold line-clamp-1 mb-0.5"
+              className="text-white text-xs font-bold line-clamp-1 mb-0.5"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               {team.name}
             </h3>
             <p
-              className="text-white/60 text-xs font-medium line-clamp-1 flex items-center gap-1"
+              className="text-white/60 text-[10px] font-medium line-clamp-1 flex items-center gap-1"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
-              <MapPin size={10} className="text-primary" />
+              <MapPin size={9} className="text-primary" />
               {team.city || "N/A"}
             </p>
           </div>
         </div>
 
         {/* Stats inline row */}
-        <div className="flex items-center gap-2 text-[10px] font-medium text-white/60 mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="flex items-center gap-2 text-[9px] font-medium text-white/60 mb-2.5" style={{ fontFamily: "'Inter', sans-serif" }}>
           <span><span className="text-white font-bold">{team.memberCount || 1}</span> Members</span>
           <span className="text-white/20">•</span>
           <span><span className="text-white font-bold">{team.matchesPlayed || 0}</span> Matches</span>
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-1.5">
           <button
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/team/${team._id}`);
             }}
-            className="h-8 rounded-lg text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5 text-background bg-primary hover:brightness-110"
+            className="h-7 rounded-md text-[10px] font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5 text-background bg-primary hover:brightness-110"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            <UserPlus size={12} strokeWidth={2.5} />
+            <UserPlus size={11} strokeWidth={2.5} />
             Join
           </button>
           <button
@@ -243,10 +244,10 @@ const TeamCard = ({ team, navigate }) => {
               e.stopPropagation();
               navigate(`/team/${team._id}`);
             }}
-            className="h-8 rounded-lg text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5 text-white bg-white/10 border border-white/10 hover:bg-white/20"
+            className="h-7 rounded-md text-[10px] font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5 text-white bg-white/10 border border-white/10 hover:bg-white/20"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            <Swords size={12} />
+            <Swords size={11} />
             Challenge
           </button>
         </div>

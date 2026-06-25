@@ -898,14 +898,14 @@ export default function Home() {
       {/* Filter Sidebar Overlay */}
       {isFilterOpen && (
         <div
-          className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 z-[1005] bg-black/60 backdrop-blur-sm transition-opacity"
           onClick={() => setIsFilterOpen(false)}
         ></div>
       )}
 
       {/* Sidebar Panel */}
       <div
-        className={`fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-[#050505] border-l border-white/10 shadow-2xl z-[110] transform transition-transform duration-300 ease-in-out ${isFilterOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-[#050505] border-l border-white/10 shadow-2xl z-[1010] transform transition-transform duration-300 ease-in-out ${isFilterOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
@@ -918,7 +918,7 @@ export default function Home() {
             </h2>
             <Button
               onClick={() => setIsFilterOpen(false)}
-              className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-white/50 hover:text-white transition-colors"
+              className="w-8 h-8 min-h-0 p-0 flex items-center justify-center bg-transparent hover:bg-white/10 rounded-full text-white/50 hover:text-white transition-colors"
             >
               <X size={18} />
             </Button>
@@ -938,7 +938,7 @@ export default function Home() {
                     <Button
                       key={type}
                       onClick={() => handleToggleVenueType(type)}
-                      className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                      className={`whitespace-nowrap px-3 h-7 min-h-0 py-0 rounded-[8px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                         isSelected
                           ? "bg-primary/15 border border-primary text-primary"
                           : "bg-white/5 border border-white/10 text-white/50 hover:border-white/20"
@@ -964,7 +964,7 @@ export default function Home() {
                     <Button
                       key={role}
                       onClick={() => handleToggleRole(role)}
-                      className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                      className={`whitespace-nowrap px-3 h-7 min-h-0 py-0 rounded-[8px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                         isSelected
                           ? "bg-primary/15 border border-primary text-primary"
                           : "bg-white/5 border border-white/10 text-white/50 hover:border-white/20"
@@ -990,7 +990,7 @@ export default function Home() {
                     <Button
                       key={type}
                       onClick={() => handleToggleJoinGame(type)}
-                      className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                      className={`whitespace-nowrap px-3 h-7 min-h-0 py-0 rounded-[8px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                         isSelected
                           ? "bg-primary/15 border border-primary text-primary"
                           : "bg-white/5 border border-white/10 text-white/50 hover:border-white/20"
@@ -1016,7 +1016,7 @@ export default function Home() {
                     <Button
                       key={type}
                       onClick={() => handleTogglePlayerFilter(type)}
-                      className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                      className={`whitespace-nowrap px-3 h-7 min-h-0 py-0 rounded-[8px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                         isSelected
                           ? "bg-primary/15 border border-primary text-primary"
                           : "bg-white/5 border border-white/10 text-white/50 hover:border-white/20"
@@ -1032,7 +1032,7 @@ export default function Home() {
           </div>
 
           {/* Footer Actions */}
-          <div className="p-6 border-t border-white/5 flex gap-3 bg-background">
+          <div className="p-4 border-t border-white/5 flex gap-3 bg-background">
             <Button
               onClick={() => {
                 setSelectedRoles([]);
@@ -1040,13 +1040,13 @@ export default function Home() {
                 setSelectedJoinGames([]);
                 setSelectedPlayers([]);
               }}
-              className="flex-1 py-3 rounded-lg border border-white/10 text-xs font-bold text-white/70 hover:text-white hover:bg-white/5 transition-colors uppercase tracking-widest"
+              className="flex-1 py-2.5 rounded-[8px] border border-white/10 text-[11px] font-bold text-white/70 hover:text-white hover:bg-white/5 transition-colors uppercase tracking-widest"
             >
               Reset
             </Button>
             <Button
               onClick={() => setIsFilterOpen(false)}
-              className="flex-[2] py-3 rounded-lg bg-primary text-black text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(191,243,103,0.3)]"
+              className="flex-[2] py-2.5 rounded-[8px] bg-primary text-black text-[11px] font-black uppercase tracking-widest hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(191,243,103,0.3)]"
             >
               Apply Filters
             </Button>

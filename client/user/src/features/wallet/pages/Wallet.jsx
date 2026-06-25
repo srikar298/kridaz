@@ -10,6 +10,9 @@ import {
   IndianRupee,
   Loader2,
   Zap,
+  Coins,
+  Lock,
+  Clock,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { updateUser } from "@redux/slices/authSlice";
@@ -196,76 +199,74 @@ const WalletPage = () => {
     <div className="min-h-screen bg-black text-white pt-2 md:pt-24 pb-20 px-4 font-inter">
       <div className="max-w-4xl mx-auto space-y-4">
         {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-base font-black uppercase tracking-tight font-open-sans">
-            My Wallet
+        <div className="space-y-1 mb-8">
+          <h1 className="text-3xl font-black uppercase tracking-tight font-open-sans">
+            MY <span className="text-primary">WALLET</span>
           </h1>
-          <p
-            className="text-white/70 uppercase tracking-widest text-[11px]"
-            style={SUBHEADING_STYLE}
-          >
+          <p className="text-zinc-400 font-normal text-[13px]">
             Manage your coins & transactions
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           {/* Balance Card */}
           <div className="md:col-span-5 space-y-4">
-            <div className="relative group overflow-hidden bg-black p-4 rounded-[16px] animate-slide-in-left text-white">
-              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
-                <Wallet className="w-20 h-20 text-white/5" />
+            <div className="relative overflow-hidden bg-[#0A0A0A] border border-primary/20 p-4 rounded-[16px] animate-slide-in-left text-white shadow-[0_0_15px_rgba(191,243,103,0.05)]">
+              <div className="absolute top-1/2 -translate-y-1/2 right-2 opacity-20">
+                <Wallet className="w-20 h-20 text-primary" />
               </div>
               <div className="relative z-10 space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-card rounded-[12px] backdrop-blur-sm">
-                    <Zap className="w-4 h-4 text-primary" />
+                  <div className="w-7 h-7 rounded-full border border-primary/30 flex items-center justify-center">
+                    <Zap className="w-3.5 h-3.5 text-primary" />
                   </div>
-                  <span className="font-inter text-[9px] font-black uppercase text-white/70 tracking-wider">
+                  <span className="font-inter text-[10px] font-medium uppercase text-primary tracking-wide">
                     Available Coins
                   </span>
                 </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl font-black text-white tracking-tighter font-open-sans">
-                      {usableBalance}
-                    </span>
-                    <IndianRupee className="w-4 h-4 text-white/50 mt-1" />
-                  </div>
-                  <p className="font-inter text-[9px] font-bold text-primary uppercase">
-                    Spendable Coins Right Now
-                  </p>
+                
+                <div className="flex items-end gap-2 pl-1">
+                  <span className="text-4xl font-bold text-white tracking-tight font-open-sans leading-none">
+                    {usableBalance}
+                  </span>
+                  <IndianRupee className="w-5 h-5 text-zinc-300 mb-0.5" />
                 </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-2 bg-card rounded-[16px] backdrop-blur-sm">
-                    <p className="font-inter text-[9px] font-black uppercase text-white/70 mb-1 tracking-widest">
-                      Total
-                    </p>
-                    <p className="text-base font-black text-white tracking-tighter font-open-sans">
-                      {balance}
-                    </p>
-                  </div>
-                  <div className="p-2 bg-card rounded-[16px] backdrop-blur-sm">
-                    <p className="font-inter text-xs font-black uppercase text-white/70 mb-1 tracking-widest">
-                      Reserved
-                    </p>
-                    <p className="text-lg font-black text-white tracking-tighter font-open-sans">
-                      {reservedBalance}
-                    </p>
-                  </div>
-                </div>
-                <div className="pt-4 border-t border-white/10">
-                  <p className="font-inter font-bold text-white/50 uppercase tracking-widest text-[8px]">
-                    Last updated: {new Date().toLocaleTimeString()}
-                  </p>
-                </div>
+                
+                <p className="font-inter text-[9px] font-medium text-primary uppercase tracking-wide">
+                  Spendable Coins Right Now
+                </p>
               </div>
             </div>
 
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 bg-[#0A0A0A] border border-white/5 rounded-[12px]">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Coins className="w-3.5 h-3.5 text-primary" />
+                  <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Total</span>
+                </div>
+                <p className="text-base font-bold text-white font-open-sans">{balance}</p>
+              </div>
+              <div className="p-3 bg-[#0A0A0A] border border-white/5 rounded-[12px]">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Lock className="w-3.5 h-3.5 text-primary" />
+                  <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Reserved</span>
+                </div>
+                <p className="text-base font-bold text-white font-open-sans">{reservedBalance}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 pt-2 pl-1">
+              <Clock className="w-4 h-4 text-primary" />
+              <p className="font-inter text-xs text-zinc-400">
+                Last updated: {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}, {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </p>
+            </div>
+
+            <div className="border-t border-white/5 my-4"></div>
+
             {/* Top-up Form */}
-            <div className="bg-black p-4 rounded-[16px] space-y-4">
-              <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 font-open-sans">
-                <Plus className="w-4 h-4 text-primary" />
+            <div className="space-y-4">
+              <h2 className="text-[14px] font-medium uppercase tracking-wide font-inter text-white">
                 Top-up Wallet
               </h2>
               <div className="space-y-4 font-inter">
@@ -275,28 +276,30 @@ const WalletPage = () => {
                     type="number"
                     value={topupAmount}
                     onChange={(e) => setTopupAmount(e.target.value)}
-                    placeholder="Enter amount (e.g. 500)"
-                    className="w-full bg-background border border-white/10 rounded-[16px] py-1.5 pl-8 pr-3 text-xs font-bold focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none text-white font-inter"
+                    placeholder="Enter amount (e.g., 500)"
+                    className="w-full bg-[#0A0A0A] border border-white/5 rounded-[8px] py-3 pl-10 pr-4 text-sm focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none text-white font-inter"
                   />
                 </div>
-                <div className="grid grid-cols-3 gap-2 font-inter">
+                <div className="grid grid-cols-3 gap-3 font-inter">
                   {[500, 1000, 2000].map((amt) => (
                     <Button
                       key={amt}
                       onClick={() => setTopupAmount(amt.toString())}
-                      className="py-1.5 rounded-[12px] bg-card border border-white/10 hover:border-secondary hover:text-secondary font-bold text-xs uppercase transition-all"
+                      className="py-3 rounded-[8px] bg-[#0A0A0A] border border-white/5 hover:border-white/20 text-white font-medium text-sm transition-all"
                     >
                       +{amt}
                     </Button>
                   ))}
                 </div>
-                <div className="relative">
+                
+                {/* Coupon input */}
+                <div className="relative mt-4">
                   <Input
                     type="text"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
                     placeholder="Have a coupon code?"
-                    className="w-full bg-background border border-white/10 rounded-[16px] py-1.5 pl-4 pr-24 text-xs font-bold focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none text-white font-inter"
+                    className="w-full bg-[#0A0A0A] border border-white/5 rounded-[8px] py-3 pl-4 pr-24 text-sm focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none text-white font-inter"
                   />
                   <Button
                     onClick={handleValidateCoupon}
@@ -427,7 +430,7 @@ const WalletPage = () => {
                             </span>
                             {tx.status === "PENDING" && tx.type === "TOPUP" && (
                               <div className="flex gap-2 font-inter">
-                                <Button
+                                <button
                                   onClick={async () => {
                                     try {
                                       const { data } = await axiosInstance.get(
@@ -443,22 +446,22 @@ const WalletPage = () => {
                                       toast.error("Failed to check status");
                                     }
                                   }}
-                                  className="text-[8px] font-bold text-primary hover:underline uppercase"
+                                  className="text-[8px] font-bold text-primary hover:underline uppercase bg-transparent p-0 border-none outline-none"
                                 >
                                   Check Status
-                                </Button>
+                                </button>
                                 <span className="text-[8px] text-zinc-600">
                                   |
                                 </span>
-                                <Button
+                                <button
                                   onClick={() => {
                                     setTopupAmount(tx.amount.toString());
                                     handleTopup();
                                   }}
-                                  className="text-[8px] font-bold text-zinc-400 hover:underline uppercase"
+                                  className="text-[8px] font-bold text-zinc-400 hover:underline uppercase bg-transparent p-0 border-none outline-none"
                                 >
                                   Retry
-                                </Button>
+                                </button>
                               </div>
                             )}
                           </div>

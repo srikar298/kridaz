@@ -257,7 +257,7 @@ export default function LandingPage() {
             onClick={prevSlide}
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
-            className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-black hover:bg-primary hover:border-primary transition-all shadow-lg"
+            className="w-10 h-10 min-h-0 p-0 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-black hover:bg-primary hover:border-primary transition-all shadow-lg"
             aria-label="Previous Slide"
           >
             <ChevronLeft size={20} strokeWidth={2.5} />
@@ -266,7 +266,7 @@ export default function LandingPage() {
             onClick={nextSlide}
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
-            className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-black hover:bg-primary hover:border-primary transition-all shadow-lg"
+            className="w-10 h-10 min-h-0 p-0 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-black hover:bg-primary hover:border-primary transition-all shadow-lg"
             aria-label="Next Slide"
           >
             <ChevronRight size={20} strokeWidth={2.5} />
@@ -295,7 +295,7 @@ export default function LandingPage() {
       {/* Side Box Icon Toggle */}
       <Button
         onClick={() => setIsBottomNavOpen(!isBottomNavOpen)}
-        className="absolute bottom-6 left-6 md:left-12 z-50 fluid-glass w-12 h-[43px] rounded-[8px] flex items-center justify-center text-white/70 hover:text-white hover:border-primary/50 hover:shadow-[0_0_15px_rgba(191,243,103,0.3)] transition-all cursor-pointer"
+        className="absolute bottom-6 left-6 md:left-12 z-50 fluid-glass w-12 h-[43px] rounded-[8px] flex items-center justify-center text-white/70 hover:text-white transition-all cursor-pointer"
         aria-label="Toggle Bottom Navigation"
       >
         {isBottomNavOpen ? <X size={20} /> : <Menu size={20} />}

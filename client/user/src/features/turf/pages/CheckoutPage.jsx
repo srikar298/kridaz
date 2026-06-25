@@ -256,7 +256,7 @@ const CheckoutPage = () => {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-card border border-[rgba(255,255,255,0.08)] p-3 rounded-[12px] text-center max-w-xl w-full relative overflow-hidden"
+          className="bg-black border border-[rgba(255,255,255,0.08)] p-3 rounded-[12px] text-center max-w-xl w-full relative overflow-hidden"
         >
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary to-primary" />
           <div className="w-10 h-10 bg-gradient-to-r from-secondary to-primary rounded-full flex items-center justify-center mx-auto mb-3 shadow-[0px_8px_24px_rgba(191,243,103,0.15)]">
@@ -280,7 +280,7 @@ const CheckoutPage = () => {
             </Link>
             <Link
               to="/booking-history"
-              className="w-full h-[36px] bg-card text-foreground border border-[rgba(255,255,255,0.08)] rounded-[8px] font-[700] text-[12px] flex items-center justify-center gap-2"
+              className="w-full h-[36px] bg-black text-foreground border border-[rgba(255,255,255,0.08)] rounded-[8px] font-[700] text-[12px] flex items-center justify-center gap-2"
             >
               View Booking History
             </Link>
@@ -304,11 +304,13 @@ const CheckoutPage = () => {
 
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
-          <GlobalBackButton />
+        <div className="flex items-center gap-2 mb-4">
+          <div className="scale-[0.8] origin-left">
+            <GlobalBackButton />
+          </div>
           <div>
-            <h1 className="text-[24px] md:text-[28px] font-[800] tracking-tight uppercase font-inter text-foreground">
-              Checkout
+            <h1 className="text-[14px] font-[800] tracking-widest uppercase font-inter text-foreground mt-0.5">
+              CHECKOUT
             </h1>
           </div>
         </div>
@@ -317,8 +319,8 @@ const CheckoutPage = () => {
           {/* Left Column: Summary */}
           <div className="lg:col-span-7 flex flex-col gap-3">
             {/* Hero Image & Turf Title */}
-            <div className="bg-card border border-[rgba(255,255,255,0.08)] rounded-[16px] overflow-hidden">
-              <div className="h-[120px] md:h-[160px] w-full bg-card">
+            <div className="bg-black border border-[rgba(255,255,255,0.08)] rounded-[16px] overflow-hidden">
+              <div className="h-[120px] md:h-[160px] w-full bg-black">
                 <img
                   src={turf?.images?.[0] || "/banner-1.png"}
                   className="w-full h-full object-cover"
@@ -327,7 +329,7 @@ const CheckoutPage = () => {
               </div>
               <div className="px-4 py-3">
                 <div>
-                  <h2 className="text-[18px] font-[700] text-foreground uppercase tracking-tight font-inter">
+                  <h2 className="text-[14px] font-[700] text-foreground uppercase tracking-wide font-inter">
                     {turfName || turf?.name || "Kridaz Venue"}
                   </h2>
                   <div className="flex items-center gap-3 text-[rgba(255,255,255,0.70)] text-[12px] mt-1.5 font-[600] uppercase tracking-wide">
@@ -348,11 +350,11 @@ const CheckoutPage = () => {
             </div>
 
             {/* Payment Plan Section */}
-            <div className="bg-card border border-[rgba(255,255,255,0.08)] rounded-[12px] px-4 py-3 flex items-center justify-between">
+            <div className="bg-black border border-[rgba(255,255,255,0.08)] rounded-[12px] px-4 py-3 flex items-center justify-between">
               <span className="text-[14px] font-[700] text-foreground uppercase tracking-widest font-inter">
                 Payment Plan
               </span>
-              <div className="flex bg-card rounded-[8px] p-1 border border-[rgba(255,255,255,0.08)]">
+              <div className="flex bg-black rounded-[8px] p-1 border border-[rgba(255,255,255,0.08)]">
                 {[30, 50, 100].map((pct) => (
                   <Button
                     key={pct}
@@ -370,7 +372,7 @@ const CheckoutPage = () => {
             </div>
 
             {/* Price Details */}
-            <div className="bg-card border border-[rgba(255,255,255,0.08)] rounded-[12px] px-4 py-3 space-y-2.5">
+            <div className="bg-black border border-[rgba(255,255,255,0.08)] rounded-[12px] px-4 py-3 space-y-2.5">
               <h3 className="text-[12px] font-[700] text-foreground uppercase tracking-widest font-inter mb-1">
                 Price Details
               </h3>
@@ -413,7 +415,7 @@ const CheckoutPage = () => {
             </div>
 
             {/* Coupon Box */}
-            <div className="bg-card border border-[rgba(255,255,255,0.08)] rounded-[12px] p-3">
+            <div className="bg-black border border-[rgba(255,255,255,0.08)] rounded-[12px] p-3">
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Tag
@@ -427,13 +429,13 @@ const CheckoutPage = () => {
                     onChange={(e) =>
                       setCouponCode(e.target.value.toUpperCase())
                     }
-                    className="w-full bg-card border border-[rgba(255,255,255,0.08)] rounded-[8px] py-[10px] pl-[36px] pr-[16px] text-[13px] font-[400] text-foreground outline-none focus:border-secondary transition-all placeholder:text-[rgba(255,255,255,0.70)]"
+                    className="w-full bg-black border border-[rgba(255,255,255,0.08)] rounded-[8px] py-[10px] pl-[36px] pr-[16px] text-[13px] font-[400] text-foreground outline-none focus:border-secondary transition-all placeholder:text-[rgba(255,255,255,0.70)]"
                   />
                 </div>
                 <Button
                   onClick={handleApplyCoupon}
                   disabled={isValidating || !couponCode}
-                  className="bg-card border border-[rgba(255,255,255,0.08)] text-foreground px-5 rounded-[8px] text-[12px] font-[700] uppercase tracking-widest disabled:opacity-40"
+                  className="bg-black border border-[rgba(255,255,255,0.08)] text-foreground px-5 rounded-[8px] text-[12px] font-[700] uppercase tracking-widest disabled:opacity-40"
                 >
                   {isValidating ? (
                     <Loader2 size={16} className="animate-spin" />
@@ -448,12 +450,12 @@ const CheckoutPage = () => {
           {/* Right Column: Payment Plan & Payment Method */}
           <div className="lg:col-span-5 space-y-4 pb-4">
             {/* Payment Method */}
-            <div className="bg-card border border-[rgba(255,255,255,0.08)] rounded-[16px] p-4 md:p-5">
+            <div className="bg-black border border-[rgba(255,255,255,0.08)] rounded-[16px] p-4 md:p-5">
               <div className="grid grid-cols-2 gap-4">
                 {/* Wallet */}
                 <Button
                   onClick={() => setPaymentMode("WALLET")}
-                  className={`relative p-4 rounded-[12px] border transition-all flex flex-col items-center justify-center gap-2 text-center ${paymentMode === "WALLET" ? "bg-card border-primary" : "bg-card border-[rgba(255,255,255,0.08)]"}`}
+                  className={`relative px-2 py-4 rounded-[12px] border transition-all flex flex-col items-center justify-center gap-2 text-center ${paymentMode === "WALLET" ? "bg-black border-primary" : "bg-black border-[rgba(255,255,255,0.08)]"}`}
                 >
                   {paymentMode === "WALLET" && (
                     <div className="absolute top-2 right-2">
@@ -464,13 +466,13 @@ const CheckoutPage = () => {
                     </div>
                   )}
                   <div
-                    className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${paymentMode === "WALLET" ? "bg-gradient-to-r from-secondary to-primary text-background" : "bg-card border border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)]"}`}
+                    className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${paymentMode === "WALLET" ? "bg-gradient-to-r from-secondary to-primary text-background" : "bg-black border border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)]"}`}
                   >
                     <Wallet className="w-4 h-4" />
                   </div>
                   <div>
                     <div
-                      className={`text-[12px] font-[700] uppercase tracking-wide ${paymentMode === "WALLET" ? "text-foreground" : "text-[rgba(255,255,255,0.70)]"}`}
+                      className={`text-[10px] whitespace-nowrap font-[700] uppercase tracking-wide ${paymentMode === "WALLET" ? "text-foreground" : "text-[rgba(255,255,255,0.70)]"}`}
                     >
                       Wallet
                     </div>
@@ -486,7 +488,7 @@ const CheckoutPage = () => {
                 {/* UPI */}
                 <Button
                   onClick={() => setPaymentMode("UPI")}
-                  className={`relative p-4 rounded-[12px] border transition-all flex flex-col items-center justify-center gap-2 text-center ${paymentMode === "UPI" ? "bg-card border-primary" : "bg-card border-[rgba(255,255,255,0.08)]"}`}
+                  className={`relative px-2 py-4 rounded-[12px] border transition-all flex flex-col items-center justify-center gap-2 text-center ${paymentMode === "UPI" ? "bg-black border-primary" : "bg-black border-[rgba(255,255,255,0.08)]"}`}
                 >
                   {paymentMode === "UPI" && (
                     <div className="absolute top-2 right-2">
@@ -497,18 +499,15 @@ const CheckoutPage = () => {
                     </div>
                   )}
                   <div
-                    className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${paymentMode === "UPI" ? "bg-gradient-to-r from-secondary to-primary text-background" : "bg-card border border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)]"}`}
+                    className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${paymentMode === "UPI" ? "bg-gradient-to-r from-secondary to-primary text-background" : "bg-black border border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)]"}`}
                   >
                     <Smartphone className="w-4 h-4" />
                   </div>
                   <div>
                     <div
-                      className={`text-[12px] font-[700] uppercase tracking-wide ${paymentMode === "UPI" ? "text-foreground" : "text-[rgba(255,255,255,0.70)]"}`}
+                      className={`text-[10px] whitespace-nowrap font-[700] uppercase tracking-wide ${paymentMode === "UPI" ? "text-foreground" : "text-[rgba(255,255,255,0.70)]"}`}
                     >
                       Instant UPI
-                    </div>
-                    <div className="text-[10px] text-[rgba(255,255,255,0.70)] font-[500] mt-0.5">
-                      GPay, PhonePe
                     </div>
                   </div>
                 </Button>
@@ -518,7 +517,7 @@ const CheckoutPage = () => {
               <div className="pt-6">
                 {paymentMode === "WALLET" && currentBalance < amountToPay ? (
                   <>
-                    <div className="border border-[rgba(255,255,255,0.08)] bg-card rounded-[12px] p-4 flex gap-3 items-center mb-4">
+                    <div className="border border-[rgba(255,255,255,0.08)] bg-black rounded-[12px] p-4 flex gap-3 items-center mb-4">
                       <Info className="text-[rgba(255,255,255,0.70)] w-5 h-5 shrink-0" />
                       <p className="text-[12px] text-[rgba(255,255,255,0.70)] font-[400] leading-snug">
                         Your wallet balance is insufficient for this booking.

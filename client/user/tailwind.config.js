@@ -18,6 +18,7 @@ export default {
           '"Poppins"',
           "sans-serif",
         ],
+        "open-sans": ['"Open Sans"', "sans-serif"],
       },
       backgroundImage: {
         banner: "url('/r.png')",

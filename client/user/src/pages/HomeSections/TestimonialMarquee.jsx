@@ -93,7 +93,10 @@ export default function TestimonialMarquee() {
         {/* We use pointer-events-auto inside a relative container to allow hovering */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 absolute inset-x-0 top-0">
           {/* Column 1 */}
-          <div className="flex flex-col gap-6 animate-marquee-vertical hover:[animation-play-state:paused]">
+          <div 
+            className="!flex flex-col gap-6 animate-marquee-vertical hover:[animation-play-state:paused]"
+            style={{ animationDuration: "90s" }}
+          >
             {col1.map((item, i) => (
               <TestimonialCard key={`c1-${i}`} item={item} />
             ))}
@@ -102,7 +105,7 @@ export default function TestimonialMarquee() {
           {/* Column 2 */}
           <div
             className="hidden md:flex flex-col gap-6 animate-marquee-vertical hover:[animation-play-state:paused]"
-            style={{ animationDuration: "45s", animationDelay: "-15s" }}
+            style={{ animationDuration: "90s" }}
           >
             {col2.map((item, i) => (
               <TestimonialCard key={`c2-${i}`} item={item} />
@@ -112,7 +115,7 @@ export default function TestimonialMarquee() {
           {/* Column 3 */}
           <div
             className="hidden md:flex flex-col gap-6 animate-marquee-vertical hover:[animation-play-state:paused]"
-            style={{ animationDuration: "35s", animationDelay: "-5s" }}
+            style={{ animationDuration: "90s" }}
           >
             {col3.map((item, i) => (
               <TestimonialCard key={`c3-${i}`} item={item} />
