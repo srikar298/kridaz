@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useSelector, useDispatch } from "react-redux";
 import useTurfData from "../features/turf/hooks/useTurfData";
-import DashboardHero from "./HomeSections/DashboardHero";
+import QuickActions from "./HomeSections/QuickActions";
 import VenuesSection from "./HomeSections/VenuesSection";
 import PlayersSection from "./HomeSections/PlayersSection";
 import SocialArenaSection from "./HomeSections/SocialArenaSection";
@@ -454,7 +454,7 @@ export default function Home() {
         <Community onSearchActive={setIsCommunitySearchActive}>
           {/* -- DASHBOARD HERO -- */}
           <div className="!mt-1 w-[100%] max-w-[100vw] overflow-x-hidden md:w-auto relative mb-0">
-            <DashboardHero
+            <QuickActions
               user={user}
               userLocation={userLocation}
               locationStatus={locationStatus}
