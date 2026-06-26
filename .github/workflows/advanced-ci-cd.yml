@@ -49,8 +49,8 @@ jobs:
         run: |
           cat <<EOF > client/user/.env.production
           VITE_API_URL=https://api.kridaz.com/
-          VITE_USER_URL=https://kridaz.vercel.app,https://www.kridaz.com
-          VITE_GOOGLE_CLIENT_ID=615790581143-k4g37kb3krcfnh1p64aodd2qa3le5q96.apps.googleusercontent.com
+          VITE_USER_URL=https://www.kridaz.com,https://kridaz.com
+          VITE_GOOGLE_CLIENT_ID=9445008437-qn18s4lgjhmu7emcq6uchq83gm8cff6c.apps.googleusercontent.com
           VITE_RAZORPAY_KEY_ID=rzp_live_SweOO8CAlfwtzg
           VITE_REELS_CDN_URL=https://pub-cc243bd179ab45ee94097baeca380dd4.r2.dev
           VITE_TURNSTILE_SITE_KEY=0x4AAAAAADTyPk2TuxnL09q7
