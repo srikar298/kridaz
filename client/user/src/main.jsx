@@ -14,23 +14,27 @@ import { setupProductionGuards } from "./utils/productionGuards";
 
 setupProductionGuards();
 
+const isProduction = import.meta.env.PROD;
+
 Sentry.init({
   dsn:
     import.meta.env.VITE_SENTRY_DSN ||
     "https://634126d8b3183e2da715d594593d1faa@o4511558335660032.ingest.de.sentry.io/4511558345752656",
-  integrations: [
-    Sentry.browserTracingIntegration(),
-    Sentry.replayIntegration(),
-  ],
+  integrations: isProduction
+    ? [
+        Sentry.browserTracingIntegration(),
+        Sentry.replayIntegration(),
+      ]
+    : [],
   // Tracing
-  tracesSampleRate: 1.0, // Capture 100% of the transactions
+  tracesSampleRate: isProduction ? 0.1 : 0.0, // Capture 10% in production, 0% in dev
   // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
-  tracePropagationTargets: ["localhost", /^https:\/\/api\.kridaz\.com\/api/],
+  tracePropagationTargets: isProduction ? ["localhost", /^https:\/\/api\.kridaz\.com\/api/] : [],
   // Session Replay
-  replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%.
-  replaysOnErrorSampleRate: 1.0, // Change the sample rate to 100% when sampling sessions where errors occur.
+  replaysSessionSampleRate: isProduction ? 0.1 : 0.0,
+  replaysOnErrorSampleRate: isProduction ? 1.0 : 0.0,
   // Enable logs to be sent to Sentry
-  enableLogs: true,
+  enableLogs: isProduction,
   environment: import.meta.env.MODE,
 });
 

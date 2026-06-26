@@ -94,7 +94,7 @@ export default function Home() {
   }, [user]);
 
   const { data: featureFlags = {} } = useGetFeaturesFlagsQuery();
-  const { data: marketingContent } = useGetMarketingContentQuery();
+  const { data: marketingContent, isLoading: marketingLoading } = useGetMarketingContentQuery();
 
   const [selectedHomeState, setSelectedHomeState] = useState("");
   const [selectedHomeCity, setSelectedHomeCity] = useState("");
@@ -182,33 +182,33 @@ export default function Home() {
 
   const combinedTurfFilters = useMemo(() => {
     const base = { ...turfFilters };
-    if (userLocation && userLocation.lat && userLocation.lng) {
+    if (locationStatus === "granted" && userLocation) {
       base.lat = userLocation.lat;
       base.lng = userLocation.lng;
+      base.city = userLocation.city || "";
+      base.state = userLocation.state || "";
     } else if (locationStatus === "denied") {
       base.city = "Hyderabad";
       base.state = "Telangana";
+    } else {
+      // Skip query while location status is detecting
+      base._skip = true;
     }
     return base;
-  }, [turfFilters, userLocation, locationStatus]);
+  }, [
+    turfFilters,
+    userLocation?.lat,
+    userLocation?.lng,
+    userLocation?.city,
+    userLocation?.state,
+    locationStatus,
+  ]);
 
   const {
     turfs,
     loading: turfLoading,
     error,
   } = useTurfData(combinedTurfFilters);
-
-  useEffect(() => {
-    if (locationStatus === "granted" && userLocation) {
-      setTurfFilters((prev) => ({
-        ...prev,
-        state: userLocation.state || "",
-        city: userLocation.city || "",
-      }));
-    } else if (locationStatus === "denied") {
-      setTurfFilters((prev) => ({ ...prev, state: "", city: "" }));
-    }
-  }, [locationStatus, userLocation]);
 
   const displayTurfs = useMemo(() => {
     if (!turfs || turfs.length === 0) return [];
@@ -237,6 +237,9 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Avoid double fetching while location is still detecting
+    if (locationStatus === "detecting") return;
+
     const fetchPlayers = async () => {
       setLoading(true);
       try {
@@ -258,7 +261,7 @@ export default function Home() {
       }
     };
     fetchPlayers();
-  }, [playerFilters, userLocation, locationStatus]);
+  }, [playerFilters, userLocation?.lat, userLocation?.lng, locationStatus]);
 
   const handleFollowToggle = async (eOrId, p) => {
     let playerId;
@@ -444,6 +447,7 @@ export default function Home() {
 
   return (
     <div className="bg-[#050505] min-h-screen text-white font-sans w-full max-w-[100vw] overflow-x-clip pt-0 pb-16 lg:pb-0">
+      <h1 className="sr-only">Kridaz - Sports Community & Venue Booking</h1>
       <div className="md:px-0 w-full mt-0 mb-4">
         <Community onSearchActive={setIsCommunitySearchActive}>
           {/* -- DASHBOARD HERO -- */}
@@ -462,9 +466,9 @@ export default function Home() {
             (loadingScoringGames || liveNetworkMatches.length > 0) && (
               <div className="!mt-2 px-4">
                 <div className="flex items-center justify-between px-1 mb-3">
-                  <h4 className="text-[11px] font-black uppercase text-white/40 tracking-widest">
+                  <h2 className="text-[11px] font-black uppercase text-white/40 tracking-widest">
                     Live Now
-                  </h4>
+                  </h2>
                 </div>
 
                 <div
@@ -472,9 +476,7 @@ export default function Home() {
                   className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth gap-3"
                 >
                   {loadingScoringGames ? (
-                    <div className="w-full py-4 flex justify-center items-center">
-                      <div className="w-4 h-4 border-2 border-[#E83441] border-t-transparent rounded-full animate-spin"></div>
-                    </div>
+                    <div className="min-w-full md:min-w-[320px] shrink-0 bg-[#0B0B0C] border border-white/5 rounded-xl animate-pulse h-[142px]" />
                   ) : (
                     liveNetworkMatches.map((match) => {
                       const teamA =
@@ -502,9 +504,9 @@ export default function Home() {
                                 LIVE
                               </div>
                               <div>
-                                <h5 className="text-[12px] font-bold text-white leading-none">
+                                <h3 className="text-[12px] font-bold text-white leading-none">
                                   {match.venue || "Kridaz Arena"}
-                                </h5>
+                                </h3>
                                 <p className="text-[10px] text-white/50 mt-1 font-medium">
                                   {match.sportType || match.gameType || "Match"}
                                 </p>
@@ -603,6 +605,7 @@ export default function Home() {
               banners={(marketingContent?.banners || []).filter(
                 (b) => b.type !== "PROMOTION"
               )}
+              loading={marketingLoading}
             />
           </div>
 
@@ -611,18 +614,16 @@ export default function Home() {
             (loadingBookings || upcomingBookingsList.length > 0) && (
               <div className="!mt-2 px-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-[11px] font-black uppercase text-white/40 tracking-widest">
+                  <h2 className="text-[11px] font-black uppercase text-white/40 tracking-widest">
                     Upcoming Bookings
-                  </h4>
+                  </h2>
                 </div>
                 <div
                   ref={bookingsScrollRef}
                   className="flex gap-3 overflow-x-auto no-scrollbar pb-2 scroll-smooth"
                 >
                   {loadingBookings ? (
-                    <div className="w-full py-4 flex justify-center items-center">
-                      <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                    </div>
+                    <div className="min-w-[145px] w-[145px] rounded-xl border border-white/5 bg-[#070708] animate-pulse h-[225px]" />
                   ) : (
                     upcomingBookingsList.map((booking) => {
                       const dateObj = new Date(
@@ -709,9 +710,9 @@ export default function Home() {
                               </span>
                             </div>
                             <div className="flex-1 min-w-0 flex flex-col justify-center">
-                              <h5 className="text-[10px] font-bold text-white leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                              <h3 className="text-[10px] font-bold text-white leading-tight group-hover:text-primary transition-colors line-clamp-2">
                                 {turfName}
-                              </h5>
+                              </h3>
                               <p className="text-[8px] text-white/50 truncate mt-0.5 font-medium">
                                 {turfAddress}
                               </p>
@@ -750,9 +751,9 @@ export default function Home() {
           {/* -- SPORTS CATEGORIES -- */}
           <div className="!mt-2 mb-2 px-2">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="text-[12px] font-black uppercase text-white tracking-widest">
+              <h2 className="text-[12px] font-black uppercase text-white tracking-widest">
                 Sports
-              </h4>
+              </h2>
             </div>
             <div className="flex overflow-x-auto no-scrollbar gap-4 pb-2 snap-x snap-mandatory">
               {sportsCategories.map((sport, index) => (
@@ -761,12 +762,24 @@ export default function Home() {
                   onClick={() =>
                     navigate(`/search?q=${encodeURIComponent(sport.name)}`)
                   }
-                  className="flex flex-col items-center cursor-pointer snap-start shrink-0"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      navigate(`/search?q=${encodeURIComponent(sport.name)}`);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Search ${sport.name}`}
+                  className="flex flex-col items-center cursor-pointer snap-start shrink-0 focus:outline-none focus:ring-2 focus:ring-primary rounded-[20px]"
                 >
                   <div className="w-[88px] h-[88px] rounded-[20px] overflow-hidden relative flex items-center justify-center">
                     <img
                       src={sport.image}
                       alt={sport.name}
+                      width="88"
+                      height="88"
+                      loading="lazy"
                       className={`w-full h-full object-contain drop-shadow-md ${sport.name === "Basketball" || sport.name === "Pickleball" ? "scale-[0.85]" : ""}`}
                     />
                   </div>

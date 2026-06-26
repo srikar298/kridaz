@@ -18,8 +18,10 @@ export default function DashboardHero() {
         >
           <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />
           <img
-            src="/3d_map_location.svg"
+            src="/3d-map-location.webp"
             alt="Leaderboard Map Icon"
+            width="80"
+            height="80"
             className="absolute inset-0 w-full h-full object-contain p-[5%] pointer-events-none transform group-hover:scale-110 transition-all duration-300 z-10"
           />
         </div>
@@ -48,8 +50,10 @@ export default function DashboardHero() {
         >
           <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />
           <img
-            src="/3d_scoreboard_v2.png"
+            src="/3d-scoreboard-v2.webp"
             alt="Scorer Icon"
+            width="80"
+            height="80"
             className="absolute inset-0 w-full h-full object-contain p-[2.5%] pointer-events-none transform group-hover:scale-110 transition-all duration-300 z-10"
           />
         </div>
@@ -77,8 +81,10 @@ export default function DashboardHero() {
         >
           <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />
           <img
-            src="/3d_whistle.svg"
+            src="/3d-whistle.webp"
             alt="Host & Join Games Whistle Icon"
+            width="80"
+            height="80"
             className="absolute inset-0 w-full h-full object-contain p-[2.5%] pointer-events-none transform group-hover:scale-110 transition-all duration-300 z-10"
           />
         </div>
@@ -106,8 +112,10 @@ export default function DashboardHero() {
         >
           <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />
           <img
-            src="/sports/3d_professional_v2.png"
+            src="/sports/3d-professional-v2.webp"
             alt="Pros Icon"
+            width="80"
+            height="80"
             className="absolute inset-0 w-full h-full object-contain p-[10%] pointer-events-none transform group-hover:scale-110 transition-all duration-300 z-10"
           />
         </div>

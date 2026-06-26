@@ -12,7 +12,7 @@ import { gsap } from "gsap";
 
 const PRI = "#BFF367";
 
-export const AdBannerSection = ({ banners = [] }) => {
+export const AdBannerSection = ({ banners = [], loading = false }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -83,10 +83,20 @@ export const AdBannerSection = ({ banners = [] }) => {
     }
   };
 
+  if (loading) {
+    return (
+      <section className="relative w-full overflow-hidden bg-black py-0">
+        <div className="w-full px-1 md:px-2">
+          <div className="relative aspect-[16/9] rounded-[8px] md:rounded-[8px] overflow-hidden border border-white/10 bg-white/5 animate-pulse" />
+        </div>
+      </section>
+    );
+  }
+
   if (!banners || banners.length === 0) return null;
 
   const currentBanner = banners[currentIndex];
-  const isVideo = !!currentBanner.videoUrl;
+  const isVideo = !!currentBanner?.videoUrl;
 
   return (
     <section className="relative w-full overflow-hidden bg-black py-0">
