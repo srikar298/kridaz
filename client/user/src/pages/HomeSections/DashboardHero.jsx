@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function QuickActions() {
+export default function DashboardHero() {
   return (
     <div className="grid grid-cols-4 gap-2 md:gap-3 mb-0 w-full pb-0 px-2">
       {/* Leaderboard / Players Nearby */}
