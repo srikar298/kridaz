@@ -69,7 +69,8 @@ const SignUp = ({ isModal = false }) => {
       } else {
         const redirectUrl = localStorage.getItem("redirectAfterLogin") || "/";
         localStorage.removeItem("redirectAfterLogin");
-        navigate(redirectUrl);
+        const isRelative = redirectUrl.startsWith("/") && !redirectUrl.startsWith("//") && !redirectUrl.startsWith("/\\");
+        navigate(isRelative ? redirectUrl : "/");
       }
     }
   }, [isLoggedIn, role, navigate, showOnboarding, isModal, closeAuthModal]);

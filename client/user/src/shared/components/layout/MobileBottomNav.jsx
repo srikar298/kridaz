@@ -28,7 +28,7 @@ const StadiumIcon = ({ size = 24, className }) => {
 const MobileBottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const isLoggedIn = useSelector((state) => state.auth?.isLoggedIn || !!state.auth?.token);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { scrollDirection } = useScrollDirection();
 

@@ -110,7 +110,8 @@ const StadiumIcon = ({ size = 24, className }) => {
 };
 
 const Navbar = () => {
-  const { isLoggedIn, role, user } = useSelector((state) => state.auth);
+  const { role, user } = useSelector((state) => state.auth || {});
+  const isLoggedIn = useSelector((state) => state.auth?.isLoggedIn || !!state.auth?.token);
   const { openAuthModal } = useAuthModal();
   const userLocation = useSelector((state) => state.ui.userLocation);
   const locationStatus = useSelector((state) => state.ui.locationStatus);

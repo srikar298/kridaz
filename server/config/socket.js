@@ -44,13 +44,17 @@ const socketConfig = (server) => {
         if (!decoded && process.env.OVERLAY_TOKEN_SECRET) {
           try {
             decoded = jwt.verify(token, process.env.OVERLAY_TOKEN_SECRET);
-          } catch (e) {}
+          } catch (e) {
+            // ignore
+          }
         }
         // Try scoring token
         if (!decoded && process.env.JWT_SCORING_SECRET) {
           try {
             decoded = jwt.verify(token, process.env.JWT_SCORING_SECRET);
-          } catch (e) {}
+          } catch (e) {
+            // ignore
+          }
         }
 
         // If all verifications fail, throw
@@ -126,7 +130,9 @@ const socketConfig = (server) => {
           });
           if (game) socket.join(game.id);
         }
-      } catch (e) {}
+      } catch (e) {
+        // ignore
+      }
     });
 
     // Counterpart so viewers stop receiving score updates when they navigate
@@ -150,20 +156,46 @@ const socketConfig = (server) => {
     });
 
     socket.on(SOCKET.OVERLAY_JOIN, async ({ matchId, token }) => {
-      if (!matchId) return;
-      socket.join(matchId);
-      logger.info(
-        `[Socket] Socket ${socket.id} joined overlay match room: ${matchId} (token: ${token})`
-      );
+      if (!matchId || !token) {
+        logger.warn(`[Socket] Overlay join rejected: missing parameters`);
+        socket.emit("error", "Missing matchId or token");
+        return;
+      }
       try {
+        if (!process.env.OVERLAY_TOKEN_SECRET) {
+          throw new Error("OVERLAY_TOKEN_SECRET is not configured");
+        }
+        const decoded = jwt.verify(token, process.env.OVERLAY_TOKEN_SECRET);
+        
+        // Resolve match/game ID
+        let resolvedGameId = matchId;
         if (!matchId.includes("-")) {
           const game = await prisma.hostedGame.findUnique({
             where: { shortId: matchId },
             select: { id: true },
           });
-          if (game) socket.join(game.id);
+          if (game) {
+            resolvedGameId = game.id;
+          }
         }
-      } catch (e) {}
+
+        if (decoded.matchId !== resolvedGameId) {
+          logger.warn(`[Socket] Overlay token matchId mismatch: token has ${decoded.matchId}, requested ${resolvedGameId}`);
+          socket.emit("error", "Unauthorized: matchId mismatch");
+          return;
+        }
+
+        socket.join(matchId);
+        if (resolvedGameId !== matchId) {
+          socket.join(resolvedGameId);
+        }
+        logger.info(
+          `[Socket] Socket ${socket.id} joined overlay match room: ${matchId} (resolved: ${resolvedGameId})`
+        );
+      } catch (err) {
+        logger.warn(`[Socket] Overlay token verification failed: ${err.message}`);
+        socket.emit("error", "Unauthorized: invalid overlay token");
+      }
     });
 
     socket.on("typing", (room) => socket.in(room).emit("typing", room));

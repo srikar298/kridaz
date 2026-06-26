@@ -3,7 +3,36 @@ import * as bookingService from "./booking.service.js";
 import { generateInvoice } from "../../utils/generateInvoice.js";
 import { format } from "date-fns";
 import logger from "../../utils/logger.js";
-import { NotFoundError } from "@kridaz/common";
+import { NotFoundError, ForbiddenError } from "@kridaz/common";
+
+const isAuthorizedForBooking = (req, booking) => {
+  if (!req.user) return false;
+  
+  const userId = req.user.id;
+  const role = req.user.role?.toUpperCase();
+  
+  // Platform admins (BMSP_*) are always allowed
+  if (role && role.startsWith("BMSP_")) {
+    return true;
+  }
+  
+  // Owner is allowed if they own the turf
+  if (booking.turf?.owner?.userId === userId) {
+    return true;
+  }
+  
+  // User who made the booking is allowed
+  if (booking.userId === userId) {
+    return true;
+  }
+
+  // Host of the game is allowed
+  if (booking.hostId === userId) {
+    return true;
+  }
+
+  return false;
+};
 
 // --- USER OPERATIONS ---
 
@@ -57,6 +86,11 @@ export const getBookingById = asyncHandler(async (req, res) => {
   const booking = await bookingService.findBookingDetailsById(id);
   if (!booking)
     throw new NotFoundError("Booking not found", { code: "BOOKING_NOT_FOUND" });
+    
+  if (!isAuthorizedForBooking(req, booking)) {
+    throw new ForbiddenError("Not authorized to view this booking", { code: "FORBIDDEN" });
+  }
+  
   return res.status(200).json(booking);
 });
 
@@ -125,6 +159,11 @@ export const downloadInvoice = asyncHandler(async (req, res) => {
   const booking = await bookingService.findBookingDetailsById(id);
   if (!booking)
     throw new NotFoundError("Booking not found", { code: "BOOKING_NOT_FOUND" });
+    
+  if (!isAuthorizedForBooking(req, booking)) {
+    throw new ForbiddenError("Not authorized to download this invoice", { code: "FORBIDDEN" });
+  }
+  
   const customerInfo = booking.user || {
     name: booking.guestName || "Guest Customer",
     email: booking.guestEmail || "N/A",

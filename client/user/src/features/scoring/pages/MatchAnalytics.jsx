@@ -555,12 +555,11 @@ const MatchAnalytics = () => {
     loadAnalytics();
     setLoading(false);
 
-    const token =
-      localStorage.getItem("token") ||
-      localStorage.getItem(`scorer_token_${matchId}`);
+    const scorerToken = localStorage.getItem(`scorer_token_${matchId}`);
     const socket = io(API_BASE, {
       reconnection: true,
-      auth: { token },
+      withCredentials: true,
+      ...(scorerToken ? { auth: { token: scorerToken } } : {}),
     });
 
     socket.on("connect", () => {

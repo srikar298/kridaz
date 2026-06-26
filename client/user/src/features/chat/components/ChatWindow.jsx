@@ -491,7 +491,8 @@ const ChatWindow = ({ chat, onBack, onSelectChat, prefillMessage }) => {
             </Button>
           )}
           {!isSelectionMode && (
-            <Button
+            <button
+              type="button"
               onClick={() => {
                 setIsSearchOpen(!isSearchOpen);
                 if (isSearchOpen) setMessageSearchQuery("");
@@ -511,16 +512,17 @@ const ChatWindow = ({ chat, onBack, onSelectChat, prefillMessage }) => {
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
-            </Button>
+            </button>
           )}
-          <Button
+          <button
+            type="button"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className={`p-2 transition-colors rounded-full ${isDropdownOpen ? "bg-white/[0.1] text-white" : "text-white/60 hover:text-white hover:bg-white/[0.05]"}`}
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 7a2 2 0 1 0-.001-4.001A2 2 0 0 0 12 7zm0 2a2 2 0 1 0-.001 3.999A2 2 0 0 0 12 9zm0 6a2 2 0 1 0-.001 3.999A2 2 0 0 0 12 15z" />
             </svg>
-          </Button>
+          </button>
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
@@ -1161,7 +1163,7 @@ const ChatWindow = ({ chat, onBack, onSelectChat, prefillMessage }) => {
                 placeholder="Type a message..."
                 className="flex-1 bg-transparent border-none text-white py-2.5 focus:ring-0 focus:outline-none text-sm placeholder:text-white/40"
               />
-              <Button
+              <button
                 type="submit"
                 disabled={!message.trim()}
                 className="p-2 bg-primary text-black rounded-full hover:scale-105 active:scale-95 transition-all disabled:opacity-30 disabled:scale-100 disabled:bg-white/10 disabled:text-white/30"
@@ -1179,7 +1181,7 @@ const ChatWindow = ({ chat, onBack, onSelectChat, prefillMessage }) => {
                     d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
                   />
                 </svg>
-              </Button>
+              </button>
             </div>
           </form>
         ) : (

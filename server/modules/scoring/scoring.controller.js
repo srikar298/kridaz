@@ -2,6 +2,7 @@ import * as scoringService from "./scoring.service.js";
 import * as scoringViews from "./scoring.views.js";
 import logger from "../../utils/logger.js";
 import { prisma } from "../../config/prisma.js";
+import jwt from "jsonwebtoken";
 
 /**
  * Standard utility to catch thrown errors from the service layer
@@ -133,7 +134,7 @@ export const notifyPlayers = async (req, res) => {
 export const goLive = async (req, res) => {
   try {
     const { matchId } = req.params;
-    const result = await scoringService.goLiveSession(matchId);
+    const result = await scoringService.goLiveSession(matchId, req.user);
 
     res.status(200).json({
       success: true,
@@ -151,7 +152,7 @@ export const goLive = async (req, res) => {
 export const endLive = async (req, res) => {
   try {
     const { matchId } = req.params;
-    await scoringService.endLiveSession(matchId);
+    await scoringService.endLiveSession(matchId, req.user);
 
     res.status(200).json({ success: true, message: "Live stream ended." });
   } catch (error) {
@@ -166,7 +167,7 @@ export const endLive = async (req, res) => {
 export const completeMatch = async (req, res) => {
   try {
     const { scoringId } = req.body;
-    const { earnedBadges } = await scoringService.finalizeMatch(scoringId);
+    const { earnedBadges } = await scoringService.finalizeMatch(scoringId, req.user);
 
     res.status(200).json({
       success: true,
@@ -218,7 +219,7 @@ export const startScoring = async (req, res) => {
       req.user?.role,
       req.body.tossWinner,
       req.body.tossDecision
-    );
+    , req.user);
 
     res.status(200).json({ success: true, scoring });
   } catch (error) {
@@ -236,7 +237,7 @@ export const startNextInnings = async (req, res) => {
     const scoring = await scoringService.advanceToNextInnings(
       scoringId,
       battingTeamId
-    );
+    , req.user);
 
     res.status(200).json({ success: true, scoring });
   } catch (error) {
@@ -251,7 +252,7 @@ export const startNextInnings = async (req, res) => {
 export const updateMatchStatus = async (req, res) => {
   try {
     const { scoringId, status } = req.body;
-    const scoring = await scoringService.updateMatchStatus(scoringId, status);
+    const scoring = await scoringService.updateMatchStatus(scoringId, status, req.user);
 
     res.status(200).json({ success: true, scoring });
   } catch (error) {
@@ -270,7 +271,7 @@ export const reviseTargetAndOvers = async (req, res) => {
       scoringId,
       revisedTarget,
       revisedOvers
-    );
+    , req.user);
 
     res.status(200).json({ success: true, scoring });
   } catch (error) {
@@ -288,7 +289,7 @@ export const setMatchOfficials = async (req, res) => {
     const scoring = await scoringService.setMatchOfficials(
       scoringId,
       officials
-    );
+    , req.user);
 
     res.status(200).json({ success: true, scoring });
   } catch (error) {
@@ -308,7 +309,7 @@ export const substitutePlayer = async (req, res) => {
       userId,
       substituteForId,
       inningsIndex
-    );
+    , req.user);
 
     res.status(200).json({ success: true, stat });
   } catch (error) {
@@ -328,7 +329,7 @@ export const useReview = async (req, res) => {
       inningsIndex,
       team,
       isSuccessful
-    );
+    , req.user);
 
     res.status(200).json({ success: true, scoring });
   } catch (error) {
@@ -347,7 +348,7 @@ export const setPowerplayOvers = async (req, res) => {
       scoringId,
       inningsIndex,
       overs
-    );
+    , req.user);
 
     res.status(200).json({ success: true, scoring });
   } catch (error) {
@@ -368,7 +369,7 @@ export const setToss = async (req, res) => {
       scoringId,
       finalWinnerTeam,
       decision
-    );
+    , req.user);
 
     res.status(200).json({
       success: true,
@@ -396,7 +397,7 @@ export const setPlayers = async (req, res) => {
       nonStrikerId,
       bowlerId,
       wicketKeeperId,
-    });
+    }, req.user);
 
     res.status(200).json({ success: true, scoring });
   } catch (error) {
@@ -411,7 +412,7 @@ export const setPlayers = async (req, res) => {
 export const undoLastBall = async (req, res) => {
   try {
     const { scoringId } = req.body;
-    const scoring = await scoringService.revertLastBall(scoringId);
+    const scoring = await scoringService.revertLastBall(scoringId, req.user);
 
     res.status(200).json({ success: true, scoring });
   } catch (error) {
@@ -429,7 +430,7 @@ export const updateScore = async (req, res) => {
     const { scoring, liveData } = await scoringService.processScoreUpdate(
       scoringId,
       ballData
-    );
+    , req.user);
 
     res.status(200).json({ success: true, scoring, liveData });
   } catch (error) {
@@ -507,7 +508,7 @@ export const deleteMatch = async (req, res) => {
     const { matchId } = req.params;
     const userId = req.user.id;
     // For now just pass it to service, or perform basic verification
-    await scoringService.deleteScoringMatch(matchId, userId);
+    await scoringService.deleteScoringMatch(matchId, userId, req.user);
     res
       .status(200)
       .json({ success: true, message: "Match deleted successfully" });
@@ -551,7 +552,7 @@ export const toggleTimer = async (req, res) => {
         .status(400)
         .json({ success: false, message: "matchId is required" });
     }
-    const result = await scoringService.toggleMatchTimer(matchId);
+    const result = await scoringService.toggleMatchTimer(matchId, req.user);
     res.status(200).json({ success: true, ...result });
   } catch (error) {
     logger.error("[Scoring] Toggle Timer Error:", error);
@@ -562,7 +563,7 @@ export const toggleTimer = async (req, res) => {
 export const addPenalty = async (req, res) => {
   try {
     const { scoringId, runs, teamId } = req.body;
-    const result = await scoringService.addPenaltyRuns(scoringId, runs, teamId);
+    const result = await scoringService.addPenaltyRuns(scoringId, runs, teamId, req.user);
     res.status(200).json({ success: true, ...result });
   } catch (error) {
     logger.error("[Scoring] Add Penalty Error:", error);
@@ -675,7 +676,7 @@ export const updateHouseRules = async (req, res) => {
       scoringId,
       req.user,
       houseRules
-    );
+    , req.user);
     res.status(200).json({ success: true, data: result });
   } catch (error) {
     logger.error("[Scoring] Update House Rules Error:", error);
@@ -691,5 +692,43 @@ export const getMatchReport = async (req, res) => {
   } catch (error) {
     logger.error("[Scoring] Get Match Report Error:", error);
     handleControllerError(res, error);
+  }
+};
+
+export const verifyOverlayToken = async (req, res) => {
+  try {
+    const { matchId } = req.params;
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(401).json({ success: false, message: "Token is required" });
+    }
+
+    if (!process.env.OVERLAY_TOKEN_SECRET) {
+      return res.status(500).json({ success: false, message: "Overlay configuration error" });
+    }
+
+    const decoded = jwt.verify(token, process.env.OVERLAY_TOKEN_SECRET);
+
+    // Resolve match/game ID
+    let resolvedGameId = matchId;
+    if (!matchId.includes("-")) {
+      const game = await prisma.hostedGame.findUnique({
+        where: { shortId: matchId },
+        select: { id: true },
+      });
+      if (game) {
+        resolvedGameId = game.id;
+      }
+    }
+
+    if (decoded.matchId !== resolvedGameId) {
+      return res.status(403).json({ success: false, message: "Token does not match matchId" });
+    }
+
+    return res.status(200).json({ success: true, message: "Token verified successfully" });
+  } catch (error) {
+    logger.error("[Scoring] Overlay Verification Error:", error);
+    return res.status(401).json({ success: false, message: "Invalid token" });
   }
 };

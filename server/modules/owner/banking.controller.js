@@ -121,11 +121,20 @@ export const requestPayout = async (req, res) => {
         .json({ success: true, message: "Password verified successfully" });
     }
 
-    // Verify balance
-    if (Number(owner.walletBalance) < amount) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Insufficient wallet balance" });
+    // Check if banking info exists and KYC is verified
+    const bankingDetails = owner.bankingDetails || {};
+    if (!bankingDetails || !bankingDetails.accountName) {
+      return res.status(400).json({
+        success: false,
+        message: "Please configure your banking details first",
+      });
+    }
+
+    if (bankingDetails.kycStatus !== "VERIFIED") {
+      return res.status(400).json({
+        success: false,
+        message: "KYC verification is required to request payouts",
+      });
     }
 
     if (amount < 5000) {
@@ -142,13 +151,11 @@ export const requestPayout = async (req, res) => {
       });
     }
 
-    // Check if banking info exists
-    const bankingDetails = owner.bankingDetails || {};
-    if (!bankingDetails || !bankingDetails.accountName) {
-      return res.status(400).json({
-        success: false,
-        message: "Please configure your banking details first",
-      });
+    // Verify balance
+    if (Number(owner.walletBalance) < amount) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Insufficient wallet balance" });
     }
 
     if (

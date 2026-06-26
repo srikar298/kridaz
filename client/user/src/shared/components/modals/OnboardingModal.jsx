@@ -630,12 +630,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
           try {
             const picRes = await axiosInstance.post(
               "/api/user/auth/profile-picture",
-              formDataImage,
-              {
-                headers: {
-                  Authorization: `Bearer ${result.token}`,
-                },
-              }
+              formDataImage
             );
             if (picRes.data.success) {
               dispatch(updateUser({ profilePic: picRes.data.profilePic }));
@@ -669,12 +664,12 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
           <img
             src={
               step === 2
-                ? "/gender_bg.png"
+                ? "/gender_bg.webp"
                 : step === 3
-                  ? "/interests_bg.png"
+                  ? "/interests_bg.webp"
                   : step === 4
-                    ? "/almost_done_bg.png"
-                    : "/onboarding_bg.png"
+                    ? "/almost_done_bg.webp"
+                    : "/onboarding_bg.webp"
             }
             alt="Auth Background"
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"

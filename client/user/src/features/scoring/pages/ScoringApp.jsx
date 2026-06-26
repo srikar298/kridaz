@@ -1322,7 +1322,7 @@ const ScoringApp = () => {
                       <div
                         className="relative -mx-4 -mt-4 h-[439px] flex flex-col justify-end pb-8 bg-cover bg-center rounded-none overflow-hidden shadow-2xl"
                         style={{
-                          backgroundImage: `linear-gradient(180deg, rgba(18,18,18,0.2) 0%, rgba(18,18,18,1) 100%), url('/3d_stadium.png')`,
+                          backgroundImage: `linear-gradient(180deg, rgba(18,18,18,0.2) 0%, rgba(18,18,18,1) 100%), url('/3d_stadium.webp')`,
                         }}
                       >
                         <div className="absolute top-4 left-4 z-50">
@@ -1717,9 +1717,9 @@ const ScoringApp = () => {
                               youtubeVideoId: vidId,
                             },
                             {
-                              headers: {
-                                Authorization: `Bearer ${localStorage.getItem(`scorer_token_${matchId}`) || localStorage.getItem("token") || ""}`,
-                              },
+                              ...(localStorage.getItem(`scorer_token_${matchId}`)
+                                ? { headers: { Authorization: `Bearer ${localStorage.getItem(`scorer_token_${matchId}`)}` } }
+                                : {}),
                             }
                           );
                           const data = response.data;
@@ -1802,7 +1802,7 @@ const ScoringApp = () => {
                           <a
                             href={`/live-overlay/${matchId}/preview?theme=${matchData?.hostedGameId?.tickerTheme || "neon_classic"}`}
                             target="_blank"
-                            rel="noreferrer"
+                            rel="noopener noreferrer"
                             className="w-full py-[14.5px] bg-card text-success border border-white/10 rounded-[8px] px-4 text-[10px] font-black uppercase tracking-widest text-center hover:bg-success/30 transition-colors"
                           >
                             Preview Theme

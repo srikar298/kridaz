@@ -6,7 +6,9 @@ import { Navigate } from "react-router-dom";
  * Redirects them to their role-specific dashboard instead of always going to "/".
  */
 export default function PublicRoute({ children }) {
-  const { isAuthenticated, token, role } = useSelector((state) => state.auth);
+  const authState = useSelector((state) => state.auth || {});
+  const isAuthenticated = authState.isAuthenticated || !!authState.token;
+  const { token, role } = authState;
 
   if (isAuthenticated && token) {
     const normalizedRole = role?.toLowerCase();

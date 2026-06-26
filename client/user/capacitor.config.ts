@@ -4,6 +4,9 @@ const config: CapacitorConfig = {
   appId: "com.kridaz.app",
   appName: "Kridaz",
   webDir: "dist",
+  server: {
+    androidScheme: "https",
+  },
   plugins: {
     extConfig: {},
     CapacitorUpdater: {

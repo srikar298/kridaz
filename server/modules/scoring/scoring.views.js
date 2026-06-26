@@ -12,6 +12,7 @@ import crypto from "crypto";
 import { prisma } from "../../config/prisma.js";
 import { NotFoundError } from "@kridaz/common";
 import { resolveHouseRules } from "./scoring.utils.js";
+import { resolveGameId } from "./scoring.service.js";
 
 // ── ETag fingerprints ────────────────────────────────────────────────────
 //
@@ -34,8 +35,14 @@ const hash = (str) =>
  * exist (caller decides whether to 404).
  */
 export const computeMatchEtag = async (matchId) => {
+  let resolvedId;
+  try {
+    resolvedId = await resolveGameId(matchId);
+  } catch (e) {
+    return null;
+  }
   const scoring = await prisma.cricketMatch.findFirst({
-    where: { OR: [{ id: matchId }, { gameId: matchId }] },
+    where: { OR: [{ id: resolvedId }, { gameId: resolvedId }] },
     select: {
       id: true,
       updatedAt: true,
@@ -70,8 +77,14 @@ export const computeMatchEtag = async (matchId) => {
  * the ball-by-ball timeline. Cheaper to compute and rarely changes.
  */
 export const computeSquadsEtag = async (matchId) => {
+  let resolvedId;
+  try {
+    resolvedId = await resolveGameId(matchId);
+  } catch (e) {
+    return null;
+  }
   const scoring = await prisma.cricketMatch.findFirst({
-    where: { OR: [{ id: matchId }, { gameId: matchId }] },
+    where: { OR: [{ id: resolvedId }, { gameId: resolvedId }] },
     select: { gameId: true },
   });
   if (!scoring) return null;
@@ -216,9 +229,11 @@ const sumExtras = (extras) => {
 // ── data loader (shared by every endpoint) ───────────────────────────────
 
 export const loadScoringContext = async (matchId) => {
-  // matchId can be the CricketMatch.id OR a HostedGame.id — both flow through here.
+  // matchId can be the CricketMatch.id, HostedGame.id, or shortId.
+  const resolvedId = await resolveGameId(matchId);
+
   const scoring = await prisma.cricketMatch.findFirst({
-    where: { OR: [{ id: matchId }, { gameId: matchId }] },
+    where: { OR: [{ id: resolvedId }, { gameId: resolvedId }] },
     include: {
       innings: { orderBy: { inningsIndex: "asc" } },
       playerStats: true,

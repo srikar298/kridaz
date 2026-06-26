@@ -35,6 +35,12 @@ import { bumpTokenVersion } from "../../utils/tokenVersion.js";
 import firebaseAdmin from "../../config/firebase.js";
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+const normalizePhone = (p) => {
+  if (!p) return "";
+  const clean = p.replace(/[^\d+]/g, "");
+  return clean.replace(/^\+/, "").replace(/^91/, "");
+};
+
 // Lifetimes — kept in one place so the cookie maxAge and the body expiry
 // timestamps can never drift. Refresh-token rotation in refreshToken() also
 // imports these via the module-scope constants below the helper.
@@ -380,7 +386,7 @@ export const verifyOtp = asyncHandler(async (req, res) => {
       // req.body.phone might be "6205170591" or "+916205170591". We do a loose match or exact.
       if (
         firebasePhone &&
-        (firebasePhone === phone || firebasePhone.endsWith(phone))
+        (firebasePhone === phone || normalizePhone(firebasePhone) === normalizePhone(phone))
       ) {
         firebaseVerified = true;
       } else {
@@ -1136,6 +1142,15 @@ export const loginStep1 = asyncHandler(async (req, res) => {
       message: "Please log in with Google",
     });
   }
+
+  // Prevent Admin 2FA Bypass (C-01)
+  if (user.role?.toUpperCase() === "ADMIN") {
+    return res.status(403).json({
+      success: false,
+      message: "Administrators must authenticate via the 2FA portal.",
+    });
+  }
+
   const isSuperAdmin = user.role?.toUpperCase() === "ADMIN";
   const role = user.role;
   const ownerProfileId = user.ownerProfile ? user.ownerProfile.id : null;
@@ -1208,7 +1223,7 @@ export const login = asyncHandler(async (req, res) => {
       const firebasePhone = decodedToken.phone_number;
       if (
         firebasePhone &&
-        (firebasePhone === email || firebasePhone.endsWith(email))
+        (firebasePhone === email || normalizePhone(firebasePhone) === normalizePhone(email))
       ) {
         firebaseVerified = true;
       }
@@ -1549,8 +1564,7 @@ export const googleAuth = asyncHandler(async (req, res) => {
           walletBalance: 50,
           role:
             requestedRole &&
-            requestedRole !== "user" &&
-            requestedRole.toUpperCase() !== "ADMIN"
+            ["OWNER", "COACH", "UMPIRE"].includes(requestedRole.toUpperCase())
               ? requestedRole.toUpperCase()
               : "USER",
           password: hashedPassword,
@@ -2367,9 +2381,6 @@ export const getMe = asyncHandler(async (req, res) => {
       applicationRole = existingRequest.role;
     }
   }
-  const token =
-    req.cookies.auth_token || req.headers.authorization?.split(" ")[1];
-
   // Strip secrets — password hash, fcmToken, googleId, refreshTokens.
   const safeUser = sanitizeUser(user);
 
@@ -2399,7 +2410,6 @@ export const getMe = asyncHandler(async (req, res) => {
     success: true,
     user: account,
     role: activeRole,
-    token,
   });
 });
 
@@ -2700,6 +2710,31 @@ export const updateProfile = asyncHandler(async (req, res) => {
   });
 
   if (email && email.toLowerCase() !== user.email?.toLowerCase()) {
+    // H-06: Email change without password confirmation
+    if (user.password) {
+      if (!req.body.currentPassword) {
+        return res.status(400).json({
+          success: false,
+          message: "Current password is required to change email address.",
+        });
+      }
+      try {
+        const isMatch = await argon2.verify(user.password, req.body.currentPassword);
+        if (!isMatch) {
+          return res.status(401).json({
+            success: false,
+            message: "Invalid current password.",
+          });
+        }
+      } catch (err) {
+        logger.error("Error verifying current password for email change:", err);
+        return res.status(500).json({
+          success: false,
+          message: "Internal server error verifying password",
+        });
+      }
+    }
+
     const conflictEmail = await prisma.user.findFirst({
       where: {
         email: email.toLowerCase(),
@@ -2862,7 +2897,7 @@ export const verifyPhoneOtp = asyncHandler(async (req, res) => {
       const firebasePhone = decodedToken.phone_number;
       if (
         firebasePhone &&
-        (firebasePhone === phone || firebasePhone.endsWith(phone))
+        (firebasePhone === phone || normalizePhone(firebasePhone) === normalizePhone(phone))
       ) {
         firebaseVerified = true;
       } else {
@@ -3021,7 +3056,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
       const firebasePhone = decodedToken.phone_number;
       if (
         firebasePhone &&
-        (firebasePhone === user.phone || firebasePhone.endsWith(user.phone))
+        (firebasePhone === user.phone || normalizePhone(firebasePhone) === normalizePhone(user.phone))
       ) {
         firebaseVerified = true;
       }
@@ -3061,6 +3096,13 @@ export const resetPassword = asyncHandler(async (req, res) => {
       password: hashedPassword,
     },
   });
+
+  // H-04 & H-19: Revoke all existing sessions by bumping token version
+  try {
+    await bumpTokenVersion(user.id);
+  } catch (err) {
+    logger.error("Failed to bump token version after password reset:", err);
+  }
 
   await prisma.oTP.deleteMany({
     where: {

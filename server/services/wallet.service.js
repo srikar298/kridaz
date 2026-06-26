@@ -133,37 +133,41 @@ class WalletService {
 
     if (role?.toLowerCase() === "user") {
       const operation = async (t) => {
-        const wallet = await t.wallet.findUnique({
-          where: { userId: userIdStr },
-        });
-        if (!wallet || Number(wallet.balance) < amountVal) {
-          throw new Error("Insufficient balance");
-        }
-        return await t.wallet.update({
-          where: { userId: userIdStr },
+        const updateResult = await t.wallet.updateMany({
+          where: { userId: userIdStr, balance: { gte: amountVal } },
           data: { balance: { decrement: amountVal } },
         });
+        if (updateResult.count === 0) {
+          throw new Error("Insufficient balance or wallet not found");
+        }
+        const updated = await t.wallet.findUnique({
+          where: { userId: userIdStr },
+        });
+        return Number(updated.balance);
       };
 
       const result = tx
         ? await operation(tx)
         : await prisma.$transaction(operation);
-      return Number(result.balance);
+      return result;
     } else {
       const operation = async (t) => {
-        const owner = await t.ownerProfile.findFirst({
+        const updateResult = await t.ownerProfile.updateMany({
+          where: {
+            OR: [{ id: userIdStr }, { userId: userIdStr }],
+            walletBalance: { gte: amountVal },
+          },
+          data: { walletBalance: { decrement: amountVal } },
+        });
+        if (updateResult.count === 0) {
+          throw new Error("Insufficient balance or owner not found");
+        }
+        const updated = await t.ownerProfile.findFirst({
           where: {
             OR: [{ id: userIdStr }, { userId: userIdStr }],
           },
         });
-        if (!owner || Number(owner.walletBalance) < amountVal) {
-          throw new Error("Insufficient balance");
-        }
-        await t.ownerProfile.update({
-          where: { id: owner.id },
-          data: { walletBalance: { decrement: amountVal } },
-        });
-        return Number(owner.walletBalance) - amountVal;
+        return Number(updated.walletBalance);
       };
 
       const result = tx

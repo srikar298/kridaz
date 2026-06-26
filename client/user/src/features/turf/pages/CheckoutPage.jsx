@@ -212,6 +212,7 @@ const CheckoutPage = () => {
             orderId: paymentResult.razorpay_order_id,
             razorpay_signature: paymentResult.razorpay_signature,
             paymentMethod: paymentMode,
+            ...(appliedCoupon?.code && { couponCode: appliedCoupon.code }),
           }
         );
 

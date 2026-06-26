@@ -439,8 +439,8 @@ export const getAllTeams = async (req, res) => {
         return {
           ...formatted,
           memberCount: t.members.length,
-          matchesPlayed: Math.floor(Math.random() * 20),
-          totalScore: Math.floor(Math.random() * 1000),
+          matchesPlayed: 0,
+          totalScore: 0,
         };
       });
     }
@@ -1416,22 +1416,20 @@ export const joinTeam = async (req, res) => {
   try {
     const { token } = req.params;
 
-    const customMember = await prisma.teamCustomMember.findFirst({
-      where: { inviteToken: token, status: "PENDING" },
-      include: { team: true },
-    });
-
-    if (!customMember) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Invalid or expired invite token" });
-    }
-
-    await prisma.$transaction(async (tx) => {
-      // Mark custom member as joined
-      await tx.teamCustomMember.update({
-        where: { id: customMember.id },
+    const result = await prisma.$transaction(async (tx) => {
+      // Mark custom member as joined atomically
+      const updatedCount = await tx.teamCustomMember.updateMany({
+        where: { inviteToken: token, status: "PENDING" },
         data: { status: "JOINED" },
+      });
+
+      if (updatedCount.count === 0) {
+        return null; // Token invalid or already claimed
+      }
+
+      const customMember = await tx.teamCustomMember.findFirst({
+        where: { inviteToken: token }, // Status is now JOINED
+        include: { team: true },
       });
 
       // If user is logged in, add them as a formal member
@@ -1450,12 +1448,20 @@ export const joinTeam = async (req, res) => {
           });
         }
       }
+
+      return customMember;
     });
+
+    if (!result) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid or expired invite token" });
+    }
 
     return res.status(200).json({
       success: true,
       message: "Successfully joined the team",
-      team: { id: customMember.teamId, name: customMember.team.name },
+      team: { id: result.teamId, name: result.team.name },
     });
   } catch (error) {
     logger.error("Join team error:", error);

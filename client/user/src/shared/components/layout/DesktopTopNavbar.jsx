@@ -41,7 +41,8 @@ export default function DesktopTopNavbar({
   isRightDrawerOpen,
   setIsRightDrawerOpen,
 }) {
-  const { isLoggedIn, role, user } = useSelector((state) => state.auth);
+  const { role, user } = useSelector((state) => state.auth || {});
+  const isLoggedIn = useSelector((state) => state.auth?.isLoggedIn || !!state.auth?.token);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();

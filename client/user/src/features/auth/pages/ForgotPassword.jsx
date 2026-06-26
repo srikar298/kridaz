@@ -29,7 +29,8 @@ const ForgotPassword = () => {
     if (isLoggedIn) {
       const redirectUrl = localStorage.getItem("redirectAfterLogin") || "/";
       localStorage.removeItem("redirectAfterLogin");
-      navigate(redirectUrl);
+      const isRelative = redirectUrl.startsWith("/") && !redirectUrl.startsWith("//") && !redirectUrl.startsWith("/\\");
+      navigate(isRelative ? redirectUrl : "/");
     }
   }, [isLoggedIn, navigate]);
 

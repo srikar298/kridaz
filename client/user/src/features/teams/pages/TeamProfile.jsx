@@ -52,74 +52,6 @@ const SUBHEADING_STYLE = {
   fontWeight: 300,
 };
 
-// Mock data for 15+ players to demonstrate the UI
-const MOCK_SQUAD = [
-  {
-    user: { name: "Rohit Sharma", role: "Captain", profilePicture: null },
-    role: "CAPTAIN",
-  },
-  {
-    user: { name: "Virat Kohli", role: "Batsman", profilePicture: null },
-    role: "VICE CAPTAIN",
-  },
-  {
-    user: { name: "KL Rahul", role: "Wicket Keeper", profilePicture: null },
-    role: "MEMBER",
-  },
-  {
-    user: { name: "Suryakumar Yadav", role: "Batsman", profilePicture: null },
-    role: "MEMBER",
-  },
-  {
-    user: { name: "Hardik Pandya", role: "All Rounder", profilePicture: null },
-    role: "MEMBER",
-  },
-  {
-    user: {
-      name: "Ravindra Jadeja",
-      role: "All Rounder",
-      profilePicture: null,
-    },
-    role: "MEMBER",
-  },
-  {
-    user: { name: "Jasprit Bumrah", role: "Bowler", profilePicture: null },
-    role: "MEMBER",
-  },
-  {
-    user: { name: "Mohammed Shami", role: "Bowler", profilePicture: null },
-    role: "MEMBER",
-  },
-  {
-    user: { name: "Kuldeep Yadav", role: "Bowler", profilePicture: null },
-    role: "MEMBER",
-  },
-  {
-    user: { name: "Shubman Gill", role: "Batsman", profilePicture: null },
-    role: "MEMBER",
-  },
-  {
-    user: { name: "Shreyas Iyer", role: "Batsman", profilePicture: null },
-    role: "MEMBER",
-  },
-  {
-    user: { name: "Ishan Kishan", role: "Wicket Keeper", profilePicture: null },
-    role: "MEMBER",
-  },
-  {
-    user: { name: "Axar Patel", role: "All Rounder", profilePicture: null },
-    role: "MEMBER",
-  },
-  {
-    user: { name: "Shardul Thakur", role: "All Rounder", profilePicture: null },
-    role: "MEMBER",
-  },
-  {
-    user: { name: "Yuzvendra Chahal", role: "Bowler", profilePicture: null },
-    role: "MEMBER",
-  },
-];
-
 const TeamProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -193,14 +125,11 @@ const TeamProfile = () => {
     );
   });
 
-  // Combine real members with mock data if real members are less than 15
-  const displayMembers =
-    team.members?.length > 1
-      ? team.members
-      : [
-          ...(team.members || []),
-          ...MOCK_SQUAD.slice(0, 15 - (team.members?.length || 0)),
-        ];
+  const displayMembers = team.members || [];
+  const completedMatches = teamMatches.filter((g) => g.scoringStatus === "COMPLETED");
+  const playedCount = completedMatches.length;
+  const wonCount = completedMatches.filter((g) => g.winnerTeamId === team.id).length;
+  const winRate = playedCount > 0 ? `${Math.round((wonCount / playedCount) * 100)}%` : "0%";
 
   const isOwner = currentUser?._id === team.owner?._id;
   const isMember = team.members?.some(
@@ -279,6 +208,23 @@ const TeamProfile = () => {
         toast.error(err.data?.message || "Failed to remove member");
       }
     });
+  };
+
+  const handleLeaveTeam = async () => {
+    const myMemberRecord = team.members?.find(
+      (m) => m.user?.id === currentUser?.id || m.user?._id === currentUser?._id
+    );
+    if (!myMemberRecord) {
+      toast.error("You are not a member of this team");
+      return;
+    }
+    if (!window.confirm("Are you sure you want to leave this team?")) return;
+    try {
+      await removeMember({ teamId: id, memberId: myMemberRecord.id }).unwrap();
+      toast.success("Left the team successfully");
+    } catch (err) {
+      toast.error(err.data?.message || "Failed to leave the team");
+    }
   };
 
   return (
@@ -391,14 +337,14 @@ const TeamProfile = () => {
               <div className="relative z-10 mt-6 bg-white/[0.02] border border-white/5 rounded-[8px] p-4">
                 <div className="grid grid-cols-3 lg:grid-cols-6 gap-x-2 gap-y-4">
                   {[
-                    { label: "Played", value: "128", icon: Trophy },
-                    { label: "Won", value: "96", icon: Star },
-                    { label: "Win Rate", value: "75%", icon: TrendingUp },
-                    { label: "Runs", value: "12.4k", icon: BarChart3 },
-                    { label: "Avg Score", value: "145", icon: Target },
+                    { label: "Played", value: playedCount.toString(), icon: Trophy },
+                    { label: "Won", value: wonCount.toString(), icon: Star },
+                    { label: "Win Rate", value: winRate, icon: TrendingUp },
+                    { label: "Runs", value: "0", icon: BarChart3 },
+                    { label: "Avg Score", value: "0", icon: Target },
                     {
                       label: "Streak",
-                      value: "6W",
+                      value: "0",
                       icon: Zap,
                       color: "var(--primary)",
                     },
@@ -454,7 +400,7 @@ const TeamProfile = () => {
                   </p>
                 </div>
                 <div className="bg-white/5 p-3 rounded-[8px] border border-white/5 text-center">
-                  <p className="text-xl font-black text-blue-500 mb-0.5">0</p>
+                  <p className="text-xl font-black text-blue-500 mb-0.5">{wonCount}</p>
                   <p className="text-[7px] font-black text-gray-700 uppercase tracking-widest">
                     Wins
                   </p>
@@ -465,7 +411,7 @@ const TeamProfile = () => {
                 <div className="grid grid-cols-3 gap-2">
                   {isMember ? (
                     <Button
-                      onClick={() => toast.success("Left the team.")}
+                      onClick={handleLeaveTeam}
                       className="py-3 bg-red-500/10 text-red-500 border border-red-500/20 rounded-[8px] font-black uppercase tracking-widest text-[8px] sm:text-[9px] flex items-center justify-center gap-1 sm:gap-2 hover:bg-red-500/20 transition-all px-1"
                     >
                       <UserPlus size={14} className="rotate-45 shrink-0" />
@@ -732,52 +678,65 @@ const TeamProfile = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
-                    {[
-                      {
-                        date: "05 May",
-                        opp: "RG Titans",
-                        score: "178-142",
-                        res: "W",
-                        mvp: "Prasenjeet",
-                      },
-                      {
-                        date: "02 May",
-                        opp: "Warriors XI",
-                        score: "156-160",
-                        res: "L",
-                        mvp: "Manish Goud",
-                        lost: true,
-                      },
-                    ].map((m, i) => (
-                      <tr key={i} className="group">
-                        <td className="py-3 text-[9px] font-bold text-gray-600 uppercase">
-                          {m.date}
-                        </td>
-                        <td className="py-3 text-[10px] font-black text-white uppercase tracking-tight">
-                          {m.opp}
-                        </td>
-                        <td className="py-3 text-center font-black text-white text-[10px]">
-                          {m.score}
-                        </td>
-                        <td className="py-3 text-center">
-                          <span
-                            className={`text-[9px] font-black ${m.lost ? "text-red-500" : "text-primary"}`}
-                          >
-                            {m.res}
-                          </span>
-                        </td>
-                        <td className="py-3 text-[9px] font-black text-white/40 uppercase">
-                          {m.mvp}
-                        </td>
-                        <td className="py-3 text-right">
-                          <Play
-                            size={8}
-                            fill="currentColor"
-                            className="text-white/20 group-hover:text-primary"
-                          />
+                    {completedMatches.length > 0 ? (
+                      completedMatches.map((m, i) => {
+                        const isTeamA = m.teams?.[0]?.teamId === team.id || m.teams?.[0]?.name?.toLowerCase() === team.name?.toLowerCase();
+                        const myTeamData = isTeamA ? m.teams?.[0] : m.teams?.[1];
+                        const oppTeamData = isTeamA ? m.teams?.[1] : m.teams?.[0];
+                        const dateStr = new Date(m.date).toLocaleDateString("en-US", { day: "2-digit", month: "short" });
+                        
+                        let resultChar = "-";
+                        let isLost = false;
+                        if (m.winnerTeamId) {
+                          if (m.winnerTeamId === team.id) {
+                            resultChar = "W";
+                          } else {
+                            resultChar = "L";
+                            isLost = true;
+                          }
+                        }
+
+                        const myScore = myTeamData?.score || 0;
+                        const oppScore = oppTeamData?.score || 0;
+
+                        return (
+                          <tr key={i} className="group">
+                            <td className="py-3 text-[9px] font-bold text-gray-600 uppercase">
+                              {dateStr}
+                            </td>
+                            <td className="py-3 text-[10px] font-black text-white uppercase tracking-tight">
+                              {oppTeamData?.name || "Opponent"}
+                            </td>
+                            <td className="py-3 text-center font-black text-white text-[10px]">
+                              {myScore}-{oppScore}
+                            </td>
+                            <td className="py-3 text-center">
+                              <span
+                                className={`text-[9px] font-black ${isLost ? "text-red-500" : "text-primary"}`}
+                              >
+                                {resultChar}
+                              </span>
+                            </td>
+                            <td className="py-3 text-[9px] font-black text-white/40 uppercase">
+                              {m.mvpName || "N/A"}
+                            </td>
+                            <td className="py-3 text-right">
+                              <Play
+                                size={8}
+                                fill="currentColor"
+                                className="text-white/20 group-hover:text-primary"
+                              />
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan={6} className="py-6 text-center text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                          No matches played yet
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>

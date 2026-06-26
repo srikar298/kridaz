@@ -122,7 +122,9 @@ router.get("/getMe", ownerAuth, getMe);
  *   post:
  *     summary: Logout
  *     tags: [Owner Auth]
+ *     security:
+ *       - BearerAuth: []
  */
-router.post("/logout", logout);
+router.post("/logout", ownerAuth, logout);
 
 export default router;

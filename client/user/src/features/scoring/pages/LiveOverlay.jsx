@@ -73,6 +73,34 @@ const LiveOverlay = () => {
   const [connected, setConnected] = useState(false);
   const commentaryTimer = useRef(null);
   const socketRef = useRef(null);
+  const [verificationStatus, setVerificationStatus] = useState("verifying");
+  const [verificationError, setVerificationError] = useState("");
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      if (!token) {
+        setVerificationStatus("failed");
+        setVerificationError("Access Denied: Missing overlay token");
+        return;
+      }
+      try {
+        const r = await fetch(
+          `${API_BASE}/api/scoring/overlay/verify/${matchId}?token=${encodeURIComponent(token)}`
+        );
+        const d = await r.json();
+        if (r.ok && d.success) {
+          setVerificationStatus("success");
+        } else {
+          setVerificationStatus("failed");
+          setVerificationError(d.message || "Access Denied: Invalid overlay token");
+        }
+      } catch (err) {
+        setVerificationStatus("failed");
+        setVerificationError("Network Error: Failed to verify access token");
+      }
+    };
+    verifyToken();
+  }, [matchId, token]);
   // Silent global audio unlocker on first user interaction
   useEffect(() => {
     const unlock = () => {
@@ -193,6 +221,7 @@ const LiveOverlay = () => {
 
   // ── HTTP fallback ────────────────────────────────────────────────────────────
   const fetchScore = useCallback(async () => {
+    if (verificationStatus !== "success") return;
     try {
       const r = await fetch(`${API_BASE}/api/scoring/live-score/${matchId}`);
       if (!r.ok) return;
@@ -201,7 +230,7 @@ const LiveOverlay = () => {
     } catch (_) {
       /* silent */
     }
-  }, [matchId]);
+  }, [matchId, verificationStatus]);
 
   // ── Helper ───────────────────────────────────────────────────────────────────
   function buildDesc(type, data) {
@@ -218,6 +247,7 @@ const LiveOverlay = () => {
 
   // ── Socket.io ────────────────────────────────────────────────────────────────
   useEffect(() => {
+    if (verificationStatus !== "success") return;
     fetchScore();
 
     const socket = io(API_BASE, {
@@ -375,7 +405,77 @@ const LiveOverlay = () => {
       socket.removeAllListeners();
       socket.disconnect();
     };
-  }, [matchId, token, fetchScore, enqueueEvent]);
+  }, [matchId, token, fetchScore, enqueueEvent, verificationStatus]);
+
+  // ─── Verification Check ──────────────────────────────────────────────────────
+  if (verificationStatus === "verifying") {
+    return (
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        background: "rgba(0,0,0,0.85)",
+        color: "#fff",
+        fontFamily: "system-ui, sans-serif"
+      }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{
+            width: "40px",
+            height: "40px",
+            border: "4px solid rgba(255,255,255,0.1)",
+            borderTop: "4px solid #3b82f6",
+            borderRadius: "50%",
+            animation: "spin 1s linear infinite",
+            margin: "0 auto 16px"
+          }} />
+          <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+          <p style={{ fontSize: "16px", fontWeight: "600", letterSpacing: "0.05em" }}>VERIFYING OVERLAY ACCESS...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (verificationStatus === "failed") {
+    return (
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        background: "rgba(15, 23, 42, 0.95)",
+        color: "#f8fafc",
+        fontFamily: "system-ui, sans-serif"
+      }}>
+        <div style={{
+          textAlign: "center",
+          maxWidth: "480px",
+          padding: "32px",
+          borderRadius: "16px",
+          border: "1px solid rgba(239, 68, 68, 0.2)",
+          background: "rgba(30, 41, 59, 0.7)",
+          boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.5)"
+        }}>
+          <div style={{
+            fontSize: "48px",
+            color: "#ef4444",
+            marginBottom: "16px"
+          }}>⚠️</div>
+          <h2 style={{
+            fontSize: "20px",
+            fontWeight: "700",
+            marginBottom: "8px",
+            color: "#f1f5f9"
+          }}>Access Denied</h2>
+          <p style={{
+            fontSize: "14px",
+            color: "#94a3b8",
+            lineHeight: "1.5"
+          }}>{verificationError}</p>
+        </div>
+      </div>
+    );
+  }
 
   // ─── Nothing to render until first data ─────────────────────────────────────
   if (!score) return null;

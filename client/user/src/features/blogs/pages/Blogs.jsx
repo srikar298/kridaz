@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ChevronRight, Eye, ThumbsUp, ArrowLeft, Search } from "lucide-react";
+import { ChevronRight, Eye, ThumbsUp, ArrowLeft, Search, Clock, Heart } from "lucide-react";
 import axios from "axios";
 import { Button, Input } from "@kridaz/ui";
 
@@ -14,6 +14,19 @@ const HEADING_STYLE = {
 const SUBHEADING_STYLE = {
   fontFamily: "'Inter 28pt Light', sans-serif",
   fontWeight: 300,
+};
+
+/**
+ * Returns Tailwind color classes for a category badge based on sport type.
+ */
+const getCategoryStyles = (cat) => {
+  switch (cat?.toLowerCase()) {
+    case 'cricket': return 'text-[#a3e635] bg-[#a3e635]/10 border-[#a3e635]/20';
+    case 'fitness': return 'text-[#c084fc] bg-[#c084fc]/10 border-[#c084fc]/20';
+    case 'venues': return 'text-[#2dd4bf] bg-[#2dd4bf]/10 border-[#2dd4bf]/20';
+    case 'football': return 'text-[#fbbf24] bg-[#fbbf24]/10 border-[#fbbf24]/20';
+    default: return 'text-white/60 bg-white/5 border-white/10';
+  }
 };
 
 const Blogs = () => {
@@ -126,81 +139,99 @@ const Blogs = () => {
 
         {/* Featured Posts / Grid */}
         {filteredBlogs.length === 0 ? (
-          <div className="py-32 text-center">
-            <p className="text-white/20 text-2xl uppercase tracking-widest" style={HEADING_STYLE}>
-              No articles found
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="mb-6 opacity-60">
+              <svg width="200" height="180" viewBox="0 0 200 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Background card stack */}
+                <rect x="30" y="40" width="140" height="110" rx="8" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+                <rect x="40" y="32" width="120" height="100" rx="8" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.07)" strokeWidth="1" />
+                {/* Main document */}
+                <rect x="52" y="24" width="100" height="130" rx="8" fill="#111" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+                {/* Header bar */}
+                <rect x="62" y="34" width="80" height="8" rx="2" fill="var(--primary)" opacity="0.15" />
+                {/* Lines */}
+                <line x1="62" y1="54" x2="132" y2="54" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="62" y1="64" x2="120" y2="64" stroke="rgba(255,255,255,0.10)" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="62" y1="74" x2="128" y2="74" stroke="rgba(255,255,255,0.10)" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="62" y1="84" x2="110" y2="84" stroke="rgba(255,255,255,0.10)" strokeWidth="1.5" strokeLinecap="round" />
+                {/* Highlighted lines (primary) */}
+                <line x1="62" y1="96" x2="132" y2="96" stroke="var(--primary)" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="62" y1="106" x2="115" y2="106" stroke="var(--primary)" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="62" y1="118" x2="132" y2="118" stroke="var(--primary)" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="62" y1="128" x2="122" y2="128" stroke="var(--primary)" strokeWidth="1.5" strokeLinecap="round" />
+                {/* Paper Plane */}
+                <path d="M142 32 L158 40 L146 56 L144 48 L134 46 Z" stroke="var(--primary)" strokeWidth="1.5" fill="none" strokeLinejoin="round" />
+                <line x1="146" y1="56" x2="144" y2="48" stroke="var(--primary)" strokeWidth="1.5" />
+                {/* Decorative dots */}
+                <circle cx="50" cy="40" r="1.5" fill="var(--primary)" opacity="0.5" />
+                <circle cx="150" cy="140" r="1.5" fill="var(--primary)" opacity="0.5" />
+                <path d="M38 135 L42 135 M40 133 L40 137" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+                <path d="M165 55 L169 55 M167 53 L167 57" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+              </svg>
+            </div>
+            <h2 className="text-white text-xl uppercase tracking-wide mb-3" style={HEADING_STYLE}>
+              No Blogs Yet
+            </h2>
+            <p className="text-white/50 text-xs leading-relaxed max-w-[250px]">
+              Looks like we're just getting started.<br />Check back soon for exciting stories<br />and insights.
             </p>
-            <Button
-              onClick={() => setSearchTerm("")}
-              className="mt-6 text-primary font-bold uppercase tracking-widest text-xs hover:underline"
-            >
-              Clear Search
-            </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredBlogs.map((blog, idx) => (
               <Link
                 key={blog.id || blog._id}
                 to={`/blogs/${blog.id || blog._id}`}
-                className="group relative aspect-[4/5] rounded-[8px] overflow-hidden border border-white/5 bg-zinc-900 flex flex-col"
+                className="group flex flex-col bg-[#111111] border border-white/5 rounded-[16px] overflow-hidden hover:bg-[#151515] hover:border-white/10 transition-colors p-2"
               >
-                {/* Image Background */}
-                <div className="absolute inset-0 z-0">
+                {/* Image */}
+                <div className="w-full shrink-0">
                   <img
                     src={blog.imageUrl || blog.featuredImage}
                     alt={blog.title}
-                    className="w-full h-full object-cover opacity-50 group-hover:opacity-70 group-hover:scale-110 transition-all duration-1000"
+                    className="w-full h-40 object-cover rounded-xl"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
                 </div>
 
-                {/* Content Overlay */}
-                <div className="relative z-10 flex flex-col h-full p-8">
-                  {/* Category & Date */}
-                  <div className="flex justify-between items-start mb-4">
-                    <span className="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest bg-white/5 border border-white/10 text-white/60">
-                      {blog.category || "Article"}
-                    </span>
-                    <span className="text-[10px] font-bold text-white/40 tracking-wider">
-                      {blog.date}
-                    </span>
-                  </div>
+                {/* Content */}
+                <div className="flex flex-col flex-1 pt-2.5 pb-1 px-1 justify-between">
+                  <div>
+                    {/* Category */}
+                    <div className="mb-2.5">
+                      <span className={`inline-block px-2.5 py-1 rounded-[6px] text-[10px] font-bold uppercase tracking-wider border ${getCategoryStyles(blog.category)}`}>
+                        {blog.category || "Article"}
+                      </span>
+                    </div>
 
-                  {/* Title */}
-                  <div className="mt-auto">
-                    <h3 className="text-xl text-white leading-tight uppercase mb-4 group-hover:text-primary transition-colors" style={HEADING_STYLE}>
+                    {/* Title */}
+                    <h3
+                      className="text-[16px] sm:text-[18px] font-bold uppercase text-white leading-snug mb-2 group-hover:text-primary transition-colors"
+                      style={{ fontFamily: "'Open Sans', sans-serif" }}
+                    >
                       {blog.title}
                     </h3>
 
-                    {/* Meta Stats */}
-                    <div className="pt-6 border-t border-white/10 flex items-center justify-between">
-                      <div className="flex items-center gap-5">
-                        <div className="flex items-center gap-2 text-xs font-mono text-white/40">
-                          <Eye size={14} style={{ color: PRI }} />
-                          {blog.views}
-                        </div>
-                        <Button
-                          onClick={(e) => handleLike(e, blog.id || blog._id)}
-                          className="flex items-center gap-2 text-xs font-mono text-white/40 hover:text-white transition-colors group/btn"
-                        >
-                          <ThumbsUp
-                            size={14}
-                            style={{ color: PRI }}
-                            className="group-hover/btn:scale-110 transition-transform"
-                          />
-                          {blog.likes}
-                        </Button>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-primary opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                        Read More <ChevronRight size={14} />
-                      </div>
+                    {/* Excerpt */}
+                    <p className="text-[13px] text-white/50 leading-relaxed line-clamp-2">
+                      {blog.excerpt || blog.subtitle || "Discover the latest insights and stories from the Kridaz community."}
+                    </p>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="flex items-center gap-1.5 text-white/40 text-[11px] font-medium">
+                      <Clock size={12} />
+                      {blog.readTime || "3 min read"}
                     </div>
+                    <button
+                      onClick={(e) => handleLike(e, blog.id || blog._id)}
+                      className="flex items-center gap-1.5 text-white/40 hover:text-white transition-colors text-[11px] font-medium"
+                    >
+                      <Heart size={12} className="transition-colors" />
+                      {blog.likes || 0}
+                    </button>
                   </div>
                 </div>
-
-                {/* Accent Border */}
-                <div className="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/20 rounded-[8px] transition-all duration-500 pointer-events-none" />
               </Link>
             ))}
           </div>

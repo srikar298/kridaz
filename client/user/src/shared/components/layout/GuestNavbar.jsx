@@ -22,7 +22,8 @@ const GuestNavbar = () => {
   const location = useLocation();
   const { scrollDirection, scrolled } = useScrollDirection();
 
-  const { isLoggedIn, role } = useSelector((state) => state.auth);
+  const { role } = useSelector((state) => state.auth || {});
+  const isLoggedIn = useSelector((state) => state.auth?.isLoggedIn || !!state.auth?.token);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userUrl = import.meta.env.VITE_USER_URL || "http://localhost:5173";

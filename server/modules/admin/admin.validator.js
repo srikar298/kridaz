@@ -17,6 +17,7 @@ export const approveWithdrawalSchema = z.object({
   body: z.object({
     transactionId: z.string().min(1, "Transaction ID is required"),
     screenshot: z.string().optional(),
+    masterPassword: z.string().min(1, "Master payout password is required"),
   }),
 });
 

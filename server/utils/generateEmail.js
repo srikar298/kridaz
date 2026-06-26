@@ -28,6 +28,8 @@ export default async function generateEmail(
     await transporter.sendMail(mailOptions);
   } catch (e) {
     logger.error("Error in generateEmail", e);
+    // H-01: Throw error so caller (e.g., BullMQ worker) knows it failed and can retry
+    throw e;
   }
 }
 

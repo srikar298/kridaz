@@ -201,7 +201,7 @@ const Leaderboard = () => {
                           className="w-full h-full object-cover rounded-full border border-white/10"
                         />
                         {player.isPro && (
-                          <span className="absolute -top-1 -right-2 bg-primary text-black text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+                          <span className="absolute -top-1 -right-1 bg-primary text-black text-[9px] font-bold px-1.5 py-0.5 rounded-full border-[2px] border-[#111]">
                             PRO
                           </span>
                         )}
@@ -222,61 +222,36 @@ const Leaderboard = () => {
                             )
                           </span>
                         </div>
-                        <div className="text-gray-400 text-[12px] mt-1 flex flex-wrap items-center gap-x-1.5">
+                        <div className="text-gray-400 text-[11px] sm:text-[12px] mt-1 flex flex-wrap items-center gap-x-1.5 sm:gap-x-2 gap-y-1">
                           {category === "batting" ? (
                             <>
-                              <span>
-                                Inn: {player.cricketStats?.matchesPlayed || 0}
-                              </span>{" "}
-                              <span className="text-white/20">|</span>
-                              <span className="font-bold text-white">
-                                Runs: {player.cricketStats?.totalRuns || 0}
-                              </span>{" "}
-                              <span className="text-white/20">|</span>
-                              <span>
-                                Avg: {player.cricketStats?.average || "0.00"}
-                              </span>{" "}
-                              <span className="text-white/20">|</span>
-                              <span>
-                                SR: {player.cricketStats?.strikeRate || "0.00"}
-                              </span>
+                              <span>Inn: <span className="text-gray-200">{player.cricketStats?.matchesPlayed || 0}</span></span>
+                              <span className="text-white/10">|</span>
+                              <span>Runs: <span className="text-white font-bold">{player.cricketStats?.totalRuns || 0}</span></span>
+                              <span className="text-white/10">|</span>
+                              <span>Avg: <span className="text-gray-200">{player.cricketStats?.average || "0.00"}</span></span>
+                              <span className="text-white/10">|</span>
+                              <span>SR: <span className="text-gray-200">{player.cricketStats?.strikeRate || "0.00"}</span></span>
                             </>
                           ) : category === "bowling" ? (
                             <>
-                              <span>
-                                Inn: {player.cricketStats?.matchesPlayed || 0}
-                              </span>{" "}
-                              <span className="text-white/20">|</span>
-                              <span className="font-bold text-white">
-                                W: {player.cricketStats?.totalWickets || 0}
-                              </span>{" "}
-                              <span className="text-white/20">|</span>
-                              <span>
-                                Eco: {player.cricketStats?.economy || "0.00"}
-                              </span>{" "}
-                              <span className="text-white/20">|</span>
-                              <span>
-                                SR: {player.cricketStats?.strikeRate || "0.00"}
-                              </span>
+                              <span>Inn: <span className="text-gray-200">{player.cricketStats?.matchesPlayed || 0}</span></span>
+                              <span className="text-white/10">|</span>
+                              <span>W: <span className="text-white font-bold">{player.cricketStats?.totalWickets || 0}</span></span>
+                              <span className="text-white/10">|</span>
+                              <span>Eco: <span className="text-gray-200">{player.cricketStats?.economy || "0.00"}</span></span>
+                              <span className="text-white/10">|</span>
+                              <span>SR: <span className="text-gray-200">{player.cricketStats?.strikeRate || "0.00"}</span></span>
                             </>
                           ) : (
                             <>
-                              <span>
-                                Mat: {player.cricketStats?.matchesPlayed || 0}
-                              </span>{" "}
-                              <span className="text-white/20">|</span>
-                              <span className="font-bold text-white">
-                                Dismissals:{" "}
-                                {player.cricketStats?.dismissals || 0}
-                              </span>{" "}
-                              <span className="text-white/20">|</span>
-                              <span>
-                                Catches: {player.cricketStats?.catches || 0}
-                              </span>{" "}
-                              <span className="text-white/20">|</span>
-                              <span>
-                                St.: {player.cricketStats?.stumpings || 0}
-                              </span>
+                              <span>Mat: <span className="text-gray-200">{player.cricketStats?.matchesPlayed || 0}</span></span>
+                              <span className="text-white/10">|</span>
+                              <span>Dismissals: <span className="text-white font-bold">{player.cricketStats?.dismissals || 0}</span></span>
+                              <span className="text-white/10">|</span>
+                              <span>Catches: <span className="text-gray-200">{player.cricketStats?.catches || 0}</span></span>
+                              <span className="text-white/10">|</span>
+                              <span>St.: <span className="text-gray-200">{player.cricketStats?.stumpings || 0}</span></span>
                             </>
                           )}
                         </div>

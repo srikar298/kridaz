@@ -243,7 +243,7 @@ router.post("/pay-balance", verifyToken, payBalance);
  *           application/pdf:
  *             schema: { type: string, format: binary }
  */
-router.get("/invoice/:id", downloadInvoice);
+router.get("/invoice/:id", verifyToken, downloadInvoice);
 
 /**
  * @swagger
@@ -265,6 +265,6 @@ router.get("/invoice/:id", downloadInvoice);
  *             schema:
  *               $ref: '#/components/schemas/Booking'
  */
-router.get("/:id", getBookingById);
+router.get("/:id", verifyToken, getBookingById);
 
 export default router;

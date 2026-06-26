@@ -18,6 +18,38 @@ import { getAccessSecret } from "../../utils/jwtSecrets.js";
 import { SOCKET } from "@kridaz/shared-constants/socketEvents";
 import { computeScoreSnapshot, resolveHouseRules } from "./scoring.utils.js";
 
+
+const verifyScoringAuth = async (scoringId, viewer) => {
+  if (!viewer || (!viewer.id && viewer.role?.toLowerCase() !== "scorer")) {
+    const err = new UnauthorizedError("Authentication required.");
+    err.meta = { code: "AUTH_REQUIRED" };
+    throw err;
+  }
+  const scoring = await prisma.cricketMatch.findUnique({
+    where: { id: scoringId },
+    select: { gameId: true }
+  });
+  if (!scoring) throw new NotFoundError("Match not found", { code: "MATCH_NOT_FOUND" });
+  
+  const game = await prisma.hostedGame.findUnique({
+    where: { id: scoring.gameId },
+    select: { hostId: true, umpireId: true, scorerId: true }
+  });
+  
+  const role = (viewer.role || "").toLowerCase();
+  const isScorerToken = role === "scorer";
+  const isHost = viewer.id && game?.hostId === viewer.id;
+  const isAssignedUmpire = viewer.id && game?.umpireId === viewer.id;
+  const isAssignedScorer = viewer.id && game?.scorerId === viewer.id;
+  
+  if (!isScorerToken && !isHost && !isAssignedUmpire && !isAssignedScorer) {
+    const err = new ForbiddenError("Not authorized to modify this match");
+    err.meta = { code: "FORBIDDEN" };
+    throw err;
+  }
+  return true;
+};
+
 const HOSTED_GAME_SCORING_INCLUDE = {
   turf: true,
   umpire: { select: { id: true, name: true, profilePicture: true } },
@@ -311,7 +343,7 @@ const checkAndAwardBadges = (user) => {
 /**
  * Initializes live overlay broadcasting details for OBS/External scoreboards.
  */
-export const goLiveSession = async (matchId) => {
+export const goLiveSession = async (matchId, viewer) => {
   let hostedGame = await prisma.hostedGame.findUnique({
     where: { id: matchId },
   });
@@ -327,6 +359,9 @@ export const goLiveSession = async (matchId) => {
 
   if (!hostedGame) {
     throw new NotFoundError("Match not found");
+  }
+  if (viewer?.id !== hostedGame.hostId) {
+    throw new ForbiddenError("Only the host can manage live broadcast");
   }
 
   if (!process.env.OVERLAY_TOKEN_SECRET) {
@@ -438,7 +473,7 @@ export const goLiveSession = async (matchId) => {
 /**
  * Ends live broadcasting for the match.
  */
-export const endLiveSession = async (matchId) => {
+export const endLiveSession = async (matchId, viewer) => {
   let hostedGame = await prisma.hostedGame.findUnique({
     where: { id: matchId },
   });
@@ -454,6 +489,9 @@ export const endLiveSession = async (matchId) => {
 
   if (!hostedGame) {
     throw new NotFoundError("Match not found");
+  }
+  if (viewer?.id !== hostedGame.hostId) {
+    throw new ForbiddenError("Only the host can manage live broadcast");
   }
 
   const finalMatchId = hostedGame.id;
@@ -533,7 +571,8 @@ export const endLiveSession = async (matchId) => {
 /**
  * Finalizes the scoring session, normalizes game/match states and runs aggregation.
  */
-export const finalizeMatch = async (scoringId) => {
+export const finalizeMatch = async (scoringId, viewer) => {
+  await verifyScoringAuth(scoringId, viewer);
   const scoring = await prisma.cricketMatch.findUnique({
     where: { id: scoringId },
     include: { innings: true, playerStats: true, timeline: true },
@@ -743,7 +782,8 @@ export const initializeScoringSession = async (
 /**
  * Transitions the live scoring session to the second innings.
  */
-export const advanceToNextInnings = async (scoringId, battingTeamId) => {
+export const advanceToNextInnings = async (scoringId, battingTeamId, viewer) => {
+  await verifyScoringAuth(scoringId, viewer);
   const scoring = await prisma.cricketMatch.findUnique({
     where: { id: scoringId },
     include: { innings: true },
@@ -860,7 +900,8 @@ export const advanceToNextInnings = async (scoringId, battingTeamId) => {
 /**
  * Updates the match status (e.g. LIVE, RAIN_DELAY, BAD_LIGHT).
  */
-export const updateMatchStatus = async (scoringId, newStatus) => {
+export const updateMatchStatus = async (scoringId, newStatus, viewer) => {
+  await verifyScoringAuth(scoringId, viewer);
   const match = await prisma.cricketMatch.findUnique({
     where: { id: scoringId },
   });
@@ -999,7 +1040,8 @@ export const reviseTargetAndOvers = async (
 /**
  * Set Match Officials (Umpires, Referees).
  */
-export const setMatchOfficials = async (scoringId, officials) => {
+export const setMatchOfficials = async (scoringId, officials, viewer) => {
+  await verifyScoringAuth(scoringId, viewer);
   const scoring = await prisma.cricketMatch.update({
     where: { id: scoringId },
     data: { matchOfficials: officials },
@@ -1125,7 +1167,8 @@ export const useReview = async (
 /**
  * Set Powerplay overs for the current innings.
  */
-export const setPowerplayOvers = async (scoringId, inningsIndex, overs) => {
+export const setPowerplayOvers = async (scoringId, inningsIndex, overs, viewer) => {
+  await verifyScoringAuth(scoringId, viewer);
   const scoring = await prisma.cricketMatch.findUnique({
     where: { id: scoringId },
     include: { innings: true },
@@ -1145,7 +1188,8 @@ export const setPowerplayOvers = async (scoringId, inningsIndex, overs) => {
 /**
  * Updates toss winner and decision state details.
  */
-export const updateTossResult = async (scoringId, winnerTeam, decision) => {
+export const updateTossResult = async (scoringId, winnerTeam, decision, viewer) => {
+  await verifyScoringAuth(scoringId, viewer);
   const scoring = await prisma.cricketMatch.update({
     where: { id: scoringId },
     data: {
@@ -1162,7 +1206,7 @@ export const updateTossResult = async (scoringId, winnerTeam, decision) => {
  */
 export const updateActivePlayers = async (
   scoringId,
-  { strikerId, nonStrikerId, bowlerId, wicketKeeperId }
+  { strikerId, nonStrikerId, bowlerId }
 ) => {
   const scoring = await prisma.cricketMatch.findUnique({
     where: { id: scoringId },
@@ -1240,7 +1284,8 @@ export const updateActivePlayers = async (
 /**
  * Reverts/undos the last ball logged in the database timeline.
  */
-export const revertLastBall = async (scoringId) => {
+export const revertLastBall = async (scoringId, viewer) => {
+  await verifyScoringAuth(scoringId, viewer);
   const scoring = await prisma.cricketMatch.findUnique({
     where: { id: scoringId },
     include: {
@@ -1400,7 +1445,8 @@ export const revertLastBall = async (scoringId) => {
 /**
  * Computes, validates, and processes standard score state changes on ball updates.
  */
-export const processScoreUpdate = async (scoringId, ballData) => {
+export const processScoreUpdate = async (scoringId, ballData, viewer) => {
+  await verifyScoringAuth(scoringId, viewer);
   const scoring = await prisma.cricketMatch.findUnique({
     where: { id: scoringId },
     include: { innings: true },
@@ -2652,21 +2698,21 @@ export const verifyScoringPassword = async (gameId, password) => {
   return { token };
 };
 
-/**
- * Delete match permanently (placeholder for actual implementation)
- */
 export const deleteScoringMatch = async (matchId, userId) => {
-  // Add appropriate validation
   const game = await prisma.hostedGame.findUnique({ where: { id: matchId } });
   if (!game) {
     throw new NotFoundError("MATCH_NOT_FOUND");
   }
+  if (game.hostId !== userId) {
+    throw new ForbiddenError("Only the host can delete this match");
+  }
 
-  // Delete the match
   await prisma.hostedGame.delete({ where: { id: matchId } });
   return true;
 };
-export const toggleMatchTimer = async (scoringId) => {
+
+export const toggleMatchTimer = async (scoringId, viewer) => {
+  await verifyScoringAuth(scoringId, viewer);
   const match = await prisma.cricketMatch.findUnique({
     where: { id: scoringId },
     include: { playerStats: true },
@@ -2767,7 +2813,8 @@ export const toggleMatchTimer = async (scoringId) => {
   return { updatedMatch };
 };
 
-export const addPenaltyRuns = async (scoringId, runs, teamId) => {
+export const addPenaltyRuns = async (scoringId, runs, teamId, viewer) => {
+  await verifyScoringAuth(scoringId, viewer);
   const match = await prisma.cricketMatch.findUnique({
     where: { id: scoringId },
     include: { innings: true },

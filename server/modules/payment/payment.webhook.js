@@ -105,42 +105,57 @@ async function handlePaymentCaptured(payment) {
         })
       : null;
     if (user || owner) {
-      await prisma.$transaction(async (tx) => {
-        await WalletService.credit(
-          transaction.userId,
-          user ? "user" : "venue_owner",
-          transaction.amount,
-          tx
-        );
+      try {
+        await prisma.$transaction(async (tx) => {
+          // Atomic state transition to prevent double-credit race condition
+          const updateResult = await tx.walletTransaction.updateMany({
+            where: {
+              id: transaction.id,
+              status: "PENDING",
+            },
+            data: {
+              status: "SUCCESS",
+              razorpayPaymentId: payment_id,
+            },
+          });
 
-        await tx.walletTransaction.update({
-          where: {
-            id: transaction.id,
-          },
-          data: {
-            status: "SUCCESS",
-            razorpayPaymentId: payment_id,
-          },
+          if (updateResult.count === 0) {
+            throw new Error("Idempotency conflict: Wallet topup already processed");
+          }
+
+          await WalletService.credit(
+            transaction.userId,
+            user ? "user" : "venue_owner",
+            transaction.amount,
+            tx
+          );
+
+          if (transaction.couponId) {
+            await tx.coupon.update({
+              where: { id: transaction.couponId },
+              data: { timesUsed: { increment: 1 } },
+            });
+          }
         });
 
-        if (transaction.couponId) {
-          await tx.coupon.update({
-            where: { id: transaction.couponId },
-            data: { timesUsed: { increment: 1 } },
-          });
+        logger.info(
+          `[WEBHOOK] Wallet topped up for ${user?.name || owner?.businessName}`
+        );
+        paymentTotal.inc({
+          status: "success",
+        });
+        paymentSuccessTotal.inc({
+          gateway: "razorpay",
+          type: "wallet_topup",
+        });
+        walletTopupTotal.inc();
+      } catch (err) {
+        if (err.message.includes("Idempotency conflict")) {
+          logger.info(`[WEBHOOK] ${err.message}. Skipping.`);
+        } else {
+          logger.error(`[WEBHOOK] Wallet topup failed for ${order_id}:`, err);
         }
-      });
-      logger.info(
-        `[WEBHOOK] Wallet topped up for ${user?.name || owner?.businessName}`
-      );
-      paymentTotal.inc({
-        status: "success",
-      });
-      paymentSuccessTotal.inc({
-        gateway: "razorpay",
-        type: "wallet_topup",
-      });
-      walletTopupTotal.inc();
+      }
     }
     return;
   }
@@ -156,9 +171,11 @@ async function handlePaymentCaptured(payment) {
     logger.info(
       `[WEBHOOK] Processing booking confirmation for order: ${order_id}`
     );
-    await prisma.booking.update({
+    // Atomic state transition for Booking
+    const updateResult = await prisma.booking.updateMany({
       where: {
         id: booking.id,
+        status: "PENDING",
       },
       data: {
         status: "CONFIRMED",
@@ -166,15 +183,20 @@ async function handlePaymentCaptured(payment) {
         paymentStatus: "SUCCESS",
       },
     });
-    paymentTotal.inc({
-      status: "success",
-    });
-    paymentSuccessTotal.inc({
-      gateway: "razorpay",
-      type: "booking",
-    });
-    bookingConfirmedTotal.inc({
-      payment_method: "online",
-    });
+
+    if (updateResult.count > 0) {
+      paymentTotal.inc({
+        status: "success",
+      });
+      paymentSuccessTotal.inc({
+        gateway: "razorpay",
+        type: "booking",
+      });
+      bookingConfirmedTotal.inc({
+        payment_method: "online",
+      });
+    } else {
+      logger.info(`[WEBHOOK] Idempotency: booking for ${order_id} already confirmed. Skipping.`);
+    }
   }
 }

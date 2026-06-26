@@ -31,6 +31,7 @@ import {
   addPenalty,
   updateHouseRules,
   getMatchReport,
+  verifyOverlayToken,
   // View tabs (public read-only)
   getScorecard,
   getSquads,
@@ -133,6 +134,7 @@ router.get("/analytics/:matchId", getMatchAnalytics);
  *         description: Live score snapshot
  */
 router.get("/live-score/:matchId", getLiveScore);
+router.get("/overlay/verify/:matchId", verifyOverlayToken);
 
 /**
  * @swagger

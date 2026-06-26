@@ -140,7 +140,7 @@ export default function App() {
   }, [dispatch]);
 
   // If we have a persisted session, don't show the blocking loading screen
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Background Prefetching for Reels
   useEffect(() => {
@@ -259,6 +259,21 @@ export default function App() {
     window.addEventListener("focus", handleFocus);
     return () => window.removeEventListener("focus", handleFocus);
   }, [authState.isLoggedIn, authState.followingIds, dispatch]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center font-sans">
+        <div className="relative flex flex-col items-center gap-4 animate-fade-in">
+          <img
+            src="/logo1.png"
+            alt="Kridaz"
+            className="h-16 w-auto object-contain animate-pulse"
+          />
+          <div className="w-8 h-8 border-2 border-[#BFF367] border-t-transparent rounded-full animate-spin" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <RootErrorBoundary>

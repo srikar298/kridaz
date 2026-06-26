@@ -882,12 +882,21 @@ export const getAllWithdrawalRequests = async (req, res) => {
 export const approveWithdrawalRequest = async (req, res) => {
   const admin = req.admin.role;
   const { id } = req.params;
-  const { transactionId, screenshot } = req.body;
+  const { transactionId, screenshot, masterPassword } = req.body;
 
   if (admin?.toUpperCase() !== "ADMIN") {
     return res
       .status(403)
       .json({ success: false, message: "Unauthorized access denied" });
+  }
+
+  // C-15: Master Payout Password verification
+  const expectedPassword = process.env.MASTER_PAYOUT_PASSWORD || process.env.ADMIN_SEED_PASSWORD;
+  if (!expectedPassword || masterPassword !== expectedPassword) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or missing Master Payout Password.",
+    });
   }
 
   try {

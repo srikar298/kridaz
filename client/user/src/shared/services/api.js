@@ -8,13 +8,9 @@ const API = axios.create({
   },
 });
 
-// Request interceptor to add auth tokens
+// Request interceptor to add auth tokens (Deprecated as we use httpOnly cookies)
 API.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // Or get from Redux store if possible
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
     return config;
   },
   (error) => Promise.reject(error)
@@ -24,12 +20,12 @@ API.interceptors.request.use(
 let isRefreshing = false;
 let failedQueue = [];
 
-const processQueue = (error, token = null) => {
+const processQueue = (error) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
     } else {
-      prom.resolve(token);
+      prom.resolve();
     }
   });
   failedQueue = [];
@@ -50,8 +46,7 @@ API.interceptors.response.use(
         return new Promise(function (resolve, reject) {
           failedQueue.push({ resolve, reject });
         })
-          .then((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
+          .then(() => {
             return API(originalRequest);
           })
           .catch((err) => {
@@ -65,16 +60,12 @@ API.interceptors.response.use(
       try {
         const { data } = await API.post("/auth/refresh", {});
 
-        if (data.success && data.token) {
-          localStorage.setItem("token", data.token);
-          API.defaults.headers.common.Authorization = `Bearer ${data.token}`;
-          originalRequest.headers.Authorization = `Bearer ${data.token}`;
-          processQueue(null, data.token);
+        if (data.success) {
+          processQueue(null);
           return API(originalRequest);
         }
       } catch (refreshError) {
-        processQueue(refreshError, null);
-        localStorage.removeItem("token");
+        processQueue(refreshError);
         window.location.href = "/login";
         return Promise.reject(refreshError);
       } finally {
@@ -89,7 +80,6 @@ API.interceptors.response.use(
         !originalRequest.url.includes("/auth/login") &&
         !originalRequest.url.includes("/auth/refresh")
       ) {
-        localStorage.removeItem("token");
         window.location.href = "/login";
       }
     }

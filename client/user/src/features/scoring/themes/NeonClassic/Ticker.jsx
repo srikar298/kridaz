@@ -232,10 +232,8 @@ export default function NeonClassicTicker({ score, connected, badge }) {
         overflow: "hidden",
       }}
     >
-      {/* Dynamic Keyframes for Neon Classic */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
+      <style>
+        {`
         @keyframes sixFlyIn {
           0% { transform: translateX(120px) scale(0.4) rotate(10deg); opacity: 0; }
           25% { transform: translateX(-12px) scale(1.2) rotate(-3deg); opacity: 1; }
@@ -299,9 +297,8 @@ export default function NeonClassicTicker({ score, connected, badge }) {
           text-transform: uppercase;
           animation: classicScrollText 15s linear infinite;
         }
-      `,
-        }}
-      />
+        `}
+      </style>
 
       {/* Scrolling Ticker */}
       <ScrollingTicker score={score} />

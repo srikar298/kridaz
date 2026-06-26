@@ -198,4 +198,64 @@ describe("Owner Module API Integration Tests", () => {
       expect(res.body.data).toHaveProperty("balances");
     });
   });
+
+  describe("POST /api/owner/banking/payout - Request Payout & KYC Check", () => {
+    it("should reject payout request if KYC is not VERIFIED", async () => {
+      // Make sure KYC is pending first
+      await prisma.ownerProfile.update({
+        where: { id: ownerProfileId },
+        data: {
+          bankingDetails: {
+            accountName: "Test Owner",
+            accountNumber: "1234567890",
+            ifscCode: "HDFC0001234",
+            bankName: "HDFC Bank",
+            kycStatus: "PENDING",
+            payoutMode: "BANK",
+          }
+        }
+      });
+
+      const res = await request(app)
+        .post("/api/owner/banking/payout")
+        .set("Authorization", `Bearer ${ownerToken}`)
+        .send({
+          amount: 5000,
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toContain("KYC verification is required");
+    });
+
+    it("should succeed payout request if KYC is VERIFIED", async () => {
+      // 1. Manually set ownerProfile's walletBalance to 10000, and KYC status to VERIFIED
+      await prisma.ownerProfile.update({
+        where: { id: ownerProfileId },
+        data: {
+          walletBalance: 10000,
+          bankingDetails: {
+            accountName: "Test Owner",
+            accountNumber: "1234567890",
+            ifscCode: "HDFC0001234",
+            bankName: "HDFC Bank",
+            kycStatus: "VERIFIED",
+            payoutMode: "BANK",
+          }
+        }
+      });
+
+      const res = await request(app)
+        .post("/api/owner/banking/payout")
+        .set("Authorization", `Bearer ${ownerToken}`)
+        .send({
+          amount: 5000,
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.message).toContain("Withdrawal of Rs 5000 initiated");
+    });
+  });
 });
+

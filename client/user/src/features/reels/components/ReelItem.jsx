@@ -12,7 +12,6 @@ import {
   useInteractWithReelMutation,
   useDeleteReelMutation,
   useAddReelCommentMutation,
-  useReportReelMutation,
   useGetReelCommentsQuery,
 } from "@redux/api/reelsApi";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,6 +19,7 @@ import { useSelector, useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 import { followUser } from "@redux/slices/authSlice";
 import axiosInstance from "@hooks/useAxiosInstance";
+import ReportModal from "../../networking/components/ReportModal";
 
 const ReelItem = ({ reel, isVisible }) => {
   const navigate = useNavigate();
@@ -49,9 +49,7 @@ const ReelItem = ({ reel, isVisible }) => {
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [addReelComment] = useAddReelCommentMutation();
-  const [reportReel] = useReportReelMutation();
   const [showReportModal, setShowReportModal] = useState(false);
-  const [reportReason, setReportReason] = useState("");
   const [localComments, setLocalComments] = useState(null); // null = not yet loaded
   const isLikingRef = React.useRef(false);
   const isLikedRef = React.useRef(reel.isLiked || false);
@@ -311,7 +309,7 @@ const ReelItem = ({ reel, isVisible }) => {
         >
           <div className="p-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
             <ThumbsUp
-              size={34}
+              size={26}
               className={`transition-colors ${isLiked ? "fill-[#BFF367] text-[#BFF367]" : "text-white fill-transparent group-hover:text-[#BFF367]"}`}
               strokeWidth={1.5}
             />
@@ -327,7 +325,7 @@ const ReelItem = ({ reel, isVisible }) => {
         >
           <div className="p-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
             <MessageCircle
-              size={34}
+              size={26}
               className={`transition-colors ${showComments ? "text-[#BFF367]" : "text-white group-hover:text-[#BFF367]"}`}
               strokeWidth={2.5}
             />
@@ -343,7 +341,7 @@ const ReelItem = ({ reel, isVisible }) => {
         >
           <div className="p-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
             <Share2
-              size={34}
+              size={26}
               className="text-white fill-transparent group-hover:text-[#BFF367] transition-colors"
               strokeWidth={2}
             />
@@ -355,7 +353,7 @@ const ReelItem = ({ reel, isVisible }) => {
             className="p-1 text-white active:bg-white/20 rounded-full transition-all duration-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
             onClick={() => setShowMenu(!showMenu)}
           >
-            <MoreVertical size={24} strokeWidth={2.5} />
+            <MoreVertical size={20} strokeWidth={2.5} />
           </button>
 
           <AnimatePresence>
@@ -593,70 +591,14 @@ const ReelItem = ({ reel, isVisible }) => {
         )}
       </AnimatePresence>
 
-      {/* Report Modal */}
+      {/* Report Modal — shared component */}
       <AnimatePresence>
         {showReportModal && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-zinc-900 w-full max-w-sm rounded-[16px] overflow-hidden border border-white/10 p-6 flex flex-col shadow-2xl"
-            >
-              <h3 className="text-white font-bold text-lg mb-4">
-                Report Short
-              </h3>
-              <p className="text-white/60 text-sm mb-4">
-                Why are you reporting this content?
-              </p>
-
-              <div className="flex flex-col gap-2 mb-6">
-                {[
-                  "Spam",
-                  "Inappropriate content",
-                  "Harassment",
-                  "Copyright violation",
-                ].map((reason) => (
-                  <button
-                    key={reason}
-                    onClick={() => setReportReason(reason)}
-                    className={`text-left px-4 py-3 rounded-[8px] text-sm font-medium transition-colors ${reportReason === reason ? "bg-[#BFF367] text-black" : "bg-white/5 text-white hover:bg-white/10"}`}
-                  >
-                    {reason}
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowReportModal(false)}
-                  className="flex-1 py-3 bg-white/10 hover:bg-white/20 text-white rounded-[8px] font-bold text-sm transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={async () => {
-                    if (!reportReason) return toast.error("Select a reason");
-                    try {
-                      await reportReel({
-                        reelId: reel.id || reel._id,
-                        reason: reportReason,
-                      }).unwrap();
-                      toast.success("Report submitted successfully");
-                      setShowReportModal(false);
-                      setReportReason("");
-                    } catch (err) {
-                      toast.error("Failed to submit report");
-                    }
-                  }}
-                  disabled={!reportReason}
-                  className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-[8px] font-bold text-sm disabled:opacity-50 transition-colors"
-                >
-                  Submit
-                </button>
-              </div>
-            </motion.div>
-          </div>
+          <ReportModal
+            type="reel"
+            itemId={reel.id || reel._id}
+            onClose={() => setShowReportModal(false)}
+          />
         )}
       </AnimatePresence>
     </div>

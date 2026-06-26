@@ -828,11 +828,15 @@ export default function FindProfessionals() {
                       className="w-full bg-black border border-white/10 rounded-lg p-3 pr-24 text-xs font-bold text-white focus:border-primary outline-none appearance-none"
                     >
                       <option value="">-- Choose Venue/Ground --</option>
-                      {grounds.map((g) => (
-                        <option key={g._id} value={g._id}>
-                          {g.name} - {g.city}, {g.state}
-                        </option>
-                      ))}
+                      {grounds.map((g) => {
+                        const fullText = `${g.name} - ${g.city ? g.city.split(',')[0] : ''}`.replace(/- $/g, '').trim();
+                        const truncated = fullText.length > 30 ? fullText.substring(0, 30) + "..." : fullText;
+                        return (
+                          <option key={g._id} value={g._id} title={`${g.name} - ${g.city || ''}, ${g.state || ''}`}>
+                            {truncated}
+                          </option>
+                        );
+                      })}
                       <option value="custom">
                         {customLocation.address
                           ? `📍 ${customLocation.address.substring(0, 45)}${customLocation.address.length > 45 ? "..." : ""}`

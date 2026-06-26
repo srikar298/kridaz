@@ -200,7 +200,7 @@ const StoryViewer = ({
         <Button
           onClick={onClose}
           className="absolute top-6 right-6 z-[1110] p-2 bg-black/40 hover:bg-black/60 text-white rounded-[8px] transition-all backdrop-blur-md"
-        >
+         aria-label="Close">
           <X size={24} />
         </Button>
 
@@ -426,20 +426,18 @@ const StoryViewer = ({
         )}
       </div>
 
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
- @keyframes progress {
- from { width: 0; }
- to { width: 100%; }
- }
- .animate-progress {
- animation-name: progress;
- animation-timing-function: linear;
- }
- `,
-        }}
-      />
+      <style>
+        {`
+          @keyframes progress {
+            from { width: 0; }
+            to { width: 100%; }
+          }
+          .animate-progress {
+            animation-name: progress;
+            animation-timing-function: linear;
+          }
+        `}
+      </style>
     </div>
   );
 };

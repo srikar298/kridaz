@@ -33,10 +33,25 @@ export const processInAppNotification = async ({
     recipientModel,
   };
 
+  // C-19: Strict Foreign Key Validation
   if (recipientModel === "User") {
+    const userExists = await prisma.user.findUnique({ where: { id: recipientId }, select: { id: true } });
+    if (!userExists) {
+      logger.warn(`[Notification Dispatcher] User ${recipientId} not found. Skipping.`);
+      return { success: false, reason: "Recipient not found" };
+    }
     data.userId = recipientId;
-  } else {
+  } else if (recipientModel === "OwnerProfile" || recipientModel === "Owner") {
+    data.recipientModel = "OwnerProfile";
+    const ownerExists = await prisma.ownerProfile.findUnique({ where: { id: recipientId }, select: { id: true } });
+    if (!ownerExists) {
+      logger.warn(`[Notification Dispatcher] OwnerProfile ${recipientId} not found. Skipping.`);
+      return { success: false, reason: "Recipient not found" };
+    }
     data.ownerId = recipientId;
+  } else {
+    logger.warn(`[Notification Dispatcher] Unknown recipientModel: ${recipientModel}`);
+    return { success: false, reason: "Invalid recipientModel" };
   }
 
   const dbNotification = await prisma.notification.create({ data });

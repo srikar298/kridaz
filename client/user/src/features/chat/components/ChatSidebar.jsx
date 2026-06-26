@@ -737,7 +737,8 @@ const ChatSidebar = ({
                               />
                             </Button>
                           )}
-                          <Button
+                          <button
+                            type="button"
                             onClick={(e) => {
                               e.stopPropagation();
                               setActiveMenu(
@@ -747,7 +748,7 @@ const ChatSidebar = ({
                             className="text-white/45 hover:text-white w-7 h-7 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center"
                           >
                             <MoreVertical size={16} />
-                          </Button>
+                          </button>
                         </div>
 
                         {/* Dropdown Menu */}

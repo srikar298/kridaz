@@ -2,7 +2,9 @@ import { useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
 
 export default function ProtectedRoute({ children, requiredRole }) {
-  const { isAuthenticated, role, token } = useSelector((state) => state.auth);
+  const authState = useSelector((state) => state.auth || {});
+  const isAuthenticated = authState.isAuthenticated || !!authState.token;
+  const { role, token } = authState;
   const location = useLocation();
 
   if (!isAuthenticated || !token) {

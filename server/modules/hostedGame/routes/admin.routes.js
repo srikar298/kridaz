@@ -1,4 +1,4 @@
-﻿import express from "express";
+import express from "express";
 import {
   getAllHostedGames,
   deleteHostedGame,
@@ -7,8 +7,12 @@ import {
   getAllDisputes,
   resolveDispute,
 } from "../../admin/admin.controller.js";
+import verifyAdminToken from "../../../middleware/jwt/admin.middleware.js";
 
 const router = express.Router();
+
+// Apply admin authentication to all routes in this router
+router.use(verifyAdminToken);
 
 /**
  * @swagger

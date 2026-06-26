@@ -24,6 +24,11 @@ socketConfig(server);
 
 // Function to start the server
 const startServer = () => {
+  if (process.env.RAILWAY_ENVIRONMENT && process.env.NODE_ENV !== "production") {
+    logger.error("[SERVER] FATAL: NODE_ENV must be 'production' in Railway/Production environments!");
+    process.exit(1);
+  }
+
   try {
     if (
       process.env.NODE_ENV === "production" ||

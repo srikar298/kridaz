@@ -271,11 +271,15 @@ export const verifyTopup = async (req, res) => {
 
     // Atomic wallet credit and status update inside Prisma transaction
     const newBalance = await prisma.$transaction(async (tx) => {
-      // Check again to avoid race conditions with webhooks
-      const currentTx = await tx.walletTransaction.findUnique({
-        where: { id: transaction.id },
+      // Atomic state transition to prevent race conditions
+      const updateResult = await tx.walletTransaction.updateMany({
+        where: { id: transaction.id, status: "PENDING" },
+        data: {
+          status: "SUCCESS",
+          razorpayPaymentId: razorpay_payment_id,
+        },
       });
-      if (currentTx.status !== "PENDING") return null;
+      if (updateResult.count === 0) return null;
 
       const balance = await WalletService.credit(
         req.user.id,
@@ -283,15 +287,6 @@ export const verifyTopup = async (req, res) => {
         transaction.amount,
         tx
       );
-
-      // Mark transaction as SUCCESS
-      await tx.walletTransaction.update({
-        where: { id: transaction.id },
-        data: {
-          status: "SUCCESS",
-          razorpayPaymentId: razorpay_payment_id,
-        },
-      });
 
       if (transaction.couponId) {
         await tx.coupon.update({
@@ -422,9 +417,15 @@ export const checkPaymentStatus = async (req, res) => {
         });
 
         const newBalance = await prisma.$transaction(async (tx) => {
-          // Re-read inside the tx to guard against concurrent verifyTopup.
-          const current = await tx.walletTransaction.findUnique({ where: { id: transaction.id } });
-          if (current.status === "SUCCESS") return undefined;
+          // Atomic state transition to prevent race conditions
+          const updateResult = await tx.walletTransaction.updateMany({
+            where: { id: transaction.id, status: "PENDING" },
+            data: {
+              status: "SUCCESS",
+              razorpayPaymentId: successfulPayment.id,
+            },
+          });
+          if (updateResult.count === 0) return undefined;
 
           const balance = await WalletService.credit(
             transaction.userId,
@@ -432,14 +433,6 @@ export const checkPaymentStatus = async (req, res) => {
             transaction.amount,
             tx
           );
-
-          await tx.walletTransaction.update({
-            where: { id: transaction.id },
-            data: {
-              status: "SUCCESS",
-              razorpayPaymentId: successfulPayment.id,
-            },
-          });
 
           if (transaction.couponId) {
             await tx.coupon.update({

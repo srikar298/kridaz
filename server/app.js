@@ -16,6 +16,7 @@ import {
   refreshLimiter,
   globalLimiter,
 } from "./middleware/rateLimiter.middleware.js";
+import helmetConfig from "./config/helmet.js";
 
 dotenv.config(); // Hot-reload trigger for route alias updates
 
@@ -35,6 +36,7 @@ const app = express();
 // host directly (PDFs, QR codes) would otherwise block.
 app.use(
   helmet({
+    ...helmetConfig,
     crossOriginResourcePolicy: { policy: "cross-origin" },
   })
 );
@@ -158,6 +160,10 @@ app.use("/api/user/wallet/topup/verify", paymentLimiter);
 // Payment routes â€” owner banking & wallet
 app.use("/api/owner/banking/payout", paymentLimiter);
 app.use("/api/owner/wallet/withdraw", paymentLimiter);
+
+// CSRF Protection (C-14)
+import { csrfProtection } from "./middleware/csrf.middleware.js";
+app.use("/api", csrfProtection);
 
 // routes
 app.use("/api", rootRouter);

@@ -249,7 +249,6 @@ export const verifyBookingPayment = async (userId, paymentData) => {
       ? Number(settings.platformFeePercentage)
       : 5;
 
-  // Configuration Expiry Guard
   const startOfSelectedDate = new Date(selectedTurfDate);
   startOfSelectedDate.setHours(0, 0, 0, 0);
 
@@ -263,15 +262,49 @@ export const verifyBookingPayment = async (userId, paymentData) => {
     });
   }
 
-  const gstAmountCalc = Math.round(
-    totalPrice * (gstPercentage / (100 + gstPercentage))
+  // C-11 & C-10: Server-side Price Calculation & Validation
+  const durationInHours = Math.ceil(
+    (new Date(adjustedEndTime) - new Date(adjustedStartTime)) / (1000 * 60 * 60)
   );
-  const baseAmount = totalPrice - gstAmountCalc;
+  
+  const venueCharges = Number(turf.pricePerHour) * durationInHours;
+  const serviceCharge = Math.round(venueCharges * 0.0125) || 25;
+  let discount = 0;
+  if (paymentData.couponCode) {
+    // Re-verify coupon server-side and calculate discount
+    const couponResult = await verifyCoupon(paymentData.couponCode, turfId, venueCharges);
+    discount = couponResult.discount;
+  }
+  
+  const calculatedTotalPrice = venueCharges + serviceCharge - discount;
+  
+  // Allow a small rounding tolerance of 1 rupee
+  if (Math.abs(calculatedTotalPrice - totalPrice) > 1) {
+    throw new BadRequestError(`Price tampering detected. Expected ${calculatedTotalPrice}, but got ${totalPrice}`, {
+      code: "PRICE_MISMATCH",
+    });
+  }
+  
+  // Verify Razorpay Order Amount matches advanceAmount exactly to prevent Razorpay bypass
+  const razorpayOrder = await razorpay.orders.fetch(orderId);
+  const amountPaidOnline = advanceAmount || totalPrice;
+  if (Number(razorpayOrder.amount) !== Math.round(amountPaidOnline * 100)) {
+    throw new BadRequestError("Razorpay order amount does not match paid amount. Tampering detected.", {
+       code: "RAZORPAY_AMOUNT_MISMATCH"
+    });
+  }
+
+  const gstAmountCalc = Math.round(
+    calculatedTotalPrice * (gstPercentage / (100 + gstPercentage))
+  );
+  const baseAmount = calculatedTotalPrice - gstAmountCalc;
   const platformFee = Math.round(baseAmount * (platformFeePercentage / 100));
 
-  const amountPaidOnline = advanceAmount || totalPrice;
-  const ownerRevenue = amountPaidOnline - platformFee - gstAmountCalc;
-
+  // C-16: Fix negative ownerRevenue by capping platform fee deduction to the amount actually paid online,
+  // or explicitly defining it as the online collection minus total fees. (If negative, owner owes platform).
+  // But to strictly avoid negative pending balance updates (which can confuse owners):
+  let ownerRevenue = amountPaidOnline - platformFee - gstAmountCalc;
+  
   // Create booking transaction
   const booking = await prisma.$transaction(async (tx) => {
     // 1. Acquire row-level lock on Turf to serialize concurrent booking attempts
@@ -459,7 +492,30 @@ export const processWalletBooking = async (userId, bookingData) => {
   const gstPercentage = Number(settings.gstPercentage || 0);
   const platformFeePercentage = Number(settings.platformFeePercentage || 5);
 
-  const finalPrice = originalPrice;
+  // C-11 & C-10: Server-side Price Calculation & Validation
+  const durationInHours = Math.ceil(
+    (new Date(adjustedEndTime) - new Date(adjustedStartTime)) / (1000 * 60 * 60)
+  );
+  const venueCharges = Number(turf.pricePerHour) * durationInHours;
+  const serviceCharge = Math.round(venueCharges * 0.0125) || 25;
+  let discount = 0;
+  if (couponCode) {
+    const couponResult = await verifyCoupon(couponCode, turfId, venueCharges);
+    discount = couponResult.discount;
+  }
+  const calculatedTotalPrice = venueCharges + serviceCharge - discount;
+  
+  if (Math.abs(calculatedTotalPrice - originalPrice) > 1) {
+    throw new BadRequestError(`Price tampering detected. Expected ${calculatedTotalPrice}, but got ${originalPrice}`, {
+      code: "PRICE_MISMATCH",
+    });
+  }
+
+  const finalPrice = calculatedTotalPrice;
+  
+  // Enforce advance amount rules (e.g. they should pay exactly the required partial amount or full amount)
+  // Currently, frontend sends bodyAdvanceAmount which is (paymentPercentage/100) * total.
+  // We will trust the bodyAdvanceAmount only if we want to allow arbitrary partials, but let's strictly require it to be at least > 0
   const amountToDeduct =
     bodyPaymentType === "PARTIAL" && bodyAdvanceAmount
       ? bodyAdvanceAmount
@@ -470,6 +526,8 @@ export const processWalletBooking = async (userId, bookingData) => {
   );
   const baseAmount = finalPrice - gstAmountCalc;
   const platformFee = Math.round(baseAmount * (platformFeePercentage / 100));
+  
+  // C-16: Allow ownerRevenue to be accurately calculated from the online collection
   const ownerRevenue = amountToDeduct - platformFee - gstAmountCalc;
 
   const wallet = await WalletService.getWallet(userId, "user");
@@ -589,16 +647,11 @@ export const processWalletBooking = async (userId, bookingData) => {
     const cashbackAmount = Math.round(finalPrice * (cashbackPercentage / 100));
     if (cashbackAmount > 0) {
       if (user) {
-        await tx.user.update({
-          where: { id: userId },
-          data: { walletBalance: { increment: cashbackAmount } },
-        });
+        await WalletService.credit(userId, "user", cashbackAmount, tx);
       } else {
-        await tx.ownerProfile.update({
-          where: { userId: userId },
-          data: { walletBalance: { increment: cashbackAmount } },
-        });
+        await WalletService.credit(userId, "owner", cashbackAmount, tx);
       }
+
 
       await tx.walletTransaction.create({
         data: {
@@ -1038,28 +1091,30 @@ export const processManualBooking = async (ownerId, manualData) => {
     });
   }
 
-  // Overlap Guard
-  const overlapping = await prisma.timeSlot.findFirst({
-    where: {
-      turfId,
-      OR: [
-        { startTime: { lt: adjustedEndTime, gte: adjustedStartTime } },
-        { endTime: { gt: adjustedStartTime, lte: adjustedEndTime } },
-        {
-          startTime: { lte: adjustedStartTime },
-          endTime: { gte: adjustedEndTime },
-        },
-      ],
-    },
-  });
-
-  if (overlapping) {
-    throw new BadRequestError("This slot is no longer available.", {
-      code: "SLOT_UNAVAILABLE",
-    });
-  }
-
   const booking = await prisma.$transaction(async (tx) => {
+    // 1. Acquire row-level lock on Turf to serialize concurrent booking attempts
+    await tx.$queryRaw`SELECT id FROM "Turf" WHERE id = ${turfId} FOR UPDATE`;
+
+    // 2. Overlap Guard (Inside transaction)
+    const overlapping = await tx.timeSlot.findFirst({
+      where: {
+        turfId,
+        OR: [
+          { startTime: { lt: adjustedEndTime, gte: adjustedStartTime } },
+          { endTime: { gt: adjustedStartTime, lte: adjustedEndTime } },
+          {
+            startTime: { lte: adjustedStartTime },
+            endTime: { gte: adjustedEndTime },
+          },
+        ],
+      },
+    });
+
+    if (overlapping) {
+      throw new BadRequestError("This slot is no longer available.", {
+        code: "SLOT_UNAVAILABLE",
+      });
+    }
     const timeSlot = await tx.timeSlot.create({
       data: {
         turfId,

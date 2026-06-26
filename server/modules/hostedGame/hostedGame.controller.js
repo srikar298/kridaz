@@ -1597,6 +1597,20 @@ export const cancelHostedGame = async (req, res) => {
             where: { id: relatedBooking.id },
             data: { status: "CANCELLED" },
           });
+
+          const paidAmount = Number(relatedBooking.paidAmount || 0);
+          if (paidAmount > 0) {
+            await WalletService.credit(hostId, "user", paidAmount, tx);
+            await tx.walletTransaction.create({
+              data: {
+                userId: hostId,
+                amount: paidAmount,
+                type: "REFUND",
+                status: "SUCCESS",
+                description: `Refunded ground booking payment for cancelled game: ${game.gameType}`,
+              },
+            });
+          }
         }
       }
 
@@ -1639,6 +1653,7 @@ export const cancelHostedGame = async (req, res) => {
 
       for (const slot of joinedSlots) {
         // Credit player (Refund from escrow)
+        await WalletService.release(slot.userId, "user", perPlayerCharge, false, tx);
         await WalletService.credit(slot.userId, "user", perPlayerCharge, tx);
         await tx.walletTransaction.create({
           data: {
@@ -1781,6 +1796,7 @@ export const leaveHostedGame = async (req, res) => {
       // If joined, refund coins
       else if (userSlot.status === "JOINED") {
         // Credit player (Refund from escrow)
+        await WalletService.release(userId, "user", perPlayerCharge, false, tx);
         await WalletService.credit(userId, "user", perPlayerCharge, tx);
         await tx.walletTransaction.create({
           data: {
@@ -2730,28 +2746,34 @@ export const claimInviteSlot = async (req, res) => {
         throw new BadRequestError("Token is required", { code: "BAD_REQUEST" });
 
       // Try player invite first
-      let customPlayer = await tx.customPlayer.findUnique({
-        where: { inviteToken: token },
-        include: { game: true },
+      const updatedPlayerCount = await tx.customPlayer.updateMany({
+        where: { inviteToken: token, inviteStatus: "PENDING" },
+        data: { inviteStatus: "CLAIMED", claimedByUserId: userId },
       });
 
       let isUmpire = false;
       let inviteData = null;
       let game = null;
 
-      if (customPlayer && customPlayer.inviteStatus === "PENDING") {
-        inviteData = customPlayer;
-        game = customPlayer.game;
-      } else {
-        // Try umpire invite
-        let customUmpire = await tx.customUmpire.findUnique({
+      if (updatedPlayerCount.count > 0) {
+        inviteData = await tx.customPlayer.findUnique({
           where: { inviteToken: token },
           include: { game: true },
         });
-        if (customUmpire && customUmpire.inviteStatus === "PENDING") {
+        game = inviteData?.game;
+      } else {
+        // Try umpire invite
+        const updatedUmpireCount = await tx.customUmpire.updateMany({
+          where: { inviteToken: token, inviteStatus: "PENDING" },
+          data: { inviteStatus: "ACCEPTED", claimedByUserId: userId },
+        });
+        if (updatedUmpireCount.count > 0) {
           isUmpire = true;
-          inviteData = customUmpire;
-          game = customUmpire.game;
+          inviteData = await tx.customUmpire.findUnique({
+            where: { inviteToken: token },
+            include: { game: true },
+          });
+          game = inviteData?.game;
         }
       }
 
@@ -2761,15 +2783,7 @@ export const claimInviteSlot = async (req, res) => {
         });
 
       if (isUmpire) {
-        // Handle Umpire Claim
-        await tx.customUmpire.update({
-          where: { id: inviteData.id },
-          data: {
-            inviteStatus: "ACCEPTED",
-            claimedByUserId: userId,
-          },
-        });
-
+        // Handle Umpire Claim (already marked ACCEPTED via updateMany)
         let owner = await tx.ownerProfile.findFirst({ where: { userId } });
 
         if (!owner) {
@@ -2825,19 +2839,10 @@ export const claimInviteSlot = async (req, res) => {
           },
         });
       } else {
-        // Handle Player Claim
+        // Handle Player Claim (already marked CLAIMED via updateMany)
         if (inviteData.mustPay && game.perPlayerCharge > 0) {
           await WalletService.reserve(userId, "user", game.perPlayerCharge, tx);
         }
-
-        // Update custom player status
-        await tx.customPlayer.update({
-          where: { id: inviteData.id },
-          data: {
-            inviteStatus: "CLAIMED",
-            claimedByUserId: userId,
-          },
-        });
 
         // Find the slot and update it
         const slot = await tx.gameSlot.findFirst({
@@ -3020,6 +3025,20 @@ export const voteGameStarted = async (req, res) => {
       if (newStatus === "COMPLETED") {
         const totalAmount = Number(game.perPlayerCharge) * totalPaidSlots;
         await WalletService.credit(game.hostId, "user", totalAmount, tx);
+
+        // Release escrow for all paid slots to zero out reserved balances
+        const paidSlots = game.slots.filter(
+          (s) => s.status === "JOINED" && s.userId
+        );
+        for (const slot of paidSlots) {
+          await WalletService.release(
+            slot.userId,
+            "user",
+            game.perPlayerCharge,
+            false,
+            tx
+          );
+        }
 
         await tx.walletTransaction.create({
           data: {
@@ -3432,8 +3451,8 @@ export const manageOpponentApplication = async (req, res) => {
         
         // Auto-refund other pending apps (releasing their full guarantor reserve)
         if (app.totalRequired > 0) {
-          WalletService.release(app.captainId, "user", app.totalRequired, false, tx).catch(console.error);
-          tx.walletTransaction.create({
+          await WalletService.release(app.captainId, "user", app.totalRequired, false, tx);
+          await tx.walletTransaction.create({
             data: {
               userId: app.captainId,
               amount: app.totalRequired,
@@ -3441,7 +3460,7 @@ export const manageOpponentApplication = async (req, res) => {
               status: "COMPLETED",
               description: `Refund of guarantor reserve since another team was accepted.`,
             },
-          }).catch(console.error);
+          });
         }
       }
 

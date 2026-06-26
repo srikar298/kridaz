@@ -162,8 +162,10 @@ router.get("/getMe", userAuth, getMe);
  *   post:
  *     summary: Logout user
  *     tags: [Auth]
+ *     security:
+ *       - BearerAuth: []
  */
-router.post("/logout", logout);
+router.post("/logout", userAuth, logout);
 
 /**
  * @swagger
