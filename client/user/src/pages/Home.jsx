@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useSelector, useDispatch } from "react-redux";
 import useTurfData from "../features/turf/hooks/useTurfData";
-import QuickActions from "./HomeSections/QuickActions";
+import DashboardHero from "./HomeSections/DashboardHero";
 import VenuesSection from "./HomeSections/VenuesSection";
 import PlayersSection from "./HomeSections/PlayersSection";
 import SocialArenaSection from "./HomeSections/SocialArenaSection";
@@ -213,7 +213,7 @@ export default function Home() {
 
   const displayTurfs = useMemo(() => {
     if (!turfs || turfs.length === 0) return [];
-    
+
     // 1. Filter by available slots
     let availableTurfs = [...turfs].filter((t) => (t.slotsLeft || 0) > 0);
 
@@ -293,8 +293,8 @@ export default function Home() {
       dispatch(isFollowing ? followUser(playerId) : unfollowUser(playerId));
       toast.error(
         err.response?.data?.message ||
-          err.message ||
-          "Failed to update follow status"
+        err.message ||
+        "Failed to update follow status"
       );
     }
   };
@@ -454,7 +454,7 @@ export default function Home() {
         <Community onSearchActive={setIsCommunitySearchActive}>
           {/* -- DASHBOARD HERO -- */}
           <div className="!mt-1 w-[100%] max-w-[100vw] overflow-x-hidden md:w-auto relative mb-0">
-            <QuickActions
+            <DashboardHero
               user={user}
               userLocation={userLocation}
               locationStatus={locationStatus}
@@ -632,9 +632,9 @@ export default function Home() {
                     upcomingBookingsList.map((booking) => {
                       const dateObj = new Date(
                         booking.date ||
-                          booking.bookingDate ||
-                          booking.timeSlot?.date ||
-                          Date.now()
+                        booking.bookingDate ||
+                        booking.timeSlot?.date ||
+                        Date.now()
                       );
                       const dayStr = dateObj
                         .getDate()
@@ -803,10 +803,10 @@ export default function Home() {
                 const Wrapper = promo.targetUrl ? "a" : "div";
                 const wrapperProps = promo.targetUrl
                   ? {
-                      href: promo.targetUrl,
-                      target: "_blank",
-                      rel: "noopener noreferrer",
-                    }
+                    href: promo.targetUrl,
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                  }
                   : {};
 
                 return (
@@ -840,27 +840,27 @@ export default function Home() {
             {(marketingContent?.banners || []).filter(
               (b) => b.type === "PROMOTION" && b.isActive
             ).length === 0 && (
-              <Link
-                to="/business/venue"
-                className="relative block overflow-hidden rounded-2xl w-full aspect-video shadow-[0_4px_20px_rgba(0,0,0,0.5)] group border border-white/[0.05] hover:border-primary/50 transition-all duration-300"
-              >
-                <div
-                  className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
-                  style={{
-                    backgroundImage: "url('/host-venue-bg-custom-2.webp')",
-                  }}
-                />
-                <div className="relative z-10 w-[45%] h-full p-4 flex flex-col justify-center gap-1.5 pl-5">
-                  <h3 className="text-[16px] leading-tight font-black text-white uppercase drop-shadow-lg">
-                    Host Your Venue
-                  </h3>
-                  <p className="text-[9px] font-medium text-white/90 leading-snug drop-shadow-md">
-                    Partner with us to list your turf and manage bookings
-                    seamlessly.
-                  </p>
-                </div>
-              </Link>
-            )}
+                <Link
+                  to="/business/venue"
+                  className="relative block overflow-hidden rounded-2xl w-full aspect-video shadow-[0_4px_20px_rgba(0,0,0,0.5)] group border border-white/[0.05] hover:border-primary/50 transition-all duration-300"
+                >
+                  <div
+                    className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
+                    style={{
+                      backgroundImage: "url('/host-venue-bg-custom-2.webp')",
+                    }}
+                  />
+                  <div className="relative z-10 w-[45%] h-full p-4 flex flex-col justify-center gap-1.5 pl-5">
+                    <h3 className="text-[16px] leading-tight font-black text-white uppercase drop-shadow-lg">
+                      Host Your Venue
+                    </h3>
+                    <p className="text-[9px] font-medium text-white/90 leading-snug drop-shadow-md">
+                      Partner with us to list your turf and manage bookings
+                      seamlessly.
+                    </p>
+                  </div>
+                </Link>
+              )}
           </div>
 
           {/* -- SOCIAL ARENA -- */}
@@ -956,11 +956,10 @@ export default function Home() {
                     <Button
                       key={type}
                       onClick={() => handleToggleVenueType(type)}
-                      className={`whitespace-nowrap px-3 h-7 min-h-0 py-0 rounded-[8px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-                        isSelected
+                      className={`whitespace-nowrap px-3 h-7 min-h-0 py-0 rounded-[8px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${isSelected
                           ? "bg-primary/15 border border-primary text-primary"
                           : "bg-white/5 border border-white/10 text-white/50 hover:border-white/20"
-                      }`}
+                        }`}
                     >
                       {isSelected && <Check size={10} strokeWidth={3} />}
                       {type}
@@ -982,11 +981,10 @@ export default function Home() {
                     <Button
                       key={role}
                       onClick={() => handleToggleRole(role)}
-                      className={`whitespace-nowrap px-3 h-7 min-h-0 py-0 rounded-[8px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-                        isSelected
+                      className={`whitespace-nowrap px-3 h-7 min-h-0 py-0 rounded-[8px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${isSelected
                           ? "bg-primary/15 border border-primary text-primary"
                           : "bg-white/5 border border-white/10 text-white/50 hover:border-white/20"
-                      }`}
+                        }`}
                     >
                       {isSelected && <Check size={10} strokeWidth={3} />}
                       {role}
@@ -1008,11 +1006,10 @@ export default function Home() {
                     <Button
                       key={type}
                       onClick={() => handleToggleJoinGame(type)}
-                      className={`whitespace-nowrap px-3 h-7 min-h-0 py-0 rounded-[8px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-                        isSelected
+                      className={`whitespace-nowrap px-3 h-7 min-h-0 py-0 rounded-[8px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${isSelected
                           ? "bg-primary/15 border border-primary text-primary"
                           : "bg-white/5 border border-white/10 text-white/50 hover:border-white/20"
-                      }`}
+                        }`}
                     >
                       {isSelected && <Check size={10} strokeWidth={3} />}
                       {type}
@@ -1034,11 +1031,10 @@ export default function Home() {
                     <Button
                       key={type}
                       onClick={() => handleTogglePlayerFilter(type)}
-                      className={`whitespace-nowrap px-3 h-7 min-h-0 py-0 rounded-[8px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-                        isSelected
+                      className={`whitespace-nowrap px-3 h-7 min-h-0 py-0 rounded-[8px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${isSelected
                           ? "bg-primary/15 border border-primary text-primary"
                           : "bg-white/5 border border-white/10 text-white/50 hover:border-white/20"
-                      }`}
+                        }`}
                     >
                       {isSelected && <Check size={10} strokeWidth={3} />}
                       {type}
