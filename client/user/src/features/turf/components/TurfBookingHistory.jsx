@@ -1081,7 +1081,7 @@ const TurfBookingHistory = () => {
               <Button
                 onClick={closeProReviewModal}
                 className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
-              >
+               aria-label="Close">
                 <X size={20} />
               </Button>
               <h2 className="text-2xl font-black uppercase tracking-tighter text-white mb-1">

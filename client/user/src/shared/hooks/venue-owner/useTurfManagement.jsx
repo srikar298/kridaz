@@ -1,24 +1,22 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
+import { useGetOwnerTurfsQuery } from "@redux/api/turfApi";
 
 const useTurfManagement = () => {
   const [turfs, setTurfs] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const { data: ownerTurfsData, isLoading, error: queryError, refetch } = useGetOwnerTurfsQuery();
 
-  const fetchTurfs = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const response = await axiosInstance.get("/api/owner/turf/owner/all");
-      setTurfs(Array.isArray(response.data) ? response.data : []);
-    } catch (err) {
-      setError("Failed to fetch turfs");
-      toast.error("Failed to load your arenas");
-    } finally {
-      setIsLoading(false);
+  useEffect(() => {
+    if (ownerTurfsData) {
+      setTurfs(Array.isArray(ownerTurfsData) ? ownerTurfsData : []);
     }
-  }, []);
+  }, [ownerTurfsData]);
+
+  // Keep fetchTurfs for backward compatibility — now just triggers RTK refetch
+  const fetchTurfs = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
   const deleteTurf = async (id) => {
     if (
@@ -56,7 +54,7 @@ const useTurfManagement = () => {
   return {
     turfs,
     isLoading,
-    error,
+    error: queryError ? "Failed to fetch turfs" : null,
     fetchTurfs,
     deleteTurf,
     toggleVisibility,

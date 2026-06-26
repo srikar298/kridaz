@@ -105,7 +105,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
       <Button
         onClick={onBack}
         className="md:hidden absolute top-4 left-4 z-20 p-2.5 bg-black/40 backdrop-blur-md rounded-[16px] text-white border border-[rgba(255,255,255,0.08)] shadow-lg"
-      >
+       aria-label="Next">
         <ChevronRight className="rotate-180" />
       </Button>
 

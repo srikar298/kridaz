@@ -35,7 +35,7 @@ const LoginModal = ({
         <Button
           onClick={onClose}
           className="absolute top-6 right-6 p-2 rounded-[8px] bg-background border border-border text-gray-400 hover:text-white hover:bg-white/10 transition-all z-10"
-        >
+         aria-label="Close">
           <X size={18} />
         </Button>
 

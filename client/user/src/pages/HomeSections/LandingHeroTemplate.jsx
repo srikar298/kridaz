@@ -23,12 +23,12 @@ export default function LandingHeroTemplate() {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img
-          src="/hero-desktop-new.png"
+          src="/hero-desktop-new.webp"
           alt="Hero Background Desktop"
           className="hidden md:block w-full h-full object-cover object-center opacity-100"
         />
         <img
-          src="/hero-mobile-new.png"
+          src="/hero-mobile-new.webp"
           alt="Hero Background Mobile"
           className="block md:hidden w-full h-full object-cover object-center opacity-100"
         />

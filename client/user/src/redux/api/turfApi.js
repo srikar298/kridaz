@@ -9,6 +9,10 @@ export const turfApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Turf"],
     }),
+    getOwnerTurfs: builder.query({
+      query: () => "/api/owner/turf/owner/all",
+      providesTags: ["Turf"],
+    }),
     getSavedTurfs: builder.query({
       query: () => ({
         url: "/api/user/turf/user/likes",
@@ -36,8 +40,10 @@ export const turfApi = baseApi.injectEndpoints({
 
 export const {
   useGetTurfsQuery,
+  useGetOwnerTurfsQuery,
   useGetSavedTurfsQuery,
   useToggleTurfLikeMutation,
   useGetTurfDetailsQuery,
   useGetTurfReviewsQuery,
+  useLazyGetOwnerTurfsQuery,
 } = turfApi;

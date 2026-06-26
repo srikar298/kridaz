@@ -164,7 +164,7 @@ const FileUpload = ({
               <Button
                 onClick={clearFile}
                 className="w-8 h-8 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-500 flex items-center justify-center transition-colors"
-              >
+               aria-label="Close">
                 <X size={14} />
               </Button>
             )}

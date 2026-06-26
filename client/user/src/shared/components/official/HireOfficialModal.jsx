@@ -104,7 +104,7 @@ const HireOfficialModal = ({ isOpen, onClose, gameId, role, onInviteSent, onSele
               <Button
                 onClick={onClose}
                 className="p-2 hover:bg-neutral-800 rounded-full transition-colors"
-              >
+               aria-label="Close">
                 <X size={20} />
               </Button>
             </div>

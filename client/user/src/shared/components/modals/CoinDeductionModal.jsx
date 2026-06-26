@@ -248,7 +248,7 @@ const CoinDeductionModal = ({
         <Button
           onClick={onClose}
           className="absolute top-6 right-6 p-2 rounded-full bg-background text-zinc-500 hover:text-white transition-colors z-10"
-        >
+         aria-label="Close">
           <X size={20} />
         </Button>
 

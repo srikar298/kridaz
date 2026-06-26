@@ -30,6 +30,7 @@ import DashboardSkeleton from "../Dashboard/DashboardSkeleton";
 import toast from "react-hot-toast";
 import GlobalBackButton from "@/shared/components/GlobalBackButton";
 import { Button } from "@kridaz/ui";
+import SEO from "@/shared/components/common/SEO";
 
 
 // Booking Information Popup
@@ -57,7 +58,7 @@ const BookingModal = ({ slot, onClose }) => {
           <Button
             onClick={onClose}
             className="p-2 hover:bg-card rounded-[10px] transition-colors border border-transparent hover:border-white/10"
-          >
+           aria-label="Close">
             <X size={18} className="text-white/70" />
           </Button>
         </div>
@@ -308,6 +309,12 @@ export default function TurfDetails() {
 
   return (
     <div className="space-y-8 animate-fade-in pb-20 bg-background min-h-screen">
+      <SEO 
+        title={`${turf.name} | Kridaz`}
+        description={`Book ${turf.name} on Kridaz. View slots, location and prices.`}
+        image={pending.image || turf.image || (turf.images && turf.images[0])}
+        url={window.location.href}
+      />
       {selectedSlot && (
         <BookingModal
           slot={selectedSlot}
@@ -538,6 +545,7 @@ export default function TurfDetails() {
             </div>
             <div className="flex gap-2">
               <Button
+                aria-label="Scroll left"
                 onClick={() => {
                   const el = document.getElementById("gallery-scroll");
                   el.scrollBy({ left: -300, behavior: "smooth" });
@@ -547,6 +555,7 @@ export default function TurfDetails() {
                 <ChevronLeft size={16} />
               </Button>
               <Button
+                aria-label="Scroll right"
                 onClick={() => {
                   const el = document.getElementById("gallery-scroll");
                   el.scrollBy({ left: 300, behavior: "smooth" });
@@ -977,7 +986,7 @@ export default function TurfDetails() {
                       <a
                         href={url}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className="p-1 rounded-[6px] bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-all shrink-0 ml-1"
                         title="View Document"
                       >

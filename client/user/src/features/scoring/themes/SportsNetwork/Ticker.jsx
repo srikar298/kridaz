@@ -239,10 +239,8 @@ export default function SportsNetworkTicker({ score, connected, badge }) {
         overflow: "hidden",
       }}
     >
-      {/* Dynamic Keyframes for Sports Network */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
+      <style>
+        {`
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap');
         
         @keyframes sixFlyIn {
@@ -312,9 +310,8 @@ export default function SportsNetworkTicker({ score, connected, badge }) {
           text-transform: uppercase;
           animation: sportsScrollText 16s linear infinite;
         }
-      `,
-        }}
-      />
+        `}
+      </style>
 
       {/* Theme Wrapper to enforce font */}
       <div className="sports-theme-wrapper">

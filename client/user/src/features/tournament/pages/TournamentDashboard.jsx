@@ -326,9 +326,8 @@ const TournamentDashboard = () => {
       )}
 
       {/* Global CSS for hiding scrollbar in tabs */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
+      <style>
+        {`
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
         }
@@ -336,9 +335,8 @@ const TournamentDashboard = () => {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
-      `,
-        }}
-      />
+        `}
+      </style>
     </div>
   );
 };

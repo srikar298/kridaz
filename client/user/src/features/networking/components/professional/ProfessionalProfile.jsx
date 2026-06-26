@@ -2767,7 +2767,7 @@ export default function ProfessionalProfile() {
                     onClick={addStructuredAchievement}
                     className="w-10 h-10 rounded-lg shadow-xl flex items-center justify-center shrink-0 transition-transform active:scale-95 mx-auto sm:mx-0"
                     style={{ backgroundColor: themeColor }}
-                  >
+                   aria-label="Add">
                     <Plus size={20} color="#000" />
                   </Button>
                 </div>

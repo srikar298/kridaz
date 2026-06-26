@@ -9,6 +9,12 @@ export const userApi = baseApi.injectEndpoints({
       }),
       providesTags: ["User"],
     }),
+    logoutUser: builder.mutation({
+      query: () => ({
+        url: "/api/user/auth/logout",
+        method: "POST",
+      }),
+    }),
     getUserBookings: builder.query({
       query: () => "/api/user/booking/get-bookings",
       providesTags: ["Booking"],
@@ -74,4 +80,5 @@ export const {
   useClearAllNotificationsMutation,
   useFollowPlayerMutation,
   useUnfollowPlayerMutation,
+  useLogoutUserMutation,
 } = userApi;

@@ -126,6 +126,7 @@ export const AdBannerSection = ({ banners = [], loading = false }) => {
                     <img
                       src={banner.imageUrl}
                       alt={banner.title}
+                      loading={idx === 0 ? "eager" : "lazy"}
                       className="w-full h-full object-contain opacity-90"
                     />
                   )}
@@ -149,7 +150,7 @@ export const AdBannerSection = ({ banners = [], loading = false }) => {
                 onClick={toggleMute}
                 className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:text-[#D2F40E] transition-all"
                 title={isMuted ? "Unmute" : "Mute"}
-              >
+               aria-label="Toggle menu">
                 {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
               </button>
             </div>

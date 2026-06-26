@@ -44,7 +44,7 @@ const PostDetailModal = ({
           <Button
             onClick={onClose}
             className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors"
-          >
+           aria-label="Close">
             <X size={18} className="text-white/80" />
           </Button>
         </div>

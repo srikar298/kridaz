@@ -3,9 +3,10 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Navbar from "@components/layout/Navbar";
 import MobileBottomNav from "@components/layout/MobileBottomNav";
-import UserFooter from "@components/layout/UserFooter";
 import ScrollToTop from "@components/common/ScrollToTop";
-import BackgroundUploadManager from "@components/BackgroundUploadManager";
+
+const UserFooter = lazy(() => import("@components/layout/UserFooter"));
+const BackgroundUploadManager = lazy(() => import("@components/BackgroundUploadManager"));
 // Desktop Right Sidebar removed — content moved to Home feed
 import { useAuthModal } from "../../context/AuthModalContext";
 
@@ -184,7 +185,9 @@ const Root = () => {
           </Suspense>
         )}
         <ScrollToTop />
-        <BackgroundUploadManager />
+        <Suspense fallback={null}>
+          <BackgroundUploadManager />
+        </Suspense>
 
         {/* Left Side: Mobile View Container */}
         <div className="w-1/2 xl:w-[45%] 2xl:w-[40%] h-full border-r border-white/5 bg-[#050505] relative z-20 flex-shrink-0 flex items-center justify-center p-2 sm:p-4 md:p-4 lg:p-6 xl:p-8 2xl:pl-12 pt-8">
@@ -305,7 +308,9 @@ const Root = () => {
         </Suspense>
       )}
       <ScrollToTop />
-      <BackgroundUploadManager />
+      <Suspense fallback={null}>
+        <BackgroundUploadManager />
+      </Suspense>
 
       {/* Collapsible Left Navigation (Previous Layout Navbar) */}
       {!isReelsPage && !isNewPostPage && <Navbar />}
@@ -336,7 +341,9 @@ const Root = () => {
                 location.pathname !== "/community" &&
                 !isTeamsPage && (
                   <div className="mt-12 border-t border-white/5 pt-8">
-                    <UserFooter />
+                    <Suspense fallback={null}>
+                      <UserFooter />
+                    </Suspense>
                   </div>
                 )}
             </div>

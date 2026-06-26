@@ -31,6 +31,11 @@ const required = (label, value) => {
       `[jwtSecrets] ${label} is unset — refusing to start. Set JWT_SECRET (legacy) or the specific JWT_*_SECRET env.`
     );
   }
+  if (process.env.NODE_ENV === "production" && value.length < 64) {
+    throw new Error(
+      `[jwtSecrets] ${label} is too weak. Must be at least 64 characters long in production.`
+    );
+  }
   return value;
 };
 

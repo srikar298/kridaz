@@ -107,7 +107,7 @@ const NetworkModal = ({ isOpen, onClose, userId, type, initialCount }) => {
           <Button
             onClick={onClose}
             className="p-2 hover:bg-background rounded-full transition-colors text-white/40 hover:text-white"
-          >
+           aria-label="Close">
             <X size={20} />
           </Button>
         </div>

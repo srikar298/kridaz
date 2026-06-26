@@ -242,7 +242,7 @@ const TournamentWizard = () => {
             <Button
               onClick={handleBack}
               className="p-2 -ml-2 rounded-full hover:bg-white/5 transition-colors"
-            >
+             aria-label="Previous">
               <ChevronLeft size={20} />
             </Button>
             <div>

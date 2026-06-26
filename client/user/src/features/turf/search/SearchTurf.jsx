@@ -388,7 +388,7 @@ const SearchTurf = ({ onSearch }) => {
             onClick={resetFilters}
             className="flex items-center justify-center p-3 text-gray-500 hover:text-primary transition-colors group/reset"
             title="Reset Filters"
-          >
+           aria-label="Reset Filters">
             <RotateCcw className="w-4 h-4 transition-transform duration-500 group-hover/reset:rotate-[-180deg]" />
           </Button>
         </div>

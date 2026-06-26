@@ -240,7 +240,7 @@ const Step3Config = ({ formData, onNext, onBack, isLoading }) => {
             onClick={submit}
             disabled={isLoading}
             className="flex items-center gap-2 bg-primary text-black font-black px-8 py-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors uppercase tracking-widest text-xs"
-          >
+           aria-label="Next">
             {isLoading ? "Saving..." : "Continue"}
             <ArrowRight size={16} />
           </Button>

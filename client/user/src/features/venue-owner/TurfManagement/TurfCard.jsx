@@ -135,7 +135,7 @@ const TurfCard = ({ turf, onEdit, onDelete, onToggleVisibility }) => {
               <Button
                 onClick={onToggleVisibility}
                 className={`w-6 h-6 md:w-7 md:h-7 !min-h-0 rounded-full transition-all flex items-center justify-center border ${turf.isActive ? "bg-primary/5 border-primary/20 text-primary hover:bg-primary/10" : "bg-black border-white/10 text-[#444] hover:text-white"}`}
-              >
+               aria-label="Toggle menu">
                 {turf.isActive ? <Eye size={11} /> : <EyeOff size={11} />}
               </Button>
 

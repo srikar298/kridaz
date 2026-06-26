@@ -124,7 +124,7 @@ const Login = ({ isModal = false }) => {
       {/* Background Image */}
       <div className="absolute inset-0 w-full h-full overflow-hidden bg-black pointer-events-none">
         <img
-          src="/login-background.png"
+          src="/login-background.webp"
           alt="Kridaz"
           className="w-full h-full object-cover object-top scale-[1.15] translate-y-6 -translate-x-6"
         />

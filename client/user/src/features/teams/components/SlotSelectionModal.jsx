@@ -88,7 +88,7 @@ const SlotSelectionModal = ({ isOpen, onClose, onSelect }) => {
           <Button
             onClick={onClose}
             className="p-1.5 rounded-lg bg-slate-800/80 text-slate-400 hover:text-slate-200 hover:bg-slate-700/80 transition-all"
-          >
+           aria-label="Close">
             <X className="h-5 w-5" />
           </Button>
         </div>

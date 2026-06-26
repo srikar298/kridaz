@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { restoreAuth, logout } from "@redux/slices/authSlice";
 import toast from "react-hot-toast";
 import { format, parseISO } from "date-fns";
+import { useGetOwnerTurfsQuery } from "@redux/api/turfApi";
 import { Button, Input } from "@kridaz/ui";
 
 
@@ -36,26 +37,21 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
     paymentMethod: "CASH",
   });
 
+  const { data: ownerTurfsData } = useGetOwnerTurfsQuery(undefined, {
+    skip: !isOpen,
+  });
+
   useEffect(() => {
-    if (isOpen) {
-      fetchTurfs();
+    if (isOpen && ownerTurfsData) {
+      setTurfs(Array.isArray(ownerTurfsData) ? ownerTurfsData : []);
     }
-  }, [isOpen]);
+  }, [isOpen, ownerTurfsData]);
 
   useEffect(() => {
     if (selectedTurf && selectedDate) {
       fetchSlots();
     }
   }, [selectedTurf, selectedDate]);
-
-  const fetchTurfs = async () => {
-    try {
-      const res = await axiosInstance.get("/api/owner/turf/owner/all");
-      setTurfs(res.data || []);
-    } catch (err) {
-      toast.error("Failed to load grounds");
-    }
-  };
 
   const fetchSlots = async () => {
     if (!selectedTurf || !selectedDate) return;
@@ -178,7 +174,7 @@ const ManualBookingModal = ({ isOpen, onClose }) => {
           <Button
             onClick={onClose}
             className="p-2 hover:bg-card rounded-[16px] transition-all text-white/70 hover:text-white border border-transparent hover:border-white/10"
-          >
+           aria-label="Close">
             <X size={20} />
           </Button>
         </div>

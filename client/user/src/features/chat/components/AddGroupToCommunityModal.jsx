@@ -87,7 +87,7 @@ const AddGroupToCommunityModal = ({ isOpen, onClose, communityId }) => {
           <Button
             onClick={onClose}
             className="p-2 hover:bg-white/5 rounded-full transition-colors text-white/20 hover:text-white"
-          >
+           aria-label="Close">
             <X size={20} />
           </Button>
         </div>
@@ -136,7 +136,7 @@ const AddGroupToCommunityModal = ({ isOpen, onClose, communityId }) => {
                 type="submit"
                 disabled={isCreating || !newGroupName.trim()}
                 className="w-full py-4 bg-primary text-black font-bold uppercase tracking-wider rounded-[8px] hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-30 flex items-center justify-center gap-2"
-              >
+               aria-label="Add">
                 {isCreating ? "Creating..." : "Create Group"} <Plus size={18} />
               </Button>
             </form>

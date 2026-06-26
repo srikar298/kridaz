@@ -342,7 +342,7 @@ const CreateTeamModal = ({ isOpen, onClose, onSuccess }) => {
               <Button
                 onClick={onClose}
                 className="w-9 h-9 rounded-[8px] bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 border border-white/5 transition-all hover:shadow-[0_0_15px_rgba(85,222,232,0.3)] hover:border-primary/30 duration-300"
-              >
+               aria-label="Close">
                 <X size={18} />
               </Button>
             </div>

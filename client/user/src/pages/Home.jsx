@@ -30,6 +30,7 @@ import { useGetProfessionalsListQuery } from "@redux/api/professionalApi";
 import { useGetUserBookingsQuery } from "@redux/api/userApi";
 import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";
 import { Button } from "@kridaz/ui";
+import SEO from "../shared/components/common/SEO";
 
 import {
   ChevronLeft,
@@ -447,6 +448,7 @@ export default function Home() {
 
   return (
     <div className="bg-[#050505] min-h-screen text-white font-sans w-full max-w-[100vw] overflow-x-clip pt-0 pb-16 lg:pb-0">
+      <SEO title="Kridaz | Sports Networking" description="Kridaz is the ultimate sports community platform for players and venue owners to book turfs, find games, and connect with other players." />
       <h1 className="sr-only">Kridaz - Sports Community & Venue Booking</h1>
       <div className="md:px-0 w-full mt-0 mb-4">
         <Community onSearchActive={setIsCommunitySearchActive}>
@@ -537,6 +539,7 @@ export default function Home() {
                                     <img
                                       src={teamA.logo}
                                       alt="A"
+                                      loading="lazy"
                                       className="w-full h-full object-cover rounded"
                                     />
                                   ) : (
@@ -569,6 +572,7 @@ export default function Home() {
                                     <img
                                       src={teamB.logo}
                                       alt="B"
+                                      loading="lazy"
                                       className="w-full h-full object-cover rounded"
                                     />
                                   ) : (
@@ -686,6 +690,7 @@ export default function Home() {
                           <div className="relative w-full aspect-[4/5] overflow-hidden bg-white/5">
                             <img
                               src={turfImage}
+                              loading="lazy"
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                               onError={(e) => {
                                 e.target.onerror = null;
@@ -842,7 +847,7 @@ export default function Home() {
                 <div
                   className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
                   style={{
-                    backgroundImage: "url('/host-venue-bg-custom-2.png')",
+                    backgroundImage: "url('/host-venue-bg-custom-2.webp')",
                   }}
                 />
                 <div className="relative z-10 w-[45%] h-full p-4 flex flex-col justify-center gap-1.5 pl-5">

@@ -194,7 +194,7 @@ const LocationSidebar = () => {
           <Button
             onClick={handleClose}
             className="text-white hover:text-white/70 transition-colors"
-          >
+           aria-label="Go back">
             <ArrowLeft size={24} />
           </Button>
           <h2 className="text-xl font-bold text-white tracking-tight">

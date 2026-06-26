@@ -57,7 +57,7 @@ const AuthModal = () => {
         <Button
           onClick={handleClose}
           className="absolute top-4 right-4 z-50 p-2 bg-black/40 hover:bg-white/10 rounded-full text-white/60 hover:text-white transition-colors"
-        >
+         aria-label="Close">
           <X size={20} />
         </Button>
 

@@ -35,6 +35,12 @@ import { bumpTokenVersion } from "../../utils/tokenVersion.js";
 import firebaseAdmin from "../../config/firebase.js";
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+const normalizePhone = (p) => {
+  if (!p) return "";
+  const clean = p.replace(/[^\d+]/g, "");
+  return clean.replace(/^\+/, "").replace(/^91/, "");
+};
+
 // Lifetimes — kept in one place so the cookie maxAge and the body expiry
 // timestamps can never drift. Refresh-token rotation in refreshToken() also
 // imports these via the module-scope constants below the helper.
@@ -380,7 +386,7 @@ export const verifyOtp = asyncHandler(async (req, res) => {
       // req.body.phone might be "6205170591" or "+916205170591". We do a loose match or exact.
       if (
         firebasePhone &&
-        (firebasePhone === phone || firebasePhone.endsWith(phone))
+        (firebasePhone === phone || normalizePhone(firebasePhone) === normalizePhone(phone))
       ) {
         firebaseVerified = true;
       } else {
@@ -1136,6 +1142,15 @@ export const loginStep1 = asyncHandler(async (req, res) => {
       message: "Please log in with Google",
     });
   }
+
+  // Prevent Admin 2FA Bypass (C-01)
+  if (user.role?.toUpperCase() === "ADMIN") {
+    return res.status(403).json({
+      success: false,
+      message: "Administrators must authenticate via the 2FA portal.",
+    });
+  }
+
   const isSuperAdmin = user.role?.toUpperCase() === "ADMIN";
   const role = user.role;
   const ownerProfileId = user.ownerProfile ? user.ownerProfile.id : null;
@@ -1208,7 +1223,7 @@ export const login = asyncHandler(async (req, res) => {
       const firebasePhone = decodedToken.phone_number;
       if (
         firebasePhone &&
-        (firebasePhone === email || firebasePhone.endsWith(email))
+        (firebasePhone === email || normalizePhone(firebasePhone) === normalizePhone(email))
       ) {
         firebaseVerified = true;
       }
@@ -2862,7 +2877,7 @@ export const verifyPhoneOtp = asyncHandler(async (req, res) => {
       const firebasePhone = decodedToken.phone_number;
       if (
         firebasePhone &&
-        (firebasePhone === phone || firebasePhone.endsWith(phone))
+        (firebasePhone === phone || normalizePhone(firebasePhone) === normalizePhone(phone))
       ) {
         firebaseVerified = true;
       } else {
@@ -3021,7 +3036,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
       const firebasePhone = decodedToken.phone_number;
       if (
         firebasePhone &&
-        (firebasePhone === user.phone || firebasePhone.endsWith(user.phone))
+        (firebasePhone === user.phone || normalizePhone(firebasePhone) === normalizePhone(user.phone))
       ) {
         firebaseVerified = true;
       }

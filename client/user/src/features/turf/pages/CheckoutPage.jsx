@@ -322,7 +322,7 @@ const CheckoutPage = () => {
             <div className="bg-black border border-[rgba(255,255,255,0.08)] rounded-[16px] overflow-hidden">
               <div className="h-[120px] md:h-[160px] w-full bg-black">
                 <img
-                  src={turf?.images?.[0] || "/banner-1.png"}
+                  src={turf?.images?.[0] || "/banner-1.webp"}
                   className="w-full h-full object-cover"
                   alt="Venue"
                 />

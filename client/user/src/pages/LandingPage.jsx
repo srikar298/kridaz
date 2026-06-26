@@ -102,7 +102,7 @@ export default function LandingPage() {
     // Slide 1
     <div className="w-full h-full relative" key="slide1">
       <img
-        src="/slide1.png?v=6"
+        src="/slide1.webp?v=6"
         alt="Kridaz Experience"
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
@@ -111,7 +111,7 @@ export default function LandingPage() {
     // Slide 2
     <div className="w-full h-full relative" key="slide2">
       <img
-        src="/slide2.png?v=6"
+        src="/slide2.webp?v=6"
         alt="Kridaz App Features"
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
@@ -120,7 +120,7 @@ export default function LandingPage() {
     // Slide 3
     <div className="w-full h-full relative" key="slide3">
       <img
-        src="/slide3.png?v=6"
+        src="/slide3.webp?v=6"
         alt="Discover Community"
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
@@ -129,7 +129,7 @@ export default function LandingPage() {
     // Slide 4
     <div className="w-full h-full relative" key="slide4">
       <img
-        src="/slide4.png?v=6"
+        src="/slide4.webp?v=6"
         alt="Join the Action"
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
@@ -138,7 +138,7 @@ export default function LandingPage() {
     // Slide 5
     <div className="w-full h-full relative" key="slide5">
       <img
-        src="/slide5.png?v=6"
+        src="/slide5.webp?v=6"
         alt="Download Kridaz"
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
@@ -165,13 +165,13 @@ export default function LandingPage() {
       <div className="hidden md:block w-full">
         <Masonry
           items={[
-            { id: "1", img: "/host-venue-bg-custom.png", height: 300 },
+            { id: "1", img: "/host-venue-bg-custom.webp", height: 300 },
             {
               id: "2",
               img: "https://picsum.photos/id/1015/600/900",
               height: 200,
             },
-            { id: "3", img: "/tournament-bg.png", height: 400 },
+            { id: "3", img: "/tournament-bg.webp", height: 400 },
             {
               id: "4",
               img: "https://picsum.photos/id/1011/600/750",
@@ -183,13 +183,13 @@ export default function LandingPage() {
               img: "https://picsum.photos/id/1020/600/800",
               height: 300,
             },
-            { id: "7", img: "/interests_bg.png", height: 250 },
+            { id: "7", img: "/interests_bg.webp", height: 250 },
             {
               id: "8",
               img: "https://picsum.photos/id/1021/600/600",
               height: 300,
             },
-            { id: "9", img: "/auth-bg.png", height: 400 },
+            { id: "9", img: "/auth-bg.webp", height: 400 },
           ]}
           ease="power3.out"
           duration={0.6}
@@ -204,9 +204,9 @@ export default function LandingPage() {
       <div className="block md:hidden">
         <MobileMasonrySlider
           items={[
-            { id: "1", img: "/host-venue-bg-custom.png" },
+            { id: "1", img: "/host-venue-bg-custom.webp" },
             { id: "2", img: "https://picsum.photos/id/1015/600/900" },
-            { id: "3", img: "/tournament-bg.png" },
+            { id: "3", img: "/tournament-bg.webp" },
           ]}
         />
       </div>
@@ -232,6 +232,7 @@ export default function LandingPage() {
 
   return (
     <div className="h-[100dvh] w-full bg-[#050505] text-white font-sans overflow-hidden relative">
+      <h1 className="sr-only">Kridaz - The Ultimate Sports Community Platform</h1>
       {/* Background Ambient Glows */}
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(191,243,103,0.05),rgba(255,255,255,0))] pointer-events-none z-0" />
       <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-primary/5 blur-[120px] rounded-full pointer-events-none z-0" />

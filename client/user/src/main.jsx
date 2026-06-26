@@ -16,6 +16,13 @@ setupProductionGuards();
 
 const isProduction = import.meta.env.PROD;
 
+// Memory leak optimization: strip logs in production unless debugging is explicitly enabled
+if (isProduction && import.meta.env.VITE_ENABLE_DEBUG !== "true") {
+  console.log = () => {};
+  console.debug = () => {};
+  console.info = () => {};
+}
+
 Sentry.init({
   dsn:
     import.meta.env.VITE_SENTRY_DSN ||

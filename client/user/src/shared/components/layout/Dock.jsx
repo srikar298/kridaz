@@ -27,6 +27,7 @@ function DockItem({
   magnification,
   baseItemSize,
   direction,
+  ariaLabel,
 }) {
   const ref = useRef(null);
   const isHovered = useMotionValue(0);
@@ -65,6 +66,7 @@ function DockItem({
       tabIndex={0}
       role="button"
       aria-haspopup="true"
+      aria-label={ariaLabel}
     >
       {Children.map(children, (child) =>
         cloneElement(child, { isHovered, direction })
@@ -213,6 +215,7 @@ export default function Dock({
             magnification={magnification}
             baseItemSize={baseItemSize}
             direction={direction}
+            ariaLabel={item.label}
           >
             <DockIcon>{item.icon}</DockIcon>
             {item.subItems ? (

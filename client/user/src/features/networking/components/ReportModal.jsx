@@ -70,7 +70,7 @@ const ReportModal = ({ postId, onClose }) => {
           <Button
             onClick={onClose}
             className="text-white/40 hover:text-white transition-colors"
-          >
+           aria-label="Close">
             <X size={20} />
           </Button>
         </div>

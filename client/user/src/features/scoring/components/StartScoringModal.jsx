@@ -1706,14 +1706,14 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                     onClick={handlePrevMonth}
                     disabled={isPrevMonthDisabled()}
                     className="p-1.5 bg-white/5 hover:bg-white/10 rounded-full text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
-                  >
+                   aria-label="Previous">
                     <ChevronLeft size={16} />
                   </Button>
                   <Button
                     type="button"
                     onClick={handleNextMonth}
                     className="p-1.5 bg-white/5 hover:bg-white/10 rounded-full text-white transition-colors"
-                  >
+                   aria-label="Next">
                     <ChevronRight size={16} />
                   </Button>
                 </div>
@@ -1829,9 +1829,8 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                   className="w-full bg-card border border-secondary/30 rounded-[12px] px-4 py-8 text-white focus:outline-none focus:ring-1 focus:ring-secondary/50 text-center text-4xl font-black tracking-widest style-time-input"
                 />
 
-                <style
-                  dangerouslySetInnerHTML={{
-                    __html: `
+                <style>
+                  {`
                   .style-time-input::-webkit-calendar-picker-indicator {
                     filter: invert(1);
                     opacity: 0.5;
@@ -1845,9 +1844,8 @@ const StartScoringModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                   .style-time-input {
                     position: relative;
                   }
-                `,
-                  }}
-                />
+                  `}
+                </style>
               </div>
             )}
 

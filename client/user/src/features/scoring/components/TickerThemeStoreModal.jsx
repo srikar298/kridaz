@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { X, Check, Sparkles, Palette, RefreshCw, Circle } from "lucide-react";
 import toast from "react-hot-toast";
 import { Button } from "@kridaz/ui";
+import API from "../../../../shared/services/api";
 
 const THEMES = [
   {
@@ -50,24 +51,19 @@ const TickerThemeStoreModal = ({
 
   const handleApplyTheme = async () => {
     setIsApplying(true);
-    const apiBase = import.meta.env.VITE_API_URL || "http://localhost:6001";
-
     try {
-      const response = await fetch(
-        `${apiBase}/api/hosted-game/update-ticker-theme/${matchId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("scorer_token_" + matchId) || localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ tickerTheme: selectedTheme }),
-        }
+      const scorerToken = localStorage.getItem("scorer_token_" + matchId);
+      const config = scorerToken ? { headers: { Authorization: `Bearer ${scorerToken}` } } : {};
+      
+      const response = await API.post(
+        `/hosted-game/update-ticker-theme/${matchId}`,
+        { tickerTheme: selectedTheme },
+        config
       );
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok && data.success) {
+      if (data.success) {
         toast.success(
           `Active theme updated to ${THEMES.find((t) => t.id === selectedTheme)?.name || selectedTheme}!`
         );
@@ -106,7 +102,7 @@ const TickerThemeStoreModal = ({
           <Button
             onClick={onClose}
             className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 border border-white/5 transition-all"
-          >
+           aria-label="Close">
             <X size={18} />
           </Button>
         </div>

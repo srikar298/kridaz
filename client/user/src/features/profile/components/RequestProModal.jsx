@@ -72,7 +72,7 @@ const RequestProModal = ({ isOpen, onClose, pro, onRequestSuccess }) => {
           <Button
             onClick={onClose}
             className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors text-white/70 hover:text-white"
-          >
+           aria-label="Close">
             <X size={18} />
           </Button>
         </div>

@@ -51,7 +51,7 @@ export default function ImageCropperModal({
           <Button
             onClick={onClose}
             className="p-2 rounded-[6px] hover:bg-background text-white/40 hover:text-white transition-all"
-          >
+           aria-label="Close">
             <X size={20} />
           </Button>
         </div>
@@ -101,7 +101,7 @@ export default function ImageCropperModal({
               onClick={handleSave}
               disabled={isCropping}
               className="flex-1 h-12 bg-primary text-black rounded-[12px] font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all disabled:opacity-50"
-            >
+             aria-label="Confirm">
               <Check size={18} />
               {isCropping ? "Cropping..." : "Save"}
             </Button>
