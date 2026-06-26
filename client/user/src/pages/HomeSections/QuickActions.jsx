@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function DashboardHero() {
+export default function QuickActions() {
   return (
     <div className="grid grid-cols-4 gap-2 md:gap-3 mb-0 w-full pb-0 px-2">
       {/* Leaderboard / Players Nearby */}
@@ -18,7 +18,7 @@ export default function DashboardHero() {
         >
           <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />
           <img
-            src="/3d-map-location.webp"
+            src="/3d-map-location.png"
             alt="Leaderboard Map Icon"
             width="80"
             height="80"
@@ -81,7 +81,7 @@ export default function DashboardHero() {
         >
           <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />
           <img
-            src="/3d-whistle.webp"
+            src="/3d-whistle.png"
             alt="Host & Join Games Whistle Icon"
             width="80"
             height="80"
