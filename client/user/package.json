@@ -29,7 +29,7 @@
     "@react-oauth/google": "^0.13.5",
     "@reduxjs/toolkit": "^2.2.6",
     "@sentry/react": "^10.53.1",
-    "axios": "^1.18.0",
+    "axios": "^1.18.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "date-fns-tz": "^3.1.3",
@@ -57,7 +57,7 @@
     "react-icons": "^5.6.0",
     "react-leaflet": "^4.2.1",
     "react-redux": "^9.1.2",
-    "react-router-dom": "^6.25.1",
+    "react-router-dom": "^7.18.0",
     "react-time-picker": "^7.0.0",
     "react-turnstile": "^1.1.5",
     "recharts": "^2.12.7",
@@ -71,7 +71,7 @@
     "@capacitor/cli": "^8.3.4",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "^6.0.3",
     "autoprefixer": "^10.4.19",
     "daisyui": "^4.12.10",
     "eslint": "^8.57.0",
@@ -81,7 +81,7 @@
     "postcss": "^8.4.40",
     "tailwindcss": "^3.4.7",
     "typescript": "^5.3.3",
-    "vite": "^5.3.4",
+    "vite": "^8.1.0",
     "vite-plugin-pwa": "^1.3.0"
   }
 }
