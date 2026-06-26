@@ -274,7 +274,7 @@ const VenueBanking = () => {
                     Financial Ledger
                   </h3>
                 </div>
-                <Button className="rounded-[6px] text-[7px] md:text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 md:gap-2 text-neutral-500 hover:text-white transition-all text-right md:text-left">
+                <Button className="rounded-[6px] text-[7px] md:text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 md:gap-2 text-neutral-500 hover:text-white transition-all text-right md:text-left" aria-label="Download">
                   <Download className="w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0" />{" "}
                   Download Audit CSV
                 </Button>

@@ -269,6 +269,7 @@ const Navbar = () => {
                     <div
                       onClick={() => dispatch(openMainSidebar())}
                       role="button"
+                      aria-label="Open sidebar menu"
                       className="relative p-1 flex items-center justify-center transition-all cursor-pointer group"
                     >
                       <Menu
@@ -341,6 +342,7 @@ const Navbar = () => {
             {!isMessagesPage && (
               <Link
                 to="/search"
+                aria-label="Search"
                 className="hidden sm:flex relative w-9 sm:w-11 h-9 sm:h-11 border border-white/10 items-center justify-center bg-white/5 hover:border-[#84CC16]/50 transition-all cursor-pointer rounded-full group"
               >
                 <Search
@@ -359,6 +361,7 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsPlusMenuOpen(!isPlusMenuOpen)}
+                  aria-label="Toggle quick actions menu"
                   className={`relative p-1 w-10 h-10 flex items-center justify-center transition-all cursor-pointer group ${isPlusMenuOpen ? "z-[1001]" : ""}`}
                 >
                   <Plus
@@ -777,6 +780,7 @@ const Navbar = () => {
                       </span>
                       <button
                         onClick={() => dispatch(closeMainSidebar())}
+                        aria-label="Close sidebar menu"
                         className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/70 hover:text-white"
                       >
                         <X size={20} />

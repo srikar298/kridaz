@@ -20,8 +20,8 @@ import { updateUser } from "../../../redux/slices/authSlice";
 import axiosInstance from "@hooks/useAxiosInstance.js";
 import toast from "react-hot-toast";
 import ScrollToTop from "@components/common/ScrollToTop";
-import streamlinedDesktop from "../../../assets/streamlined-desktop.png";
-import streamlinedMobile from "../../../assets/streamlined-mobile.png";
+import streamlinedDesktop from "../../../assets/streamlined-desktop.webp";
+import streamlinedMobile from "../../../assets/streamlined-mobile.webp";
 import insightsDesktop from "../../../assets/insights-desktop.png";
 import insightsMobile from "../../../assets/insights-mobile.png";
 import financesDesktop from "../../../assets/finances-desktop.png";
@@ -279,12 +279,12 @@ export default function VenueOwnerLanding() {
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img
-            src="/venue-hero-desktop.png"
+            src="/venue-hero-desktop.webp"
             alt="Hero Background Desktop"
             className="hidden md:block w-full h-full object-cover object-center opacity-100"
           />
           <img
-            src="/venue-hero-mobile.png"
+            src="/venue-hero-mobile.webp"
             alt="Hero Background Mobile"
             className="block md:hidden w-full h-full object-cover object-top opacity-100"
           />

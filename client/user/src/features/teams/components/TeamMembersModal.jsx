@@ -52,7 +52,7 @@ const TeamMembersModal = ({ isOpen, onClose, team }) => {
               <Button
                 onClick={onClose}
                 className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all"
-              >
+               aria-label="Close">
                 <X size={18} />
               </Button>
             </div>

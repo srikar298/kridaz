@@ -38,7 +38,7 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }) => {
         <Button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 hover:bg-white/5 rounded-full transition-colors text-white/20 hover:text-white z-10"
-        >
+         aria-label="Close">
           <X size={18} />
         </Button>
 

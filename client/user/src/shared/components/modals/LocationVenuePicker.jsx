@@ -119,7 +119,7 @@ const LocationVenuePicker = ({ isOpen, onClose, onSelect, onBookSlot }) => {
                 variant="ghost"
                 className="w-8 h-8 p-0 rounded-full bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
                 onClick={closeAndReset}
-              >
+               aria-label="Close">
                 <X size={18} />
               </Button>
             </div>

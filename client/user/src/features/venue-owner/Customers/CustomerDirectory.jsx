@@ -66,7 +66,7 @@ export default function CustomerDirectory() {
             </p>
           </div>
           <div className="flex items-center gap-3 shrink-0 mt-2 md:mt-0">
-            <Button className="flex items-center justify-center p-2 sm:p-3 bg-card hover:bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none   -white/10 rounded-[16px] md:rounded-[16px] text-white/70 transition-all shadow-[var(--shadow-2)]">
+            <Button className="flex items-center justify-center p-2 sm:p-3 bg-card hover:bg-gradient-to-r from-secondary to-primary shadow-[0_8px_24px_rgba(179,220,38,0.15)] border-none   -white/10 rounded-[16px] md:rounded-[16px] text-white/70 transition-all shadow-[var(--shadow-2)]" aria-label="Download">
               <Download className="w-4 h-4 md:w-5 md:h-5" />
             </Button>
           </div>

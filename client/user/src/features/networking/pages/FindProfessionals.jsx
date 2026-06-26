@@ -552,7 +552,7 @@ export default function FindProfessionals() {
           <div className="px-2 md:px-0">
             <div className="w-full h-[180px] sm:h-[240px] rounded-[16px] overflow-hidden mb-6 relative cursor-pointer group bg-card shadow-[0px_8px_24px_rgba(179,220,38,0.15)] border border-[rgba(255,255,255,0.08)]">
               <img
-                src="/pro-banner.png"
+                src="/pro-banner.webp"
                 alt="Pro Training"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
               />
@@ -584,7 +584,7 @@ export default function FindProfessionals() {
             <div className="mx-1 md:mx-0 text-center py-12 px-2 border border-[rgba(255,255,255,0.08)] rounded-[16px] bg-card relative overflow-hidden shadow-2xl">
               <div className="relative z-10 flex flex-col items-center">
                 <img
-                  src="/empty-pros.png"
+                  src="/empty-pros.webp"
                   alt="No Professionals Found"
                   className="w-full max-w-[200px] h-[140px] object-cover mb-6 border border-white/5 rounded-2xl"
                 />

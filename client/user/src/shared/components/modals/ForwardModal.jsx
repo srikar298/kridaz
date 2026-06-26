@@ -81,7 +81,7 @@ const ForwardModal = ({ isOpen, onClose, messageId }) => {
           <Button
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
-          >
+           aria-label="Close">
             <X size={18} />
           </Button>
         </div>
@@ -185,7 +185,7 @@ const ForwardModal = ({ isOpen, onClose, messageId }) => {
               onClick={handleForward}
               disabled={isForwarding}
               className="w-full flex items-center justify-center gap-2 py-3 bg-primary text-black font-black uppercase tracking-wider text-sm rounded-[8px] hover:bg-[#95e61a] transition-colors disabled:opacity-50"
-            >
+             aria-label="Send">
               <Send size={16} />
               {isForwarding
                 ? "Forwarding..."

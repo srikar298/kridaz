@@ -65,7 +65,7 @@ const RegistrationModal = ({ tournament, onClose }) => {
           <Button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-white hover:bg-white/10 transition-colors"
-          >
+           aria-label="Close">
             <X size={16} />
           </Button>
         </div>

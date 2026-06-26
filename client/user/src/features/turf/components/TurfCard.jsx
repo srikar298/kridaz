@@ -210,13 +210,13 @@ const TurfCard = ({ turf, featured = false, distance = "1.2km Away" }) => {
           <Button
             onClick={prevImage}
             className="w-7 h-7 md:w-8 md:h-8 min-h-0 p-0 flex items-center justify-center bg-black/40 hover:bg-primary hover:text-black backdrop-blur-sm rounded-full text-white transition-all border border-white/10"
-          >
+           aria-label="Previous">
             <ChevronLeft size={16} />
           </Button>
           <Button
             onClick={nextImage}
             className="w-7 h-7 md:w-8 md:h-8 min-h-0 p-0 flex items-center justify-center bg-black/40 hover:bg-primary hover:text-black backdrop-blur-sm rounded-full text-white transition-all border border-white/10"
-          >
+           aria-label="Next">
             <ChevronRight size={16} />
           </Button>
         </div>

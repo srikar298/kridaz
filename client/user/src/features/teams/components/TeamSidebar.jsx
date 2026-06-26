@@ -320,7 +320,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                         <a
                           href={`/analytics/${item.shortId || item.id}`}
                           target="_blank"
-                          rel="noreferrer"
+                          rel="noopener noreferrer"
                           className="flex-1 text-center text-[10px] uppercase font-[800] font-inter tracking-widest text-primary border border-primary/30 rounded-[8px] py-2 hover:bg-primary/10 transition-colors"
                         >
                           Watch Live

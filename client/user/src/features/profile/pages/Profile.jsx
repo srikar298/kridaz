@@ -68,6 +68,7 @@ import RequestProModal from "../components/RequestProModal";
 import { useSocket } from "@context/SocketContext";
 import { isProfessionalRole, getDynamicProfileRoute } from "@utils/routeUtils";
 import { Button, Input, Select } from "@kridaz/ui";
+import SEO from "@/shared/components/common/SEO";
 
 
 const PRI = "var(--primary)"; // New primary lime accent matching the gradient vibrant stop
@@ -1163,6 +1164,12 @@ export default function Profile() {
 
   return (
     <div className="profile-page-bg min-h-screen bg-black text-white pb-24 overflow-x-hidden">
+      <SEO 
+        title={`${profileUser?.name || 'Profile'} | Kridaz`}
+        description={profileUser?.bio || `View ${profileUser?.name || 'this user'}'s profile on Kridaz.`}
+        image={profileUser?.profilePicture || profileUser?.profileImage}
+        url={window.location.href}
+      />
       {/* ── Gradient SVG Definition for Lucide Icons */}
       <svg width="0" height="0" className="absolute">
         <defs>
@@ -2110,7 +2117,7 @@ export default function Profile() {
                                 <a
                                   href={pro.linkedin}
                                   target="_blank"
-                                  rel="noreferrer"
+                                  rel="noopener noreferrer"
                                   className="w-8 h-8 rounded-lg bg-[#0077B5]/10 border border-[#0077B5]/30 flex items-center justify-center text-[#0077B5] hover:bg-[#0077B5]/20 transition-colors backdrop-blur-sm"
                                 >
                                   <svg
@@ -2126,7 +2133,7 @@ export default function Profile() {
                                 <a
                                   href={pro.instagram}
                                   target="_blank"
-                                  rel="noreferrer"
+                                  rel="noopener noreferrer"
                                   className="w-8 h-8 rounded-lg bg-[#E1306C]/10 border border-[#E1306C]/30 flex items-center justify-center text-[#E1306C] hover:bg-[#E1306C]/20 transition-colors backdrop-blur-sm"
                                 >
                                   <svg
@@ -2142,7 +2149,7 @@ export default function Profile() {
                                 <a
                                   href={pro.youtube}
                                   target="_blank"
-                                  rel="noreferrer"
+                                  rel="noopener noreferrer"
                                   className="w-8 h-8 rounded-lg bg-destructive/10 border border-destructive/30 flex items-center justify-center text-destructive hover:bg-destructive/20 transition-colors backdrop-blur-sm"
                                 >
                                   <svg
@@ -2253,7 +2260,7 @@ export default function Profile() {
                                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                       alt="Gallery item"
                                     />
-                                    <Button className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                    <Button className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white" aria-label="Show">
                                       <Eye size={18} />
                                     </Button>
                                   </>
@@ -2668,7 +2675,7 @@ export default function Profile() {
                                         : ""}
                                     </p>
                                   </div>
-                                  <Button className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-[8px] text-white transition-all group-hover:scale-105">
+                                  <Button className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-[8px] text-white transition-all group-hover:scale-105" aria-label="Next">
                                     <ArrowRight size={14} />
                                   </Button>
                                 </div>
@@ -3172,7 +3179,7 @@ export default function Profile() {
                                   </span>
                                 </Button>
                               </div>
-                              <Button className="text-gray-500 hover:text-white transition-colors">
+                              <Button className="text-gray-500 hover:text-white transition-colors" aria-label="Next">
                                 <ArrowRight size={12} />
                               </Button>
                             </div>

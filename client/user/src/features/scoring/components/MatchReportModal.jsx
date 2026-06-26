@@ -56,7 +56,7 @@ export default function MatchReportModal({
           <Button
             onClick={onClose}
             className="p-3 bg-white/5 rounded-[8px] text-neutral-400 hover:text-white transition-all border border-white/5 hover:border-white/20"
-          >
+           aria-label="Close">
             <X size={20} />
           </Button>
         </div>

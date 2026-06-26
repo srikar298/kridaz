@@ -76,13 +76,13 @@ const VenueOwnerCalendar = () => {
               <Button
                 onClick={handlePrevDay}
                 className="w-10 h-10 flex items-center justify-center bg-card hover:bg-[#252525] rounded-[16px] border border-white/10 transition-all"
-              >
+               aria-label="Previous">
                 <ChevronLeft size={20} className="text-muted-foreground" />
               </Button>
               <Button
                 onClick={handleNextDay}
                 className="w-10 h-10 flex items-center justify-center bg-card hover:bg-[#252525] rounded-[16px] border border-white/10 transition-all"
-              >
+               aria-label="Next">
                 <ChevronRight size={20} className="text-muted-foreground" />
               </Button>
               <Button

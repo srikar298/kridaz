@@ -190,7 +190,7 @@ const GlobalSearch = () => {
               </div>
             </div>
           </Link>
-          <Button className="text-white/40 hover:text-white transition-colors p-1 bg-transparent border-none shadow-none hover:bg-transparent">
+          <Button className="text-white/40 hover:text-white transition-colors p-1 bg-transparent border-none shadow-none hover:bg-transparent" aria-label="More options">
             <MoreVertical size={18} />
           </Button>
         </div>

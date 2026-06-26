@@ -195,7 +195,7 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
           <Button
             onClick={onClose}
             className="p-2 hover:bg-white/5 rounded-[8px] transition-colors"
-          >
+           aria-label="Close">
             <X size={20} className="text-white/40" />
           </Button>
         </div>

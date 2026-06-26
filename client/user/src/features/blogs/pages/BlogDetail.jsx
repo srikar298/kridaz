@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { Button } from "@kridaz/ui";
+import SafeHtml from "../../shared/components/SafeHtml";
 
 import {
   ArrowLeft,
@@ -165,7 +166,7 @@ export default function BlogDetail() {
             <Button
               onClick={handleLike}
               className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-white transition-all group"
-            >
+             aria-label="Like">
               <ThumbsUp
                 size={13}
                 className="group-hover:scale-110 transition-transform"
@@ -177,11 +178,10 @@ export default function BlogDetail() {
         </div>
       </div>
 
-      {/* ΓöÇΓöÇ ARTICLE BODY ΓöÇΓöÇ */}
       <div className="max-w-4xl mx-auto px-6 pt-14">
-        <div
+        <SafeHtml
           className="text-gray-400 text-lg leading-relaxed space-y-6 [&_h2]:text-white [&_h2]:text-3xl [&_h2]:font-black [&_h2]:uppercase [&_h2]:tracking-tight [&_h2]:mt-12 [&_h2]:mb-4 [&_h3]:text-white [&_h3]:text-2xl [&_h3]:font-black [&_h3]:uppercase [&_h3]:tracking-tight [&_h3]:mt-8 [&_h3]:mb-3 [&_p]:mb-6 [&_p]:leading-relaxed [&_strong]:text-white [&_strong]:font-bold [&_a]:text-primary [&_a]:no-underline hover:[&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2 [&_li]:leading-relaxed [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:pl-6 [&_blockquote]:italic [&_blockquote]:text-gray-500 [&_hr]:border-white/10 [&_hr]:my-10 [&_img]:rounded-[8px] [&_img]:w-full [&_img]:object-cover"
-          dangerouslySetInnerHTML={{ __html: blog.content }}
+          html={blog.content}
         />
       </div>
 

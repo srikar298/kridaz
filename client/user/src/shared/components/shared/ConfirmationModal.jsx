@@ -33,7 +33,7 @@ const ConfirmationModal = ({
             <Button
               onClick={onClose}
               className="p-2 text-white/20 hover:text-white transition-colors"
-            >
+             aria-label="Close">
               <X size={20} />
             </Button>
           </div>

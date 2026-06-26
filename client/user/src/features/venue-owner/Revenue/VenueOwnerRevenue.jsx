@@ -107,7 +107,7 @@ export default function VenueOwnerRevenue() {
           </div>
 
           <div className="flex flex-row items-center shrink-0">
-            <Button className="flex items-center justify-center p-2 md:p-3 bg-card hover:bg-white/[0.05] border border-white/10 rounded-[16px] md:rounded-[16px] transition-all shadow-xl text-neutral-400 hover:text-white group">
+            <Button className="flex items-center justify-center p-2 md:p-3 bg-card hover:bg-white/[0.05] border border-white/10 rounded-[16px] md:rounded-[16px] transition-all shadow-xl text-neutral-400 hover:text-white group" aria-label="Download">
               <Download
                 size={14}
                 className="shrink-0 md:w-5 md:h-5 group-hover:scale-110 transition-transform"

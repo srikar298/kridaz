@@ -158,7 +158,7 @@ const SlotPickerPopup = ({ isOpen, onClose, onSelect, gameId, slotId }) => {
               <Button
                 onClick={onClose}
                 className="p-3 bg-neutral-800 rounded-[8px] text-neutral-400 hover:text-white transition-colors"
-              >
+               aria-label="Close">
                 <X size={20} />
               </Button>
             </div>

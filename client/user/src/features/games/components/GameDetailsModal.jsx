@@ -124,7 +124,7 @@ const GameDetailsModal = ({ game, onClose, onJoinSlot, currentUserId }) => {
           <Button
             onClick={onClose}
             className="p-2 rounded-[8px] bg-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-700 transition-all"
-          >
+           aria-label="Close">
             <X className="h-5 w-5" />
           </Button>
         </div>

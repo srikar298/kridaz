@@ -17,8 +17,9 @@ import {
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, updateUser } from "@redux/slices/authSlice.js";
-import axiosInstance from "@hooks/useAxiosInstance";
 import ManualBookingModal from "@features/venue-owner/ManualBookingModal";
+import { useLogoutUserMutation } from "@redux/api/userApi";
+import { useLazyGetOwnerTurfsQuery } from "@redux/api/turfApi";
 import useNotifications from "@hooks/shared/useNotifications";
 import {
   useGetDashboardStatsQuery,
@@ -56,6 +57,8 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
     skip: !isProfessionalDashboard,
   });
   const [toggleOnline, { isLoading: isToggling }] = useToggleOnlineMutation();
+  const [logoutUser] = useLogoutUserMutation();
+  const [getOwnerTurfs] = useLazyGetOwnerTurfsQuery();
   const isOnline = user?.isOnline || false;
 
   const {
@@ -115,7 +118,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
 
   const handleLogout = async () => {
     try {
-      await axiosInstance.post("/api/user/auth/logout");
+      await logoutUser().unwrap();
       dispatch(logout());
       navigate("/", { replace: true });
     } catch (error) {
@@ -126,8 +129,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
 
   const handleCheckVenue = async () => {
     try {
-      const response = await axiosInstance.get("/api/owner/turf/owner/all");
-      const turfs = response.data;
+      const turfs = await getOwnerTurfs().unwrap();
       if (turfs && turfs.length > 0) {
         navigate(`/venue/${turfs[0]._id}`);
       } else {
@@ -246,7 +248,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
               className="p-2 text-white hover:opacity-80 transition-opacity lg:hidden"
               style={{ color: themeColor }}
               onClick={toggleSidebar}
-            >
+             aria-label="Menu">
               <Menu size={24} />
             </Button>
           )}

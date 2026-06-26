@@ -54,7 +54,7 @@ export default function PenaltyModal({ matchData, onClose, onConfirm }) {
                 <Button
                   onClick={onClose}
                   className="p-1 rounded-full hover:bg-white/10 text-neutral-500 hover:text-white transition-colors"
-                >
+                 aria-label="Close">
                   <X size={16} />
                 </Button>
               )}

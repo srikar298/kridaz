@@ -265,7 +265,7 @@ const SearchPlayers = ({ onSearch, userLocation }) => {
           <Button
             onClick={resetFilters}
             className="flex items-center justify-center p-2 md:p-3 text-gray-500 hover:text-primary transition-colors shrink-0 group/reset"
-          >
+           aria-label="Undo">
             <RotateCcw className="w-3.5 h-3.5 md:w-4 md:h-4 transition-transform duration-500 group-hover/reset:rotate-[-180deg]" />
           </Button>
         </div>

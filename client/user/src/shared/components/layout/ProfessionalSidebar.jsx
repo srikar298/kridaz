@@ -125,7 +125,7 @@ const ProfessionalSidebar = ({
             <Button
               onClick={toggleSidebar}
               className="text-white hover:text-primary transition-colors"
-            >
+             aria-label="Close">
               <X size={20} />
             </Button>
           </div>

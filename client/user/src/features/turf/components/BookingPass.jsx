@@ -188,7 +188,7 @@ const BookingPass = () => {
             <Button
               onClick={handleDownload}
               className="flex items-center justify-center w-[30px] h-[30px] bg-card border border-[rgba(255,255,255,0.08)] rounded-[8px] text-zinc-400 hover:text-primary transition-all"
-            >
+             aria-label="Download">
               <Download size={14} />
             </Button>
             <Button
@@ -217,7 +217,7 @@ const BookingPass = () => {
             {/* Top Section: Venue Image & Basic Info */}
             <div className="relative h-[80px]">
               <img
-                src={turf.images?.[0] || turf.image || "/banner-1.png"}
+                src={turf.images?.[0] || turf.image || "/banner-1.webp"}
                 className="w-full h-full object-cover"
                 alt={turf.name}
                 crossOrigin="anonymous"

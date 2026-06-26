@@ -623,7 +623,7 @@ const SignUp = ({ isModal = false }) => {
         {/* Background Image */}
         <div className="absolute inset-0 w-full h-full overflow-hidden bg-black pointer-events-none">
           <img
-            src="/signup-background.png"
+            src="/signup-background.webp"
             alt="Signup"
             className="w-full h-full object-contain object-top mt-10"
           />

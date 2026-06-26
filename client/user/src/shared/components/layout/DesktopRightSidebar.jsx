@@ -333,7 +333,7 @@ export default function DesktopRightSidebar({
                     <div
                       className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
                       style={{
-                        backgroundImage: "url('/host-venue-bg-custom-2.png')",
+                        backgroundImage: "url('/host-venue-bg-custom-2.webp')",
                       }}
                     />
 

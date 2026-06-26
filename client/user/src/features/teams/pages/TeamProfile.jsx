@@ -294,7 +294,7 @@ const TeamProfile = () => {
                   <Button
                     onClick={copyId}
                     className="flex items-center gap-1.5 bg-black/40 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-[6px] text-primary font-black text-[10px] hover:bg-white/5 transition-colors"
-                  >
+                   aria-label="Copy">
                     {team.teamCode} <Copy size={10} className="opacity-50" />
                   </Button>
                 </div>

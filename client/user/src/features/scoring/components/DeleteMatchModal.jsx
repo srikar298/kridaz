@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Lock, Loader2, X } from "lucide-react";
 import { Button, Input } from "@kridaz/ui";
+import API from "../../../../shared/services/api";
 
 
 const ScoringPasswordModal = ({
@@ -26,17 +27,9 @@ const ScoringPasswordModal = ({
     setError("");
 
     try {
-      const apiBase = import.meta.env.VITE_API_URL || "http://localhost:6001";
-      const response = await fetch(`${apiBase}/api/scoring/auth/${matchId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ password }),
-      });
+      const response = await API.post(`/scoring/auth/${matchId}`, { password });
 
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         // Store verification success in session storage so they don't get prompted repeatedly on refresh
         sessionStorage.setItem(`scoringAuth_${matchId}`, "true");
@@ -64,7 +57,7 @@ const ScoringPasswordModal = ({
             <Button
               onClick={onClose}
               className="p-3 bg-white/5 rounded-[8px] border border-white/5 hover:bg-white/10 transition-all text-neutral-400 hover:text-white"
-            >
+             aria-label="Close">
               <X size={20} />
             </Button>
           )}

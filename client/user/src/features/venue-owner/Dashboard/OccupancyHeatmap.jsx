@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/react";
 import React, { useState, useEffect } from "react";
 import { Clock, Phone, Mail, X } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
+import { useGetOwnerTurfsQuery } from "@redux/api/turfApi";
 import { Button, Select } from "@kridaz/ui";
 
 
@@ -13,22 +14,15 @@ const OccupancyHeatmap = () => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-  useEffect(() => {
-    fetchTurfs();
-  }, []);
+  const { data: ownerTurfsData } = useGetOwnerTurfsQuery();
 
-  const fetchTurfs = async () => {
-    try {
-      const res = await axiosInstance.get("/api/owner/turf/owner/all");
-      const data = Array.isArray(res.data) ? res.data : [];
-      setTurfs(data);
-      if (data.length > 0) {
-        setSelectedTurf(data[0]._id);
-      }
-    } catch (error) {
-      Sentry.captureException(error);
+  useEffect(() => {
+    const data = Array.isArray(ownerTurfsData) ? ownerTurfsData : [];
+    setTurfs(data);
+    if (data.length > 0 && !selectedTurf) {
+      setSelectedTurf(data[0]._id);
     }
-  };
+  }, [ownerTurfsData]);
 
   useEffect(() => {
     if (selectedTurf) {

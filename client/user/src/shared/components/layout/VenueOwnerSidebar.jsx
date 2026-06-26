@@ -96,7 +96,7 @@ const PartnerSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
           <Button
             onClick={toggleSidebar}
             className="text-muted-foreground hover:text-primary transition-colors"
-          >
+           aria-label="Close">
             <X size={20} />
           </Button>
         </div>

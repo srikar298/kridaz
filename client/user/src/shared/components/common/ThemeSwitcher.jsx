@@ -18,7 +18,7 @@ const ThemeSwitcher = () => {
   };
 
   return (
-    <Button className="btn btn-ghost btn-circle me-1" onClick={toggleTheme}>
+    <Button className="btn btn-ghost btn-circle me-1" onClick={toggleTheme} aria-label="Toggle menu">
       {theme === "light" ? <Moon /> : <Sun />}
     </Button>
   );

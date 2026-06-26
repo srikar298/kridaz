@@ -251,7 +251,7 @@ const PlayerMap = ({
           onClick={handleRecenter}
           className="w-10 h-10 bg-black/80 backdrop-blur-md border border-primary/30 rounded-[8px] flex items-center justify-center text-primary hover:bg-primary hover:text-black transition-all shadow-2xl"
           title="Recenter Map"
-        >
+         aria-label="Recenter Map">
           <Navigation size={18} />
         </Button>
       </div>

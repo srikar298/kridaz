@@ -1,9 +1,10 @@
 import { createBrowserRouter, Navigate, useParams } from "react-router-dom";
 import { lazy, Suspense } from "react";
 
-// Î“Ã¶Ã‡Î“Ã¶Ã‡ Eager: Layouts (used on nearly every route Î“Ã‡Ã¶ small files, no split benefit) Î“Ã¶Ã‡Î“Ã¶Ã‡
-import { PartnerLayout, ProfessionalLayout } from "@layouts";
+// ── Eager: Layouts (used on nearly every route – small files, no split benefit) ──────────────────
 import UserRoot from "@user/layouts/Root";
+const PartnerLayout = lazy(() => import("@layouts/VenueOwnerLayout"));
+const ProfessionalLayout = lazy(() => import("@layouts/ProfessionalLayout"));
 
 // ── Eager: Route guards & error utilities (must be synchronous) ──────────────────
 import ProtectedRoute from "@components/ProtectedRoute/ProtectedRoute";
@@ -350,7 +351,9 @@ const router = createBrowserRouter([
     path: "/venue-owner",
     element: (
       <ProtectedRoute requiredRole="venu_owners">
-        <PartnerLayout />
+        <S>
+          <PartnerLayout />
+        </S>
       </ProtectedRoute>
     ),
     children: [
@@ -492,7 +495,9 @@ const router = createBrowserRouter([
           "cheerleader",
         ]}
       >
-        <ProfessionalLayout />
+        <S>
+          <ProfessionalLayout />
+        </S>
       </ProtectedRoute>
     ),
     children: [

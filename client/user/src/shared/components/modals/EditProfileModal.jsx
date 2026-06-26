@@ -335,7 +335,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
             type="button"
             onClick={onClose}
             className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-card border border-white/[0.08] text-white/70 hover:text-white transition-colors"
-          >
+           aria-label="Close">
             <X size={20} />
           </Button>
         </div>

@@ -69,7 +69,7 @@ const InterestsModal = ({ isOpen, onClose, onSaved }) => {
             <Button
               onClick={onClose}
               className="p-2 hover:bg-background rounded-full transition-colors text-white/40"
-            >
+             aria-label="Close">
               <X size={20} />
             </Button>
           </div>

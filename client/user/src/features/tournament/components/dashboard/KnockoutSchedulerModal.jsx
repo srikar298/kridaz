@@ -106,7 +106,7 @@ const KnockoutSchedulerModal = ({ tournament, onClose }) => {
           <Button
             onClick={onClose}
             className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white/50 hover:text-white transition-colors"
-          >
+           aria-label="Close">
             <X size={20} />
           </Button>
         </div>

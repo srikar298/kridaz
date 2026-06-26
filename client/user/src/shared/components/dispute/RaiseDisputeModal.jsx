@@ -85,7 +85,7 @@ export default function RaiseDisputeModal({ booking, onClose, onSuccess }) {
           <Button
             onClick={onClose}
             className="text-gray-500 hover:text-white transition-colors"
-          >
+           aria-label="Close">
             <X size={24} />
           </Button>
         </div>

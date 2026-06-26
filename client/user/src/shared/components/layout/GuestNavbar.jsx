@@ -192,6 +192,7 @@ const GuestNavbar = () => {
           <Button
             onClick={() => setIsOpen(!isOpen)}
             className="lg:hidden text-white/60 hover:text-white transition-colors"
+            aria-label={isOpen ? "Close menu" : "Open menu"}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </Button>

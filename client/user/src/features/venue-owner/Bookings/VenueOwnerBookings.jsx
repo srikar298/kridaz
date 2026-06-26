@@ -82,7 +82,7 @@ const VenueOwnerBookings = () => {
                 </p>
               </div>
             </div>
-            <Button className="shrink-0 w-8 h-8 md:w-10 md:h-10 p-0 flex items-center justify-center bg-card hover:bg-primary hover:text-background rounded-full transition-all text-muted-foreground group shadow-[var(--shadow-2)]">
+            <Button className="shrink-0 w-8 h-8 md:w-10 md:h-10 p-0 flex items-center justify-center bg-card hover:bg-primary hover:text-background rounded-full transition-all text-muted-foreground group shadow-[var(--shadow-2)]" aria-label="Download">
               <Download className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] group-hover:scale-110 transition-transform" />
             </Button>
           </div>

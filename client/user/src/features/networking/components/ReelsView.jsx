@@ -61,7 +61,7 @@ const ReelsView = ({ gateInteraction, onBack }) => {
           <button
             onClick={onBack}
             className="flex items-center justify-center bg-black/60 backdrop-blur-md border border-white/10 text-white w-9 h-9 rounded-[8px] hover:bg-white/10 transition-all"
-          >
+           aria-label="Go back">
             <ArrowLeft size={16} strokeWidth={2.5} />
           </button>
         </div>

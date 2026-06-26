@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "axios";
+import API from "../../../shared/services/api";
 import { Button, Input, Select } from "@kridaz/ui";
 
 import {
@@ -66,10 +66,7 @@ const PayoutsTab = ({ role }) => {
   const fetchBankingDetails = async () => {
     setIsLoading(true);
     try {
-      const token = localStorage.getItem("token") || "";
-      const res = await axios.get("/api/owner/banking", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await API.get("/owner/banking");
       if (res.data) {
         setBanking(res.data);
         const details = res.data.bankingDetails || {};
@@ -119,7 +116,6 @@ const PayoutsTab = ({ role }) => {
     setFeedbackMsg("");
     setIsSavingDetails(true);
     try {
-      const token = localStorage.getItem("token") || "";
       const payload = {
         accountName,
         payoutMode,
@@ -128,9 +124,7 @@ const PayoutsTab = ({ role }) => {
           : { upiId }),
       };
 
-      const res = await axios.put("/api/owner/banking", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await API.put("/owner/banking", payload);
 
       if (res.data) {
         setFeedbackType("success");
@@ -170,13 +164,9 @@ const PayoutsTab = ({ role }) => {
 
     setIsSubmittingPayout(true);
     try {
-      const token = localStorage.getItem("token") || "";
-      const res = await axios.post(
-        "/api/owner/banking/payout",
-        { amount: amountNum },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const res = await API.post(
+        "/owner/banking/payout",
+        { amount: amountNum }
       );
 
       if (res.data) {

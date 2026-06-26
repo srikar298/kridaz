@@ -264,7 +264,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
           <Button
             onClick={onClose}
             className="p-2 rounded-[6px] hover:bg-background text-white/20 hover:text-white transition-all"
-          >
+           aria-label="Close">
             <X size={20} />
           </Button>
         </div>

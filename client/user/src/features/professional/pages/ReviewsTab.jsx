@@ -7,7 +7,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useSelector } from "react-redux";
-import axios from "axios";
+import API from "../../../shared/services/api";
 import { Button, Textarea } from "@kridaz/ui";
 
 
@@ -33,10 +33,7 @@ const ReviewsTab = ({ role }) => {
     }
     setIsLoading(true);
     try {
-      const token = localStorage.getItem("token") || "";
-      const res = await axios.get(`/api/professional/details/${ownerId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await API.get(`/professional/details/${ownerId}`);
       if (res.data && res.data.professional) {
         setReviews(res.data.reviews || []);
         setRating(res.data.professional.rating || 5.0);
@@ -60,15 +57,11 @@ const ReviewsTab = ({ role }) => {
     setIsSubmittingReply(true);
     setFeedback("");
     try {
-      const token = localStorage.getItem("token") || "";
-      await axios.post(
-        "/api/professional/review/reply",
+      await API.post(
+        "/professional/review/reply",
         {
           reviewId,
           reply: replyText,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
         }
       );
 

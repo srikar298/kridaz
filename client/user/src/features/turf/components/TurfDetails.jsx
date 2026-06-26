@@ -178,7 +178,7 @@ const TurfDetails = () => {
   }, [id]);
 
   const images =
-    turf?.images?.length > 0 ? turf.images : [turf?.image || "/banner-1.png"];
+    turf?.images?.length > 0 ? turf.images : [turf?.image || "/banner-1.webp"];
   const video = turf?.video;
 
   // Helper to extract YouTube ID
@@ -482,7 +482,7 @@ const TurfDetails = () => {
                 <Button
                   onClick={toggleFavorite}
                   className={`w-8 h-8 min-h-0 p-0 rounded-full bg-card border ${isFavorite ? "border-primary text-primary" : "border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)]"} hover:bg-[#1a1a1a] hover:text-white transition-colors shadow-lg flex items-center justify-center`}
-                >
+                 aria-label="Like">
                   <Heart
                     className={`w-4 h-4 ${isFavorite ? "fill-current" : ""}`}
                   />
@@ -598,13 +598,13 @@ const TurfDetails = () => {
                       <Button
                         onClick={handlePrev}
                         className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:text-black z-30"
-                      >
+                       aria-label="Previous">
                         <ChevronLeft size={20} />
                       </Button>
                       <Button
                         onClick={handleNext}
                         className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:text-black z-30"
-                      >
+                       aria-label="Next">
                         <ChevronRight size={20} />
                       </Button>
                     </>
@@ -742,7 +742,7 @@ const TurfDetails = () => {
                           7896541230
                         </p>
                       </div>
-                      <Button className="w-9 h-9 rounded-[8px] bg-gradient-to-br from-primary to-primary flex items-center justify-center text-black hover:brightness-110 transition-all shadow-[0_0_15px_rgba(85,222,232,0.2)]">
+                      <Button className="w-9 h-9 rounded-[8px] bg-gradient-to-br from-primary to-primary flex items-center justify-center text-black hover:brightness-110 transition-all shadow-[0_0_15px_rgba(85,222,232,0.2)]" aria-label="Call">
                         <Phone size={16} fill="currentColor" />
                       </Button>
                     </div>
@@ -1046,7 +1046,7 @@ const PoliciesModal = ({ isOpen, onClose, rules, turfName }) => {
               <Button
                 onClick={onClose}
                 className="w-10 h-10 rounded-full bg-card border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[rgba(255,255,255,0.70)] hover:text-white transition-colors"
-              >
+               aria-label="Confirm">
                 <Check className="w-5 h-5" />
               </Button>
             </div>
