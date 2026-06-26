@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { Button } from "@kridaz/ui";
-import SafeHtml from "../../shared/components/SafeHtml";
+import SafeHtml from "../../../shared/components/SafeHtml";
 
 import {
   ArrowLeft,

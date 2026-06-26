@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Lock, Loader2, X } from "lucide-react";
 import { Button, Input } from "@kridaz/ui";
-import API from "../../../../shared/services/api";
+import API from "../../../shared/services/api";
 
 
 const ScoringPasswordModal = ({

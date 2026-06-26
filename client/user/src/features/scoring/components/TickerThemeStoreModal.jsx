@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { X, Check, Sparkles, Palette, RefreshCw, Circle } from "lucide-react";
 import toast from "react-hot-toast";
 import { Button } from "@kridaz/ui";
-import API from "../../../../shared/services/api";
+import API from "../../../shared/services/api";
 
 const THEMES = [
   {
