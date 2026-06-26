@@ -1,7 +1,7 @@
 $envFile = "c:\Users\saavi\OneDrive\Desktop\kridaz\kridaz\server\.env"
 $jsonFile = "c:\Users\saavi\OneDrive\Desktop\kridaz\kridaz\azure_settings.json"
 $rg = "kridaz-prod"
-$apps = @("Kridaz", "kridaz-worker", "kridaz-web", "kridaz-admin")
+$apps = @("Kridaz", "kridaz-worker")
 
 $settings = @()
 foreach($line in Get-Content $envFile) {
@@ -9,14 +9,12 @@ foreach($line in Get-Content $envFile) {
         $parts = $line -split '=', 2
         if ($parts.Length -eq 2) {
             $key = $parts[0].Trim()
-            $val = $parts[1].Trim()
-            if (($val.StartsWith('""') -and $val.EndsWith('""')) -or ($val.StartsWith("''") -and $val.EndsWith("''"))) {
-                $val = $val.Substring(1, $val.Length - 2)
-            }
-            if ($key -eq "NODE_ENV") {
-                $val = "production"
-            }
-            $settings += @{ name = $key; value = $val; slotSetting = $false }
+            $value = $parts[1].Trim()
+
+            # Strip double quotes from the beginning and end of ALL values
+            $value = $value -replace '^"|"$', ''
+
+            $settings += @{ name = $key; value = $value; slotSetting = $false }
         }
     }
 }
