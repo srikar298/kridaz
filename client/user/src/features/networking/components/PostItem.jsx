@@ -692,64 +692,105 @@ const PostItem = React.memo(
           </button>
         </div>
 
-        {/* Expandable Comments Section */}
+        {/* Expandable Comments Section -> Bottom Sheet Comments */}
         <AnimatePresence>
           {expandedComments && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="overflow-hidden bg-background"
-            >
-              <div className="space-y-3 pt-3 px-4 pb-4 border-t border-white/5">
-                {post.comments && post.comments.length > 0 && (
-                  <div className="max-h-[200px] overflow-y-auto space-y-2.5 pr-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-                    {post.comments.slice(0, 4).map((comment) => {
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpandedComments(false);
+                }}
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
+              />
+              
+              {/* Bottom Sheet */}
+              <motion.div
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className="fixed bottom-0 left-0 right-0 z-[101] bg-[#0f0f0f] rounded-t-[24px] border-t border-white/10 overflow-hidden flex flex-col max-h-[85vh] min-h-[50vh]"
+                style={{
+                  boxShadow: "0 -10px 40px rgba(0,0,0,0.5)"
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Drag Handle & Header */}
+                <div className="flex flex-col items-center pt-3 pb-2 border-b border-white/5 relative shrink-0">
+                  <div className="w-10 h-1.5 bg-white/20 rounded-full mb-3" />
+                  <h3 className="text-white font-bold text-[14px]">Comments</h3>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExpandedComments(false);
+                    }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 mt-1.5 p-2 text-white/50 hover:text-white transition-colors"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+
+                {/* Comments List */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                  {post.comments && post.comments.length > 0 ? (
+                    post.comments.map((comment) => {
                       const commentUser = comment.userId || comment.user;
                       return (
                         <div
                           key={comment.id || comment._id}
-                          className="flex items-start gap-2 text-[11px] leading-normal"
+                          className="flex items-start gap-3"
                         >
-                          <Link
-                            to={`/profile/${commentUser?.id || commentUser?._id}`}
-                            className="font-bold text-white hover:text-primary transition-colors shrink-0"
-                          >
-                            {commentUser?.name ||
-                              commentUser?.username ||
-                              "Player"}
+                          <Link to={`/profile/${commentUser?.id || commentUser?._id}`} className="shrink-0">
+                            <img
+                              src={commentUser?.profilePicture || "/default-avatar.png"}
+                              className="w-8 h-8 rounded-full object-cover border border-white/10"
+                              alt=""
+                            />
                           </Link>
-                          <span className="text-foreground break-words">
-                            {comment.text}
-                          </span>
+                          <div className="flex-1">
+                            <div className="flex items-baseline gap-2">
+                              <Link
+                                to={`/profile/${commentUser?.id || commentUser?._id}`}
+                                className="font-bold text-[12px] text-white hover:text-primary transition-colors"
+                              >
+                                {commentUser?.name || commentUser?.username || "Player"}
+                              </Link>
+                              <span className="text-[10px] text-white/40">
+                                {getFormattedTime(comment.createdAt)}
+                              </span>
+                            </div>
+                            <p className="text-[13px] text-foreground mt-0.5 break-words">
+                              {comment.text}
+                            </p>
+                          </div>
                         </div>
                       );
-                    })}
-                    {post.comments.length > 4 && (
-                      <button className="text-[11px] text-primary font-bold hover:underline">
-                        View all {post.comments.length} comments
-                      </button>
-                    )}
-                  </div>
-                )}
-                {post.comments?.length === 0 && (
-                  <p className="text-[11px] text-white/30 italic">
-                    No comments yet. Be the first!
-                  </p>
-                )}
+                    })
+                  ) : (
+                    <div className="py-10 text-center flex flex-col items-center">
+                      <p className="text-[13px] text-white/40 font-medium">
+                        No comments yet. Be the first to start the conversation!
+                      </p>
+                    </div>
+                  )}
+                </div>
 
                 {/* Comment Input */}
-                <div className="flex items-center gap-3 pt-2 border-t border-white/5">
+                <div className="p-3 border-t border-white/5 bg-background/50 backdrop-blur-md shrink-0 flex items-center gap-3">
                   <img
                     src={user?.profilePicture || "/default-avatar.png"}
-                    className="w-7 h-7 rounded-full object-cover border border-white/10 shrink-0"
+                    className="w-8 h-8 rounded-full object-cover border border-white/10 shrink-0"
                     alt=""
                   />
                   <Input
                     type="text"
-                    placeholder="Add a comment..."
-                    className="flex-1 bg-transparent text-[11px] font-medium outline-none text-white placeholder:text-muted-foreground"
+                    placeholder={`Add a comment for ${post.adminId?.name || post.author?.name || "Player"}...`}
+                    className="flex-1 bg-white/5 border-white/10 rounded-full px-4 h-10 text-[13px] font-medium outline-none text-white placeholder:text-muted-foreground focus:border-primary/50 focus:bg-white/10 transition-all"
                     value={commentInput}
                     onChange={(e) => setCommentInput(e.target.value)}
                     onKeyDown={(e) => {
@@ -759,17 +800,17 @@ const PostItem = React.memo(
                   <button
                     onClick={handleAddComment}
                     disabled={!commentInput.trim()}
-                    className={`text-[11px] font-bold px-3 py-1.5 rounded-full transition-all ${
+                    className={`text-[12px] font-bold px-4 h-10 rounded-full transition-all shrink-0 ${
                       commentInput.trim()
-                        ? "bg-primary text-black hover:bg-primary/80 cursor-pointer"
-                        : "bg-card text-muted-foreground cursor-not-allowed"
+                        ? "bg-primary text-black hover:scale-105 cursor-pointer"
+                        : "bg-white/5 text-white/30 cursor-not-allowed"
                     }`}
                   >
                     Post
                   </button>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
       </div>

@@ -28,6 +28,7 @@ model User {
   interests               String[]
   sportTypes              String[]
   googleId                String?
+  appleId                 String?                       @unique
   lastSeen                DateTime                      @default(now())
   status                  String                        @default("active")
   migrationStatus         Json?

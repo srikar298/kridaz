@@ -603,6 +603,16 @@ const CommunityFeed = ({
               <Loader2 size={24} className="text-primary animate-spin" />
             </div>
           )}
+          {!hasMorePosts && loadedPosts.length > 0 && (
+            <div className="py-12 flex flex-col w-full px-2">
+              <h2 className="text-[72px] sm:text-[96px] md:text-[120px] font-black leading-[0.85] text-[#1a1a1a] tracking-tighter uppercase font-poppins">
+                GAME ON<br />ALWAYS.
+              </h2>
+              <div className="text-[13px] sm:text-[14px] text-white/90 font-medium mt-6 flex items-center gap-1.5 font-inter">
+                Make with <span className="text-red-500 text-lg">❤️</span> in Hyderabad
+              </div>
+            </div>
+          )}
         </div>
       )}
 

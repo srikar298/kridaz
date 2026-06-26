@@ -65,10 +65,18 @@ services:
       - key: CLIENT_URLS
         sync: false
 
-      # ── OAuth: Google / YouTube ───────────────────────────────────────────
+      # ── OAuth: Google / YouTube / Apple ───────────────────────────────────
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_ANDROID_CLIENT_ID
+        sync: false
+      - key: GOOGLE_ANDROID_RELEASE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_IOS_CLIENT_ID
+        sync: false
+      - key: APPLE_BUNDLE_ID
         sync: false
 
       # ── Monitoring (optional, gracefully skipped if absent) ───────────────
