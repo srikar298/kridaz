@@ -623,11 +623,12 @@ const PostItem = React.memo(
         )}
 
         {/* Action Bar */}
-        <div className="flex items-center justify-between border-t border-white/10 bg-background px-2 py-1">
-          <button
-            onClick={handleLike}
-            className="flex-1 flex items-center justify-center gap-2 py-2 transition-colors group"
-          >
+        <div className="flex items-center justify-between border-t border-white/10 bg-background px-4 py-1">
+          <div className="flex items-center gap-6">
+            <button
+              onClick={handleLike}
+              className="flex items-center justify-center gap-2 py-2 transition-colors group"
+            >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -662,10 +663,10 @@ const PostItem = React.memo(
               </span>
             )}
           </button>
-          <button
-            onClick={() => setExpandedComments(!expandedComments)}
-            className="flex-1 flex items-center justify-center gap-2 py-2 transition-colors group"
-          >
+            <button
+              onClick={() => setExpandedComments(!expandedComments)}
+              className="flex items-center justify-center gap-2 py-2 transition-colors group"
+            >
             <img
               src={CommentIcon}
               alt="Comment"
@@ -676,13 +677,14 @@ const PostItem = React.memo(
                 {post.totalComments || post.comments.length}
               </span>
             )}
-          </button>
+            </button>
+          </div>
           <button
             onClick={(e) => {
               e.stopPropagation();
               onSharePost(postId);
             }}
-            className="flex-1 flex items-center justify-center py-2 transition-colors group"
+            className="flex items-center justify-center py-2 transition-colors group"
           >
             <img
               src={ShareIcon}
