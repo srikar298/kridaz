@@ -1,6 +1,8 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import crypto from "crypto";
 import dotenv from "dotenv";
+import sharp from "sharp";
+import logger from "./logger.js";
 dotenv.config();
 
 const s3Client = new S3Client({
@@ -42,6 +44,7 @@ export const uploadToR2 = async (buffer, folder = "kridaz", mimeType = null) => 
     else if (buffer.length > 4 && buffer[4] === 0x66 && buffer[5] === 0x74 && buffer[6] === 0x79 && buffer[7] === 0x70) contentType = "video/mp4"; // FTYP
   }
 
+  // Upload the original file
   await s3Client.send(
     new PutObjectCommand({
       Bucket: BUCKET_NAME,
@@ -50,6 +53,47 @@ export const uploadToR2 = async (buffer, folder = "kridaz", mimeType = null) => 
       ContentType: contentType,
     })
   );
+
+  // If it's an image (and not a gif which sharp might break animation for without special handling),
+  // generate and upload variants
+  if (contentType.startsWith("image/") && contentType !== "image/gif") {
+    try {
+      // We will save variants as webp for best compression
+      
+      // Medium variant (800px)
+      const mediumBuffer = await sharp(buffer)
+        .resize(800, null, { withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toBuffer();
+      
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: `${cleanFolder}/${fileName}_800.webp`,
+          Body: mediumBuffer,
+          ContentType: "image/webp",
+        })
+      );
+
+      // Thumbnail variant (400px)
+      const thumbBuffer = await sharp(buffer)
+        .resize(400, null, { withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toBuffer();
+        
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: `${cleanFolder}/${fileName}_400.webp`,
+          Body: thumbBuffer,
+          ContentType: "image/webp",
+        })
+      );
+    } catch (err) {
+      logger.error("[R2_RESIZE_ERROR] Failed to generate image variants:", err.message);
+      // Don't throw, we still successfully uploaded the original
+    }
+  }
 
   return `${R2_PUBLIC_URL}/${key}`;
 };
@@ -63,12 +107,31 @@ export const deleteFromR2 = async (fileUrl) => {
   
   try {
     const key = fileUrl.replace(`${R2_PUBLIC_URL}/`, "");
+    
+    // Delete the original file
     await s3Client.send(
       new DeleteObjectCommand({
         Bucket: BUCKET_NAME,
         Key: key,
       })
     );
+    
+    // Also try to delete potential variants if this was an image
+    // The key format is like folder/123456789-abcdef
+    const variants = [`${key}_400.webp`, `${key}_800.webp`];
+    for (const variantKey of variants) {
+      try {
+        await s3Client.send(
+          new DeleteObjectCommand({
+            Bucket: BUCKET_NAME,
+            Key: variantKey,
+          })
+        );
+      } catch (e) {
+        // Ignore errors for variants, they might not exist (e.g. non-images)
+      }
+    }
+    
   } catch (err) {
     console.error("Error deleting from R2:", err.message);
   }

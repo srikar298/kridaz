@@ -117,6 +117,7 @@ const Login = ({ isModal = false }) => {
         <img
           src="/logo1.png"
           alt="Logo"
+          fetchPriority="high"
           className="h-20 w-auto object-contain drop-shadow-2xl"
         />
       </div>
@@ -126,6 +127,7 @@ const Login = ({ isModal = false }) => {
         <img
           src="/login-background.webp"
           alt="Kridaz"
+          fetchPriority="high"
           className="w-full h-full object-cover object-top scale-[1.15] translate-y-6 -translate-x-6"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
