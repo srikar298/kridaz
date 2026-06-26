@@ -985,6 +985,7 @@ export const getAllHostedGames = async (req, res) => {
     const games = await prisma.hostedGame.findMany({
       where: {
         status: "ACTIVE",
+        deletedAt: null,
         ...(city ? { city: { contains: city, mode: "insensitive" } } : {}),
         ...(state ? { state: { contains: state, mode: "insensitive" } } : {}),
         ...(gameType ? { gameType } : {}),
@@ -1392,7 +1393,7 @@ export const getMyHostedGames = async (req, res) => {
   try {
     const hostId = req.user.id || req.user.user;
     let games = await prisma.hostedGame.findMany({
-      where: { hostId },
+      where: { hostId, deletedAt: null },
       orderBy: { date: "desc" },
       include: fullGameInclude,
     });

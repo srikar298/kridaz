@@ -9,10 +9,10 @@ export const validateCoupon = async (req, res) => {
   try {
     const { code, amount } = req.body;
 
-    if (!code || !amount) {
+    if (!code || !amount || isNaN(Number(amount)) || Number(amount) <= 0) {
       return res.status(400).json({
         success: false,
-        message: "Coupon code and amount are required",
+        message: "Valid coupon code and positive amount are required",
       });
     }
 
@@ -74,8 +74,8 @@ export const createTopupOrder = async (req, res) => {
   try {
     const { amount, couponCode } = req.body; // Amount in INR
 
-    if (!amount) {
-      return res.status(400).json({ message: "Top-up amount is required" });
+    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+      return res.status(400).json({ message: "Valid top-up amount is required" });
     }
 
     const minTopup = Number(process.env.WALLET_MIN_TOPUP) || 500;
@@ -483,6 +483,10 @@ export const requestWithdrawal = async (req, res) => {
   const { amount, bankDetails } = req.body;
 
   try {
+    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+      return res.status(400).json({ message: "Valid withdrawal amount is required" });
+    }
+
     if (req.user.role === "user") {
       return res
         .status(403)

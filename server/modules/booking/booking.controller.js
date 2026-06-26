@@ -41,10 +41,9 @@ const isAuthorizedForBooking = (req, booking) => {
  */
 export const createOrder = asyncHandler(async (req, res) => {
   const userId = req.user.id || req.user.user;
-  const { totalPrice } = req.body;
   const { order, user } = await bookingService.createRazorpayOrder(
     userId,
-    totalPrice
+    req.body
   );
   return res.status(200).json({
     order,

@@ -185,6 +185,7 @@ model OwnerProfile {
   inProgressBalance       Decimal                       @default(0) @db.Decimal(12, 2)
   disputeBalance          Decimal                       @default(0) @db.Decimal(12, 2)
   withdrawnBalance        Decimal                       @default(0) @db.Decimal(12, 2)
+  promotionalBalance      Decimal                       @default(0) @db.Decimal(12, 2)
   price                   Float                         @default(0)
   dob                     DateTime?
   gender                  String?
@@ -389,6 +390,7 @@ model Wallet {
   userId          String              @unique
   balance         Decimal             @default(0) @db.Decimal(12, 2)
   reservedBalance Decimal             @default(0) @db.Decimal(12, 2)
+  promotionalBalance Decimal          @default(0) @db.Decimal(12, 2)
   user            User                @relation(fields: [userId], references: [id])
   transactions    WalletTransaction[]
 }
@@ -476,6 +478,7 @@ model HostedGame {
   isLive                Boolean              @default(false)
   streamStatus          String               @default("offline")
   overlayConfig         Json?
+  deletedAt             DateTime?
   liveStartedAt         DateTime?
   overlayToken          String?
   lastCommentary        String?

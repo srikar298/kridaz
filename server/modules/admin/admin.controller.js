@@ -1253,7 +1253,10 @@ export const deleteHostedGame = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const game = await prisma.hostedGame.delete({ where: { id } });
+    const game = await prisma.hostedGame.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
     if (!game) {
       return res
         .status(404)
@@ -1287,8 +1290,9 @@ export const batchDeleteGames = async (req, res) => {
   }
 
   try {
-    const result = await prisma.hostedGame.deleteMany({
+    const result = await prisma.hostedGame.updateMany({
       where: { id: { in: gameIds } },
+      data: { deletedAt: new Date() },
     });
 
     await logAdminAction(req, "BATCH_DELETE_GAMES", "GAME_MANAGEMENT", null, {

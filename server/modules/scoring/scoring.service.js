@@ -2707,7 +2707,10 @@ export const deleteScoringMatch = async (matchId, userId) => {
     throw new ForbiddenError("Only the host can delete this match");
   }
 
-  await prisma.hostedGame.delete({ where: { id: matchId } });
+  await prisma.hostedGame.update({
+    where: { id: matchId },
+    data: { deletedAt: new Date() },
+  });
   return true;
 };
 

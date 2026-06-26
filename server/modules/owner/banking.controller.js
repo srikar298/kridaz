@@ -104,13 +104,22 @@ export const requestPayout = async (req, res) => {
     });
     if (!owner) return res.status(404).json({ message: "Owner not found" });
 
-    // Verify password if master password is set and password parameter is provided
-    if (owner.password && password) {
+    // Verify password if master password is set
+    if (owner.password) {
+      if (!password) {
+        return res.status(401).json({
+          success: false,
+          code: "MASTER_PASSWORD_REQUIRED",
+          message: "Master password is required to initiate a payout.",
+        });
+      }
       const isMatch = await argon2.verify(owner.password, password);
       if (!isMatch) {
-        return res
-          .status(401)
-          .json({ success: false, message: "Invalid master password" });
+        return res.status(401).json({
+          success: false,
+          code: "INVALID_MASTER_PASSWORD",
+          message: "Incorrect master password.",
+        });
       }
     }
 

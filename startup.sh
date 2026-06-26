@@ -13,8 +13,8 @@ fi
 echo "Generating Prisma client..."
 npx prisma generate || echo "Warning: prisma generate failed, continuing..."
 
-echo "Pushing DB schema..."
-npx prisma db push --accept-data-loss || echo "Warning: prisma db push failed, continuing..."
+echo "Applying migrations..."
+npx prisma migrate deploy || echo "Warning: prisma migrate deploy failed, continuing..."
 
 echo "Starting server..."
 node server.js

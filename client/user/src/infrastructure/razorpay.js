@@ -20,10 +20,8 @@ export const loadRazorpay = () => {
   });
 };
 
-export const createOrder = async (totalPrice) => {
-  const response = await axiosInstance.post("/api/user/booking/create-order", {
-    totalPrice,
-  });
+export const createOrder = async (payload) => {
+  const response = await axiosInstance.post("/api/user/booking/create-order", payload);
   return response.data;
 };
 

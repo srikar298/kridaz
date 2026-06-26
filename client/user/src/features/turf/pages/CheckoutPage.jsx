@@ -194,7 +194,14 @@ const CheckoutPage = () => {
           toast.success("Booking confirmed!");
         }
       } else {
-        const { order } = await createOrder(advanceAmount);
+        const { order } = await createOrder({
+          turfId,
+          startTime: startISO,
+          endTime: endISO,
+          selectedTurfDate: dateISO,
+          paymentPercentage,
+          ...(appliedCoupon?.code && { couponCode: appliedCoupon.code }),
+        });
         const paymentResult = await handlePayment(order, user);
 
         const res = await axiosInstance.post(

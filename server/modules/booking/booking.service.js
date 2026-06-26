@@ -131,7 +131,41 @@ export const calculateCancellationRefund = (booking) => {
  * @param {number} totalPrice - Total price for the booking in INR.
  * @returns {Promise<{ order: any, user: any }>}
  */
-export const createRazorpayOrder = async (userId, totalPrice) => {
+export const calculateServerSidePrice = async (turf, startTime, endTime, selectedTurfDate, couponCode) => {
+  const adjustedStartTime = adjustTime(startTime, selectedTurfDate);
+  const adjustedEndTime = adjustTime(endTime, selectedTurfDate);
+
+  const durationInHours = Math.ceil(
+    (new Date(adjustedEndTime) - new Date(adjustedStartTime)) / (1000 * 60 * 60)
+  );
+  
+  const venueCharges = Number(turf.pricePerHour) * durationInHours;
+  const serviceCharge = Math.round(venueCharges * 0.0125) || 25;
+  let discount = 0;
+  if (couponCode) {
+    const couponResult = await verifyCoupon(couponCode, turf.id, venueCharges);
+    discount = couponResult.discount;
+  }
+  
+  return {
+    calculatedTotalPrice: venueCharges + serviceCharge - discount,
+    adjustedStartTime,
+    adjustedEndTime,
+    venueCharges,
+    serviceCharge,
+    discount
+  };
+};
+
+export const createRazorpayOrder = async (userId, payload) => {
+  const {
+    turfId,
+    startTime,
+    endTime,
+    selectedTurfDate,
+    couponCode,
+    paymentPercentage = 100
+  } = payload;
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { id: true, name: true, email: true, phone: true },
@@ -143,8 +177,27 @@ export const createRazorpayOrder = async (userId, totalPrice) => {
     });
   }
 
+  if (!turfId || !startTime || !endTime || !selectedTurfDate) {
+    throw new BadRequestError("Missing booking details to calculate price.");
+  }
+
+  const turf = await prisma.turf.findUnique({ where: { id: turfId } });
+  if (!turf) {
+    throw new NotFoundError("Turf not found.");
+  }
+
+  const { calculatedTotalPrice } = await calculateServerSidePrice(
+    turf,
+    startTime,
+    endTime,
+    selectedTurfDate,
+    couponCode
+  );
+
+  const amountToPay = Math.round(calculatedTotalPrice * (paymentPercentage / 100));
+
   const options = {
-    amount: Math.round(totalPrice * 100),
+    amount: Math.round(amountToPay * 100),
     currency: "INR",
     receipt: `receipt${Date.now()}`,
   };
@@ -263,20 +316,13 @@ export const verifyBookingPayment = async (userId, paymentData) => {
   }
 
   // C-11 & C-10: Server-side Price Calculation & Validation
-  const durationInHours = Math.ceil(
-    (new Date(adjustedEndTime) - new Date(adjustedStartTime)) / (1000 * 60 * 60)
+  const { calculatedTotalPrice } = await calculateServerSidePrice(
+    turf,
+    startTime,
+    endTime,
+    selectedTurfDate,
+    paymentData.couponCode
   );
-  
-  const venueCharges = Number(turf.pricePerHour) * durationInHours;
-  const serviceCharge = Math.round(venueCharges * 0.0125) || 25;
-  let discount = 0;
-  if (paymentData.couponCode) {
-    // Re-verify coupon server-side and calculate discount
-    const couponResult = await verifyCoupon(paymentData.couponCode, turfId, venueCharges);
-    discount = couponResult.discount;
-  }
-  
-  const calculatedTotalPrice = venueCharges + serviceCharge - discount;
   
   // Allow a small rounding tolerance of 1 rupee
   if (Math.abs(calculatedTotalPrice - totalPrice) > 1) {
@@ -285,6 +331,16 @@ export const verifyBookingPayment = async (userId, paymentData) => {
     });
   }
   
+  // Enforce advance amount rules strictly
+  const paymentPercentage = paymentData.paymentPercentage || 100;
+  const expectedAdvanceAmount = Math.round(calculatedTotalPrice * (paymentPercentage / 100));
+
+  if (advanceAmount && Math.abs(advanceAmount - expectedAdvanceAmount) > 1) {
+    throw new BadRequestError(`Tampering detected. Expected advance ${expectedAdvanceAmount}, got ${advanceAmount}`, {
+      code: "ADVANCE_AMOUNT_MISMATCH"
+    });
+  }
+
   // Verify Razorpay Order Amount matches advanceAmount exactly to prevent Razorpay bypass
   const razorpayOrder = await razorpay.orders.fetch(orderId);
   const amountPaidOnline = advanceAmount || totalPrice;
@@ -493,17 +549,13 @@ export const processWalletBooking = async (userId, bookingData) => {
   const platformFeePercentage = Number(settings.platformFeePercentage || 5);
 
   // C-11 & C-10: Server-side Price Calculation & Validation
-  const durationInHours = Math.ceil(
-    (new Date(adjustedEndTime) - new Date(adjustedStartTime)) / (1000 * 60 * 60)
+  const { calculatedTotalPrice } = await calculateServerSidePrice(
+    turf,
+    startTime,
+    endTime,
+    selectedTurfDate,
+    couponCode
   );
-  const venueCharges = Number(turf.pricePerHour) * durationInHours;
-  const serviceCharge = Math.round(venueCharges * 0.0125) || 25;
-  let discount = 0;
-  if (couponCode) {
-    const couponResult = await verifyCoupon(couponCode, turfId, venueCharges);
-    discount = couponResult.discount;
-  }
-  const calculatedTotalPrice = venueCharges + serviceCharge - discount;
   
   if (Math.abs(calculatedTotalPrice - originalPrice) > 1) {
     throw new BadRequestError(`Price tampering detected. Expected ${calculatedTotalPrice}, but got ${originalPrice}`, {
@@ -513,9 +565,16 @@ export const processWalletBooking = async (userId, bookingData) => {
 
   const finalPrice = calculatedTotalPrice;
   
-  // Enforce advance amount rules (e.g. they should pay exactly the required partial amount or full amount)
-  // Currently, frontend sends bodyAdvanceAmount which is (paymentPercentage/100) * total.
-  // We will trust the bodyAdvanceAmount only if we want to allow arbitrary partials, but let's strictly require it to be at least > 0
+  // Enforce advance amount rules strictly
+  const paymentPercentage = bookingData.paymentPercentage || 100;
+  const expectedAdvanceAmount = Math.round(finalPrice * (paymentPercentage / 100));
+
+  if (bodyAdvanceAmount && Math.abs(bodyAdvanceAmount - expectedAdvanceAmount) > 1) {
+    throw new BadRequestError(`Tampering detected. Expected advance ${expectedAdvanceAmount}, got ${bodyAdvanceAmount}`, {
+      code: "ADVANCE_AMOUNT_MISMATCH"
+    });
+  }
+
   const amountToDeduct =
     bodyPaymentType === "PARTIAL" && bodyAdvanceAmount
       ? bodyAdvanceAmount
