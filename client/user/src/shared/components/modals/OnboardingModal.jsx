@@ -11,6 +11,8 @@ import {
   Image as ImageIcon,
   ChevronDown,
   X,
+  User,
+  Calendar,
 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
@@ -28,7 +30,7 @@ const getNameFromEmail = (email) => {
   return clean.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 };
 
-const CustomSelect = ({ value, onChange, options, placeholder }) => {
+const CustomSelect = ({ value, onChange, options, placeholder, icon }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -45,18 +47,21 @@ const CustomSelect = ({ value, onChange, options, placeholder }) => {
   return (
     <div className="relative flex-1" ref={dropdownRef}>
       <div
-        className="w-full bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 px-4 text-white hover:border-primary outline-none transition-all cursor-pointer flex justify-between items-center"
+        className="w-full bg-card border border-primary/50 rounded-[16px] py-2 px-2 text-white hover:border-primary outline-none transition-all cursor-pointer flex justify-between items-center h-[42px]"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span
-          className={
-            value
-              ? "text-white text-sm md:text-base"
-              : "text-white/40 text-sm md:text-base"
-          }
-        >
-          {value ? options.find((o) => o.value === value)?.label : placeholder}
-        </span>
+        <div className="flex items-center gap-1">
+          {icon && <span className="text-primary flex items-center justify-center">{icon}</span>}
+          <span
+            className={
+              value
+                ? "text-white text-[12px] md:text-sm"
+                : "text-white/40 text-[12px] md:text-sm"
+            }
+          >
+            {value ? options.find((o) => o.value === value)?.label : placeholder}
+          </span>
+        </div>
         <ChevronDown
           size={16}
           className={`text-white/40 transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -67,7 +72,7 @@ const CustomSelect = ({ value, onChange, options, placeholder }) => {
           {options.map((opt) => (
             <div
               key={opt.value}
-              className={`px-4 py-3 cursor-pointer transition-colors text-sm ${value === opt.value ? "bg-primary text-background font-bold" : "text-white/80 hover:bg-white/5 hover:text-white"}`}
+              className={`px-3 py-2 cursor-pointer transition-colors text-[13px] ${value === opt.value ? "bg-primary text-background font-bold" : "text-white/80 hover:bg-white/5 hover:text-white"}`}
               onClick={() => {
                 onChange(opt.value);
                 setIsOpen(false);
@@ -676,7 +681,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="w-full max-w-[900px] h-[580px] max-h-[90vh] bg-card flex relative animate-in slide-in-from-bottom-8 duration-500 ease-out rounded-[20px] border border-white/[0.08] shadow-[0px_4px_16px_rgba(0,0,0,0.4)] overflow-hidden">
+      <div className="w-full max-w-[900px] h-[650px] max-h-[90vh] bg-black flex relative animate-in slide-in-from-bottom-8 duration-500 ease-out rounded-[20px] border border-white/[0.08] shadow-[0px_4px_16px_rgba(0,0,0,0.4)] overflow-hidden">
         {/* Left Side: Image Holder */}
         <div className="hidden md:block w-1/2 relative bg-black">
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
@@ -696,11 +701,11 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
         </div>
 
         {/* Right Side: Form Area */}
-        <div className="w-full md:w-1/2 flex flex-col relative bg-card">
+        <div className="w-full md:w-1/2 flex flex-col relative bg-black">
           {/* Close Button */}
           <Button
             onClick={onClose}
-            className="absolute top-4 right-4 z-50 p-2 text-white/50 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all"
+            className="absolute top-4 right-4 z-50 p-2 text-white/50 hover:text-white !bg-transparent transition-all border-none"
             aria-label="Close"
           >
             <X size={20} />
@@ -719,19 +724,19 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
           <div className="p-5 md:p-6 pt-6 md:pt-8 flex-1 flex flex-col min-h-0 relative z-10">
             {/* Header */}
             {step === 1 ? (
-              <div className="text-left mb-2 md:mb-3 shrink-0">
+              <div className="text-center mb-2 md:mb-3 shrink-0">
                 <h2 className="text-[24px] md:text-[28px] font-bold text-white tracking-tight leading-[1.1] font-['Inter'] uppercase">
                   Tell me some
                   <br />
-                  details please?
+                  <span className="text-primary">details</span> please?
                 </h2>
               </div>
             ) : step === 2 ? (
-              <div className="text-left mb-4 md:mb-6 shrink-0">
-                <h2 className="text-[28px] md:text-[36px] font-bold text-white tracking-tight leading-[1.1] font-['Inter']">
+              <div className="text-center mb-4 md:mb-6 shrink-0">
+                <h2 className="text-[24px] md:text-[28px] font-bold text-white tracking-tight leading-[1.1] font-['Inter'] uppercase">
                   What is
                   <br />
-                  your gender?
+                  your <span className="text-primary">gender</span>?
                 </h2>
                 <p className="text-white/60 text-xs md:text-sm mt-2 md:mt-3 leading-relaxed">
                   This help us find you more
@@ -740,26 +745,40 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                 </p>
               </div>
             ) : (
-              <div className="text-left mb-3 md:mb-6 shrink-0">
-                <h2 className="text-[28px] md:text-[40px] font-black text-white leading-tight mb-2 uppercase">
+              <div className="text-center mb-4 md:mb-6 shrink-0">
+                <h2 className="text-[24px] md:text-[28px] font-bold text-white tracking-tight leading-[1.1] font-['Inter'] uppercase">
                   {step === 3 && (
                     <>
-                      WHAT ARE YOU
+                      What are you
                       <br />
-                      INTERESTED IN?
+                      <span className="text-primary">interested</span> in?
                     </>
                   )}
-                  {step === 4 && "ALMOST DONE!"}
+                  {step === 4 && (
+                    <>
+                      Almost <span className="text-primary">done</span>!
+                    </>
+                  )}
                 </h2>
-                <p className="text-muted-foreground text-[12px] md:text-[14px]">
-                  {step === 3 && "Select sports to find relevant content"}
-                  {step === 4 && "Finalize your account details"}
+                <p className="text-white/60 text-xs md:text-sm mt-2 md:mt-3 leading-relaxed">
+                  {step === 3 && (
+                    <>
+                      Select sports to find
+                      <br />
+                      relevant content
+                    </>
+                  )}
+                  {step === 4 && (
+                    <>
+                      Finalize your account details
+                    </>
+                  )}
                 </p>
               </div>
             )}
 
             {/* Content */}
-            <div className="flex-1 flex flex-col justify-start min-h-0 overflow-y-auto custom-scrollbar -mx-2 px-2 pb-4">
+            <div className="flex-1 flex flex-col justify-start min-h-0 overflow-y-auto overflow-x-hidden -mx-2 px-2 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {step === 1 && (
                 <div className="space-y-4 md:space-y-5 animate-in slide-in-from-bottom-8 duration-300">
                   {/* Image Upload Placeholder */}
@@ -799,24 +818,27 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                   {/* Name Fields */}
                   <div className="grid grid-cols-2 gap-3 mt-1">
                     <label className="block">
-                      <span className="text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2 block">
-                        First Name
+                      <span className="flex items-center gap-1.5 text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2">
+                        <User size={14} className="text-primary" /> FIRST NAME
                       </span>
-                      <Input
-                        type="text"
-                        value={formData.firstName}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            firstName: e.target.value,
-                          })
-                        }
-                        className="w-full bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-3 px-4 text-white focus:border-primary outline-none transition-all text-xs md:text-sm"
-                      />
+                      <div className="relative">
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={16} />
+                        <Input
+                          type="text"
+                          value={formData.firstName}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              firstName: e.target.value,
+                            })
+                          }
+                          className="w-full bg-card border border-primary/50 rounded-[16px] py-2.5 md:py-3 pl-11 pr-4 text-white focus:border-primary outline-none transition-all text-xs md:text-sm !ring-0 !ring-offset-0"
+                        />
+                      </div>
                     </label>
                     <label className="block">
-                      <span className="text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2 block">
-                        Last Name
+                      <span className="flex items-center gap-1.5 text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2">
+                        <User size={14} className="text-primary" /> LAST NAME
                       </span>
                       <Input
                         type="text"
@@ -824,14 +846,14 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                         onChange={(e) =>
                           setFormData({ ...formData, lastName: e.target.value })
                         }
-                        className="w-full bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-3 px-4 text-white focus:border-primary outline-none transition-all text-xs md:text-sm"
+                        className="w-full bg-card border border-primary/50 rounded-[16px] py-2.5 md:py-3 px-4 text-white focus:border-primary outline-none transition-all text-xs md:text-sm !ring-0 !ring-offset-0"
                       />
                     </label>
                   </div>
 
                   <label className="block">
-                    <span className="text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2 block">
-                      Date of Birth
+                    <span className="flex items-center gap-1.5 text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2">
+                      <Calendar size={14} className="text-primary" /> DATE OF BIRTH
                     </span>
                     <div className="flex gap-2">
                       <CustomSelect
@@ -839,6 +861,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                         onChange={setDobDay}
                         options={days}
                         placeholder="DD"
+                        icon={<Calendar size={16} />}
                       />
                       <CustomSelect
                         value={dobMonth}
@@ -859,7 +882,8 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
 
               {step === 2 && (
                 <div className="flex justify-center gap-3 md:gap-5 animate-in slide-in-from-bottom-8 duration-300 mt-2 md:mt-6">
-                  <Button
+                  <button
+                    type="button"
                     onClick={() => setFormData({ ...formData, gender: "Male" })}
                     className={`w-[130px] h-[170px] md:w-[158px] md:h-[228px] shrink-0 rounded-[16px] border transition-all duration-300 relative overflow-hidden flex flex-col pt-3 md:pt-5 ${
                       formData.gender === "Male"
@@ -881,9 +905,10 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                         className="absolute inset-0 w-full h-full object-cover object-bottom"
                       />
                     </div>
-                  </Button>
+                  </button>
 
-                  <Button
+                  <button
+                    type="button"
                     onClick={() =>
                       setFormData({ ...formData, gender: "Female" })
                     }
@@ -907,7 +932,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                         className="absolute inset-0 w-full h-full object-cover object-bottom"
                       />
                     </div>
-                  </Button>
+                  </button>
                 </div>
               )}
 
@@ -925,7 +950,8 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                         const isPrimary =
                           isSelected && formData.sportTypes[0] === sport.name;
                         return (
-                          <Button
+                          <button
+                            type="button"
                             key={sport.name}
                             onClick={() => toggleSport(sport.name)}
                             className={`group relative w-full aspect-square md:aspect-[4/5] rounded-[12px] md:rounded-[16px] transition-all duration-300 overflow-hidden ${isSelected ? "scale-[1.02] z-10" : "border border-white/[0.08] opacity-60 hover:opacity-100 hover:border-white/[0.2]"}`}
@@ -949,7 +975,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
 
                             <div className="absolute inset-0 w-full h-full rounded-[16px] overflow-hidden flex flex-col justify-end">
                               <img
-                                src={`/sports/${sport.name.toLowerCase().replace(" ", "_")}.png`}
+                                src={`/sports/${sport.name.toLowerCase().replace(" ", "-")}.png`}
                                 alt={sport.name}
                                 className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 ${isSelected ? "scale-105" : "group-hover:scale-110"}`}
                               />
@@ -987,7 +1013,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                                 )}
                               </div>
                             </div>
-                          </Button>
+                          </button>
                         );
                       })}
                     </div>
@@ -998,9 +1024,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
               {step === 4 && (
                 <div className="space-y-4 md:space-y-6 animate-in slide-in-from-bottom-8 duration-300">
                   <div className="space-y-3 md:space-y-5">
-                    <span className="text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2 block">
-                      Account Details
-                    </span>
+
 
                     <div className="block" ref={locationRef}>
                       <span className="text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2 block">
@@ -1024,7 +1048,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                             setShowSuggestions(locationSuggestions.length > 0)
                           }
                           placeholder="Select your location"
-                          className="w-full bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 pl-12 pr-4 text-white focus:border-primary outline-none transition-all placeholder-white/40 text-sm md:text-base"
+                          className="w-full bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 pl-12 pr-4 text-white focus:border-primary outline-none transition-all placeholder-white/40 text-sm md:text-base !ring-0 !ring-offset-0"
                         />
                         {isSearchingLocation && (
                           <div className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -1075,7 +1099,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                                   setIsEmailVerified(false);
                                 }
                               }}
-                              className="w-full bg-card border border-white/[0.08] rounded-[16px] py-4 px-4 text-white focus:border-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                              className="w-full bg-card border border-white/[0.08] rounded-[16px] py-4 px-4 text-white focus:border-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed !ring-0 !ring-offset-0"
                             />
                           </div>
                           {isEmailVerified ? (
@@ -1095,7 +1119,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                           Phone Number
                         </span>
                         <div className="relative flex gap-2">
-                          <Select
+                          <select
                             value={formData.countryCode}
                             onChange={(e) =>
                               setFormData({
@@ -1104,7 +1128,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                               })
                             }
                             disabled={isPhoneVerified}
-                            className="bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 px-3 text-white focus:border-primary outline-none transition-all w-[90px] md:w-[100px] text-xs md:text-sm appearance-none cursor-pointer"
+                            className="bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 px-3 text-white focus:border-primary outline-none transition-all w-[90px] md:w-[100px] text-xs md:text-sm appearance-none cursor-pointer !ring-0 !ring-offset-0"
                           >
                             <option value="+91">IN (+91)</option>
                             {countryCodeOptions.map((c, i) => (
@@ -1112,7 +1136,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                                 {c.code} ({c.dial_code})
                               </option>
                             ))}
-                          </Select>
+                          </select>
                           <div className="relative flex-1">
                             <Input
                               type="tel"
@@ -1129,7 +1153,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                                   setIsPhoneVerified(false);
                                 }
                               }}
-                              className="w-full bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 px-4 text-white focus:border-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed text-sm md:text-base"
+                              className="w-full bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 px-4 text-white focus:border-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed text-sm md:text-base !ring-0 !ring-offset-0"
                             />
                           </div>
 
@@ -1143,7 +1167,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
 
                         {needsPhoneVerification && !isPhoneVerified && (
                           <div className="mt-2 md:mt-3">
-                            <Button
+                            <button
                               type="button"
                               onClick={() => handleSendPhoneOtp(false)}
                               disabled={
@@ -1152,7 +1176,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                                 formData.phone.length < 10 ||
                                 timeLeft > 0
                               }
-                              className="w-full py-3 bg-primary rounded-[16px] font-bold text-xs uppercase tracking-wider text-background shadow-[0px_8px_24px_rgba(179,220,38,0.15)] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center"
+                              className="w-full py-3 bg-primary rounded-[16px] font-bold text-xs uppercase tracking-wider text-black shadow-[0px_8px_24px_rgba(179,220,38,0.15)] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center"
                             >
                               {sendingPhoneOtp ? (
                                 <Loader2 className="animate-spin w-4 h-4 mx-auto" />
@@ -1163,7 +1187,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                               ) : (
                                 "Get OTP"
                               )}
-                            </Button>
+                            </button>
                           </div>
                         )}
 
@@ -1185,7 +1209,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                                     )
                                   }
                                   placeholder="Enter 6-digit OTP"
-                                  className="w-full md:flex-1 bg-card border border-white/[0.08] rounded-[16px] py-3 md:py-4 px-4 text-white placeholder:text-white/40 focus:border-primary outline-none transition-all text-center tracking-widest font-black text-sm md:text-base"
+                                  className="w-full md:flex-1 bg-card border border-white/[0.08] rounded-[16px] py-3 md:py-4 px-4 text-white placeholder:text-white/40 focus:border-primary outline-none transition-all text-center tracking-widest font-black text-sm md:text-base !ring-0 !ring-offset-0"
                                 />
                                 <Button
                                   type="button"
@@ -1218,7 +1242,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                           setFormData({ ...formData, password: e.target.value })
                         }
                         placeholder="Must be at least 6 characters"
-                        className="w-full bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 px-4 text-white focus:border-primary outline-none transition-all text-sm md:text-base"
+                        className="w-full bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 px-4 text-white focus:border-primary outline-none transition-all text-sm md:text-base !ring-0 !ring-offset-0"
                       />
                     </label>
                   </div>
@@ -1227,7 +1251,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
             </div>
 
             {/* Footer Actions */}
-            <div className="flex pt-3 md:pt-4 mt-auto shrink-0 z-10 bg-card">
+            <div className="flex pt-3 md:pt-4 mt-auto shrink-0 z-10 bg-transparent">
               <div className="flex w-full h-[48px] md:h-[58px] gap-3 md:gap-4">
                 {step > 1 && (
                   <Button

@@ -79,16 +79,16 @@ const Community = ({ children, onSearchActive }) => {
 
   // Filter / panel state
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialTab = searchParams.get("tab") === "shots" ? "Reels" : "All";
+  const initialTab = searchParams.get("tab") === "reels" ? "Reels" : "Highlights";
   const [activeFilter, setActiveFilter] = useState(initialTab);
   const [activeSportFilter, setActiveSportFilter] = useState("");
 
   // Sync activeFilter if URL changes (e.g. from Home page click)
   useEffect(() => {
-    if (searchParams.get("tab") === "shots") {
+    if (searchParams.get("tab") === "reels") {
       setActiveFilter("Reels");
     } else if (activeFilter === "Reels") {
-      setActiveFilter("All");
+      setActiveFilter("Highlights");
     }
   }, [searchParams.get("tab")]);
 
@@ -96,7 +96,7 @@ const Community = ({ children, onSearchActive }) => {
   const handleSetActiveFilter = (filter) => {
     setActiveFilter(filter);
     if (filter === "Reels") {
-      searchParams.set("tab", "shots");
+      searchParams.set("tab", "reels");
       setSearchParams(searchParams, { replace: true });
     } else {
       searchParams.delete("tab");
@@ -277,7 +277,7 @@ const Community = ({ children, onSearchActive }) => {
             {activeFilter === "Reels" ? (
               <ReelsView
                 gateInteraction={gateInteraction}
-                onBack={() => handleSetActiveFilter("All")}
+                onBack={() => handleSetActiveFilter("Highlights")}
               />
             ) : (
               <>

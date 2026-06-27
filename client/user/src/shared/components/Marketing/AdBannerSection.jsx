@@ -85,9 +85,11 @@ export const AdBannerSection = ({ banners = [], loading = false }) => {
 
   if (loading) {
     return (
-      <section className="relative w-full overflow-hidden bg-black py-0">
-        <div className="w-full px-1 md:px-2">
-          <div className="relative aspect-[16/9] rounded-[8px] md:rounded-[8px] overflow-hidden border border-white/10 bg-white/5 animate-pulse" />
+      <section className="relative w-full overflow-hidden py-0">
+        <div className="w-full px-2">
+          <div className="relative bg-[#1B1B1B] border border-[#434242] rounded-[12px] p-2 w-full shadow-lg">
+            <div className="relative aspect-[16/9] rounded-lg overflow-hidden bg-white/5 animate-pulse" />
+          </div>
         </div>
       </section>
     );
@@ -99,72 +101,74 @@ export const AdBannerSection = ({ banners = [], loading = false }) => {
   const isVideo = !!currentBanner?.videoUrl;
 
   return (
-    <section className="relative w-full overflow-hidden bg-black py-0">
-      <div className="w-full px-1 md:px-2">
-        <div className="relative group aspect-[16/9] rounded-[8px] md:rounded-[8px] overflow-hidden border border-white/10 shadow-2xl">
-          {/* Banner Media Container (Horizontal Slides) */}
-          <div
-            className="flex h-full w-full transition-transform duration-700 ease-in-out"
-            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-          >
-            {banners.map((banner, idx) => {
-              const isBannerVideo = !!banner.videoUrl;
-              const isCurrent = idx === currentIndex;
-              return (
-                <div key={idx} className="relative w-full h-full shrink-0">
-                  {isBannerVideo ? (
-                    <video
-                      ref={isCurrent ? videoRef : null}
-                      src={banner.videoUrl}
-                      className="w-full h-full object-contain opacity-90"
-                      autoPlay={isCurrent}
-                      muted={isMuted}
-                      loop
-                      playsInline
-                    />
-                  ) : (
-                    <img
-                      src={banner.imageUrl}
-                      alt={banner.title}
-                      loading={idx === 0 ? "eager" : "lazy"}
-                      className="w-full h-full object-contain opacity-90"
-                    />
-                  )}
-                  {banner.targetUrl && (
-                    <a
-                      href={banner.targetUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="absolute inset-0 z-20"
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Video Control Overlays */}
-          {isVideo && (
-            <div className="absolute top-4 right-4 z-40 flex items-center gap-2">
-              <button
-                onClick={toggleMute}
-                className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:text-[#D2F40E] transition-all"
-                title={isMuted ? "Unmute" : "Mute"}
-               aria-label="Toggle menu">
-                {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
-              </button>
+    <section className="relative w-full overflow-hidden py-0">
+      <div className="w-full px-2">
+        <div className="relative bg-[#1B1B1B] border border-[#434242] rounded-[12px] p-2 w-full shadow-lg">
+          <div className="relative group overflow-hidden rounded-lg aspect-[16/9] w-full">
+            {/* Banner Media Container (Horizontal Slides) */}
+            <div
+              className="flex h-full w-full transition-transform duration-700 ease-in-out"
+              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+            >
+              {banners.map((banner, idx) => {
+                const isBannerVideo = !!banner.videoUrl;
+                const isCurrent = idx === currentIndex;
+                return (
+                  <div key={idx} className="relative w-full h-full shrink-0">
+                    {isBannerVideo ? (
+                      <video
+                        ref={isCurrent ? videoRef : null}
+                        src={banner.videoUrl}
+                        className="w-full h-full object-contain opacity-90"
+                        autoPlay={isCurrent}
+                        muted={isMuted}
+                        loop
+                        playsInline
+                      />
+                    ) : (
+                      <img
+                        src={banner.imageUrl}
+                        alt={banner.title}
+                        loading={idx === 0 ? "eager" : "lazy"}
+                        className="w-full h-full object-contain opacity-90"
+                      />
+                    )}
+                    {banner.targetUrl && (
+                      <a
+                        href={banner.targetUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute inset-0 z-20"
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          )}
 
-          {/* Indicators */}
-          <div className="absolute bottom-6 right-8 flex gap-2 z-20">
-            {banners.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentIndex(idx)}
-                className={`h-1 rounded-full transition-all ${idx === currentIndex ? "w-6 bg-[#D2F40E]" : "w-1.5 bg-white/20 hover:bg-white/40"}`}
-              />
-            ))}
+            {/* Video Control Overlays */}
+            {isVideo && (
+              <div className="absolute top-4 right-4 z-40 flex items-center gap-2">
+                <button
+                  onClick={toggleMute}
+                  className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:text-[#D2F40E] transition-all"
+                  title={isMuted ? "Unmute" : "Mute"}
+                 aria-label="Toggle menu">
+                  {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                </button>
+              </div>
+            )}
+
+            {/* Indicators */}
+            <div className="absolute bottom-6 right-8 flex gap-2 z-20">
+              {banners.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentIndex(idx)}
+                  className={`h-1 rounded-full transition-all ${idx === currentIndex ? "w-6 bg-[#D2F40E]" : "w-1.5 bg-white/20 hover:bg-white/40"}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>

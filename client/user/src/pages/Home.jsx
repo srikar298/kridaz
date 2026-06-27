@@ -12,6 +12,8 @@ import SocialArenaSection from "./HomeSections/SocialArenaSection";
 import Community from "../features/networking/pages/Community";
 import JoinGamesSection from "./HomeSections/JoinGamesSection";
 import ProfessionalsSection from "./HomeSections/ProfessionalsSection";
+import SportsCategoriesSection from "./HomeSections/SportsCategoriesSection";
+import PromotionsSection from "./HomeSections/PromotionsSection";
 import { AdBannerSection } from "../shared/components/Marketing/AdBannerSection";
 import InterestsModal from "../shared/components/modals/InterestsModal";
 import toast from "react-hot-toast";
@@ -43,6 +45,7 @@ import {
   Menu,
   MessageCircle,
   Plus,
+  MapPin,
 } from "lucide-react";
 
 const HEADING_STYLE = { fontFamily: "'Open Sans', sans-serif" };
@@ -56,16 +59,7 @@ const SPORTS = [
   "SWIMMING",
   "TABLE TENNIS",
 ];
-const sportsCategories = [
-  { name: "Cricket", image: "/sports/cricket.png" },
-  { name: "Football", image: "/sports/football.png" },
-  { name: "Basketball", image: "/sports/basketball.png" },
-  { name: "Tennis", image: "/sports/tennis.png" },
-  { name: "Table Tennis", image: "/sports/table-tennis.png" },
-  { name: "Badminton", image: "/sports/badminton.png" },
-  { name: "Pickleball", image: "/sports/pickleball.png" },
-  { name: "Volleyball", image: "/sports/volleyball.png" },
-];
+
 
 export default function Home() {
   const navigate = useNavigate();
@@ -100,6 +94,7 @@ export default function Home() {
   const [selectedHomeState, setSelectedHomeState] = useState("");
   const [selectedHomeCity, setSelectedHomeCity] = useState("");
   const [selectedGameSport, setSelectedGameSport] = useState("all");
+  const [currentLiveMatchSlide, setCurrentLiveMatchSlide] = useState(0);
 
   const { data: states = [], isLoading: loadingStates } =
     useGetStatesListQuery();
@@ -123,7 +118,7 @@ export default function Home() {
       city: selectedHomeCity,
       limit: 6,
     });
-  const professionals = professionalsResp?.data || [];
+  const professionals = professionalsResp?.professionals || professionalsResp?.data?.professionals || professionalsResp?.data || [];
 
   const { data: reelsFeedResp } = useGetReelsFeedQuery();
   const reelsFeed = reelsFeedResp?.reels || [];
@@ -463,24 +458,152 @@ export default function Home() {
             />
           </div>
 
+          {/* -- AD BANNERS -- */}
+          <div className="!mt-8 mb-1 px-2">
+            <AdBannerSection
+              banners={(marketingContent?.banners || []).filter(
+                (b) => b.type !== "PROMOTION"
+              )}
+              loading={marketingLoading}
+            />
+          </div>
+
+          {/* -- UPCOMING BOOKINGS -- */}
+          {isLoggedIn && (
+            <div className="!mt-6 px-4">
+              <div className="flex items-center justify-between px-1 mb-3">
+                <h2 className="text-[16px] font-semibold text-white tracking-wide" style={HEADING_STYLE}>
+                  Upcoming Booking
+                </h2>
+                <Link to="/profile?tab=bookings" className="text-[12px] font-medium text-[#bbf455]">
+                  View More &gt;
+                </Link>
+              </div>
+
+              <div
+                ref={bookingsScrollRef}
+                className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth gap-3 pb-2"
+              >
+                {loadingBookings ? (
+                  <div className="min-w-[190px] w-[190px] h-[84px] bg-[#161616] border border-white/5 rounded-[12px] animate-pulse shrink-0" />
+                ) : (
+                  (upcomingBookingsList.length > 0 ? upcomingBookingsList : [
+                    {
+                      id: "mock1",
+                      date: new Date(Date.now() + 86400000).toISOString(),
+                      startTime: "07:00",
+                      turfId: { name: "Play Arena", city: "Ghatkopar" }
+                    },
+                    {
+                      id: "mock2",
+                      date: new Date(Date.now() + 86400000 * 3).toISOString(),
+                      startTime: "20:00",
+                      turfId: { name: "Turbo Turf", city: "Powai" }
+                    }
+                  ]).map((booking) => {
+                    const dateObj = new Date(booking.date || booking.timeSlot?.date || booking.createdAt);
+                    const dayNum = dateObj.getDate();
+                    const monthStr = dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+                    const dayStr = dateObj.toLocaleString('en-US', { weekday: 'short' });
+                    
+                    // Fallback time parsing
+                    let timeStr = "12:00 PM";
+                    try {
+                      if (booking.startTime || booking.timeSlot?.startTime) {
+                        const timeString = booking.startTime || booking.timeSlot?.startTime;
+                        // Time might be in HH:mm format
+                        if (typeof timeString === 'string' && timeString.includes(':')) {
+                          const [hours, minutes] = timeString.split(':');
+                          const h = parseInt(hours);
+                          const ampm = h >= 12 ? 'PM' : 'AM';
+                          const h12 = h % 12 || 12;
+                          timeStr = `${h12}:${minutes} ${ampm}`;
+                        } else {
+                          timeStr = new Date(timeString).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                        }
+                      }
+                    } catch (e) {
+                      console.error("Error parsing time", e);
+                    }
+
+                    return (
+                      <Link
+                        key={booking._id || booking.id}
+                        to={`/venue/${booking.turfId?._id || booking.turfId}`}
+                        className="min-w-[190px] w-[190px] h-[84px] shrink-0 snap-start bg-[#161616] border border-white/10 rounded-[12px] p-[14px] flex items-center gap-3 hover:bg-[#202020] transition-colors"
+                      >
+                        {/* Date Box */}
+                        <div className="w-[56px] h-[56px] rounded-[8px] border border-white/10 flex flex-col justify-center items-center py-1 px-3 shrink-0 bg-white/5">
+                          <span className="text-[18px] font-bold text-white leading-none">{dayNum}</span>
+                          <span className="text-[10px] text-white/50 uppercase mt-1 leading-none">{monthStr}</span>
+                        </div>
+
+                        {/* Info */}
+                        <div className="flex flex-col justify-center w-[calc(100%-68px)] gap-[2px]">
+                          <div className="text-[10px] text-white/50 truncate">
+                            {dayStr} • {timeStr}
+                          </div>
+                          <div className="text-[12px] font-bold text-white truncate w-full">
+                            {booking.turfId?.name || "Play Arena"}
+                          </div>
+                          <div className="text-[10px] text-white/50 flex items-center truncate w-full">
+                            <MapPin size={10} className="inline mr-1 shrink-0" />
+                            <span className="truncate">{booking.turfId?.city || booking.turfId?.location?.city || "Unknown Location"}</span>
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          )}
+
           {/* -- LIVE MATCHES -- */}
-          {isLoggedIn &&
-            (loadingScoringGames || liveNetworkMatches.length > 0) && (
-              <div className="!mt-2 px-4">
-                <div className="flex items-center justify-between px-1 mb-3">
-                  <h2 className="text-[11px] font-black uppercase text-white/40 tracking-widest">
-                    Live Now
+          {isLoggedIn && (
+              <div className="!mt-8 px-4">
+                <div className="flex items-center justify-between px-1 mb-4">
+                  <h2 className="text-[16px] font-semibold text-white tracking-wide" style={HEADING_STYLE}>
+                    Live Matches
                   </h2>
+                  <Link to="/matches" className="text-[12px] font-medium text-[#bbf455]">
+                    View More &gt;
+                  </Link>
                 </div>
 
                 <div
                   ref={liveMatchesScrollRef}
-                  className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth gap-3"
+                  onScroll={(e) => {
+                    const scrollLeft = e.target.scrollLeft;
+                    const cardWidth = 285 + 12; // w-[285px] + gap-3
+                    const newSlide = Math.round(scrollLeft / cardWidth);
+                    if (newSlide !== currentLiveMatchSlide) {
+                      setCurrentLiveMatchSlide(newSlide);
+                    }
+                  }}
+                  className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth gap-3 pb-2"
                 >
                   {loadingScoringGames ? (
-                    <div className="min-w-full md:min-w-[320px] shrink-0 bg-[#0B0B0C] border border-white/5 rounded-xl animate-pulse h-[142px]" />
+                    <div className="min-w-[285px] w-[285px] h-[161px] bg-[#161616] border border-white/5 rounded-[12px] animate-pulse shrink-0" />
                   ) : (
-                    liveNetworkMatches.map((match) => {
+                    (liveNetworkMatches.length > 0 ? liveNetworkMatches : [
+                      {
+                        _id: "mock1",
+                        venue: "Green Park Arena",
+                        sportType: "Cricket",
+                        overs: 12,
+                        teamA: { name: "Warriors", score: "89/2", oversPlayed: "8.4" },
+                        teamB: { name: "Titans", score: "76/3", oversPlayed: "8.4" }
+                      },
+                      {
+                        _id: "mock2",
+                        venue: "Green Park Arena",
+                        sportType: "Cricket",
+                        overs: 12,
+                        teamA: { name: "Warriors", score: "89/2", oversPlayed: "8.4" },
+                        teamB: { name: "Titans", score: "76/3", oversPlayed: "8.4" }
+                      }
+                    ]).map((match) => {
                       const teamA =
                         match.teamA ||
                         (Array.isArray(match.teams)
@@ -497,102 +620,38 @@ export default function Home() {
                         <Link
                           key={match._id || match.id}
                           to={`/match/live/${match._id || match.id}`}
-                          className="min-w-full md:min-w-[320px] shrink-0 snap-start block bg-gradient-to-br from-[#E83441]/20 via-[#0B0B0C] to-[#0B0B0C] border border-[#E83441]/20 rounded-xl p-4 hover:border-[#E83441]/40 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.4)] backdrop-blur-sm group relative"
+                          className="min-w-[285px] w-[285px] h-[161px] shrink-0 snap-start bg-[#161616] border border-white/10 rounded-[12px] p-[14px] flex flex-col justify-between hover:bg-[#202020] transition-colors relative"
                         >
-                          {/* Top section: Status & Info */}
-                          <div className="flex justify-between items-start mb-4">
-                            <div className="flex gap-3 items-center">
-                              <div className="bg-[#E83441] text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-[4px] tracking-widest shadow-[0_0_10px_rgba(232,52,65,0.4)]">
-                                LIVE
-                              </div>
-                              <div>
-                                <h3 className="text-[12px] font-bold text-white leading-none">
-                                  {match.venue || "Kridaz Arena"}
-                                </h3>
-                                <p className="text-[10px] text-white/50 mt-1 font-medium">
-                                  {match.sportType || match.gameType || "Match"}
-                                </p>
-                              </div>
+                          {/* Top row: LIVE tag + Arena Info */}
+                          <div className="absolute top-[14px] left-[14px] bg-[#E80000] text-white text-[10px] font-bold px-2 py-1 rounded z-10">
+                            LIVE
+                          </div>
+                          
+                          <div className="w-full flex flex-col items-center justify-center text-center mt-1">
+                            <div className="text-[14px] font-[600] text-white leading-[1.2]" style={{ fontFamily: "'Inter', sans-serif" }}>
+                              {match.venue || "Green Park Arena"}
                             </div>
-                            <div className="text-[10px] font-medium text-right leading-tight">
-                              <span className="text-primary">
-                                Overs: {match.overs || 0}
-                              </span>
-                              <br />
-                              {match.target && (
-                                <span className="text-white/40 text-[9px]">
-                                  Target: {match.target}
-                                </span>
-                              )}
+                            <div className="text-[11px] text-white/50 mt-[2px]" style={{ fontFamily: "'Inter', sans-serif" }}>
+                              {match.sportType || match.gameType || "Cricket"} • {match.overs || 12} Overs
                             </div>
                           </div>
 
-                          {/* Bottom section: Scoreboard */}
-                          <div className="flex flex-col gap-2.5 relative pr-6">
-                            {/* Team 1 */}
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <div
-                                  className={`w-6 h-6 rounded bg-card border border-white/10 flex items-center justify-center shrink-0`}
-                                >
-                                  {teamA.logo ? (
-                                    <img
-                                      src={teamA.logo}
-                                      alt="A"
-                                      loading="lazy"
-                                      className="w-full h-full object-cover rounded"
-                                    />
-                                  ) : (
-                                    <span
-                                      className={`text-[10px] font-black text-white`}
-                                    >
-                                      {(teamA.name || "A").substring(0, 2)}
-                                    </span>
-                                  )}
-                                </div>
-                                <span className="text-[11px] font-bold text-white/60">
-                                  {teamA.name || "Team A"}
-                                </span>
-                              </div>
-                              <div className="text-[14px] font-black text-white/60 font-mono tracking-tight">
-                                {teamA.score || "0"}{" "}
-                                <span className="text-[9px] font-medium text-white/40 ml-0.5">
-                                  ({teamA.oversPlayed || "0.0"})
-                                </span>
-                              </div>
+                          {/* Teams section */}
+                          <div className="flex items-center justify-between mt-auto">
+                            {/* Team A Box */}
+                            <div className="w-[96px] h-[86px] rounded-[8px] border border-white/10 bg-white/5 flex flex-col items-center justify-center py-2 px-1 text-center shrink-0">
+                              <span className="text-[11px] text-white/70 truncate w-full">{teamA.name || "Warriors"}</span>
+                              <span className="text-[20px] font-bold text-white my-1 leading-none">{teamA.score || "0/0"}</span>
+                              <span className="text-[9px] text-white/50">{teamA.oversPlayed || "0.0"} Overs</span>
                             </div>
 
-                            {/* Team 2 (Batting) */}
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <div
-                                  className={`w-6 h-6 rounded bg-yellow-500/20 border border-white/10 flex items-center justify-center shrink-0`}
-                                >
-                                  {teamB.logo ? (
-                                    <img
-                                      src={teamB.logo}
-                                      alt="B"
-                                      loading="lazy"
-                                      className="w-full h-full object-cover rounded"
-                                    />
-                                  ) : (
-                                    <span
-                                      className={`text-[10px] font-black text-yellow-500`}
-                                    >
-                                      {(teamB.name || "B").substring(0, 2)}
-                                    </span>
-                                  )}
-                                </div>
-                                <span className="text-[11px] font-bold text-white">
-                                  {teamB.name || "Team B"}
-                                </span>
-                              </div>
-                              <div className="text-[14px] font-black text-white font-mono tracking-tight shadow-[var(--primary)]">
-                                {teamB.score || "0"}{" "}
-                                <span className="text-[9px] font-medium text-white/60 ml-0.5">
-                                  ({teamB.oversPlayed || "0.0"})
-                                </span>
-                              </div>
+                            <div className="text-[11px] font-bold text-white/40">VS</div>
+
+                            {/* Team B Box */}
+                            <div className="w-[96px] h-[86px] rounded-[8px] border border-white/10 bg-white/5 flex flex-col items-center justify-center py-2 px-1 text-center shrink-0">
+                              <span className="text-[11px] text-white/70 truncate w-full">{teamB.name || "Titans"}</span>
+                              <span className="text-[20px] font-bold text-white my-1 leading-none">{teamB.score || "0/0"}</span>
+                              <span className="text-[9px] text-white/50">{teamB.oversPlayed || "0.0"} Overs</span>
                             </div>
                           </div>
                         </Link>
@@ -600,17 +659,73 @@ export default function Home() {
                     })
                   )}
                 </div>
+
+                {/* Dot Slider */}
+                <div className="flex justify-center items-center gap-1.5 mt-3 mb-1">
+                  {Array.from({ length: liveNetworkMatches.length > 0 ? liveNetworkMatches.length : 2 }).map((_, idx) => (
+                    <div 
+                      key={idx} 
+                      className={`h-1.5 rounded-full transition-all duration-300 ${currentLiveMatchSlide === idx ? 'w-4 bg-white' : 'w-1.5 bg-white/20'}`}
+                    ></div>
+                  ))}
+                </div>
               </div>
             )}
 
-          {/* -- AD BANNERS -- */}
-          <div className="!mt-3 mb-1 px-2">
-            <AdBannerSection
-              banners={(marketingContent?.banners || []).filter(
-                (b) => b.type !== "PROMOTION"
-              )}
-              loading={marketingLoading}
-            />
+          {/* -- JOIN GAMES NEARBY (NEW UI) -- */}
+          <div className="!mt-8 px-4">
+            <div className="flex items-center justify-between px-1 mb-4">
+              <h2 className="text-[16px] font-semibold text-white tracking-wide" style={{ fontFamily: "'Inter', sans-serif" }}>
+                Join Games Nearby
+              </h2>
+              <Link to="/join-games" className="text-[12px] font-medium text-[#bbf455]">
+                View More &gt;
+              </Link>
+            </div>
+            
+            <div className="flex flex-col gap-[14px]">
+              {[1, 2, 3].map((item) => (
+                <div key={item} className="w-full max-w-[361px] mx-auto h-[158px] rounded-[12px] border border-[#434242] bg-[#1B1B1B] p-[14px] flex flex-col justify-between">
+                  {/* Top Half */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-white text-[20px] font-bold leading-none" style={{ fontFamily: "'Inter', sans-serif" }}>Cricket</span>
+                        <span className="bg-[#1C361C] text-[#BBF455] text-[10px] px-2.5 py-0.5 rounded-full font-medium tracking-wide">Turf</span>
+                      </div>
+                      <div className="flex -space-x-1.5">
+                        {[1,2,3,4,5,6,7].map(i => (
+                          <div key={i} className="w-[22px] h-[22px] rounded-full border border-[#1B1B1B] bg-gray-600 overflow-hidden shrink-0">
+                            <img src={`https://i.pravatar.cc/100?img=${i + item * 5}`} alt="player" className="w-full h-full object-cover" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="text-right flex flex-col items-end">
+                      <div className="text-white font-bold text-[14px] leading-none mb-1">8 <span className="text-white/60 text-[11px] font-semibold">/ 11</span></div>
+                      <div className="text-white/40 text-[10px] font-medium">Joined</div>
+                    </div>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="w-full h-[1px] bg-white/5 my-1"></div>
+
+                  {/* Bottom Half */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-white font-bold text-[13px] leading-none" style={{ fontFamily: "'Inter', sans-serif" }}>Today, 7:30 AM</span>
+                      <div className="flex items-center gap-1">
+                        <MapPin size={12} className="text-white/40 shrink-0" />
+                        <span className="text-white/40 text-[11px] truncate max-w-[180px]">Green Park Arena, Ghatkopar</span>
+                      </div>
+                    </div>
+                    <button className="bg-[#BBF455] text-black font-bold text-[12px] px-4 py-2 rounded-full shrink-0">
+                      Join Now
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* -- UPCOMING BOOKINGS -- */}
@@ -730,9 +845,8 @@ export default function Home() {
                 </div>
               </div>
             )}
-
           {/* -- FIND YOUR ARENA -- */}
-          <div className="!mt-2 px-2">
+          <div className="!mt-8 px-2">
             <VenuesSection
               userLocation={userLocation}
               loading={loading}
@@ -744,7 +858,7 @@ export default function Home() {
           </div>
 
           {/* -- FIND PLAYERS NEAR YOU -- */}
-          <div className="!mt-2 px-2">
+          <div className="!mt-8 px-2">
             <PlayersSection
               loading={loading}
               players={players}
@@ -753,123 +867,80 @@ export default function Home() {
             />
           </div>
 
-          {/* -- SPORTS CATEGORIES -- */}
-          <div className="!mt-2 mb-2 px-2">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-[12px] font-black uppercase text-white tracking-widest">
-                Sports
-              </h2>
+          {/* -- PROFESSIONALS (NEW UI) -- */}
+          <div className="!mt-8 px-4">
+            <div className="flex items-center justify-between px-1 mb-4">
+              <div
+                className="text-[16px] font-semibold text-white tracking-wide"
+                style={{ fontFamily: "'Inter', sans-serif" }}
+              >
+                Professionals
+              </div>
+              <Link
+                to="/professionals"
+                className="flex items-center gap-1 text-[12px] font-medium text-[#bbf455] whitespace-nowrap"
+              >
+                View More &gt;
+              </Link>
             </div>
-            <div className="flex overflow-x-auto no-scrollbar gap-4 pb-2 snap-x snap-mandatory">
-              {sportsCategories.map((sport, index) => (
-                <div
-                  key={index}
-                  onClick={() =>
-                    navigate(`/search?q=${encodeURIComponent(sport.name)}`)
-                  }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      navigate(`/search?q=${encodeURIComponent(sport.name)}`);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Search ${sport.name}`}
-                  className="flex flex-col items-center cursor-pointer snap-start shrink-0 focus:outline-none focus:ring-2 focus:ring-primary rounded-[20px]"
-                >
-                  <div className="w-[88px] h-[88px] rounded-[20px] overflow-hidden relative flex items-center justify-center">
-                    <img
-                      src={sport.image}
-                      alt={sport.name}
-                      width="88"
-                      height="88"
-                      loading="lazy"
-                      className={`w-full h-full object-contain drop-shadow-md ${sport.name === "Basketball" || sport.name === "Pickleball" ? "scale-[0.85]" : ""}`}
+            
+            <div className="flex gap-[14px] overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2">
+              {professionalsLoading ? (
+                [...Array(5)].map((_, i) => (
+                  <div key={i} className="shrink-0 w-[188px] h-[234px] snap-start rounded-[12px] bg-[#161616] animate-pulse" />
+                ))
+              ) : professionals.length === 0 ? (
+                <div className="text-white/50 text-[13px] py-4 w-full text-center" style={{ fontFamily: "'Inter', sans-serif" }}>No professionals available in your area.</div>
+              ) : (
+                professionals.map((p) => (
+                  <div
+                    key={p.id || p._id}
+                    className="shrink-0 w-[188px] h-[234px] snap-start relative rounded-[12px] overflow-hidden group cursor-pointer border border-[#434242]"
+                  >
+                    <img 
+                      src={p.profilePicture || p.profileImage || p.image || "https://i.pravatar.cc/300?img=11"} 
+                      alt={p.name} 
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/30 to-transparent"></div>
+                    
+                    <div className="absolute top-3 left-3 bg-black/40 backdrop-blur-md px-2 py-1 rounded-[6px] flex items-center gap-1 border border-white/10">
+                      <span className="text-white text-[10px]">★</span>
+                      <span className="text-white text-[11px] font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>{p.rating || "4.8"}</span>
+                    </div>
+
+                    <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
+                      <div className="flex flex-col max-w-[100px]">
+                        <span className="text-white font-bold text-[14px] leading-tight truncate" style={{ fontFamily: "'Inter', sans-serif" }}>
+                          {p.name ? p.name : "Rahul Sharma"}
+                        </span>
+                        <span className="text-white/80 text-[12px] mt-0.5" style={{ fontFamily: "'Inter', sans-serif" }}>
+                          {p.role || p.primaryRole || "Coach"}
+                        </span>
+                      </div>
+                      <button className="bg-white text-black font-bold text-[12px] px-3.5 py-1.5 rounded-[8px] shrink-0 active:scale-95 transition-transform" style={{ fontFamily: "'Inter', sans-serif" }}>
+                        Book
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
+
+          {/* -- SPORTS CATEGORIES -- */}
+          <SportsCategoriesSection />
 
           {/* -- PROMOTIONS & HOST YOUR VENUE CTA -- */}
-          <div className="!mt-4 px-2 space-y-4">
-            {/* Dynamic Promotions */}
-            {(marketingContent?.banners || [])
-              .filter((b) => b.type === "PROMOTION" && b.isActive)
-              .sort((a, b) => a.order - b.order)
-              .map((promo) => {
-                const Wrapper = promo.targetUrl ? "a" : "div";
-                const wrapperProps = promo.targetUrl
-                  ? {
-                    href: promo.targetUrl,
-                    target: "_blank",
-                    rel: "noopener noreferrer",
-                  }
-                  : {};
-
-                return (
-                  <Wrapper
-                    key={promo._id || promo.id}
-                    {...wrapperProps}
-                    className="relative block overflow-hidden rounded-2xl w-full aspect-video shadow-[0_4px_20px_rgba(0,0,0,0.5)] group border border-white/[0.05] hover:border-primary/50 transition-all duration-300 cursor-pointer"
-                  >
-                    {promo.videoUrl ? (
-                      <video
-                        src={promo.videoUrl}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                      />
-                    ) : (
-                      <div
-                        className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
-                        style={{
-                          backgroundImage: `url('${promo.imageUrl || ""}')`,
-                        }}
-                      />
-                    )}
-                  </Wrapper>
-                );
-              })}
-
-            {/* Static Host Your Venue */}
-            {(marketingContent?.banners || []).filter(
-              (b) => b.type === "PROMOTION" && b.isActive
-            ).length === 0 && (
-                <Link
-                  to="/business/venue"
-                  className="relative block overflow-hidden rounded-2xl w-full aspect-video shadow-[0_4px_20px_rgba(0,0,0,0.5)] group border border-white/[0.05] hover:border-primary/50 transition-all duration-300"
-                >
-                  <div
-                    className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
-                    style={{
-                      backgroundImage: "url('/host-venue-bg-custom-2.webp')",
-                    }}
-                  />
-                  <div className="relative z-10 w-[45%] h-full p-4 flex flex-col justify-center gap-1.5 pl-5">
-                    <h3 className="text-[16px] leading-tight font-black text-white uppercase drop-shadow-lg">
-                      Host Your Venue
-                    </h3>
-                    <p className="text-[9px] font-medium text-white/90 leading-snug drop-shadow-md">
-                      Partner with us to list your turf and manage bookings
-                      seamlessly.
-                    </p>
-                  </div>
-                </Link>
-              )}
-          </div>
+          <PromotionsSection marketingContent={marketingContent} />
 
           {/* -- SOCIAL ARENA -- */}
-          <div className="!mt-2 px-2">
+          <div className="!mt-8 px-2">
             <SocialArenaSection reelsFeed={reelsFeed} />
           </div>
 
           {/* -- JOIN GAMES NEAR YOU (Feature Flag) -- */}
-          <div className="!mt-2 px-2">
+          <div className="!mt-8 px-2">
             <JoinGamesSection
               featureFlags={featureFlags}
               selectedHomeState={selectedHomeState}
@@ -887,7 +958,7 @@ export default function Home() {
             />
           </div>
 
-          <div className={`!mt-2 px-2 ${shouldHideRest ? "hidden" : ""}`}>
+          <div className={`!mt-8 px-2 ${shouldHideRest ? "hidden" : ""}`}>
             {/* -- FIND PROFESSIONALS (Feature Flag) -- */}
             <ProfessionalsSection
               featureFlags={featureFlags}

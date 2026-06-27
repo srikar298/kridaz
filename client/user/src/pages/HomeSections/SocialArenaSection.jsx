@@ -206,34 +206,15 @@ export default function SocialArenaSection({ reelsFeed }) {
   let playingCount = 0;
 
   return (
-    <section className="mb-8 w-full overflow-hidden">
+    <section className="mb-2 w-full overflow-hidden">
       <div className="w-full">
-        <div className="relative flex flex-row items-center justify-between gap-4 mb-6 lg:mb-8">
-          <div className="relative flex items-center gap-2">
-            <h2
-              className="text-[14px] font-black text-white tracking-tighter leading-none flex items-center gap-2 md:gap-3"
-              style={{ fontFamily: "'Open Sans', sans-serif" }}
-            >
-              Your{" "}
-              <span
-                style={{
-                  background: GRAD,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                Social Arena
-              </span>
-            </h2>
-          </div>
-        </div>
+        {/* Heading removed to prevent duplication with CommunityFeed */}
 
         {/* Reels Section (Horizontal Mock Data) */}
         <div className="mb-2">
           <div
             ref={containerRef}
-            className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x relative"
+            className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x relative"
           >
             {reelsFeed.length === 0 ? (
               <div className="w-full py-12 flex items-center justify-center border border-white/5 bg-white/5 rounded-[12px]">

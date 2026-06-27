@@ -45,12 +45,12 @@ const CustomDropdown = ({
   return (
     <div className="relative flex-1 md:min-w-[120px]" ref={dropdownRef}>
       <div
-        className="w-full bg-card/80 backdrop-blur-md border border-white/5 rounded-md py-1.5 px-2.5 text-white/90 text-[11px] sm:text-[12px] font-medium focus:outline-none hover:border-primary/40 hover:text-white transition-all cursor-pointer hover:bg-card flex items-center justify-between gap-2 shadow-sm"
+        className="w-[120px] h-[34px] bg-[#161616] border border-[#2b2b2b] rounded-[8px] pt-[8px] pr-[8px] pb-[8px] pl-[10px] text-white text-[13px] font-medium focus:outline-none hover:border-white/20 transition-all cursor-pointer flex items-center justify-between gap-[4px]"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="truncate">{selectedOption.label}</span>
         <ChevronDown
-          size={14}
+          size={16}
           className={`text-white/40 transition-transform duration-200 shrink-0 ${isOpen ? "rotate-180" : ""}`}
         />
       </div>
@@ -62,7 +62,7 @@ const CustomDropdown = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-[calc(100%+4px)] left-0 w-full min-w-[120px] bg-card/95 backdrop-blur-xl border border-white/10 rounded-md shadow-2xl overflow-hidden z-50 py-1"
+            className="absolute top-[calc(100%+8px)] left-0 w-[120px] bg-[#161616] border border-[#2b2b2b] rounded-[8px] shadow-2xl overflow-hidden z-50 py-1"
           >
             {options.map((opt) => (
               <div
@@ -450,39 +450,58 @@ const CommunityFeed = ({
 
       {/* Filters Row */}
       {!debouncedSearchQuery.trim() && (
-        <div className="mb-6">
-          {/* Unified View Filters Dropdowns */}
-          <div className="flex gap-2 items-center w-full pb-1">
-            {/* Post Type Filter */}
-            <CustomDropdown
-              value={activeFilter}
-              onChange={handleSetActiveFilter}
-              options={[
-                "All",
-                "Following",
-                "Highlights",
-                "Match Moments",
-                "Announcements",
-              ].map((f) => ({ label: f, value: f }))}
-            />
+        <div className="mb-6 flex flex-col gap-4 px-2 md:px-0">
+          <div className="flex justify-between items-center w-full">
+            <h2 className="text-[18px] font-semibold text-white tracking-[0px] leading-[1.2] normal-case" style={{ fontFamily: "'Inter', sans-serif" }}>
+              Your Social Arena
+            </h2>
+            <div className="w-[120px]">
+              <CustomDropdown
+                value={activeFilter}
+                onChange={handleSetActiveFilter}
+                options={[
+                  "All",
+                  "Following",
+                  "Highlights",
+                  "Match Moments",
+                  "Announcements",
+                ].map((f) => ({ label: f, value: f }))}
+              />
+            </div>
+          </div>
 
-            {/* Sport Category Filter */}
-            <CustomDropdown
-              value={activeSportFilter}
-              onChange={setActiveSportFilter}
-              placeholder="All Categories"
-              options={[
-                { label: "All Categories", value: "" },
-                ...[
-                  "Cricket",
-                  "Football",
-                  "Rugby",
-                  "Baseball",
-                  "Hockey",
-                  "Athletics",
-                ].map((s) => ({ label: s, value: s.toLowerCase() })),
-              ]}
-            />
+          {/* Sport Category Pill Row */}
+          <div className="flex items-center overflow-x-auto w-full no-scrollbar bg-[#161616] p-[6px] h-[48px] rounded-[12px] border border-[#2b2b2b] gap-[6px]">
+            <button
+              onClick={() => setActiveSportFilter("")}
+              className={`shrink-0 px-4 h-full flex items-center justify-center rounded-[8px] text-[13px] font-medium transition-all ${
+                activeSportFilter === "" ? "bg-[#333333] text-white" : "text-[#a5a5a5] hover:text-white"
+              }`}
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              All Categories
+            </button>
+            {[
+              { label: "Cricket", value: "cricket", icon: "🏏" },
+              { label: "Football", value: "football", icon: "⚽" },
+              { label: "Basketball", value: "basketball", icon: "🏀" },
+              { label: "Rugby", value: "rugby", icon: "🏉" },
+              { label: "Baseball", value: "baseball", icon: "⚾" },
+              { label: "Hockey", value: "hockey", icon: "🏑" },
+              { label: "Athletics", value: "athletics", icon: "🏃" }
+            ].map((sport) => (
+              <button
+                key={sport.value}
+                onClick={() => setActiveSportFilter(sport.value)}
+                className={`shrink-0 flex items-center justify-center gap-2 px-4 h-full rounded-[8px] text-[13px] font-medium transition-all ${
+                  activeSportFilter === sport.value ? "bg-[#333333] text-white" : "text-[#a5a5a5] hover:text-white"
+                }`}
+                style={{ fontFamily: "'Inter', sans-serif" }}
+              >
+                <span className="grayscale opacity-70 text-[14px] leading-none">{sport.icon}</span>
+                {sport.label}
+              </button>
+            ))}
           </div>
         </div>
       )}
@@ -580,11 +599,11 @@ const CommunityFeed = ({
           <Loader2 size={32} className="text-primary animate-spin" />
         </div>
       ) : loadedPosts.length === 0 ? (
-        <div className="bg-background border border-white/5 rounded-[8px] p-16 text-center text-white/30 font-bold uppercase tracking-widest text-sm">
+        <div className="bg-background border border-white/5 rounded-[8px] p-16 text-center text-white/30 font-bold uppercase tracking-widest text-sm mx-2 md:mx-0">
           No posts found
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-6 px-2 md:px-0">
           {loadedPosts.map((post) => (
             <PostItem
               key={post._id || post.id}

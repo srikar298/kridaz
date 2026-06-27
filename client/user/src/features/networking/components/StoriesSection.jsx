@@ -116,11 +116,13 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
         {/* Add/View Your Story */}
         <div className="flex flex-col items-center gap-2.5 shrink-0 group relative">
           <div
-            className={`w-[72px] h-[72px] rounded-full p-[2px] relative ${
-              myStoryGroup && hasSeenGroup(myStoryGroup)
-                ? "bg-white/20"
-                : "bg-gradient-to-r from-primary to-primary"
-            }`}
+            className="w-[72px] h-[72px] rounded-full relative shrink-0"
+            style={{
+              padding: "1.5px",
+              background: myStoryGroup && hasSeenGroup(myStoryGroup)
+                ? "rgba(255, 255, 255, 0.2)"
+                : "linear-gradient(149.28deg, #55DEE8 13.25%, #BFF367 83.54%)"
+            }}
           >
             <div
               onClick={() => {
@@ -204,7 +206,13 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
             className="flex flex-col items-center gap-2.5 shrink-0 cursor-pointer group"
           >
             <div
-              className={`w-[72px] h-[72px] rounded-full p-[2px] relative ${hasSeenGroup(group) ? "bg-white/20" : "bg-gradient-to-r from-primary to-primary"}`}
+              className="w-[72px] h-[72px] rounded-full relative shrink-0"
+              style={{
+                padding: "1.5px",
+                background: hasSeenGroup(group)
+                  ? "rgba(255, 255, 255, 0.2)"
+                  : "linear-gradient(149.28deg, #55DEE8 13.25%, #BFF367 83.54%)"
+              }}
             >
               <div className="w-full h-full rounded-full bg-background p-[2px]">
                 <div className="w-full h-full rounded-full overflow-hidden bg-card">
