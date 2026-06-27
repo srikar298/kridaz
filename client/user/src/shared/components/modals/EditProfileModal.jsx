@@ -61,6 +61,8 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
         bio: user.bio || "",
         gender: user.gender || "",
         location: user.location || user.city || "",
+        city: user.city || "",
+        state: user.state || "",
         interests: user.interests || user.sportTypes || [],
       });
     }
@@ -107,7 +109,14 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
 
   const handleSelectLocation = (suggestion) => {
     const formatted = formatLocation(suggestion);
-    setFormData({ ...formData, location: formatted });
+    const cityName = suggestion.city || suggestion.display_name.split(",")[0].trim();
+    const stateName = suggestion.state || "";
+    setFormData({ 
+      ...formData, 
+      location: formatted,
+      city: cityName,
+      state: stateName
+    });
     setShowSuggestions(false);
   };
 
@@ -215,7 +224,26 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
   const submitProfileUpdate = async (finalPhone = formData.phone) => {
     setLoading(true);
     try {
-      const payload = { ...formData, phone: finalPhone };
+      let currentCity = formData.city || "";
+      let currentState = formData.state || "";
+
+      if ((!currentState || currentState.trim() === "") && formData.location) {
+        const parts = formData.location.split(",").map((p) => p.trim()).filter(Boolean);
+        if (parts.length >= 2) {
+          currentCity = parts[0];
+          currentState = parts[1];
+        } else if (parts.length === 1) {
+          currentCity = parts[0];
+          currentState = parts[0];
+        }
+      }
+
+      const payload = { 
+        ...formData, 
+        phone: finalPhone,
+        city: currentCity,
+        state: currentState
+      };
       const response = await axiosInstance.put(
         "/api/user/auth/updateProfile",
         payload
