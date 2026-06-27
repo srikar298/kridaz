@@ -228,16 +228,16 @@ const sumExtras = (extras) => {
 
 // ── data loader (shared by every endpoint) ───────────────────────────────
 
-export const loadScoringContext = async (matchId) => {
+export const loadScoringContext = async (matchId, options = {}) => {
+  const includeTimeline = options.includeTimeline !== false;
   // matchId can be the CricketMatch.id, HostedGame.id, or shortId.
   const resolvedId = await resolveGameId(matchId);
-
   const scoring = await prisma.cricketMatch.findFirst({
     where: { OR: [{ id: resolvedId }, { gameId: resolvedId }] },
     include: {
       innings: { orderBy: { inningsIndex: "asc" } },
       playerStats: true,
-      timeline: { orderBy: { timestamp: "asc" } },
+      timeline: includeTimeline ? { orderBy: { timestamp: "asc" } } : undefined,
     },
   });
   if (!scoring) throw new NotFoundError("Match not found");
@@ -381,22 +381,19 @@ export const buildScorecard = async (matchId) => {
       };
     });
 
-    // --- Fall of Wickets ---
+    // --- Fall of Wickets (O(n) pre-computation) ---
     let cumRuns = 0;
     let wicketIdx = 0;
-    const validBallsSoFar = (i) => {
-      // Count legal balls up to AND including index i.
-      let count = 0;
-      for (let k = 0; k <= i; k++) {
-        const b = inningsBalls[k];
-        const legal =
-          b.extraType !== "PENALTY" &&
-          (b.extraType !== "WIDE" || houseRules.wideIsLegalBall) &&
-          (b.extraType !== "NO_BALL" || houseRules.noBallIsLegalBall);
-        if (legal) count++;
-      }
-      return count;
-    };
+    const runningLegalBalls = [];
+    let legalCount = 0;
+    for (const b of inningsBalls) {
+      const legal =
+        b.extraType !== "PENALTY" &&
+        (b.extraType !== "WIDE"    || houseRules.wideIsLegalBall) &&
+        (b.extraType !== "NO_BALL" || houseRules.noBallIsLegalBall);
+      if (legal) legalCount++;
+      runningLegalBalls.push(legalCount);
+    }
     const fallOfWickets = [];
     for (let i = 0; i < inningsBalls.length; i++) {
       const b = inningsBalls[i];
@@ -405,7 +402,7 @@ export const buildScorecard = async (matchId) => {
         wicketIdx += 1;
         const outId = b.playerOutId || b.batterId;
         const out = players.get(outId);
-        const balls = validBallsSoFar(i);
+        const balls = runningLegalBalls[i];
         const over = `${Math.floor(balls / ballsPerOver)}.${balls % ballsPerOver}`;
         fallOfWickets.push({
           wicketNumber: wicketIdx,
@@ -623,7 +620,7 @@ const buildPartnerships = (inningsBalls, players, ballsPerOver) => {
 // Slot with no userId (still OPEN) OR explicitly marked bench → Bench.
 
 export const buildSquads = async (matchId) => {
-  const { hostedGame, players } = await loadScoringContext(matchId);
+  const { hostedGame, players } = await loadScoringContext(matchId, { includeTimeline: false });
 
   const mkSide = (teamKey) => {
     const team = hostedGame.teams?.find((t) => t.teamKey === teamKey);

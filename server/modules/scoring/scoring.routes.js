@@ -9,6 +9,7 @@ import {
   goLive,
   endLive,
   updateCommentarySettings,
+  getMatchCommentary,
   startNextInnings,
   // Phase 1 additions
   setToss,
@@ -40,6 +41,7 @@ import {
 } from "./scoring.controller.js";
 import verifyAuth from "../../middleware/jwt/auth.middleware.js";
 import { validate } from "../../middleware/validate.middleware.js";
+import { scoringLimiter } from "../../middleware/rateLimiter.middleware.js";
 import {
   startScoringSchema,
   updateScoreSchema,
@@ -299,7 +301,7 @@ router.post("/start", validate(startScoringSchema), startScoring);
  *       200:
  *         description: Score updated
  */
-router.put("/update", validate(updateScoreSchema), updateScore);
+router.put("/update", scoringLimiter, validate(updateScoreSchema), updateScore);
 
 /**
  * @swagger
@@ -386,6 +388,7 @@ router.post("/:matchId/end-live", endLive);
  *         description: Commentary settings updated
  */
 router.post("/:matchId/commentary-settings", updateCommentarySettings);
+router.get("/:matchId/commentary", getMatchCommentary);
 
 /**
  * @swagger
@@ -550,7 +553,7 @@ router.post("/set-players", validate(setPlayersSchema), setPlayers);
  *       200:
  *         description: Action reverted
  */
-router.post("/undo", validate(undoLastBallSchema), undoLastBall);
+router.post("/undo", scoringLimiter, validate(undoLastBallSchema), undoLastBall);
 
 /**
  * @swagger

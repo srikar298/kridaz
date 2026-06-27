@@ -233,11 +233,8 @@ export const startScoring = async (req, res) => {
  */
 export const startNextInnings = async (req, res) => {
   try {
-    const { scoringId, battingTeamId } = req.body;
-    const scoring = await scoringService.advanceToNextInnings(
-      scoringId,
-      battingTeamId
-    , req.user);
+    const { scoringId, battingTeamId, isFollowOn, isSuperOver } = req.body;
+    const scoring = await scoringService.advanceToNextInnings(scoringId, battingTeamId, { isFollowOn, isSuperOver }, req.user);
 
     res.status(200).json({ success: true, scoring });
   } catch (error) {
@@ -539,6 +536,25 @@ export const updateCommentarySettings = async (req, res) => {
     res.status(200).json({ success: true, data: updatedGame });
   } catch (error) {
     logger.error("[Scoring] Update Commentary Settings Error:", error);
+    handleControllerError(res, error);
+  }
+};
+
+export const getMatchCommentary = async (req, res) => {
+  try {
+    const { matchId } = req.params;
+    const limit = req.query.limit ? parseInt(req.query.limit) : 50;
+    const commentaryFeed = await prisma.matchBall.findMany({
+      where: {
+        matchId,
+        commentary: { not: null }
+      },
+      orderBy: { timestamp: "desc" },
+      take: limit
+    });
+    res.status(200).json({ success: true, commentary: commentaryFeed });
+  } catch (error) {
+    logger.error("[Scoring] Get Match Commentary Error:", error);
     handleControllerError(res, error);
   }
 };

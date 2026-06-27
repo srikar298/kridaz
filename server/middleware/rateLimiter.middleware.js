@@ -194,3 +194,23 @@ export const globalLimiter = rateLimit({
   skip: (req) =>
     isTestOrDev || req.path === "/health" || req.path === "/api/health",
 });
+
+/**
+ * Scoring update limiter — caps ball updates.
+ * 60 requests per minute per match (1 ball per second is a safe upper limit).
+ * This prevents double-taps or rapid retry bugs from flooding the database with concurrent transaction updates.
+ */
+export const scoringLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: createRedisStoreWithBreaker('rl:scoring'),
+  keyGenerator: (req) => {
+    const matchId = req.body?.scoringId || req.params?.matchId || req.body?.matchId;
+    if (matchId) return `match:${matchId}`;
+    return userOrIpKey(req);
+  },
+  message: { success: false, code: 'RATE_LIMITED', message: 'Too many updates. Please wait a second.' },
+  skip: (req) => isTestOrDev,
+});

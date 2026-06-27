@@ -488,6 +488,9 @@ export const computeScoreSnapshot = (scoring, match) => {
       fielding: currentInnings.fieldingTeamReviews ?? 2,
     },
     powerplayOvers: currentInnings.powerplayOvers || 0,
+    // Free Hit status — set by processScoreUpdate after every no-ball (Law 21.18).
+    // Clients use this to show the FREE HIT indicator and disable illegal dismissals.
+    freeHitActive: scoring.freeHitActive ?? false,
     isInningsComplete,
     isMatchComplete,
     // DLS-lite signals — UI can show "Revised Target: 142 in 18 overs" etc.

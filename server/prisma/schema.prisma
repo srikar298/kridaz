@@ -386,13 +386,13 @@ model Booking {
 }
 
 model Wallet {
-  id              String              @id @default(uuid())
-  userId          String              @unique
-  balance         Decimal             @default(0) @db.Decimal(12, 2)
-  reservedBalance Decimal             @default(0) @db.Decimal(12, 2)
-  promotionalBalance Decimal          @default(0) @db.Decimal(12, 2)
-  user            User                @relation(fields: [userId], references: [id])
-  transactions    WalletTransaction[]
+  id                 String              @id @default(uuid())
+  userId             String              @unique
+  balance            Decimal             @default(0) @db.Decimal(12, 2)
+  reservedBalance    Decimal             @default(0) @db.Decimal(12, 2)
+  promotionalBalance Decimal             @default(0) @db.Decimal(12, 2)
+  user               User                @relation(fields: [userId], references: [id])
+  transactions       WalletTransaction[]
 }
 
 model WalletTransaction {
@@ -639,6 +639,8 @@ model Innings {
   battingTeamReviews  Int          @default(2)
   fieldingTeamReviews Int          @default(2)
   powerplayOvers      Int          @default(0)
+  isSuperOver         Boolean      @default(false)
+  isFollowOn          Boolean      @default(false)
   createdAt           DateTime     @default(now())
   match               CricketMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
 }
@@ -665,6 +667,10 @@ model MatchBall {
   wicketTakerId    String?
   fieldingPosition String?
   distance         String?
+  isOverthrow      Boolean      @default(false)
+  overthrowRuns    Int          @default(0)
+  isDeadBall       Boolean      @default(false)
+  obstructionMode  String?
   commentary       String?
   timestamp        DateTime     @default(now())
   match            CricketMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
@@ -993,7 +999,7 @@ model Coupon {
   code          String              @unique
   ownerId       String?
   turfId        String?
-  discountType  String
+  discountType  String // e.g. 'PERCENTAGE', 'FIXED'
   discountValue Decimal             @db.Decimal(10, 2)
   validUntil    DateTime
   usageLimit    Int                 @default(0)
@@ -1733,16 +1739,16 @@ model ProfessionalInquiry {
 }
 
 model GameApplication {
-  id            String   @id @default(uuid())
-  gameId        String
-  teamId        String
-  captainId     String
-  status        String   @default("PENDING")
+  id                String   @id @default(uuid())
+  gameId            String
+  teamId            String
+  captainId         String
+  status            String   @default("PENDING")
   totalRequired     Float    @default(0)
   guarantorReleased Float    @default(0)
-  message       String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  message           String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   game    HostedGame @relation(fields: [gameId], references: [id], onDelete: Cascade)
   team    Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
