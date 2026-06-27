@@ -170,8 +170,6 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0(@types/node@25.9.3)(jiti@1.21.7)(sass@1.99.0)(terser@5.48.0)
 
-  client/flutter-app: {}
-
   client/user:
     dependencies:
       '@capacitor/android':

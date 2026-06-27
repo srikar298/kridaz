@@ -31,7 +31,7 @@ const WICKET_TYPES = [
   { key: "STUMPED", label: "Stumped", needsFielder: true },
   { key: "HIT_WICKET", label: "Hit Wicket", needsFielder: false },
   {
-    key: "OBSTRUCTING",
+    key: "OBSTRUCTING_FIELD",
     label: "Obstructing Field",
     needsFielder: false,
     needsWhoOut: true,
@@ -49,6 +49,12 @@ const WICKET_TYPES = [
     needsWhoOut: true,
   },
   { key: "TIMED_OUT", label: "Timed Out", needsFielder: false },
+  {
+    key: "MANKAD",
+    label: "Mankad",
+    needsFielder: false,
+    needsWhoOut: false,
+  },
 ];
 
 const WicketModal = ({
@@ -58,11 +64,13 @@ const WicketModal = ({
   onConfirm,
   onClose,
 }) => {
-  const [step, setStep] = useState("type"); // 'type' | 'whoOut' | 'runs' | 'fielder' | 'nextBatter'
+  const [step, setStep] = useState("type"); // 'type' | 'whoOut' | 'crossing' | 'runs' | 'fielder' | 'nextBatter' | 'obstructionMode'
   const [wicketType, setWicketType] = useState(null);
   const [fielderId, setFielderId] = useState(null);
   const [playerOutId, setPlayerOutId] = useState(null);
   const [runsCompleted, setRunsCompleted] = useState(0);
+  const [didCross, setDidCross] = useState(false);
+  const [obstructionMode, setObstructionMode] = useState(null);
 
   const selectedMeta = WICKET_TYPES.find((w) => w.key === wicketType);
 
@@ -92,12 +100,70 @@ const WicketModal = ({
 
   const handleTypeSelect = (wt) => {
     setWicketType(wt.key);
+    
+    if (wt.key === "MANKAD") {
+      const nonStriker = activeBatters.find((p) => p.role === "Non-Striker");
+      if (nonStriker) {
+        setPlayerOutId(nonStriker.userId);
+      }
+      setStep("nextBatter");
+      return;
+    }
+
+    if (wt.key === "OBSTRUCTING_FIELD") {
+      setStep("obstructionMode");
+      return;
+    }
+
+    if (wt.key === "RUN_OUT" && activeBatters.length > 0) {
+      setStep("whoOut");
+      return;
+    }
+
     goToNextFromType(wt);
   };
 
   const handleWhoOutSelect = (playerId) => {
     setPlayerOutId(playerId);
+    
+    if (wicketType === "RUN_OUT") {
+      setStep("crossing");
+      return;
+    }
+
+    if (wicketType === "OBSTRUCTING_FIELD") {
+      if (obstructionMode === "KNOCKED_AWAY") {
+        setStep("runs");
+      } else {
+        setStep("nextBatter");
+      }
+      return;
+    }
+
     goToNextFromWhoOut(selectedMeta);
+  };
+
+  const handleCrossingSelect = (crossed) => {
+    setDidCross(crossed);
+    setStep("runs");
+  };
+
+  const handleObstructionModeSelect = (mode) => {
+    setObstructionMode(mode);
+    if (mode === "DEFLECT_BALL") {
+      setRunsCompleted(0);
+      if (activeBatters.length > 0) {
+        setStep("whoOut");
+      } else {
+        setStep("nextBatter");
+      }
+    } else {
+      if (activeBatters.length > 0) {
+        setStep("whoOut");
+      } else {
+        setStep("runs");
+      }
+    }
   };
 
   const handleRunsSelect = (runs) => {
@@ -117,6 +183,8 @@ const WicketModal = ({
       nextBatterId: nextId,
       runs: runsCompleted,
       playerOutId,
+      didCross,
+      obstructionMode,
     });
   };
 
@@ -145,7 +213,9 @@ const WicketModal = ({
                 <h2 className="font-inter text-[24px] font-semibold tracking-tight uppercase text-white leading-tight">
                   {step === "type" && "How was the wicket?"}
                   {step === "whoOut" && "Who got out?"}
-                  {step === "runs" && "Runs completed before run out?"}
+                  {step === "crossing" && "Had the batters crossed?"}
+                  {step === "obstructionMode" && "Type of obstruction?"}
+                  {step === "runs" && "Runs completed before wicket?"}
                   {step === "fielder" &&
                     `Who ${selectedMeta?.key === "STUMPED" ? "stumped" : selectedMeta?.key === "RUN_OUT" ? "ran them out" : "caught it"}?`}
                   {step === "nextBatter" && "Who bats next?"}
@@ -213,7 +283,7 @@ const WicketModal = ({
               </>
             )}
 
-            {/* Step 1.75: Runs completed */}
+             {/* Step 1.75: Runs completed */}
             {step === "runs" && (
               <div className="grid grid-cols-4 gap-2">
                 {[0, 1, 2, 3, 4, 5, 6].map((run) => (
@@ -227,6 +297,56 @@ const WicketModal = ({
                     </span>
                   </Button>
                 ))}
+              </div>
+            )}
+
+            {/* Step: Crossing selection */}
+            {step === "crossing" && (
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  onClick={() => handleCrossingSelect(true)}
+                  className="p-4 py-8 rounded-[8px] bg-card hover:border-success/50 hover:bg-success/8 transition-all text-center group"
+                >
+                  <span className="text-sm font-black text-white group-hover:text-success transition-colors">
+                    YES (Batters Crossed)
+                  </span>
+                </Button>
+                <Button
+                  onClick={() => handleCrossingSelect(false)}
+                  className="p-4 py-8 rounded-[8px] bg-card hover:border-red-500/50 hover:bg-red-500/8 transition-all text-center group"
+                >
+                  <span className="text-sm font-black text-white group-hover:text-red-400 transition-colors">
+                    NO (Did Not Cross)
+                  </span>
+                </Button>
+              </div>
+            )}
+
+            {/* Step: Obstruction Mode selection */}
+            {step === "obstructionMode" && (
+              <div className="flex flex-col gap-3">
+                <Button
+                  onClick={() => handleObstructionModeSelect("DEFLECT_BALL")}
+                  className="w-full flex flex-col items-start p-4 rounded-[8px] bg-card hover:border-red-500/40 hover:bg-red-500/8 transition-all group"
+                >
+                  <span className="block font-bold text-white text-sm">
+                    Deflected Ball (Law 37.1)
+                  </span>
+                  <span className="block text-[11px] text-neutral-500 mt-1 text-left">
+                    Batter deliberately deflected/interfered. Runs do not count.
+                  </span>
+                </Button>
+                <Button
+                  onClick={() => handleObstructionModeSelect("KNOCKED_AWAY")}
+                  className="w-full flex flex-col items-start p-4 rounded-[8px] bg-card hover:border-yellow-500/40 hover:bg-yellow-500/8 transition-all group"
+                >
+                  <span className="block font-bold text-white text-sm">
+                    Knocked Away (Law 37.2)
+                  </span>
+                  <span className="block text-[11px] text-neutral-500 mt-1 text-left">
+                    Batter hit ball running to prevent run out. Completed runs count.
+                  </span>
+                </Button>
               </div>
             )}
 
@@ -274,6 +394,8 @@ const WicketModal = ({
                           nextBatterId: null,
                           runs: runsCompleted,
                           playerOutId,
+                          didCross,
+                          obstructionMode,
                         })
                       }
                       className="mt-4 px-6 py-3 bg-red-500 text-white font-black rounded-[8px] text-sm uppercase tracking-widest hover:bg-red-600 transition-colors"
@@ -311,18 +433,28 @@ const WicketModal = ({
               <Button
                 onClick={() => {
                   if (step === "nextBatter") {
-                    if (selectedMeta?.needsFielder) setStep("fielder");
-                    else if (selectedMeta?.needsRuns) setStep("runs");
+                    if (wicketType === "MANKAD") setStep("type");
+                    else if (selectedMeta?.needsFielder) setStep("fielder");
+                    else if (selectedMeta?.key === "OBSTRUCTING_FIELD" && obstructionMode === "DEFLECT_BALL") setStep("whoOut");
+                    else if (selectedMeta?.needsRuns || (selectedMeta?.key === "OBSTRUCTING_FIELD" && obstructionMode === "KNOCKED_AWAY")) setStep("runs");
                     else if (selectedMeta?.needsWhoOut) setStep("whoOut");
                     else setStep("type");
                   } else if (step === "fielder") {
-                    if (selectedMeta?.needsRuns) setStep("runs");
+                    if (wicketType === "RUN_OUT") setStep("runs");
+                    else if (selectedMeta?.needsRuns) setStep("runs");
                     else if (selectedMeta?.needsWhoOut) setStep("whoOut");
                     else setStep("type");
                   } else if (step === "runs") {
-                    if (selectedMeta?.needsWhoOut) setStep("whoOut");
+                    if (wicketType === "RUN_OUT") setStep("crossing");
+                    else if (selectedMeta?.key === "OBSTRUCTING_FIELD") setStep("whoOut");
+                    else if (selectedMeta?.needsWhoOut) setStep("whoOut");
                     else setStep("type");
+                  } else if (step === "crossing") {
+                    setStep("whoOut");
                   } else if (step === "whoOut") {
+                    if (wicketType === "OBSTRUCTING_FIELD") setStep("obstructionMode");
+                    else setStep("type");
+                  } else if (step === "obstructionMode") {
                     setStep("type");
                   }
                 }}
