@@ -655,6 +655,8 @@ const ScoringApp = () => {
 
   const [showInningsCompleteModal, setShowInningsCompleteModal] =
     useState(false);
+  const [isSuperOver, setIsSuperOver] = useState(false);
+  const [isFollowOn, setIsFollowOn] = useState(false);
   const [hasAutoPausedTimer, setHasAutoPausedTimer] = useState(false);
 
   useEffect(() => {
@@ -1127,6 +1129,21 @@ const ScoringApp = () => {
                     >
                       <span className="text-white font-inter font-semibold uppercase tracking-wider text-[13px]">
                         LEG BYE
+                      </span>
+                    </Button>
+                    <Button
+                      onClick={() =>
+                        handleScoringClick(async () => {
+                          const result = await handleScore({ runs: 0, isDeadBall: true, extraType: "NONE" });
+                          if (result.success) {
+                            toast.success("Dead Ball recorded!");
+                          }
+                        })
+                      }
+                      className="flex-1 bg-white/[0.05] border border-white/10 rounded-none flex items-center justify-center hover:bg-white/10 transition-all transform active:scale-95"
+                    >
+                      <span className="text-yellow-400 font-inter font-semibold uppercase tracking-widest text-[13px]">
+                        DEAD
                       </span>
                     </Button>
                   </div>
@@ -2226,6 +2243,8 @@ const ScoringApp = () => {
             nextBatterId,
             runs,
             playerOutId,
+            didCross,
+            obstructionMode,
           }) => {
             const result = await handleScore({
               runs: runs || 0,
@@ -2234,6 +2253,8 @@ const ScoringApp = () => {
               fielderId,
               nextBatterId,
               playerOutId,
+              didCross,
+              obstructionMode,
               extraType: "NONE",
             });
             if (result.success) {
@@ -2309,12 +2330,58 @@ const ScoringApp = () => {
               match timer has been paused. Set up the next innings to resume the
               match.
             </p>
+
+            {/* Super Over & Follow-On Toggles */}
+            <div className="flex flex-col gap-3 mb-6 text-left border border-white/5 bg-white/[0.02] p-4 rounded-[8px]">
+              <label className="flex items-center gap-3 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={isSuperOver}
+                  onChange={(e) => {
+                    setIsSuperOver(e.target.checked);
+                    if (e.target.checked) setIsFollowOn(false); // Can't be both
+                  }}
+                  className="w-4 h-4 rounded accent-success cursor-pointer"
+                />
+                <div>
+                  <span className="block text-sm font-bold text-white">Super Over</span>
+                  <span className="block text-[11px] text-neutral-500">Play a tie-breaker over (1 over, 2 wickets max)</span>
+                </div>
+              </label>
+
+              <label className="flex items-center gap-3 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={isFollowOn}
+                  onChange={(e) => {
+                    setIsFollowOn(e.target.checked);
+                    if (e.target.checked) setIsSuperOver(false); // Can't be both
+                  }}
+                  className="w-4 h-4 rounded accent-success cursor-pointer"
+                />
+                <div>
+                  <span className="block text-sm font-bold text-white">Enforce Follow-On</span>
+                  <span className="block text-[11px] text-neutral-500">Force the same team to bat sequentially again</span>
+                </div>
+              </label>
+            </div>
+
             <Button
               onClick={async () => {
                 setShowInningsCompleteModal(false);
-                const res = await advanceToNextInnings(bowlingTeamKey);
+                const targetBattingTeam = isFollowOn ? battingTeamKey : bowlingTeamKey;
+                const res = await advanceToNextInnings(targetBattingTeam, {
+                  isFollowOn,
+                  isSuperOver,
+                });
                 if (res.success) {
-                  toast.success("2nd innings is ready! Select the openers.");
+                  toast.success(
+                    isSuperOver 
+                      ? "Super Over is ready! Select the openers." 
+                      : isFollowOn 
+                        ? "Follow-On innings is ready! Select the openers." 
+                        : "Next innings is ready! Select the openers."
+                  );
                   // Force the UI to show the InningsSetupModal for the next innings
                   setShowInningsSetup(true);
                 } else {
@@ -2371,6 +2438,8 @@ const ScoringApp = () => {
             nextBatterId,
             runs,
             playerOutId,
+            didCross,
+            obstructionMode,
           }) => {
             const result = await handleScore({
               runs: runs || 0,
@@ -2379,6 +2448,8 @@ const ScoringApp = () => {
               fielderId,
               nextBatterId,
               playerOutId,
+              didCross,
+              obstructionMode,
               extraType: "NONE",
             });
             if (result.success) {

@@ -136,21 +136,22 @@ const useCricketScoring = (matchId) => {
       const current = innings[inningsIndex];
 
       if (current) {
-        const runs = ballData.runs ?? 0;
-        const extraRuns = ballData.extraRuns ?? (ballData.isExtra ? 1 : 0);
-        const isWide = ballData.extraType === "WIDE";
-        const isNoBall = ballData.extraType === "NO_BALL";
-        const isBye = ballData.extraType === "BYE";
-        const isLegBye = ballData.extraType === "LEG_BYE";
-        const isPenalty = ballData.extraType === "PENALTY";
-        const isLegalBall = true; // Every delivery counts towards the 6 balls of the over
+        const isDeadBall = ballData.isDeadBall || false;
+        const runs = isDeadBall ? 0 : (ballData.runs ?? 0);
+        const extraRuns = isDeadBall ? 0 : (ballData.extraRuns ?? (ballData.isExtra ? 1 : 0));
+        const isWide = !isDeadBall && ballData.extraType === "WIDE";
+        const isNoBall = !isDeadBall && ballData.extraType === "NO_BALL";
+        const isBye = !isDeadBall && ballData.extraType === "BYE";
+        const isLegBye = !isDeadBall && ballData.extraType === "LEG_BYE";
+        const isPenalty = !isDeadBall && ballData.extraType === "PENALTY";
+        const isLegalBall = !isDeadBall; // Dead ball does not count towards the over balls
 
         // Update innings runs & wickets
         current.totalRuns = (current.totalRuns ?? 0) + runs + extraRuns;
         if (isLegalBall) {
           current.totalBalls = (current.totalBalls ?? 0) + 1;
         }
-        if (ballData.isWicket && ballData.wicketType !== "RETIRED_HURT") {
+        if (ballData.isWicket && ballData.wicketType !== "RETIRED_HURT" && !isDeadBall) {
           current.totalWickets = (current.totalWickets ?? 0) + 1;
         }
 
@@ -670,7 +671,8 @@ const useCricketScoring = (matchId) => {
     }
   };
 
-  const advanceToNextInnings = async (battingTeamId) => {
+  const advanceToNextInnings = async (battingTeamId, options = {}) => {
+    const { isFollowOn = false, isSuperOver = false } = options;
     try {
       const response = await axiosInstance.post(
         "/api/scoring/next-innings",
@@ -678,6 +680,8 @@ const useCricketScoring = (matchId) => {
           scoringId:
             matchData?.cricketMatch?.id || matchData?.id || matchData?._id,
           battingTeamId,
+          isFollowOn,
+          isSuperOver,
         },
         { headers: getHeaders() }
       );

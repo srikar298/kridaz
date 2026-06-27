@@ -33,6 +33,14 @@ export const updateScoreSchema = z.object({
         .optional(),
       isWicket: z.boolean().optional(),
       wicketType: z.string().optional(),
+      isOverthrow: z.boolean().optional(),
+      overthrowRuns: z.number().int().min(0).max(6).optional(),
+      isDeadBall: z.boolean().optional(),
+      obstructionMode: z.string().optional(),
+      didCross: z.boolean().optional(),
+      isBoundary: z.boolean().optional(),
+      isFour: z.boolean().optional(),
+      isSix: z.boolean().optional(),
       batsmanId: z.string().min(1, "Batsman ID is required"),
       bowlerId: z.string().min(1, "Bowler ID is required"),
     }),
@@ -98,6 +106,8 @@ export const startNextInningsSchema = z.object({
   body: z.object({
     scoringId: z.string().min(1, "Scoring ID is required"),
     battingTeamId: z.string().min(1, "Batting Team ID is required"),
+    isFollowOn: z.boolean().optional(),
+    isSuperOver: z.boolean().optional(),
   }),
 });
 

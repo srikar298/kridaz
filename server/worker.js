@@ -81,6 +81,12 @@ const startWorker = async () => {
     trackQueue("media", mediaQueue);
     logger.info("[WORKER_PROCESS] Unified inline media worker initialized.");
 
+    // Start Kridaz Career Stats Worker
+    logger.info("[WORKER_PROCESS] Starting career stats workers...");
+    const { careerStatsWorker, careerStatsQueue } = await import("./queues/careerStats.queue.js");
+    trackQueue("career_stats", careerStatsQueue);
+    logger.info("[WORKER_PROCESS] Kridaz career stats worker initialized.");
+
     // On startup: drain stale failed jobs from previous runs and requeue
     // any pending DB reels that have a rawVideoUrl (safety net for server restarts)
     try {
@@ -173,6 +179,9 @@ const shutdown = async (signal) => {
           .catch(() => {}),
         import("./queues/settlement.queue.js")
           .then(({ settlementQueue }) => settlementQueue?.close?.())
+          .catch(() => {}),
+        import("./queues/careerStats.queue.js")
+          .then(({ careerStatsQueue }) => careerStatsQueue.close())
           .catch(() => {}),
       ]),
     ]);

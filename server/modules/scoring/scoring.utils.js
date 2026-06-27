@@ -22,7 +22,7 @@ import crypto from "crypto";
  */
 // MVP scoring weights. Defaults are the ones the engine has always used —
 // product can tune via PATCH /scoring/house-rules with `mvpWeights: { ... }`.
-const DEFAULT_MVP_WEIGHTS = Object.freeze({
+export const DEFAULT_MVP_WEIGHTS = Object.freeze({
   perRun: 1,
   bonus30: 10,
   bonus50: 20,
@@ -488,6 +488,9 @@ export const computeScoreSnapshot = (scoring, match) => {
       fielding: currentInnings.fieldingTeamReviews ?? 2,
     },
     powerplayOvers: currentInnings.powerplayOvers || 0,
+    // Free Hit status — set by processScoreUpdate after every no-ball (Law 21.18).
+    // Clients use this to show the FREE HIT indicator and disable illegal dismissals.
+    freeHitActive: scoring.freeHitActive ?? false,
     isInningsComplete,
     isMatchComplete,
     // DLS-lite signals — UI can show "Revised Target: 142 in 18 overs" etc.

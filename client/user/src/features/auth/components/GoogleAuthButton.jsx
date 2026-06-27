@@ -26,6 +26,7 @@ const GoogleIcon = () => (
 
 import { Capacitor } from "@capacitor/core";
 import { Button } from "@kridaz/ui";
+import { isGoogleConfigured } from "@utils/googleAuth";
 
 
 const GoogleAuthButton = ({
@@ -47,7 +48,8 @@ const GoogleAuthButton = ({
 
   // Google does not allow web-based OAuth inside WebViews (Capacitor mobile container).
   // Hide it on Android/iOS native to prevent disallowed useragent error.
-  if (Capacitor.isNativePlatform()) {
+  // Also hide if Google OAuth is not configured/disabled in the environment.
+  if (Capacitor.isNativePlatform() || !isGoogleConfigured) {
     return null;
   }
 

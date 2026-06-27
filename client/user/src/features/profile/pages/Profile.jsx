@@ -55,6 +55,7 @@ import {
 import toast from "react-hot-toast";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useGoogleLogin } from "@react-oauth/google";
+import { isGoogleConfigured } from "@utils/googleAuth";
 import {
   logout,
   updateUser,
@@ -1629,14 +1630,16 @@ export default function Profile() {
                             placeholder="6-digit OTP"
                             className="bg-background border border-white/[0.08] rounded-[8px] px-3 py-1.5 text-xs text-white w-[90px] outline-none focus:border-primary text-center tracking-widest font-black transition-all"
                           />
-                          <button
+                          <Button
+                            type="button"
                             onClick={handleVerifyOTP}
                             disabled={verifyingEmail || otpCode.length !== 6}
                             className="px-4 py-1.5 bg-gradient-to-r from-secondary to-primary text-background text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:opacity-90 transition-all disabled:opacity-50 shadow-[0_4px_12px_rgba(191,243,103,0.15)] border-none outline-none cursor-pointer shrink-0"
                           >
                             {verifyingEmail ? "..." : "Verify"}
-                          </button>
-                          <button
+                          </Button>
+                          <Button
+                            type="button"
                             onClick={() => {
                               setEditingEmail(false);
                               setOtpState("idle");
@@ -1646,45 +1649,49 @@ export default function Profile() {
                             className="px-3 py-1.5 bg-white/[0.05] border border-white/[0.08] text-white/60 text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:bg-white/[0.1] hover:text-white transition-all outline-none cursor-pointer shrink-0"
                           >
                             Cancel
-                          </button>
+                          </Button>
                         </>
                       ) : (
                         /* Default: Google verify + Get OTP buttons */
                         <>
-                          <button
-                            onClick={() => verifyWithGoogle()}
-                            disabled={sendingVerification || verifyingEmail}
-                            className="px-3 py-1.5 bg-white/[0.03] border border-white/[0.08] text-white text-[10px] font-black uppercase tracking-wider rounded-[8px] hover:bg-white/[0.08] transition-all disabled:opacity-50 flex items-center gap-1.5 outline-none cursor-pointer shrink-0"
-                            title="Verify with Google"
-                          >
-                            <svg width="12" height="12" viewBox="0 0 48 48" className="shrink-0">
-                              <path
-                                fill="#EA4335"
-                                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
-                              />
-                              <path
-                                fill="#4285F4"
-                                d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
-                              />
-                              <path
-                                fill="#FBBC05"
-                                d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.56 10.78l7.97-6.19z"
-                              />
-                              <path
-                                fill="#34A853"
-                                d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
-                              />
-                              <path fill="none" d="M0 0h48v48H0z" />
-                            </svg>
-                            <span className="hidden sm:inline">Google</span>
-                          </button>
-                          <button
+                          {isGoogleConfigured && (
+                            <Button
+                              type="button"
+                              onClick={() => verifyWithGoogle()}
+                              disabled={sendingVerification || verifyingEmail}
+                              className="px-3 py-1.5 bg-white/[0.03] border border-white/[0.08] text-white text-[10px] font-black uppercase tracking-wider rounded-[8px] hover:bg-white/[0.08] transition-all disabled:opacity-50 flex items-center gap-1.5 outline-none cursor-pointer shrink-0"
+                              title="Verify with Google"
+                            >
+                              <svg width="12" height="12" viewBox="0 0 48 48" className="shrink-0">
+                                <path
+                                  fill="#EA4335"
+                                  d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+                                />
+                                <path
+                                  fill="#4285F4"
+                                  d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
+                                />
+                                <path
+                                  fill="#FBBC05"
+                                  d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.56 10.78l7.97-6.19z"
+                                />
+                                <path
+                                  fill="#34A853"
+                                  d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+                                />
+                                <path fill="none" d="M0 0h48v48H0z" />
+                              </svg>
+                              <span className="hidden sm:inline">Google</span>
+                            </Button>
+                          )}
+                          <Button
+                            type="button"
                             onClick={handleSendOTP}
                             disabled={sendingVerification || verifyingEmail}
                             className="px-4 py-1.5 bg-gradient-to-r from-secondary to-primary text-background text-[10px] font-black uppercase tracking-widest rounded-[8px] hover:opacity-90 transition-all disabled:opacity-50 shadow-[0_4px_12px_rgba(191,243,103,0.15)] border-none outline-none cursor-pointer shrink-0"
                           >
                             {sendingVerification ? "..." : "Get OTP"}
-                          </button>
+                          </Button>
                         </>
                       )}
                     </div>
