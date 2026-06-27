@@ -791,20 +791,20 @@ export default function VenueOwnerLanding() {
       {/* ── Document Verification Modal ── */}
       {showDocumentModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-card border border-white/10 rounded-[10px] p-6 md:p-8 w-full max-w-lg relative animate-fadeInUp">
+          <div className="bg-card border border-white/10 rounded-[10px] p-5 md:p-6 w-full max-w-sm relative animate-fadeInUp">
             <Button
               onClick={() => setShowDocumentModal(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
             >
               <X size={24} />
             </Button>
-            <h2 className="text-[20px] md:text-4xl font-black tracking-tight leading-[1.05] font-poppins font-medium normal-case text-white text-center mb-8">
+            <h2 className="text-[18px] md:text-[22px] font-black tracking-tight leading-[1.05] font-poppins font-medium normal-case text-white text-center pr-4 mb-5">
               Document Verification
             </h2>
 
             <form className="space-y-6 mt-4" onSubmit={handleDocumentSubmit}>
               {/* Custom Tabs */}
-              <div className="flex bg-[#1A1D1D] rounded-lg p-1 w-full max-w-[300px] mx-auto mb-6">
+              <div className="flex bg-[#1A1D1D] rounded-lg p-1 w-full max-w-[240px] mx-auto mb-4">
                 <Button
                   type="button"
                   onClick={() => setActiveTab("aadhaar")}
@@ -830,19 +830,19 @@ export default function VenueOwnerLanding() {
               </div>
 
               {activeTab === "aadhaar" && (
-                <div className="grid grid-cols-2 gap-4 md:gap-6 animate-fadeIn">
+                <div className="grid grid-cols-2 gap-3 animate-fadeIn">
                   {/* Aadhaar FRONT Upload Box */}
                   <label
-                    className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${aadharFront ? "opacity-80" : ""}`}
+                    className={`flex flex-col items-center gap-2 cursor-pointer group ${aadharFront ? "opacity-80" : ""}`}
                   >
                     <span
-                      className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base"
+                      className="text-white font-black tracking-wider uppercase text-center text-xs md:text-sm"
                       style={{ fontFamily: "'Inter'" }}
                     >
                       FRONT
                     </span>
                     <div
-                      className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] p-2 md:p-3 overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharFront ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}
+                      className={`relative w-full h-[80px] md:h-[90px] bg-[#D9D9D9] rounded-[10px] p-1.5 overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharFront ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}
                     >
                       {aadharFront ? (
                         <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
@@ -900,16 +900,16 @@ export default function VenueOwnerLanding() {
 
                   {/* Aadhaar BACK Upload Box */}
                   <label
-                    className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${aadharBack ? "opacity-80" : ""}`}
+                    className={`flex flex-col items-center gap-2 cursor-pointer group ${aadharBack ? "opacity-80" : ""}`}
                   >
                     <span
-                      className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base"
+                      className="text-white font-black tracking-wider uppercase text-center text-xs md:text-sm"
                       style={{ fontFamily: "'Inter'" }}
                     >
                       BACK
                     </span>
                     <div
-                      className={`relative w-full h-[110px] md:h-[130px] bg-[#D9D9D9] rounded-[10px] p-2 md:p-3 overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharBack ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}
+                      className={`relative w-full h-[80px] md:h-[90px] bg-[#D9D9D9] rounded-[10px] p-1.5 overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharBack ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}
                     >
                       {aadharBack ? (
                         <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
@@ -963,16 +963,16 @@ export default function VenueOwnerLanding() {
                 <div className="flex justify-center animate-fadeIn">
                   {/* PAN Upload Box */}
                   <label
-                    className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group w-[220px] md:w-[260px] ${panFront ? "opacity-80" : ""}`}
+                    className={`flex flex-col items-center gap-2 cursor-pointer group w-[200px] md:w-[240px] ${panFront ? "opacity-80" : ""}`}
                   >
                     <span
-                      className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base"
+                      className="text-white font-black tracking-wider uppercase text-center text-xs md:text-sm"
                       style={{ fontFamily: "'Inter'" }}
                     >
                       FRONT
                     </span>
                     <div
-                      className={`relative w-full h-[130px] md:h-[150px] bg-[#D9D9D9] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${panFront ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}
+                      className={`relative w-full h-[100px] md:h-[120px] bg-[#D9D9D9] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${panFront ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}
                     >
                       {panFront ? (
                         <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
@@ -1043,7 +1043,7 @@ export default function VenueOwnerLanding() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full max-w-[240px] py-3 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                  className="w-full max-w-[200px] py-2.5 rounded-[10px] font-bold text-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center justify-center gap-2 disabled:opacity-70 text-xs"
                   style={{ background: GRADIENT, fontFamily: "'Inter'" }}
                 >
                   {isSubmitting ? (

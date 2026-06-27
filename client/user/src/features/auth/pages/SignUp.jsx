@@ -394,7 +394,7 @@ const SignUp = ({ isModal = false }) => {
                       <Select
                         value={countryCode}
                         onChange={(e) => setCountryCode(e.target.value)}
-                        className="bg-card border border-white/5 focus:border-[#D2F40E]/50 focus:shadow-[0_0_10px_rgba(210,244,14,0.1)] rounded-[8px] h-11 px-2 text-white text-sm outline-none transition-all cursor-pointer w-[75px] flex-shrink-0 appearance-none text-center"
+                        className="bg-card border border-white/5 focus:border-[#D2F40E]/50 focus:shadow-[0_0_10px_rgba(210,244,14,0.1)] rounded-[8px] h-11 px-2 text-white text-sm outline-none transition-all cursor-pointer !w-[80px] shrink-0 appearance-none text-center"
                       >
                         <option value="+91" className="text-black">
                           +91

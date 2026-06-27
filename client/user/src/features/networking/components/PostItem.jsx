@@ -217,26 +217,26 @@ const PostItem = React.memo(
       post.authorId === currentUserId;
 
     return (
-      <div className="bg-background border border-white/5 rounded-[12px] overflow-hidden flex flex-col max-w-[470px] mx-auto w-full">
+      <div className="bg-[#161616] border border-[#434242] rounded-[12px] overflow-hidden flex flex-col max-w-[361px] mx-auto w-full shadow-sm">
         {/* Post Header */}
-        <div className="flex items-center justify-between p-4 pb-2">
+        <div className="flex items-center justify-between p-4 pb-3">
           <Link
             to={`/profile/${post.adminId?.id || post.adminId?._id || post.author?.id || post.author?._id || post.authorId}`}
             className="flex items-center gap-3 group"
           >
             <img
               src={post.adminId?.profilePicture || "/default-avatar.png"}
-              className="w-10 h-10 rounded-full object-cover border border-white/10 group-hover:border-[var(--primary)]/50 transition-colors"
+              className="w-10 h-10 rounded-full object-cover border border-[#434242] group-hover:border-[var(--primary)]/50 transition-colors"
               alt=""
             />
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[12px] font-bold text-white transition-colors">
+                <span className="text-[14px] font-bold text-white transition-colors">
                   {post.adminId?.name || post.author?.name || "Player"}
                 </span>
                 <ShieldCheck size={14} className="text-primary" />
               </div>
-              <div className="text-[10px] font-medium text-muted-foreground mt-0.5">
+              <div className="text-[12px] font-medium text-[#a5a5a5] mt-0.5">
                 {getFormattedTime(post.createdAt)}
               </div>
             </div>
@@ -280,7 +280,7 @@ const PostItem = React.memo(
 
         {/* Caption */}
         {(post.title || post.content) && (
-          <div className="text-[13px] font-normal leading-snug px-4 pb-3">
+          <div className="text-[14px] font-normal leading-[1.4] px-4 pb-4">
             <div
               ref={captionRef}
               className={`text-white/90 whitespace-pre-wrap ${
@@ -293,7 +293,7 @@ const PostItem = React.memo(
             {hasMoreCaption && (
               <button
                 onClick={() => setIsCaptionExpanded(!isCaptionExpanded)}
-                className="text-primary font-semibold mt-1 text-[11px] hover:underline block focus:outline-none border-0 bg-transparent p-0"
+                className="text-white/60 font-medium mt-1.5 text-[13px] hover:text-white hover:underline block focus:outline-none border-0 bg-transparent p-0 transition-colors"
               >
                 {isCaptionExpanded ? "Read less" : "Read more"}
               </button>
@@ -555,75 +555,35 @@ const PostItem = React.memo(
           </div>
         ) : null}
 
+        {/* Separator Above Likes */}
+        <div className="mx-4 h-[1px] bg-[#434242] mt-2" />
+
         {/* Likes Summary */}
-        {post.likes?.length > 0 && (
-          <div className="flex items-center gap-2 text-[10px] font-medium text-white/50 px-4 py-2.5">
-            <div className="flex -space-x-1.5 shrink-0">
-              {post.likes.slice(0, 3).map((likeUser, i) => (
-                <div
-                  key={likeUser.id || likeUser._id || i}
-                  className="w-5 h-5 rounded-full bg-zinc-800 border border-background overflow-hidden flex items-center justify-center shrink-0"
-                >
-                  {likeUser.profilePicture || likeUser.profileImage ? (
-                    <img
-                      src={likeUser.profilePicture || likeUser.profileImage}
-                      className="w-full h-full object-cover"
-                      alt=""
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-zinc-700 text-white text-[8px] font-bold">
-                      {(likeUser.username ||
-                        likeUser.name ||
-                        "U")[0].toUpperCase()}
-                    </div>
-                  )}
-                </div>
-              ))}
+        <div className="flex items-center justify-between text-[13px] font-medium text-[#a5a5a5] px-4 py-3">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center -space-x-1.5 text-[15px]">
+              <span className="z-10 drop-shadow-md">👍</span>
+              <span className="z-0 drop-shadow-md">💖</span>
             </div>
-            <p className="text-[10px] text-white/50 font-medium">
-              {post.likes.length === 1 && (
-                <span>
-                  Liked by{" "}
-                  <span className="font-bold text-white">
-                    {post.likes[0].username || post.likes[0].name || "User"}
-                  </span>
-                </span>
+            <span>
+              {post.likes?.length > 0 ? (
+                post.likes.length > 1 ? (
+                  <>{post.likes[0].name || post.likes[0].username || "User"} and {post.likes.length - 1} others</>
+                ) : (
+                  <>{post.likes[0].name || post.likes[0].username || "User"}</>
+                )
+              ) : (
+                "0 likes"
               )}
-              {post.likes.length === 2 && (
-                <span>
-                  Liked by{" "}
-                  <span className="font-bold text-white">
-                    {post.likes[0].username || post.likes[0].name || "User"}
-                  </span>{" "}
-                  and{" "}
-                  <span className="font-bold text-white">
-                    {post.likes[1].username || post.likes[1].name || "User"}
-                  </span>
-                </span>
-              )}
-              {post.likes.length > 2 && (
-                <span>
-                  Liked by{" "}
-                  <span className="font-bold text-white">
-                    {post.likes[0].username || post.likes[0].name || "User"}
-                  </span>
-                  ,{" "}
-                  <span className="font-bold text-white">
-                    {post.likes[1].username || post.likes[1].name || "User"}
-                  </span>{" "}
-                  and{" "}
-                  <span className="font-bold text-white">
-                    {post.likes.length - 2}{" "}
-                    {post.likes.length - 2 === 1 ? "other" : "others"}
-                  </span>
-                </span>
-              )}
-            </p>
+            </span>
           </div>
-        )}
+          <span>
+            {post.totalComments || post.comments?.length || 0} comments
+          </span>
+        </div>
 
         {/* Action Bar */}
-        <div className="flex items-center justify-between border-t border-white/10 bg-background px-2 py-1">
+        <div className="flex items-center justify-between border-t border-[#434242] bg-transparent px-2 py-1.5">
           <button
             onClick={handleLike}
             className="flex-1 flex items-center justify-center gap-2 py-2 transition-colors group"
@@ -656,11 +616,9 @@ const PostItem = React.memo(
                 d="M4 21h1V8H4c-1.1 0-2 .9-2 2v9c0 1.1.9 2 2 2M20 8h-6.61l1.12-3.37c.2-.61.1-1.28-.27-1.8c-.38-.52-.98-.83-1.62-.83h-.61c-.3 0-.58.13-.77.36L7.01 7.44V21h10.31a2 2 0 0 0 1.87-1.3l2.76-7.35c.04-.11.06-.23.06-.35v-2c0-1.1-.9-2-2-2Z"
               />
             </svg>
-            {post.likes?.length > 0 && (
-              <span className="text-[12px] font-bold text-foreground group-hover:text-white transition-colors">
-                {post.likes.length}
-              </span>
-            )}
+            <span className={`text-[13px] font-medium transition-colors ${post.likes?.some((l) => (l.id || l._id || l) === currentUserId) ? "text-primary" : "text-[#a5a5a5] group-hover:text-white"}`}>
+              Like
+            </span>
           </button>
           <button
             onClick={() => setExpandedComments(!expandedComments)}
@@ -669,26 +627,27 @@ const PostItem = React.memo(
             <img
               src={CommentIcon}
               alt="Comment"
-              className="w-[18px] h-[18px] object-contain transition-all duration-200 opacity-70 group-hover:opacity-100 brightness-0 invert"
+              className="w-[18px] h-[18px] object-contain transition-all duration-200 opacity-60 group-hover:opacity-100 brightness-0 invert"
             />
-            {(post.totalComments > 0 || post.comments?.length > 0) && (
-              <span className="text-[12px] font-bold text-foreground group-hover:text-white transition-colors">
-                {post.totalComments || post.comments.length}
-              </span>
-            )}
+            <span className="text-[13px] font-medium text-[#a5a5a5] group-hover:text-white transition-colors">
+              Comment
+            </span>
           </button>
           <button
             onClick={(e) => {
               e.stopPropagation();
               onSharePost(postId);
             }}
-            className="flex-1 flex items-center justify-center py-2 transition-colors group"
+            className="flex-1 flex items-center justify-center gap-2 py-2 transition-colors group"
           >
             <img
               src={ShareIcon}
               alt="Share"
-              className="w-[18px] h-[18px] object-contain transition-all duration-200 opacity-70 group-hover:opacity-100 brightness-0 invert"
+              className="w-[18px] h-[18px] object-contain transition-all duration-200 opacity-60 group-hover:opacity-100 brightness-0 invert"
             />
+            <span className="text-[13px] font-medium text-[#a5a5a5] group-hover:text-white transition-colors">
+              Share
+            </span>
           </button>
         </div>
 

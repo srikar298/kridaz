@@ -88,124 +88,98 @@ export default function BlogDetail() {
 
   return (
     <div className="min-h-screen bg-black text-white pb-24">
-      {/* ΓöÇΓöÇ HERO ΓöÇΓöÇ */}
-      <div className="relative h-[60vh] min-h-[400px] overflow-hidden">
-        <img
-          src={blog.imageUrl || blog.featuredImage}
-          alt={blog.title}
-          className="absolute inset-0 w-full h-full object-cover opacity-40"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+      {/* ┌── TOP NAVIGATION & TAG ──┐ */}
+      <div className="max-w-4xl mx-auto px-6 pt-4 pb-6 flex justify-between items-center">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-[8px] border text-sm font-bold text-white/60 hover:text-white hover:border-white/30 transition-all"
+          style={{ borderColor: BDR, backgroundColor: "rgba(255,255,255,0.05)" }}
+        >
+          <ArrowLeft size={14} /> Back
+        </Link>
 
-        {/* Back button */}
-        <div className="absolute top-10 left-6 z-10">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-[8px] border text-sm font-bold text-white/60 hover:text-white hover:border-white/30 transition-all backdrop-blur-sm"
-            style={{ borderColor: BDR, backgroundColor: "rgba(0,0,0,0.5)" }}
+        {blog.category && (
+          <div
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest"
+            style={{ backgroundColor: `${PRI}18`, color: PRI }}
           >
-            <ArrowLeft size={14} /> Back
-          </Link>
-        </div>
-
-        {/* Hero Content */}
-        <div className="absolute bottom-0 left-0 right-0 max-w-4xl mx-auto px-6 pb-12">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4">
-            <Link to="/" className="hover:text-white transition-colors">
-              Home
-            </Link>
-            <ChevronRight size={10} />
-            <span>Blog</span>
-            <ChevronRight size={10} />
-            <span style={{ color: PRI }}>{blog.category || "Article"}</span>
+            <Tag size={10} /> {blog.category}
           </div>
+        )}
+      </div>
 
-          {/* Category badge */}
-          {blog.category && (
-            <div
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-4"
-              style={{ backgroundColor: `${PRI}18`, color: PRI }}
-            >
-              <Tag size={10} /> {blog.category}
-            </div>
-          )}
-
-          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-none mb-4">
-            {blog.title}
-          </h1>
-          {blog.subtitle && (
-            <p className="text-gray-400 text-lg max-w-2xl">{blog.subtitle}</p>
-          )}
+      {/* ┌── HERO IMAGE ──┐ */}
+      <div className="max-w-4xl mx-auto px-6 mb-2">
+        <div className="w-full overflow-hidden rounded-[16px] bg-white/5 flex items-center justify-center">
+          <img
+            src={blog.imageUrl || blog.featuredImage}
+            alt={blog.title}
+            className="w-full h-auto max-h-[70vh] object-contain"
+          />
         </div>
       </div>
 
-      {/* ΓöÇΓöÇ META BAR ΓöÇΓöÇ */}
+      {/* ┌── META BAR ──┐ */}
       <div
-        className="border-b"
+        className="border-b border-t mb-6"
         style={{ borderColor: BDR, backgroundColor: "#050505" }}
       >
-        <div className="max-w-4xl mx-auto px-6 py-5 flex flex-wrap items-center gap-6">
-          <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
-            <User size={13} style={{ color: PRI }} />
-            {blog.author || "Kridaz Team"}
+        <div className="max-w-4xl mx-auto px-6 py-3 flex flex-wrap items-center justify-between gap-y-3 gap-x-2">
+          <div className="flex items-center gap-2.5 sm:gap-4 flex-nowrap overflow-x-auto scrollbar-hide max-w-full">
+            <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-gray-500 font-medium whitespace-nowrap">
+              <User size={11} style={{ color: PRI }} className="shrink-0" />
+              {blog.author || "Kridaz Team"}
+            </div>
+            <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-gray-500 font-medium whitespace-nowrap">
+              <Calendar size={11} style={{ color: PRI }} className="shrink-0" />
+              {blog.date}
+            </div>
+            <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-gray-500 font-medium whitespace-nowrap">
+              <Clock size={11} style={{ color: PRI }} className="shrink-0" />
+              {blog.readTime || "5 mins read"}
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
-            <Calendar size={13} style={{ color: PRI }} />
-            {blog.date}
-          </div>
-          <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
-            <Clock size={13} style={{ color: PRI }} />
-            {blog.readTime || "5 mins read"}
-          </div>
-          <div className="flex items-center gap-4 ml-auto">
-            <div className="flex items-center gap-1.5 text-xs text-gray-500">
-              <Eye size={13} style={{ color: PRI }} />
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-500">
+              <Eye size={12} style={{ color: PRI }} />
               {blog.views} views
             </div>
-            <Button
+            <button
               onClick={handleLike}
-              className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-white transition-all group"
+              className="flex items-center gap-1.5 text-[11px] text-gray-500 hover:text-white transition-all group bg-transparent border-none p-0 outline-none"
              aria-label="Like">
               <ThumbsUp
-                size={13}
+                size={12}
                 className="group-hover:scale-110 transition-transform"
                 style={{ color: PRI }}
               />
               {blog.likes} likes
-            </Button>
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 pt-14">
+      {/* ┌── TITLE CONTENT ──┐ */}
+      <div className="max-w-4xl mx-auto px-6 pb-8">
+        <h2 
+          className="text-2xl md:text-3xl font-black uppercase tracking-tight leading-tight mb-4"
+          style={{ fontFamily: '"Open Sans", sans-serif' }}
+        >
+          {blog.title}
+        </h2>
+        {blog.subtitle && (
+          <p className="text-gray-400 text-lg max-w-2xl">{blog.subtitle}</p>
+        )}
+      </div>
+
+      <div className="max-w-4xl mx-auto px-6 pt-4">
         <SafeHtml
-          className="text-gray-400 text-lg leading-relaxed space-y-6 [&_h2]:text-white [&_h2]:text-3xl [&_h2]:font-black [&_h2]:uppercase [&_h2]:tracking-tight [&_h2]:mt-12 [&_h2]:mb-4 [&_h3]:text-white [&_h3]:text-2xl [&_h3]:font-black [&_h3]:uppercase [&_h3]:tracking-tight [&_h3]:mt-8 [&_h3]:mb-3 [&_p]:mb-6 [&_p]:leading-relaxed [&_strong]:text-white [&_strong]:font-bold [&_a]:text-primary [&_a]:no-underline hover:[&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2 [&_li]:leading-relaxed [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:pl-6 [&_blockquote]:italic [&_blockquote]:text-gray-500 [&_hr]:border-white/10 [&_hr]:my-10 [&_img]:rounded-[8px] [&_img]:w-full [&_img]:object-cover"
+          className="text-gray-400 text-[15px] leading-relaxed text-justify whitespace-pre-wrap [&_h2]:text-primary [&_h2]:text-2xl [&_h2]:font-black [&_h2]:uppercase [&_h2]:tracking-tight [&_h2]:mt-8 [&_h2]:mb-2 [&_h3]:text-primary [&_h3]:text-xl [&_h3]:font-black [&_h3]:uppercase [&_h3]:tracking-tight [&_h3]:mt-6 [&_h3]:mb-2 [&_h4]:text-primary [&_h5]:text-primary [&_h6]:text-primary [&_p]:leading-relaxed [&_strong]:text-white [&_strong]:font-bold [&_a]:text-primary [&_a]:no-underline hover:[&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:leading-relaxed [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:pl-6 [&_blockquote]:italic [&_blockquote]:text-gray-500 [&_hr]:border-white/10 [&_hr]:my-8 [&_img]:rounded-[8px] [&_img]:w-full [&_img]:object-cover"
           html={blog.content}
         />
       </div>
 
-      {/* ΓöÇΓöÇ FOOTER CTA ΓöÇΓöÇ */}
-      <div className="max-w-4xl mx-auto px-6 pt-20">
-        <div
-          className="rounded-[8px] border p-10 text-center"
-          style={{ borderColor: BDR, backgroundColor: "var(--background)" }}
-        >
-          <h3 className="text-2xl font-black uppercase tracking-tight mb-3">
-            Ready to play?
-          </h3>
-          <p className="text-gray-500 text-sm mb-6">
-            Book a premium sports venue in your city ΓÇö instantly.
-          </p>
-          <Link
-            to="/venues"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-[8px] font-bold text-sm uppercase tracking-widest text-black hover:brightness-110 transition-all"
-            style={{ backgroundColor: PRI }}
-          >
-            Explore Venues <ChevronRight size={16} />
-          </Link>
-        </div>
-      </div>
+
     </div>
   );
 }

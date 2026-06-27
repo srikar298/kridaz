@@ -4,129 +4,136 @@ import { Link } from "react-router-dom";
 export default function DashboardHero() {
   return (
     <div className="grid grid-cols-4 gap-2 md:gap-3 mb-0 w-full pb-0 px-2">
-      {/* Leaderboard / Players Nearby */}
+      {/* Players Nearby */}
       <Link
         to="/players"
-        className="w-full flex flex-col items-center gap-1.5 md:gap-2 cursor-pointer group"
+        className="relative w-full h-[90px] md:h-[110px] bg-[#1B1B1B] border border-[#434242] rounded-[12px] overflow-hidden flex flex-col items-start justify-start p-2.5 cursor-pointer shadow-lg"
       >
-        <div
-          className="relative w-full rounded-[12px] overflow-visible force-overflow-visible flex items-center justify-center aspect-square transition-all duration-300 shadow-xl border border-[#EBEBEB]/15 group-hover:scale-[1.02]"
+        <div 
+          className="absolute pointer-events-none z-0"
           style={{
-            background:
-              "radial-gradient(circle at 80% 50%, #2087FF 0%, #0E49B5 45%, #031533 100%)",
+            width: '81.88px',
+            height: '48.91px',
+            top: '-30px',
+            left: '-33px',
+            transform: 'rotate(-39.56deg)',
+            backgroundColor: 'rgba(73, 170, 233, 0.4)',
+            opacity: 0.6,
+            filter: 'blur(20px)'
           }}
+        />
+        <span
+          className="text-[12px] font-medium text-white leading-[1.2] z-10 text-left tracking-normal"
+          style={{ fontFamily: "'Inter', sans-serif" }}
         >
-          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />
-          <img
-            src="/3d-map-location.webp"
-            alt="Leaderboard Map Icon"
-            width="80"
-            height="80"
-            className="absolute inset-0 w-full h-full object-contain p-[5%] pointer-events-none transform group-hover:scale-110 transition-all duration-300 z-10"
-          />
-        </div>
-        <div className="h-[28px] flex items-start justify-center">
-          <span
-            className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors"
-            style={{ fontFamily: "'Open Sans', sans-serif" }}
-          >
-            Players Nearby
-          </span>
-        </div>
+          Players<br />Nearby
+        </span>
+        <img
+          src="/3d-map-location.png"
+          alt="Players Nearby Icon"
+          className="absolute -bottom-1 -right-2 w-[80px] h-[80px] md:w-[90px] md:h-[90px] object-contain object-right-bottom z-10 pointer-events-none"
+        />
       </Link>
 
       {/* Scoring */}
       <Link
         to="/my-teams"
         state={{ openStartScoringModal: true }}
-        className="w-full flex flex-col items-center gap-1.5 md:gap-2 cursor-pointer group"
+        className="relative w-full h-[90px] md:h-[110px] bg-[#1B1B1B] border border-[#434242] rounded-[12px] overflow-hidden flex flex-col items-start justify-start p-2.5 cursor-pointer shadow-lg"
       >
-        <div
-          className="relative w-full rounded-[12px] overflow-visible force-overflow-visible flex items-center justify-center aspect-square transition-all duration-300 shadow-xl border border-[#EBEBEB]/15 group-hover:scale-[1.02]"
+        <div 
+          className="absolute pointer-events-none z-0"
           style={{
-            background:
-              "radial-gradient(circle at 80% 50%, #FF9800 0%, #E65100 45%, #3E1700 100%)",
+            width: '81.88px',
+            height: '48.91px',
+            top: '-30px',
+            left: '-33.25px',
+            transform: 'rotate(-39.56deg)',
+            backgroundColor: 'rgba(249, 159, 67, 0.4)',
+            opacity: 0.6,
+            filter: 'blur(20px)'
           }}
+        />
+        <span
+          className="text-[12px] font-medium text-white leading-[1.2] z-10 text-left tracking-normal"
+          style={{ fontFamily: "'Inter', sans-serif" }}
         >
-          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />
-          <img
-            src="/3d-scoreboard-v2.webp"
-            alt="Scorer Icon"
-            width="80"
-            height="80"
-            className="absolute inset-0 w-full h-full object-contain p-[2.5%] pointer-events-none transform group-hover:scale-110 transition-all duration-300 z-10"
-          />
-        </div>
-        <div className="h-[28px] flex items-start justify-center">
-          <span
-            className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors"
-            style={{ fontFamily: "'Open Sans', sans-serif" }}
-          >
-            Score Match
-          </span>
-        </div>
+          Score<br />Match
+        </span>
+        <img
+          src="/3d-scoreboard-v2.webp"
+          alt="Scorer Icon"
+          className="absolute object-contain z-10 pointer-events-none"
+          style={{
+            width: '61.62px',
+            height: '51.26px',
+            top: '50px',
+            left: '28px',
+            transform: 'rotate(12deg) scale(1.25)'
+          }}
+        />
       </Link>
 
       {/* Host & Join Games */}
       <Link
         to="/join-games"
-        className="w-full flex flex-col items-center gap-1.5 md:gap-2 cursor-pointer group"
+        className="relative w-full h-[90px] md:h-[110px] bg-[#1B1B1B] border border-[#434242] rounded-[12px] overflow-hidden flex flex-col items-start justify-start p-2.5 cursor-pointer shadow-lg"
       >
-        <div
-          className="relative w-full rounded-[12px] overflow-visible force-overflow-visible flex items-center justify-center aspect-square transition-all duration-300 shadow-xl border border-[#EBEBEB]/15 group-hover:scale-[1.02]"
+        <div 
+          className="absolute pointer-events-none z-0"
           style={{
-            background:
-              "radial-gradient(circle at 80% 50%, var(--success) 0%, #15803D 45%, #032512 100%)",
+            width: '81.88px',
+            height: '48.91px',
+            top: '-30px',
+            left: '-32.5px',
+            transform: 'rotate(-39.56deg)',
+            backgroundColor: 'rgba(66, 154, 65, 0.4)',
+            opacity: 0.6,
+            filter: 'blur(20px)'
           }}
+        />
+        <span
+          className="text-[12px] font-medium text-white leading-[1.2] z-10 text-left tracking-normal"
+          style={{ fontFamily: "'Inter', sans-serif" }}
         >
-          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />
-          <img
-            src="/3d-whistle.webp"
-            alt="Host & Join Games Whistle Icon"
-            width="80"
-            height="80"
-            className="absolute inset-0 w-full h-full object-contain p-[2.5%] pointer-events-none transform group-hover:scale-110 transition-all duration-300 z-10"
-          />
-        </div>
-        <div className="h-[28px] flex items-start justify-center">
-          <span
-            className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors"
-            style={{ fontFamily: "'Open Sans', sans-serif" }}
-          >
-            Join Game
-          </span>
-        </div>
+          Join<br />Game
+        </span>
+        <img
+          src="/3d-whistle.png"
+          alt="Host & Join Games Icon"
+          className="absolute -bottom-4 -right-4 w-[115px] h-[115px] md:w-[125px] md:h-[125px] object-contain object-right-bottom z-10 pointer-events-none -scale-x-100"
+        />
       </Link>
 
       {/* Pros */}
       <Link
         to="/professionals"
-        className="w-full flex flex-col items-center gap-1.5 md:gap-2 cursor-pointer group"
+        className="relative w-full h-[90px] md:h-[110px] bg-[#1B1B1B] border border-[#434242] rounded-[12px] overflow-hidden flex flex-col items-start justify-start p-2.5 cursor-pointer shadow-lg"
       >
-        <div
-          className="relative w-full rounded-[12px] overflow-visible force-overflow-visible flex items-center justify-center aspect-square transition-all duration-300 shadow-xl border border-[#EBEBEB]/15 group-hover:scale-[1.02]"
+        <div 
+          className="absolute pointer-events-none z-0"
           style={{
-            background:
-              "radial-gradient(circle at 80% 50%, #FFA2FF 0%, #A726E2 50%, #220038 100%)",
+            width: '81.88px',
+            height: '48.91px',
+            top: '-30px',
+            left: '-32.75px',
+            transform: 'rotate(-39.56deg)',
+            backgroundColor: 'rgba(117, 58, 216, 0.4)',
+            opacity: 0.6,
+            filter: 'blur(20px)'
           }}
+        />
+        <span
+          className="text-[12px] font-medium text-white leading-[1.2] z-10 text-left tracking-normal"
+          style={{ fontFamily: "'Inter', sans-serif" }}
         >
-          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[12px]" />
-          <img
-            src="/sports/3d-professional-v2.webp"
-            alt="Pros Icon"
-            width="80"
-            height="80"
-            className="absolute inset-0 w-full h-full object-contain p-[10%] pointer-events-none transform group-hover:scale-110 transition-all duration-300 z-10"
-          />
-        </div>
-        <div className="h-[28px] flex items-start justify-center">
-          <span
-            className="text-[7px] md:text-[9px] font-normal text-white/70 uppercase whitespace-nowrap text-center leading-tight group-hover:text-white transition-colors"
-            style={{ fontFamily: "'Open Sans', sans-serif" }}
-          >
-            Pro's
-          </span>
-        </div>
+          Pro's
+        </span>
+        <img
+          src="/sports/3d-professional-v2.webp"
+          alt="Pros Icon"
+          className="absolute -bottom-1.5 -right-6 w-[65px] h-[65px] md:w-[70px] md:h-[70px] object-contain object-right-bottom z-10 pointer-events-none -rotate-6 -scale-x-100"
+        />
       </Link>
     </div>
   );

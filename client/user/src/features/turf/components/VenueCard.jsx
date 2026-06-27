@@ -1,14 +1,15 @@
 import React from "react";
 import { Heart, MapPin, Star } from "lucide-react";
 
-const VenueCard = ({ t, onClick }) => {
+const VenueCard = ({ t, onClick, isActive = true }) => {
   return (
-    <div
+    <article
       onClick={onClick}
-      className="block relative w-full h-full rounded-[12px] overflow-hidden group bg-card border-2 border-gray-600/60 hover:border-white/40 transition-all duration-300 shadow-lg cursor-pointer"
+      className={`inline-flex flex-col items-center gap-3 relative flex-[0_0_auto] cursor-pointer transition-all duration-300 ${!isActive ? "opacity-50" : "opacity-100"}`}
     >
-      {/* Normal Card Content */}
-      <div className="absolute inset-0 w-full h-full bg-card">
+      <div
+        className={`relative rounded-xl border border-solid border-[#434242] overflow-hidden transition-all duration-300 ${isActive ? "w-[280px] h-[280px] md:w-80 md:h-80" : "w-[220px] h-[240px] md:w-60 md:h-[260px]"}`}
+      >
         <img
           src={
             t.images?.[0] ||
@@ -22,59 +23,52 @@ const VenueCard = ({ t, onClick }) => {
           }}
           alt={t.name}
           draggable={false}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700"
         />
 
-        {/* Dark gradient at the bottom */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90 z-0 pointer-events-none" />
+        {/* Top Badges */}
+        <div className="absolute top-2.5 w-full px-2.5 flex items-center justify-between">
+          <div className="inline-flex items-center justify-center gap-1 px-2 py-1.5 bg-[#04050447] rounded-lg backdrop-blur-md">
+            <Star size={14} className="text-white" fill="currentColor" />
+            <span className="font-medium text-white text-xs tracking-[0] leading-[14.4px] whitespace-nowrap">
+              {t.averageRating || t.avgRating || t.rating || "4.8"}
+            </span>
+          </div>
 
-        {/* Heart Icon top right */}
-        <div className="absolute top-4 right-4 z-10">
           <button
-            className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:scale-110 transition-transform shadow-md border-0 outline-none p-0 cursor-pointer"
+            type="button"
+            aria-label="Add to favorites"
+            className="inline-flex items-center justify-center p-2 bg-[#ffffff14] rounded-lg backdrop-brightness-[84.0%] backdrop-saturate-[104.3%] backdrop-hue-rotate-[-4.8deg] [-webkit-backdrop-filter:brightness(84.0%)_saturate(104.3%)_hue-rotate(-4.8deg)] shadow-[inset_0_1px_0_rgba(255,255,255,0.20),inset_1px_0_0_rgba(255,255,255,0.16),inset_0_-1px_1px_rgba(0,0,0,0.05),inset_-1px_0_1px_rgba(0,0,0,0.04)] hover:bg-[#ffffff25] transition-colors"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
             }}
           >
-            <Heart size={16} className="text-green-600" strokeWidth={2} />
+            <Heart size={18} className="text-white" />
           </button>
         </div>
+      </div>
 
-        {/* Bottom Details Section */}
-        <div className="absolute bottom-0 left-0 right-0 p-5 z-10 flex flex-col gap-3 pointer-events-none">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between items-end gap-2">
-              <h3
-                className="text-[18px] font-bold text-white leading-tight line-clamp-2"
-                style={{ fontFamily: "'Open Sans', sans-serif" }}
-              >
-                {t.name}
-              </h3>
-            </div>
-          </div>
-
-          {/* Location & Rating Row */}
-          <div className="flex justify-between items-center mt-1 w-full gap-1 overflow-hidden">
-            {/* Plain Text Location */}
-            <div className="flex items-center gap-0.5 text-white/80 min-w-0">
-              <MapPin size={8} className="text-white/70 shrink-0" />
-              <span className="text-[8px] font-medium whitespace-nowrap truncate">
-                {t.distance ? `${Math.round(t.distance)} km` : "1 km"} away
-              </span>
-            </div>
-
-            {/* Rating Pill on the right */}
-            <div className="flex items-center gap-0.5 px-1 py-0.5 bg-white/20 backdrop-blur-md rounded-full border border-white/10 shrink-0">
-              <Star size={8} className="text-white" fill="currentColor" />
-              <span className="text-[8px] font-semibold text-white">
-                {t.averageRating || t.avgRating || t.rating || "4.8"}
-              </span>
-            </div>
+      {/* Text Container (Below Image) */}
+      <div
+        className={`inline-flex flex-col items-center gap-4 relative transition-all duration-300 ${!isActive ? "opacity-0 pointer-events-none invisible" : "opacity-100 visible"}`}
+      >
+        <div className="flex flex-col w-[222px] items-center gap-1.5">
+          <h2 
+            className="font-semibold text-white text-[16px] tracking-[0px] leading-[1.2] text-center line-clamp-1 normal-case"
+            style={{ fontFamily: "'Inter', sans-serif" }}
+          >
+            {t.name ? t.name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : ""}
+          </h2>
+          <div className="inline-flex items-center gap-1 text-[#a5a5a5]">
+            <MapPin size={14} />
+            <p className="font-normal text-[#a5a5a5] text-xs tracking-[0] leading-[14.4px] whitespace-nowrap truncate max-w-[180px]">
+              {t.address || t.city || "Paramount colony, Hyderabad"}
+            </p>
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

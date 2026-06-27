@@ -18,6 +18,8 @@ import {
   Apple,
   Activity,
   ChevronLeft,
+  ChevronRight,
+  UploadCloud,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -522,7 +524,7 @@ export default function ProfessionalLanding() {
 
       {/* ── Modals ── */}
       {modalStep === 1 && (
-        <div className="fixed inset-0 z-[100] bg-card flex flex-col p-6 animate-fadeInUp overflow-y-auto no-scrollbar">
+        <div className="fixed inset-0 z-[100] bg-black flex flex-col px-3 py-6 md:p-6 animate-fadeInUp overflow-y-auto no-scrollbar">
           <div className="w-full max-w-lg mx-auto relative flex-1 flex flex-col pt-4 pb-8 justify-center">
             {user?.ownerProfile ||
             [
@@ -603,19 +605,19 @@ export default function ProfessionalLanding() {
               </div>
             ) : (
               <>
-                <div className="flex items-start justify-start mb-6 -ml-2 gap-1.5">
-                  <Button
-                    onClick={() => setModalStep(0)}
-                    className="text-gray-400 hover:text-white transition-colors p-1 mt-0.5"
-                  >
-                    <ChevronLeft size={28} />
-                  </Button>
-                  <div className="flex flex-col text-left">
+                <button
+                  onClick={() => setModalStep(0)}
+                  className="fixed left-4 top-5 md:absolute md:left-6 md:top-6 text-gray-400 hover:text-white transition-colors p-2 bg-white/5 rounded-[10px] z-10 border border-white/5"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <div className="flex flex-col items-center justify-center mb-10 mt-2 relative">
+                  <div className="flex flex-col text-center mt-2">
                     <h2
-                      className="text-xl font-bold text-white tracking-normal normal-case mb-1"
+                      className="text-[24px] font-bold text-white tracking-normal normal-case mb-1"
                       style={{ fontFamily: "'Open Sans'" }}
                     >
-                      Select your role
+                      Select your <span className="text-primary">role</span>
                     </h2>
                     <p className="text-gray-400 text-xs">
                       Please select your primary profession.
@@ -623,23 +625,24 @@ export default function ProfessionalLanding() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2.5 mb-5">
+                <div className="grid grid-cols-2 gap-x-2 gap-y-4 mb-8">
                   {availableRoles.map((role) => {
                     const isSelected = selectedRoles.includes(role.id);
                     return (
-                      <Button
+                      <button
                         key={role.id}
+                        type="button"
                         onClick={() => toggleRole(role.id)}
-                        className={`flex flex-col items-center justify-center p-3.5 border rounded-[10px] transition-all ${isSelected ? "border-primary bg-primary/10 text-white shadow-[0_0_15px_rgba(191,243,103,0.15)]" : "border-white/10 bg-white/5 text-gray-400 hover:border-white/30 hover:bg-white/10"}`}
+                        className={`flex flex-row items-center justify-start px-1.5 py-2 md:p-3 border rounded-[10px] transition-all gap-1.5 md:gap-3 w-full ${isSelected ? "border-primary bg-primary/10 text-white shadow-[0_0_15px_rgba(191,243,103,0.15)]" : "border-[#2D2D2D] bg-[#0a0a0c] text-white hover:border-[#BFF367]/50 hover:bg-white/5"}`}
                       >
-                        <role.icon
-                          size={24}
-                          className={`mb-2 ${isSelected ? "text-primary" : ""}`}
-                        />
-                        <span className="font-bold uppercase tracking-wider text-[10px]">
+                        <div className={`w-7 h-7 md:w-10 md:h-10 rounded-full border shrink-0 flex items-center justify-center ${isSelected ? "border-primary text-primary bg-primary/20" : "border-[#2D2D2D] text-gray-400 bg-black"}`}>
+                          <role.icon size={14} className="md:w-[18px] md:h-[18px]" />
+                        </div>
+                        <span className="font-bold uppercase tracking-wide md:tracking-wider text-[8.5px] md:text-[11px] flex-1 text-left truncate">
                           {role.label}
                         </span>
-                      </Button>
+                        <ChevronRight size={14} className="text-gray-500 shrink-0 md:w-[18px] md:h-[18px]" />
+                      </button>
                     );
                   })}
                 </div>
@@ -658,137 +661,101 @@ export default function ProfessionalLanding() {
       )}
 
       {modalStep === 2 && (
-        <div className="fixed inset-0 z-[100] bg-card flex flex-col p-6 animate-fadeInUp overflow-y-auto no-scrollbar">
+        <div className="fixed inset-0 z-[100] bg-black flex flex-col p-6 animate-fadeInUp overflow-y-auto no-scrollbar">
           <div className="w-full max-w-lg mx-auto relative flex-1 flex flex-col pt-12 pb-8 justify-center">
-            <Button
+            <button
               onClick={() => setModalStep(1)}
-              className="absolute top-2 left-0 text-gray-400 hover:text-white transition-colors flex items-center"
+              className="fixed left-4 top-5 md:absolute md:left-6 md:top-6 text-gray-400 hover:text-white transition-colors p-2 bg-white/5 rounded-[10px] z-10 border border-white/5"
             >
-              <ChevronLeft size={32} />
-            </Button>
+              <ChevronLeft size={24} />
+            </button>
             <h2
-              className="text-3xl font-bold mb-8 text-white text-center"
+              className="text-[24px] font-bold mb-2 text-white text-center uppercase tracking-normal"
               style={{ fontFamily: "'Open Sans'" }}
             >
-              Document Verification
+              Document <br />
+              <span className="text-primary">Verification</span>
             </h2>
 
-            <form className="space-y-6 mt-4" onSubmit={handleDocumentSubmit}>
-              <div className="grid grid-cols-2 gap-4 md:gap-6 mt-4">
-                {/* Aadhaar Front Box */}
-                <label
-                  className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${aadharFront ? "opacity-80" : ""}`}
-                >
-                  <span
-                    className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base leading-tight"
-                    style={{ fontFamily: "'Inter'" }}
-                  >
-                    AADHAAR CARD <br /> FRONT
-                  </span>
-                  <div
-                    className={`relative w-full h-[110px] md:h-[130px] bg-[#E8E8E8] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharFront ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}
-                  >
-                    {aadharFront ? (
-                      <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
-                        <FileCheck className="text-primary mb-2" size={32} />
-                        <span
-                          className="text-white font-bold tracking-wider uppercase text-center text-xs"
-                          style={{ fontFamily: "'Inter'" }}
-                        >
-                          Uploaded
-                        </span>
+            <form className="space-y-6 mt-0" onSubmit={handleDocumentSubmit}>
+              <div className="flex flex-col gap-2 mt-2">
+                <span className="text-white font-bold uppercase tracking-wider text-xs ml-1" style={{ fontFamily: "'Inter'" }}>
+                  AADHAAR CARD
+                </span>
+                <div className="grid grid-cols-2 gap-4 bg-[#0a0a0c] border border-[#2D2D2D] p-4 md:p-5 rounded-[16px]">
+                  {/* Aadhaar Front Box */}
+                  <label className={`flex flex-col gap-3 cursor-pointer group relative ${aadharFront ? "opacity-80" : ""}`}>
+                    <span className="text-gray-300 font-semibold text-[11px] md:text-xs">Front Side</span>
+                    <div className={`relative w-full h-[90px] md:h-[110px] bg-[#E8E8E8] rounded-[8px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharFront ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}>
+                      {aadharFront ? (
+                        <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
+                          <FileCheck className="text-primary mb-2" size={32} />
+                        </div>
+                      ) : (
+                        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs" style={{ fontFamily: "'Inter'" }}>
+                            Upload Front
+                          </span>
+                        </div>
+                      )}
+                      
+                      <div className="flex justify-between items-start opacity-60 p-2">
+                        <Landmark className="w-5 h-5 text-gray-600" />
+                        <div className="space-y-1 flex flex-col items-end mt-0.5">
+                          <div className="w-10 h-1 bg-gray-500 rounded-full"></div>
+                          <div className="w-6 h-1 bg-gray-500 rounded-full"></div>
+                        </div>
                       </div>
-                    ) : (
-                      <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span
-                          className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs"
-                          style={{ fontFamily: "'Inter'" }}
-                        >
-                          Upload Front
-                        </span>
-                      </div>
-                    )}
-                    <div className="flex justify-between items-start opacity-60">
-                      <Landmark className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
-                      <div className="space-y-1 md:space-y-1.5 flex flex-col items-end mt-0.5">
-                        <div className="w-12 md:w-20 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
-                        <div className="w-8 md:w-14 h-1.5 md:h-2 bg-gray-500 rounded-full"></div>
+                      <div className="flex gap-2 mt-1 opacity-60 p-2">
+                        <div className="w-8 h-10 bg-gray-400/30 rounded-[6px] overflow-hidden flex items-end justify-center border border-gray-400/20">
+                          <User className="w-6 h-6 text-gray-600 -mb-1" fill="currentColor" />
+                        </div>
+                        <div className="flex-1 space-y-1.5 mt-0.5">
+                          <div className="w-full h-1.5 bg-gray-500 rounded-full"></div>
+                          <div className="w-5/6 h-1.5 bg-gray-500 rounded-full"></div>
+                          <div className="w-4/6 h-1.5 bg-gray-500 rounded-full"></div>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex gap-2 md:gap-3 mt-1 opacity-60">
-                      <div className="w-10 h-12 md:w-12 md:h-14 bg-gray-400/30 rounded-[8px] overflow-hidden flex items-end justify-center border border-gray-400/20">
-                        <User className="w-8 h-8 md:w-10 md:h-10 text-gray-600 -mb-1.5" fill="currentColor" />
-                      </div>
-                      <div className="flex-1 space-y-2 md:space-y-2.5 mt-0.5 md:mt-1">
-                        <div className="w-full h-2 md:h-2.5 bg-gray-500 rounded-full"></div>
-                        <div className="w-5/6 h-2 md:h-2.5 bg-gray-500 rounded-full"></div>
-                        <div className="w-4/6 h-2 md:h-2.5 bg-gray-500 rounded-full"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleAadharFrontUpload}
-                  />
-                </label>
+                    <Input type="file" accept="image/*" className="hidden" onChange={handleAadharFrontUpload} />
+                  </label>
 
-                {/* Aadhaar Back Box */}
-                <label
-                  className={`flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${aadharBack ? "opacity-80" : ""}`}
-                >
-                  <span
-                    className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base leading-tight"
-                    style={{ fontFamily: "'Inter'" }}
-                  >
-                    AADHAAR CARD <br /> BACK
-                  </span>
-                  <div
-                    className={`relative w-full h-[110px] md:h-[130px] bg-[#E8E8E8] rounded-[10px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharBack ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}
-                  >
-                    {aadharBack ? (
-                      <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
-                        <FileCheck className="text-primary mb-2" size={32} />
-                        <span
-                          className="text-white font-bold tracking-wider uppercase text-center text-xs"
-                          style={{ fontFamily: "'Inter'" }}
-                        >
-                          Uploaded
-                        </span>
+                  {/* Aadhaar Back Box */}
+                  <label className={`flex flex-col gap-3 cursor-pointer group relative ${aadharBack ? "opacity-80" : ""}`}>
+                    <span className="text-gray-300 font-semibold text-[11px] md:text-xs">Back Side</span>
+                    <div className={`relative w-full h-[90px] md:h-[110px] bg-[#E8E8E8] rounded-[8px] overflow-hidden shadow-inner flex flex-col justify-between transition-all ${aadharBack ? "ring-2 ring-primary" : "group-hover:ring-2 group-hover:ring-primary"}`}>
+                      {aadharBack ? (
+                        <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
+                          <FileCheck className="text-primary mb-2" size={32} />
+                        </div>
+                      ) : (
+                        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs" style={{ fontFamily: "'Inter'" }}>
+                            Upload Back
+                          </span>
+                        </div>
+                      )}
+                      
+                      <div className="w-full h-3 bg-gray-400 mt-2"></div>
+                      <div className="p-2 space-y-1.5 opacity-60 flex-1">
+                        <div className="w-full h-1 bg-gray-500 rounded-full"></div>
+                        <div className="w-4/5 h-1 bg-gray-500 rounded-full"></div>
+                        <div className="w-3/4 h-1 bg-gray-500 rounded-full"></div>
                       </div>
-                    ) : (
-                      <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span
-                          className="text-white font-bold tracking-wider uppercase text-center text-[10px] md:text-xs"
-                          style={{ fontFamily: "'Inter'" }}
-                        >
-                          Upload Back
-                        </span>
+                      <div className="absolute bottom-2 left-2 opacity-60">
+                         <QrCode size={16} className="text-gray-500" />
                       </div>
-                    )}
-                    {/* Abstract Back ID UI */}
-                    <div className="w-full h-4 bg-gray-400 mt-2"></div>
-                    <div className="p-2 space-y-1.5 opacity-60">
-                      <div className="w-full h-1.5 bg-gray-500 rounded-full"></div>
-                      <div className="w-4/5 h-1.5 bg-gray-500 rounded-full"></div>
-                      <div className="w-3/4 h-1.5 bg-gray-500 rounded-full"></div>
                     </div>
-                  </div>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleAadharBackUpload}
-                  />
-                </label>
+                    <Input type="file" accept="image/*" className="hidden" onChange={handleAadharBackUpload} />
+                  </label>
+                </div>
 
                 {/* PAN Upload Box */}
                 <label
-                  className={`col-span-2 w-full max-w-xs mx-auto flex flex-col items-center gap-3 md:gap-4 cursor-pointer group ${panFront ? "opacity-80" : ""}`}
+                  className={`col-span-2 w-full flex flex-col items-start gap-3 md:gap-4 cursor-pointer group mt-4 ${panFront ? "opacity-80" : ""}`}
                 >
                   <span
-                    className="text-white font-black tracking-wider uppercase text-center text-sm md:text-base"
+                    className="text-white font-bold tracking-wider uppercase text-xs ml-1"
                     style={{ fontFamily: "'Inter'" }}
                   >
                     PAN CARD

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Search,
@@ -28,6 +28,31 @@ export default function VenuesSection({
   const scrollRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
   const [selectedTurfForPopup, setSelectedTurfForPopup] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return;
+    const scrollLeft = scrollRef.current.scrollLeft;
+    const containerWidth = scrollRef.current.clientWidth;
+    
+    let closestIndex = 0;
+    let minDiff = Infinity;
+    
+    Array.from(scrollRef.current.children).forEach((child, index) => {
+      // Calculate distance from center of child to center of container
+      const childCenter = child.offsetLeft + child.clientWidth / 2 - scrollRef.current.offsetLeft;
+      const scrollCenter = scrollLeft + containerWidth / 2;
+      const diff = Math.abs(childCenter - scrollCenter);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIndex = index;
+      }
+    });
+    
+    if (closestIndex !== activeIndex) {
+      setActiveIndex(closestIndex);
+    }
+  }, [activeIndex]);
 
   useEffect(() => {
     let interval;
@@ -56,7 +81,7 @@ export default function VenuesSection({
 
   const scroll = (direction) => {
     if (scrollRef.current) {
-      const scrollAmount = scrollRef.current.clientWidth;
+      const scrollAmount = scrollRef.current.clientWidth * 0.75;
       scrollRef.current.scrollBy({
         left: direction === "left" ? -scrollAmount : scrollAmount,
         behavior: "smooth",
@@ -65,8 +90,8 @@ export default function VenuesSection({
   };
 
   return (
-    <section className="pt-[15px] mb-8 w-full">
-      <div className="mb-6">
+    <section className="w-full">
+      <div className="mb-4">
         <h2
           className="text-[14px] font-black text-white tracking-tighter leading-none text-left"
           style={{ fontFamily: "'Open Sans', sans-serif" }}
@@ -107,17 +132,32 @@ export default function VenuesSection({
           <div className="relative">
             <div
               ref={scrollRef}
-              className="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 pr-4 scroll-smooth"
+              className="flex items-center gap-[6px] overflow-x-auto snap-x snap-mandatory no-scrollbar pb-6 px-[calc(50%-130px)] scroll-smooth min-h-[380px]"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
+              onScroll={handleScroll}
             >
-              {displayTurfs.slice(0, 10).map((t) => (
+              {displayTurfs.slice(0, 10).map((t, idx) => (
                 <div
                   key={t._id}
-                  className="w-[65%] shrink-0 snap-start aspect-[1080/1350]"
+                  className={`shrink-0 snap-center w-[260px] h-[360px] flex justify-center items-center relative transition-all duration-300 ${idx === activeIndex ? 'z-10' : 'z-0'}`}
                 >
-                  <VenueCard t={t} onClick={() => setSelectedTurfForPopup(t)} />
+                  <VenueCard 
+                    t={t} 
+                    onClick={() => setSelectedTurfForPopup(t)} 
+                    isActive={idx === activeIndex}
+                  />
                 </div>
+              ))}
+            </div>
+            
+            {/* Carousel Dots */}
+            <div className="flex justify-center gap-1.5 mt-2">
+              {displayTurfs.slice(0, 10).map((_, idx) => (
+                <div 
+                  key={idx} 
+                  className={`rounded-full transition-all duration-300 ${idx === activeIndex ? "w-[18px] h-1.5 bg-white" : "w-1.5 h-1.5 bg-[#434242]"}`}
+                ></div>
               ))}
             </div>
           </div>
