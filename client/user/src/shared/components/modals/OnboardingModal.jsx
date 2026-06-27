@@ -236,6 +236,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
           : initialData?.name || getNameFromEmail(emailVal));
 
       setFormData((prev) => ({
+        ...prev,
         name:
           savedData?.name ||
           prev.name ||
@@ -563,11 +564,17 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
     try {
       const payloadName =
         formData.firstName + (formData.lastName ? " " + formData.lastName : "");
-      const formattedPhone = formData.phone
-        ? formData.phone.startsWith("+")
-          ? formData.phone
-          : formData.countryCode + formData.phone
-        : undefined;
+      let formattedPhone = formData.phone;
+      if (formattedPhone) {
+        if (!formattedPhone.startsWith("+")) {
+          const cleanCode = (formData.countryCode || "+91").replace("+", "");
+          if (formattedPhone.startsWith(cleanCode)) {
+            formattedPhone = "+" + formattedPhone;
+          } else {
+            formattedPhone = (formData.countryCode || "+91") + formattedPhone;
+          }
+        }
+      }
       const finalFormData = { 
         ...formData, 
         city: currentCity,
