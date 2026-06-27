@@ -43,6 +43,8 @@ model User {
   locationSharingEnabled  Boolean                       @default(true)
   tokenVersion            Int                           @default(0)
   isEmailVerified         Boolean                       @default(false)
+  battingStyle            String?
+  bowlingStyle            String?
   auditLogs               AuditLog[]
   blogs                   Blog[]
   bookings                Booking[]
@@ -612,6 +614,7 @@ model CricketMatch {
   strikerId            String?
   nonStrikerId         String?
   bowlerId             String?
+  wicketKeeperId       String?
   revisedTarget        Int?
   revisedOvers         Float?
   matchOfficials       Json?
@@ -757,14 +760,15 @@ model Team {
 }
 
 model TeamMember {
-  id        String   @id @default(uuid())
-  teamId    String
-  userId    String
-  role      String   @default("PLAYER")
-  status    String   @default("JOINED")
-  createdAt DateTime @default(now())
-  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id])
+  id          String   @id @default(uuid())
+  teamId      String
+  userId      String
+  role        String   @default("PLAYER")
+  playingRole String   @default("NONE")
+  status      String   @default("JOINED")
+  createdAt   DateTime @default(now())
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model TeamCustomMember {

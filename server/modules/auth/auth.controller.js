@@ -2617,6 +2617,8 @@ export const updateProfile = asyncHandler(async (req, res) => {
     interests,
     password,
     email,
+    battingStyle,
+    bowlingStyle,
   } = req.body;
   const decoded = req.user || req.owner;
   if (!decoded) {
@@ -2690,6 +2692,16 @@ export const updateProfile = asyncHandler(async (req, res) => {
     });
     return copy;
   };
+  const VALID_BATTING_STYLES = ["RHB", "LHB"];
+  const VALID_BOWLING_STYLES = ["RF", "RMF", "RM", "OB", "LB", "LF", "LMF", "LM", "SLA", "LC"];
+
+  if (battingStyle && !VALID_BATTING_STYLES.includes(battingStyle)) {
+    return res.status(400).json({ success: false, message: "Invalid battingStyle." });
+  }
+  if (bowlingStyle && !VALID_BOWLING_STYLES.includes(bowlingStyle)) {
+    return res.status(400).json({ success: false, message: "Invalid bowlingStyle." });
+  }
+
   const updateData = cleanObject({
     name,
     username: username?.toLowerCase(),
@@ -2700,6 +2712,8 @@ export const updateProfile = asyncHandler(async (req, res) => {
     state,
     sportTypes: finalInterests,
     interests: finalInterests,
+    battingStyle,
+    bowlingStyle,
     isOnboarded:
       req.body.isOnboarded === true || req.body.isOnboarded === "true"
         ? true
