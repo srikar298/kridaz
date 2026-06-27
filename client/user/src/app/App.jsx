@@ -33,6 +33,7 @@ const getCookie = (name) => {
 
 import { SocketProvider } from "@context/SocketContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { GOOGLE_CLIENT_ID } from "@utils/googleAuth";
 import { Toaster } from "react-hot-toast";
 import { RootErrorBoundary } from "@components/common";
 
@@ -278,7 +279,7 @@ export default function App() {
   return (
     <RootErrorBoundary>
       <ObservabilityProvider>
-        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <SocketProvider>
             <RouterProvider router={router} />
             <Toaster

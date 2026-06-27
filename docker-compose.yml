@@ -8,8 +8,6 @@ services:
       POSTGRES_USER: kridaz
       POSTGRES_PASSWORD: password
       POSTGRES_DB: kridaz
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -21,8 +19,6 @@ services:
   redis:
     image: redis:7-alpine
     container_name: kridaz-redis
-    ports:
-      - "6379:6379"
     volumes:
       - redisdata:/data
     healthcheck:
@@ -43,10 +39,9 @@ services:
         condition: service_healthy
     ports:
       - "4000:4000"
+    env_file:
+      - .env
     environment:
-      - DATABASE_URL=postgresql://kridaz:password@db:5432/kridaz
-      - REDIS_URL=redis://redis:6379
-      - NODE_ENV=development
       - PORT=4000
       - ENABLE_WORKERS=false
     # To run migrations prior to API starting locally, you can use:
@@ -65,10 +60,9 @@ services:
         condition: service_healthy
       api:
         condition: service_started
+    env_file:
+      - .env
     environment:
-      - DATABASE_URL=postgresql://kridaz:password@db:5432/kridaz
-      - REDIS_URL=redis://redis:6379
-      - NODE_ENV=development
       - ENABLE_WORKERS=true
     command: pnpm run worker
 

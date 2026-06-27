@@ -22,7 +22,7 @@ import crypto from "crypto";
  */
 // MVP scoring weights. Defaults are the ones the engine has always used —
 // product can tune via PATCH /scoring/house-rules with `mvpWeights: { ... }`.
-const DEFAULT_MVP_WEIGHTS = Object.freeze({
+export const DEFAULT_MVP_WEIGHTS = Object.freeze({
   perRun: 1,
   bonus30: 10,
   bonus50: 20,

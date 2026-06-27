@@ -45,7 +45,14 @@ Sentry.init({
   environment: import.meta.env.MODE,
 });
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+import { GOOGLE_CLIENT_ID, isGoogleConfigured } from "@utils/googleAuth";
+if (!isGoogleConfigured) {
+  console.warn(
+    "[Google Auth] VITE_GOOGLE_CLIENT_ID is missing or invalid in environment. " +
+    "Google Sign-In features will be disabled/hidden in UI."
+  );
+}
+
 
 import { AuthModalProvider } from "./context/AuthModalContext";
 
