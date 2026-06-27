@@ -534,7 +534,21 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
     if (needsPhoneVerification && !isPhoneVerified)
       return toast.error("Please verify your phone number via OTP");
 
-    if (!formData.state || formData.state.trim() === "") {
+    let currentCity = formData.city;
+    let currentState = formData.state;
+
+    if ((!currentState || currentState.trim() === "") && formData.location) {
+      const parts = formData.location.split(",").map((p) => p.trim()).filter(Boolean);
+      if (parts.length >= 2) {
+        currentCity = parts[0];
+        currentState = parts[1];
+      } else if (parts.length === 1) {
+        currentCity = parts[0];
+        currentState = parts[0];
+      }
+    }
+
+    if (!currentState || currentState.trim() === "") {
       return toast.error(
         "Please select a precise location that includes a State from the dropdown list."
       );
@@ -549,7 +563,12 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
           ? formData.phone
           : formData.countryCode + formData.phone
         : undefined;
-      const finalFormData = { ...formData, phone: formattedPhone };
+      const finalFormData = { 
+        ...formData, 
+        city: currentCity,
+        state: currentState,
+        phone: formattedPhone 
+      };
 
       if (isGoogle) {
         const res = await axiosInstance.put("/api/user/auth/updateProfile", {
