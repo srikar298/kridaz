@@ -101,6 +101,9 @@ const ReelReports = lazy(() =>
 const ErrorLogs = lazy(() =>
   import("../features/admin").then((m) => ({ default: m.ErrorLogs }))
 );
+const QRCodeManager = lazy(() =>
+  import("../features/admin").then((m) => ({ default: m.QRCodeManager }))
+);
 
 const S = ({ children }) => (
   <Suspense fallback={<PageLoader />}>{children}</Suspense>
@@ -370,6 +373,14 @@ const router = createBrowserRouter([
         element: (
           <S>
             <ErrorLogs />
+          </S>
+        ),
+      },
+      {
+        path: "qrcodes",
+        element: (
+          <S>
+            <QRCodeManager />
           </S>
         ),
       },

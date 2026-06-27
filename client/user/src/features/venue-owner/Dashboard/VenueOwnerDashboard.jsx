@@ -510,12 +510,23 @@ const StatsCard = ({
               {prefix}
             </span>
           )}
-          <CountUp
-            end={Number(value) || 0}
-            duration={2}
-            separator=","
-            decimals={(Number(value) || 0) % 1 === 0 ? 0 : 1}
-          />
+          {typeof CountUp === 'function' ? (
+            <CountUp
+              end={Number(value) || 0}
+              duration={2}
+              separator=","
+              decimals={(Number(value) || 0) % 1 === 0 ? 0 : 1}
+            />
+          ) : CountUp && typeof CountUp.default === 'function' ? (
+            <CountUp.default
+              end={Number(value) || 0}
+              duration={2}
+              separator=","
+              decimals={(Number(value) || 0) % 1 === 0 ? 0 : 1}
+            />
+          ) : (
+            <span>{value}</span>
+          )}
           {suffix && (
             <span className="text-[10px] md:text-sm text-white/40 font-medium">
               {suffix}

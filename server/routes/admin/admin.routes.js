@@ -47,4 +47,7 @@ adminRouter.use("/coupons", verifyAdminToken, adminCouponRouter);
 adminRouter.use("/error-logs", verifyAdminToken, errorLogsRouter);
 adminRouter.use("/venue-invites", verifyAdminToken, venueInvitesRouter);
 
+import qrAdminRouter from "../../modules/qr/routes/admin.qr.routes.js";
+adminRouter.use("/qr", verifyAdminToken, qrAdminRouter);
+
 export default adminRouter;

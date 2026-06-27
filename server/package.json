@@ -6,8 +6,8 @@
   "packageManager": "pnpm@10.28.0",
   "scripts": {
     "dev": "concurrently \"nodemon server.js\" \"nodemon worker.js\"",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
+    "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watch --runInBand",
     "start": "node server.js",
     "migrate": "npx prisma migrate deploy",
     "server": "nodemon server.js",

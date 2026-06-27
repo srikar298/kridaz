@@ -26,3 +26,4 @@ export { default as HostedGamesPage } from "./HostedGames/HostedGamesPage";
 export { default as CouponManagement } from "./Coupons/CouponManagement";
 export { default as ReelReports } from "./Reels/ReelReports";
 export { default as ErrorLogs } from "./ErrorLogs/ErrorLogs";
+export { default as QRCodeManager } from "./QRCode/QRCodeManager";

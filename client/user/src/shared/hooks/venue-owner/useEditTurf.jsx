@@ -186,6 +186,10 @@ export default function useEditTurf(turfId) {
   const [facilities, setFacilities] = useState([]);
   const [generatedSlots, setGeneratedSlots] = useState([]);
 
+  const [existingImages, setExistingImages] = useState([]);
+  const [imagesModified, setImagesModified] = useState(false);
+  const watchedImages = watch("images");
+
   useEffect(() => {
     const savedDraft = localStorage.getItem(`editVenueDraft_${turfId}`);
     if (savedDraft) {
@@ -295,6 +299,9 @@ export default function useEditTurf(turfId) {
           setManagerContacts(turfData.managerContacts);
           setValue("managerContacts", turfData.managerContacts);
         }
+        if (turfData.images) {
+          setExistingImages(turfData.images);
+        }
 
         setSportTypes(turfData.sportTypes || []);
         setGroundTypes(turfData.groundTypes || []);
@@ -367,6 +374,17 @@ export default function useEditTurf(turfId) {
   useEffect(() => {
     setValue("sportTypes", sportTypes);
   }, [sportTypes, setValue]);
+
+  useEffect(() => {
+    if (watchedImages && watchedImages.length > 0) {
+      setImagesModified(true);
+    }
+  }, [watchedImages]);
+
+  const removeExistingImage = (index) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
+    setImagesModified(true);
+  };
 
   useEffect(() => {
     setValue("groundTypes", groundTypes);
@@ -544,6 +562,13 @@ export default function useEditTurf(turfId) {
       }
     });
 
+    if (imagesModified) {
+      formData.append("imagesModified", "true");
+      existingImages.forEach((img) => {
+        formData.append("existingImages", img);
+      });
+    }
+
     // Append generated slots
     formData.append("generatedSlots", JSON.stringify(generatedSlots));
 
@@ -633,5 +658,8 @@ export default function useEditTurf(turfId) {
     settings,
     trigger,
     saveDraft,
+    existingImages,
+    removeExistingImage,
+    imagesModified,
   };
 }

@@ -44,6 +44,7 @@ import uploadRouter from "../modules/upload/routes/public.routes.js";
 import locationRouter from "../modules/turf/routes/public.routes.js";
 import settingsPublicRouter from "../modules/settings/routes/public.routes.js";
 import publicVenueInvitesRouter from "../modules/admin/routes/publicVenueInvites.routes.js";
+import qrPublicRouter from "../modules/qr/routes/public.qr.routes.js";
 
 const rootRouter = Router();
 
@@ -67,5 +68,6 @@ rootRouter.use("/upload", uploadRouter);
 rootRouter.use("/location", locationRouter);
 rootRouter.use("/settings", settingsPublicRouter);
 rootRouter.use("/venue-invites", publicVenueInvitesRouter);
+rootRouter.use("/qr", qrPublicRouter);
 
 export default rootRouter;

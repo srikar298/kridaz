@@ -1,7 +1,7 @@
 import { Worker } from "bullmq";
 import { bullmqConnection } from "../../config/redis.js";
 import logger from "../../utils/logger.js";
-import prisma from "../../config/prisma.js";
+import { prisma } from "../../config/prisma.js";
 import { notificationQueue } from "../notification.queue.js";
 import { getIo } from "../../config/socket.js"; // Standard socket.io setup
 

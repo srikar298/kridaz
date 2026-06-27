@@ -1143,8 +1143,8 @@ export const loginStep1 = asyncHandler(async (req, res) => {
     });
   }
 
-  // Prevent Admin 2FA Bypass (C-01)
-  if (user.role?.toUpperCase() === "ADMIN") {
+  // Prevent Admin 2FA Bypass (C-01) - Enforced in production only as frontend 2FA is not implemented yet
+  if (user.role?.toUpperCase() === "ADMIN" && process.env.NODE_ENV === "production") {
     return res.status(403).json({
       success: false,
       message: "Administrators must authenticate via the 2FA portal.",

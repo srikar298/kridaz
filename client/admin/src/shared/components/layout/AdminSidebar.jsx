@@ -17,6 +17,7 @@ import {
   LogOut,
   Trophy,
   Tag,
+  QrCode,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logout } from "@redux/slices/authSlice.js";
@@ -81,6 +82,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
     { to: "/admin/audit", label: "Audit Logs", icon: Shield },
     { to: "/admin/error-logs", label: "System Errors", icon: Shield },
     { to: "/admin/marketing", label: "Marketing", icon: Activity },
+    { to: "/admin/qrcodes", label: "QR Codes", icon: QrCode },
     { to: "/admin/coupons", label: "Coupons", icon: Tag },
     { to: "/admin/blogs", label: "Blogs", icon: FileText },
     {

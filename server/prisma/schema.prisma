@@ -1748,3 +1748,13 @@ model GameApplication {
   team    Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
   captain User       @relation(fields: [captainId], references: [id])
 }
+
+model DynamicQRCode {
+  id           String   @id @default(uuid())
+  name         String
+  targetUrl    String
+  fallbackUrl  String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
+}

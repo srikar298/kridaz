@@ -845,15 +845,28 @@ export const editTurfById = async (req, res) => {
         .json({ success: false, message: "Turf not found" });
     }
 
-    if (req.files && req.files.length > 0) {
-      const uploadPromises = req.files.map((file) => {
-        return uploadToR2(file.buffer, "kridaz/turfs");
-      });
+    if (req.body.imagesModified === "true") {
+      let finalImages = [];
+      if (req.body.existingImages) {
+        finalImages = Array.isArray(req.body.existingImages)
+          ? req.body.existingImages
+          : [req.body.existingImages];
+      }
 
-      const imageUrls = await Promise.all(uploadPromises);
-      updatedTurfData.image = imageUrls[0];
-      updatedTurfData.images = imageUrls;
+      if (req.files && req.files.images && req.files.images.length > 0) {
+        const uploadPromises = req.files.images.map((file) => {
+          return uploadToR2(file.buffer, "kridaz/turfs");
+        });
+        const newImageUrls = await Promise.all(uploadPromises);
+        finalImages = [...finalImages, ...newImageUrls];
+      }
+      
+      updatedTurfData.images = finalImages;
+      updatedTurfData.image = finalImages[0] || null;
     }
+
+    delete updatedTurfData.imagesModified;
+    delete updatedTurfData.existingImages;
 
     // Logic for pending updates
     if (turf.status === "approved") {

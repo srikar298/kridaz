@@ -8,7 +8,7 @@ import {
   fetchCities,
   searchLocations,
 } from "@utils/locationService";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { Button, Input, Select, Textarea } from "@kridaz/ui";
 
@@ -57,6 +57,8 @@ const EditTurf = () => {
     addManagerContact,
     removeManagerContact,
     turf,
+    existingImages,
+    removeExistingImage,
   } = useEditTurf(id);
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -419,20 +421,28 @@ const EditTurf = () => {
                   </div>
                 )}
 
-                {/* Existing images from server (shown when no new file chosen) */}
-                {imagePreviews.length === 0 && turf?.images?.length > 0 && (
+                {/* Existing images from server */}
+                {existingImages && existingImages.length > 0 && (
                   <div>
                     <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-3 mb-2 ml-1">
                       Current Images
                     </p>
-                    <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                      {turf.images.map((src, i) => (
-                        <img
-                          key={i}
-                          src={src}
-                          alt={`existing ${i}`}
-                          className="w-20 h-20 object-cover rounded-[16px] border border-primary/20 shrink-0"
-                        />
+                    <div className="flex gap-3 overflow-x-auto pb-2 pt-3 custom-scrollbar">
+                      {existingImages.map((src, i) => (
+                        <div key={i} className="relative w-20 h-20 shrink-0">
+                          <img
+                            src={src}
+                            alt={`existing ${i}`}
+                            className="w-full h-full object-cover rounded-[16px] border border-white/10"
+                          />
+                          <Button
+                            type="button"
+                            onClick={() => removeExistingImage(i)}
+                            className="absolute -top-2 -right-2 w-5 h-5 !min-h-0 !p-0 rounded-full bg-red-500 text-white !border-none flex items-center justify-center hover:bg-red-600 shadow-lg z-10"
+                          >
+                            <Trash2 size={10} />
+                          </Button>
+                        </div>
                       ))}
                     </div>
                   </div>
