@@ -1677,15 +1677,24 @@ export const getOpponentTeams = async (req, res) => {
 };
 
 // @route   PUT /api/team/:id/members/:memberId/role
-// @desc    Update a team member's role
+// @desc    Update a team member's role and/or playing role
 export const updateMemberRole = async (req, res) => {
   try {
     const { id, memberId } = req.params;
-    const { role } = req.body; // e.g., "CAPTAIN", "PLAYER"
+    const { role, playingRole } = req.body;
     const userId = req.user.id;
 
-    if (!["CAPTAIN", "PLAYER"].includes(role)) {
+    const VALID_ROLES = ["CAPTAIN", "VICE_CAPTAIN", "PLAYER"];
+    const VALID_PLAYING_ROLES = ["BATSMAN", "BOWLER", "ALL_ROUNDER", "WICKET_KEEPER", "NONE"];
+
+    if (role && !VALID_ROLES.includes(role)) {
       return res.status(400).json({ success: false, message: "Invalid role specified." });
+    }
+    if (playingRole && !VALID_PLAYING_ROLES.includes(playingRole)) {
+      return res.status(400).json({ success: false, message: "Invalid playing role specified." });
+    }
+    if (!role && !playingRole) {
+      return res.status(400).json({ success: false, message: "Provide role or playingRole." });
     }
 
     const team = await prisma.team.findUnique({
@@ -1706,20 +1715,29 @@ export const updateMemberRole = async (req, res) => {
       return res.status(404).json({ success: false, message: "Member not found in this team." });
     }
 
-    // Check Captain limit if making a captain
-    if (role === "CAPTAIN" && targetMember.role !== "CAPTAIN") {
-      const currentCaptains = team.members.filter((m) => m.role === "CAPTAIN").length;
-      if (currentCaptains >= 2) {
-        return res.status(400).json({
-          success: false,
-          message: "Maximum of 2 captains allowed per team.",
-        });
+    const updateData = {};
+
+    if (role) {
+      // Demote existing holder of this exclusive role to PLAYER first
+      if (role === "CAPTAIN" || role === "VICE_CAPTAIN") {
+        const existing = team.members.find((m) => m.role === role && m.id !== memberId);
+        if (existing) {
+          await prisma.teamMember.update({
+            where: { id: existing.id },
+            data: { role: "PLAYER" },
+          });
+        }
       }
+      updateData.role = role;
+    }
+
+    if (playingRole) {
+      updateData.playingRole = playingRole;
     }
 
     const updatedMember = await prisma.teamMember.update({
       where: { id: memberId },
-      data: { role },
+      data: updateData,
       include: {
         user: { select: { id: true, name: true, profilePicture: true } },
       },
@@ -1727,7 +1745,7 @@ export const updateMemberRole = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: `Member role updated to ${role}.`,
+      message: "Member updated successfully.",
       member: updatedMember,
     });
   } catch (error) {
