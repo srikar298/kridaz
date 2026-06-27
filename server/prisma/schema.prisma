@@ -614,6 +614,7 @@ model CricketMatch {
   strikerId            String?
   nonStrikerId         String?
   bowlerId             String?
+  wicketKeeperId       String?
   revisedTarget        Int?
   revisedOvers         Float?
   matchOfficials       Json?

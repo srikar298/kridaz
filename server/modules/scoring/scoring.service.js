@@ -1206,7 +1206,7 @@ export const updateTossResult = async (scoringId, winnerTeam, decision, viewer) 
  */
 export const updateActivePlayers = async (
   scoringId,
-  { strikerId, nonStrikerId, bowlerId }
+  { strikerId, nonStrikerId, bowlerId, wicketKeeperId }
 ) => {
   const scoring = await prisma.cricketMatch.findUnique({
     where: { id: scoringId },
@@ -1247,6 +1247,7 @@ export const updateActivePlayers = async (
   if (bowlerId) updateData.bowlerId = bowlerId;
   if (strikerId !== undefined) updateData.strikerId = strikerId;
   if (nonStrikerId !== undefined) updateData.nonStrikerId = nonStrikerId;
+  if (wicketKeeperId !== undefined) updateData.wicketKeeperId = wicketKeeperId;
 
   // Retired-hurt comeback: when a player retired hurt is sent back in to bat,
   // flip their stat row's outStatus from RETIRED_HURT → NOT_OUT so the
@@ -1275,10 +1276,27 @@ export const updateActivePlayers = async (
     ...resetRetiredHurtOps,
   ]);
 
-  return await prisma.cricketMatch.findUnique({
+  const updated = await prisma.cricketMatch.findUnique({
     where: { id: scoringId },
-    include: { innings: true, playerStats: true },
+    include: {
+      innings: true,
+      playerStats: true,
+      game: { include: { slots: true } },
+    },
   });
+
+  // Check whether a wicket keeper is known — either persisted on the match
+  // or pre-assigned via a slot role — so the client can prompt when missing.
+  const hasWicketKeeper =
+    !!updated.wicketKeeperId ||
+    (updated.game?.slots || []).some(
+      (s) =>
+        s.role &&
+        (s.role.toUpperCase().includes("WK") ||
+          s.role.toUpperCase().includes("WICKET"))
+    );
+
+  return { ...updated, requiresWicketKeeper: !hasWicketKeeper };
 };
 
 /**
@@ -2323,21 +2341,53 @@ export const createScoringMatch = async (userId, matchData) => {
   if (teamAId) {
     const teamA = await prisma.team.findUnique({
       where: { id: teamAId },
-      select: { name: true, logo: true, image: true },
+      select: {
+        name: true, logo: true, image: true,
+        members: {
+          where: { status: "JOINED" },
+          select: { userId: true, role: true, playingRole: true },
+        },
+      },
     });
     if (teamA) {
       teamAName = teamA.name;
       teamAImage = teamA.logo || teamA.image || null;
+      // Auto-populate players from team members when caller didn't send them
+      if ((!teamAPlayers || teamAPlayers.length === 0) && teamA.members.length > 0) {
+        teamAPlayers = teamA.members.map((m) => ({
+          id: m.userId,
+          role: m.role === "CAPTAIN" ? "CAPTAIN"
+              : m.role === "VICE_CAPTAIN" ? "VICE_CAPTAIN"
+              : m.playingRole === "WICKET_KEEPER" ? "WK"
+              : "PLAYER",
+        }));
+      }
     }
   }
   if (teamBId) {
     const teamB = await prisma.team.findUnique({
       where: { id: teamBId },
-      select: { name: true, logo: true, image: true },
+      select: {
+        name: true, logo: true, image: true,
+        members: {
+          where: { status: "JOINED" },
+          select: { userId: true, role: true, playingRole: true },
+        },
+      },
     });
     if (teamB) {
       teamBName = teamB.name;
       teamBImage = teamB.logo || teamB.image || null;
+      // Auto-populate players from team members when caller didn't send them
+      if ((!teamBPlayers || teamBPlayers.length === 0) && teamB.members.length > 0) {
+        teamBPlayers = teamB.members.map((m) => ({
+          id: m.userId,
+          role: m.role === "CAPTAIN" ? "CAPTAIN"
+              : m.role === "VICE_CAPTAIN" ? "VICE_CAPTAIN"
+              : m.playingRole === "WICKET_KEEPER" ? "WK"
+              : "PLAYER",
+        }));
+      }
     }
   }
 
@@ -2520,7 +2570,7 @@ export const createScoringMatch = async (userId, matchData) => {
   }
 
   // Return full game with teams + player slots
-  return await prisma.hostedGame.findUnique({
+  const fullGame = await prisma.hostedGame.findUnique({
     where: { id: game.id },
     include: {
       teams: {
@@ -2535,6 +2585,21 @@ export const createScoringMatch = async (userId, matchData) => {
       },
     },
   });
+
+  // Compute per-team missing-role flags so the client can prompt the user
+  // to assign any roles that weren't set on the team beforehand.
+  const missingRoles = {};
+  for (const team of fullGame.teams) {
+    const roles = team.slots.map((s) => (s.role || "").toUpperCase());
+    const key = team.teamKey; // "teamA" | "teamB"
+    missingRoles[key] = {
+      captain:      !roles.some((r) => r.includes("CAPTAIN") && !r.includes("VICE")),
+      viceCaptain:  !roles.some((r) => r.includes("VICE_CAPTAIN") || r === "VC"),
+      wicketKeeper: !roles.some((r) => r.includes("WK") || r.includes("WICKET")),
+    };
+  }
+
+  return { ...fullGame, missingRoles };
 };
 
 /**

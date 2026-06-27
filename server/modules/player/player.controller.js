@@ -724,7 +724,8 @@ const NEARBY_PLAYER_FIELDS = {
   role: true,
   sportTypes: true,
   interests: true,
-  lastSeen: true,
+  latitude: true,
+  longitude: true,
 };
 
 export const getNearbyPlayers = async (req, res) => {
