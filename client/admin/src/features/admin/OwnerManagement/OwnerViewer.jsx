@@ -14,7 +14,8 @@ import {
   CheckCircle,
   X,
 } from "lucide-react";
-import CountUp from "react-countup";
+import CountUpRaw from "react-countup";
+const CountUp = CountUpRaw && CountUpRaw.default ? CountUpRaw.default : CountUpRaw;
 import ConfirmationModal from "@components/shared/ConfirmationModal";
 import { Button, Input } from "@kridaz/ui";
 

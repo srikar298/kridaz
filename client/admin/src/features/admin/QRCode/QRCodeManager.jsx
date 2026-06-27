@@ -5,11 +5,13 @@ import { QRCodeSVG } from "qrcode.react";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-// Using axios directly with the admin token if api utility is not standard
-// We can get token from localStorage typically in this app
-const getToken = () => localStorage.getItem("token") || "";
+import { store } from "../../../redux/store";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// Using axios directly with the admin token if api utility is not standard
+// We get token directly from the redux store
+const getToken = () => store.getState().auth?.token || "";
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:6001";
 
 const QRCodeManager = () => {
   const [qrCodes, setQrCodes] = useState([]);
@@ -17,6 +19,7 @@ const QRCodeManager = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ id: null, name: "", targetUrl: "", fallbackUrl: "", isActive: true });
   const [isEditing, setIsEditing] = useState(false);
+
 
   const qrRefs = useRef({});
 
@@ -129,26 +132,23 @@ const QRCodeManager = () => {
     img.src = "data:image/svg+xml;base64," + btoa(svgData);
   };
 
-  const getPublicUrl = (id) => {
-    return `${API_BASE}/api/qr/${id}`;
-  };
-
   return (
     <div className="p-6 text-white h-full overflow-y-auto">
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
             <QrCode size={24} />
-            Dynamic QR Codes
+            QR Codes
           </h1>
           <p className="text-white/60 text-sm mt-1">
-            Manage dynamic QR codes and their routing destinations
+            Generate static QR codes for your links
           </p>
         </div>
         <Button onClick={() => handleOpenModal()} className="bg-primary text-black hover:bg-primary/90">
           <Plus size={18} className="mr-2" /> Create QR Code
         </Button>
       </div>
+
 
       {loading ? (
         <div className="flex justify-center p-12">
@@ -158,15 +158,9 @@ const QRCodeManager = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {qrCodes.map((qr) => (
             <div key={qr.id} className="bg-white/5 border border-white/10 rounded-xl p-5 flex flex-col items-center relative group">
-              {!qr.isActive && (
-                <div className="absolute top-3 left-3 bg-red-500/20 text-red-500 text-xs px-2 py-1 rounded border border-red-500/50">
-                  Inactive
-                </div>
-              )}
-              
               <div className="bg-white p-3 rounded-lg mb-4 mt-2">
                 <QRCodeSVG
-                  value={getPublicUrl(qr.id)}
+                  value={qr.targetUrl || "https://kridaz.com"}
                   size={150}
                   level={"H"}
                   includeMargin={false}
@@ -180,14 +174,10 @@ const QRCodeManager = () => {
               
               <div className="w-full space-y-2 mt-4 text-sm">
                 <div className="flex flex-col">
-                  <span className="text-white/50 text-xs">Target URL:</span>
+                  <span className="text-white/50 text-xs">Link (URL):</span>
                   <a href={qr.targetUrl} target="_blank" rel="noreferrer" className="text-blue-400 hover:underline truncate" title={qr.targetUrl}>
                     {qr.targetUrl || "None"}
                   </a>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-white/50 text-xs">Fallback URL:</span>
-                  <span className="text-white/80 truncate" title={qr.fallbackUrl}>{qr.fallbackUrl || "None"}</span>
                 </div>
               </div>
 
@@ -242,7 +232,7 @@ const QRCodeManager = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-1">Target Nav Link (URL)</label>
+                <label className="block text-sm font-medium text-white/80 mb-1">Link (URL)</label>
                 <input
                   type="url"
                   required
@@ -251,27 +241,6 @@ const QRCodeManager = () => {
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors"
                   placeholder="https://example.com/target"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-white/80 mb-1">Fallback Link (URL)</label>
-                <input
-                  type="url"
-                  required
-                  value={formData.fallbackUrl}
-                  onChange={(e) => setFormData({ ...formData, fallbackUrl: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors"
-                  placeholder="https://example.com/fallback"
-                />
-              </div>
-              <div className="flex items-center gap-2 mt-2">
-                <input
-                  type="checkbox"
-                  id="isActive"
-                  checked={formData.isActive}
-                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="w-4 h-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary focus:ring-offset-black"
-                />
-                <label htmlFor="isActive" className="text-sm text-white/80">Active (if unchecked, goes to fallback)</label>
               </div>
 
               <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-white/10">

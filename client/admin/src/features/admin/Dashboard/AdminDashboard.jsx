@@ -16,7 +16,8 @@ import {
   Clock,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import CountUp from "react-countup";
+import CountUpRaw from "react-countup";
+const CountUp = CountUpRaw && CountUpRaw.default ? CountUpRaw.default : CountUpRaw;
 import {
   AreaChart,
   Area,

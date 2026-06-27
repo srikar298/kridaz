@@ -20,7 +20,8 @@ import {
   X,
   Image,
 } from "lucide-react";
-import CountUp from "react-countup";
+import CountUpRaw from "react-countup";
+const CountUp = CountUpRaw && CountUpRaw.default ? CountUpRaw.default : CountUpRaw;
 import useAdminFinance from "@hooks/admin/useAdminFinance";
 import useWithdrawals from "@hooks/admin/useWithdrawals";
 import { Button, Input, Select, Textarea } from "@kridaz/ui";

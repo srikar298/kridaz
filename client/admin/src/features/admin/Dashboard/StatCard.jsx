@@ -1,4 +1,5 @@
-import CountUp from "react-countup";
+import CountUpRaw from "react-countup";
+const CountUp = CountUpRaw && CountUpRaw.default ? CountUpRaw.default : CountUpRaw;
 import { TrendingUp } from "lucide-react";
 
 const StatCard = ({
