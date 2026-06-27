@@ -3,7 +3,7 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-@import "../../../packages/ui/styles/core.css";
+@import "@kridaz/ui/styles/core.css";
 
 /* ── App Specific Overrides ─────────────────────────────────────── */
 :root {
