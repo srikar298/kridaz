@@ -3,7 +3,7 @@ import { bullmqConnection } from "../../config/redis.js";
 import logger from "../../utils/logger.js";
 import { prisma } from "../../config/prisma.js";
 import { notificationQueue } from "../notification.queue.js";
-import { getIo } from "../../config/socket.js"; // Standard socket.io setup
+import { getIO } from "../../config/socket.js"; // Standard socket.io setup
 
 const queueName = "gameApplicationQueue";
 
@@ -49,7 +49,7 @@ export const gameApplicationWorker = new Worker(
       // await mailService.sendTeamApplicationEmail(game.host.email, { ... });
 
       // 4. Broadcast via WebSockets to update the host's UI in real-time
-      const io = getIo();
+      const io = getIO();
       if (io) {
         io.to(`user_${game.hostId}`).emit("game_application_update", {
           gameId: game.id,
