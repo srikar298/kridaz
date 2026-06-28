@@ -414,9 +414,8 @@ const MyHostedGames = ({ embedded = false }) => {
                                       );
                                       return;
                                     }
-                                    navigate("/my-teams", {
+                                    navigate("/start-scoring-match", {
                                       state: {
-                                        openStartScoringModal: true,
                                         initialGameData: game,
                                       },
                                     });

@@ -1768,3 +1768,14 @@ model DynamicQRCode {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 }
+
+model QuickLink {
+  id          String   @id @default(uuid())
+  title       String
+  imageUrl    String?
+  targetUrl   String?
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

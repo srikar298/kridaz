@@ -26,6 +26,7 @@ export default function VenuesSection({
 }) {
   const navigate = useNavigate();
   const scrollRef = useRef(null);
+  const hasInitialScrolled = useRef(false);
   const [isHovered, setIsHovered] = useState(false);
   const [selectedTurfForPopup, setSelectedTurfForPopup] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -55,20 +56,36 @@ export default function VenuesSection({
   }, [activeIndex]);
 
   useEffect(() => {
+    if (displayTurfs?.length > 1 && scrollRef.current && !hasInitialScrolled.current) {
+      // Set to true immediately so we don't trigger again
+      hasInitialScrolled.current = true;
+      
+      const timer = setTimeout(() => {
+        if (scrollRef.current) {
+          const cardWidth = scrollRef.current.children[0]?.clientWidth || 260;
+          // cardWidth + gap (6px) places the second item precisely in the center
+          scrollRef.current.scrollTo({ left: cardWidth + 6, behavior: "auto" });
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [displayTurfs]);
+
+  useEffect(() => {
     let interval;
     if (!isHovered) {
       interval = setInterval(() => {
-        // Only auto-slide on desktop (min-width: 768px)
-        if (window.innerWidth >= 768 && scrollRef.current) {
+        if (scrollRef.current) {
           const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
 
           // If we reached the end, loop back to the start. Otherwise, scroll right by roughly one card width.
           if (scrollLeft + clientWidth >= scrollWidth - 10) {
             scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
           } else {
-            const cardWidth = scrollRef.current.children[0]?.clientWidth || 396;
+            const cardWidth = scrollRef.current.children[0]?.clientWidth || 260;
             scrollRef.current.scrollBy({
-              left: cardWidth + 16,
+              left: cardWidth + 6,
               behavior: "smooth",
             });
           }

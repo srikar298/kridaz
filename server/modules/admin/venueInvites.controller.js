@@ -151,7 +151,7 @@ export const listVenueInvites = async (req, res) => {
   try {
     const invites = await prisma.venueInvite.findMany({
       include: {
-        turf: {
+        Turf: {
           select: {
             id: true,
             name: true,
@@ -160,18 +160,18 @@ export const listVenueInvites = async (req, res) => {
             isActive: true,
           },
         },
-        admin: { select: { id: true, name: true, email: true } },
+        User: { select: { id: true, name: true, email: true } },
       },
       orderBy: { createdAt: "desc" },
     });
 
-    // Update status locally if expired
+    // Update status locally if expired & normalize Prisma relation keys for frontend
     const now = new Date();
-    const formattedInvites = invites.map((inv) => {
+    const formattedInvites = invites.map(({ Turf, User, ...inv }) => {
       if (inv.status === "PENDING" && inv.expiresAt < now) {
         inv.status = "EXPIRED";
       }
-      return inv;
+      return { ...inv, turf: Turf, admin: User };
     });
 
     return wrapped(res, { invites: formattedInvites });

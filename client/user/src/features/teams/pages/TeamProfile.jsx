@@ -40,7 +40,7 @@ import {
 } from "@redux/api/teamApi";
 import toast from "react-hot-toast";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
-import { StartScoringModal, ScoringMatchCard } from "@features/scoring";
+import { ScoringMatchCard } from "@features/scoring";
 import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";
 import { Button } from "@kridaz/ui";
 
@@ -75,7 +75,6 @@ const TeamProfile = () => {
   const [showChallengeModal, setShowChallengeModal] = useState(false);
   const [showSquadModal, setShowSquadModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
-  const [showScoringModal, setShowScoringModal] = useState(false);
   const [selectedMyTeam, setSelectedMyTeam] = useState("");
   const [activeMemberMenu, setActiveMemberMenu] = useState(null);
 
@@ -494,7 +493,7 @@ const TeamProfile = () => {
               <div className="mt-auto pt-4">
                 <div className="grid grid-cols-3 gap-2">
                   <Button
-                    onClick={() => setShowScoringModal(true)}
+                    onClick={() => navigate("/start-scoring-match")}
                     className="py-3 bg-gradient-to-r from-primary to-primary text-black font-black uppercase tracking-widest text-[8px] sm:text-[9px] rounded-[8px] flex items-center justify-center gap-1 sm:gap-2 hover:brightness-110 shadow-lg shadow-[var(--primary)]/10 px-1"
                   >
                     <Play size={14} className="fill-black shrink-0" />
@@ -990,11 +989,6 @@ const TeamProfile = () => {
           </div>
         )}
       </AnimatePresence>
-
-      <StartScoringModal
-        isOpen={showScoringModal}
-        onClose={() => setShowScoringModal(false)}
-      />
     </div>
   );
 };

@@ -5,7 +5,13 @@
   "main": "./src/index.js",
   "exports": {
     ".": "./src/index.js",
-    "./tailwind.preset.js": "./tailwind.preset.js"
+    "./tailwind.preset.js": "./tailwind.preset.js",
+    "./styles/*": "./styles/*",
+    "./styles/core.css": {
+      "style": "./styles/core.css",
+      "import": "./styles/core.css",
+      "default": "./styles/core.css"
+    }
   },
   "dependencies": {
     "clsx": "^2.1.1",

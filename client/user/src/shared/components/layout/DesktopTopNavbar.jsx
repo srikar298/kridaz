@@ -124,8 +124,7 @@ export default function DesktopTopNavbar({
               >
                 <li>
                   <Link
-                    to="/my-teams"
-                    state={{ openStartScoringModal: true }}
+                    to="/start-scoring-match"
                     className="flex items-center gap-3 p-3.5 text-xs font-bold text-white/60 hover:text-[#BFF367] hover:bg-white/5 transition-all"
                   >
                     Score Match

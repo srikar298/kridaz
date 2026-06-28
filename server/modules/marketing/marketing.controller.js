@@ -1,4 +1,4 @@
-// Touch comment to reload nodemon and prisma client yet again final
+// Touch comment to reload nodemon and prisma client yet again final v2
 import { prisma } from "../../config/prisma.js";
 import { uploadToR2 } from "../../utils/r2Upload.js";
 
@@ -174,7 +174,7 @@ export const deleteVideo = async (req, res) => {
 // Public
 export const getActiveMarketing = async (req, res) => {
   try {
-    const [banners, videos] = await Promise.all([
+    const [banners, videos, quickLinks] = await Promise.all([
       prisma.adBanner.findMany({
         where: { isActive: true },
         orderBy: { order: "asc" },
@@ -183,12 +183,93 @@ export const getActiveMarketing = async (req, res) => {
         where: { isActive: true },
         orderBy: { order: "asc" },
       }),
+      prisma.quickLink.findMany({
+        where: { isActive: true },
+        orderBy: { order: "asc" },
+      }),
     ]);
     res.status(200).json({
       success: true,
       banners,
       videos,
+      quickLinks,
     });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Quick Links
+export const getQuickLinks = async (req, res) => {
+  try {
+    const quickLinks = await prisma.quickLink.findMany({
+      orderBy: { order: "asc" },
+    });
+    res.status(200).json({ success: true, quickLinks });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const createQuickLink = async (req, res) => {
+  try {
+    const { title, targetUrl, order, isActive } = req.body;
+    const linkData = {
+      title,
+      targetUrl,
+      order: order ? Number(order) : 0,
+      isActive: isActive === "true" || isActive === true,
+    };
+    if (req.file) {
+      linkData.imageUrl = await uploadMedia(
+        req.file.buffer,
+        "kridaz/marketing",
+        req.file.mimetype
+      );
+    } else if (req.body.imageUrl) {
+      linkData.imageUrl = req.body.imageUrl;
+    }
+    const quickLink = await prisma.quickLink.create({ data: linkData });
+    res.status(201).json({ success: true, quickLink });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const updateQuickLink = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, targetUrl, order, isActive } = req.body;
+    const linkData = {
+      title,
+      targetUrl,
+      order: order ? Number(order) : 0,
+      isActive: isActive === "true" || isActive === true,
+    };
+    if (req.file) {
+      linkData.imageUrl = await uploadMedia(
+        req.file.buffer,
+        "kridaz/marketing",
+        req.file.mimetype
+      );
+    } else if (req.body.imageUrl) {
+      linkData.imageUrl = req.body.imageUrl;
+    }
+    const quickLink = await prisma.quickLink.update({
+      where: { id },
+      data: linkData,
+    });
+    res.status(200).json({ success: true, quickLink });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteQuickLink = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.quickLink.delete({ where: { id } });
+    res.status(200).json({ success: true, message: "Deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

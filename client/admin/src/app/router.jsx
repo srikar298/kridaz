@@ -70,6 +70,9 @@ const FeatureFlags = lazy(() =>
 const MarketingManagement = lazy(() =>
   import("../features/admin").then((m) => ({ default: m.MarketingManagement }))
 );
+const HomeScreenUI = lazy(() =>
+  import("../features/admin").then((m) => ({ default: m.HomeScreenUI }))
+);
 const BlogManagement = lazy(() =>
   import("../features/admin").then((m) => ({ default: m.BlogManagement }))
 );
@@ -317,6 +320,14 @@ const router = createBrowserRouter([
         element: (
           <S>
             <MarketingManagement />
+          </S>
+        ),
+      },
+      {
+        path: "home-ui-updates",
+        element: (
+          <S>
+            <HomeScreenUI />
           </S>
         ),
       },

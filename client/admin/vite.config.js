@@ -11,6 +11,7 @@ export default defineConfig({
   resolve: {
     dedupe: ["react", "react-dom"],
     alias: {
+      "@kridaz/ui/styles": path.resolve(__dirname, "../../packages/ui/styles"),
       "@app": path.resolve(__dirname, "./src/app"),
       "@": path.resolve(__dirname, "./src"),
       "@components/layout": path.resolve(

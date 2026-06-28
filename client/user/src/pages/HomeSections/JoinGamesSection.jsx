@@ -26,6 +26,7 @@ export default function JoinGamesSection({
   const navigate = useNavigate();
 
   if (!featureFlags["join_games"]) return null;
+  if (!hostedGamesLoading && (!hostedGames || hostedGames.length === 0)) return null;
 
   return (
     <section className="py-6 mb-6 w-full">

@@ -15,6 +15,7 @@ import {
   MessageCircle,
   Briefcase,
   Wallet,
+  UserSearch,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 
@@ -79,7 +80,7 @@ const MobileBottomNav = () => {
       icon: Wallet,
       isSpecial: false,
     },
-    { title: "Professionals", path: "/professionals", icon: Briefcase, isSpecial: false },
+    { title: "Players Nearby", path: "/players", icon: UserSearch, isSpecial: false },
   ];
 
   // Filter items based on login status and role
@@ -109,7 +110,7 @@ const MobileBottomNav = () => {
 
       {/* Floating Bottom Nav Container */}
       <div
-        className={`lg:hidden fixed left-0 right-0 z-[100] flex flex-col items-center justify-end pointer-events-none pb-6 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+        className={`lg:hidden fixed left-0 right-0 z-[100] flex flex-col items-center justify-end pointer-events-none pb-3 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
           scrollDirection === "down" && !isMenuOpen ? "translate-y-[150%]" : "translate-y-0"
         }`}
         style={{ bottom: "env(safe-area-inset-bottom)" }}
@@ -118,7 +119,7 @@ const MobileBottomNav = () => {
         <div 
           className={`w-full max-w-[363px] bg-[#050505]/95 backdrop-blur-3xl rounded-[24px] border border-white/10 flex items-center justify-around px-2 transition-all duration-300 ease-in-out pointer-events-auto mx-auto shadow-2xl ${
             isMenuOpen 
-              ? "h-[62px] opacity-100 translate-y-0 mb-3" 
+              ? "h-[56px] opacity-100 translate-y-0 mb-3" 
               : "h-0 opacity-0 translate-y-4 border-transparent overflow-hidden mb-0"
           }`}
         >
@@ -148,7 +149,7 @@ const MobileBottomNav = () => {
         <div className="w-full flex items-center justify-center gap-2 pointer-events-auto px-4 max-w-[400px] mx-auto">
           
           {/* The flexible Pill */}
-          <div className="flex-1 max-w-[291px] h-[62px] rounded-[31px] border border-white/15 bg-white/5 backdrop-blur-xl flex items-center justify-between p-[4px] shadow-lg">
+          <div className="flex-1 max-w-[291px] h-[56px] rounded-[28px] border border-white/15 bg-white/5 backdrop-blur-xl flex items-center justify-between p-[4px] shadow-lg">
             {visibleItems.map((item) => {
               const isActive = location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(item.path));
               return (
@@ -156,14 +157,14 @@ const MobileBottomNav = () => {
                   key={item.name}
                   to={item.path}
                   onClick={handleClose}
-                  className={`flex flex-col items-center justify-center rounded-[28px] transition-all duration-300 ${
+                  className={`flex flex-col items-center justify-center rounded-[24px] transition-all duration-300 ${
                     isActive 
                       ? "w-[74px] h-full bg-white/[0.08] backdrop-blur-md border border-white/[0.14] shadow-[0_4px_30px_rgba(0,0,0,0.1)]" 
                       : "w-[54px] h-full hover:bg-white/5"
                   }`}
                 >
                   <item.icon 
-                    size={isActive ? 20 : 22} 
+                    size={isActive ? 18 : 20} 
                     strokeWidth={isActive ? 2.5 : 2} 
                     className={isActive ? "text-[#bbf455]" : "text-white/50"} 
                   />
@@ -180,14 +181,14 @@ const MobileBottomNav = () => {
             })}
           </div>
 
-          {/* The + Button Circle (62x62) */}
+          {/* The + Button Circle (56x56) */}
           <button
             onClick={handleToggle}
-            className={`w-[62px] h-[62px] rounded-full border border-white/15 bg-white/10 backdrop-blur-xl flex items-center justify-center shadow-lg transition-transform duration-300 shrink-0 ${
+            className={`w-[56px] h-[56px] rounded-full border border-white/15 bg-white/10 backdrop-blur-xl flex items-center justify-center shadow-lg transition-transform duration-300 shrink-0 ${
               isMenuOpen ? "rotate-45 text-white/50" : "text-[#bbf455]"
             }`}
           >
-            {isMenuOpen ? <X size={26} strokeWidth={2.5} /> : <Plus size={26} strokeWidth={2.5} />}
+            {isMenuOpen ? <X size={24} strokeWidth={2.5} /> : <Plus size={24} strokeWidth={2.5} />}
           </button>
           
         </div>

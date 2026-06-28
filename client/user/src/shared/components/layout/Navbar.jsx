@@ -18,6 +18,9 @@ import {
   Bell,
   UserSearch,
   Search,
+  Wifi,
+  BatteryFull,
+  SignalHigh,
   Plus,
   Bookmark,
   FileText,
@@ -63,6 +66,7 @@ import axiosInstance from "@hooks/useAxiosInstance";
 import useNotifications from "@hooks/shared/useNotifications";
 import { useScrollDirection } from "@hooks/useScrollDirection.js";
 import { useAuthModal } from "../../../context/AuthModalContext";
+import { useGetUserWalletQuery } from "@redux/api/userApi";
 
 import { Liquid } from "../ui/button-1";
 
@@ -124,6 +128,9 @@ const Navbar = () => {
     import.meta.env.VITE_PARTNER_URL || "http://localhost:5174";
   const isPartnerPortal = location.pathname.startsWith("/partners");
   const { scrollDirection, scrolled: isScrolled } = useScrollDirection();
+
+  const { data: walletData } = useGetUserWalletQuery(undefined, { skip: !isLoggedIn });
+  const walletBalance = walletData?.balance || 0;
 
   const [isInviteHovered, setIsInviteHovered] = useState(false);
   const [isPlusMenuOpen, setIsPlusMenuOpen] = useState(false);
@@ -257,6 +264,7 @@ const Navbar = () => {
           ${scrollDirection === "down" && window.innerWidth < 1024 ? "-translate-y-full" : "translate-y-0"}
         `}
       >
+
         <div className="flex justify-center">
           <div
             className={`relative w-full max-w-full flex items-center justify-between px-4 pt-1 sm:pt-2 h-[56px] sm:h-[72px] ${isLoggedIn ? "border-b border-white/10" : ""}`}
@@ -264,30 +272,65 @@ const Navbar = () => {
             {/* Logo & Mobile Location Section */}
             <div className="flex items-center justify-between w-full overflow-visible">
               {isLoggedIn ? (
-                <div className="flex flex-row items-center gap-1 py-1 w-full">
-                  {/* PROFILE SIDEBAR TOGGLE MOVED TO LEFT */}
-                  <div className="relative shrink-0 flex items-center justify-center -mt-[3px]">
-                    <div
-                      onClick={() => dispatch(openMainSidebar())}
-                      role="button"
-                      aria-label="Open sidebar menu"
-                      className="relative p-1 flex items-center justify-center transition-all cursor-pointer group"
-                    >
-                      <Menu
-                        size={24}
-                        className="text-white/80 group-hover:text-[#84CC16] transition-colors relative z-10"
-                      />
+                <div className="flex flex-row items-center justify-between w-full">
+                  <div className="flex flex-row items-center gap-1 py-1">
+                    {/* PROFILE SIDEBAR TOGGLE MOVED TO LEFT */}
+                    <div className="relative shrink-0 flex items-center justify-center -mt-[3px]">
+                      <div
+                        onClick={() => dispatch(openMainSidebar())}
+                        role="button"
+                        aria-label="Open sidebar menu"
+                        className="relative p-1 flex items-center justify-center transition-all cursor-pointer group"
+                      >
+                        <Menu
+                          size={24}
+                          className="text-white/80 group-hover:text-[#84CC16] transition-colors relative z-10"
+                        />
+                      </div>
                     </div>
+
+                    {/* Header Logo */}
+                    <Link to="/" className="flex shrink-0">
+                      <img
+                        src="/logo.png"
+                        alt="Kridaz"
+                        className="h-5 sm:h-6 object-contain"
+                      />
+                    </Link>
                   </div>
 
-                  {/* Header Logo */}
-                  <Link to="/" className="flex shrink-0">
-                    <img
-                      src="/logo.png"
-                      alt="Kridaz"
-                      className="h-5 sm:h-6 object-contain"
-                    />
-                  </Link>
+                  {/* Actions for Mobile */}
+                  <div className="flex items-center gap-[4px]">
+                    {/* Wallet / Coins Button */}
+                    <Link
+                      to="/wallet"
+                      className="flex items-center justify-center gap-1.5 h-[32px] px-2.5 bg-[#FFD600] rounded-[8px] hover:scale-105 active:scale-95 transition-all"
+                    >
+                      <div className="flex items-center justify-center text-black">
+                        <Wallet size={16} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-black font-bold text-[12px] font-inter">{walletBalance}</span>
+                    </Link>
+
+                    {/* Search Box */}
+                    <Link
+                      to="/search"
+                      aria-label="Search"
+                      style={{ width: '32px', height: '32px' }}
+                      className="flex items-center justify-center shrink-0 bg-white/10 rounded-[8px] hover:bg-white/20 transition-colors"
+                    >
+                      <Search size={16} className="text-white" />
+                    </Link>
+
+                    {/* Notification Box */}
+                    <Link
+                      to="/notifications"
+                      aria-label="Notifications"
+                      className="flex items-center justify-center w-[40px] h-[40px] bg-white/10 rounded-[10px] hover:bg-white/20 transition-colors ml-1"
+                    >
+                      <Bell size={20} className="text-white" />
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 <div className="flex w-full items-center justify-between">
@@ -320,68 +363,69 @@ const Navbar = () => {
             <div className="flex items-center gap-6">
               {/* Logo removed as requested */}
             </div>
+            
+            {/* Desktop Actions */}
+            <div className="flex items-center gap-[4px]">
+              {!isLoggedIn ? (
+                <button
+                  onClick={() => navigate("/login")}
+                  className="flex items-center gap-2 text-sm font-semibold text-white/60 hover:text-white transition-all hover:translate-x-1"
+                >
+                  <ShieldCheck size={16} className="opacity-50" />
+                  Login
+                </button>
+              ) : (
+                <>
+                  {/* Wallet / Coins Button */}
+                  <Link
+                    to="/wallet"
+                    className="flex items-center justify-center gap-1.5 h-[32px] px-2.5 bg-[#FFD600] rounded-[8px] hover:scale-105 active:scale-95 transition-all"
+                  >
+                    <div className="flex items-center justify-center text-black">
+                      <Wallet size={16} strokeWidth={2.5} />
+                    </div>
+                    <span className="text-black font-bold text-[12px] font-inter">{walletBalance}</span>
+                  </Link>
+
+                  {/* Search Box */}
+                  <Link
+                    to="/search"
+                    aria-label="Search"
+                    style={{ width: '32px', height: '32px' }}
+                    className="flex items-center justify-center shrink-0 bg-white/10 rounded-[8px] hover:bg-white/20 transition-colors"
+                  >
+                    <Search size={16} className="text-white" />
+                  </Link>
+
+                  {/* Notification Box */}
+                  <Link
+                    to="/notifications"
+                    aria-label="Notifications"
+                    className="flex items-center justify-center w-[40px] h-[40px] bg-white/10 rounded-[10px] hover:bg-white/20 transition-colors ml-1"
+                  >
+                    <Bell size={20} className="text-white" />
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </nav>
-      {/* ACTIONS (Moved outside nav to prevent dropdown clipping) */}
-      <div
-        className={`flex items-center gap-2 sm:gap-4 fixed right-2 sm:right-4 z-[1000] transition-all duration-300 ${scrollDirection === "down" && window.innerWidth < 1024 ? "-translate-y-full top-[-100px]" : "translate-y-0 top-3 sm:top-4 lg:top-5"}`}
-      >
-        {!isLoggedIn ? (
-          <>
-            <button
-              onClick={() => navigate("/login")}
-              className="hidden sm:flex items-center gap-2 text-sm font-semibold text-white/60 hover:text-white transition-all hover:translate-x-1"
-            >
-              <ShieldCheck size={16} className="opacity-50" />
-              Login
-            </button>
-          </>
-        ) : (
-          <div className="flex items-center gap-[4px]">
-            {/* Wallet / Coins Button */}
-            <Link
-              to="/wallet"
-              className="flex items-center justify-center gap-1.5 h-[40px] px-3 bg-[#FFD600] rounded-[10px] hover:scale-105 active:scale-95 transition-all"
-            >
-              <div className="flex items-center justify-center bg-black rounded-full w-4 h-4">
-                <div className="w-[6px] h-[6px] bg-[#FFD600] rotate-45" />
-              </div>
-              <span className="text-black font-bold text-[14px] font-inter">32</span>
-            </Link>
+      {/* SIDEBAR OVERLAY AND PANEL */}
+      {isLoggedIn && (
+        <>
+          {/* OVERLAY */}
+          {isSidebarOpen &&
+            createPortal(
+              <div
+                className="fixed inset-0 bg-black/60 z-[999] backdrop-blur-sm transition-opacity"
+                onClick={() => dispatch(closeMainSidebar())}
+              />,
+              document.body
+            )}
 
-            {/* Search Box */}
-            <Link
-              to="/search"
-              aria-label="Search"
-              className="flex items-center justify-center w-[40px] h-[40px] bg-white/10 rounded-[10px] hover:bg-white/20 transition-colors"
-            >
-              <Search size={20} className="text-white" />
-            </Link>
-
-            {/* Notification Box */}
-            <Link
-              to="/notifications"
-              aria-label="Notifications"
-              className="flex items-center justify-center w-[40px] h-[40px] bg-white/10 rounded-[10px] hover:bg-white/20 transition-colors"
-            >
-              <Bell size={20} className="text-white" />
-            </Link>
-
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                {/* OVERLAY */}
-                {isSidebarOpen &&
-                  createPortal(
-                    <div
-                      className="fixed inset-0 bg-black/60 z-[999] backdrop-blur-sm transition-opacity"
-                      onClick={() => dispatch(closeMainSidebar())}
-                    />,
-                    document.body
-                  )}
-
-                {/* SIDEBAR PANEL */}
-                {createPortal(
+          {/* SIDEBAR PANEL */}
+          {createPortal(
                   <div
                     className={`fixed top-0 left-0 h-[100dvh] w-72 sm:w-80 bg-[#0A0A0A] border-r border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] z-[1000] transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
                   >
@@ -775,11 +819,8 @@ const Navbar = () => {
                   </div>,
                   document.body
                 )}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+        </>
+      )}
     </>
   );
 };

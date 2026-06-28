@@ -10,6 +10,7 @@ import {
   Upload,
   Image as ImageIcon,
   Activity as BellIcon,
+  Link as LinkIcon,
 } from "lucide-react";
 import PushComposer from "./PushComposer";
 import { Button, Input } from "@kridaz/ui";
@@ -17,6 +18,7 @@ import { Button, Input } from "@kridaz/ui";
 export const MarketingManagement = () => {
   const [activeTab, setActiveTab] = useState("banners");
   const [banners, setBanners] = useState([]);
+  const [quickLinks, setQuickLinks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
@@ -37,7 +39,9 @@ export const MarketingManagement = () => {
   const displayBanners =
     activeTab === "promotions"
       ? banners.filter((b) => b.type === "PROMOTION")
-      : banners.filter((b) => b.type !== "PROMOTION");
+      : activeTab === "quick-links"
+      ? quickLinks
+      : banners.filter((b) => b.type !== "PROMOTION" && b.type !== "QUICK_LINK");
 
   const API_BASE = "/api/admin/marketing";
 
@@ -50,6 +54,8 @@ export const MarketingManagement = () => {
       setLoading(true);
       const res = await axiosInstance.get(`${API_BASE}/banners`);
       setBanners(res.data.banners || []);
+      const quickLinkRes = await axiosInstance.get(`${API_BASE}/quick-links`);
+      setQuickLinks(quickLinkRes.data.quickLinks || []);
     } catch (error) {
       console.error("Marketing fetch error:", error);
       toast.error("Failed to fetch banners");
@@ -114,14 +120,18 @@ export const MarketingManagement = () => {
       let dataToSubmit;
       let headers = {};
 
-      if (activeTab === "banners" || activeTab === "promotions") {
+      let endpoint = activeTab === "quick-links" ? "quick-links" : "banners";
+
+      if (activeTab === "banners" || activeTab === "promotions" || activeTab === "quick-links") {
         const fData = new FormData();
         fData.append("title", formData.title || `Banner ${Date.now()}`);
         fData.append("description", formData.description || "");
         fData.append("targetUrl", formData.targetUrl || "");
         fData.append("order", formData.order);
         fData.append("isActive", formData.isActive);
-        fData.append("type", activeTab === "promotions" ? "PROMOTION" : "HOME");
+        if (activeTab !== "quick-links") {
+          fData.append("type", activeTab === "promotions" ? "PROMOTION" : "HOME");
+        }
 
         if (selectedFile) {
           fData.append("image", selectedFile);
@@ -135,13 +145,13 @@ export const MarketingManagement = () => {
 
       if (editingItem) {
         await axiosInstance.put(
-          `${API_BASE}/banners/${editingItem._id || editingItem.id}`,
+          `${API_BASE}/${endpoint}/${editingItem._id || editingItem.id}`,
           dataToSubmit,
           { headers }
         );
         toast.success("Updated successfully");
       } else {
-        await axiosInstance.post(`${API_BASE}/banners`, dataToSubmit, {
+        await axiosInstance.post(`${API_BASE}/${endpoint}`, dataToSubmit, {
           headers,
         });
         toast.success("Created successfully");
@@ -157,7 +167,8 @@ export const MarketingManagement = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure?")) return;
     try {
-      await axiosInstance.delete(`${API_BASE}/banners/${id}`);
+      let endpoint = activeTab === "quick-links" ? "quick-links" : "banners";
+      await axiosInstance.delete(`${API_BASE}/${endpoint}/${id}`);
       toast.success("Deleted successfully");
       fetchData();
     } catch (error) {
@@ -227,6 +238,15 @@ export const MarketingManagement = () => {
           <div className="flex items-center gap-2">
             <ImageIcon size={16} />
             Promotions
+          </div>
+        </Button>
+        <Button
+          onClick={() => setActiveTab("quick-links")}
+          className={`px-6 py-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeTab === "quick-links" ? "border-lime-500 text-lime-500" : "border-transparent text-gray-400 hover:text-white"}`}
+        >
+          <div className="flex items-center gap-2">
+            <LinkIcon size={16} />
+            Quick Links
           </div>
         </Button>
         <Button

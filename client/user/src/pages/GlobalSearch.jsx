@@ -25,8 +25,6 @@ import { Button, Input } from "@kridaz/ui";
 import { useSelector } from "react-redux";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
 import PostItem from "../features/networking/components/PostItem";
-import { useGetReelsFeedQuery } from "@redux/api/reelsApi";
-import SocialArenaSection from "./HomeSections/SocialArenaSection";
 
 
 const HEADING_STYLE = { fontFamily: "'Inter', sans-serif" };
@@ -99,8 +97,6 @@ const GlobalSearch = () => {
   const { data: defaultFeedData, isLoading: defaultPostsLoading } =
     useGetCommunityFeedQuery({ page: 1, limit: 5 });
 
-  const { data: reelsFeedResp } = useGetReelsFeedQuery();
-  const reelsFeed = reelsFeedResp?.reels || [];
   const latestPosts = defaultFeedData?.posts || [];
 
   useEffect(() => {
@@ -216,35 +212,37 @@ const GlobalSearch = () => {
   const VENUE_TYPES = ["TURF", "GROUND", "INDOOR"];
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white pt-0 px-4 md:px-6 font-inter relative overflow-hidden">
-      <div className="max-w-3xl mx-auto space-y-6 pb-20">
+    <div className="min-h-screen bg-[#050505] text-white pt-0 px-0 md:px-0 font-inter relative overflow-hidden">
+      <div className="w-full mx-auto pb-20">
         {/* Search Bar */}
-        <div className="relative flex items-center w-full bg-card rounded-xl overflow-hidden shadow-lg border border-white/5 group focus-within:border-primary/30 transition-colors">
-          <Search
-            size={20}
-            className="absolute left-4 text-white/40 group-focus-within:text-primary transition-colors"
-          />
-          <Input
-            type="text"
-            placeholder="Search venues, games, players..."
-            className="w-full bg-transparent py-4 pl-12 pr-14 text-sm font-bold text-white outline-none placeholder:text-white/30"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          {searchQuery && (
+        <div className="relative flex items-center w-full max-w-3xl mx-auto mt-6 px-4 mb-6">
+          <div className="relative flex items-center w-full bg-card rounded-xl overflow-hidden shadow-lg border border-white/5 group focus-within:border-primary/30 transition-colors">
+            <Search
+              size={20}
+              className="absolute left-4 text-white/40 group-focus-within:text-primary transition-colors"
+            />
+            <Input
+              type="text"
+              placeholder="Search venues, games, players..."
+              className="w-full bg-transparent py-4 pl-12 pr-14 text-sm font-bold text-white outline-none placeholder:text-white/30 border-none ring-0"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <Button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-12 text-white/40 hover:text-white transition-colors p-1 bg-transparent border-none"
+              >
+                <X size={16} />
+              </Button>
+            )}
             <Button
-              onClick={() => setSearchQuery("")}
-              className="absolute right-12 text-white/40 hover:text-white transition-colors p-1"
+              onClick={() => setIsFilterOpen(true)}
+              className="absolute right-3 p-2 text-primary transition-colors bg-transparent hover:scale-110 border-none"
             >
-              <X size={16} />
+              <SlidersHorizontal size={18} />
             </Button>
-          )}
-          <Button
-            onClick={() => setIsFilterOpen(true)}
-            className="absolute right-3 p-2 text-primary transition-colors bg-transparent hover:scale-110"
-          >
-            <SlidersHorizontal size={18} />
-          </Button>
+          </div>
         </div>
 
 
@@ -256,7 +254,7 @@ const GlobalSearch = () => {
             {((activeQuickFilter === "All" &&
               (loadedPlayers.length > 0 || playersLoading)) ||
               activeQuickFilter === "Roles") && (
-                <div className="flex flex-col gap-3 bg-background border border-white/5 rounded-[8px] p-5">
+                <div className="flex flex-col gap-3 px-4 py-3 bg-transparent border-none">
                   <div className="flex items-center justify-between mb-1">
                     <h3
                       className="text-[18px] font-semibold text-white tracking-[0px] leading-[1.2] normal-case"
@@ -330,7 +328,7 @@ const GlobalSearch = () => {
             {((activeQuickFilter === "All" &&
               (venues.length > 0 || loadingVenues)) ||
               activeQuickFilter === "Venue") && (
-                <div className="flex flex-col gap-3 bg-background border border-white/5 rounded-[8px] p-5">
+                <div className="flex flex-col gap-3 px-4 py-3 bg-transparent border-none">
                   <div className="flex items-center justify-between mb-1">
                     <h3
                       className="text-[18px] font-semibold text-white tracking-[0px] leading-[1.2] normal-case"
@@ -369,7 +367,7 @@ const GlobalSearch = () => {
             {((activeQuickFilter === "All" &&
               (games.length > 0 || loadingGames)) ||
               activeQuickFilter === "Join Games") && (
-                <div className="flex flex-col gap-3 bg-background border border-white/5 rounded-[8px] p-5">
+                <div className="flex flex-col gap-3 px-4 py-3 bg-transparent border-none">
                   <div className="flex items-center justify-between mb-1">
                     <h3
                       className="text-[18px] font-semibold text-white tracking-[0px] leading-[1.2] normal-case"
@@ -404,7 +402,7 @@ const GlobalSearch = () => {
               (loadedPosts.length > 0 || postsLoading)) ||
               activeQuickFilter === "Posts" ||
               activeQuickFilter === "Live") && (
-                <div className="flex flex-col gap-3 bg-background border border-white/5 rounded-[8px] p-5">
+                <div className="flex flex-col gap-3 px-4 py-3 bg-transparent border-none">
                   <div className="flex items-center justify-between mb-1">
                     <h3
                       className="text-[18px] font-semibold text-white tracking-[0px] leading-[1.2] normal-case"
@@ -511,20 +509,15 @@ const GlobalSearch = () => {
             </div>
 
             {/* Latest Posts */}
-            <div className="space-y-4">
+            <div className="space-y-4 mt-6">
               <div className="flex items-center justify-between">
                 <h3
                   className="text-[18px] font-semibold text-white tracking-[0px] leading-[1.2] normal-case"
                   style={{ fontFamily: "'Inter', sans-serif" }}
                 >
-                  Your Social Arena
+                  Latest Posts
                 </h3>
-                <Button className="text-xs font-bold text-primary hover:underline bg-transparent border-none shadow-none p-0 hover:bg-transparent">
-                  View All
-                </Button>
               </div>
-
-              <SocialArenaSection reelsFeed={reelsFeed} />
 
               {defaultPostsLoading ? (
                 <div className="space-y-3">

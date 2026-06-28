@@ -7,7 +7,6 @@ import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";
 import { Plus, Users, Search, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AddOpponentModal from "./AddOpponentModal";
-import { StartScoringModal } from "@features/scoring";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Input } from "@kridaz/ui";
 
@@ -18,19 +17,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("myTeams"); // 'myTeams', 'opponentTeams', 'scoringMatches'
   const [isAddOpponentOpen, setIsAddOpponentOpen] = useState(false);
-  const [isStartScoringOpen, setIsStartScoringOpen] = useState(false);
-  const [startScoringInitialData, setStartScoringInitialData] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  React.useEffect(() => {
-    if (location.state?.openStartScoringModal) {
-      setIsStartScoringOpen(true);
-      if (location.state?.initialGameData) {
-        setStartScoringInitialData(location.state.initialGameData);
-      }
-      navigate(location.pathname, { replace: true, state: {} });
-    }
-  }, [location.state, navigate, location.pathname]);
 
   const { data: myData, isLoading: isMyLoading } = useGetMyTeamsQuery(
     undefined,
@@ -93,7 +80,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <Button
-              onClick={() => setIsStartScoringOpen(true)}
+              onClick={() => navigate("/start-scoring-match")}
               className="flex items-center justify-center px-4 h-8 bg-primary text-background rounded-[16px] hover:scale-105 shadow-md shadow-primary/20 transition-all duration-300 shrink-0"
               title="Start Scoring"
             >
@@ -156,7 +143,7 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
                         <div className="h-px bg-[rgba(255,255,255,0.08)] w-full" />
                         <Button
                           onClick={() => {
-                            setIsStartScoringOpen(true);
+                            navigate("/start-scoring-match");
                             setIsDropdownOpen(false);
                           }}
                           className="px-4 py-2.5 text-left text-[14px] text-[rgba(255,255,255,0.70)] hover:text-foreground hover:bg-[rgba(255,255,255,0.08)] font-[500] font-inter transition-colors"
@@ -429,19 +416,6 @@ const TeamSidebar = ({ onSelectTeam, selectedTeamId, onCreateTeam }) => {
         )}
       />
 
-      <StartScoringModal
-        isOpen={isStartScoringOpen}
-        initialData={startScoringInitialData}
-        onClose={() => {
-          setIsStartScoringOpen(false);
-          setStartScoringInitialData(null);
-        }}
-        onSuccess={() => {
-          setIsStartScoringOpen(false);
-          setStartScoringInitialData(null);
-          setActiveTab("scoringMatches");
-        }}
-      />
     </div>
   );
 };

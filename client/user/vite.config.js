@@ -109,6 +109,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       dedupe: ["react", "react-dom"],
       alias: {
+        "@kridaz/ui/styles": path.resolve(__dirname, "../../packages/ui/styles"),
         "@app": path.resolve(__dirname, "./src/app"),
         "@components": path.resolve(__dirname, "./src/shared/components"),
         "@hooks/useAxiosInstance": path.resolve(

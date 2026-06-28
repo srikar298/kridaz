@@ -8,6 +8,10 @@ import {
   createVideo,
   updateVideo,
   deleteVideo,
+  getQuickLinks,
+  createQuickLink,
+  updateQuickLink,
+  deleteQuickLink,
 } from "../marketing.controller.js";
 import upload from "../../../middleware/uploads/upload.middleware.js";
 
@@ -131,5 +135,12 @@ router.put("/videos/:id", updateVideo);
  *         description: Video deleted
  */
 router.delete("/videos/:id", deleteVideo);
+
+// Quick Links
+
+router.get("/quick-links", getQuickLinks);
+router.post("/quick-links", upload.single("image"), createQuickLink);
+router.put("/quick-links/:id", upload.single("image"), updateQuickLink);
+router.delete("/quick-links/:id", deleteQuickLink);
 
 export default router;

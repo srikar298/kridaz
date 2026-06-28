@@ -22,6 +22,7 @@ export default function ProfessionalsSection({
   const navigate = useNavigate();
 
   if (!featureFlags["find_professionals"]) return null;
+  if (!professionalsLoading && (!professionals || professionals.length === 0)) return null;
 
   return (
     <section

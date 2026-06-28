@@ -14,6 +14,8 @@ export default function PlayersSection({
   const navigate = useNavigate();
   const { gateInteraction } = useLoginOnDemand();
 
+  if (!loading && (!players || players.length === 0)) return null;
+
   return (
     <section className="mb-8 w-full">
       <div className="w-full">

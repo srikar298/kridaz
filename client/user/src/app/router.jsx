@@ -165,6 +165,9 @@ const LiveOverlay = lazy(() =>
 const ThemePreview = lazy(() =>
   import("@features/scoring").then((m) => ({ default: m.ThemePreview }))
 );
+const StartScoringPage = lazy(() =>
+  import("@features/scoring").then((m) => ({ default: m.StartScoringPage }))
+);
 const TeamPass = lazy(() =>
   import("@features/teams").then((m) => ({ default: m.TeamPass }))
 );
@@ -864,6 +867,16 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <S>
               <MyTeams />
+            </S>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "start-scoring-match",
+        element: (
+          <ProtectedRoute>
+            <S>
+              <StartScoringPage />
             </S>
           </ProtectedRoute>
         ),

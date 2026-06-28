@@ -1,7 +1,31 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function DashboardHero() {
+export default function DashboardHero({ marketingContent }) {
+  const quickLinks = (marketingContent?.banners || [])
+    .filter((b) => b.type === "QUICK_LINK" && b.isActive)
+    .sort((a, b) => a.order - b.order);
+
+  if (quickLinks && quickLinks.length > 0) {
+    return (
+      <div className="grid grid-cols-4 gap-2 md:gap-3 mb-0 w-full pb-0 px-2">
+        {quickLinks.map((link) => (
+          <Link
+            key={link.id || link._id}
+            to={link.targetUrl || "#"}
+            className="relative w-full h-[90px] md:h-[110px] rounded-[12px] overflow-hidden flex flex-col items-center justify-center cursor-pointer shadow-lg"
+          >
+            <img
+              src={link.imageUrl}
+              alt={link.title || "Quick Link"}
+              className="w-full h-full object-cover"
+            />
+          </Link>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-4 gap-2 md:gap-3 mb-0 w-full pb-0 px-2">
       {/* Players Nearby */}

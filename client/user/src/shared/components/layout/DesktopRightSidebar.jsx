@@ -322,32 +322,6 @@ export default function DesktopRightSidebar({
                     );
                   })}
 
-                {/* Static Fallback */}
-                {(marketingContent?.banners || []).filter(
-                  (b) => b.type === "PROMOTION" && b.isActive
-                ).length === 0 && (
-                  <Link
-                    to="/host"
-                    className="relative block overflow-hidden rounded-2xl w-full aspect-video shadow-[0_4px_20px_rgba(0,0,0,0.5)] group border border-white/[0.05] hover:border-primary/50 transition-all duration-300 my-0"
-                  >
-                    <div
-                      className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
-                      style={{
-                        backgroundImage: "url('/host-venue-bg-custom-2.webp')",
-                      }}
-                    />
-
-                    <div className="relative z-10 w-[45%] h-full p-4 flex flex-col justify-center gap-1.5 pl-5">
-                      <h3 className="text-[16px] leading-tight font-black text-white uppercase drop-shadow-lg">
-                        Host Your Venue
-                      </h3>
-                      <p className="text-[9px] font-medium text-white/90 leading-snug drop-shadow-md">
-                        Partner with us to list your turf and manage bookings
-                        seamlessly.
-                      </p>
-                    </div>
-                  </Link>
-                )}
               </div>
 
               {/* Live Now */}

@@ -48,6 +48,17 @@ const PostItem = React.memo(
       }
     }, [post.content, post.title]);
 
+    useEffect(() => {
+      if (expandedComments) {
+        document.body.setAttribute("data-hide-bottom-nav", "true");
+      } else {
+        document.body.removeAttribute("data-hide-bottom-nav");
+      }
+      return () => {
+        document.body.removeAttribute("data-hide-bottom-nav");
+      };
+    }, [expandedComments]);
+
     const handleMediaScroll = (e) => {
       if (!e.target) return;
       const index = Math.round(e.target.scrollLeft / e.target.clientWidth);
@@ -568,7 +579,7 @@ const PostItem = React.memo(
             <span>
               {post.likes?.length > 0 ? (
                 post.likes.length > 1 ? (
-                  <>{post.likes[0].name || post.likes[0].username || "User"} and {post.likes.length - 1} others</>
+                  <>{post.likes[0].name || post.likes[0].username || "User"} and {post.likes.length - 1} {post.likes.length - 1 === 1 ? "other" : "others"}</>
                 ) : (
                   <>{post.likes[0].name || post.likes[0].username || "User"}</>
                 )
@@ -578,7 +589,7 @@ const PostItem = React.memo(
             </span>
           </div>
           <span>
-            {post.totalComments || post.comments?.length || 0} comments
+            {post.totalComments || post.comments?.length || 0} {(post.totalComments || post.comments?.length) === 1 ? "comment" : "comments"}
           </span>
         </div>
 

@@ -8,12 +8,10 @@ import useTurfData from "../features/turf/hooks/useTurfData";
 import DashboardHero from "./HomeSections/DashboardHero";
 import VenuesSection from "./HomeSections/VenuesSection";
 import PlayersSection from "./HomeSections/PlayersSection";
-import SocialArenaSection from "./HomeSections/SocialArenaSection";
-import Community from "../features/networking/pages/Community";
-import JoinGamesSection from "./HomeSections/JoinGamesSection";
-import ProfessionalsSection from "./HomeSections/ProfessionalsSection";
 import SportsCategoriesSection from "./HomeSections/SportsCategoriesSection";
 import PromotionsSection from "./HomeSections/PromotionsSection";
+import Community from "../features/networking/pages/Community";
+import SocialArenaSection from "./HomeSections/SocialArenaSection";
 import { AdBannerSection } from "../shared/components/Marketing/AdBannerSection";
 import InterestsModal from "../shared/components/modals/InterestsModal";
 import toast from "react-hot-toast";
@@ -71,6 +69,7 @@ export default function Home() {
   const bookingsScrollRef = useRef(null);
   const liveMatchesScrollRef = useRef(null);
   const { isLoggedIn } = useSelector((state) => state.auth);
+  const { userLocation } = useSelector((state) => state.ui);
 
   useEffect(() => {
     if (activeReel) {
@@ -103,14 +102,17 @@ export default function Home() {
     { skip: !selectedHomeState }
   );
 
+  // Resolve effective city/state: prefer user-selected dropdown, fallback to auto-detected location
+  const effectiveGameCity = selectedHomeCity || userLocation?.city || "";
+  const effectiveGameState = selectedHomeState || userLocation?.state || "";
+
   const { data: hostedGamesResp, isLoading: hostedGamesLoading } =
     useListGamesQuery({
-      state: selectedHomeState,
-      city: selectedHomeCity,
-      sport: selectedGameSport === "all" ? undefined : selectedGameSport,
-      status: "open",
-    });
-  const hostedGames = hostedGamesResp?.data || [];
+      state: effectiveGameState,
+      city: effectiveGameCity,
+      gameType: selectedGameSport === "all" ? undefined : selectedGameSport,
+    }, { skip: !effectiveGameCity && !effectiveGameState });
+  const hostedGames = hostedGamesResp?.games || hostedGamesResp?.data || [];
 
   const { data: professionalsResp, isLoading: professionalsLoading } =
     useGetProfessionalsListQuery({
@@ -170,7 +172,7 @@ export default function Home() {
     }
   };
 
-  const userLocation = useSelector((state) => state.ui.userLocation);
+
   const locationStatus = useSelector((state) => state.ui.locationStatus);
 
   const [playerFilters, setPlayerFilters] = useState({});
@@ -442,10 +444,23 @@ export default function Home() {
   }, [professionals, normalizedSearchQuery]);
 
   return (
-    <div className="bg-[#050505] min-h-screen text-white font-sans w-full max-w-[100vw] overflow-x-clip pt-0 pb-16 lg:pb-0">
+    <div className="bg-[#050505] min-h-screen text-white font-sans w-full max-w-[100vw] overflow-x-clip pt-0 pb-16 lg:pb-0 relative">
       <SEO title="Kridaz | Sports Networking" description="Kridaz is the ultimate sports community platform for players and venue owners to book turfs, find games, and connect with other players." />
       <h1 className="sr-only">Kridaz - Sports Community & Venue Booking</h1>
-      <div className="md:px-0 w-full mt-0 mb-4">
+      
+      {/* Ambient Top Glow (Curved Shape) */}
+      <div 
+        className="fixed top-[-100px] right-[-80px] pointer-events-none z-[80]"
+        style={{
+          width: '555px',
+          height: '250px',
+          background: 'rgba(191, 243, 103, 0.20)',
+          filter: 'blur(90px)',
+          borderRadius: '100% 0% 100% 0% / 100% 100% 0% 0%'
+        }}
+      />
+
+      <div className="md:px-0 w-full mt-0 mb-4 relative z-10">
         <Community onSearchActive={setIsCommunitySearchActive}>
           {/* -- DASHBOARD HERO -- */}
           <div className="!mt-1 w-[100%] max-w-[100vw] overflow-x-hidden md:w-auto relative mb-0">
@@ -462,16 +477,16 @@ export default function Home() {
           <div className="!mt-8 mb-1 px-2">
             <AdBannerSection
               banners={(marketingContent?.banners || []).filter(
-                (b) => b.type !== "PROMOTION"
+                (b) => b.type !== "PROMOTION" && b.type !== "QUICK_LINK"
               )}
               loading={marketingLoading}
             />
           </div>
 
           {/* -- UPCOMING BOOKINGS -- */}
-          {isLoggedIn && (
-            <div className="!mt-6 px-4">
-              <div className="flex items-center justify-between px-1 mb-3">
+          {isLoggedIn && (loadingBookings || upcomingBookingsList?.length > 0) && (
+            <div className="!mt-6 pl-4">
+              <div className="flex items-center justify-between px-1 pr-5 mb-3">
                 <h2 className="text-[16px] font-semibold text-white tracking-wide" style={HEADING_STYLE}>
                   Upcoming Booking
                 </h2>
@@ -487,20 +502,7 @@ export default function Home() {
                 {loadingBookings ? (
                   <div className="min-w-[190px] w-[190px] h-[84px] bg-[#161616] border border-white/5 rounded-[12px] animate-pulse shrink-0" />
                 ) : (
-                  (upcomingBookingsList.length > 0 ? upcomingBookingsList : [
-                    {
-                      id: "mock1",
-                      date: new Date(Date.now() + 86400000).toISOString(),
-                      startTime: "07:00",
-                      turfId: { name: "Play Arena", city: "Ghatkopar" }
-                    },
-                    {
-                      id: "mock2",
-                      date: new Date(Date.now() + 86400000 * 3).toISOString(),
-                      startTime: "20:00",
-                      turfId: { name: "Turbo Turf", city: "Powai" }
-                    }
-                  ]).map((booking) => {
+                  upcomingBookingsList.map((booking) => {
                     const dateObj = new Date(booking.date || booking.timeSlot?.date || booking.createdAt);
                     const dayNum = dateObj.getDate();
                     const monthStr = dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase();
@@ -533,7 +535,7 @@ export default function Home() {
                         className="min-w-[190px] w-[190px] h-[84px] shrink-0 snap-start bg-[#161616] border border-white/10 rounded-[12px] p-[14px] flex items-center gap-3 hover:bg-[#202020] transition-colors"
                       >
                         {/* Date Box */}
-                        <div className="w-[56px] h-[56px] rounded-[8px] border border-white/10 flex flex-col justify-center items-center py-1 px-3 shrink-0 bg-white/5">
+                        <div className="w-[56px] h-[56px] rounded-[8px] border border-white/20 bg-white/10 backdrop-blur-sm flex flex-col justify-center items-center py-1 px-3 shrink-0">
                           <span className="text-[18px] font-bold text-white leading-none">{dayNum}</span>
                           <span className="text-[10px] text-white/50 uppercase mt-1 leading-none">{monthStr}</span>
                         </div>
@@ -560,9 +562,9 @@ export default function Home() {
           )}
 
           {/* -- LIVE MATCHES -- */}
-          {isLoggedIn && (
-              <div className="!mt-8 px-4">
-                <div className="flex items-center justify-between px-1 mb-4">
+          {isLoggedIn && (loadingScoringGames || liveNetworkMatches?.length > 0) && (
+              <div className="!mt-8 pl-4">
+                <div className="flex items-center justify-between px-1 pr-5 mb-4">
                   <h2 className="text-[16px] font-semibold text-white tracking-wide" style={HEADING_STYLE}>
                     Live Matches
                   </h2>
@@ -586,24 +588,7 @@ export default function Home() {
                   {loadingScoringGames ? (
                     <div className="min-w-[285px] w-[285px] h-[161px] bg-[#161616] border border-white/5 rounded-[12px] animate-pulse shrink-0" />
                   ) : (
-                    (liveNetworkMatches.length > 0 ? liveNetworkMatches : [
-                      {
-                        _id: "mock1",
-                        venue: "Green Park Arena",
-                        sportType: "Cricket",
-                        overs: 12,
-                        teamA: { name: "Warriors", score: "89/2", oversPlayed: "8.4" },
-                        teamB: { name: "Titans", score: "76/3", oversPlayed: "8.4" }
-                      },
-                      {
-                        _id: "mock2",
-                        venue: "Green Park Arena",
-                        sportType: "Cricket",
-                        overs: 12,
-                        teamA: { name: "Warriors", score: "89/2", oversPlayed: "8.4" },
-                        teamB: { name: "Titans", score: "76/3", oversPlayed: "8.4" }
-                      }
-                    ]).map((match) => {
+                    liveNetworkMatches.map((match) => {
                       const teamA =
                         match.teamA ||
                         (Array.isArray(match.teams)
@@ -639,19 +624,19 @@ export default function Home() {
                           {/* Teams section */}
                           <div className="flex items-center justify-between mt-auto">
                             {/* Team A Box */}
-                            <div className="w-[96px] h-[86px] rounded-[8px] border border-white/10 bg-white/5 flex flex-col items-center justify-center py-2 px-1 text-center shrink-0">
-                              <span className="text-[11px] text-white/70 truncate w-full">{teamA.name || "Warriors"}</span>
-                              <span className="text-[20px] font-bold text-white my-1 leading-none">{teamA.score || "0/0"}</span>
-                              <span className="text-[9px] text-white/50">{teamA.oversPlayed || "0.0"} Overs</span>
+                            <div className="w-[96px] h-[86px] rounded-[8px] border border-white/20 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center gap-[6px] text-center shrink-0">
+                              <span className="text-[12px] font-normal text-white leading-[1.2] font-inter truncate w-full px-1">{teamA.name || "Warriors"}</span>
+                              <span className="text-[18px] font-bold text-white leading-[1.2] font-inter">{teamA.score || "0/0"}</span>
+                              <span className="text-[12px] font-normal text-[#A5A5A5] leading-[1.2] font-inter">{teamA.oversPlayed || "0.0"} Overs</span>
                             </div>
 
                             <div className="text-[11px] font-bold text-white/40">VS</div>
 
                             {/* Team B Box */}
-                            <div className="w-[96px] h-[86px] rounded-[8px] border border-white/10 bg-white/5 flex flex-col items-center justify-center py-2 px-1 text-center shrink-0">
-                              <span className="text-[11px] text-white/70 truncate w-full">{teamB.name || "Titans"}</span>
-                              <span className="text-[20px] font-bold text-white my-1 leading-none">{teamB.score || "0/0"}</span>
-                              <span className="text-[9px] text-white/50">{teamB.oversPlayed || "0.0"} Overs</span>
+                            <div className="w-[96px] h-[86px] rounded-[8px] border border-white/20 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center gap-[6px] text-center shrink-0">
+                              <span className="text-[12px] font-normal text-white leading-[1.2] font-inter truncate w-full px-1">{teamB.name || "Titans"}</span>
+                              <span className="text-[18px] font-bold text-white leading-[1.2] font-inter">{teamB.score || "0/0"}</span>
+                              <span className="text-[12px] font-normal text-[#A5A5A5] leading-[1.2] font-inter">{teamB.oversPlayed || "0.0"} Overs</span>
                             </div>
                           </div>
                         </Link>
@@ -661,7 +646,7 @@ export default function Home() {
                 </div>
 
                 {/* Dot Slider */}
-                <div className="flex justify-center items-center gap-1.5 mt-3 mb-1">
+                <div className="flex justify-center items-center gap-1.5 mt-3 mb-1 pr-4">
                   {Array.from({ length: liveNetworkMatches.length > 0 ? liveNetworkMatches.length : 2 }).map((_, idx) => (
                     <div 
                       key={idx} 
@@ -673,10 +658,11 @@ export default function Home() {
             )}
 
           {/* -- JOIN GAMES NEARBY (NEW UI) -- */}
-          <div className="!mt-8 px-4">
+          {(hostedGamesLoading || hostedGames?.length > 0) && (
+            <div className="!mt-8 px-4">
             <div className="flex items-center justify-between px-1 mb-4">
               <h2 className="text-[16px] font-semibold text-white tracking-wide" style={{ fontFamily: "'Inter', sans-serif" }}>
-                Join Games Nearby
+                JOIN GAMES NEARBY
               </h2>
               <Link to="/join-games" className="text-[12px] font-medium text-[#bbf455]">
                 View More &gt;
@@ -684,167 +670,126 @@ export default function Home() {
             </div>
             
             <div className="flex flex-col gap-[14px]">
-              {[1, 2, 3].map((item) => (
-                <div key={item} className="w-full max-w-[361px] mx-auto h-[158px] rounded-[12px] border border-[#434242] bg-[#1B1B1B] p-[14px] flex flex-col justify-between">
-                  {/* Top Half */}
-                  <div className="flex items-start justify-between">
-                    <div className="flex flex-col gap-3">
-                      <div className="flex items-center gap-3">
-                        <span className="text-white text-[20px] font-bold leading-none" style={{ fontFamily: "'Inter', sans-serif" }}>Cricket</span>
-                        <span className="bg-[#1C361C] text-[#BBF455] text-[10px] px-2.5 py-0.5 rounded-full font-medium tracking-wide">Turf</span>
-                      </div>
-                      <div className="flex -space-x-1.5">
-                        {[1,2,3,4,5,6,7].map(i => (
-                          <div key={i} className="w-[22px] h-[22px] rounded-full border border-[#1B1B1B] bg-gray-600 overflow-hidden shrink-0">
-                            <img src={`https://i.pravatar.cc/100?img=${i + item * 5}`} alt="player" className="w-full h-full object-cover" />
+              {hostedGamesLoading ? (
+                // Skeleton loading cards
+                [1, 2, 3].map((i) => (
+                  <div key={i} className="w-full max-w-[361px] mx-auto h-[158px] rounded-[12px] border border-[#434242] bg-[#1B1B1B] animate-pulse" />
+                ))
+              ) : (
+                hostedGames.slice(0, 4).map((game) => {
+                  // Calculate slots
+                  const isQuick = game.gameMode === "QUICK";
+                  const allSlots = isQuick
+                    ? (game.quickSlots || [])
+                    : [
+                        ...(game.teams?.teamA?.slots || []),
+                        ...(game.teams?.teamB?.slots || []),
+                      ];
+                  const totalSlots = allSlots.length || game.maxMembers || 11;
+                  const joinedSlots = allSlots.filter(
+                    (s) => s.status === "JOINED" || s.status === "HELD" || s.status === "APPROVED" || s.userId || s.user
+                  );
+                  const joinedCount = joinedSlots.length;
+
+                  // Player avatars (from joined players)
+                  const playerAvatars = joinedSlots
+                    .map((s) => s.user?.profilePicture)
+                    .filter(Boolean)
+                    .slice(0, 7);
+
+                  // Venue info
+                  const venueName = game.turf?.name || game.ground?.name || game.customVenue || "Self-Arranged";
+                  const venueCity = game.turf?.city || game.city || userLocation?.city || "";
+                  const venueType = game.turf ? "Turf" : game.ground ? "Ground" : "Custom";
+
+                  // Date & Time
+                  const gameDate = game.date ? new Date(game.date) : null;
+                  const today = new Date();
+                  const isToday = gameDate && gameDate.toDateString() === today.toDateString();
+                  const tomorrow = new Date(today);
+                  tomorrow.setDate(tomorrow.getDate() + 1);
+                  const isTomorrow = gameDate && gameDate.toDateString() === tomorrow.toDateString();
+                  
+                  let dateLabel = "—";
+                  if (isToday) dateLabel = "Today";
+                  else if (isTomorrow) dateLabel = "Tomorrow";
+                  else if (gameDate) dateLabel = gameDate.toLocaleDateString("en-IN", { day: "2-digit", month: "short" });
+
+                  const timeLabel = game.time || "—";
+
+                  return (
+                    <Link
+                      key={game._id || game.id}
+                      to="/join-games"
+                      className="block w-full max-w-[361px] mx-auto h-[158px] rounded-[12px] border border-[#434242] bg-[#1B1B1B] p-[14px] flex flex-col justify-between hover:border-[#BBF455]/30 transition-colors"
+                    >
+                      {/* Top Half */}
+                      <div className="flex items-start justify-between">
+                        <div className="flex flex-col gap-3">
+                          <div className="flex items-center gap-3">
+                            <span className="text-white text-[20px] font-bold leading-none capitalize" style={{ fontFamily: "'Inter', sans-serif" }}>
+                              {game.gameType || "Game"}
+                            </span>
+                            <span className="bg-[#1C361C] text-[#BBF455] text-[10px] px-2.5 py-0.5 rounded-full font-medium tracking-wide">
+                              {venueType}
+                            </span>
                           </div>
-                        ))}
+                          <div className="flex -space-x-1.5">
+                            {(playerAvatars.length > 0 ? playerAvatars : Array(Math.min(joinedCount || 1, 5)).fill(null)).map((avatar, i) => (
+                              <div key={i} className="w-[22px] h-[22px] rounded-full border border-[#1B1B1B] bg-gray-600 overflow-hidden shrink-0">
+                                {avatar ? (
+                                  <img src={avatar} alt="player" className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full bg-gradient-to-br from-[#BBF455]/30 to-gray-700 flex items-center justify-center text-[8px] text-white/60 font-bold">
+                                    {i + 1}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                            {joinedCount > 7 && (
+                              <div className="w-[22px] h-[22px] rounded-full border border-[#1B1B1B] bg-gray-700 flex items-center justify-center text-[8px] text-white/50 font-bold shrink-0">
+                                +{joinedCount - 7}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right flex flex-col items-end">
+                          <div className="text-white font-bold text-[14px] leading-none mb-1">
+                            {joinedCount} <span className="text-white/60 text-[11px] font-semibold">/ {totalSlots}</span>
+                          </div>
+                          <div className="text-white/40 text-[10px] font-medium">Joined</div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="text-right flex flex-col items-end">
-                      <div className="text-white font-bold text-[14px] leading-none mb-1">8 <span className="text-white/60 text-[11px] font-semibold">/ 11</span></div>
-                      <div className="text-white/40 text-[10px] font-medium">Joined</div>
-                    </div>
-                  </div>
 
-                  {/* Divider */}
-                  <div className="w-full h-[1px] bg-white/5 my-1"></div>
+                      {/* Divider */}
+                      <div className="w-full h-[1px] bg-white/5 my-1"></div>
 
-                  {/* Bottom Half */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col gap-1.5">
-                      <span className="text-white font-bold text-[13px] leading-none" style={{ fontFamily: "'Inter', sans-serif" }}>Today, 7:30 AM</span>
-                      <div className="flex items-center gap-1">
-                        <MapPin size={12} className="text-white/40 shrink-0" />
-                        <span className="text-white/40 text-[11px] truncate max-w-[180px]">Green Park Arena, Ghatkopar</span>
+                      {/* Bottom Half */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-col gap-1.5">
+                          <span className="text-white font-bold text-[13px] leading-none" style={{ fontFamily: "'Inter', sans-serif" }}>
+                            {dateLabel}, {timeLabel}
+                          </span>
+                          <div className="flex items-center gap-1">
+                            <MapPin size={12} className="text-white/40 shrink-0" />
+                            <span className="text-white/40 text-[11px] truncate max-w-[180px]">
+                              {venueName}{venueCity ? `, ${venueCity}` : ""}
+                            </span>
+                          </div>
+                        </div>
+                        <span className="bg-[#BBF455] text-black font-bold text-[12px] px-4 py-2 rounded-full shrink-0">
+                          Join Now
+                        </span>
                       </div>
-                    </div>
-                    <button className="bg-[#BBF455] text-black font-bold text-[12px] px-4 py-2 rounded-full shrink-0">
-                      Join Now
-                    </button>
-                  </div>
-                </div>
-              ))}
+                    </Link>
+                  );
+                })
+              )}
             </div>
           </div>
+          )}
 
-          {/* -- UPCOMING BOOKINGS -- */}
-          {isLoggedIn &&
-            (loadingBookings || upcomingBookingsList.length > 0) && (
-              <div className="!mt-2 px-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-[11px] font-black uppercase text-white/40 tracking-widest">
-                    Upcoming Bookings
-                  </h2>
-                </div>
-                <div
-                  ref={bookingsScrollRef}
-                  className="flex gap-3 overflow-x-auto no-scrollbar pb-2 scroll-smooth"
-                >
-                  {loadingBookings ? (
-                    <div className="min-w-[145px] w-[145px] rounded-xl border border-white/5 bg-[#070708] animate-pulse h-[225px]" />
-                  ) : (
-                    upcomingBookingsList.map((booking) => {
-                      const dateObj = new Date(
-                        booking.date ||
-                        booking.bookingDate ||
-                        booking.timeSlot?.date ||
-                        Date.now()
-                      );
-                      const dayStr = dateObj
-                        .getDate()
-                        .toString()
-                        .padStart(2, "0");
-                      const monthStr = dateObj
-                        .toLocaleString("en-US", { month: "short" })
-                        .toUpperCase();
-                      let startTime =
-                        booking.timeSlot?.formattedStartTime ||
-                        booking.startTime ||
-                        "Slot";
-                      if (
-                        booking.startTime &&
-                        booking.startTime.includes("T")
-                      ) {
-                        startTime = new Date(
-                          booking.startTime
-                        ).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        });
-                      } else if (booking.playStartTime) {
-                        startTime = new Date(
-                          booking.playStartTime
-                        ).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        });
-                      }
-                      const turfName =
-                        booking.turf?.name ||
-                        booking.turfName ||
-                        booking.customVenue ||
-                        "Confirmed Venue";
-                      const turfAddress =
-                        booking.turf?.address ||
-                        booking.turf?.city ||
-                        booking.turfCity ||
-                        booking.city ||
-                        booking.location ||
-                        "View Details";
-                      const turfImage =
-                        booking.turf?.images?.[0] ||
-                        booking.turfImage ||
-                        "/default-turf.jpg";
-                      return (
-                        <Link
-                          key={booking._id || booking.id}
-                          to={`/booking-pass/${booking.id || booking._id}`}
-                          className="min-w-[145px] w-[145px] flex flex-col rounded-xl border border-gray-600/60 bg-[#070708] overflow-hidden group shrink-0 shadow-sm transition-all hover:border-primary/50"
-                        >
-                          <div className="relative w-full aspect-[4/5] overflow-hidden bg-white/5">
-                            <img
-                              src={turfImage}
-                              loading="lazy"
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src =
-                                  "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&q=80";
-                              }}
-                              alt={turfName}
-                            />
-                            <div className="absolute bottom-0 left-0 right-0 bg-[#E81E73] p-1 px-2">
-                              <p className="text-[9px] font-bold text-white text-center">
-                                Booked • {startTime}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex gap-2 p-2">
-                            <div className="bg-[#2A2D34] rounded-lg p-1 w-[36px] h-[40px] flex flex-col items-center justify-center shrink-0 border border-white/5">
-                              <span className="text-[11px] font-black text-white leading-none">
-                                {dayStr}
-                              </span>
-                              <span className="text-[7px] font-bold text-primary leading-none mt-1 uppercase">
-                                {monthStr}
-                              </span>
-                            </div>
-                            <div className="flex-1 min-w-0 flex flex-col justify-center">
-                              <h3 className="text-[10px] font-bold text-white leading-tight group-hover:text-primary transition-colors line-clamp-2">
-                                {turfName}
-                              </h3>
-                              <p className="text-[8px] text-white/50 truncate mt-0.5 font-medium">
-                                {turfAddress}
-                              </p>
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
-            )}
+
           {/* -- FIND YOUR ARENA -- */}
           <div className="!mt-8 px-2">
             <VenuesSection
@@ -895,30 +840,42 @@ export default function Home() {
                 professionals.map((p) => (
                   <div
                     key={p.id || p._id}
+                    onClick={() => navigate(`/profile/${p.userId || p.id || p._id}`)}
                     className="shrink-0 w-[188px] h-[234px] snap-start relative rounded-[12px] overflow-hidden group cursor-pointer border border-[#434242]"
                   >
                     <img 
-                      src={p.profilePicture || p.profileImage || p.image || "https://i.pravatar.cc/300?img=11"} 
-                      alt={p.name} 
+                      src={p.profilePicture || p.profileImage || p.image || "/default-avatar.png"} 
+                      alt={p.name || "Professional"} 
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/30 to-transparent"></div>
                     
-                    <div className="absolute top-3 left-3 bg-black/40 backdrop-blur-md px-2 py-1 rounded-[6px] flex items-center gap-1 border border-white/10">
-                      <span className="text-white text-[10px]">★</span>
-                      <span className="text-white text-[11px] font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>{p.rating || "4.8"}</span>
-                    </div>
+                    {p.rating !== undefined && p.rating !== null && (
+                      <div className="absolute top-3 left-3 bg-black/40 backdrop-blur-md px-2 py-1 rounded-[6px] flex items-center gap-1 border border-white/10">
+                        <span className="text-white text-[10px]">★</span>
+                        <span className="text-white text-[11px] font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>
+                          {Number(p.rating).toFixed(1)}
+                        </span>
+                      </div>
+                    )}
 
                     <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
                       <div className="flex flex-col max-w-[100px]">
-                        <span className="text-white font-bold text-[14px] leading-tight truncate" style={{ fontFamily: "'Inter', sans-serif" }}>
-                          {p.name ? p.name : "Rahul Sharma"}
+                        <span className="text-white font-bold text-[14px] leading-tight truncate capitalize" style={{ fontFamily: "'Inter', sans-serif" }}>
+                          {p.name || "Professional"}
                         </span>
-                        <span className="text-white/80 text-[12px] mt-0.5" style={{ fontFamily: "'Inter', sans-serif" }}>
-                          {p.role || p.primaryRole || "Coach"}
+                        <span className="text-white/80 text-[12px] mt-0.5 uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
+                          {p.role || p.primaryRole || "PRO"}
                         </span>
                       </div>
-                      <button className="bg-white text-black font-bold text-[12px] px-3.5 py-1.5 rounded-[8px] shrink-0 active:scale-95 transition-transform" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/profile/${p.userId || p.id || p._id}`);
+                        }}
+                        className="bg-white text-black font-bold text-[12px] px-3.5 py-1.5 rounded-[8px] shrink-0 active:scale-95 transition-transform" 
+                        style={{ fontFamily: "'Inter', sans-serif" }}
+                      >
                         Book
                       </button>
                     </div>
@@ -939,33 +896,6 @@ export default function Home() {
             <SocialArenaSection reelsFeed={reelsFeed} />
           </div>
 
-          {/* -- JOIN GAMES NEAR YOU (Feature Flag) -- */}
-          <div className="!mt-8 px-2">
-            <JoinGamesSection
-              featureFlags={featureFlags}
-              selectedHomeState={selectedHomeState}
-              setSelectedHomeState={setSelectedHomeState}
-              selectedHomeCity={selectedHomeCity}
-              setSelectedHomeCity={setSelectedHomeCity}
-              states={states}
-              loadingStates={loadingStates}
-              cities={cities}
-              loadingCities={loadingCities}
-              selectedGameSport={selectedGameSport}
-              setSelectedGameSport={setSelectedGameSport}
-              hostedGames={hostedGames}
-              hostedGamesLoading={hostedGamesLoading}
-            />
-          </div>
-
-          <div className={`!mt-8 px-2 ${shouldHideRest ? "hidden" : ""}`}>
-            {/* -- FIND PROFESSIONALS (Feature Flag) -- */}
-            <ProfessionalsSection
-              featureFlags={featureFlags}
-              professionals={professionals}
-              professionalsLoading={professionalsLoading}
-            />
-          </div>
         </Community>
       </div>
 
