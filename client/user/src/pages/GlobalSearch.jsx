@@ -557,12 +557,11 @@ const GlobalSearch = () => {
                         key={ground._id}
                         className={`shrink-0 snap-center w-[260px] h-[360px] flex justify-center items-center relative transition-all duration-300 ${idx === activeVenueIndex ? 'z-10' : 'z-0'}`}
                       >
-                        <VenueCard
-                          t={ground}
+                        <TurfCardMobile
+                          turf={ground}
                           onClick={() =>
                             navigate(`/venue/${ground._id || ground.id}`)
                           }
-                          isActive={idx === activeVenueIndex}
                         />
                       </div>
                     ))}
