@@ -70,6 +70,9 @@ const FeatureFlags = lazy(() =>
 const MarketingManagement = lazy(() =>
   import("../features/admin").then((m) => ({ default: m.MarketingManagement }))
 );
+const BannerAdsManager = lazy(() =>
+  import("../features/admin").then((m) => ({ default: m.BannerAdsManager }))
+);
 const HomeScreenUI = lazy(() =>
   import("../features/admin").then((m) => ({ default: m.HomeScreenUI }))
 );
@@ -149,6 +152,14 @@ const router = createBrowserRouter([
         path: "professionals",
         children: [
           {
+            path: "all",
+            element: (
+              <S>
+                <ProfessionalManagement role="professional" />
+              </S>
+            ),
+          },
+          {
             path: "coaches",
             element: (
               <S>
@@ -189,6 +200,14 @@ const router = createBrowserRouter([
             ),
           },
         ],
+      },
+      {
+        path: "banner-ads",
+        element: (
+          <S>
+            <BannerAdsManager />
+          </S>
+        ),
       },
       {
         path: "users",

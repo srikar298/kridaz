@@ -51,6 +51,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
       label: "Roles",
       icon: Users,
       subItems: [
+        { to: "/admin/professionals/all", label: "All Professionals" },
         { to: "/admin/owners", label: "Venue Owners" },
         { to: "/admin/professionals/coaches", label: "Coaches" },
         { to: "/admin/professionals/umpires", label: "Umpires" },
@@ -82,6 +83,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isMinimized, className }) => {
     { to: "/admin/audit", label: "Audit Logs", icon: Shield },
     { to: "/admin/error-logs", label: "System Errors", icon: Shield },
     { to: "/admin/marketing", label: "Marketing", icon: Activity },
+    { to: "/admin/banner-ads", label: "Banner Ads", icon: Tag },
     { to: "/admin/home-ui-updates", label: "Home UI Updates", icon: LayoutGrid },
     { to: "/admin/qrcodes", label: "QR Codes", icon: QrCode },
     { to: "/admin/coupons", label: "Coupons", icon: Tag },
