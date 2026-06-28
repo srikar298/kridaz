@@ -275,6 +275,20 @@ const Login = ({ isModal = false }) => {
               </p>
             )}
 
+            {/* Forgot Password Link */}
+            <div className="flex justify-end -mt-1 mb-2">
+              <button
+                type="button"
+                onClick={() => {
+                  if (isModal) closeAuthModal();
+                  navigate("/forgot-password");
+                }}
+                className="text-xs text-white/60 hover:text-[#C8F53B] transition-colors"
+              >
+                Forgot Password?
+              </button>
+            </div>
+
             {/* Continue Button */}
             <button
               type="submit"
