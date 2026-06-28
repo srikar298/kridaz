@@ -12,6 +12,16 @@ import "./index.css";
 import * as Sentry from "@sentry/react";
 import { setupProductionGuards } from "./utils/productionGuards";
 
+if ('serviceWorker' in navigator) {
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) {
+      refreshing = true;
+      window.location.reload();
+    }
+  });
+}
+
 setupProductionGuards();
 
 const isProduction = import.meta.env.PROD;

@@ -1,7 +1,36 @@
 import React from "react";
 import { Heart, MapPin, Star } from "lucide-react";
+import { useSelector } from "react-redux";
+import { useGetSavedTurfsQuery, useToggleTurfLikeMutation } from "@redux/api/turfApi";
+import toast from "react-hot-toast";
 
 const VenueCard = ({ t, onClick, isActive = true }) => {
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const { data: savedData } = useGetSavedTurfsQuery(undefined, {
+    skip: !isLoggedIn,
+  });
+  const [toggleTurfLike] = useToggleTurfLikeMutation();
+
+  const isFavorite =
+    isLoggedIn && savedData?.turfs?.some((turf) => (turf.id || turf._id) === t._id);
+
+  const toggleFavorite = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isLoggedIn) {
+      toast.error("Please login to save venues");
+      return;
+    }
+
+    try {
+      await toggleTurfLike(t._id).unwrap();
+      toast.success(isFavorite ? "Removed from saved" : "Saved successfully");
+    } catch (err) {
+      console.error("Failed to toggle wishlist like:", err);
+      toast.error("Failed to update saved status");
+    }
+  };
   return (
     <article
       onClick={onClick}
@@ -39,12 +68,9 @@ const VenueCard = ({ t, onClick, isActive = true }) => {
             type="button"
             aria-label="Add to favorites"
             className="inline-flex items-center justify-center p-2 bg-[#ffffff14] rounded-lg backdrop-brightness-[84.0%] backdrop-saturate-[104.3%] backdrop-hue-rotate-[-4.8deg] [-webkit-backdrop-filter:brightness(84.0%)_saturate(104.3%)_hue-rotate(-4.8deg)] shadow-[inset_0_1px_0_rgba(255,255,255,0.20),inset_1px_0_0_rgba(255,255,255,0.16),inset_0_-1px_1px_rgba(0,0,0,0.05),inset_-1px_0_1px_rgba(0,0,0,0.04)] hover:bg-[#ffffff25] transition-colors"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
+            onClick={toggleFavorite}
           >
-            <Heart size={18} className="text-white" />
+            <Heart size={18} className={isFavorite ? "text-red-500 fill-red-500" : "text-white"} />
           </button>
         </div>
       </div>
