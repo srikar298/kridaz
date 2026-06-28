@@ -20,7 +20,7 @@ import {
 } from "@redux/api/communityApi";
 import { useGetGroundsQuery } from "@redux/api/gamesApi";
 import axiosInstance from "@hooks/useAxiosInstance";
-import { TurfCardMobile } from "../features/turf";
+import { VenueCard } from "../features/turf";
 import { GameCard } from "../features/games";
 import { TurfCardSkeleton, PostSkeleton } from "../shared/components/ui";
 import { Button, Input } from "@kridaz/ui";
@@ -406,9 +406,9 @@ const GlobalSearch = () => {
                   ) : (
                     <div className="grid grid-cols-1 gap-4">
                       {venues.map((t) => (
-                        <TurfCardMobile
+                        <VenueCard
                           key={t._id || t.id}
-                          turf={t}
+                          t={t}
                           onClick={() => navigate(`/venue/${t._id || t.id}`)}
                         />
                       ))}
@@ -544,23 +544,38 @@ const GlobalSearch = () => {
                     />
                   ))}
                 </div>
-              ) : popularGrounds.length > 0 ? (
-                <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 -mx-4 px-4">
-                  {popularGrounds.map((ground) => (
-                    <div
-                      key={ground._id}
-                      className="w-[85%] md:w-[400px] shrink-0 snap-center"
-                    >
-                      <TurfCardMobile
-                        turf={ground}
-                        onClick={() =>
-                          navigate(`/venue/${ground._id || ground.id}`)
-                        }
-                      />
+                ) : popularGrounds.length > 0 ? (
+                  <div className="relative group/scroll">
+                    <div className="relative">
+                      <div
+                        ref={scrollRef}
+                        className="flex items-center gap-[6px] overflow-x-auto snap-x snap-mandatory no-scrollbar pb-6 px-[calc(50%-130px)] scroll-smooth min-h-[380px]"
+                        onScroll={handleScroll}
+                      >
+                        {popularGrounds.slice(0, 10).map((ground, idx) => (
+                          <div
+                            key={ground._id}
+                            className={`shrink-0 snap-center w-[260px] h-[360px] flex justify-center items-center relative transition-all duration-300 ${idx === activeVenueIndex ? 'z-10' : 'z-0'}`}
+                          >
+                            <VenueCard
+                              t={ground}
+                              onClick={() => navigate(`/venue/${ground._id || ground.id}`)}
+                              isActive={idx === activeVenueIndex}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex justify-center gap-1.5 mt-2">
+                        {popularGrounds.slice(0, 10).map((_, idx) => (
+                          <div
+                            key={idx}
+                            className={`rounded-full transition-all duration-300 ${idx === activeVenueIndex ? "w-[18px] h-1.5 bg-white" : "w-1.5 h-1.5 bg-[#434242]"}`}
+                          ></div>
+                        ))}
+                      </div>
                     </div>
-                  ))}
-                </div>
-              ) : (
+                  </div>
+                ) : (
                 <div className="text-sm text-white/30 italic">
                   No popular venues found.
                 </div>
