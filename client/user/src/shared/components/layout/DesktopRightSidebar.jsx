@@ -1053,7 +1053,7 @@ export default function DesktopRightSidebar({
                         <img
                           src={
                             activePlayer.profilePicture ||
-                            `https://api.dicebear.com/7.x/avataaars/svg?seed=${activePlayer.name}`
+                            `https://api.dicebear.com/7.x/initials/svg?seed=${activePlayer.name}`
                           }
                           className="w-full h-full object-cover"
                           alt=""

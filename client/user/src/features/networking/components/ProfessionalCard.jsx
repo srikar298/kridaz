@@ -80,11 +80,11 @@ const ProfessionalCard = ({ pro, getInitials }) => {
     >
       {/* Background Image */}
       <img 
-        src={pro.image || pro.profilePicture || pro.user?.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${pro.name || pro.user?.name || 'User'}`} 
+        src={pro.image || pro.profilePicture || pro.user?.profilePicture || `https://api.dicebear.com/7.x/initials/svg?seed=${pro.name || pro.user?.name || 'User'}`} 
         alt={pro.name || pro.user?.name || "Anonymous"} 
         onError={(e) => {
           e.target.onerror = null;
-          e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${pro.name || pro.user?.name || 'User'}`;
+          e.target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${pro.name || pro.user?.name || 'User'}`;
         }}
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
       />

@@ -195,7 +195,7 @@ const Leaderboard = () => {
                         <img
                           src={
                             player.profilePicture ||
-                            `https://api.dicebear.com/7.x/avataaars/svg?seed=${player.name}`
+                            `https://api.dicebear.com/7.x/initials/svg?seed=${player.name}`
                           }
                           alt=""
                           className="w-full h-full object-cover rounded-full border border-white/10"

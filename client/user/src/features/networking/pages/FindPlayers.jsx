@@ -72,12 +72,12 @@ const PlayerCard = ({
     >
       {/* Background Image or Initials */}
       <img
-        src={player.profilePicture || player.profileImage || player.image || player.user?.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${playerName}`}
+        src={player.profilePicture || player.profileImage || player.image || player.user?.profilePicture || `https://api.dicebear.com/7.x/initials/svg?seed=${playerName}`}
         alt={playerName}
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale-[20%] group-hover:grayscale-0"
         onError={(e) => {
           e.target.onerror = null;
-          e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${playerName}`;
+          e.target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${playerName}`;
         }}
       />
 

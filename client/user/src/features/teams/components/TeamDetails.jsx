@@ -306,7 +306,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                         <img
                           src={
                             req.profilePic ||
-                            `https://api.dicebear.com/7.x/avataaars/svg?seed=${req.username}`
+                            `https://api.dicebear.com/7.x/initials/svg?seed=${req.username}`
                           }
                           alt={req.username}
                           className="w-full h-full object-cover"
@@ -365,7 +365,7 @@ const TeamDetails = ({ team, onInviteClick, onCreateClick, onBack }) => {
                       <img
                         src={
                           member.profilePic ||
-                          `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.username}`
+                          `https://api.dicebear.com/7.x/initials/svg?seed=${member.username}`
                         }
                         alt={member.username}
                         className="w-full h-full object-cover"

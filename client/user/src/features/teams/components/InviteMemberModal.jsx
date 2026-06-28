@@ -253,7 +253,7 @@ const InviteMemberModal = ({ isOpen, onClose, teamId, teamName }) => {
                           <img
                             src={
                               player.profilePic ||
-                              `https://api.dicebear.com/7.x/avataaars/svg?seed=${player.username}`
+                              `https://api.dicebear.com/7.x/initials/svg?seed=${player.username}`
                             }
                             alt=""
                             className="w-full h-full object-cover"

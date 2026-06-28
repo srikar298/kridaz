@@ -289,7 +289,7 @@ const SlotPickerPopup = ({ isOpen, onClose, onSelect, gameId, slotId }) => {
                                     <img
                                       src={
                                         member.user?.profilePicture ||
-                                        `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.user?.name || member.name}`
+                                        `https://api.dicebear.com/7.x/initials/svg?seed=${member.user?.name || member.name}`
                                       }
                                       alt={member.user?.name || member.name}
                                       className="w-full h-full object-cover"
