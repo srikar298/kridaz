@@ -126,7 +126,7 @@ export default function Home() {
     });
   const professionals = professionalsResp?.professionals || professionalsResp?.data?.professionals || professionalsResp?.data || [];
 
-  const { data: reelsFeedResp } = useGetReelsFeedQuery();
+  const { data: reelsFeedResp, isLoading: reelsLoading } = useGetReelsFeedQuery();
   const reelsFeed = reelsFeedResp?.reels || [];
 
   // Upcoming Bookings
