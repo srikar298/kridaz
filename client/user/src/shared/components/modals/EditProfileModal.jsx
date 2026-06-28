@@ -17,6 +17,7 @@ import { updateUser } from "../../../redux/slices/authSlice";
 import { searchLocations, formatLocation } from "../../utils/locationService";
 import { Button, Input, Select, Textarea } from "@kridaz/ui";
 import ImageCropperModal from "./ImageCropperModal";
+import LocationVenuePicker from "./LocationVenuePicker";
 
 export default function EditProfileModal({ isOpen, onClose, user }) {
   const [formData, setFormData] = useState({
@@ -34,6 +35,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [isSearchingLocation, setIsSearchingLocation] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   
   // Cropper states
   const [imageToCrop, setImageToCrop] = useState(null);
@@ -652,56 +654,36 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
           </div>
 
           {/* Row 4: Location */}
-          <div className="flex flex-col" ref={locationRef}>
+          <div className="flex flex-col">
             <label className="text-[14px] font-semibold text-white mb-2">
               Location
             </label>
-            <div className="relative group">
+            <div className="relative cursor-pointer" onClick={() => setIsLocationModalOpen(true)}>
               <MapPin
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 group-focus-within:text-secondary transition-colors"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 z-10 group-focus-within:text-secondary transition-colors"
                 size={18}
               />
-              <Input
-                type="text"
-                value={formData.location}
-                onChange={(e) => {
-                  setFormData({ ...formData, location: e.target.value });
-                  setShowSuggestions(true);
-                }}
-                onFocus={() =>
-                  setShowSuggestions(locationSuggestions.length > 0)
-                }
-                placeholder="e.g. Mumbai, Maharashtra"
-                className="w-full h-[58px] bg-card border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-12 text-[14px] text-white focus:outline-none focus:border-secondary transition-all placeholder-white/70"
-              />
-              {isSearchingLocation && (
-                <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                  <Loader2 className="w-4 h-4 text-secondary animate-spin" />
-                </div>
-              )}
-
-              {/* Suggestions Dropdown */}
-              {showSuggestions && locationSuggestions.length > 0 && (
-                <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-card border border-white/[0.08] rounded-[16px] overflow-hidden z-[110] shadow-[0px_4px_16px_rgba(0,0,0,0.4)] max-h-[200px] overflow-y-auto custom-scrollbar">
-                  {locationSuggestions.map((suggestion, idx) => (
-                    <Button
-                      type="button"
-                      key={idx}
-                      onClick={() => handleSelectLocation(suggestion)}
-                      className="w-full px-4 py-3 text-left hover:bg-card border-b border-white/[0.08] last:border-0 transition-colors flex flex-col gap-1"
-                    >
-                      <span className="text-[14px] font-semibold text-white">
-                        {suggestion.city ||
-                          suggestion.display_name.split(",")[0]}
-                      </span>
-                      <span className="text-[12px] font-normal text-white/70 truncate">
-                        {suggestion.display_name}
-                      </span>
-                    </Button>
-                  ))}
-                </div>
-              )}
+              <div
+                className={`w-full bg-card border border-white/[0.08] rounded-[16px] py-4 pl-12 pr-4 text-[14px] transition-all flex items-center h-[58px] ${formData.location ? 'text-white' : 'text-white/70'}`}
+              >
+                <span className="truncate">{formData.location || "e.g. Mumbai, Maharashtra"}</span>
+              </div>
             </div>
+            
+            <LocationVenuePicker 
+              isOpen={isLocationModalOpen}
+              onClose={() => setIsLocationModalOpen(false)}
+              hideVenues={true}
+              onSelect={(data) => {
+                setFormData({
+                  ...formData,
+                  location: data.displayName,
+                  city: data.city || data.displayName.split(',')[0].trim(),
+                  state: data.state || "",
+                });
+                setIsLocationModalOpen(false);
+              }}
+            />
           </div>
 
           {/* Row 5: Sports & Interests */}

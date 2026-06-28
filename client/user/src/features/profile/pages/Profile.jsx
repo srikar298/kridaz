@@ -1319,30 +1319,30 @@ export default function Profile() {
                   <p className="profile-username text-primary text-xs md:text-sm font-sans font-bold">
                     @{profileUser?.username || "not_specified"}
                   </p>
-                  <span className="profile-tag-badge flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-primary/30 bg-black/50 text-primary text-[9px] font-black tracking-widest uppercase backdrop-blur-md shrink-0">
-                    <svg
-                      className="w-3 h-3"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 14a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 13V5a2 2 0 012-2h4a2 2 0 012 2v8"
-                      />
-                    </svg>
-                    {profileUser?.role === "USER"
-                      ? "PLAYER"
-                      : profileUser?.role || "PLAYER"}
-                  </span>
+                  {profileUser?.role !== "USER" && (
+                    <span className="profile-tag-badge flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-primary/30 bg-black/50 text-primary text-[9px] font-black tracking-widest uppercase backdrop-blur-md shrink-0">
+                      <svg
+                        className="w-3 h-3"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 14a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 13V5a2 2 0 012-2h4a2 2 0 012 2v8"
+                        />
+                      </svg>
+                      {profileUser?.role}
+                    </span>
+                  )}
                   {profileUser?.sportTypes &&
                     profileUser.sportTypes.length > 0 && (
                       <span className="profile-tag-badge flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-secondary/30 bg-black/50 text-secondary text-[9px] font-black tracking-widest uppercase backdrop-blur-md shrink-0">

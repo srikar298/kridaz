@@ -3,7 +3,7 @@ import { RouterProvider } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import router from "./router";
 import { logout, restoreAuth } from "@redux/slices/authSlice";
-import { setUserLocation, setLocationStatus } from "@redux/slices/uiSlice";
+import { setUserLocation, setLocationStatus, closeLocationSidebar } from "@redux/slices/uiSlice";
 import axiosInstance from "@hooks/useAxiosInstance";
 
 // Simple JWT decoder (no verification, just payload extraction)
@@ -43,8 +43,8 @@ import { useWebPushNotifications } from "@hooks/useWebPushNotifications";
 import { useOTAUpdate } from "@hooks/useOTAUpdate";
 
 import { ObservabilityProvider } from "./ObservabilityProvider";
-const LocationSidebar = lazy(
-  () => import("../shared/components/modals/LocationSidebar")
+const LocationVenuePicker = lazy(
+  () => import("../shared/components/modals/LocationVenuePicker")
 );
 
 export default function App() {
@@ -296,7 +296,16 @@ export default function App() {
             />
             {locationSidebarOpen && (
               <Suspense fallback={null}>
-                <LocationSidebar />
+                <LocationVenuePicker
+                  isOpen={locationSidebarOpen}
+                  onClose={() => dispatch(closeLocationSidebar())}
+                  hideVenues={true}
+                  onSelect={(loc) => {
+                    dispatch(setUserLocation({ lat: loc.lat, lng: loc.lng, city: loc.city, state: loc.state }));
+                    dispatch(setLocationStatus('granted'));
+                    dispatch(closeLocationSidebar());
+                  }}
+                />
               </Suspense>
             )}
           </SocketProvider>

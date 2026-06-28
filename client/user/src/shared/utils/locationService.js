@@ -38,7 +38,7 @@ export const fetchCities = async (state) => {
 };
 
 export const searchLocations = async (query) => {
-  if (!query || query.length < 3) return [];
+  if (!query || query.length < 1) return [];
   try {
     const response = await axios.get(
       `https://nominatim.openstreetmap.org/search`,

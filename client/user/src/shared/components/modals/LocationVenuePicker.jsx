@@ -1,16 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, MapPin, X, Map, Building2 } from "lucide-react";
+import { Search, MapPin, X, Map, Building2, Crosshair, Loader2 } from "lucide-react";
 import { Button, Input } from "@kridaz/ui";
 import { searchLocations } from "@utils/locationService";
 import useTurfData from "@features/turf/hooks/useTurfData";
+import { useSelector, useDispatch } from "react-redux";
+import { setLocationStatus } from "@redux/slices/uiSlice";
 
-const LocationVenuePicker = ({ isOpen, onClose, onSelect, onBookSlot }) => {
+const LocationVenuePicker = ({ isOpen, onClose, onSelect, onBookSlot, hideVenues = false }) => {
   const [activeTab, setActiveTab] = useState("custom"); // 'custom' | 'venues'
   const [searchQuery, setSearchQuery] = useState("");
   const [customSuggestions, setCustomSuggestions] = useState([]);
   const [isSearchingCustom, setIsSearchingCustom] = useState(false);
   const [selectedVenueForAction, setSelectedVenueForAction] = useState(null);
+
+  const dispatch = useDispatch();
+  const userLocation = useSelector((state) => state.ui?.userLocation);
+  const currentCity = userLocation?.city || "Chennai";
+
+  const [isDetecting, setIsDetecting] = useState(false);
+  const [nearbySuggestions, setNearbySuggestions] = useState([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
   // Kridaz Venues Data
   const { turfs, loading: loadingVenues } = useTurfData({
@@ -18,11 +28,30 @@ const LocationVenuePicker = ({ isOpen, onClose, onSelect, onBookSlot }) => {
     limit: 10,
   });
 
+  // Effect for Nearby Suggestions
+  useEffect(() => {
+    if (activeTab !== "custom" || !isOpen) return;
+    if (searchQuery.length < 1) {
+      const fetchSuggestions = async () => {
+        setLoadingSuggestions(true);
+        try {
+          const results = await searchLocations(currentCity);
+          setNearbySuggestions(results);
+        } catch (err) {
+          console.error("Error fetching nearby suggestions", err);
+        } finally {
+          setLoadingSuggestions(false);
+        }
+      };
+      fetchSuggestions();
+    }
+  }, [isOpen, currentCity, searchQuery.length, activeTab]);
+
   // Effect for OpenStreetMap Custom Location
   useEffect(() => {
     if (activeTab !== "custom") return;
 
-    if (!searchQuery || searchQuery.length < 3) {
+    if (!searchQuery || searchQuery.length < 1) {
       setCustomSuggestions([]);
       return;
     }
@@ -44,20 +73,82 @@ const LocationVenuePicker = ({ isOpen, onClose, onSelect, onBookSlot }) => {
 
   if (!isOpen) return null;
 
+  const handleDetectLocation = () => {
+    setIsDetecting(true);
+    dispatch(setLocationStatus("detecting"));
+    if (!navigator.geolocation) {
+      dispatch(setLocationStatus("denied"));
+      setIsDetecting(false);
+      return;
+    }
+
+    let timeoutId = setTimeout(() => {
+      dispatch(setLocationStatus("denied"));
+      setIsDetecting(false);
+    }, 10000);
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        clearTimeout(timeoutId);
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        let city = "";
+        let state = "";
+        try {
+          const res = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+          );
+          const data = await res.json();
+          city = data.city || data.locality || "";
+          state = data.principalSubdivision || "";
+        } catch (error) {
+          console.warn("Reverse geocoding failed:", error);
+        }
+        
+        if (onSelect) {
+          onSelect({
+            type: "CUSTOM",
+            displayName: city,
+            city: city,
+            state: state,
+            lat: lat,
+            lng: lng,
+          });
+        }
+        setSelectedVenueForAction(null);
+        setIsDetecting(false);
+        if (onClose) onClose();
+      },
+      () => {
+        clearTimeout(timeoutId);
+        dispatch(setLocationStatus("denied"));
+        setIsDetecting(false);
+      },
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: Infinity }
+    );
+  };
+
   const handleSelectCustom = (suggestion) => {
-    const cityName = suggestion.city || suggestion.display_name.split(",")[0];
-    const stateName = suggestion.state || "";
-    
-    onSelect({
-      type: "CUSTOM",
-      displayName: suggestion.display_name,
-      city: cityName,
-      state: stateName,
-      lat: suggestion.lat,
-      lng: suggestion.lon,
-    });
-    setSelectedVenueForAction(null);
-    onClose();
+    try {
+      const cityName = suggestion?.city || suggestion?.display_name?.split(",")[0] || "Unknown";
+      const stateName = suggestion?.state || "";
+      
+      if (onSelect) {
+        onSelect({
+          type: "CUSTOM",
+          displayName: suggestion?.display_name || cityName,
+          city: cityName,
+          state: stateName,
+          lat: suggestion?.lat || null,
+          lng: suggestion?.lon || null,
+        });
+      }
+      setSelectedVenueForAction(null);
+      if (onClose) onClose();
+    } catch (err) {
+      console.error("Error selecting custom location:", err);
+      if (onClose) onClose();
+    }
   };
 
   const handleSelectVenue = (venue) => {
@@ -127,30 +218,32 @@ const LocationVenuePicker = ({ isOpen, onClose, onSelect, onBookSlot }) => {
             {!selectedVenueForAction ? (
               <>
                 {/* Tabs */}
-            <div className="flex p-2 bg-[#111]">
-              <button
-                type="button"
-                onClick={() => { setActiveTab("custom"); setSearchQuery(""); }}
-                className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg flex items-center justify-center gap-2 transition-all ${
-                  activeTab === "custom"
-                    ? "bg-gradient-to-r from-secondary/20 to-primary/20 text-primary border border-primary/30 shadow-[0_0_15px_rgba(191,243,103,0.15)]"
-                    : "text-white/50 hover:bg-white/5"
-                }`}
-              >
-                <Map size={16} /> Custom
-              </button>
-              <button
-                type="button"
-                onClick={() => { setActiveTab("venues"); setSearchQuery(""); }}
-                className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg flex items-center justify-center gap-2 transition-all ${
-                  activeTab === "venues"
-                    ? "bg-gradient-to-r from-secondary/20 to-primary/20 text-primary border border-primary/30 shadow-[0_0_15px_rgba(191,243,103,0.15)]"
-                    : "text-white/50 hover:bg-white/5"
-                }`}
-              >
-                <Building2 size={16} /> Kridaz Venues
-              </button>
-            </div>
+                {!hideVenues && (
+                  <div className="flex p-2 bg-[#111]">
+                    <button
+                      type="button"
+                      onClick={() => { setActiveTab("custom"); setSearchQuery(""); }}
+                      className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg flex items-center justify-center gap-2 transition-all ${
+                        activeTab === "custom"
+                          ? "bg-gradient-to-r from-secondary/20 to-primary/20 text-primary border border-primary/30 shadow-[0_0_15px_rgba(191,243,103,0.15)]"
+                          : "text-white/50 hover:bg-white/5"
+                      }`}
+                    >
+                      <Map size={16} /> Custom
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setActiveTab("venues"); setSearchQuery(""); }}
+                      className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg flex items-center justify-center gap-2 transition-all ${
+                        activeTab === "venues"
+                          ? "bg-gradient-to-r from-secondary/20 to-primary/20 text-primary border border-primary/30 shadow-[0_0_15px_rgba(191,243,103,0.15)]"
+                          : "text-white/50 hover:bg-white/5"
+                      }`}
+                    >
+                      <Building2 size={16} /> Kridaz Venues
+                    </button>
+                  </div>
+                )}
 
             {/* Search Input */}
             <div className="p-4 border-b border-white/5 relative">
@@ -177,25 +270,73 @@ const LocationVenuePicker = ({ isOpen, onClose, onSelect, onBookSlot }) => {
             <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
               {activeTab === "custom" && (
                 <div className="space-y-1">
-                  {searchQuery.length > 0 && searchQuery.length < 3 && (
-                    <p className="text-center text-white/40 text-xs py-8">Type at least 3 characters to search</p>
-                  )}
-                  {customSuggestions.map((suggestion, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleSelectCustom(suggestion)}
-                      className="w-full px-4 py-3 text-left hover:bg-white/5 rounded-xl border border-transparent hover:border-white/5 transition-all flex flex-col gap-1 group"
-                    >
-                      <span className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors">
-                        {suggestion.city || suggestion.display_name.split(",")[0]}
-                      </span>
-                      <span className="text-[11px] text-white/40 line-clamp-1 w-full">
-                        {suggestion.display_name}
-                      </span>
-                    </button>
-                  ))}
-                  {searchQuery.length >= 3 && !isSearchingCustom && customSuggestions.length === 0 && (
-                    <p className="text-center text-white/40 text-xs py-8">No locations found</p>
+                  {searchQuery.length < 1 ? (
+                    <div className="flex flex-col gap-4 p-2">
+                      <Button
+                        onClick={handleDetectLocation}
+                        disabled={isDetecting}
+                        className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 border border-primary/20 hover:border-primary/50 rounded-xl transition-all group"
+                      >
+                        <div className="flex items-center gap-3">
+                          {isDetecting ? (
+                            <Loader2 size={20} className="text-primary animate-spin" />
+                          ) : (
+                            <Crosshair size={20} className="text-primary group-hover:scale-110 transition-transform" />
+                          )}
+                          <span className="text-sm font-bold text-white tracking-wide">
+                            {isDetecting ? "Detecting Location..." : "Use Current Location"}
+                          </span>
+                        </div>
+                      </Button>
+
+                      <div className="mt-4">
+                        <span className="text-[10px] font-black text-white/30 uppercase tracking-widest px-2">
+                          NEARBY {currentCity.toUpperCase()} AREAS
+                        </span>
+                        <div className="mt-2 space-y-1">
+                          {loadingSuggestions ? (
+                            <div className="flex items-center justify-center py-8">
+                              <Loader2 size={24} className="text-primary animate-spin" />
+                            </div>
+                          ) : (
+                            nearbySuggestions.map((suggestion, idx) => (
+                              <button
+                                key={`nearby-${idx}`}
+                                onClick={() => handleSelectCustom(suggestion)}
+                                className="w-full px-4 py-3 text-left hover:bg-white/5 rounded-xl border border-transparent hover:border-white/5 transition-all flex flex-col gap-1 group"
+                              >
+                                <span className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors">
+                                  {suggestion.city || suggestion.suburb || suggestion.display_name.split(",")[0]}
+                                </span>
+                                <span className="text-[11px] text-white/40 line-clamp-1 w-full">
+                                  {suggestion.display_name}
+                                </span>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {customSuggestions.map((suggestion, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => handleSelectCustom(suggestion)}
+                          className="w-full px-4 py-3 text-left hover:bg-white/5 rounded-xl border border-transparent hover:border-white/5 transition-all flex flex-col gap-1 group"
+                        >
+                          <span className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors">
+                            {suggestion.city || suggestion.display_name.split(",")[0]}
+                          </span>
+                          <span className="text-[11px] text-white/40 line-clamp-1 w-full">
+                            {suggestion.display_name}
+                          </span>
+                        </button>
+                      ))}
+                      {searchQuery.length >= 1 && !isSearchingCustom && customSuggestions.length === 0 && (
+                        <p className="text-center text-white/40 text-xs py-8">No locations found</p>
+                      )}
+                    </>
                   )}
                 </div>
               )}

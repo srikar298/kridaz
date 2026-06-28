@@ -2817,7 +2817,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
     }),
   });
 
-  if (email && email.toLowerCase() !== user.email?.toLowerCase()) {
+  if (email && email.toLowerCase() !== user.email?.toLowerCase() && user.email && !user.email.includes("@placeholder.com") && !user.email.includes("placeholder")) {
     // H-06: Email change without password confirmation
     if (user.password) {
       if (!req.body.currentPassword) {

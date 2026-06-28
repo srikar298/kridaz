@@ -13,6 +13,7 @@ import {
   X,
   User,
   Calendar,
+  Mail,
 } from "lucide-react";
 import axiosInstance from "@hooks/useAxiosInstance";
 import toast from "react-hot-toast";
@@ -21,6 +22,7 @@ import { updateUser, login } from "@redux/slices/authSlice";
 import { searchLocations, fetchCountryCodes, formatLocation } from "@utils/locationService";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Button, Input, Select } from "@kridaz/ui";
+import LocationVenuePicker from "./LocationVenuePicker";
 
 
 const getNameFromEmail = (email) => {
@@ -138,7 +140,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
     name: "",
     email: "",
     phone: "",
-    gender: "",
+    gender: "Male",
     dob: "",
     sportTypes: [],
     password: "",
@@ -226,9 +228,14 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
       const isGoogle = initialData.authMethod === "google";
       const userObj = isGoogle ? initialData.user || {} : {};
 
+      let backendEmail = initialData?.email || "";
+      if (backendEmail.includes("@placeholder.com") || backendEmail.includes("placeholder")) {
+        backendEmail = "";
+      }
+
       const emailVal =
         savedData?.email ||
-        (isGoogle ? userObj.email || "" : initialData?.email || "");
+        (isGoogle ? userObj.email || "" : backendEmail);
       const derivedName =
         savedData?.name ||
         (isGoogle
@@ -435,8 +442,10 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
 
   const handleNext = () => {
     if (step === 1) {
-      if (!formData.firstName)
-        return toast.error("Please enter your first name");
+      if (!formData.name)
+        return toast.error("Please enter your full name");
+      if (!formData.email)
+        return toast.error("Please enter your email address");
       if (!formData.dob) return toast.error("Please select your date of birth");
 
       const dob = new Date(formData.dob);
@@ -558,8 +567,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
 
     setLoading(true);
     try {
-      const payloadName =
-        formData.firstName + (formData.lastName ? " " + formData.lastName : "");
+      const payloadName = formData.name;
       let formattedPhone = formData.phone;
       if (formattedPhone) {
         if (!formattedPhone.startsWith("+")) {
@@ -802,135 +810,110 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                   </div>
 
                   {/* Name Fields */}
-                  <div className="grid grid-cols-2 gap-3 mt-1">
+                  <div className="block mt-1">
                     <label className="block">
                       <span className="flex items-center gap-1.5 text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2">
-                        <User size={14} className="text-primary" /> FIRST NAME
+                        <User size={14} className="text-primary" /> FULL NAME
                       </span>
                       <div className="relative">
                         <User className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={16} />
                         <Input
                           type="text"
-                          value={formData.firstName}
+                          value={formData.name}
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              firstName: e.target.value,
+                              name: e.target.value,
                             })
                           }
                           className="w-full bg-card border border-primary/50 rounded-[16px] py-2.5 md:py-3 pl-11 pr-4 text-white focus:border-primary outline-none transition-all text-xs md:text-sm !ring-0 !ring-offset-0"
                         />
                       </div>
                     </label>
-                    <label className="block">
-                      <span className="flex items-center gap-1.5 text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2">
-                        <User size={14} className="text-primary" /> LAST NAME
-                      </span>
-                      <Input
-                        type="text"
-                        value={formData.lastName}
-                        onChange={(e) =>
-                          setFormData({ ...formData, lastName: e.target.value })
-                        }
-                        className="w-full bg-card border border-primary/50 rounded-[16px] py-2.5 md:py-3 px-4 text-white focus:border-primary outline-none transition-all text-xs md:text-sm !ring-0 !ring-offset-0"
-                      />
-                    </label>
                   </div>
 
-                  <label className="block">
+                  <label className="block mt-3 mb-3">
                     <span className="flex items-center gap-1.5 text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2">
-                      <Calendar size={14} className="text-primary" /> DATE OF BIRTH
+                      <Mail size={14} className="text-primary" /> EMAIL ADDRESS
                     </span>
-                    <div className="flex gap-2">
-                      <CustomSelect
-                        value={dobDay}
-                        onChange={setDobDay}
-                        options={days}
-                        placeholder="DD"
-                        icon={<Calendar size={16} />}
-                      />
-                      <CustomSelect
-                        value={dobMonth}
-                        onChange={setDobMonth}
-                        options={months}
-                        placeholder="MM"
-                      />
-                      <CustomSelect
-                        value={dobYear}
-                        onChange={setDobYear}
-                        options={years}
-                        placeholder="YYYY"
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={16} />
+                      <Input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="your@email.com"
+                        className="w-full bg-card border border-primary/50 rounded-[16px] py-2.5 md:py-3 pl-11 pr-4 text-white focus:border-primary outline-none transition-all text-xs md:text-sm !ring-0 !ring-offset-0"
                       />
                     </div>
                   </label>
-                
-                  <div className="block mt-3">
-                    <span className="flex items-center gap-1.5 text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2">
-                      <User size={14} className="text-primary" /> GENDER
-                    </span>
-                    <div className="flex bg-card border border-white/[0.08] p-1 rounded-[16px]">
-                      <button type="button" onClick={() => setFormData({ ...formData, gender: "Male" })} className={`flex-1 py-2 text-xs md:text-sm font-semibold rounded-[12px] transition-all ${formData.gender === "Male" ? "bg-primary text-black" : "text-white/60 hover:text-white"}`}>Male</button>
-                      <button type="button" onClick={() => setFormData({ ...formData, gender: "Female" })} className={`flex-1 py-2 text-xs md:text-sm font-semibold rounded-[12px] transition-all ${formData.gender === "Female" ? "bg-primary text-black" : "text-white/60 hover:text-white"}`}>Female</button>
-                    </div>
+
+                  <div className="grid grid-cols-2 gap-3 mt-3">
+                    <label className="block">
+                      <span className="flex items-center gap-1.5 text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2">
+                        <Calendar size={14} className="text-primary" /> DATE OF BIRTH
+                      </span>
+                      <div className="relative">
+                        <Input
+                          type="date"
+                          value={formData.dob}
+                          onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                          className="w-full bg-card border border-primary/50 rounded-[16px] py-2.5 md:py-3 px-4 text-white focus:border-primary outline-none transition-all text-xs md:text-sm !ring-0 !ring-offset-0 [color-scheme:dark]"
+                        />
+                      </div>
+                    </label>
+
+                    <label className="block">
+                      <span className="flex items-center gap-1.5 text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2">
+                        <User size={14} className="text-primary" /> GENDER
+                      </span>
+                      <div className="relative">
+                        <select
+                          value={formData.gender}
+                          onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                          className="w-full bg-card border border-primary/50 rounded-[16px] py-2.5 md:py-3 px-4 text-white focus:border-primary outline-none transition-all text-xs md:text-sm !ring-0 !ring-offset-0 appearance-none"
+                        >
+                          <option value="Male" className="bg-card text-white">Male</option>
+                          <option value="Female" className="bg-card text-white">Female</option>
+                          <option value="Others" className="bg-card text-white">Others</option>
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none" size={16} />
+                      </div>
+                    </label>
                   </div>
 
-
-<div className="block" ref={locationRef}>
+                  <div className="block" ref={locationRef}>
                       <span className="text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2 block">
                         Your City/Area
                       </span>
-                      <div className="relative">
+                      <div className="relative cursor-pointer" onClick={() => setIsLocationModalOpen(true)}>
                         <MapPin
                           className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 z-10"
                           size={18}
                         />
-                        <Input
-                          type="text"
-                          value={formData.location}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              location: e.target.value,
-                            })
-                          }
-                          onFocus={() =>
-                            setShowSuggestions(locationSuggestions.length > 0)
-                          }
-                          placeholder="Select your location"
-                          className="w-full bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 pl-12 pr-4 text-white focus:border-primary outline-none transition-all placeholder-white/40 text-sm md:text-base !ring-0 !ring-offset-0"
-                        />
-                        {isSearchingLocation && (
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                            <Loader2 className="w-4 h-4 text-primary animate-spin" />
-                          </div>
-                        )}
-                        {showSuggestions && locationSuggestions.length > 0 && (
-                          <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-white/[0.08] rounded-[16px] overflow-hidden z-[110] shadow-[0px_4px_16px_rgba(0,0,0,0.4)] max-h-[160px] overflow-y-auto custom-scrollbar">
-                            {locationSuggestions.map((suggestion, idx) => (
-                              <Button
-                                type="button"
-                                key={idx}
-                                onClick={() => handleSelectLocation(suggestion)}
-                                className="w-full px-4 py-3 text-left hover:bg-white/5 text-white/80 hover:text-white border-b border-white/[0.08] last:border-0 transition-colors flex flex-col gap-0.5"
-                              >
-                                <span className="text-sm font-bold">
-                                  {suggestion.city ||
-                                    suggestion.display_name.split(",")[0]}
-                                </span>
-                                <span className="text-[10px] text-white/40 truncate">
-                                  {suggestion.display_name}
-                                </span>
-                              </Button>
-                            ))}
-                          </div>
-                        )}
+                        <div
+                          className={`w-full bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 pl-12 pr-4 transition-all text-sm md:text-base flex items-center h-[46px] md:h-[58px] ${formData.location ? 'text-white' : 'text-white/40'}`}
+                        >
+                          <span className="truncate">{formData.location || "Select your location"}</span>
+                        </div>
                       </div>
-                    </div>
-
-
-
-
-</div>
+                      
+                      <LocationVenuePicker 
+                        isOpen={isLocationModalOpen}
+                        onClose={() => setIsLocationModalOpen(false)}
+                        hideVenues={true}
+                        onSelect={(data) => {
+                          setFormData({
+                            ...formData,
+                            location: data.displayName,
+                            city: data.city || data.displayName.split(',')[0],
+                            state: data.state || "",
+                          });
+                          setIsLocationModalOpen(false);
+                        }}
+                      />
+                  </div>
+                </div>
               )}
 
 {step === 2 && ( <div className="animate-in slide-in-from-bottom-8 duration-300">
