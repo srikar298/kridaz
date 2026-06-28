@@ -162,6 +162,7 @@ export default function VenuesSection({
                   <VenueCard
                     t={t} 
                     onClick={() => setSelectedTurfForPopup(t)}
+                    isActive={idx === activeIndex}
                   />
                 </div>
               ))}
