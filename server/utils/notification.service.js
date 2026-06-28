@@ -48,13 +48,6 @@ export const sendWhatsAppMessage = async (
           type: "text",
           value: String(param),
         };
-        if (index === 0) {
-          componentsObj[`button_1`] = {
-            subtype: "url",
-            type: "text",
-            value: String(param),
-          };
-        }
       });
     } else if (typeof params === "object" && params !== null) {
       Object.entries(params).forEach(([key, value]) => {
@@ -125,7 +118,8 @@ export const sendSMSMessage = async (phone, otp) => {
     let formattedPhone = phone.replace(/\D/g, "");
     if (formattedPhone.length === 10) formattedPhone = "91" + formattedPhone;
 
-    const url = `https://control.msg91.com/api/v5/otp?authkey=${authKey}&mobile=${formattedPhone}&otp=${otp}`;
+    const templateId = process.env.MSG91_SMS_OTP_TEMPLATE_ID || "";
+    const url = `https://control.msg91.com/api/v5/otp?authkey=${authKey}&mobile=${formattedPhone}&otp=${otp}${templateId ? `&template_id=${templateId}` : ''}`;
 
     logger.info(
       `[SMS Service] Sending request to MSG91 at ${new Date().toISOString()} for ${formattedPhone}`
