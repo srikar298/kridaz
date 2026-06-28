@@ -277,7 +277,7 @@ const Community = ({ children, onSearchActive }) => {
             {activeFilter === "Reels" ? (
               <ReelsView
                 gateInteraction={gateInteraction}
-                onBack={() => handleSetActiveFilter("Highlights")}
+                onBack={() => navigate("/")}
               />
             ) : (
               <>

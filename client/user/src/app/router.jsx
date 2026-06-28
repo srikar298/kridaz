@@ -716,7 +716,14 @@ const router = createBrowserRouter([
           </S>
         ),
       },
-      { path: "community", element: <Navigate to="/" replace /> },
+      {
+        path: "community",
+        element: (
+          <S>
+            <Community />
+          </S>
+        ),
+      },
       {
         path: "search",
         element: (
