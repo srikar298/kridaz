@@ -540,42 +540,25 @@ const GlobalSearch = () => {
                 <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 px-4 snap-x">
                   {[1, 2, 3].map((i) => (
                     <div
-                      key={i}
-                      className="min-w-[200px] w-[200px] h-[280px] rounded-[12px] bg-white/5 animate-pulse shrink-0 border border-white/5 snap-start"
+                              className="min-w-[200px] w-[200px] h-[280px] rounded-[12px] bg-white/5 animate-pulse shrink-0 border border-white/5 snap-start"
                     />
                   ))}
                 </div>
               ) : popularGrounds.length > 0 ? (
-                <div className="relative group/scroll -mx-4 px-4">
-                  <div
-                    ref={scrollRef}
-                    className="flex items-center gap-[6px] overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 px-[calc(50%-130px)] scroll-smooth min-h-[380px]"
-                    onScroll={handleScroll}
-                  >
-                    {popularGrounds.map((ground, idx) => (
-                      <div
-                        key={ground._id}
-                        className={`shrink-0 snap-center w-[260px] h-[360px] flex justify-center items-center relative transition-all duration-300 ${idx === activeVenueIndex ? 'z-10' : 'z-0'}`}
-                      >
-                        <TurfCardMobile
-                          turf={ground}
-                          onClick={() =>
-                            navigate(`/venue/${ground._id || ground.id}`)
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Carousel Dots */}
-                  <div className="flex justify-center gap-1.5 mt-2">
-                    {popularGrounds.map((_, idx) => (
-                      <div
-                        key={idx}
-                        className={`rounded-full transition-all duration-300 ${idx === activeVenueIndex ? "w-[18px] h-1.5 bg-white" : "w-1.5 h-1.5 bg-[#434242]"}`}
-                      ></div>
-                    ))}
-                  </div>
+                <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 -mx-4 px-4">
+                  {popularGrounds.map((ground) => (
+                    <div
+                      key={ground._id}
+                      className="w-[85%] md:w-[400px] shrink-0 snap-center"
+                    >
+                      <TurfCardMobile
+                        turf={ground}
+                        onClick={() =>
+                          navigate(`/venue/${ground._id || ground.id}`)
+                        }
+                      />
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <div className="text-sm text-white/30 italic">
