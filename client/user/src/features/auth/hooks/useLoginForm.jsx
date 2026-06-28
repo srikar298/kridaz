@@ -50,6 +50,16 @@ const useLoginForm = (countryCode = "+91") => {
     resolver: zodResolver(loginSchema),
   });
 
+  const [formError, setFormError] = useState("");
+
+  const emailVal = watch("email");
+  const passVal = watch("password");
+  const otpVal = watch("otp");
+
+  useEffect(() => {
+    setFormError("");
+  }, [emailVal, passVal, otpVal, countryCode]);
+
   useEffect(() => {
     let timer;
     if (showOtpInput && timeLeft > 0) {
@@ -190,9 +200,13 @@ const useLoginForm = (countryCode = "+91") => {
 
       if (errorMessage.toLowerCase().includes("account not found")) {
         setAccountNotFound(true);
+        setFormError("Account not found. Please sign up first.");
         toast.error("Account not found. Redirecting to sign up...");
-        navigate("/signup");
+        setTimeout(() => {
+          navigate("/signup");
+        }, 3000);
       } else {
+        setFormError(errorMessage);
         toast.error(errorMessage);
       }
     } finally {
@@ -230,7 +244,9 @@ const useLoginForm = (countryCode = "+91") => {
 
       handleRoleRedirect(result.role);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Verification failed");
+      const msg = error.response?.data?.message || "Verification failed";
+      setFormError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -278,9 +294,13 @@ const useLoginForm = (countryCode = "+91") => {
         errorMessage.toLowerCase().includes("account not found") ||
         errorMessage.toLowerCase().includes("sign up first")
       ) {
+        setFormError("Account not found. Please sign up first.");
         toast.error("Account not found. Redirecting to sign up...");
-        navigate("/signup");
+        setTimeout(() => {
+          navigate("/signup");
+        }, 3000);
       } else {
+        setFormError(errorMessage);
         toast.error(errorMessage);
       }
     } finally {
@@ -289,6 +309,7 @@ const useLoginForm = (countryCode = "+91") => {
   };
 
   const handleGoogleError = () => {
+    setFormError("Google authentication failed");
     toast.error("Google authentication failed");
   };
 
@@ -308,6 +329,7 @@ const useLoginForm = (countryCode = "+91") => {
     handleSendOtp: handleLoginStep1,
     isPhoneAuth,
     watch,
+    formError,
   };
 };
 

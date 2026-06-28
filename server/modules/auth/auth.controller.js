@@ -435,7 +435,6 @@ export const verifyOtp = asyncHandler(async (req, res) => {
 
   // Generate Registration Token valid for 30 minutes.
   // jti makes the token single-use: register() atomically claims it via
-  // Redis SET NX. Replays return REGISTRATION_TOKEN_USED.
   const registrationToken = jwt.sign(
     {
       verifiedEmail: email || otpRecord?.email,
@@ -445,7 +444,7 @@ export const verifyOtp = asyncHandler(async (req, res) => {
     },
     getRegistrationSecret(),
     {
-      expiresIn: "30m",
+      expiresIn: "1m",
     }
   );
 
@@ -576,6 +575,80 @@ export const requestUpgrade = asyncHandler(async (req, res) => {
     message: "Upgrade request submitted successfully",
   });
 });
+export const createAccount = asyncHandler(async (req, res) => {
+  const { registrationToken, password } = req.body;
+  if (!registrationToken || !password) {
+    return res.status(400).json({ success: false, message: "Missing token or password" });
+  }
+
+  let decodedToken;
+  try {
+    decodedToken = await claimRegistrationToken(registrationToken);
+  } catch (err) {
+    return res.status(err.status || 400).json({
+      success: false,
+      code: err.code,
+      message: err.message,
+    });
+  }
+
+  const { verifiedPhone, verifiedEmail } = decodedToken;
+
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      OR: [
+        ...(verifiedPhone ? [{ phone: verifiedPhone }] : []),
+        ...(verifiedEmail ? [{ email: verifiedEmail }] : []),
+      ],
+    },
+  });
+
+  if (existingUser) {
+    return res.status(400).json({ success: false, message: "Account already exists" });
+  }
+
+  const hashedPassword = await argon2.hash(password);
+  const finalUsername = await generateUniqueUsername("player");
+
+  const result = await prisma.$transaction(async (tx) => {
+    const user = await tx.user.create({
+      data: {
+        name: "Player",
+        username: finalUsername,
+        password: hashedPassword,
+        phone: verifiedPhone || null,
+        email: verifiedEmail || `${finalUsername}@placeholder.com`,
+        role: "USER",
+        isOnboarded: false,
+        isVerified: true,
+        isEmailVerified: !!verifiedEmail,
+        walletBalance: 50,
+        wallet: {
+          create: {
+            balance: 50,
+            reservedBalance: 0,
+          },
+        },
+      },
+    });
+    if (verifiedPhone) {
+      await migrateCustomInvitesForUser(tx, user.id, verifiedPhone);
+    }
+    return user;
+  });
+
+  const token = await generateUserToken(result.id, result.role);
+  const tokens = await issueTokens(res, result.id, token);
+
+  return res.status(201).json({
+    success: true,
+    message: "Account created successfully",
+    token,
+    ...tokens,
+    user: sanitizeUser(result),
+  });
+});
+
 export const registerUser = asyncHandler(async (req, res) => {
   const {
     name,

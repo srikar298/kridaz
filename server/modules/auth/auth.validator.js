@@ -14,6 +14,13 @@ export const sendOtpSchema = z.object({
     }),
 });
 
+export const createAccountSchema = z.object({
+  body: z.object({
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    registrationToken: z.string({ required_error: "Registration token is required" }),
+  }),
+});
+
 export const userRegisterSchema = z.object({
   body: z
     .object({

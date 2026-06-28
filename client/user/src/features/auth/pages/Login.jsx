@@ -1,6 +1,7 @@
+/* eslint-disable react/forbid-elements, react/no-unescaped-entities, no-unused-vars */
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import toast from "@utils/toast";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@redux/slices/authSlice";
 import useLoginForm from "../hooks/useLoginForm";
@@ -8,6 +9,7 @@ import GoogleAuthButton from "../components/GoogleAuthButton";
 import OnboardingModal from "@components/modals/OnboardingModal";
 import { Capacitor } from "@capacitor/core";
 import { ArrowRight, X, User, Lock, Eye, EyeOff } from "lucide-react";
+import InlineError from "../../../shared/components/ui/InlineError";
 
 import { useAuthModal } from "../../../context/AuthModalContext";
 import { fetchCountryCodes } from "@utils/locationService";
@@ -51,6 +53,7 @@ const Login = ({ isModal = false }) => {
     handleSendOtp,
     isPhoneAuth,
     watch,
+    formError,
   } = useLoginForm(countryCode);
 
   const emailValue = watch("email");
@@ -191,6 +194,9 @@ const Login = ({ isModal = false }) => {
                 Resend Code
               </button>
             </div>
+            
+            <InlineError message={formError} className="mb-4 text-center justify-center" />
+
             <button
               type="submit"
               disabled={loading}
@@ -288,6 +294,8 @@ const Login = ({ isModal = false }) => {
                 Forgot Password?
               </button>
             </div>
+
+            <InlineError message={formError} className="mb-4" />
 
             {/* Continue Button */}
             <button

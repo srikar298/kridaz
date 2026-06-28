@@ -1,6 +1,7 @@
 import express from "express";
 import {
   registerUser,
+  createAccount,
   login,
   sendOtp,
   verifyOtp,
@@ -30,6 +31,7 @@ import {
 } from "../auth.controller.js";
 import {
   userRegisterSchema,
+  createAccountSchema,
   userLoginSchema,
   sendOtpSchema,
   loginStep1Schema,
@@ -65,6 +67,20 @@ router.post("/verify-otp", otpLimiter, verifyOtp);
 router.post("/send-email-verification", authLimiter, sendEmailVerificationLink);
 router.post("/verify-email", verifyEmailToken);
 router.post("/verify-email-google", authLimiter, verifyEmailGoogle);
+
+/**
+ * @swagger
+ * /auth/create-account:
+ *   post:
+ *     summary: Create account after OTP verification
+ *     tags: [Auth]
+ */
+router.post(
+  "/create-account",
+  authLimiter,
+  validate(createAccountSchema),
+  createAccount
+);
 
 /**
  * @swagger

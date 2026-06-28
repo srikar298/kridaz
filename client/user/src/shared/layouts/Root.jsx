@@ -169,21 +169,6 @@ const Root = () => {
   if (showSplitView) {
     return (
       <div className="flex h-screen w-screen overflow-hidden bg-[#050505] text-white">
-        {isAuthModalOpen && (
-          <Suspense fallback={null}>
-            <AuthModal />
-          </Suspense>
-        )}
-        {showOnboarding && (
-          <Suspense fallback={null}>
-            <OnboardingModal
-              isOpen={showOnboarding}
-              onClose={() => setShowOnboarding(false)}
-              onComplete={() => setShowOnboarding(false)}
-              initialData={{ authMethod: "google", user: user || {} }}
-            />
-          </Suspense>
-        )}
         <ScrollToTop />
         <Suspense fallback={null}>
           <BackgroundUploadManager />

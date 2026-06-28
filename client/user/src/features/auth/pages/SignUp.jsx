@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import GoogleAuthButton from "../components/GoogleAuthButton";
 import OnboardingModal from "@components/modals/OnboardingModal";
@@ -9,8 +9,11 @@ import {
   Zap,
   User,
   ArrowRight,
+  Eye,
+  EyeOff
 } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@utils/toast";
+import InlineError from "../../../shared/components/ui/InlineError";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { useDispatch, useSelector } from "react-redux";
 import { searchLocations, fetchCountryCodes } from "@utils/locationService";
@@ -24,6 +27,89 @@ import { Button, Input, Select } from "@kridaz/ui";
 const SUBHEADING_STYLE = {
   fontFamily: "'Inter 28pt Light', sans-serif",
   fontWeight: 300,
+};
+
+const SearchableCountrySelect = ({ value, onChange, options }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filtered = options.filter(
+    (c) =>
+      c.dial_code.toLowerCase().includes(search.toLowerCase()) ||
+      (c.name && c.name.toLowerCase().includes(search.toLowerCase())) ||
+      (c.code && c.code.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  return (
+    <div className="relative shrink-0" ref={dropdownRef}>
+      <div
+        className="bg-card border border-white/5 hover:border-[#D2F40E]/50 rounded-[8px] h-11 px-2 text-white text-sm flex items-center justify-center cursor-pointer w-[80px] transition-all"
+        onClick={() => {
+          setIsOpen(!isOpen);
+          if (!isOpen) setSearch(""); // Reset search on open
+        }}
+      >
+        {value}
+      </div>
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-2 w-[220px] bg-[#111111] border border-white/10 rounded-[8px] shadow-[0_4px_20px_rgba(0,0,0,0.5)] z-[9999] overflow-hidden flex flex-col">
+          <div className="p-2 border-b border-white/10 shrink-0">
+            <input
+              autoFocus
+              type="text"
+              placeholder="Search code or country..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-[4px] px-3 py-1.5 text-[13px] text-white placeholder:text-white/30 outline-none focus:border-[#D2F40E]/50 transition-all"
+            />
+          </div>
+          <div className="max-h-[220px] overflow-y-auto custom-scrollbar">
+            <div
+              className={`px-3 py-2 text-[13px] cursor-pointer flex justify-between items-center transition-colors ${value === "+91" ? "bg-[#D2F40E]/10 text-[#D2F40E]" : "text-white/80 hover:bg-white/10 hover:text-white"}`}
+              onClick={() => {
+                onChange("+91");
+                setIsOpen(false);
+              }}
+            >
+              <span className="font-medium">+91</span>
+              <span className="text-[11px] opacity-50 truncate ml-2">India</span>
+            </div>
+            {filtered.map((c, i) => (
+              <div
+                key={i}
+                className={`px-3 py-2 text-[13px] cursor-pointer flex justify-between items-center transition-colors ${value === c.dial_code ? "bg-[#D2F40E]/10 text-[#D2F40E]" : "text-white/80 hover:bg-white/10 hover:text-white"}`}
+                onClick={() => {
+                  onChange(c.dial_code);
+                  setIsOpen(false);
+                }}
+              >
+                <span className="font-medium shrink-0">{c.dial_code}</span>
+                <span className="text-[11px] opacity-50 truncate ml-2 text-right">
+                  {c.name || c.code}
+                </span>
+              </div>
+            ))}
+            {filtered.length === 0 && (
+              <div className="px-3 py-4 text-center text-[12px] text-white/40">
+                No results found
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 const SignUp = ({ isModal = false }) => {
@@ -51,6 +137,11 @@ const SignUp = ({ isModal = false }) => {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [registrationToken, setRegistrationToken] = useState("");
+  const [formError, setFormError] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -86,6 +177,10 @@ const SignUp = ({ isModal = false }) => {
   }, [step, timeLeft]);
 
   useEffect(() => {
+    setFormError("");
+  }, [step, identifier, otp, password, confirmPassword, countryCode]);
+
+  useEffect(() => {
     setMounted(true);
     const inviteToken =
       searchParams.get("inviteToken") || searchParams.get("invite");
@@ -118,14 +213,19 @@ const SignUp = ({ isModal = false }) => {
 
   const handleSendOtp = async (e, forceSms = false) => {
     if (e && e.preventDefault) e.preventDefault();
-    if (!identifier) return toast.error("Phone number required");
+    if (!identifier) {
+      setFormError("Phone number required");
+      return;
+    }
 
     const isPhone = /^\d{10}$/.test(identifier);
 
     if (!isPhone) {
-      return toast.error("Please enter a valid 10-digit phone number");
+      setFormError("Please enter a valid 10-digit phone number");
+      return;
     }
 
+    setFormError(""); // Clear any previous errors
     setAuthMode("phone");
 
     // Remove the '+' sign before sending to the backend
@@ -133,7 +233,7 @@ const SignUp = ({ isModal = false }) => {
     const formattedPhone = cleanCountryCode + identifier;
 
     setPhone(formattedPhone);
-    setLoading(true);
+    
     try {
       const fullPhone = `+${formattedPhone}`;
 
@@ -157,8 +257,6 @@ const SignUp = ({ isModal = false }) => {
           return;
         }
         toast.success(res.data.message || "OTP sent via SMS");
-        setStep(2);
-        setTimeLeft(60);
       } else {
         const payload = { phone: formattedPhone, type: "signup" };
         const res = await axiosInstance.post(
@@ -190,32 +288,40 @@ const SignUp = ({ isModal = false }) => {
             { position: "top-center", duration: 8000 }
           );
         }
-        setStep(2);
-        setTimeLeft(60);
       }
+      
+      // Transition to OTP screen on success
+      setStep(2);
+      setTimeLeft(60);
     } catch (err) {
       console.error(err);
       const errorMessage =
         err.response?.data?.message || err.message || "Failed to send OTP";
-      if (errorMessage.toLowerCase().includes("already registered")) {
+      if (errorMessage.toLowerCase().includes("already registered") || errorMessage.toLowerCase().includes("already exists")) {
+        setFormError("Account already exists with this phone number. Redirecting to login...");
         toast.error("Account already exists. Redirecting to login...");
-        if (isModal) {
-          toggleView();
-        } else {
-          navigate("/login");
-        }
+        setTimeout(() => {
+          if (isModal) {
+            toggleView();
+          } else {
+            navigate("/login");
+          }
+        }, 3000);
       } else {
+        setFormError(errorMessage);
         toast.error(errorMessage);
+        // Fallback to step 1 if it fails entirely so they can try again
+        setStep(1);
       }
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    if (!otp || otp.length < 6)
+    if (!otp || otp.length < 6) {
+      setFormError("Valid 6-digit OTP required");
       return toast.error("Valid 6-digit OTP required");
+    }
 
     setLoading(true);
     try {
@@ -227,37 +333,59 @@ const SignUp = ({ isModal = false }) => {
 
       if (res.data.success) {
         toast.success("OTP verified successfully!");
-        setOnboardingData({
-          authMethod: authMode,
-          email: authMode === "email" ? email : "",
-          phone: authMode === "phone" ? phone : "",
-          otp: otp,
-          password: "",
-          registrationToken: res.data.registrationToken,
-        });
-        setShowOnboarding(true);
+        setRegistrationToken(res.data.registrationToken);
+        setStep(3);
       }
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || err.message || "Invalid OTP");
+      const msg = err.response?.data?.message || err.message || "Invalid OTP";
+      setFormError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
   };
 
-  const handlePasswordSubmit = (e) => {
+  const handleSetPassword = async (e) => {
     e.preventDefault();
-    if (password.length < 6)
-      return toast.error("Password must be at least 6 characters");
+    if (!password || password.length < 8) {
+      setFormError("Password must be at least 8 characters");
+      return toast.error("Password must be at least 8 characters");
+    }
 
-    setOnboardingData({
-      authMethod: authMode,
-      email: authMode === "email" ? email : "",
-      phone: authMode === "phone" ? phone : "",
-      otp,
-      password,
-    });
-    setShowOnboarding(true);
+    if (password !== confirmPassword) {
+      setFormError("Passwords do not match");
+      return toast.error("Passwords do not match");
+    }
+
+    setLoading(true);
+    try {
+      const res = await axiosInstance.post("/api/user/auth/create-account", {
+        registrationToken,
+        password,
+      });
+
+      if (res.data.success) {
+        toast.success("Account created successfully!");
+        dispatch(
+          login({
+            token: res.data.token,
+            role: res.data.user.role,
+            user: res.data.user,
+          })
+        );
+        if (isModal) {
+          closeAuthModal();
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      const msg = err.response?.data?.message || err.message || "Failed to create account";
+      setFormError(msg);
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleSuccess = async (googleResponse) => {
@@ -391,24 +519,11 @@ const SignUp = ({ isModal = false }) => {
                       Phone Number
                     </label>
                     <div className="relative flex gap-3">
-                      <Select
+                      <SearchableCountrySelect
                         value={countryCode}
-                        onChange={(e) => setCountryCode(e.target.value)}
-                        className="bg-card border border-white/5 focus:border-[#D2F40E]/50 focus:shadow-[0_0_10px_rgba(210,244,14,0.1)] rounded-[8px] h-11 px-2 text-white text-sm outline-none transition-all cursor-pointer !w-[80px] shrink-0 appearance-none text-center"
-                      >
-                        <option value="+91" className="text-black">
-                          +91
-                        </option>
-                        {countryCodeOptions.map((c, i) => (
-                          <option
-                            key={i}
-                            value={c.dial_code}
-                            className="text-black"
-                          >
-                            {c.dial_code}
-                          </option>
-                        ))}
-                      </Select>
+                        onChange={(val) => setCountryCode(val)}
+                        options={countryCodeOptions}
+                      />
                       <div className="relative flex-1">
                         <Input
                           type="tel"
@@ -425,7 +540,7 @@ const SignUp = ({ isModal = false }) => {
                     </div>
                   </div>
 
-                  {/* Features section removed as requested */}
+                  <InlineError message={formError} className="mb-4" />
 
                   {/* Continue Button & Login Link */}
                   <div className="mt-auto pb-4 flex flex-col gap-5">
@@ -447,6 +562,7 @@ const SignUp = ({ isModal = false }) => {
                     <div className="text-center">
                       <p className="text-[14px] text-white/60">
                         Already have an account?{" "}
+                        {/* eslint-disable-next-line react/forbid-elements */}
                         <button
                           type="button"
                           onClick={() => {
@@ -541,6 +657,8 @@ const SignUp = ({ isModal = false }) => {
                     </div>
                   </div>
 
+                  <InlineError message={formError} className="mb-4 text-center justify-center" />
+
                   <Button
                     type="button"
                     onClick={handleVerifyOtp}
@@ -552,6 +670,77 @@ const SignUp = ({ isModal = false }) => {
                       : loading
                         ? "Verifying..."
                         : "Verify & Sign Up"}
+                  </Button>
+                </div>
+              )}
+
+              {step === 3 && (
+                <div className="flex-1 flex flex-col animate-slide-left">
+                  <div className="flex-1">
+                    <div className="flex flex-col items-start justify-center text-left mb-6">
+                      <div className="space-y-1">
+                        <p className="text-[12px] text-white/60">
+                          Create a password for your account
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 mb-6">
+                        <div className="space-y-2">
+                          <label className="text-[11px] font-semibold tracking-widest text-[#C8F53B] uppercase block">
+                            Password
+                          </label>
+                          <div className="relative">
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="At least 8 characters"
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              className="w-full bg-card border border-white/5 focus:border-[#D2F40E]/50 focus:shadow-[0_0_10px_rgba(210,244,14,0.1)] rounded-[8px] h-11 px-4 pr-10 text-white text-sm placeholder:text-[12px] placeholder:text-white/30 outline-none transition-all"
+                            />
+                            <div
+                              role="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors cursor-pointer"
+                            >
+                              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-[11px] font-semibold tracking-widest text-[#C8F53B] uppercase block">
+                            Confirm Password
+                          </label>
+                          <div className="relative">
+                            <Input
+                              type={showConfirmPassword ? "text" : "password"}
+                              placeholder="Re-enter your password"
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              className="w-full bg-card border border-white/5 focus:border-[#D2F40E]/50 focus:shadow-[0_0_10px_rgba(210,244,14,0.1)] rounded-[8px] h-11 px-4 pr-10 text-white text-sm placeholder:text-[12px] placeholder:text-white/30 outline-none transition-all"
+                            />
+                            <div
+                              role="button"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors cursor-pointer"
+                            >
+                              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+
+                  <InlineError message={formError} className="mb-4" />
+
+                  <Button
+                    type="button"
+                    onClick={handleSetPassword}
+                    disabled={loading}
+                    className="w-full bg-[linear-gradient(90deg,#D2F40E_0%,#B8ED30_50%,#A9E956_100%)] text-black h-11 rounded-[8px] font-bold text-[15px] flex items-center justify-center transition-all active:scale-[0.98] disabled:opacity-50 shadow-[0_0_20px_rgba(210,244,14,0.25)] hover:shadow-[0_0_25px_rgba(210,244,14,0.4)] mt-auto mb-4"
+                  >
+                    {loading ? "Creating Account..." : "Create Account"}
                   </Button>
                 </div>
               )}

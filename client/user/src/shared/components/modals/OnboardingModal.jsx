@@ -534,11 +534,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
         }
       }
     }
-    if (!formData.password) return toast.error("Please create a password");
-    if (formData.password.length < 6)
-      return toast.error("Password must be at least 6 characters");
-    if (needsPhoneVerification && !isPhoneVerified)
-      return toast.error("Please verify your phone number via OTP");
+
 
     let currentCity = formData.city;
     let currentState = formData.state;
@@ -738,24 +734,9 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                   <span className="text-primary">details</span> please?
                 </h2>
               </div>
-            ) : step === 2 ? (
-              <div className="text-center mb-4 md:mb-6 shrink-0">
-                <h2 className="text-[24px] md:text-[28px] font-bold text-white tracking-tight leading-[1.1] font-['Inter'] uppercase">
-                  What is
-                  <br />
-                  your <span className="text-primary">gender</span>?
-                </h2>
-                <p className="text-white/60 text-xs md:text-sm mt-2 md:mt-3 leading-relaxed">
-                  This help us find you more
-                  <br />
-                  relevant content
-                </p>
-              </div>
             ) : (
               <div className="text-center mb-4 md:mb-6 shrink-0">
-                <h2 className="text-[24px] md:text-[28px] font-bold text-white tracking-tight leading-[1.1] font-['Inter'] uppercase">
-                  {step === 3 && (
-                    <>
+                <h2 className="text-[24px] md:text-[28px] font-bold text-white tracking-tight leading-[1.1] font-['Inter'] uppercase"> {step === 2 && ( <>
                       What are you
                       <br />
                       <span className="text-primary">interested</span> in?
@@ -767,9 +748,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                     </>
                   )}
                 </h2>
-                <p className="text-white/60 text-xs md:text-sm mt-2 md:mt-3 leading-relaxed">
-                  {step === 3 && (
-                    <>
+                <p className="text-white/60 text-xs md:text-sm mt-2 md:mt-3 leading-relaxed"> {step === 2 && ( <>
                       Select sports to find
                       <br />
                       relevant content
@@ -884,67 +863,77 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                       />
                     </div>
                   </label>
-                </div>
+                
+                  <div className="block mt-3">
+                    <span className="flex items-center gap-1.5 text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2">
+                      <User size={14} className="text-primary" /> GENDER
+                    </span>
+                    <div className="flex bg-card border border-white/[0.08] p-1 rounded-[16px]">
+                      <button type="button" onClick={() => setFormData({ ...formData, gender: "Male" })} className={`flex-1 py-2 text-xs md:text-sm font-semibold rounded-[12px] transition-all ${formData.gender === "Male" ? "bg-primary text-black" : "text-white/60 hover:text-white"}`}>Male</button>
+                      <button type="button" onClick={() => setFormData({ ...formData, gender: "Female" })} className={`flex-1 py-2 text-xs md:text-sm font-semibold rounded-[12px] transition-all ${formData.gender === "Female" ? "bg-primary text-black" : "text-white/60 hover:text-white"}`}>Female</button>
+                    </div>
+                  </div>
+
+
+<div className="block" ref={locationRef}>
+                      <span className="text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2 block">
+                        Your City/Area
+                      </span>
+                      <div className="relative">
+                        <MapPin
+                          className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 z-10"
+                          size={18}
+                        />
+                        <Input
+                          type="text"
+                          value={formData.location}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              location: e.target.value,
+                            })
+                          }
+                          onFocus={() =>
+                            setShowSuggestions(locationSuggestions.length > 0)
+                          }
+                          placeholder="Select your location"
+                          className="w-full bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 pl-12 pr-4 text-white focus:border-primary outline-none transition-all placeholder-white/40 text-sm md:text-base !ring-0 !ring-offset-0"
+                        />
+                        {isSearchingLocation && (
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                            <Loader2 className="w-4 h-4 text-primary animate-spin" />
+                          </div>
+                        )}
+                        {showSuggestions && locationSuggestions.length > 0 && (
+                          <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-white/[0.08] rounded-[16px] overflow-hidden z-[110] shadow-[0px_4px_16px_rgba(0,0,0,0.4)] max-h-[160px] overflow-y-auto custom-scrollbar">
+                            {locationSuggestions.map((suggestion, idx) => (
+                              <Button
+                                type="button"
+                                key={idx}
+                                onClick={() => handleSelectLocation(suggestion)}
+                                className="w-full px-4 py-3 text-left hover:bg-white/5 text-white/80 hover:text-white border-b border-white/[0.08] last:border-0 transition-colors flex flex-col gap-0.5"
+                              >
+                                <span className="text-sm font-bold">
+                                  {suggestion.city ||
+                                    suggestion.display_name.split(",")[0]}
+                                </span>
+                                <span className="text-[10px] text-white/40 truncate">
+                                  {suggestion.display_name}
+                                </span>
+                              </Button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+
+
+
+</div>
               )}
 
-              {step === 2 && (
-                <div className="flex justify-center gap-3 md:gap-5 animate-in slide-in-from-bottom-8 duration-300 mt-2 md:mt-6">
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, gender: "Male" })}
-                    className={`w-[130px] h-[170px] md:w-[158px] md:h-[228px] shrink-0 rounded-[16px] border transition-all duration-300 relative overflow-hidden flex flex-col pt-3 md:pt-5 ${
-                      formData.gender === "Male"
-                        ? "border-white bg-card"
-                        : "border-white/[0.08] bg-card"
-                    }`}
-                  >
-                    <span className="text-white font-medium text-[13px] md:text-[15px] relative z-10 mb-2">
-                      Male
-                    </span>
-                    <div className="flex-1 w-full relative">
-                      <img
-                        src={
-                          formData.gender === "Male"
-                            ? "/gender/male_selected.png"
-                            : "/gender/male_default.png"
-                        }
-                        alt="Male"
-                        className="absolute inset-0 w-full h-full object-cover object-bottom"
-                      />
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFormData({ ...formData, gender: "Female" })
-                    }
-                    className={`w-[130px] h-[170px] md:w-[158px] md:h-[228px] shrink-0 rounded-[16px] border transition-all duration-300 relative overflow-hidden flex flex-col pt-3 md:pt-5 ${
-                      formData.gender === "Female"
-                        ? "border-white bg-card"
-                        : "border-white/[0.08] bg-card"
-                    }`}
-                  >
-                    <span className="text-white font-medium text-[15px] relative z-10 mb-2">
-                      Female
-                    </span>
-                    <div className="flex-1 w-full relative">
-                      <img
-                        src={
-                          formData.gender === "Female"
-                            ? "/gender/female_selected.png"
-                            : "/gender/female_default.png"
-                        }
-                        alt="Female"
-                        className="absolute inset-0 w-full h-full object-cover object-bottom"
-                      />
-                    </div>
-                  </button>
-                </div>
-              )}
-
-              {step === 3 && (
-                <div className="animate-in slide-in-from-bottom-8 duration-300">
+{step === 2 && ( <div className="animate-in slide-in-from-bottom-8 duration-300">
                   <div className="flex flex-col">
                     <span className="text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-3 block shrink-0">
                       Pick Your Sports
@@ -1033,57 +1022,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                   <div className="space-y-3 md:space-y-5">
 
 
-                    <div className="block" ref={locationRef}>
-                      <span className="text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1.5 md:mb-2 block">
-                        Your City/Area
-                      </span>
-                      <div className="relative">
-                        <MapPin
-                          className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 z-10"
-                          size={18}
-                        />
-                        <Input
-                          type="text"
-                          value={formData.location}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              location: e.target.value,
-                            })
-                          }
-                          onFocus={() =>
-                            setShowSuggestions(locationSuggestions.length > 0)
-                          }
-                          placeholder="Select your location"
-                          className="w-full bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 pl-12 pr-4 text-white focus:border-primary outline-none transition-all placeholder-white/40 text-sm md:text-base !ring-0 !ring-offset-0"
-                        />
-                        {isSearchingLocation && (
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                            <Loader2 className="w-4 h-4 text-primary animate-spin" />
-                          </div>
-                        )}
-                        {showSuggestions && locationSuggestions.length > 0 && (
-                          <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-white/[0.08] rounded-[16px] overflow-hidden z-[110] shadow-[0px_4px_16px_rgba(0,0,0,0.4)] max-h-[160px] overflow-y-auto custom-scrollbar">
-                            {locationSuggestions.map((suggestion, idx) => (
-                              <Button
-                                type="button"
-                                key={idx}
-                                onClick={() => handleSelectLocation(suggestion)}
-                                className="w-full px-4 py-3 text-left hover:bg-white/5 text-white/80 hover:text-white border-b border-white/[0.08] last:border-0 transition-colors flex flex-col gap-0.5"
-                              >
-                                <span className="text-sm font-bold">
-                                  {suggestion.city ||
-                                    suggestion.display_name.split(",")[0]}
-                                </span>
-                                <span className="text-[10px] text-white/40 truncate">
-                                  {suggestion.display_name}
-                                </span>
-                              </Button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    
 
                     {!isGoogle && initialData?.authMethod === "phone" && (
                       <label className="block">
@@ -1126,29 +1065,35 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                           Phone Number
                         </span>
                         <div className="relative flex gap-2">
-                          <select
-                            value={formData.countryCode}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                countryCode: e.target.value,
-                              })
-                            }
-                            disabled={isPhoneVerified}
-                            className="bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 px-3 text-white focus:border-primary outline-none transition-all w-[90px] md:w-[100px] text-xs md:text-sm appearance-none cursor-pointer !ring-0 !ring-offset-0"
-                          >
-                            <option value="+91">IN (+91)</option>
-                            {countryCodeOptions.map((c, i) => (
-                              <option key={i} value={c.dial_code}>
-                                {c.code} ({c.dial_code})
-                              </option>
-                            ))}
-                          </select>
+                          <div className="relative">
+                            <input
+                              list="countryCodes"
+                              value={formData.countryCode}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  countryCode: e.target.value,
+                                })
+                              }
+                              disabled={isPhoneVerified}
+                              className="bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 px-3 text-white focus:border-primary outline-none transition-all w-[90px] md:w-[100px] text-xs md:text-sm !ring-0 !ring-offset-0"
+                              placeholder="+91"
+                            />
+                            <datalist id="countryCodes">
+                              <option value="+91">IN (+91)</option>
+                              {countryCodeOptions.map((c, i) => (
+                                <option key={i} value={c.dial_code}>
+                                  {c.code} ({c.dial_code})
+                                </option>
+                              ))}
+                            </datalist>
+                          </div>
                           <div className="relative flex-1">
                             <Input
                               type="tel"
                               maxLength={10}
                               value={formData.phone}
+                              className={`w-full bg-card border ${formData.phone && formData.phone.length > 0 && formData.phone.length < 10 ? 'border-red-500 focus:border-red-500' : 'border-white/[0.08] focus:border-primary'} rounded-[16px] py-2.5 md:py-4 px-4 text-white outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed text-sm md:text-base !ring-0 !ring-offset-0`}
                               disabled={isPhoneVerified}
                               onChange={(e) => {
                                 setFormData({
@@ -1160,8 +1105,12 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                                   setIsPhoneVerified(false);
                                 }
                               }}
-                              className="w-full bg-card border border-white/[0.08] rounded-[16px] py-2.5 md:py-4 px-4 text-white focus:border-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed text-sm md:text-base !ring-0 !ring-offset-0"
                             />
+                            {formData.phone && formData.phone.length > 0 && formData.phone.length < 10 && (
+                              <span className="text-red-500 text-[10px] mt-1 block">
+                                Phone number must be 10 digits
+                              </span>
+                            )}
                           </div>
 
                           {needsPhoneVerification && isPhoneVerified && (
@@ -1270,7 +1219,7 @@ const OnboardingModal = ({ isOpen, onClose, initialData, onComplete }) => {
                   </Button>
                 )}
 
-                {step < 4 ? (
+                {step < 2 ? (
                   <Button
                     onClick={handleNext}
                     className="flex-1 bg-primary shadow-[0px_8px_24px_rgba(179,220,38,0.15)] text-background h-full rounded-[16px] font-bold text-[14px] md:text-[18px] flex items-center justify-center transition-all disabled:opacity-40"

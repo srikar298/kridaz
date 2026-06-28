@@ -148,14 +148,6 @@ const Navbar = () => {
   const [isPlusMenuOpen, setIsPlusMenuOpen] = useState(false);
   const [plusMenuSearch, setPlusMenuSearch] = useState("");
 
-  useEffect(() => {
-    if (!isLoggedIn) {
-      const timer = setTimeout(() => {
-        navigate("/login");
-      }, 7000);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoggedIn, navigate]);
 
   // Restrict body scroll when menus are open
   useEffect(() => {
