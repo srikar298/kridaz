@@ -23,7 +23,7 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
   const userLocation = useSelector((state) => state.ui.userLocation);
   const currentUserId = user?._id || user?.id;
 
-  const { data: storiesData } = useGetStoriesFeedQuery(
+  const { data: storiesData, isLoading: storiesLoading } = useGetStoriesFeedQuery(
     userLocation ? { lat: userLocation.lat, lng: userLocation.lng } : undefined,
     { skip: !isLoggedIn }
   );
@@ -199,56 +199,67 @@ const StoriesSection = ({ user, isLoggedIn, isAdmin, gateInteraction }) => {
         </div>
 
         {/* Render Other Stories */}
-        {otherStories.map((group, idx) => (
-          <div
-            key={group._id}
-            onClick={() => setSelectedStoryGroup(group)}
-            className="flex flex-col items-center gap-2.5 shrink-0 cursor-pointer group"
-          >
+        {storiesLoading ? (
+          <>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={`skel-${i}`} className="flex flex-col items-center gap-2.5 shrink-0">
+                <div className="w-[72px] h-[72px] rounded-full bg-[#161616] animate-pulse border border-white/5 shrink-0" />
+                <div className="w-12 h-2.5 bg-[#161616] animate-pulse rounded-full" />
+              </div>
+            ))}
+          </>
+        ) : (
+          otherStories.map((group, idx) => (
             <div
-              className="w-[72px] h-[72px] rounded-full relative shrink-0"
-              style={{
-                padding: "1.5px",
-                background: hasSeenGroup(group)
-                  ? "rgba(255, 255, 255, 0.2)"
-                  : "linear-gradient(149.28deg, #55DEE8 13.25%, #BFF367 83.54%)"
-              }}
+              key={group._id}
+              onClick={() => setSelectedStoryGroup(group)}
+              className="flex flex-col items-center gap-2.5 shrink-0 cursor-pointer group"
             >
-              <div className="w-full h-full rounded-full bg-background p-[2px]">
-                <div className="w-full h-full rounded-full overflow-hidden bg-card">
-                  {getStoryThumb(group.stories[0]) ? (
-                    <img
-                      src={getStoryThumb(group.stories[0])}
-                      alt=""
-                      className={`w-full h-full object-cover ${
-                        group.stories.some(
-                          (s) =>
-                            s.status === "pending" || s.status === "processing"
-                        )
-                          ? "blur-sm opacity-50"
-                          : ""
-                      }`}
-                    />
-                  ) : group.stories[0].mediaType === "video" ? (
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-card to-card">
-                      <Video size={24} className="text-primary mb-1" />
-                      <span className="text-[7px] font-bold text-white/40 uppercase tracking-wider">
-                        Video
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[7px] p-2 text-center text-primary font-bold bg-card">
-                      {group.stories[0].content?.slice(0, 15)}
-                    </div>
-                  )}
+              <div
+                className="w-[72px] h-[72px] rounded-full relative shrink-0"
+                style={{
+                  padding: "1.5px",
+                  background: hasSeenGroup(group)
+                    ? "rgba(255, 255, 255, 0.2)"
+                    : "linear-gradient(149.28deg, #55DEE8 13.25%, #BFF367 83.54%)"
+                }}
+              >
+                <div className="w-full h-full rounded-full bg-background p-[2px]">
+                  <div className="w-full h-full rounded-full overflow-hidden bg-card">
+                    {getStoryThumb(group.stories[0]) ? (
+                      <img
+                        src={getStoryThumb(group.stories[0])}
+                        alt=""
+                        className={`w-full h-full object-cover ${
+                          group.stories.some(
+                            (s) =>
+                              s.status === "pending" || s.status === "processing"
+                          )
+                            ? "blur-sm opacity-50"
+                            : ""
+                        }`}
+                      />
+                    ) : group.stories[0].mediaType === "video" ? (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-card to-card">
+                        <Video size={24} className="text-primary mb-1" />
+                        <span className="text-[7px] font-bold text-white/40 uppercase tracking-wider">
+                          Video
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[7px] p-2 text-center text-primary font-bold bg-card">
+                        {group.stories[0].content?.slice(0, 15)}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
+              <span className="text-[10px] font-bold text-white/80 group-hover:text-primary transition-colors truncate max-w-[68px]">
+                {group.user?.name?.split(" ")[0] || "Player"}
+              </span>
             </div>
-            <span className="text-[10px] font-bold text-white/80 group-hover:text-primary transition-colors truncate max-w-[68px]">
-              {group.user?.name?.split(" ")[0] || "Player"}
-            </span>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {selectedStoryGroup && (

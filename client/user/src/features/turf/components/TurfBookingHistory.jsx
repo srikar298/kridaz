@@ -28,7 +28,7 @@ import WriteReview from "@components/reviews/WriteReview";
 import ReportIssueFlowModal from "@components/dispute/ReportIssueFlowModal";
 import useSimilarRecommendations from "@hooks/useSimilarRecommendations";
 import useRecommendations from "@hooks/useRecommendations";
-import { TurfCard } from "@features/turf";
+import TurfCardMobile from "./TurfCardMobile";
 import axiosInstance from "@hooks/useAxiosInstance";
 import {
   useGetUserOnDemandBookingsQuery,
@@ -449,7 +449,7 @@ const TurfBookingHistory = () => {
                     ) : (
                       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
                         {similarTurfs.map((t) => (
-                          <TurfCard
+                          <TurfCardMobile
                             key={t.id || t._id}
                             turf={t}
                             distance={
@@ -497,7 +497,7 @@ const TurfBookingHistory = () => {
                     ) : (
                       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
                         {recommendations.map((t) => (
-                          <TurfCard
+                          <TurfCardMobile
                             key={t.id || t._id}
                             turf={t}
                             distance={

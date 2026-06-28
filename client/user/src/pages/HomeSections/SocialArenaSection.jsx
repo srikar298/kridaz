@@ -99,7 +99,7 @@ const SocialArenaReelCard = ({ reel, shouldPlay, navigate }) => {
       style={{ borderColor: BDR }}
       onClick={(e) => {
         e.preventDefault();
-        navigate(`/?tab=shots&id=${reel.id || reel._id || ""}`);
+        navigate(`/community?tab=shots&id=${reel.id || reel._id || ""}`);
       }}
     >
       {hasVideo ? (

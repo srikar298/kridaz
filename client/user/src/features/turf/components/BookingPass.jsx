@@ -18,17 +18,22 @@ import {
   AlertOctagon,
   FileText,
   Trophy,
+  Star,
+  Edit3,
 } from "lucide-react";
 import useBookingPass from "../hooks/useBookingPass";
 import { motion } from "framer-motion";
 import { jsPDF } from "jspdf";
 import useSimilarRecommendations from "@hooks/useSimilarRecommendations";
-import { TurfCard } from "@features/turf";
+import TurfCardMobile from "./TurfCardMobile";
 import { toPng } from "html-to-image";
 import toast from "react-hot-toast";
 import ReportIssueFlowModal from "@components/dispute/ReportIssueFlowModal";
+import RateVenueModal from "./RateVenueModal";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { Button } from "@kridaz/ui";
+import { useGetTurfReviewsQuery } from "@redux/api/turfApi";
+import { useSelector } from "react-redux";
 
 
 const BookingPass = () => {
@@ -36,7 +41,17 @@ const BookingPass = () => {
   const { booking, loading } = useBookingPass(id);
   const passRef = useRef(null);
   const [showDisputeModal, setShowDisputeModal] = useState(false);
+  const [showRateModal, setShowRateModal] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
+
+  const currentBookingStatus = booking?.status;
+  const currentTurfId = booking?.turf?.id || booking?.turf?._id;
+  const currentUser = useSelector((state) => state.auth?.user);
+  const { data: reviewsData } = useGetTurfReviewsQuery(currentTurfId, { skip: !currentTurfId || currentBookingStatus !== "COMPLETED" });
+  
+  const existingReview = reviewsData?.reviews?.find(
+    (r) => r.user?.id === currentUser?.id || r.userId === currentUser?.id
+  );
 
   const handleDownload = async () => {
     if (!passRef.current) return;
@@ -116,9 +131,8 @@ const BookingPass = () => {
     }
   };
 
-  const turfId = booking?.turf?.id || booking?.turf?._id;
   const { similarTurfs, loading: similarLoading } = useSimilarRecommendations(
-    turfId,
+    currentTurfId,
     { limit: 3 }
   );
 
@@ -159,7 +173,7 @@ const BookingPass = () => {
     );
   }
 
-  const { turf, timeSlot, user, totalPrice, qrCode, status } = booking;
+  const { turf, timeSlot, totalPrice, qrCode, status } = booking;
   const hoursUntilSlot =
     (new Date(booking.playStartTime || timeSlot?.startTime) - new Date()) /
     (1000 * 60 * 60);
@@ -186,16 +200,10 @@ const BookingPass = () => {
               <FileText size={12} /> Invoice
             </Link>
             <Button
-              onClick={handleDownload}
-              className="flex items-center justify-center w-[30px] h-[30px] bg-card border border-[rgba(255,255,255,0.08)] rounded-[8px] text-zinc-400 hover:text-primary transition-all"
-             aria-label="Download">
-              <Download size={14} />
-            </Button>
-            <Button
               onClick={handleShare}
-              className="flex items-center justify-center w-[30px] h-[30px] bg-card border border-[rgba(255,255,255,0.08)] rounded-[8px] text-zinc-400 hover:text-primary transition-all"
+              className="flex items-center justify-center h-[30px] px-3 bg-card border border-[rgba(255,255,255,0.08)] rounded-[8px] text-zinc-400 hover:text-primary transition-all text-[9px] font-black uppercase tracking-widest gap-1.5"
             >
-              <Share2 size={14} />
+              <Share2 size={12} /> Share
             </Button>
           </div>
         </div>
@@ -462,19 +470,44 @@ const BookingPass = () => {
 
           {/* Raise dispute */}
           {status !== "CANCELLED" && status !== "DISPUTED" && (
-            <Button
-              onClick={() => setShowDisputeModal(true)}
-              className="w-full flex items-center justify-center gap-2 h-[42px] rounded-[12px] text-[10px] font-[700] uppercase tracking-widest transition-all text-zinc-400 bg-card border border-[rgba(255,255,255,0.08)] hover:text-white"
-            >
-              <AlertOctagon size={14} />
-              Report Issue / Request Help
-            </Button>
+            <div className="flex justify-center pt-2 pb-1">
+              <button
+                onClick={() => setShowDisputeModal(true)}
+                className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-zinc-600 hover:text-zinc-400 transition-colors"
+              >
+                <AlertOctagon size={12} />
+                Report
+              </button>
+            </div>
+          )}
+
+          {/* Rate Venue */}
+          {status === "COMPLETED" && (
+            existingReview ? (
+              <div className="flex justify-center mt-2 pt-1 pb-1">
+                <button
+                  onClick={() => setShowRateModal(true)}
+                  className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-primary/70 hover:text-primary transition-colors"
+                >
+                  <Edit3 size={12} />
+                  Edit Rating
+                </button>
+              </div>
+            ) : (
+              <Button
+                onClick={() => setShowRateModal(true)}
+                className="w-full flex items-center justify-center gap-2 h-[42px] rounded-[12px] text-[10px] font-[700] uppercase tracking-widest transition-all text-black bg-primary hover:bg-primary/90 mt-2"
+              >
+                <Star size={14} className="fill-black" />
+                Rate Venue
+              </Button>
+            )
           )}
 
           {/* Find Opponent (GBNO) */}
           {status === "CONFIRMED" && !isSlotOver && (
             <Link
-              to={`/host-game?requestType=GBNO&bookingId=${booking.id || booking._id}&turfId=${turfId}`}
+              to={`/host-game?requestType=GBNO&bookingId=${booking.id || booking._id}&turfId=${currentTurfId}`}
               className="w-full flex items-center justify-center gap-2 h-[42px] rounded-[12px] text-[10px] font-[700] uppercase tracking-widest transition-all text-background bg-gradient-to-r from-secondary to-primary hover:scale-[1.02]"
             >
               <Trophy size={14} />
@@ -520,15 +553,15 @@ const BookingPass = () => {
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-6 max-w-md mx-auto">
                 {similarTurfs.map((t) => (
-                  <TurfCard
+                  <TurfCardMobile
                     key={t.id || t._id}
                     turf={t}
                     distance={
                       t.distance
-                        ? `${(t.distance / 1000).toFixed(1)} km Away`
-                        : "Nearby"
+                        ? `${(t.distance / 1000).toFixed(1)} km`
+                        : null
                     }
                   />
                 ))}
@@ -544,6 +577,15 @@ const BookingPass = () => {
           booking={booking}
           onClose={() => setShowDisputeModal(false)}
           onSuccess={() => window.location.reload()}
+        />
+      )}
+
+      {/* Rate Venue Modal */}
+      {showRateModal && (
+        <RateVenueModal
+          turf={turf}
+          existingReview={existingReview}
+          onClose={() => setShowRateModal(false)}
         />
       )}
     </div>

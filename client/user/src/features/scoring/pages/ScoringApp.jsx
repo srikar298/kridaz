@@ -24,6 +24,7 @@ import {
   Hash,
   Crosshair,
   Share2,
+  Loader2,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
@@ -44,7 +45,6 @@ import PenaltyModal from "../components/PenaltyModal";
 import EndMatchModal from "../components/EndMatchModal";
 import MatchReportModal from "../components/MatchReportModal";
 import MatchExitModal from "../components/MatchExitModal";
-import cricketLoadingGif from "../../../assets/cricket-loading.gif";
 import GlobalBackButton from "@/shared/components/GlobalBackButton";
 import { Button, Input, Select } from "@kridaz/ui";
 
@@ -757,12 +757,16 @@ const ScoringApp = () => {
 
   if (loading)
     return (
-      <div className="min-h-[100dvh] bg-black flex flex-col items-center justify-center font-inter">
+      <div className="min-h-[100dvh] bg-black flex flex-col items-center justify-center font-inter gap-4">
         <img
-          src={cricketLoadingGif}
+          src="/logo.png"
           alt="Loading match..."
-          className="w-32 h-32 object-contain"
+          className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-[0_0_15px_rgba(85,222,232,0.5)]"
         />
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70 mt-2">
+          Initializing Scorer...
+        </p>
       </div>
     );
 

@@ -34,6 +34,13 @@ const NewPostLanding = () => {
     recordingDurationRef.current = recordingDuration;
   }, [recordingDuration]);
 
+  useEffect(() => {
+    document.body.setAttribute("data-hide-bottom-nav", "true");
+    return () => {
+      document.body.removeAttribute("data-hide-bottom-nav");
+    };
+  }, []);
+
   const startCamera = useCallback(async () => {
     // Ensure any existing streams are fully stopped before starting a new one
     if (streamRef.current) {

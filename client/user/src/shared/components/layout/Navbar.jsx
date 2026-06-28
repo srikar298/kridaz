@@ -120,7 +120,19 @@ const Navbar = () => {
   const userLocation = useSelector((state) => state.ui.userLocation);
   const locationStatus = useSelector((state) => state.ui.locationStatus);
   const isSidebarOpen = useSelector((state) => state.ui.mainSidebar?.isOpen);
-  // Auth state log removed
+  // Hide top nav when a modal sets the body attribute
+  const [isHidden, setIsHidden] = useState(
+    () => document.body.hasAttribute("data-hide-bottom-nav")
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsHidden(document.body.hasAttribute("data-hide-bottom-nav"));
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ["data-hide-bottom-nav"] });
+    return () => observer.disconnect();
+  }, []);
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -254,6 +266,8 @@ const Navbar = () => {
     isProfessional ||
     isJoinGames;
 
+  if (isHidden) return null;
+
   return (
     <>
       {" "}
@@ -326,9 +340,10 @@ const Navbar = () => {
                     <Link
                       to="/notifications"
                       aria-label="Notifications"
-                      className="flex items-center justify-center w-[40px] h-[40px] bg-white/10 rounded-[10px] hover:bg-white/20 transition-colors ml-1"
+                      style={{ width: '32px', height: '32px' }}
+                      className="flex items-center justify-center shrink-0 bg-white/10 rounded-[8px] hover:bg-white/20 transition-colors ml-1"
                     >
-                      <Bell size={20} className="text-white" />
+                      <Bell size={16} className="text-white" />
                     </Link>
                   </div>
                 </div>
@@ -401,9 +416,10 @@ const Navbar = () => {
                   <Link
                     to="/notifications"
                     aria-label="Notifications"
-                    className="flex items-center justify-center w-[40px] h-[40px] bg-white/10 rounded-[10px] hover:bg-white/20 transition-colors ml-1"
+                    style={{ width: '32px', height: '32px' }}
+                    className="flex items-center justify-center shrink-0 bg-white/10 rounded-[8px] hover:bg-white/20 transition-colors ml-1"
                   >
-                    <Bell size={20} className="text-white" />
+                    <Bell size={16} className="text-white" />
                   </Link>
                 </>
               )}

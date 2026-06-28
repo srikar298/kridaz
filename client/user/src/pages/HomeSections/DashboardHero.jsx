@@ -1,7 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function DashboardHero({ marketingContent }) {
+export default function DashboardHero({ marketingContent, loading }) {
+  if (loading) {
+    return (
+      <div className="grid grid-cols-4 gap-2 md:gap-3 mb-0 w-full pb-0 px-2">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="w-full h-[90px] md:h-[110px] rounded-[12px] bg-[#161616] animate-pulse border border-white/5"
+          />
+        ))}
+      </div>
+    );
+  }
+
   const quickLinks = (marketingContent?.banners || [])
     .filter((b) => b.type === "QUICK_LINK" && b.isActive)
     .sort((a, b) => a.order - b.order);

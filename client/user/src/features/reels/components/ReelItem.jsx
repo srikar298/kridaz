@@ -157,7 +157,7 @@ const ReelItem = ({ reel, isVisible }) => {
     const shareData = {
       title: "Kridaz Shorts",
       text: reel.caption,
-      url: `${window.location.origin}/?tab=shots&id=${reel.id || reel._id}`,
+      url: `${window.location.origin}/community?tab=shots&id=${reel.id || reel._id}`,
     };
 
     try {

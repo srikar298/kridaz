@@ -1,5 +1,5 @@
 import express from "express";
-import { addReview, viewReviewsByTurf } from "../review.controller.js";
+import { addReview, updateReview, viewReviewsByTurf } from "../review.controller.js";
 import verifyUserToken from "../../../middleware/jwt/user.middleware.js";
 
 const router = express.Router();
@@ -30,5 +30,16 @@ router.get("/:id", viewReviewsByTurf);
  *       - BearerAuth: []
  */
 router.post("/:id", verifyUserToken, addReview);
+
+/**
+ * @swagger
+ * /review/{id}:
+ *   put:
+ *     summary: Update an existing review for a turf
+ *     tags: [Review]
+ *     security:
+ *       - BearerAuth: []
+ */
+router.put("/:id", verifyUserToken, updateReview);
 
 export default router;

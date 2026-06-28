@@ -8,14 +8,19 @@ const BookingInvoice = () => {
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const invoiceDownloadUrl = `${import.meta.env.VITE_API_URL}/api/user/booking/invoice/${id}`;
+  const [pdfUrl, setPdfUrl] = useState(null);
 
   useEffect(() => {
-    const fetchBooking = async () => {
+    let objectUrl = null;
+    const fetchBookingAndInvoice = async () => {
       try {
-        const response = await axiosInstance.get(`/api/user/booking/${id}`);
-        setBooking(response.data);
+        const [bookingRes, invoiceRes] = await Promise.all([
+          axiosInstance.get(`/api/user/booking/${id}`),
+          axiosInstance.get(`/api/user/booking/invoice/${id}`, { responseType: 'blob' })
+        ]);
+        setBooking(bookingRes.data);
+        objectUrl = URL.createObjectURL(invoiceRes.data);
+        setPdfUrl(objectUrl);
       } catch (err) {
         console.error("Error fetching invoice data:", err);
         setError(
@@ -25,7 +30,13 @@ const BookingInvoice = () => {
         setLoading(false);
       }
     };
-    fetchBooking();
+    fetchBookingAndInvoice();
+    
+    return () => {
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
   }, [id]);
 
   if (loading) {
@@ -80,7 +91,8 @@ const BookingInvoice = () => {
           </Link>
 
           <a
-            href={invoiceDownloadUrl}
+            href={pdfUrl || "#"}
+            download={`Kridaz_Invoice_${booking?.orderId || id}.pdf`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 bg-primary hover:bg-[#b8e600] rounded-[8px] px-4 py-2 text-black text-[10px] font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(204,255,0,0.1)]"
@@ -92,26 +104,18 @@ const BookingInvoice = () => {
 
         {/* Invoice PDF Viewer */}
         <div className="bg-white flex-1 w-full relative">
-          <object
-            data={invoiceDownloadUrl}
-            type="application/pdf"
-            className="w-full h-full border-0 absolute inset-0"
-            title={`Invoice ${id}`}
-          >
-            <div className="flex flex-col items-center justify-center h-full p-6 text-center bg-gray-100">
-              <p className="text-gray-600 mb-4 text-sm font-medium">
-                Your browser doesn&apos;t support inline PDF viewing.
-              </p>
-              <a
-                href={invoiceDownloadUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-primary text-black px-6 py-3 rounded-full font-bold text-xs uppercase tracking-widest"
-              >
-                Download PDF to View
-              </a>
+          {pdfUrl ? (
+            <iframe
+              src={pdfUrl}
+              className="w-full h-full border-0 absolute inset-0"
+              title={`Invoice ${id}`}
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">
+              <Loader2 size={24} className="animate-spin mr-2" />
+              Loading PDF...
             </div>
-          </object>
+          )}
         </div>
       </div>
     </div>

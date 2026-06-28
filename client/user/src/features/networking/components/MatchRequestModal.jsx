@@ -113,7 +113,7 @@ export default function MatchRequestModal({
   const handleLocationVenueSelect = (data) => {
     if (data.type === "VENUE") {
       setSelectedGroundId(data.venueId);
-      setCustomLocation({ latitude: "", longitude: "", address: "" });
+      setCustomLocation({ latitude: "", longitude: "", address: data.displayName || data.name || "" });
     } else if (data.type === "CUSTOM") {
       setSelectedGroundId("custom");
       setCustomLocation({
@@ -313,24 +313,32 @@ export default function MatchRequestModal({
                     "STREAMER",
                     "COMMENTATOR",
                     "CHEERLEADER",
-                  ].map((roleVal) => {
-                    const isSelected = selectedRoles.includes(roleVal);
-                    return (
-                      <button
-                        key={roleVal}
-                        type="button"
-                        onClick={() => handleToggleRole(roleVal)}
-                        className={`px-4 py-2 h-9 shrink-0 rounded-[10px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-                          isSelected
-                            ? "bg-[#1c2a11] border border-primary text-primary shadow-[0_0_10px_rgba(191,243,103,0.1)]"
-                            : "bg-[#111] border border-white/5 text-white/50 hover:bg-white/5 hover:text-white"
-                        }`}
-                      >
-                        {isSelected && <Check size={12} strokeWidth={3} className="text-primary" />}
-                        {roleVal}
-                      </button>
-                    );
-                  })}
+                  ]
+                    .sort((a, b) => {
+                      const aSelected = selectedRoles.includes(a);
+                      const bSelected = selectedRoles.includes(b);
+                      if (aSelected && !bSelected) return -1;
+                      if (!aSelected && bSelected) return 1;
+                      return 0;
+                    })
+                    .map((roleVal) => {
+                      const isSelected = selectedRoles.includes(roleVal);
+                      return (
+                        <button
+                          key={roleVal}
+                          type="button"
+                          onClick={() => handleToggleRole(roleVal)}
+                          className={`px-4 py-2 h-9 shrink-0 rounded-[10px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                            isSelected
+                              ? "bg-[#1c2a11] border border-primary text-primary shadow-[0_0_10px_rgba(191,243,103,0.1)]"
+                              : "bg-[#111] border border-white/5 text-white/50 hover:bg-white/5 hover:text-white"
+                          }`}
+                        >
+                          {isSelected && <Check size={12} strokeWidth={3} className="text-primary" />}
+                          {roleVal}
+                        </button>
+                      );
+                    })}
                 </div>
               </div>
 
@@ -349,10 +357,10 @@ export default function MatchRequestModal({
                       <MapPin size={14} className="text-primary group-hover:scale-110 transition-transform" />
                     </div>
                     <span className="truncate text-left font-inter">
-                      {selectedGroundId === "custom" && customLocation.address
+                      {selectedGroundId && grounds.find(g => g._id === selectedGroundId || g.id === selectedGroundId)
+                        ? `${grounds.find(g => g._id === selectedGroundId || g.id === selectedGroundId).name} - ${grounds.find(g => g._id === selectedGroundId || g.id === selectedGroundId).city || ""}`.replace(/- $/g, "").trim()
+                        : customLocation.address
                         ? customLocation.address
-                        : selectedGroundId && grounds.find(g => g._id === selectedGroundId)
-                        ? `${grounds.find(g => g._id === selectedGroundId).name} - ${grounds.find(g => g._id === selectedGroundId).city || ""}`.replace(/- $/g, "").trim()
                         : "Search by Location / Venue"}
                     </span>
                   </div>

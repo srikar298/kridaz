@@ -12,19 +12,17 @@ import PublicRoute from "@components/ProtectedRoute/PublicRoute";
 import NotFound from "@components/common/NotFound";
 import RootRedirect from "@components/common/RootRedirect";
 import ErrorBoundary from "@components/common/ErrorBoundary";
-import cricketLoadingGif from "../assets/cricket-loading.gif";
+import { Loader2 } from "lucide-react";
 
 // ── Spinner shown while any lazy chunk loads ──────────────────
 const PageLoader = () => (
-  <div className="fixed inset-0 z-[9999] bg-[#050505] flex flex-col items-center justify-center font-sans">
+  <div className="fixed inset-0 z-[9999] bg-[#050505] flex flex-col items-center justify-center font-sans gap-4">
     <img
-      src={cricketLoadingGif}
-      alt="Loading..."
-      className="w-24 h-24 object-contain"
+      src="/logo.png"
+      alt="Kridaz"
+      className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-[0_0_15px_rgba(85,222,232,0.5)]"
     />
-    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-success mt-3">
-      Loading page...
-    </p>
+    <Loader2 className="w-8 h-8 text-primary animate-spin" />
   </div>
 );
 

@@ -136,12 +136,13 @@ export default function FindProfessionals() {
   // RTK Query Mutations & Queries
   const [createMatchRequest, { isLoading: isCreatingRequest }] =
     useCreateMatchRequestMutation();
-  const { refetch: refetchBookings } = useGetUserOnDemandBookingsQuery(
+  const { data: bookingsData, refetch: refetchBookings } = useGetUserOnDemandBookingsQuery(
     undefined,
     {
       skip: !isLoggedIn,
     }
   );
+  const assignedBookings = bookingsData?.bookings || [];
   const { socket } = useSocket();
 
   // Sync state to URL
@@ -297,6 +298,11 @@ export default function FindProfessionals() {
   const handleLocationVenueSelect = (loc) => {
     if (loc.type === "VENUE") {
       setSelectedGroundId(loc.venueId);
+      const ground = grounds.find(g => g._id === loc.venueId || g.id === loc.venueId);
+      if (ground) {
+        setCityFilter(ground.city || "All");
+        setStateFilter(ground.state || "All");
+      }
       setCustomLocation({
         latitude: "",
         longitude: "",
@@ -304,6 +310,8 @@ export default function FindProfessionals() {
       });
     } else if (loc.type === "CUSTOM") {
       setSelectedGroundId("custom");
+      setCityFilter(loc.city || "All");
+      setStateFilter(loc.state || "All");
       setCustomLocation({
         latitude: loc.lat,
         longitude: loc.lng,
@@ -419,16 +427,7 @@ export default function FindProfessionals() {
       <div className="max-w-7xl mx-auto px-4 space-y-6 mt-6">
         {!isSearchExpanded && (
           <div className="space-y-6">
-            {/* Search Bar at Top */}
-            <div 
-              onClick={() => setIsSearchExpanded(true)}
-              className="w-full flex items-center bg-[#111111] rounded-[16px] border border-white/10 p-1.5 transition-colors h-14 cursor-text"
-            >
-              <Search className="text-white/40 ml-3 mr-2 shrink-0" size={18} />
-              <div className="flex-1 text-[14px] font-medium text-white/40">
-                Search professionals...
-              </div>
-            </div>
+
 
             {/* Title */}
             <h2 
@@ -486,44 +485,83 @@ export default function FindProfessionals() {
               ))}
             </div>
 
-        {/* 3. Assigned to you (Mock Data based on existing bookings structure) */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-white text-base font-bold font-['Open_Sans']">Assigned to you</h3>
-            <button 
-              onClick={() => navigate('/booking-history?subTab=professionals')}
-              className="text-primary text-[11px] font-bold"
-            >
-              View history
-            </button>
-          </div>
-          <div className="flex overflow-x-auto gap-4 pb-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden">
-            <div className="w-full min-w-full shrink-0 bg-[#111] border border-white/10 rounded-2xl p-3 snap-start shadow-xl flex flex-col gap-2.5">
-              <div className="flex items-start justify-between w-full">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-card overflow-hidden shrink-0 border border-white/5">
-                    <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Rohit Sharma" className="w-full h-full object-cover" />
+        {/* 3. Assigned to you (Real Data) */}
+        {assignedBookings.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-white text-base font-bold font-['Open_Sans']">Assigned to you</h3>
+              <button 
+                onClick={() => navigate('/booking-history?subTab=professionals')}
+                className="text-primary text-[11px] font-bold"
+              >
+                View history
+              </button>
+            </div>
+            <div className="flex overflow-x-auto gap-4 pb-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden">
+              {assignedBookings.map((booking) => (
+                <div 
+                  key={booking.id} 
+                  onClick={() => navigate('/booking-history?subTab=professionals')}
+                  className="w-full cursor-pointer min-w-full shrink-0 bg-[#111] border border-white/10 rounded-2xl p-3 snap-start shadow-xl flex flex-col gap-2.5"
+                >
+                  <div className="flex items-start justify-between w-full">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-card overflow-hidden shrink-0 border border-white/5">
+                        <img 
+                          src={booking.professional?.user?.profilePicture || `https://ui-avatars.com/api/?name=${booking.professional?.user?.name || 'P'}&background=random`} 
+                          alt={booking.professional?.user?.name || "Professional"} 
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
+                      <div>
+                        <h4 className="text-[13px] font-bold text-white truncate font-inter leading-none mb-1">
+                          {booking.professional?.user?.name || "Professional"}
+                        </h4>
+                        <p className="text-[10.5px] text-white/50 truncate capitalize">{booking.role?.toLowerCase() || "Professional"}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 text-[#FFD700] text-[9.5px] font-black bg-white/5 px-2 py-1 rounded-lg mt-0.5">
+                      <Star size={10} className="fill-[#FFD700]" /> 4.8 <span className="text-white/40 font-medium">(120)</span>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-[13px] font-bold text-white truncate font-inter leading-none mb-1">Rohit Sharma</h4>
-                    <p className="text-[10.5px] text-white/50 truncate">Umpire</p>
+                  <div className="flex items-center justify-between w-full mt-1 mb-2 bg-[#161616] p-2 rounded-lg border border-white/5">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-1.5 text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                        <Calendar size={10} className="text-primary" /> {booking.matchDate || "N/A"}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                        <Clock size={10} className="text-primary" /> {booking.matchStartTime || "N/A"} - {booking.matchEndTime || "N/A"}
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1 items-end">
+                      <div className="flex items-center gap-1.5 text-[9px] font-black text-gray-400 uppercase tracking-widest text-right">
+                        <MapPin size={10} className="text-primary" /> {booking.ground?.name || booking.customLocation?.address || "Custom Location"}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[9px] font-black text-gray-400 uppercase tracking-widest text-right">
+                        ID: #{booking.id?.substring(0, 5).toUpperCase()}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-[9.5px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-1 rounded-md border border-primary/20">
+                      {booking.status === 'ASSIGNED' ? `${booking.role || 'Pro'} Assigned` : booking.status}
+                    </span>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate('/booking-history?subTab=professionals');
+                      }}
+                      className="shrink-0 bg-primary/20 hover:bg-primary/30 text-primary text-[10px] font-bold px-3 py-1 h-[26px] rounded-md border border-primary/30 flex items-center justify-center transition-colors"
+                    >
+                      View Details
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 text-[#FFD700] text-[9.5px] font-black bg-white/5 px-2 py-1 rounded-lg mt-0.5">
-                  <Star size={10} className="fill-[#FFD700]" /> 4.8 <span className="text-white/40 font-medium">(120)</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between w-full mt-0.5">
-                <span className="text-[9.5px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-1 rounded-md border border-primary/20">
-                  Umpire Assigned
-                </span>
-                <button className="shrink-0 bg-primary/20 hover:bg-primary/30 text-primary text-[10px] font-bold px-3 py-1 h-[26px] rounded-md border border-primary/30 flex items-center justify-center transition-colors">
-                  View Details
-                </button>
-              </div>
+              ))}
             </div>
           </div>
-        </div>
+        )}
 
         {/* 4. Offers for you */}
         {adBanners.length > 0 && (
@@ -537,6 +575,16 @@ export default function FindProfessionals() {
           <h3 className="text-white text-base font-bold font-['Open_Sans'] mb-3">
             Find more professionals
           </h3>
+
+          <div 
+            onClick={() => setIsSearchExpanded(true)}
+            className="w-full flex items-center bg-[#111111] rounded-[16px] border border-white/10 p-1.5 transition-colors h-14 cursor-text mb-4"
+          >
+            <Search className="text-white/40 ml-3 mr-2 shrink-0" size={18} />
+            <div className="flex-1 text-[14px] font-medium text-white/40">
+              Search professionals...
+            </div>
+          </div>
           
           {/* Roles Filter Segmented Control */}
           <div className="bg-[#111111] border border-white/5 rounded-2xl p-1.5 flex items-center overflow-x-auto gap-1 mb-4 [&::-webkit-scrollbar]:hidden">

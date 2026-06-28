@@ -15,7 +15,7 @@ import useReservation from "../hooks/useReservation";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
 import axiosInstance from "@hooks/useAxiosInstance";
 import useSimilarRecommendations from "@hooks/useSimilarRecommendations";
-import TurfCard from "./TurfCard.jsx";
+import TurfCardMobile from "./TurfCardMobile.jsx";
 import { useGetSavedTurfsQuery, useToggleTurfLikeMutation } from "@redux/api/turfApi";
 import toast from "react-hot-toast";
 import GlobalBackButton from "@/shared/components/GlobalBackButton";
@@ -476,8 +476,8 @@ const TurfDetails = () => {
           {/* VenueOverviewSection */}
           <div className="w-full flex-none space-y-4 lg:space-y-6">
             {/* Top Actions Row */}
-            <div className="flex items-center justify-between w-full pr-4 md:pr-0">
-              <GlobalBackButton className="!w-8 !h-8 !min-h-0 [&>svg]:!w-4 [&>svg]:!h-4" />
+            <div className="flex items-center justify-between w-full pr-4 md:pr-0 relative z-50">
+              <GlobalBackButton className="!w-8 !h-8 !min-h-0 [&>svg]:!w-4 [&>svg]:!h-4 relative z-50" />
               <div className="flex items-center gap-2">
                 <Button
                   onClick={toggleFavorite}
@@ -854,7 +854,7 @@ const TurfDetails = () => {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                     {similarTurfs.slice(0, 4).map((t) => (
-                      <TurfCard
+                      <TurfCardMobile
                         key={t.id || t._id}
                         turf={t}
                         distance={

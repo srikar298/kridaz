@@ -31,6 +31,7 @@ import { useGetUserBookingsQuery } from "@redux/api/userApi";
 import { useGetMyScoringGamesQuery } from "@redux/api/scoringApi";
 import { Button } from "@kridaz/ui";
 import SEO from "../shared/components/common/SEO";
+import ProfessionalCard from "../features/networking/components/ProfessionalCard";
 
 import {
   ChevronLeft,
@@ -74,8 +75,11 @@ export default function Home() {
   useEffect(() => {
     if (activeReel) {
       navigate(`/community?reel=${activeReel}`);
+    } else if (searchParams.get("tab") === "shots") {
+      const id = searchParams.get("id");
+      navigate(`/community?tab=shots${id ? `&id=${id}` : ""}`);
     }
-  }, [activeReel, navigate]);
+  }, [activeReel, searchParams, navigate]);
 
   useEffect(() => {
     if (
@@ -470,6 +474,7 @@ export default function Home() {
               locationStatus={locationStatus}
               marketingContent={marketingContent}
               isLoggedIn={isLoggedIn}
+              loading={marketingLoading}
             />
           </div>
 
@@ -838,47 +843,11 @@ export default function Home() {
                 <div className="text-white/50 text-[13px] py-4 w-full text-center" style={{ fontFamily: "'Inter', sans-serif" }}>No professionals available in your area.</div>
               ) : (
                 professionals.map((p) => (
-                  <div
-                    key={p.id || p._id}
-                    onClick={() => navigate(`/profile/${p.userId || p.id || p._id}`)}
-                    className="shrink-0 w-[188px] h-[234px] snap-start relative rounded-[12px] overflow-hidden group cursor-pointer border border-[#434242]"
-                  >
-                    <img 
-                      src={p.profilePicture || p.profileImage || p.image || "/default-avatar.png"} 
-                      alt={p.name || "Professional"} 
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                  <div key={p.id || p._id} className="shrink-0 w-[160px] snap-start">
+                    <ProfessionalCard 
+                      pro={p} 
+                      getInitials={(name) => name?.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2)} 
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/30 to-transparent"></div>
-                    
-                    {p.rating !== undefined && p.rating !== null && (
-                      <div className="absolute top-3 left-3 bg-black/40 backdrop-blur-md px-2 py-1 rounded-[6px] flex items-center gap-1 border border-white/10">
-                        <span className="text-white text-[10px]">★</span>
-                        <span className="text-white text-[11px] font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>
-                          {Number(p.rating).toFixed(1)}
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
-                      <div className="flex flex-col max-w-[100px]">
-                        <span className="text-white font-bold text-[14px] leading-tight truncate capitalize" style={{ fontFamily: "'Inter', sans-serif" }}>
-                          {p.name || "Professional"}
-                        </span>
-                        <span className="text-white/80 text-[12px] mt-0.5 uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
-                          {p.role || p.primaryRole || "PRO"}
-                        </span>
-                      </div>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/profile/${p.userId || p.id || p._id}`);
-                        }}
-                        className="bg-white text-black font-bold text-[12px] px-3.5 py-1.5 rounded-[8px] shrink-0 active:scale-95 transition-transform" 
-                        style={{ fontFamily: "'Inter', sans-serif" }}
-                      >
-                        Book
-                      </button>
-                    </div>
                   </div>
                 ))
               )}

@@ -98,6 +98,13 @@ const StoryViewer = ({
     setCurrentStoryIndex(initialIndex);
   }, [storyGroup, initialIndex]);
 
+  useEffect(() => {
+    document.body.setAttribute("data-hide-bottom-nav", "true");
+    return () => {
+      document.body.removeAttribute("data-hide-bottom-nav");
+    };
+  }, []);
+
   // Reset duration to default when story changes (will be overridden by video callback)
   useEffect(() => {
     const story = storyGroup?.stories?.[currentStoryIndex];

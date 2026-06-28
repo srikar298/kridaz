@@ -19,6 +19,17 @@ export const addReview = async (req, res) => {
       return res.status(404).json({ message: "Turf not found" });
     }
 
+    const existingReview = await prisma.review.findFirst({
+      where: {
+        userId,
+        turfId: id,
+      },
+    });
+
+    if (existingReview) {
+      return res.status(400).json({ message: "You have already reviewed this venue." });
+    }
+
     await prisma.review.create({
       data: {
         userId,
@@ -33,6 +44,44 @@ export const addReview = async (req, res) => {
     return res.status(201).json({ message: "Review added successfully" });
   } catch (error) {
     logger.error("Error in addReview", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updateReview = async (req, res) => {
+  const userId = req.user.id || req.user.user;
+  const { id } = req.params;
+  const { rating, review: comment } = req.body;
+
+  if (!rating || !comment) {
+    return res.status(400).json({ message: "Please provide all the required fields" });
+  }
+
+  try {
+    const existingReview = await prisma.review.findFirst({
+      where: {
+        userId,
+        turfId: id,
+      },
+    });
+
+    if (!existingReview) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    await prisma.review.update({
+      where: { id: existingReview.id },
+      data: {
+        rating: parseInt(rating),
+        comment,
+      },
+    });
+
+    await invalidateCache("turfs:list:*");
+
+    return res.status(200).json({ message: "Review updated successfully" });
+  } catch (error) {
+    logger.error("Error in updateReview", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };

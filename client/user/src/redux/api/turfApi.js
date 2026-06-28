@@ -33,7 +33,23 @@ export const turfApi = baseApi.injectEndpoints({
     }),
     getTurfReviews: builder.query({
       query: (id) => `/api/user/review/${id}`,
-      providesTags: ["Turf"],
+      providesTags: ["Turf", "Review"],
+    }),
+    addTurfReview: builder.mutation({
+      query: ({ turfId, rating, review }) => ({
+        url: `/api/user/review/${turfId}`,
+        method: "POST",
+        body: { rating, review },
+      }),
+      invalidatesTags: ["Turf", "Review"],
+    }),
+    updateTurfReview: builder.mutation({
+      query: ({ turfId, rating, review }) => ({
+        url: `/api/user/review/${turfId}`,
+        method: "PUT",
+        body: { rating, review },
+      }),
+      invalidatesTags: ["Turf", "Review"],
     }),
   }),
 });
@@ -45,5 +61,7 @@ export const {
   useToggleTurfLikeMutation,
   useGetTurfDetailsQuery,
   useGetTurfReviewsQuery,
+  useAddTurfReviewMutation,
+  useUpdateTurfReviewMutation,
   useLazyGetOwnerTurfsQuery,
 } = turfApi;

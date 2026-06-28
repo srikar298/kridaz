@@ -245,7 +245,6 @@ const PostItem = React.memo(
                 <span className="text-[14px] font-bold text-white transition-colors">
                   {post.adminId?.name || post.author?.name || "Player"}
                 </span>
-                <ShieldCheck size={14} className="text-primary" />
               </div>
               <div className="text-[12px] font-medium text-[#a5a5a5] mt-0.5">
                 {getFormattedTime(post.createdAt)}
