@@ -240,7 +240,7 @@ export default function FindProfessionals() {
     try {
       const res = await axiosInstance.get("/api/features/marketing");
       if (res.data?.success && res.data?.banners) {
-        setAdBanners(res.data.banners);
+        setAdBanners(res.data.banners.filter(b => b.type === "PROFESSIONAL"));
       }
     } catch (err) {
       console.error("Error loading banners:", err);
@@ -547,9 +547,8 @@ export default function FindProfessionals() {
                         <span className="text-white font-black text-xl">%</span>
                       </div>
                       <div className="flex-1">
-                        <h4 className="text-white font-black text-lg">{banner.title}</h4>
                         {banner.description && (
-                          <p className="text-white/60 text-[11px] font-medium mt-0.5">{banner.description}</p>
+                          <p className="text-white/90 text-sm font-medium mt-0.5">{banner.description}</p>
                         )}
                       </div>
                       <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 group-hover:text-primary transition-colors">

@@ -477,7 +477,7 @@ export default function Home() {
           <div className="!mt-8 mb-1 px-2">
             <AdBannerSection
               banners={(marketingContent?.banners || []).filter(
-                (b) => b.type !== "PROMOTION" && b.type !== "QUICK_LINK"
+                (b) => b.type === "HOME" || !b.type
               )}
               loading={marketingLoading}
             />
