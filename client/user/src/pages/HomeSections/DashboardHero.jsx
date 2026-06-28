@@ -2,8 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 export default function DashboardHero({ marketingContent }) {
-  const quickLinks = (marketingContent?.banners || [])
-    .filter((b) => b.type === "QUICK_LINK" && b.isActive)
+  const quickLinks = (marketingContent?.quickLinks || [])
+    .filter((b) => b.isActive)
     .sort((a, b) => a.order - b.order);
 
   if (quickLinks && quickLinks.length > 0) {

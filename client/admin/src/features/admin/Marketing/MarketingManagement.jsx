@@ -378,13 +378,32 @@ export const MarketingManagement = () => {
               className="p-6 space-y-5 max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar"
             >
               <div className="grid grid-cols-1 gap-5">
-                <div className="hidden">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
+                    Title (Optional)
+                  </label>
                   <Input
                     type="text"
-                    value={formData.title || `Ad - ${Date.now()}`}
+                    value={formData.title}
                     onChange={(e) =>
                       setFormData({ ...formData, title: e.target.value })
                     }
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-lime-500 transition-colors text-sm"
+                    placeholder="e.g. Summer Sale 20%"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
+                    Description (Optional)
+                  </label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-lime-500 transition-colors text-sm min-h-[80px]"
+                    placeholder="Short description or subtitle..."
                   />
                 </div>
 
