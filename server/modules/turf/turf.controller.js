@@ -938,7 +938,7 @@ export const getTurfDetailsWithSlots = async (req, res) => {
     }
 
     const processedSlots = turf.timeSlots.map((s) => {
-      const booking = s.booking[0]; // Assuming one booking per slot
+      const booking = s.booking; // One-to-one relation
       return {
         id: s.id,
         startTime: s.startTime,
