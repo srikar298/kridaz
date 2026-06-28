@@ -10,7 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TurfCardMobile } from "../../features/turf";
+import { VenueCard } from "../../features/turf";
 import { Button } from "@kridaz/ui";
 
 
@@ -159,8 +159,8 @@ export default function VenuesSection({
                   key={t._id}
                   className={`shrink-0 snap-center w-[260px] h-[360px] flex justify-center items-center relative transition-all duration-300 ${idx === activeIndex ? 'z-10' : 'z-0'}`}
                 >
-                  <TurfCardMobile
-                    turf={t} 
+                  <VenueCard
+                    t={t} 
                     onClick={() => setSelectedTurfForPopup(t)}
                   />
                 </div>
@@ -206,7 +206,7 @@ export default function VenuesSection({
                 <X size={18} />
               </Button>
 
-              <TurfCardMobile turf={selectedTurfForPopup} />
+              <VenueCard t={selectedTurfForPopup} />
             </motion.div>
           </motion.div>
         )}

@@ -86,8 +86,8 @@ export const AdBannerSection = ({ banners = [], loading = false }) => {
   if (loading) {
     return (
       <section className="relative w-full overflow-hidden py-0">
-        <div className="w-full px-2">
-          <div className="relative bg-[#1B1B1B] border border-[#434242] rounded-[12px] p-2 w-full shadow-lg">
+        <div className="w-full px-1">
+          <div className="relative bg-[#1B1B1B] border border-[#434242] rounded-[12px] p-0 w-full shadow-lg">
             <div className="relative aspect-[16/9] rounded-lg overflow-hidden bg-white/5 animate-pulse" />
           </div>
         </div>
@@ -102,8 +102,8 @@ export const AdBannerSection = ({ banners = [], loading = false }) => {
 
   return (
     <section className="relative w-full overflow-hidden py-0">
-      <div className="w-full px-2">
-        <div className="relative bg-[#1B1B1B] border border-[#434242] rounded-[12px] p-2 w-full shadow-lg">
+      <div className="w-full px-1">
+        <div className="relative bg-[#1B1B1B] border border-[#434242] rounded-[12px] p-0 w-full shadow-lg">
           <div className="relative group overflow-hidden rounded-lg aspect-[16/9] w-full">
             {/* Banner Media Container (Horizontal Slides) */}
             <div
