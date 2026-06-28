@@ -26,6 +26,7 @@ import useWriteReview from "@hooks/useWriteReview";
 import TurfBookingHistorySkeleton from "@components/ui/TurfBookingHistorySkeleton";
 import WriteReview from "@components/reviews/WriteReview";
 import ReportIssueFlowModal from "@components/dispute/ReportIssueFlowModal";
+import LiveMatchSearchCard from "./LiveMatchSearchCard";
 import useSimilarRecommendations from "@hooks/useSimilarRecommendations";
 import useRecommendations from "@hooks/useRecommendations";
 import TurfCardMobile from "./TurfCardMobile";
@@ -204,6 +205,7 @@ const TurfBookingHistory = () => {
   // Load Hired Professionals Bookings
   const [professionalBookings, setProfessionalBookings] = useState([]);
   const [loadingProBookings, setLoadingProBookings] = useState(false);
+  const [proTab, setProTab] = useState("ongoing");
 
   useEffect(() => {
     const fetchProBookings = async () => {
@@ -542,7 +544,7 @@ const TurfBookingHistory = () => {
               ) : (
                 <div className="space-y-8">
                   {/* Section 1: Active Match Requests */}
-                  {activeRequests.length > 0 && (
+                  {proTab === "ongoing" && activeRequests.length > 0 && (
                     <div className="space-y-3">
                       <h4 className="text-[10px] font-black uppercase text-primary tracking-widest flex items-center gap-2">
                         <span className="flex h-2 w-2 relative">
@@ -553,71 +555,14 @@ const TurfBookingHistory = () => {
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {activeRequests.map((req) => (
-                          <div
-                            key={req.id}
-                            className="bg-card border border-primary/20 rounded-lg p-5 relative overflow-hidden"
-                          >
-                            <div className="space-y-3 font-sans">
-                              <div>
-                                <span className="text-[8px] uppercase tracking-wider text-white/40 block">
-                                  Target Roles
-                                </span>
-                                <div className="flex flex-wrap gap-1.5 mt-1">
-                                  {req.roles.map((r) => (
-                                    <span
-                                      key={r}
-                                      className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-bold text-white uppercase"
-                                    >
-                                      {r}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-
-                              <div className="grid grid-cols-2 gap-4 pt-1.5">
-                                <div>
-                                  <span className="text-[8px] uppercase tracking-wider text-white/40 block">
-                                    Venue/Location
-                                  </span>
-                                  <span className="text-xs font-bold text-white block truncate">
-                                    {req.ground?.name ||
-                                      req.customLocation?.address ||
-                                      "Custom Coords"}
-                                  </span>
-                                </div>
-                                <div>
-                                  <span className="text-[8px] uppercase tracking-wider text-white/40 block">
-                                    Budget Scope
-                                  </span>
-                                  <span className="text-xs font-bold text-primary">
-                                    ₹{req.minBudget} - ₹{req.maxBudget}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="pt-3 border-t border-white/5 flex items-center justify-between flex-wrap gap-2 mt-2">
-                                <div className="flex items-center gap-1.5 text-[10px] text-gray-500 uppercase font-bold tracking-widest">
-                                  <Calendar
-                                    size={10}
-                                    className="text-primary"
-                                  />{" "}
-                                  {req.matchDate || "Flexible"}
-                                  <Clock
-                                    size={10}
-                                    className="text-primary ml-2"
-                                  />{" "}
-                                  {req.matchStartTime || "TBD"} -{" "}
-                                  {req.matchEndTime || "TBD"}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                          <LiveMatchSearchCard key={req.id} req={req} />
                         ))}
                       </div>
                     </div>
                   )}
 
                   {/* Section 1.5: Failed/Expired Search Requests */}
-                  {failedRequests.length > 0 && (
+                  {proTab === "failed" && failedRequests.length > 0 && (
                     <div className="space-y-3">
                       <h4 className="text-[10px] font-black uppercase text-red-500 tracking-widest flex items-center gap-2">
                         <AlertOctagon size={12} />
@@ -626,91 +571,12 @@ const TurfBookingHistory = () => {
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {failedRequests.map((req) => (
-                          <div
+                          <LiveMatchSearchCard
                             key={req.id}
-                            className="bg-card border border-red-500/20 rounded-lg p-5 relative overflow-hidden transition-all duration-300 hover:border-red-500/40"
-                          >
-                            {/* Subtle overlay accent */}
-                            <div className="absolute top-0 right-0 bg-red-500/10 text-red-500 px-3 py-1 rounded-bl-lg text-[8px] font-black uppercase tracking-wider border-l border-b border-red-500/20">
-                              {req.status}
-                            </div>
-
-                            <div className="space-y-3 font-sans">
-                              <div>
-                                <span className="text-[8px] uppercase tracking-wider text-white/40 block">
-                                  Target Roles
-                                </span>
-                                <div className="flex flex-wrap gap-1.5 mt-1">
-                                  {req.roles.map((r) => (
-                                    <span
-                                      key={r}
-                                      className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-bold text-white uppercase"
-                                    >
-                                      {r}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-
-                              <div className="grid grid-cols-2 gap-4 pt-1.5">
-                                <div>
-                                  <span className="text-[8px] uppercase tracking-wider text-white/40 block">
-                                    Venue/Location
-                                  </span>
-                                  <span className="text-xs font-bold text-white block truncate">
-                                    {req.ground?.name ||
-                                      req.customLocation?.address ||
-                                      "Custom Coords"}
-                                  </span>
-                                </div>
-                                <div>
-                                  <span className="text-[8px] uppercase tracking-wider text-white/40 block">
-                                    Budget Scope
-                                  </span>
-                                  <span className="text-xs font-bold text-red-400">
-                                    ₹{req.minBudget} - ₹{req.maxBudget}
-                                  </span>
-                                </div>
-                              </div>
-
-                              <div className="pt-3 border-t border-white/5 flex items-center gap-2 mt-2">
-                                <div className="flex items-center gap-1.5 text-[10px] text-gray-500 uppercase font-bold tracking-widest">
-                                  <Calendar
-                                    size={10}
-                                    className="text-red-400"
-                                  />{" "}
-                                  {req.matchDate || "Flexible"}
-                                  <Clock
-                                    size={10}
-                                    className="text-red-400 ml-2"
-                                  />{" "}
-                                  {req.matchStartTime || "TBD"} -{" "}
-                                  {req.matchEndTime || "TBD"}
-                                </div>
-                              </div>
-
-                              <div className="pt-3 border-t border-white/5 flex items-center justify-between flex-wrap gap-2 mt-2">
-                                <span className="text-[8px] text-gray-500 uppercase tracking-widest font-bold">
-                                  Requested:{" "}
-                                  {new Date(req.createdAt).toLocaleDateString(
-                                    "en-GB"
-                                  )}{" "}
-                                  at{" "}
-                                  {new Date(req.createdAt).toLocaleTimeString(
-                                    [],
-                                    { hour: "2-digit", minute: "2-digit" }
-                                  )}
-                                </span>
-
-                                <Button
-                                  onClick={() => handleRetryMatch(req)}
-                                  className="px-3 py-1.5 bg-primary/10 hover:bg-primary hover:text-black border border-primary/20 text-primary text-[8px] font-black uppercase tracking-widest rounded-[6px] transition-all flex items-center gap-1.5 active:scale-95"
-                                >
-                                  <RefreshCw size={10} /> Retry Search
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
+                            req={req}
+                            onRetry={handleRetryMatch}
+                            isFailed={true}
+                          />
                         ))}
                       </div>
                     </div>

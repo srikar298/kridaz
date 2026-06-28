@@ -1766,6 +1766,17 @@ export const getUserOnDemandBookings = async (req, res) => {
       },
       include: {
         ground: true,
+        offers: {
+          include: {
+            professional: {
+              include: {
+                user: {
+                  select: { name: true, profilePicture: true },
+                },
+              },
+            },
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -1780,6 +1791,17 @@ export const getUserOnDemandBookings = async (req, res) => {
       },
       include: {
         ground: true,
+        offers: {
+          include: {
+            professional: {
+              include: {
+                user: {
+                  select: { name: true, profilePicture: true },
+                },
+              },
+            },
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -1792,6 +1814,17 @@ export const getUserOnDemandBookings = async (req, res) => {
       },
       include: {
         ground: true,
+        offers: {
+          include: {
+            professional: {
+              include: {
+                user: {
+                  select: { name: true, profilePicture: true },
+                },
+              },
+            },
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });

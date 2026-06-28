@@ -5,6 +5,7 @@ import { followUser, unfollowUser } from "@redux/slices/authSlice";
 import axiosInstance from "@hooks/useAxiosInstance";
 import { motion } from "framer-motion";
 import ProfessionalCard from "../components/ProfessionalCard";
+import LiveMatchSearchCard from "@features/turf/components/LiveMatchSearchCard";
 import MatchRequestModal from "../components/MatchRequestModal";
 import LocationVenuePicker from "../../../shared/components/modals/LocationVenuePicker";
 import { AdBannerSection } from "../../../shared/components/Marketing/AdBannerSection";
@@ -143,6 +144,7 @@ export default function FindProfessionals() {
     }
   );
   const assignedBookings = bookingsData?.bookings || [];
+  const activeRequests = bookingsData?.activeRequests || [];
   const { socket } = useSocket();
 
   // Sync state to URL
@@ -424,7 +426,7 @@ export default function FindProfessionals() {
 
   return (
     <div className="min-h-screen bg-[#000000] text-white px-0 pb-20 font-sans relative overflow-x-hidden">
-      <div className="max-w-7xl mx-auto px-4 space-y-6 mt-6">
+      <div className="max-w-7xl mx-auto px-4 space-y-6 mt-2">
         {!isSearchExpanded && (
           <div className="space-y-6">
 
@@ -558,6 +560,33 @@ export default function FindProfessionals() {
                     </button>
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 3.5. Live Match Search */}
+        {activeRequests && activeRequests.length > 0 && (
+          <div className="mb-6 space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="text-[10px] font-black uppercase text-primary tracking-widest flex items-center gap-2">
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+                Live Match Search ({activeRequests.length})
+              </h4>
+              <Button
+                variant="ghost"
+                onClick={() => navigate("/booking-history?subTab=professionals")}
+                className="text-[10px] text-gray-400 hover:text-white uppercase tracking-widest font-bold px-2 py-1 h-auto"
+              >
+                View all
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {activeRequests.map((req) => (
+                <LiveMatchSearchCard key={req.id} req={req} />
               ))}
             </div>
           </div>
