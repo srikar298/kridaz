@@ -116,6 +116,16 @@ const prisma = basePrisma.$extends({
           return processSocialAccounts(user.socialAccounts, "decrypt");
         },
       },
+      profilePicture: {
+        needs: { profilePicture: true, name: true },
+        compute(user) {
+          if (user.profilePicture && user.profilePicture !== "/default-avatar.png") {
+            return user.profilePicture;
+          }
+          const seed = user.name || "User";
+          return `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(seed)}`;
+        }
+      }
     },
   },
 });
