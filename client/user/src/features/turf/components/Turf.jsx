@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import TurfCardMobile from "./TurfCardMobile.jsx";
+import VenueCard from "./VenueCard";
 import TurfCardSkeleton from "@components/ui/TurfCardSkeleton.jsx";
 import useTurfData from "../hooks/useTurfData.jsx";
 import SearchTurf from "@components/search/SearchTurf.jsx";
@@ -24,6 +25,7 @@ import { Button, Input } from "@kridaz/ui";
  * Turf — Venue discovery page.
  */
 const Turf = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const searchFilters = useSelector((state) => state.turf.filters);
   const [userLocation, setUserLocation] = useState(null);
@@ -172,17 +174,12 @@ const Turf = () => {
             {turfs.map((turf, idx) => (
               <div
                 key={turf._id}
-                className="animate-fade-in-up"
+                className="animate-fade-in-up flex justify-center w-full"
                 style={{ animationDelay: `${idx * 80}ms` }}
               >
-                <TurfCardMobile
-                  turf={turf}
-                  featured={idx === 0 && locationStatus === "granted"}
-                  distance={
-                    turf.distance != null
-                      ? `${(turf.distance / 1000).toFixed(1)} km`
-                      : null
-                  }
+                <VenueCard
+                  t={turf}
+                  onClick={() => navigate(`/venue/${turf._id || turf.id}`)}
                 />
               </div>
             ))}
@@ -243,15 +240,12 @@ const Turf = () => {
                 ) : (
                   <div className="grid grid-cols-1 gap-6 md:gap-8 max-w-md mx-auto">
                     {recommendations.map((t) => (
-                      <TurfCardMobile
-                        key={t.id || t._id}
-                        turf={t}
-                        distance={
-                          t.distance
-                            ? `${(t.distance / 1000).toFixed(1)} km Away`
-                            : "Nearby"
-                        }
-                      />
+                      <div key={t.id || t._id} className="flex justify-center w-full">
+                        <VenueCard
+                          t={t}
+                          onClick={() => navigate(`/venue/${t._id || t.id}`)}
+                        />
+                      </div>
                     ))}
                   </div>
                 )}
