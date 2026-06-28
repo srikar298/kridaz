@@ -13,7 +13,7 @@ import toast from "react-hot-toast";
 import { Capacitor } from "@capacitor/core";
 import { useSelector } from "react-redux";
 import { Button, Input } from "@kridaz/ui";
-
+import { fetchCountryCodes } from "@utils/locationService";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -24,6 +24,21 @@ const ForgotPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { isLoggedIn } = useSelector((state) => state.auth);
+  
+  const [countryCode, setCountryCode] = useState("+91");
+  const [countryCodeOptions, setCountryCodeOptions] = useState([]);
+
+  useEffect(() => {
+    const loadCountryCodes = async () => {
+      const codes = await fetchCountryCodes();
+      if (codes && codes.length > 0) {
+        setCountryCodeOptions(codes.filter((c) => c.dial_code !== "+91"));
+      }
+    };
+    loadCountryCodes();
+  }, []);
+
+  const isPhoneInput = /^\d+$/.test(email);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -43,13 +58,21 @@ const ForgotPassword = () => {
 
     setLoading(true);
     try {
+      const finalEmail = isPhoneInput ? countryCode + email : email;
       const res = await axiosInstance.post(
         "/api/user/auth/forgot-password-otp",
-        { email }
+        { email: finalEmail }
       );
       if (res.data.success) {
         if (res.data.requiresOtp) {
-          toast.success("OTP sent to your phone");
+          const payload = {
+            phone: finalEmail.startsWith("+") ? finalEmail.replace("+", "") : finalEmail,
+          };
+          const otpRes = await axiosInstance.post(
+            "/api/user/auth/send-otp",
+            payload
+          );
+          toast.success(otpRes.data?.message || "OTP sent to your phone");
           setStep(2);
         } else {
           toast.success(res.data.message || "OTP sent!");
@@ -105,8 +128,9 @@ const ForgotPassword = () => {
 
     setLoading(true);
     try {
+      const finalEmail = isPhoneInput ? countryCode + email : email;
       const res = await axiosInstance.post("/api/user/auth/reset-password", {
-        email,
+        email: finalEmail,
         otp: otp,
         newPassword,
       });
@@ -174,13 +198,36 @@ const ForgotPassword = () => {
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/30 group-focus-within:text-primary transition-colors">
                     <Mail size={18} />
                   </div>
+                  {isPhoneInput && (
+                    <select
+                      value={countryCode}
+                      onChange={(e) => setCountryCode(e.target.value)}
+                      className="absolute left-10 inset-y-0 my-auto h-full z-10 bg-transparent text-white text-sm outline-none cursor-pointer appearance-none w-[60px] animate-fade-in focus:outline-none"
+                    >
+                      <option value="+91" className="text-black">
+                        +91
+                      </option>
+                      {countryCodeOptions.map((c, i) => (
+                        <option key={i} value={c.dial_code} className="text-black">
+                          {c.dial_code}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                   <Input
                     type="text"
                     required
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (/^\d+$/.test(val)) {
+                        setEmail(val.slice(0, 10));
+                      } else {
+                        setEmail(val);
+                      }
+                    }}
                     placeholder="Enter registered email or phone"
-                    className="w-full bg-white/5 border border-white/10 rounded-[8px] py-4 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 transition-all text-sm font-bold"
+                    className={`w-full bg-white/5 border border-white/10 rounded-[8px] py-4 ${isPhoneInput ? "pl-28" : "pl-12"} pr-4 text-white focus:outline-none focus:border-primary/50 transition-all text-sm font-bold`}
                   />
                 </div>
               </div>
