@@ -19,7 +19,7 @@ import { meiliClient } from "../../config/search.js";
 // --- USER OPERATIONS ---
 
 export const getAllTurfs = async (req, res) => {
-  const { searchTerm, city, state, lat, lng, radius, limit, page } = req.query;
+  const { searchTerm, city, state, lat, lng, radius, limit, page, venueTypes, sportType, minPrice, maxPrice } = req.query;
   try {
     const isVal = (v) =>
       v && v !== "" && v !== "null" && v !== "undefined" && v !== "Select";
@@ -30,6 +30,20 @@ export const getAllTurfs = async (req, res) => {
     };
 
     if (isVal(state)) where.state = { contains: state, mode: "insensitive" };
+    
+    if (isVal(venueTypes)) {
+      where.groundTypes = { hasSome: venueTypes.split(",").map((v) => v.trim()) };
+    }
+    
+    if (isVal(sportType)) {
+      where.sportTypes = { has: sportType };
+    }
+    
+    if (isVal(minPrice) || isVal(maxPrice)) {
+      where.pricePerHour = {};
+      if (isVal(minPrice)) where.pricePerHour.gte = parseFloat(minPrice);
+      if (isVal(maxPrice)) where.pricePerHour.lte = parseFloat(maxPrice);
+    }
 
     if (isVal(searchTerm) && searchTerm !== "All") {
       where.OR = [

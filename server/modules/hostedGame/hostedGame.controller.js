@@ -943,7 +943,7 @@ export const createHostedGame = async (req, res) => {
 
 export const getAllHostedGames = async (req, res) => {
   try {
-    const { city, state, gameType, limit, page } = req.query;
+    const { city, state, gameType, limit, page, query, joinable, live, minPrice, maxPrice } = req.query;
 
     const take = limit ? Math.min(parseInt(limit), 50) : 20;
     const skip = page ? (parseInt(page) - 1) * take : 0;
@@ -982,14 +982,38 @@ export const getAllHostedGames = async (req, res) => {
       },
     };
 
+    const where = {
+      status: "ACTIVE",
+      deletedAt: null,
+      ...(city ? { city: { contains: city, mode: "insensitive" } } : {}),
+      ...(state ? { state: { contains: state, mode: "insensitive" } } : {}),
+      ...(gameType ? { gameType: { contains: gameType, mode: "insensitive" } } : {}),
+    };
+
+    if (query && query !== "") {
+      where.OR = [
+        { city: { contains: query, mode: "insensitive" } },
+        { state: { contains: query, mode: "insensitive" } },
+        { turf: { name: { contains: query, mode: "insensitive" } } },
+        { host: { name: { contains: query, mode: "insensitive" } } },
+        { name: { contains: query, mode: "insensitive" } },
+      ];
+    }
+
+    if (joinable === 'true') {
+      where.scoringStatus = "NOT_STARTED";
+    } else if (live === 'true') {
+      where.scoringStatus = "IN_PROGRESS";
+    }
+
+    if (minPrice || maxPrice) {
+      where.perPlayerCharge = {};
+      if (minPrice) where.perPlayerCharge.gte = parseFloat(minPrice);
+      if (maxPrice) where.perPlayerCharge.lte = parseFloat(maxPrice);
+    }
+
     const games = await prisma.hostedGame.findMany({
-      where: {
-        status: "ACTIVE",
-        deletedAt: null,
-        ...(city ? { city: { contains: city, mode: "insensitive" } } : {}),
-        ...(state ? { state: { contains: state, mode: "insensitive" } } : {}),
-        ...(gameType ? { gameType } : {}),
-      },
+      where,
       orderBy: [{ date: "asc" }, { createdAt: "desc" }],
       take,
       skip,

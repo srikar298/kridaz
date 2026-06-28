@@ -41,6 +41,8 @@ export const MarketingManagement = () => {
       ? banners.filter((b) => b.type === "PROMOTION")
       : activeTab === "professional-banners"
       ? banners.filter((b) => b.type === "PROFESSIONAL")
+      : activeTab === "home-quick-links"
+      ? banners.filter((b) => b.type === "QUICK_LINK")
       : activeTab === "quick-links"
       ? quickLinks
       : banners.filter((b) => b.type === "HOME" || !b.type);
@@ -124,7 +126,7 @@ export const MarketingManagement = () => {
 
       let endpoint = activeTab === "quick-links" ? "quick-links" : "banners";
 
-      if (activeTab === "banners" || activeTab === "promotions" || activeTab === "quick-links" || activeTab === "professional-banners") {
+      if (activeTab === "banners" || activeTab === "promotions" || activeTab === "quick-links" || activeTab === "professional-banners" || activeTab === "home-quick-links") {
         const fData = new FormData();
         fData.append("title", formData.title || `Banner ${Date.now()}`);
         fData.append("description", formData.description || "");
@@ -135,6 +137,7 @@ export const MarketingManagement = () => {
           let bannerType = "HOME";
           if (activeTab === "promotions") bannerType = "PROMOTION";
           if (activeTab === "professional-banners") bannerType = "PROFESSIONAL";
+          if (activeTab === "home-quick-links") bannerType = "QUICK_LINK";
           fData.append("type", bannerType);
         }
 
@@ -246,6 +249,15 @@ export const MarketingManagement = () => {
           </div>
         </Button>
         <Button
+          onClick={() => setActiveTab("home-quick-links")}
+          className={`px-6 py-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeTab === "home-quick-links" ? "border-lime-500 text-lime-500" : "border-transparent text-gray-400 hover:text-white"}`}
+        >
+          <div className="flex items-center gap-2">
+            <Layout size={16} />
+            Home UI Quick Links
+          </div>
+        </Button>
+        <Button
           onClick={() => setActiveTab("promotions")}
           className={`px-6 py-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeTab === "promotions" ? "border-lime-500 text-lime-500" : "border-transparent text-gray-400 hover:text-white"}`}
         >
@@ -313,9 +325,6 @@ export const MarketingManagement = () => {
                   <h3 className="font-bold text-white truncate pr-4">
                     {item.title}
                   </h3>
-                  <span className="text-xs font-mono text-lime-500">
-                    #{item.order}
-                  </span>
                 </div>
                 {item.description && (
                   <p className="text-[11px] text-gray-400 line-clamp-2 mb-2 leading-relaxed">

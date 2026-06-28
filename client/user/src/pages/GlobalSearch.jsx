@@ -53,7 +53,10 @@ const GlobalSearch = () => {
   
   const [joinableGamesOnly, setJoinableGamesOnly] = useState(false);
   const [liveGamesOnly, setLiveGamesOnly] = useState(true);
-  const [hasPostsOnly, setHasPostsOnly] = useState(false);
+  
+  const [minPrice, setMinPrice] = useState(10);
+  const [maxPrice, setMaxPrice] = useState(500);
+  const [sportType, setSportType] = useState("");
 
   const [activeVenueIndex, setActiveVenueIndex] = useState(0);
   const scrollRef = useRef(null);
@@ -114,8 +117,11 @@ const GlobalSearch = () => {
         triggerSearchPlayers({
           query: debouncedQuery,
           roles: selectedRoles.join(","),
+          sportType,
           page: 1,
           limit: 10,
+          minPrice,
+          maxPrice,
         });
       }
 
@@ -125,10 +131,14 @@ const GlobalSearch = () => {
         activeQuickFilter === "Live"
       ) {
         triggerGetFeed({
-          searchTerm: debouncedQuery,
+          search: debouncedQuery,
           page: 1,
           limit: 10,
           roles: selectedRoles.join(","),
+          sportType,
+          live: liveGamesOnly,
+          minPrice,
+          maxPrice,
         });
       }
 
@@ -139,6 +149,9 @@ const GlobalSearch = () => {
             params: {
               searchTerm: debouncedQuery,
               venueTypes: selectedVenueTypes.join(","),
+              minPrice,
+              maxPrice,
+              sportType,
             },
           })
           .then((res) => setVenues(res.data.turfs || []))
@@ -150,7 +163,14 @@ const GlobalSearch = () => {
         setLoadingGames(true);
         axiosInstance
           .get("/api/hosted-game/list", {
-            params: { query: debouncedQuery },
+            params: { 
+              query: debouncedQuery,
+              joinable: joinableGamesOnly,
+              live: liveGamesOnly,
+              minPrice,
+              maxPrice,
+              gameType: sportType,
+            },
           })
           .then((res) => setGames(res.data.games || []))
           .catch(console.error)
@@ -164,6 +184,11 @@ const GlobalSearch = () => {
     selectedRoles,
     selectedVenueTypes,
     activeQuickFilter,
+    joinableGamesOnly,
+    liveGamesOnly,
+    minPrice,
+    maxPrice,
+    sportType,
   ]);
 
   const loadedPlayers = playersData?.players || [];
@@ -586,9 +611,11 @@ const GlobalSearch = () => {
               onClick={() => {
                 setSelectedRoles([]);
                 setSelectedVenueTypes([]);
+                setSportType("");
                 setJoinableGamesOnly(false);
                 setLiveGamesOnly(false);
-                setHasPostsOnly(false);
+                setMinPrice(0);
+                setMaxPrice(0);
               }}
               className="bg-transparent border-none text-white/70 hover:text-white text-[12px] font-semibold p-0 h-auto"
             >
@@ -650,6 +677,32 @@ const GlobalSearch = () => {
 
             <div className="w-full h-px bg-white/10" />
 
+            {/* Sport Type */}
+            <div>
+              <h4 className="text-[10px] font-bold uppercase text-white/50 tracking-widest mb-3">
+                Sport Type
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {["Cricket", "Football", "Badminton", "Tennis", "Basketball"].map((type) => {
+                  const isSelected = sportType === type;
+                  return (
+                    <Button
+                      key={type}
+                      onClick={() => setSportType(isSelected ? "" : type)}
+                      className={`whitespace-nowrap px-3 py-1 h-auto rounded-[6px] text-[9px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1 ${isSelected
+                          ? "bg-[#2a2a2a] border border-[#bbf455] text-white"
+                          : "bg-[#1b1b1b] border border-[#323232] text-white/50 hover:bg-[#202020]"
+                        }`}
+                    >
+                      {type}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="w-full h-px bg-white/10" />
+
             {/* Game Status */}
             <div>
               <h4 className="text-[10px] font-bold uppercase text-white/50 tracking-widest mb-3">
@@ -674,49 +727,35 @@ const GlobalSearch = () => {
                     <div className={`bg-white w-3 h-3 rounded-full shadow-md transform transition-transform duration-300 ${liveGamesOnly ? 'translate-x-4' : 'translate-x-0'}`} />
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[12px] font-semibold text-white/80">Has Posts</span>
-                  <div
-                    onClick={() => setHasPostsOnly(!hasPostsOnly)}
-                    className={`w-9 h-5 rounded-full flex items-center px-1 cursor-pointer transition-colors duration-300 ${hasPostsOnly ? 'bg-[#bbf455]' : 'bg-[#333]'}`}
-                  >
-                    <div className={`bg-white w-3 h-3 rounded-full shadow-md transform transition-transform duration-300 ${hasPostsOnly ? 'translate-x-4' : 'translate-x-0'}`} />
-                  </div>
-                </div>
               </div>
             </div>
 
             <div className="w-full h-px bg-white/10" />
 
-            {/* Booking Fee Mock */}
+            {/* Booking Fee */}
             <div>
-              <h4 className="text-[10px] font-bold uppercase text-white/50 tracking-widest mb-2">
+              <h4 className="text-[10px] font-bold uppercase text-white/50 tracking-widest mb-3">
                 Booking Fee (Price Range)
               </h4>
-              <p className="text-[11px] text-white/40 mb-3">Average booking fee per hour is $45</p>
-
-              {/* Mock Histogram */}
-              <div className="flex items-end gap-[2px] h-[40px] w-full px-2">
-                {[10, 20, 35, 55, 80, 95, 100, 80, 55, 40, 25, 15, 10].map((val, i) => (
-                  <div key={i} className={`flex-1 rounded-t-[2px] ${i >= 3 && i <= 8 ? 'bg-[#d9d9d9]' : 'bg-[#333]'}`} style={{ height: `${val}%` }} />
-                ))}
-              </div>
-
-              {/* Slider Track */}
-              <div className="relative w-full h-1 bg-[#333] mt-2 rounded-full mb-5">
-                <div className="absolute left-[25%] right-[35%] top-0 bottom-0 bg-[#d9d9d9] rounded-full"></div>
-                <div className="absolute left-[25%] top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg"></div>
-              </div>
-
-              {/* Min/Max Inputs */}
+              
               <div className="flex gap-3">
                 <div className="flex-1 bg-[#161616] rounded-[6px] p-2 px-3">
-                  <div className="text-[9px] text-white/40 mb-0.5">Minimum</div>
-                  <div className="text-[12px] font-semibold text-white">Rs 10</div>
+                  <div className="text-[9px] text-white/40 mb-0.5">Minimum (Rs)</div>
+                  <input
+                    type="number"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(Number(e.target.value))}
+                    className="w-full bg-transparent text-[12px] font-semibold text-white outline-none"
+                  />
                 </div>
                 <div className="flex-1 bg-[#161616] rounded-[6px] p-2 px-3">
-                  <div className="text-[9px] text-white/40 mb-0.5">Maximum</div>
-                  <div className="text-[12px] font-semibold text-white">Rs 500+</div>
+                  <div className="text-[9px] text-white/40 mb-0.5">Maximum (Rs)</div>
+                  <input
+                    type="number"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(Number(e.target.value))}
+                    className="w-full bg-transparent text-[12px] font-semibold text-white outline-none"
+                  />
                 </div>
               </div>
             </div>

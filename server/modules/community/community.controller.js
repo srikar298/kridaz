@@ -328,7 +328,7 @@ export const getPosts = async (req, res) => {
     const rawId = req.user?.id || req.admin?.id;
     const userId = await resolveUserId(rawId);
 
-    const { search, page = 1, limit = 10, following, lat, lng, excludeType, postType } = req.query;
+    const { search, page = 1, limit = 10, following, lat, lng, excludeType, postType, roles, sportType } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const take = parseInt(limit);
 
@@ -388,6 +388,25 @@ export const getPosts = async (req, res) => {
 
     if (authorFilter) {
       conditions.push(authorFilter);
+    }
+    
+    // 3. Roles Filter
+    if (roles && roles !== "") {
+      const rolesArray = roles.split(',').map(r => r.trim());
+      conditions.push({
+        author: {
+          role: { in: rolesArray }
+        }
+      });
+    }
+
+    // 4. Sport Type Filter
+    if (sportType && sportType !== "") {
+      conditions.push({
+        author: {
+          sportTypes: { has: sportType }
+        }
+      });
     }
 
     if (search) {

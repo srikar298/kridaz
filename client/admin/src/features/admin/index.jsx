@@ -11,7 +11,7 @@ export { default as VenueApprovalDetail } from "./Turf/VenueApprovalDetail";
 export { default as TransactionSection } from "./Transactions/TransactionSection";
 export { FeatureFlags } from "./FeatureFlags";
 export { MarketingManagement } from "./Marketing/MarketingManagement";
-export { HomeScreenUI } from "./HomeScreenUI/HomeScreenUI";
+
 export { BlogManagement } from "./Blogs/BlogManagement";
 export { default as CommunityManagement } from "./Community/CommunityManagement";
 export { default as CommunityPosts } from "./Community/CommunityPosts";

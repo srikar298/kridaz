@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import ProfessionalCard from "../components/ProfessionalCard";
 import MatchRequestModal from "../components/MatchRequestModal";
 import LocationVenuePicker from "../../../shared/components/modals/LocationVenuePicker";
+import { AdBannerSection } from "../../../shared/components/Marketing/AdBannerSection";
 import {
   Search,
   MapPin,
@@ -522,43 +523,8 @@ export default function FindProfessionals() {
 
         {/* 4. Offers for you */}
         {adBanners.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-white text-base font-bold font-['Open_Sans']">Offers for you</h3>
-            </div>
-            <div className="flex overflow-x-auto gap-4 pb-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden">
-              {adBanners.map((banner) => (
-                <a 
-                  key={banner.id} 
-                  href={banner.targetUrl || "#"} 
-                  target={banner.targetUrl ? "_blank" : "_self"}
-                  rel="noopener noreferrer"
-                  className="min-w-[280px] sm:min-w-[320px] bg-gradient-to-r from-[#211135] to-[#120a1c] border border-[#3b1d60] rounded-2xl p-5 flex items-center justify-between shadow-2xl relative overflow-hidden group hover:border-primary/50 transition-colors shrink-0 snap-start block"
-                >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full pointer-events-none group-hover:bg-primary/20 transition-colors" />
-                  
-                  {banner.imageUrl ? (
-                    <div className="absolute inset-0 z-0">
-                      <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover transition-opacity" />
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-4 relative z-10 w-full">
-                      <div className="w-12 h-12 bg-[#311c4c] rounded-xl flex items-center justify-center border border-white/10 shrink-0">
-                        <span className="text-white font-black text-xl">%</span>
-                      </div>
-                      <div className="flex-1">
-                        {banner.description && (
-                          <p className="text-white/90 text-sm font-medium mt-0.5">{banner.description}</p>
-                        )}
-                      </div>
-                      <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 group-hover:text-primary transition-colors">
-                        <ArrowLeft size={16} className="rotate-135" />
-                      </div>
-                    </div>
-                  )}
-                </a>
-              ))}
-            </div>
+          <div className="-mx-4 sm:mx-0">
+            <AdBannerSection banners={adBanners} loading={false} />
           </div>
         )}
 

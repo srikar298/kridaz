@@ -490,8 +490,8 @@ export default function Home() {
                 <h2 className="text-[16px] font-semibold text-white tracking-wide" style={HEADING_STYLE}>
                   Upcoming Booking
                 </h2>
-                <Link to="/profile?tab=bookings" className="text-[12px] font-medium text-[#bbf455]">
-                  View More &gt;
+                <Link to="/booking-history" className="text-[12px] font-medium text-[#bbf455]">
+                  View History
                 </Link>
               </div>
 
@@ -531,7 +531,7 @@ export default function Home() {
                     return (
                       <Link
                         key={booking._id || booking.id}
-                        to={`/venue/${booking.turfId?._id || booking.turfId}`}
+                        to={`/booking-pass/${booking._id || booking.id}`}
                         className="min-w-[190px] w-[190px] h-[84px] shrink-0 snap-start bg-[#161616] border border-white/10 rounded-[12px] p-[14px] flex items-center gap-3 hover:bg-[#202020] transition-colors"
                       >
                         {/* Date Box */}
@@ -546,11 +546,11 @@ export default function Home() {
                             {dayStr} • {timeStr}
                           </div>
                           <div className="text-[12px] font-bold text-white truncate w-full">
-                            {booking.turfId?.name || "Play Arena"}
+                            {booking.turf?.name || booking.turfId?.name || "Play Arena"}
                           </div>
                           <div className="text-[10px] text-white/50 flex items-center truncate w-full">
                             <MapPin size={10} className="inline mr-1 shrink-0" />
-                            <span className="truncate">{booking.turfId?.city || booking.turfId?.location?.city || "Unknown Location"}</span>
+                            <span className="truncate">{booking.turf?.city || booking.turf?.location?.city || booking.turfId?.city || booking.turfId?.location?.city || "Unknown Location"}</span>
                           </div>
                         </div>
                       </Link>

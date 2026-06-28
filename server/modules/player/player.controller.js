@@ -222,8 +222,8 @@ export const getPublicPlayers = async (req, res) => {
 
 export const searchPlayers = async (req, res) => {
   try {
-    const { query, page = 1, limit = 10 } = req.query;
-    if (!query) {
+    const { query, page = 1, limit = 10, roles, sportType } = req.query;
+    if (!query && !roles && !sportType) {
       return res.status(200).json({ success: true, players: [] });
     }
 
@@ -234,16 +234,29 @@ export const searchPlayers = async (req, res) => {
     if (req.user?.id) {
       currentUserId = await resolveUserId(req.user.id);
     }
+    
+    const where = {
+      ...(currentUserId ? { id: { not: currentUserId } } : {}),
+    };
+    
+    if (query && query !== "") {
+      where.OR = [
+        { name: { contains: query, mode: "insensitive" } },
+        { username: { contains: query, mode: "insensitive" } },
+        { phone: { contains: query } },
+      ];
+    }
+    
+    if (roles && roles !== "") {
+      where.role = { in: roles.split(',').map(r => r.trim()) };
+    }
+    
+    if (sportType && sportType !== "") {
+      where.sportTypes = { has: sportType };
+    }
 
     const users = await prisma.user.findMany({
-      where: {
-        OR: [
-          { name: { contains: query, mode: "insensitive" } },
-          { username: { contains: query, mode: "insensitive" } },
-          { phone: { contains: query } },
-        ],
-        ...(currentUserId ? { id: { not: currentUserId } } : {}),
-      },
+      where,
       select: {
         id: true,
         name: true,
