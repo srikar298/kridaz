@@ -47,8 +47,9 @@ const PlayerCard = ({
 }) => {
   const playerId = player.id || player._id;
   const isFollowing = followingIds.includes(playerId);
+  const playerName = player.name || player.user?.name || "Anonymous";
   const initials =
-    player.name
+    playerName
       ?.split(" ")
       .map((w) => w[0])
       .join("")
@@ -71,12 +72,12 @@ const PlayerCard = ({
     >
       {/* Background Image or Initials */}
       <img
-        src={player.profilePicture || player.profileImage || player.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${player.name}`}
-        alt={player.name}
+        src={player.profilePicture || player.profileImage || player.image || player.user?.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${playerName}`}
+        alt={playerName}
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale-[20%] group-hover:grayscale-0"
         onError={(e) => {
           e.target.onerror = null;
-          e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${player.name}`;
+          e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${playerName}`;
         }}
       />
 
@@ -98,7 +99,7 @@ const PlayerCard = ({
           className="text-white text-xs font-bold line-clamp-1 mb-0.5"
           style={{ fontFamily: "'Inter', sans-serif" }}
         >
-          {player.name || "Anonymous"}
+          {playerName}
         </h3>
 
         {/* Location: City */}
@@ -589,7 +590,7 @@ const FindPlayers = () => {
       if (res.data.success) {
         if (res.data.players.length > 100 && !hasShownLimitToast) {
           toast("Showing top nearby players. Zoom in to see more.", {
-            icon: "=ƒôì",
+            icon: "📍",
           });
           setHasShownLimitToast(true);
         }

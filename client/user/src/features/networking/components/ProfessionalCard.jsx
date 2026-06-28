@@ -80,11 +80,11 @@ const ProfessionalCard = ({ pro, getInitials }) => {
     >
       {/* Background Image */}
       <img 
-        src={pro.image || pro.profilePicture || pro.user?.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${pro.name}`} 
-        alt={pro.name} 
+        src={pro.image || pro.profilePicture || pro.user?.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${pro.name || pro.user?.name || 'User'}`} 
+        alt={pro.name || pro.user?.name || "Anonymous"} 
         onError={(e) => {
           e.target.onerror = null;
-          e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${pro.name}`;
+          e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${pro.name || pro.user?.name || 'User'}`;
         }}
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
       />
@@ -111,7 +111,7 @@ const ProfessionalCard = ({ pro, getInitials }) => {
       {/* Bottom Content Area */}
       <div className="relative mt-auto p-2.5 z-10 flex flex-col w-full">
         <h4 className="text-[13px] font-bold text-white truncate font-inter mb-1.5 shadow-black drop-shadow-md">
-          {pro.name || "Anonymous"}
+          {pro.name || pro.user?.name || "Anonymous"}
         </h4>
         
         <div className="flex items-end justify-between w-full mt-auto gap-2">
