@@ -382,8 +382,8 @@ export const verifyOtp = asyncHandler(async (req, res) => {
       const firebasePhone = decodedToken.phone_number;
 
       // Ensure the verified phone matches the requested phone
-      // Firebase phone includes country code (e.g., +916205170591).
-      // req.body.phone might be "6205170591" or "+916205170591". We do a loose match or exact.
+      // Firebase phone includes country code (e.g., +919999999999).
+      // req.body.phone might be "9999999999" or "+919999999999". We do a loose match or exact.
       if (
         firebasePhone &&
         (firebasePhone === phone || normalizePhone(firebasePhone) === normalizePhone(phone))
@@ -1090,16 +1090,18 @@ export const loginStep1 = asyncHandler(async (req, res) => {
     const cleanEmail = email.replace(/^\+/, "");
     const withoutCountry =
       cleanEmail.length >= 10 ? cleanEmail.slice(-10) : cleanEmail;
-    if (withoutCountry && withoutCountry !== email) {
-      phoneChecks.push({ phone: withoutCountry });
+
+    if (cleanEmail !== email) {
+      phoneChecks.push({ phone: cleanEmail });
     }
-    if (!email.startsWith("+")) {
-      if (cleanEmail.length > 10) {
-        phoneChecks.push({ phone: `+${cleanEmail}` });
-      } else if (/^\d{10}$/.test(cleanEmail)) {
-        phoneChecks.push({ phone: `+91${cleanEmail}` });
-        phoneChecks.push({ phone: `91${cleanEmail}` });
+    phoneChecks.push({ phone: `+${cleanEmail}` });
+    
+    if (/^\d{10}$/.test(withoutCountry)) {
+      if (withoutCountry !== email && withoutCountry !== cleanEmail) {
+        phoneChecks.push({ phone: withoutCountry });
       }
+      phoneChecks.push({ phone: `+91${withoutCountry}` });
+      phoneChecks.push({ phone: `91${withoutCountry}` });
     }
   }
 
@@ -1182,15 +1184,34 @@ export const loginStep1 = asyncHandler(async (req, res) => {
 export const login = asyncHandler(async (req, res) => {
   let { email, password, otp } = req.body;
   if (email) email = email.toLowerCase();
+
+  let phoneChecks = [{ phone: email }];
+  if (email) {
+    const cleanEmail = email.replace(/^\+/, "");
+    const withoutCountry =
+      cleanEmail.length >= 10 ? cleanEmail.slice(-10) : cleanEmail;
+
+    if (cleanEmail !== email) {
+      phoneChecks.push({ phone: cleanEmail });
+    }
+    phoneChecks.push({ phone: `+${cleanEmail}` });
+    
+    if (/^\d{10}$/.test(withoutCountry)) {
+      if (withoutCountry !== email && withoutCountry !== cleanEmail) {
+        phoneChecks.push({ phone: withoutCountry });
+      }
+      phoneChecks.push({ phone: `+91${withoutCountry}` });
+      phoneChecks.push({ phone: `91${withoutCountry}` });
+    }
+  }
+
   const user = await prisma.user.findFirst({
     where: {
       OR: [
         {
           email,
         },
-        {
-          phone: email,
-        },
+        ...phoneChecks,
       ],
     },
     include: {
