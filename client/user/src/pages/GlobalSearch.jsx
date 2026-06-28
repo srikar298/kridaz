@@ -627,7 +627,7 @@ const GlobalSearch = () => {
 
       {/* Sidebar Panel */}
       <div
-        className={`fixed top-0 right-0 bottom-0 w-full sm:w-[400px] max-w-full bg-[#050505] shadow-2xl z-[1010] transform transition-transform duration-300 ease-in-out ${isFilterOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-[#050505] border-l border-white/10 shadow-2xl z-[1010] transform transition-transform duration-300 ease-in-out ${isFilterOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
