@@ -54,15 +54,8 @@ export const sendWhatsAppMessage = async (
       const otpTemplate = process.env.MSG91_WHATSAPP_OTP_TEMPLATE || "otp_verification";
       if (templateName === otpTemplate && params.length > 0) {
         componentsObj["button_1"] = {
-          type: "button",
-          sub_type: "url",
-          index: 0,
-          parameters: [
-            {
-              type: "text",
-              text: String(params[0]),
-            },
-          ],
+          type: "text",
+          value: String(params[0]),
         };
       }
     } else if (typeof params === "object" && params !== null) {
