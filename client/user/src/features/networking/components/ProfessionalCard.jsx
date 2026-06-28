@@ -79,13 +79,15 @@ const ProfessionalCard = ({ pro, getInitials }) => {
       onClick={() => navigate(`/profile/${pro.userId || pro.id || pro._id}`)}
     >
       {/* Background Image */}
-      {pro.image || pro.profilePicture ? (
-        <img src={pro.image || pro.profilePicture} alt={pro.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-      ) : (
-        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#222] to-[#111] transition-transform duration-500 group-hover:scale-105">
-          <span className="text-primary/30 font-bold text-4xl">{getInitials(pro.name)}</span>
-        </div>
-      )}
+      <img 
+        src={pro.image || pro.profilePicture || pro.user?.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${pro.name}`} 
+        alt={pro.name} 
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${pro.name}`;
+        }}
+        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+      />
 
       {/* Top Gradient for Top Icons */}
       <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/80 to-transparent pointer-events-none" />

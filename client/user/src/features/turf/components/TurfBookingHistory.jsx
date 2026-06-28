@@ -432,7 +432,7 @@ const TurfBookingHistory = () => {
                     </div>
 
                     {similarLoading ? (
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
                         {[...Array(4)].map((_, i) => (
                           <div
                             key={i}
@@ -447,7 +447,7 @@ const TurfBookingHistory = () => {
                         ))}
                       </div>
                     ) : (
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
                         {similarTurfs.map((t) => (
                           <TurfCardMobile
                             key={t.id || t._id}
@@ -480,7 +480,7 @@ const TurfBookingHistory = () => {
                     </div>
 
                     {recsLoading ? (
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
                         {[...Array(4)].map((_, i) => (
                           <div
                             key={i}
@@ -495,7 +495,7 @@ const TurfBookingHistory = () => {
                         ))}
                       </div>
                     ) : (
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
                         {recommendations.map((t) => (
                           <TurfCardMobile
                             key={t.id || t._id}

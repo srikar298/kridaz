@@ -25,7 +25,7 @@ export default function ImageCropperModal({
     try {
       setIsCropping(true);
       const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
-      onCropComplete(croppedImageBlob);
+      await onCropComplete(croppedImageBlob);
     } catch (e) {
       console.error(e);
     } finally {

@@ -862,7 +862,7 @@ export default function Home() {
 
           {/* -- SOCIAL ARENA -- */}
           <div className="!mt-8 px-2">
-            <SocialArenaSection reelsFeed={reelsFeed} />
+            <SocialArenaSection reelsFeed={reelsFeed} reelsLoading={reelsLoading} />
           </div>
 
         </Community>

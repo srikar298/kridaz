@@ -668,6 +668,7 @@ export default function EditProfileModal({ isOpen, onClose, user }) {
             </Button>
             <Button
               type="submit"
+              onClick={handleSubmit}
               disabled={
                 loading ||
                 sendingOtp ||

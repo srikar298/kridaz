@@ -11,6 +11,7 @@ import {
   ThumbsUp,
   MessageCircle,
   Send,
+  ChevronDown,
 } from "lucide-react";
 import { useLazySearchPlayersQuery } from "@redux/api/teamApi";
 import {
@@ -19,8 +20,9 @@ import {
 } from "@redux/api/communityApi";
 import { useGetGroundsQuery } from "@redux/api/gamesApi";
 import axiosInstance from "@hooks/useAxiosInstance";
-import { VenueCard } from "../features/turf";
+import { TurfCardMobile } from "../features/turf";
 import { GameCard } from "../features/games";
+import { TurfCardSkeleton, PostSkeleton } from "../shared/components/ui";
 import { Button, Input } from "@kridaz/ui";
 import { useSelector } from "react-redux";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
@@ -57,6 +59,7 @@ const GlobalSearch = () => {
   const [minPrice, setMinPrice] = useState(10);
   const [maxPrice, setMaxPrice] = useState(500);
   const [sportType, setSportType] = useState("");
+  const [isSportsFilterOpen, setIsSportsFilterOpen] = useState(false);
 
   const [activeVenueIndex, setActiveVenueIndex] = useState(0);
   const scrollRef = useRef(null);
@@ -295,11 +298,32 @@ const GlobalSearch = () => {
                     )}
                   </div>
 
-                  {loadedPlayers.length === 0 && !playersLoading ? (
-                    <div className="text-center py-6 text-white/30 font-bold text-[12px] uppercase tracking-wider">
-                      No players found
-                    </div>
-                  ) : (
+                    {playersLoading ? (
+                      <div
+                        className="grid grid-rows-2 grid-flow-col gap-4 overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20 scroll-smooth"
+                        style={{
+                          maxHeight: "240px",
+                          minHeight: "180px",
+                        }}
+                      >
+                        {[1, 2, 3, 4, 5, 6].map((n) => (
+                          <div
+                            key={n}
+                            className="flex items-center gap-3 bg-neutral-900/50 border border-white/5 p-3 rounded-[8px] min-w-[220px] max-w-[280px] shrink-0 animate-pulse"
+                          >
+                            <div className="w-[42px] h-[42px] rounded-full bg-white/10 shrink-0" />
+                            <div className="flex-1 min-w-0 space-y-2">
+                              <div className="h-4 bg-white/10 rounded w-3/4" />
+                              <div className="h-3 bg-white/10 rounded w-1/2" />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : loadedPlayers.length === 0 ? (
+                      <div className="text-center py-6 text-white/30 font-bold text-[12px] uppercase tracking-wider">
+                        No players found
+                      </div>
+                    ) : (
                     <div
                       className="grid grid-rows-2 grid-flow-col gap-4 overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20 scroll-smooth"
                       style={{
@@ -369,19 +393,24 @@ const GlobalSearch = () => {
                     )}
                   </div>
 
-                  {venues.length === 0 && !loadingVenues ? (
+                  {loadingVenues ? (
+                    <div className="grid grid-cols-1 gap-4">
+                      {[1, 2, 3].map((n) => (
+                        <TurfCardSkeleton key={n} />
+                      ))}
+                    </div>
+                  ) : venues.length === 0 ? (
                     <div className="text-center py-6 text-white/30 font-bold text-[12px] uppercase tracking-wider">
                       No venues found
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                       {venues.map((t) => (
-                        <div key={t._id} className="aspect-[3/4]">
-                          <VenueCard
-                            t={t}
-                            onClick={() => navigate(`/venue/${t._id || t.id}`)}
-                          />
-                        </div>
+                        <TurfCardMobile
+                          key={t._id || t.id}
+                          turf={t}
+                          onClick={() => navigate(`/venue/${t._id || t.id}`)}
+                        />
                       ))}
                     </div>
                   )}
@@ -408,11 +437,28 @@ const GlobalSearch = () => {
                     )}
                   </div>
 
-                  {games.length === 0 && !loadingGames ? (
-                    <div className="text-center py-6 text-white/30 font-bold text-[12px] uppercase tracking-wider">
-                      No games found
-                    </div>
-                  ) : (
+                    {loadingGames ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {[1, 2, 3, 4].map((n) => (
+                          <div key={n} className="h-[180px] bg-neutral-900/50 border border-white/5 rounded-[16px] animate-pulse p-4 space-y-4">
+                            <div className="flex justify-between">
+                              <div className="h-4 bg-white/10 rounded w-1/3" />
+                              <div className="h-4 bg-white/10 rounded w-1/4" />
+                            </div>
+                            <div className="h-6 bg-white/10 rounded w-1/2" />
+                            <div className="h-4 bg-white/10 rounded w-2/3 mt-6" />
+                            <div className="flex gap-2">
+                              <div className="h-8 bg-white/10 rounded-full w-8" />
+                              <div className="h-8 bg-white/10 rounded-full w-8" />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : games.length === 0 ? (
+                      <div className="text-center py-6 text-white/30 font-bold text-[12px] uppercase tracking-wider">
+                        No games found
+                      </div>
+                    ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {games.map((g) => (
                         <GameCard key={g.id || g._id} game={g} />
@@ -443,11 +489,17 @@ const GlobalSearch = () => {
                     )}
                   </div>
 
-                  {loadedPosts.length === 0 && !postsLoading ? (
-                    <div className="text-center py-6 text-white/30 font-bold text-[12px] uppercase tracking-wider">
-                      No posts found
-                    </div>
-                  ) : (
+                    {postsLoading ? (
+                      <div className="space-y-6">
+                        {[1, 2].map((n) => (
+                          <PostSkeleton key={n} />
+                        ))}
+                      </div>
+                    ) : loadedPosts.length === 0 ? (
+                      <div className="text-center py-6 text-white/30 font-bold text-[12px] uppercase tracking-wider">
+                        No posts found
+                      </div>
+                    ) : (
                     <div className="space-y-6">
                       {loadedPosts.map((post) => (
                         <PostItem
@@ -580,13 +632,16 @@ const GlobalSearch = () => {
       </div>
 
       {/* Filter Sidebar Overlay */}
-      {/* Backdrop */}
-      {isFilterOpen && (
-        <div
-          className="fixed inset-0 z-[1005] bg-black/60 backdrop-blur-sm transition-opacity"
-          onClick={() => setIsFilterOpen(false)}
-        ></div>
-      )}
+        {/* Overlay Backdrop for Mobile Filters & Sports */}
+        {(isFilterOpen || isSportsFilterOpen) && (
+          <div
+            className="fixed inset-0 bg-black/80 z-[60] backdrop-blur-sm"
+            onClick={() => {
+              setIsFilterOpen(false);
+              setIsSportsFilterOpen(false);
+            }}
+          />
+        )}
 
       {/* Sidebar Panel */}
       <div
@@ -626,12 +681,12 @@ const GlobalSearch = () => {
           {/* Filter Content */}
           <div className="flex-1 overflow-y-auto p-5 space-y-5 no-scrollbar">
             {/* Roles */}
-            <div>
-              <h4 className="text-[10px] font-bold uppercase text-white/50 tracking-widest mb-3">
-                Roles
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {ROLES.map((role) => {
+              <div>
+                <h4 className="text-[10px] font-bold uppercase text-white/50 tracking-widest mb-3">
+                  Roles
+                </h4>
+                <div className="flex flex-nowrap overflow-x-auto no-scrollbar gap-2 pb-2">
+                  {ROLES.map((role) => {
                   const isSelected = selectedRoles.includes(role);
                   return (
                     <Button
@@ -652,12 +707,12 @@ const GlobalSearch = () => {
             <div className="w-full h-px bg-white/10" />
 
             {/* Venue Type */}
-            <div>
-              <h4 className="text-[10px] font-bold uppercase text-white/50 tracking-widest mb-3">
-                Venue Type
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {VENUE_TYPES.map((type) => {
+              <div>
+                <h4 className="text-[10px] font-bold uppercase text-white/50 tracking-widest mb-3">
+                  Venue Type
+                </h4>
+                <div className="flex flex-nowrap overflow-x-auto no-scrollbar gap-2 pb-2">
+                  {VENUE_TYPES.map((type) => {
                   const isSelected = selectedVenueTypes.includes(type);
                   return (
                     <Button
@@ -678,23 +733,82 @@ const GlobalSearch = () => {
             <div className="w-full h-px bg-white/10" />
 
             {/* Sport Type */}
-            <div>
+            <div className="space-y-4">
               <h4 className="text-[10px] font-bold uppercase text-white/50 tracking-widest mb-3">
                 Sport Type
               </h4>
-              <div className="flex flex-wrap gap-2">
-                {["Cricket", "Football", "Badminton", "Tennis", "Basketball"].map((type) => {
-                  const isSelected = sportType === type;
+              <div 
+                className="flex items-center justify-between bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] rounded-[12px] px-4 py-3 cursor-pointer hover:bg-[rgba(255,255,255,0.05)] transition-colors"
+                onClick={() => setIsSportsFilterOpen(true)}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-[14px] font-medium text-white capitalize">
+                    {sportType || "All Sports"}
+                  </span>
+                </div>
+                <ChevronDown size={16} className="text-white/50" />
+              </div>
+            </div>
+
+            {/* Sports Sidebar Portal-like inline for GlobalSearch */}
+            <div
+              className={`fixed top-0 bottom-0 right-0 w-[85%] max-w-[360px] bg-card border-l border-[rgba(255,255,255,0.08)] z-[101] transform transition-transform duration-300 ease-in-out ${
+                isSportsFilterOpen ? "translate-x-0" : "translate-x-full"
+              } overflow-y-auto no-scrollbar pb-24`}
+            >
+              <div className="sticky top-0 bg-card/95 backdrop-blur-md p-5 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between z-10">
+                <h3 className="text-[15px] font-black uppercase tracking-wider text-white flex items-center gap-2">
+                  Select Sport
+                </h3>
+                <Button
+                  onClick={() => setIsSportsFilterOpen(false)}
+                  className="p-2 rounded-full hover:bg-white/10 transition-colors"
+                >
+                  <X size={18} className="text-white/60 hover:text-white" />
+                </Button>
+              </div>
+              <div className="p-4 space-y-1">
+                {[
+                  "All",
+                  "Cricket",
+                  "Football",
+                  "Badminton",
+                  "Tennis",
+                  "Basketball",
+                  "Swimming",
+                  "Volleyball",
+                  "Table Tennis",
+                  "Squash",
+                  "Hockey",
+                ].map((sport) => {
+                  const isSelected = sport === "All" ? !sportType : sportType === sport;
                   return (
                     <Button
-                      key={type}
-                      onClick={() => setSportType(isSelected ? "" : type)}
-                      className={`whitespace-nowrap px-3 py-1 h-auto rounded-[6px] text-[9px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1 ${isSelected
-                          ? "bg-[#2a2a2a] border border-[#bbf455] text-white"
-                          : "bg-[#1b1b1b] border border-[#323232] text-white/50 hover:bg-[#202020]"
-                        }`}
+                      key={sport}
+                      onClick={() => {
+                        setSportType(sport === "All" ? "" : isSelected ? "" : sport);
+                        setIsSportsFilterOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between p-4 rounded-xl transition-colors group ${
+                        isSelected
+                          ? "bg-primary/10 text-primary"
+                          : "text-gray-300 hover:bg-white/5 hover:text-white"
+                      }`}
                     >
-                      {type}
+                      <span
+                        className={`text-[14px] font-bold ${
+                          isSelected
+                            ? "text-primary"
+                            : "text-gray-300 group-hover:text-white"
+                        }`}
+                      >
+                        {sport}
+                      </span>
+                      {isSelected ? (
+                        <div className="w-2 h-2 rounded-full bg-primary" />
+                      ) : (
+                        <div className="w-2 h-2 rounded-full border border-white/20 group-hover:border-white/50 transition-colors" />
+                      )}
                     </Button>
                   );
                 })}

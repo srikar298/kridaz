@@ -12,6 +12,7 @@ import PostItem from "./PostItem";
 import ShareModal from "./ShareModal";
 import ReportModal from "./ReportModal";
 import DeleteConfirmModal from "./DeleteConfirmModal";
+import { PostSkeleton } from "../../../shared/components/ui";
 import toast from "react-hot-toast";
 import { AnimatePresence, motion } from "framer-motion";
 import PostDetailModal from "./PostDetailModal";
@@ -595,8 +596,10 @@ const CommunityFeed = ({
 
       {/* Feed list */}
       {postsLoading && loadedPosts.length === 0 ? (
-        <div className="py-20 flex flex-col items-center justify-center gap-4">
-          <Loader2 size={32} className="text-primary animate-spin" />
+        <div className="space-y-6 px-2 md:px-0">
+          {[1, 2, 3].map((n) => (
+            <PostSkeleton key={`post-skeleton-${n}`} />
+          ))}
         </div>
       ) : loadedPosts.length === 0 ? (
         <div className="bg-background border border-white/5 rounded-[8px] p-16 text-center text-white/30 font-bold uppercase tracking-widest text-sm mx-2 md:mx-0">

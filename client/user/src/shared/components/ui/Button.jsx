@@ -1,10 +1,10 @@
 import { cn } from "../../lib/utils.js";
-import { Button } from "@kridaz/ui";
+import { Button as BaseButton } from "@kridaz/ui";
 
 
 const Button = ({ children, loading, className, ...props }) => {
   return (
-    <Button
+    <BaseButton
       className={cn("btn relative", className)}
       disabled={loading}
       {...props}
@@ -15,7 +15,7 @@ const Button = ({ children, loading, className, ...props }) => {
         </span>
       ) : null}
       <span className={loading ? "invisible" : ""}>{children}</span>
-    </Button>
+    </BaseButton>
   );
 };
 

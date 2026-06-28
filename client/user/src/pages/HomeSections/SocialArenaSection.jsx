@@ -4,6 +4,7 @@ import { Play, Eye } from "lucide-react";
 import { useSelector } from "react-redux";
 import useLoginOnDemand from "@hooks/useLoginOnDemand";
 import Hls from "hls.js";
+import { ReelSkeleton } from "../../shared/components/ui";
 
 const GRAD = "linear-gradient(90deg, var(--primary) 0%, var(--primary) 100%)";
 const BDR = "var(--border)";
@@ -107,7 +108,7 @@ const SocialArenaReelCard = ({ reel, shouldPlay, navigate }) => {
           <video
             ref={videoRef}
             poster={thumbnailUrl || undefined}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 absolute top-0 left-0"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 absolute top-0 left-0 pointer-events-none"
             preload="none"
             muted
             playsInline
@@ -162,7 +163,7 @@ const SocialArenaReelCard = ({ reel, shouldPlay, navigate }) => {
   );
 };
 
-export default function SocialArenaSection({ reelsFeed }) {
+export default function SocialArenaSection({ reelsFeed, reelsLoading }) {
   const navigate = useNavigate();
   const containerRef = useRef(null);
   const [visibleIndices, setVisibleIndices] = useState(new Set());
@@ -216,7 +217,13 @@ export default function SocialArenaSection({ reelsFeed }) {
             ref={containerRef}
             className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x relative"
           >
-            {reelsFeed.length === 0 ? (
+            {reelsLoading ? (
+              <>
+                {[1, 2, 3, 4].map((n) => (
+                  <ReelSkeleton key={`reel-skeleton-${n}`} />
+                ))}
+              </>
+            ) : reelsFeed.length === 0 ? (
               <div className="w-full py-12 flex items-center justify-center border border-white/5 bg-white/5 rounded-[12px]">
                 <p className="text-white/30 text-xs font-bold uppercase tracking-[0.2em]">
                   No reels available

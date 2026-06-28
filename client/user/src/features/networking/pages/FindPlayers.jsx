@@ -70,29 +70,15 @@ const PlayerCard = ({
       className="shrink-0 w-full h-[220px] snap-start relative rounded-[16px] border border-white/5 bg-card overflow-hidden transition-all duration-300 group hover:border-primary/30 cursor-pointer"
     >
       {/* Background Image or Initials */}
-      {player.profilePicture || player.profileImage ? (
-        <img
-          src={player.profilePicture || player.profileImage}
-          alt={player.name}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale-[20%] group-hover:grayscale-0"
-          onError={(e) => {
-            e.target.style.display = "none";
-            e.target.nextElementSibling.style.display = "flex";
-          }}
-        />
-      ) : null}
-      <div
-        className="absolute inset-0 flex items-center justify-center bg-white/5"
-        style={{
-          display: player.profilePicture || player.profileImage ? "none" : "flex",
+      <img
+        src={player.profilePicture || player.profileImage || player.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${player.name}`}
+        alt={player.name}
+        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale-[20%] group-hover:grayscale-0"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${player.name}`;
         }}
-      >
-        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 mb-10">
-          <span className="text-primary font-bold text-xl tracking-wider">
-            {initials}
-          </span>
-        </div>
-      </div>
+      />
 
       {/* Gradient Overlay for text readability */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-[#000000]/60 to-transparent" />
