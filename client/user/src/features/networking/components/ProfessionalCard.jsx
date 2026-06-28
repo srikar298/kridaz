@@ -75,77 +75,66 @@ const ProfessionalCard = ({ pro, getInitials }) => {
 
   return (
     <div 
-      className="bg-[#111] border border-white/5 rounded-2xl p-4 flex gap-4 items-center group hover:border-white/10 transition-colors cursor-pointer"
+      className="bg-[#111] rounded-2xl flex flex-col group hover:border-primary/50 transition-colors cursor-pointer overflow-hidden relative border border-white/5 aspect-[3/4]"
       onClick={() => navigate(`/profile/${pro.userId || pro.id || pro._id}`)}
     >
-      <div className="w-20 h-24 rounded-xl bg-card overflow-hidden shrink-0 border border-white/10 relative">
-        {pro.image || pro.profilePicture ? (
-          <img src={pro.image || pro.profilePicture} alt={pro.name} className="w-full h-full object-cover" />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#222] to-[#111]">
-            <span className="text-primary/50 font-bold text-2xl">{getInitials(pro.name)}</span>
-          </div>
-        )}
-      </div>
+      {/* Background Image */}
+      {pro.image || pro.profilePicture ? (
+        <img src={pro.image || pro.profilePicture} alt={pro.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#222] to-[#111] transition-transform duration-500 group-hover:scale-105">
+          <span className="text-primary/30 font-bold text-4xl">{getInitials(pro.name)}</span>
+        </div>
+      )}
+
+      {/* Top Gradient for Top Icons */}
+      <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/80 to-transparent pointer-events-none" />
       
-      <div className="flex-1 min-w-0 flex flex-col justify-between h-24 py-1">
-        <div>
-          <div className="flex justify-between items-start mb-1">
-            <h4 className="text-[15px] font-bold text-white truncate font-inter">
-              {pro.name || "Anonymous"}
-            </h4>
-            
-            {/* Like and Share Buttons */}
-            <div className="flex items-center gap-3 shrink-0">
-              <div className="flex items-center gap-1 text-[#FFD700] text-[10px] font-black mr-1">
-                <Star size={10} className="fill-[#FFD700]" /> 
-                {pro.rating ? pro.rating.toFixed(1) : "0.0"} 
-                <span className="text-white/40 font-medium ml-0.5">({pro.reviewCount || 0})</span>
-              </div>
-              
-              <button onClick={handleSave} className="group p-1 -m-1">
-                <Heart 
-                  size={14} 
-                  className={`transition-all duration-200 ${isSaved ? "fill-primary text-primary" : "text-white/30 group-hover:text-white"}`} 
-                />
-              </button>
-              
-              <button onClick={handleShare} className="group p-1 -m-1">
-                <img
-                  src={ShareIcon}
-                  alt="Share"
-                  className="w-[14px] h-[14px] object-contain transition-all duration-200 opacity-30 group-hover:opacity-100 brightness-0 invert"
-                />
-              </button>
+      {/* Top Left: Rating Pill */}
+      <div className="absolute top-2.5 left-2.5 flex items-center gap-1 text-[#FFD700] bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-black border border-white/10 z-10">
+        <Star size={10} className="fill-[#FFD700]" /> 
+        {pro.rating ? pro.rating.toFixed(1) : "0.0"} 
+      </div>
+
+      {/* Top Right: Actions */}
+      <div className="absolute top-2.5 right-2.5 flex flex-col gap-2 z-10">
+        <button onClick={handleSave} className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center transition-colors hover:bg-black/80">
+          <Heart size={12} className={isSaved ? "fill-primary text-primary" : "text-white/80"} />
+        </button>
+      </div>
+
+      {/* Bottom Gradient for Bottom Text */}
+      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#050505] via-[#050505]/90 to-transparent pointer-events-none z-0" />
+      
+      {/* Bottom Content Area */}
+      <div className="relative mt-auto p-2.5 z-10 flex flex-col w-full">
+        <h4 className="text-[13px] font-bold text-white truncate font-inter mb-1.5 shadow-black drop-shadow-md">
+          {pro.name || "Anonymous"}
+        </h4>
+        
+        <div className="flex items-end justify-between w-full mt-auto gap-2">
+          <div className="flex flex-col gap-1 min-w-0">
+            <p className="text-[9px] text-[#3b82f6] font-medium uppercase tracking-wider truncate shadow-black drop-shadow-sm">
+              {pro.role || "Professional"}
+            </p>
+            <div className="flex items-center gap-1 text-white/60 text-[9px]">
+              <MapPin size={9} className="text-white/40 shrink-0" />
+              <span className="truncate">
+                {pro.city ? pro.city.split(",")[0].trim() : pro.location || "Local Area"}
+              </span>
             </div>
           </div>
           
-          <p className="text-[11px] text-white/50 font-medium mb-1">
-            {pro.role || "Professional"}
-          </p>
-          
-          <div className="flex items-center gap-1 text-white/40 text-[10px]">
-            <MapPin size={10} />
-            <span className="truncate max-w-[120px]">
-              {pro.city ? pro.city.split(",")[0].trim() : pro.location || "Local Area"}
-            </span>
-          </div>
-        </div>
-        
-        <div className="flex items-center justify-between mt-auto">
-          <div className="text-[10px] font-medium text-white/40">
-            <span className="text-white text-sm font-black">₹{pro.price || "0"}</span> / match
-          </div>
-          <Button 
+          <button 
             onClick={(e) => handleFollowToggle(e, pro)}
-            className={`text-[10px] font-black px-5 py-2 h-auto rounded-lg transition-all hover:scale-105 active:scale-95 ${
+            className={`text-[9px] font-black px-2.5 py-1 h-[22px] rounded transition-all flex items-center justify-center hover:scale-105 active:scale-95 shrink-0 mb-0.5 ${
               followingIds.includes(pro._id || pro.id)
-                ? "bg-transparent text-white/50 border border-white/10"
-                : "bg-primary hover:bg-primary/90 text-black shadow-[0_4px_16px_rgba(191,243,103,0.3)]"
+                ? "bg-transparent text-white/50 border border-white/10 backdrop-blur-sm"
+                : "bg-white hover:bg-gray-200 text-black shadow-[0_4px_12px_rgba(255,255,255,0.2)]"
             }`}
           >
             {followingIds.includes(pro._id || pro.id) ? "Following" : "Follow"}
-          </Button>
+          </button>
         </div>
       </div>
     </div>

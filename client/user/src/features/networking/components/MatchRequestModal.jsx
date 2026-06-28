@@ -156,7 +156,7 @@ export default function MatchRequestModal({
 
     const payload = {
       roles: selectedRoles,
-      budget,
+      maxBudget: budget,
       expiresAt: new Date(Date.now() + expiresInSeconds * 1000).toISOString(),
       matchDate,
       matchStartTime,
@@ -245,25 +245,25 @@ export default function MatchRequestModal({
           <div className="flex items-center gap-3">
             <div>
               <h2
-                className="text-lg font-bold uppercase tracking-tight text-white"
-                style={{ fontFamily: "'Open Sans', sans-serif" }}
+                className="text-xl font-black uppercase tracking-tight text-white mb-0.5"
+                style={{ fontFamily: "'Inter', sans-serif" }}
               >
                 Find Professional
               </h2>
               <p
-                className="text-[10px] text-white/50"
-                style={{ fontFamily: "'Inter 28pt Light', sans-serif" }}
+                className="text-[10px] font-medium text-white/50"
               >
                 On-demand matching for coaches, umpires & scorers.
               </p>
             </div>
           </div>
-          <Button
+          <button
+            type="button"
             onClick={() => !isCreatingRequest && onClose()}
-            className="p-2 rounded-lg hover:bg-white/5 text-white/40 hover:text-white transition-colors bg-white/5"
+            className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors flex items-center justify-center border border-white/5 shrink-0"
           >
             <X size={18} />
-          </Button>
+          </button>
         </div>
 
         {/* Modal Body */}
@@ -295,14 +295,14 @@ export default function MatchRequestModal({
           </div>
         ) : (
           <div className="overflow-y-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: "none" }}>
-            <form onSubmit={handleRequestMatch} className="p-5 sm:p-6 space-y-5">
+            <form onSubmit={handleRequestMatch} className="p-4 sm:p-5 space-y-4">
               {/* Roles Selection */}
               <div>
                 <label className="text-[10px] font-black uppercase text-white/50 tracking-wider block mb-2">
                   Roles
                 </label>
                 <div
-                  className="flex overflow-x-auto gap-2 pb-2 [&::-webkit-scrollbar]:hidden"
+                  className="flex overflow-x-auto gap-2 pb-1.5 [&::-webkit-scrollbar]:hidden"
                   style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
                   {[
@@ -316,19 +316,19 @@ export default function MatchRequestModal({
                   ].map((roleVal) => {
                     const isSelected = selectedRoles.includes(roleVal);
                     return (
-                      <Button
+                      <button
                         key={roleVal}
                         type="button"
                         onClick={() => handleToggleRole(roleVal)}
-                        className={`px-4 py-2 shrink-0 rounded-[8px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                        className={`px-4 py-2 h-9 shrink-0 rounded-[10px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                           isSelected
-                            ? "bg-primary/15 border border-primary text-primary"
-                            : "bg-white/5 border border-white/10 text-white/50 hover:border-white/25 hover:text-white/70"
+                            ? "bg-[#1c2a11] border border-primary text-primary shadow-[0_0_10px_rgba(191,243,103,0.1)]"
+                            : "bg-[#111] border border-white/5 text-white/50 hover:bg-white/5 hover:text-white"
                         }`}
                       >
-                        {isSelected && <Check size={10} strokeWidth={3} />}
+                        {isSelected && <Check size={12} strokeWidth={3} className="text-primary" />}
                         {roleVal}
-                      </Button>
+                      </button>
                     );
                   })}
                 </div>
@@ -339,16 +339,16 @@ export default function MatchRequestModal({
                 <label className="text-[10px] font-black uppercase text-white/50 tracking-wider block mb-2">
                   Venue / Location
                 </label>
-                <Button
+                <button
                   type="button"
                   onClick={() => setShowLocationSearchModal(true)}
-                  className="w-full bg-[#111111] hover:bg-[#1a1a1a] border border-white/10 rounded-[16px] p-4 text-xs font-bold text-white transition-colors flex items-center justify-between gap-3 group"
+                  className="w-full bg-[#111111] hover:bg-[#151515] border border-white/5 rounded-xl h-[46px] px-3.5 text-xs font-bold text-white transition-colors flex items-center justify-between gap-3 group"
                 >
-                  <div className="flex items-center gap-3 truncate">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <MapPin size={16} className="text-primary group-hover:scale-110 transition-transform" />
+                  <div className="flex items-center gap-2.5 truncate">
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <MapPin size={14} className="text-primary group-hover:scale-110 transition-transform" />
                     </div>
-                    <span className="truncate text-left">
+                    <span className="truncate text-left font-inter">
                       {selectedGroundId === "custom" && customLocation.address
                         ? customLocation.address
                         : selectedGroundId && grounds.find(g => g._id === selectedGroundId)
@@ -356,8 +356,8 @@ export default function MatchRequestModal({
                         : "Search by Location / Venue"}
                     </span>
                   </div>
-                  <ChevronDown size={16} className="text-white/50 shrink-0" />
-                </Button>
+                  <ChevronDown size={14} className="text-white/40 shrink-0" />
+                </button>
               </div>
 
               {/* Schedule / Timing Selection */}
@@ -365,15 +365,15 @@ export default function MatchRequestModal({
                 <label className="text-[10px] font-black uppercase text-white/50 tracking-wider block mb-2">
                   Match Schedule
                 </label>
-                <div className="flex items-center bg-card border border-white/10 rounded-lg divide-x divide-white/10 overflow-hidden">
-                  <div className="flex-[1.2] p-2.5 relative group hover:bg-white/5 transition-colors">
-                    <span className="text-[8px] text-primary font-bold uppercase mb-1 flex items-center gap-1">
+                <div className="flex items-center bg-[#111] border border-white/5 rounded-xl divide-x divide-white/5 overflow-hidden h-[52px]">
+                  <div className="flex-[1.2] p-2.5 relative group hover:bg-white/5 transition-colors h-full flex flex-col justify-center">
+                    <span className="text-[8px] text-primary font-black uppercase mb-0.5 flex items-center gap-1 tracking-wider">
                       <Calendar size={10} /> Date
                     </span>
-                    <div className="text-[11px] sm:text-xs font-bold text-white group-hover:text-primary transition-colors truncate">
+                    <div className="text-[11px] font-bold text-white group-hover:text-primary transition-colors truncate">
                       {formatDisplayDate(matchDate)}
                     </div>
-                    <Input
+                    <input
                       type="date"
                       value={matchDate}
                       onChange={(e) => setMatchDate(e.target.value)}
@@ -384,14 +384,14 @@ export default function MatchRequestModal({
                       required
                     />
                   </div>
-                  <div className="flex-1 p-2.5 relative group hover:bg-white/5 transition-colors">
-                    <span className="text-[8px] text-white/40 font-bold uppercase mb-1 flex items-center gap-1">
+                  <div className="flex-1 p-2.5 relative group hover:bg-white/5 transition-colors h-full flex flex-col justify-center">
+                    <span className="text-[8px] text-white/40 font-black uppercase mb-0.5 flex items-center gap-1 tracking-wider">
                       <Clock size={10} /> Start
                     </span>
-                    <div className="text-[11px] sm:text-xs font-bold text-white truncate">
+                    <div className="text-[11px] font-bold text-white truncate">
                       {formatDisplayTime(matchStartTime)}
                     </div>
-                    <Input
+                    <input
                       type="time"
                       value={matchStartTime}
                       onChange={(e) => setMatchStartTime(e.target.value)}
@@ -402,14 +402,14 @@ export default function MatchRequestModal({
                       required
                     />
                   </div>
-                  <div className="flex-1 p-2.5 relative group hover:bg-white/5 transition-colors">
-                    <span className="text-[8px] text-white/40 font-bold uppercase mb-1 flex items-center gap-1">
+                  <div className="flex-1 p-2.5 relative group hover:bg-white/5 transition-colors h-full flex flex-col justify-center">
+                    <span className="text-[8px] text-white/40 font-black uppercase mb-0.5 flex items-center gap-1 tracking-wider">
                       <Clock size={10} /> End
                     </span>
-                    <div className="text-[11px] sm:text-xs font-bold text-white truncate">
+                    <div className="text-[11px] font-bold text-white truncate">
                       {formatDisplayTime(matchEndTime)}
                     </div>
-                    <Input
+                    <input
                       type="time"
                       value={matchEndTime}
                       onChange={(e) => setMatchEndTime(e.target.value)}
@@ -424,29 +424,29 @@ export default function MatchRequestModal({
               </div>
 
               {/* Budget Slider */}
-              <div>
+              <div className="pt-1">
                 <div className="flex items-center justify-between mb-3">
                   <label className="text-[10px] font-black uppercase text-white/50 tracking-wider">
                     Budget (₹)
                   </label>
-                  <span className="text-xs font-bold text-primary">
+                  <span className="text-[12px] font-black text-primary">
                     ₹{budget}
                   </span>
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <span className="text-[9px] font-bold text-white/40 w-6 shrink-0">
+                    <span className="text-[9px] font-bold text-white/40 w-6 shrink-0 tracking-wider">
                       Max
                     </span>
-                    <div className="flex-1 relative">
-                      <Input
+                    <div className="flex-1 relative flex items-center bg-[#1a1a1c] h-2.5 rounded-full border border-white/5">
+                      <input
                         type="range"
                         min={500}
                         max={10000}
                         step={100}
                         value={budget}
                         onChange={(e) => setBudget(parseInt(e.target.value))}
-                        className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-[0_0_8px_rgba(191,243,103,0.4)] [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-0"
+                        className="w-full absolute inset-0 appearance-none bg-transparent cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#bcf062] [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(191,243,103,0.5)] [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-webkit-slider-runnable-track]:appearance-none [&::-webkit-slider-runnable-track]:bg-transparent"
                       />
                     </div>
                   </div>
@@ -454,20 +454,22 @@ export default function MatchRequestModal({
               </div>
 
               {/* Submit Button */}
-              <Button
-                type="submit"
-                disabled={isCreatingRequest}
-                className="w-full py-4 rounded-lg bg-gradient-to-r from-primary to-primary text-black font-black text-xs uppercase tracking-widest hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(191,243,103,0.2)] hover:shadow-[0_4px_25px_rgba(191,243,103,0.4)]"
-              >
-                {isCreatingRequest ? (
-                  <>
-                    <Loader2 className="animate-spin text-black" size={16} />
-                    Initiating Match...
-                  </>
-                ) : (
-                  "⚡ FIND PRO'S"
-                )}
-              </Button>
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={isCreatingRequest}
+                  className="w-full h-[46px] rounded-[10px] bg-[#bcf062] hover:bg-[#aee64b] text-[#111] font-black text-[11px] uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(191,243,103,0.15)] disabled:opacity-50"
+                >
+                  {isCreatingRequest ? (
+                    <>
+                      <Loader2 className="animate-spin text-[#111]" size={14} />
+                      Initiating Match...
+                    </>
+                  ) : (
+                    "⚡ FIND PRO'S"
+                  )}
+                </button>
+              </div>
 
               {/* Info Footer */}
               <p className="text-[9px] text-white/30 text-center leading-relaxed">
