@@ -28,9 +28,20 @@ export const createBookingSchema = z.object({
   paymentMethod: z.enum(["RAZORPAY", "WALLET", "FREE"]).default("RAZORPAY"),
 });
 
-export const createOrderBodySchema = z.object({
-  totalPrice: z.number().min(1, "Total price must be greater than 0"),
-});
+export const createOrderBodySchema = z
+  .object({
+    id: z.string().optional(),
+    turfId: z.string().optional(),
+    startTime: z.string().min(1, "Start time is required"),
+    endTime: z.string().min(1, "End time is required"),
+    selectedTurfDate: z.string().min(1, "Selected turf date is required"),
+    couponCode: z.string().optional(),
+    paymentPercentage: z.number().optional(),
+  })
+  .refine((data) => data.id || data.turfId, {
+    message: "Turf ID is required (either as 'id' or 'turfId')",
+    path: ["turfId"],
+  });
 
 export const createOrderSchema = z.object({
   body: createOrderBodySchema,
@@ -48,6 +59,11 @@ export const verifyPaymentBodySchema = z
     paymentId: z.string().min(1, "Payment ID is required"),
     orderId: z.string().min(1, "Order ID is required"),
     razorpay_signature: z.string().min(1, "Razorpay signature is required"),
+    advanceAmount: z.number().optional(),
+    balanceAmount: z.number().optional(),
+    paymentType: z.string().optional(),
+    paymentMethod: z.string().optional(),
+    couponCode: z.string().optional(),
   })
   .refine((data) => data.id || data.turfId, {
     message: "Turf ID is required (either as 'id' or 'turfId')",
@@ -66,6 +82,11 @@ export const bookWithWalletBodySchema = z
     endTime: z.string().min(1, "End time is required"),
     selectedTurfDate: z.string().min(1, "Selected turf date is required"),
     totalPrice: z.number().min(1, "Total price is required"),
+    advanceAmount: z.number().optional(),
+    balanceAmount: z.number().optional(),
+    paymentType: z.string().optional(),
+    paymentPercentage: z.number().optional(),
+    couponCode: z.string().optional(),
   })
   .refine((data) => data.id || data.turfId, {
     message: "Turf ID is required (either as 'id' or 'turfId')",

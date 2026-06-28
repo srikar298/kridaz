@@ -138,8 +138,36 @@ export const calculateServerSidePrice = async (turf, startTime, endTime, selecte
   const durationInHours = Math.ceil(
     (new Date(adjustedEndTime) - new Date(adjustedStartTime)) / (1000 * 60 * 60)
   );
+
+  const formatTimeStr = (isoString) => {
+    const timeZone = process.env.TIMEZONE || "Asia/Kolkata";
+    let str = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', timeZone, hour12: true }).format(new Date(isoString));
+    str = str.replace(/\u202F/g, ' ');
+    if (str.length === 7) str = "0" + str;
+    return str;
+  };
   
-  const venueCharges = Number(turf.pricePerHour) * durationInHours;
+  const slotStartTimeStr = formatTimeStr(startTime);
+  const slotEndTimeStr = formatTimeStr(endTime);
+  
+  let parsedSlots = [];
+  if (Array.isArray(turf.generatedSlots)) {
+    parsedSlots = turf.generatedSlots;
+  } else if (typeof turf.generatedSlots === "string") {
+    try {
+      parsedSlots = JSON.parse(turf.generatedSlots);
+      if (typeof parsedSlots === "string") parsedSlots = JSON.parse(parsedSlots);
+    } catch (e) {}
+  }
+  
+  let customPrice = null;
+  const slot = parsedSlots.find(s => s.startTime === slotStartTimeStr);
+  if (slot && slot.price != null) {
+    customPrice = Number(slot.price);
+  }
+
+  const ratePerHour = customPrice !== null ? customPrice : Number(turf.pricePerHour);
+  const venueCharges = ratePerHour * durationInHours;
   const serviceCharge = Math.round(venueCharges * 0.0125) || 25;
   let discount = 0;
   if (couponCode) {

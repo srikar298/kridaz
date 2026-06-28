@@ -459,7 +459,7 @@ const CheckoutPage = () => {
           <div className="lg:col-span-5 space-y-4 pb-4">
             {/* Payment Method */}
             <div className="bg-black border border-[rgba(255,255,255,0.08)] rounded-[16px] p-4 md:p-5">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 {/* Wallet */}
                 <Button
                   onClick={() => setPaymentMode("WALLET")}
@@ -490,33 +490,6 @@ const CheckoutPage = () => {
                   </div>
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-background text-[9px] font-[800] px-2 py-0.5 rounded-[4px] uppercase whitespace-nowrap shadow-sm">
                     {settings?.cashbackPercentage || 5}% BACK
-                  </div>
-                </Button>
-
-                {/* UPI */}
-                <Button
-                  onClick={() => setPaymentMode("UPI")}
-                  className={`relative px-2 py-4 rounded-[12px] border transition-all flex flex-col items-center justify-center gap-2 text-center ${paymentMode === "UPI" ? "bg-black border-primary" : "bg-black border-[rgba(255,255,255,0.08)]"}`}
-                >
-                  {paymentMode === "UPI" && (
-                    <div className="absolute top-2 right-2">
-                      <Check
-                        className="w-4 h-4"
-                        style={{ stroke: "url(#theme-gradient)" }}
-                      />
-                    </div>
-                  )}
-                  <div
-                    className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${paymentMode === "UPI" ? "bg-gradient-to-r from-secondary to-primary text-background" : "bg-black border border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.70)]"}`}
-                  >
-                    <Smartphone className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div
-                      className={`text-[10px] whitespace-nowrap font-[700] uppercase tracking-wide ${paymentMode === "UPI" ? "text-foreground" : "text-[rgba(255,255,255,0.70)]"}`}
-                    >
-                      Instant UPI
-                    </div>
                   </div>
                 </Button>
               </div>

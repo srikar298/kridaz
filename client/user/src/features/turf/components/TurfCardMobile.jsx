@@ -325,8 +325,8 @@ const TurfCardMobile = ({ turf, distance: distanceProp }) => {
 
   return (
     <div className="w-full h-auto bg-card rounded-[16px] overflow-hidden border border-[rgba(255,255,255,0.08)] font-inter  flex flex-col relative z-10 isolate">
-      {/* ── Top Image Header (2.4:1 ratio) ── */}
-      <div className="relative w-full aspect-[2.4/1] shrink-0 group bg-[#0a0a0a]">
+      {/* ── Top Image Header (1.5:1 ratio) ── */}
+      <div className="relative w-full aspect-[1.5/1] shrink-0 group bg-[#0a0a0a]">
         <div
           ref={scrollContainerRef}
           className="absolute inset-0 flex overflow-x-auto snap-x snap-mandatory no-scrollbar"
