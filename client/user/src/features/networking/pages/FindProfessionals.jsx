@@ -439,7 +439,7 @@ export default function FindProfessionals() {
                 }
                 setShowMatchModal(true);
               }}
-              className="text-2xl font-black text-white cursor-pointer select-none -mb-2"
+              className="text-[20px] sm:text-2xl uppercase whitespace-nowrap tracking-tight font-black font-inter text-white cursor-pointer select-none -mb-2"
             >
               Whom do you want to <span className="text-primary">hire</span>?
             </h2>
@@ -471,12 +471,12 @@ export default function FindProfessionals() {
                   }}
                   className="flex flex-col items-center gap-2 group snap-start shrink-0"
                 >
-                  <div className={`w-[70px] h-[70px] rounded-2xl flex items-center justify-center transition-colors ${
+                  <div className={`w-[70px] h-[48px] rounded-xl flex items-center justify-center transition-colors ${
                     cat.active 
                       ? "bg-transparent border border-primary text-primary" 
                       : "bg-[#111111] border border-transparent text-white/70 group-hover:bg-[#1a1a1a]"
                   }`}>
-                    <cat.icon size={24} className={cat.active ? "text-primary" : ""} strokeWidth={cat.active ? 2 : 1.5} />
+                    <cat.icon size={20} className={cat.active ? "text-primary" : ""} strokeWidth={cat.active ? 2 : 1.5} />
                   </div>
                   <span className={`text-[11px] font-medium transition-colors ${cat.active ? "text-primary" : "text-white/70"}`}>
                     {cat.id}
@@ -497,25 +497,29 @@ export default function FindProfessionals() {
             </button>
           </div>
           <div className="flex overflow-x-auto gap-4 pb-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden">
-            <div className="min-w-[280px] sm:min-w-[320px] bg-[#111] border border-white/10 rounded-2xl p-4 snap-start shadow-xl flex items-center gap-4">
-              <div className="w-14 h-14 rounded-xl bg-card overflow-hidden shrink-0 border border-white/5">
-                <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Rohit Sharma" className="w-full h-full object-cover" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
-                    Umpire Assigned
-                  </span>
-                  <div className="flex items-center gap-1 text-[#FFD700] text-[10px] font-black ml-auto">
-                    <Star size={10} className="fill-[#FFD700]" /> 4.8 <span className="text-white/40 font-medium">(120)</span>
+            <div className="w-full min-w-full shrink-0 bg-[#111] border border-white/10 rounded-2xl p-3 snap-start shadow-xl flex flex-col gap-2.5">
+              <div className="flex items-start justify-between w-full">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-card overflow-hidden shrink-0 border border-white/5">
+                    <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Rohit Sharma" className="w-full h-full object-cover" />
+                  </div>
+                  <div>
+                    <h4 className="text-[13px] font-bold text-white truncate font-inter leading-none mb-1">Rohit Sharma</h4>
+                    <p className="text-[10.5px] text-white/50 truncate">Umpire</p>
                   </div>
                 </div>
-                <h4 className="text-sm font-bold text-white truncate font-inter mb-0.5">Rohit Sharma</h4>
-                <p className="text-[11px] text-white/50 truncate">Umpire</p>
+                <div className="flex items-center gap-1 text-[#FFD700] text-[9.5px] font-black bg-white/5 px-2 py-1 rounded-lg mt-0.5">
+                  <Star size={10} className="fill-[#FFD700]" /> 4.8 <span className="text-white/40 font-medium">(120)</span>
+                </div>
               </div>
-              <Button className="shrink-0 bg-primary/20 hover:bg-primary/30 text-primary text-[10px] font-bold px-3 py-1.5 h-auto rounded-lg border border-primary/30 ml-2">
-                View Details
-              </Button>
+              <div className="flex items-center justify-between w-full mt-0.5">
+                <span className="text-[9.5px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-1 rounded-md border border-primary/20">
+                  Umpire Assigned
+                </span>
+                <button className="shrink-0 bg-primary/20 hover:bg-primary/30 text-primary text-[10px] font-bold px-3 py-1 h-[26px] rounded-md border border-primary/30 flex items-center justify-center transition-colors">
+                  View Details
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -566,22 +570,43 @@ export default function FindProfessionals() {
         )}
 
         {/* 5. Professionals List on Main Page */}
-        <div className="space-y-4 pt-4">
-          <h3 className="text-white text-base font-bold font-['Open_Sans'] mb-4">
+        <div className="pt-4">
+          <h3 className="text-white text-base font-bold font-['Open_Sans'] mb-3">
             Find more professionals
           </h3>
+          
+          {/* Roles Filter Segmented Control */}
+          <div className="bg-[#111111] border border-white/5 rounded-2xl p-1.5 flex items-center overflow-x-auto gap-1 mb-4 [&::-webkit-scrollbar]:hidden">
+            {roles.map((role) => (
+              <button
+                key={role}
+                onClick={() => setSelectedRole(role)}
+                className={`shrink-0 px-4 py-2 rounded-xl text-[13px] font-medium transition-colors ${
+                  selectedRole === role
+                    ? "bg-[#2a2a2a] text-white shadow-sm"
+                    : "text-white/50 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                {role === "All" ? "All Categories" : role}
+              </button>
+            ))}
+          </div>
           {loading ? (
-            [...Array(3)].map((_, i) => (
-              <div key={i} className="h-28 rounded-2xl bg-[#111] border border-white/5 animate-pulse" />
-            ))
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="aspect-[3/4] rounded-2xl bg-[#111] border border-white/5 animate-pulse" />
+              ))}
+            </div>
           ) : professionals.length === 0 ? (
             <div className="text-center py-12 px-4 border border-[rgba(255,255,255,0.08)] rounded-2xl bg-[#111]">
               <p className="text-white/50 text-sm">No professionals found.</p>
             </div>
           ) : (
-            professionals.map((pro) => (
-              <ProfessionalCard key={pro.id || pro._id} pro={pro} getInitials={getInitials} />
-            ))
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              {professionals.map((pro) => (
+                <ProfessionalCard key={pro.id || pro._id} pro={pro} getInitials={getInitials} />
+              ))}
+            </div>
           )}
         </div>
         </div>
@@ -599,33 +624,32 @@ export default function FindProfessionals() {
               </button>
               <form 
                 onSubmit={(e) => { e.preventDefault(); fetchProfessionals(); }}
-                className="flex-1 flex items-center bg-[#111111] rounded-[16px] border border-white/10 p-1.5 focus-within:border-primary/50 transition-colors h-14"
+                className="flex-1 flex items-center bg-[#151515] rounded-2xl border border-white/5 p-1 focus-within:bg-[#1a1a1c] focus-within:border-white/20 transition-all h-12"
               >
-                <Input
+                <div className="pl-4 pr-2 text-white/40 flex items-center justify-center">
+                  <Search size={18} />
+                </div>
+                <input
                   type="text"
                   autoFocus
                   value={proSearchTerm}
                   onChange={(e) => setProSearchTerm(e.target.value)}
                   placeholder="Search professionals..."
-                  className="flex-1 bg-transparent border-none focus:ring-0 text-[14px] font-medium text-white placeholder:text-white/40 h-full py-0 px-3 outline-none"
+                  className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none text-[14px] font-medium text-white placeholder:text-white/30 h-full py-0 px-1 shadow-none"
                 />
-                <button 
-                  type="submit"
-                  className="w-10 h-10 rounded-xl bg-primary/10 hover:bg-primary/20 flex items-center justify-center shrink-0 transition-colors text-primary mr-1"
-                >
-                  <Search size={18} />
-                </button>
               </form>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4">
               <h3 className="text-white/50 text-sm font-medium mb-4">
                 Search Results
               </h3>
               {loading ? (
-                [...Array(3)].map((_, i) => (
-                  <div key={i} className="h-28 rounded-2xl bg-[#111] border border-white/5 animate-pulse" />
-                ))
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="aspect-[3/4] rounded-2xl bg-[#111] border border-white/5 animate-pulse" />
+                  ))}
+                </div>
               ) : professionals.filter(pro => 
                   pro.name?.toLowerCase().includes(proSearchTerm.toLowerCase()) || 
                   pro.role?.toLowerCase().includes(proSearchTerm.toLowerCase())
@@ -634,12 +658,14 @@ export default function FindProfessionals() {
                   <p className="text-white/50 text-sm">No professionals found matching your search.</p>
                 </div>
               ) : (
-                professionals.filter(pro => 
-                  pro.name?.toLowerCase().includes(proSearchTerm.toLowerCase()) || 
-                  pro.role?.toLowerCase().includes(proSearchTerm.toLowerCase())
-                ).map((pro) => (
-                  <ProfessionalCard key={pro.id || pro._id} pro={pro} getInitials={getInitials} />
-                ))
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  {professionals.filter(pro => 
+                    pro.name?.toLowerCase().includes(proSearchTerm.toLowerCase()) || 
+                    pro.role?.toLowerCase().includes(proSearchTerm.toLowerCase())
+                  ).map((pro) => (
+                    <ProfessionalCard key={pro.id || pro._id} pro={pro} getInitials={getInitials} />
+                  ))}
+                </div>
               )}
             </div>
           </div>

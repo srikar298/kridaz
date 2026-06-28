@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { MoreVertical, ShieldCheck, Video } from "lucide-react";
+import { MoreVertical, ShieldCheck, Video, ThumbsUp } from "lucide-react";
 import CommentIcon from "../../../assets/icons/comment_icon.png";
 import ShareIcon from "../../../assets/icons/share_icon.png";
 import { AnimatePresence, motion } from "framer-motion";
@@ -571,12 +571,11 @@ const PostItem = React.memo(
 
         {/* Likes Summary */}
         <div className="flex items-center justify-between text-[13px] font-medium text-[#a5a5a5] px-4 py-3">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center -space-x-1.5 text-[15px]">
-              <span className="z-10 drop-shadow-md">👍</span>
-              <span className="z-0 drop-shadow-md">💖</span>
+          <div className="flex items-center gap-2 min-w-0 flex-1 mr-3">
+            <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/20 border border-primary/30 shrink-0">
+              <ThumbsUp size={10} className="text-primary fill-primary" />
             </div>
-            <span>
+            <span className="truncate">
               {post.likes?.length > 0 ? (
                 post.likes.length > 1 ? (
                   <>{post.likes[0].name || post.likes[0].username || "User"} and {post.likes.length - 1} {post.likes.length - 1 === 1 ? "other" : "others"}</>
@@ -588,7 +587,7 @@ const PostItem = React.memo(
               )}
             </span>
           </div>
-          <span>
+          <span className="shrink-0 text-[12px]">
             {post.totalComments || post.comments?.length || 0} {(post.totalComments || post.comments?.length) === 1 ? "comment" : "comments"}
           </span>
         </div>
