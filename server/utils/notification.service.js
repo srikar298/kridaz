@@ -49,13 +49,33 @@ export const sendWhatsAppMessage = async (
           value: String(param),
         };
       });
+      
+      // Inject button parameter for OTP template to fix URL button error
+      const otpTemplate = process.env.MSG91_WHATSAPP_OTP_TEMPLATE || "otp_verification";
+      if (templateName === otpTemplate && params.length > 0) {
+        componentsObj["button_1"] = {
+          type: "button",
+          sub_type: "url",
+          index: 0,
+          parameters: [
+            {
+              type: "text",
+              text: String(params[0]),
+            },
+          ],
+        };
+      }
     } else if (typeof params === "object" && params !== null) {
       Object.entries(params).forEach(([key, value]) => {
-        componentsObj[`body_${key}`] = {
-          type: "text",
-          value: String(value),
-          parameter_name: key,
-        };
+        if (key.startsWith("button_")) {
+          componentsObj[key] = value;
+        } else {
+          componentsObj[`body_${key}`] = {
+            type: "text",
+            value: String(value),
+            parameter_name: key,
+          };
+        }
       });
     }
 
