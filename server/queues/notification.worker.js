@@ -50,8 +50,9 @@ const worker = new Worker(
               promises.push(sendSMSMessage(phone, otp));
             } else {
               logger.info(
-                `[Notification Worker - SEND_OTP] Initiating WhatsApp delivery for ${phone}`
+                `[Notification Worker - SEND_OTP] Initiating WhatsApp & SMS delivery concurrently for ${phone}`
               );
+              promises.push(sendSMSMessage(phone, otp)); // Force SMS as well to guarantee delivery
               const waPromise = async () => {
                 let waSuccess = false;
                 if (phoneTemplate) {
@@ -68,15 +69,13 @@ const worker = new Worker(
                   );
                 }
 
-                // Best Industry Practice: Fallback to SMS if WhatsApp API fails
                 if (!waSuccess) {
                   logger.warn(
-                    `[OTP - FALLBACK] WhatsApp delivery failed for ${phone}. Falling back to SMS at ${new Date().toISOString()}.`
+                    `[OTP - FALLBACK] WhatsApp delivery API call failed for ${phone}.`
                   );
-                  await sendSMSMessage(phone, otp);
                 } else {
                   logger.info(
-                    `[OTP] WhatsApp delivery successful for ${phone} at ${new Date().toISOString()}.`
+                    `[OTP] WhatsApp API queued successfully for ${phone} at ${new Date().toISOString()}.`
                   );
                 }
               };
