@@ -1418,6 +1418,21 @@ const MatchAnalytics = () => {
                   <div className="absolute top-0 right-0 w-40 h-40 bg-success/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
                   <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl -ml-16 -mb-16 pointer-events-none" />
 
+                  {liveScore.isSuperOver && (
+                    <div className="mb-4">
+                      <span className="inline-flex items-center gap-1.5 bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(250,204,21,0.15)] animate-pulse">
+                        ⚡ Super Over
+                      </span>
+                    </div>
+                  )}
+                  {liveScore.isFollowOn && (
+                    <div className="mb-4">
+                      <span className="inline-flex items-center gap-1.5 bg-blue-400/10 border border-blue-400/30 text-blue-400 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">
+                        🔄 Follow-On
+                      </span>
+                    </div>
+                  )}
+
                   {liveScore.result && (
                     <div className="mb-6 py-2 px-4 bg-success/20 border border-success/30 rounded-[8px]">
                       <p className="text-success text-[10px] font-black uppercase tracking-[0.3em] mb-1">
@@ -1509,6 +1524,19 @@ const MatchAnalytics = () => {
                     </div>
                   )}
                 </motion.div>
+
+                {liveScore.freeHitActive && (
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="mb-4 bg-yellow-400/10 border border-yellow-400/50 rounded-[8px] p-3 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(250,204,21,0.1)]"
+                  >
+                    <span className="text-sm">⚡</span>
+                    <p className="text-yellow-400 font-black text-xs tracking-[0.2em] uppercase">
+                      FREE HIT ACTIVE
+                    </p>
+                  </motion.div>
+                )}
 
                 {/* 2. Batsmen */}
                 <div className="bg-white/[0.03] border border-white/[0.06] rounded-[8px] overflow-hidden">
@@ -1676,160 +1704,175 @@ const MatchAnalytics = () => {
         )}
 
         {activeTab === "scorecard" && (
-          <div className="space-y-8">
-            {/* Batting Scorecard */}
-            <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-[8px] overflow-hidden">
-              <div className="p-8 border-b border-white/5 flex items-center justify-between">
-                <h3 className="text-lg font-black uppercase tracking-tighter">
-                  Batting Scorecard
-                </h3>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="border-b border-white/5 text-[9px] font-black text-neutral-600 uppercase tracking-widest">
-                      <th className="px-8 py-4">Batter</th>
-                      <th className="px-4 py-4">Status</th>
-                      <th className="px-4 py-4 text-right">R</th>
-                      <th className="px-4 py-4 text-right">B</th>
-                      <th className="px-4 py-4 text-right">4s</th>
-                      <th className="px-4 py-4 text-right">6s</th>
-                      <th className="px-8 py-4 text-right">SR</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {scoring?.playerStats
-                      ?.filter((s) => s.battingBalls > 0 || s.battingRuns > 0)
-                      .map((s, i) => {
-                        const sr =
-                          s.battingBalls > 0
-                            ? ((s.battingRuns / s.battingBalls) * 100).toFixed(
-                                2
-                              )
-                            : "0.00";
-                        return (
-                          <tr
-                            key={i}
-                            className="group hover:bg-white/[0.01] transition-colors"
-                          >
-                            <td className="px-8 py-4 font-bold text-sm uppercase text-white">
-                              {s.user?.name}
-                            </td>
-                            <td className="px-4 py-4 text-[10px] text-gray-500 font-black uppercase">
-                              {formatOutStatus(s)}
-                            </td>
-                            <td className="px-4 py-4 text-right font-black text-success">
-                              {s.battingRuns || 0}
-                            </td>
-                            <td className="px-4 py-4 text-right text-gray-400 text-sm">
-                              {s.battingBalls || 0}
-                            </td>
-                            <td className="px-4 py-4 text-right text-gray-400 text-sm">
-                              {s.battingFours || 0}
-                            </td>
-                            <td className="px-4 py-4 text-right text-gray-400 text-sm">
-                              {s.battingSixes || 0}
-                            </td>
-                            <td className="px-8 py-4 text-right font-bold text-sm text-secondary">
-                              {sr}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    {scoring?.playerStats?.filter(
-                      (s) => s.battingBalls > 0 || s.battingRuns > 0
-                    ).length === 0 && (
-                      <tr>
-                        <td
-                          colSpan="7"
-                          className="px-8 py-8 text-center text-xs text-gray-500 uppercase tracking-widest font-bold"
-                        >
-                          No Batting Records Yet
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <div className="space-y-12">
+            {scoring?.innings?.map((inn, innIdx) => {
+              const inningsBattingStats = scoring.playerStats?.filter(
+                (s) => s.inningsIndex === inn.inningsIndex && (s.battingBalls > 0 || s.battingRuns > 0)
+              ) || [];
+              
+              const inningsBowlingStats = scoring.playerStats?.filter(
+                (s) => s.inningsIndex === inn.inningsIndex && s.bowlingBalls > 0
+              ) || [];
 
-            {/* Bowling Scorecard */}
-            <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-[8px] overflow-hidden">
-              <div className="p-8 border-b border-white/5 flex items-center justify-between">
-                <h3 className="text-lg font-black uppercase tracking-tighter">
-                  Bowling Scorecard
-                </h3>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="border-b border-white/5 text-[9px] font-black text-neutral-600 uppercase tracking-widest">
-                      <th className="px-8 py-4">Bowler</th>
-                      <th className="px-4 py-4 text-right">O</th>
-                      <th className="px-4 py-4 text-right">M</th>
-                      <th className="px-4 py-4 text-right">R</th>
-                      <th className="px-4 py-4 text-right">W</th>
-                      <th className="px-4 py-4 text-right">Econ</th>
-                      <th className="px-4 py-4 text-right">WD</th>
-                      <th className="px-8 py-4 text-right">NB</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {scoring?.playerStats
-                      ?.filter((s) => s.bowlingBalls > 0)
-                      .map((s, i) => {
-                        const overs = `${Math.floor(s.bowlingBalls / 6)}.${s.bowlingBalls % 6}`;
-                        const econ =
-                          s.bowlingBalls > 0
-                            ? ((s.bowlingRuns / s.bowlingBalls) * 6).toFixed(2)
-                            : "0.00";
-                        return (
-                          <tr
-                            key={i}
-                            className="group hover:bg-white/[0.01] transition-colors"
-                          >
-                            <td className="px-8 py-4 font-bold text-sm uppercase text-white">
-                              {s.user?.name}
-                            </td>
-                            <td className="px-4 py-4 text-right font-bold text-sm text-gray-300">
-                              {overs}
-                            </td>
-                            <td className="px-4 py-4 text-right text-gray-400 text-sm">
-                              {s.bowlingMaidens || 0}
-                            </td>
-                            <td className="px-4 py-4 text-right text-gray-400 text-sm">
-                              {s.bowlingRuns || 0}
-                            </td>
-                            <td className="px-4 py-4 text-right font-black text-success">
-                              {s.bowlingWickets || 0}
-                            </td>
-                            <td className="px-4 py-4 text-right text-secondary font-bold text-sm">
-                              {econ}
-                            </td>
-                            <td className="px-4 py-4 text-right text-gray-400 text-sm">
-                              {s.bowlingWides || 0}
-                            </td>
-                            <td className="px-8 py-4 text-right text-gray-400 text-sm">
-                              {s.bowlingNoBalls || 0}
-                            </td>
+              if (inningsBattingStats.length === 0 && inningsBowlingStats.length === 0) return null;
+
+              const teamName = inn.battingTeam === "teamA" ? teamAName : teamBName;
+              
+              const formatInningsLabel = () => {
+                let label = `${teamName} Innings`;
+                if (inn.isSuperOver) return `${teamName} — Super Over ⚡`;
+                if (inn.isFollowOn) return `${teamName} — Follow-On 🔄`;
+                return label;
+              };
+
+              const ballsPerOver = scoring?.houseRules?.ballsPerOver || 6;
+              const overString = `${Math.floor(inn.totalBalls / ballsPerOver)}.${inn.totalBalls % ballsPerOver}`;
+
+              return (
+                <div key={inn.id || innIdx} className="space-y-8">
+                  {/* Innings Title Banner */}
+                  <div className="bg-white/[0.02] border border-white/[0.05] rounded-[8px] px-8 py-5 flex items-center justify-between">
+                    <h4 className="text-sm font-black uppercase tracking-widest text-success">
+                      {formatInningsLabel()}
+                    </h4>
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                      {inn.totalRuns} / {inn.totalWickets} ({overString} Ov)
+                    </span>
+                  </div>
+
+                  {/* Batting Scorecard */}
+                  <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-[8px] overflow-hidden">
+                    <div className="p-8 border-b border-white/5 flex items-center justify-between">
+                      <h3 className="text-lg font-black uppercase tracking-tighter">
+                        Batting Scorecard
+                      </h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left">
+                        <thead>
+                          <tr className="border-b border-white/5 text-[9px] font-black text-neutral-600 uppercase tracking-widest">
+                            <th className="px-8 py-4">Batter</th>
+                            <th className="px-4 py-4">Status</th>
+                            <th className="px-4 py-4 text-right">R</th>
+                            <th className="px-4 py-4 text-right">B</th>
+                            <th className="px-4 py-4 text-right">4s</th>
+                            <th className="px-4 py-4 text-right">6s</th>
+                            <th className="px-8 py-4 text-right">SR</th>
                           </tr>
-                        );
-                      })}
-                    {scoring?.playerStats?.filter((s) => s.bowlingBalls > 0)
-                      .length === 0 && (
-                      <tr>
-                        <td
-                          colSpan="8"
-                          className="px-8 py-8 text-center text-xs text-gray-500 uppercase tracking-widest font-bold"
-                        >
-                          No Bowling Records Yet
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {inningsBattingStats.map((s, i) => {
+                            const sr =
+                              s.battingBalls > 0
+                                ? ((s.battingRuns / s.battingBalls) * 100).toFixed(2)
+                                : "0.00";
+                            return (
+                              <tr
+                                key={i}
+                                className="group hover:bg-white/[0.01] transition-colors"
+                              >
+                                <td className="px-8 py-4 font-bold text-sm uppercase text-white">
+                                  {s.user?.name}
+                                </td>
+                                <td className="px-4 py-4 text-[10px] text-gray-500 font-black uppercase">
+                                  {formatOutStatus(s)}
+                                </td>
+                                <td className="px-4 py-4 text-right font-black text-success">
+                                  {s.battingRuns || 0}
+                                </td>
+                                <td className="px-4 py-4 text-right text-gray-400 text-sm">
+                                  {s.battingBalls || 0}
+                                </td>
+                                <td className="px-4 py-4 text-right text-gray-400 text-sm">
+                                  {s.battingFours || 0}
+                                </td>
+                                <td className="px-4 py-4 text-right text-gray-400 text-sm">
+                                  {s.battingSixes || 0}
+                                </td>
+                                <td className="px-8 py-4 text-right font-bold text-sm text-secondary">
+                                  {sr}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Bowling Scorecard */}
+                  <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-[8px] overflow-hidden">
+                    <div className="p-8 border-b border-white/5 flex items-center justify-between">
+                      <h3 className="text-lg font-black uppercase tracking-tighter">
+                        Bowling Scorecard
+                      </h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left">
+                        <thead>
+                          <tr className="border-b border-white/5 text-[9px] font-black text-neutral-600 uppercase tracking-widest">
+                            <th className="px-8 py-4">Bowler</th>
+                            <th className="px-4 py-4 text-right">O</th>
+                            <th className="px-4 py-4 text-right">M</th>
+                            <th className="px-4 py-4 text-right">R</th>
+                            <th className="px-4 py-4 text-right">W</th>
+                            <th className="px-4 py-4 text-right">Econ</th>
+                            <th className="px-4 py-4 text-right">WD</th>
+                            <th className="px-8 py-4 text-right">NB</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {inningsBowlingStats.map((s, i) => {
+                            const overs = `${Math.floor(s.bowlingBalls / ballsPerOver)}.${s.bowlingBalls % ballsPerOver}`;
+                            const econ =
+                              s.bowlingBalls > 0
+                                ? ((s.bowlingRuns / s.bowlingBalls) * ballsPerOver).toFixed(2)
+                                : "0.00";
+                            return (
+                              <tr
+                                key={i}
+                                className="group hover:bg-white/[0.01] transition-colors"
+                              >
+                                <td className="px-8 py-4 font-bold text-sm uppercase text-white">
+                                  {s.user?.name}
+                                </td>
+                                <td className="px-4 py-4 text-right font-bold text-sm text-gray-300">
+                                  {overs}
+                                </td>
+                                <td className="px-4 py-4 text-right text-gray-400 text-sm">
+                                  {s.bowlingMaidens || 0}
+                                </td>
+                                <td className="px-4 py-4 text-right text-gray-400 text-sm">
+                                  {s.bowlingRuns || 0}
+                                </td>
+                                <td className="px-4 py-4 text-right font-black text-success">
+                                  {s.bowlingWickets || 0}
+                                </td>
+                                <td className="px-4 py-4 text-right text-secondary font-bold text-sm">
+                                  {econ}
+                                </td>
+                                <td className="px-4 py-4 text-right text-gray-400 text-sm">
+                                  {s.bowlingWides || 0}
+                                </td>
+                                <td className="px-8 py-4 text-right text-gray-400 text-sm">
+                                  {s.bowlingNoBalls || 0}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {(!scoring?.innings || scoring.innings.length === 0) && (
+              <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-[8px] p-12 text-center text-xs text-gray-500 uppercase tracking-widest font-bold">
+                No Scorecard Records Yet
               </div>
-            </div>
+            )}
           </div>
         )}
 
