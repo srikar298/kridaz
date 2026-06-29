@@ -185,10 +185,16 @@ export const aggregatePlayerStats = async (matchScoring, hostedGame) => {
         else if (stat.battingRuns >= 50)
           cricket.fifties = (cricket.fifties || 0) + 1;
 
+        const isOut = stat.outStatus && stat.outStatus !== "NOT_OUT" && stat.outStatus !== "RETIRED_HURT";
+        if (cricket.dismissals === undefined) {
+          cricket.dismissals = Math.max(0, (cricket.matches || 1) - 1);
+        }
+        cricket.dismissals += isOut ? 1 : 0;
+
         cricket.battingAverage =
-          cricket.matches > 0
-            ? Number((cricket.runs / cricket.matches).toFixed(2))
-            : 0;
+          cricket.dismissals > 0
+            ? Number((cricket.runs / cricket.dismissals).toFixed(2))
+            : cricket.runs;
         cricket.battingStrikeRate =
           cricket.ballsFaced > 0
             ? Number(((cricket.runs / cricket.ballsFaced) * 100).toFixed(2))
@@ -981,8 +987,10 @@ export const updateMatchStatus = async (scoringId, newStatus, viewer) => {
 export const reviseTargetAndOvers = async (
   scoringId,
   revisedTarget,
-  revisedOvers
+  revisedOvers,
+  viewer
 ) => {
+  await verifyScoringAuth(scoringId, viewer);
   const scoring = await prisma.cricketMatch.update({
     where: { id: scoringId },
     data: { revisedTarget, revisedOvers },
@@ -1057,8 +1065,10 @@ export const substitutePlayer = async (
   scoringId,
   userId,
   substituteForId,
-  inningsIndex
+  inningsIndex,
+  viewer
 ) => {
+  await verifyScoringAuth(scoringId, viewer);
   // Add the substitute to the player stats for the match/innings
   const stat = await prisma.matchPlayerStat.upsert({
     where: {
@@ -1089,8 +1099,10 @@ export const useReview = async (
   scoringId,
   inningsIndex,
   team,
-  isSuccessful
+  isSuccessful,
+  viewer
 ) => {
+  await verifyScoringAuth(scoringId, viewer);
   const scoring = await prisma.cricketMatch.findUnique({
     where: { id: scoringId },
     include: { innings: true },
@@ -1432,12 +1444,39 @@ export const revertLastBall = async (scoringId, viewer) => {
       ? [
           prisma.cricketMatch.update({
             where: { id: scoring.id },
-            data: {
-              // Restore the dismissed batter as striker so the match state
-              // is consistent after undo. playerOutId takes priority (run-out
-              // of non-striker); falls back to batterId for the normal case.
-              strikerId: lastBall.playerOutId || lastBall.batterId,
-            },
+            data: (() => {
+              const isNonStrikerRunOut = lastBall.playerOutId && lastBall.playerOutId !== lastBall.batterId;
+              
+              if (isNonStrikerRunOut) {
+                // Non-striker was run out. Prior to the ball, striker was lastBall.batterId (A)
+                // and non-striker was lastBall.playerOutId (B).
+                return {
+                  strikerId: lastBall.batterId,
+                  nonStrikerId: lastBall.playerOutId,
+                };
+              } else {
+                // Striker was out (Caught, Bowled, LBW, or Striker Run Out).
+                // Striker prior to the ball was lastBall.batterId (A).
+                // Reconstruct whether batters crossed to locate survivor B.
+                const isWide = lastBall.extraType === "WIDE";
+                const isNoBall = lastBall.extraType === "NO_BALL";
+                const isBye = lastBall.extraType === "BYE";
+                const isLegBye = lastBall.extraType === "LEG_BYE";
+                const runs = lastBall.runs ?? 0;
+                const extraRuns = lastBall.extraRuns ?? 0;
+                const physicalRunsRan = runs +
+                  (isBye || isLegBye ? extraRuns : 0) +
+                  ((isWide || isNoBall) && extraRuns > 1 ? extraRuns - 1 : 0);
+                const crossed = physicalRunsRan % 2 !== 0;
+                
+                const survivorId = crossed ? scoring.strikerId : scoring.nonStrikerId;
+                
+                return {
+                  strikerId: lastBall.batterId,
+                  nonStrikerId: survivorId || scoring.nonStrikerId,
+                };
+              }
+            })(),
           }),
         ]
       : []),
@@ -1530,13 +1569,13 @@ export const processScoreUpdate = async (scoringId, ballData, viewer) => {
   ]);
   if (
     houseRules.enforceFreeHit &&
-    scoring.freeHitActive &&
+    (scoring.freeHitActive || isNoBall) &&
     ballData.isWicket &&
     FREE_HIT_FORBIDDEN_WICKETS.has(ballData.wicketType)
   ) {
     throw new BadRequestError(
-      `Batter cannot be out ${ballData.wicketType} on a free hit (Law 21.18).`,
-      { code: "FREE_HIT_INVALID_DISMISSAL" }
+      `Batter cannot be out ${ballData.wicketType} off a ${isNoBall ? "no-ball" : "free hit"} (MCC Laws).`,
+      { code: isNoBall ? "NO_BALL_INVALID_DISMISSAL" : "FREE_HIT_INVALID_DISMISSAL" }
     );
   }
 
@@ -2148,7 +2187,7 @@ export const fetchLiveScoreSnapshot = async (matchId) => {
   const mappedMatch = mapHostedGame(match);
 
   const scoring = await prisma.cricketMatch.findUnique({
-    where: { gameId: matchId },
+    where: { gameId: resolvedId },
     include: {
       innings: true,
       playerStats: true,
@@ -2274,7 +2313,7 @@ const generateUniqueShortId = async () => {
  *   shortId         ← collision-safe alphanumeric ID
  */
 export const createScoringMatch = async (userId, matchData) => {
-  const {
+  let {
     matchName,
     format,
     ballType,
@@ -2954,8 +2993,9 @@ export const addPenaltyRuns = async (scoringId, runs, teamId, viewer) => {
   // innings" case is left for umpire reconciliation rather than silently
   // dropping the runs.
   const penaltyRuns = parseInt(runs);
-  const over = Math.floor(currentInnings.totalBalls / 6);
-  const ballInOver = currentInnings.totalBalls % 6;
+  const ballsPerOver = houseRules.ballsPerOver || 6;
+  const over = Math.floor(currentInnings.totalBalls / ballsPerOver);
+  const ballInOver = currentInnings.totalBalls % ballsPerOver;
 
   const newBall = await prisma.matchBall.create({
     data: {
