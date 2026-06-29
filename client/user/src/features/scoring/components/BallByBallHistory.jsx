@@ -1,9 +1,11 @@
 import React, { useState, useMemo } from "react";
 import { Shield } from "lucide-react";
 import { Button } from "@kridaz/ui";
+import { formatBallDismissal } from "../utils/dismissalFormatter.js";
 
 
 const ballColor = (ball) => {
+  if (ball.isDeadBall) return "bg-neutral-800 text-neutral-500 line-through opacity-50";
   if (ball.isWicket) return "bg-red-600 text-white";
   if (ball.isExtra) return "bg-yellow-500 text-black";
   if (ball.runs === 6) return "bg-primary text-black";
@@ -13,6 +15,7 @@ const ballColor = (ball) => {
 };
 
 const ballLabel = (ball) => {
+  if (ball.isDeadBall) return "DB";
   if (ball.isWicket) return "W";
   if (ball.extraType === "WIDE") return "Wd";
   if (ball.extraType === "NO_BALL") return "Nb";
@@ -172,11 +175,13 @@ const BallByBallHistory = ({ matchData }) => {
                           </p>
                         </div>
                         <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider">
-                          {ball.isWicket
-                            ? `OUT - ${ball.wicketType}`
-                            : ball.isExtra
-                              ? `${ball.extraType} + ${ball.runs} RUNS`
-                              : `${ball.runs} RUNS`}
+                          {ball.isDeadBall
+                            ? "DEAD BALL"
+                            : ball.isWicket
+                              ? formatBallDismissal(ball)
+                              : ball.isExtra
+                                ? `${ball.extraType} + ${ball.runs} RUNS`
+                                : `${ball.runs} RUNS`}
                         </p>
                       </div>
                       <div className="text-right">

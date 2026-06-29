@@ -8,11 +8,13 @@ const BALL_STYLES = {
   wide: { bg: "#eab308", color: "#000" },
   no_ball: { bg: "#f97316", color: "#000" },
   dot: { bg: "#374151", color: "#9ca3af" },
+  dead: { bg: "#1e293b", color: "#64748b", textDecoration: "line-through" },
   run: { bg: "#1f2937", color: "#fff" },
 };
 
 function getBallStyle(ball) {
   if (!ball) return BALL_STYLES.dot;
+  if (ball.type === "dead" || ball.label === "DB") return BALL_STYLES.dead;
   if (ball.isWicket || ball.type === "wicket") return BALL_STYLES.wicket;
   const lbl = ball.label || ball.type || "";
   if (lbl === "6" || ball.type === "six") return BALL_STYLES.six;
@@ -35,6 +37,7 @@ function BallPill({ ball, size = 36 }) {
         borderRadius: "50%",
         background: st.bg,
         color: st.color,
+        textDecoration: st.textDecoration || "none",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

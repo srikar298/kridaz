@@ -35,6 +35,7 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import BallByBallHistory from "../components/BallByBallHistory";
 import GlobalBackButton from "@/shared/components/GlobalBackButton";
+import { formatOutStatus } from "../utils/dismissalFormatter.js";
 import { Button, Select } from "@kridaz/ui";
 
 
@@ -178,6 +179,7 @@ const MatchAnalytics = () => {
 
   const getBallCls = (ball) => {
     if (!ball) return "bg-gray-800 text-gray-500";
+    if (ball.type === "dead" || ball.label === "DB") return "bg-neutral-800 text-neutral-500 line-through opacity-50";
     if (ball.isWicket || ball.type === "wicket") return "bg-red-600 text-white";
     const lbl = ball.label || "";
     if (lbl === "6" || ball.type === "six") return "bg-purple-600 text-white";
@@ -1714,7 +1716,7 @@ const MatchAnalytics = () => {
                               {s.user?.name}
                             </td>
                             <td className="px-4 py-4 text-[10px] text-gray-500 font-black uppercase">
-                              {s.outStatus || "Not Out"}
+                              {formatOutStatus(s)}
                             </td>
                             <td className="px-4 py-4 text-right font-black text-success">
                               {s.battingRuns || 0}
