@@ -4,7 +4,7 @@ import { ArrowRight, ArrowLeft, Users, Coins, Percent, AlertCircle } from "lucid
 
 const Step6Teams = ({ formData, onNext, onBack, isLoading }) => {
   const [localData, setLocalData] = useState({
-    registrationFee: formData.registrationFee || "",
+    entryFee: formData.entryFee || "",
     advanceFee: formData.advanceFee || "",
     discount: formData.discount || "",
     details: {
@@ -35,7 +35,7 @@ const Step6Teams = ({ formData, onNext, onBack, isLoading }) => {
     onNext(localData);
   };
 
-  const isValid = localData.registrationFee !== "" && localData.registrationFee >= 0;
+  const isValid = localData.entryFee !== "" && localData.entryFee >= 0;
 
   return (
     <div className="space-y-8 animate-fade-in pb-20">
@@ -52,8 +52,8 @@ const Step6Teams = ({ formData, onNext, onBack, isLoading }) => {
             </label>
             <Input
               type="number"
-              name="registrationFee"
-              value={localData.registrationFee}
+              name="entryFee"
+              value={localData.entryFee}
               onChange={handleNumChange}
               placeholder="e.g. 5000"
               className="w-full bg-card border border-white/5 rounded-xl px-4 py-4 text-sm font-bold text-white focus:outline-none focus:border-[#FFD700] transition-colors"

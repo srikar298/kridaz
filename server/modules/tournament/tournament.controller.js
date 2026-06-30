@@ -99,7 +99,13 @@ export const getTournamentById = async (req, res, next) => {
       include: {
         pools: true,
         teams: {
-          include: { team: true },
+          include: {
+            team: {
+              include: {
+                members: true,
+              },
+            },
+          },
         },
         officials: true,
         venues: {

@@ -10,6 +10,14 @@ import {
 } from "lucide-react";
 
 const FinancesTab = ({ tournament }) => {
+  const registeredTeams = tournament.teams || [];
+  const entryFee = Number(tournament.entryFee) || 0;
+  const maxTeams = tournament.maxTeams || 0;
+
+  const collected = registeredTeams.reduce((sum, t) => sum + (Number(t.amountPaid) || 0), 0);
+  const expectedTotal = maxTeams * entryFee;
+  const pendingDues = Math.max(0, expectedTotal - collected);
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Wallet Balance */}
@@ -23,7 +31,7 @@ const FinancesTab = ({ tournament }) => {
               <p className="text-xs font-bold text-white/50 uppercase tracking-wider mb-1">
                 Total Collections (via Kridaz)
               </p>
-              <h2 className="text-3xl font-black text-white">â‚¹0</h2>
+              <h2 className="text-3xl font-black text-white">₹{collected.toLocaleString()}</h2>
             </div>
           </div>
 
@@ -48,12 +56,11 @@ const FinancesTab = ({ tournament }) => {
               <div>
                 <p className="text-sm font-bold text-white">Expected Total</p>
                 <p className="text-[10px] text-white/50">
-                  {tournament.maxTeams} Teams x â‚¹{tournament.entryFee}
+                  {maxTeams} Teams x ₹{entryFee.toLocaleString()}
                 </p>
               </div>
               <p className="text-lg font-black text-white">
-                â‚¹
-                {(tournament.maxTeams * tournament.entryFee).toLocaleString()}
+                ₹{expectedTotal.toLocaleString()}
               </p>
             </div>
 
@@ -62,9 +69,9 @@ const FinancesTab = ({ tournament }) => {
                 <p className="text-sm font-bold text-primary">
                   Collected So Far
                 </p>
-                <p className="text-[10px] text-primary/50">From 0 teams</p>
+                <p className="text-[10px] text-primary/50">From {registeredTeams.length} teams</p>
               </div>
-              <p className="text-lg font-black text-primary">â‚¹0</p>
+              <p className="text-lg font-black text-primary">₹{collected.toLocaleString()}</p>
             </div>
 
             <div className="flex justify-between items-center p-4 bg-red-500/10 rounded-xl border border-red-500/20">
@@ -73,8 +80,7 @@ const FinancesTab = ({ tournament }) => {
                 <p className="text-[10px] text-red-400/50">To be collected</p>
               </div>
               <p className="text-lg font-black text-red-400">
-                â‚¹
-                {(tournament.maxTeams * tournament.entryFee).toLocaleString()}
+                ₹{pendingDues.toLocaleString()}
               </p>
             </div>
           </div>
@@ -83,32 +89,36 @@ const FinancesTab = ({ tournament }) => {
         {/* Transactions List */}
         <div className="bg-card border border-white/5 rounded-2xl p-6">
           <h3 className="text-sm font-black text-white/90 uppercase tracking-widest mb-6">
-            Recent Transactions
+            Team Payments Ledger
           </h3>
 
-          <div className="space-y-3">
-            <div className="flex justify-between items-center p-3 hover:bg-white/5 rounded-xl transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center">
-                  <ArrowUpRight size={14} className="text-red-500" />
+          <div className="space-y-3 max-h-[300px] overflow-y-auto">
+            {registeredTeams.map((t) => (
+              <div key={t.id} className="flex justify-between items-center p-3 hover:bg-white/5 rounded-xl transition-colors border-b border-white/5">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                    <ArrowDownRight size={14} className="text-emerald-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white line-clamp-1">
+                      {t.team?.name || "Registered Team"}
+                    </p>
+                    <p className="text-[10px] text-white/50">
+                      Status: <span className="font-bold text-primary">{t.paymentStatus}</span>
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-white">
-                    Platform Fee Paid
-                  </p>
-                  <p className="text-[10px] text-white/50">
-                    Kridaz Listing Fee
-                  </p>
-                </div>
+                <p className="text-sm font-black text-emerald-500">+₹{Number(t.amountPaid || 0).toLocaleString()}</p>
               </div>
-              <p className="text-sm font-black text-red-500">-â‚¹999</p>
-            </div>
+            ))}
 
-            <div className="text-center p-8">
-              <p className="text-xs text-white/40 font-bold">
-                No other transactions yet.
-              </p>
-            </div>
+            {registeredTeams.length === 0 && (
+              <div className="text-center p-8">
+                <p className="text-xs text-white/40 font-bold">
+                  No registrations recorded yet.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

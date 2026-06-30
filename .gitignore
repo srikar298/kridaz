@@ -6,6 +6,7 @@ node_modules/
 dist/
 build/
 *.log
+.turbo/
 
 # ── Debug / scratch / generated files ───────────────────────────────
 # Root-level scratch folder (dev-only debug scripts)

@@ -71,8 +71,8 @@ const Step3Config = ({ formData, onNext, onBack, isLoading }) => {
     pitchType: formData.pitchType || "Turf",
     matchType: formData.matchType || "Limited Overs",
     maxTeams: formData.maxTeams || 8,
-    minPlayersPerTeam: formData.minPlayersPerTeam || 11,
-    maxPlayersPerTeam: formData.maxPlayersPerTeam || 15,
+    minPlayersPerTeam: formData.details?.minPlayersPerTeam || formData.minPlayersPerTeam || 11,
+    maxPlayersPerTeam: formData.details?.maxPlayersPerTeam || formData.maxPlayersPerTeam || 15,
     numberOfWinners: formData.numberOfWinners || 1,
   });
 
@@ -88,7 +88,14 @@ const Step3Config = ({ formData, onNext, onBack, isLoading }) => {
   };
 
   const submit = () => {
-    onNext(localData);
+    onNext({
+      ...localData,
+      details: {
+        ...formData.details,
+        minPlayersPerTeam: localData.minPlayersPerTeam,
+        maxPlayersPerTeam: localData.maxPlayersPerTeam,
+      },
+    });
   };
 
   const renderSelectChips = (options, currentVal, field) => (
