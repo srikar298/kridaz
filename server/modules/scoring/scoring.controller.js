@@ -300,13 +300,15 @@ export const setMatchOfficials = async (req, res) => {
  */
 export const substitutePlayer = async (req, res) => {
   try {
-    const { scoringId, userId, substituteForId, inningsIndex } = req.body;
+    const { scoringId, userId, substituteForId, inningsIndex, isSubstitute } = req.body;
     const stat = await scoringService.substitutePlayer(
       scoringId,
       userId,
       substituteForId,
-      inningsIndex
-    , req.user);
+      inningsIndex,
+      req.user,
+      isSubstitute !== undefined ? isSubstitute : true
+    );
 
     res.status(200).json({ success: true, stat });
   } catch (error) {

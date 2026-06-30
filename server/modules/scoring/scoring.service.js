@@ -1066,7 +1066,8 @@ export const substitutePlayer = async (
   userId,
   substituteForId,
   inningsIndex,
-  viewer
+  viewer,
+  isSubstitute = true
 ) => {
   await verifyScoringAuth(scoringId, viewer);
   // Add the substitute to the player stats for the match/innings
@@ -1075,14 +1076,14 @@ export const substitutePlayer = async (
       matchId_userId_inningsIndex: { matchId: scoringId, userId, inningsIndex },
     },
     update: {
-      isSubstitute: true,
+      isSubstitute: isSubstitute,
       substituteForId: substituteForId,
     },
     create: {
       matchId: scoringId,
       userId,
       inningsIndex,
-      isSubstitute: true,
+      isSubstitute: isSubstitute,
       substituteForId: substituteForId,
     },
   });
