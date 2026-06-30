@@ -1087,6 +1087,53 @@ export const substitutePlayer = async (
     },
   });
 
+  // Dynamic roster sync: automatically add the new player to the team roster if not already present
+  try {
+    const match = await prisma.cricketMatch.findUnique({
+      where: { id: scoringId },
+      include: {
+        game: {
+          include: {
+            teams: true,
+          },
+        },
+      },
+    });
+
+    if (match && match.game && match.game.teams) {
+      let activeTeamId = null;
+      for (const gt of match.game.teams) {
+        if (gt.linkedTeamId) {
+          const isMember = await prisma.teamMember.findFirst({
+            where: { teamId: gt.linkedTeamId, userId: substituteForId },
+          });
+          if (isMember) {
+            activeTeamId = gt.linkedTeamId;
+            break;
+          }
+        }
+      }
+
+      if (activeTeamId) {
+        const isNewPlayerMember = await prisma.teamMember.findFirst({
+          where: { teamId: activeTeamId, userId },
+        });
+        if (!isNewPlayerMember) {
+          await prisma.teamMember.create({
+            data: {
+              teamId: activeTeamId,
+              userId,
+              role: "PLAYER",
+              status: "JOINED",
+            },
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.error("[Scoring] Auto-add substitute to team roster failed:", err);
+  }
+
   return stat;
 };
 
