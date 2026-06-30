@@ -133,9 +133,9 @@ export const getTournamentStandings = async (tournamentId) => {
   const games = await prisma.hostedGame.findMany({
     where: { tournamentId, tournamentStage: "GROUP" },
     include: {
-      teams: { include: { team: true } },
+      teams: { include: { linkedTeam: true } },
       cricketMatch: {
-        include: { teams: true },
+        include: { innings: true },
       },
     },
   });
@@ -155,9 +155,9 @@ export const getTournamentStandings = async (tournamentId) => {
         tied: 0,
         points: 0,
         runsScored: 0,
-        oversFaced: 0,
+        ballsFaced: 0,
         runsConceded: 0,
-        oversBowled: 0,
+        ballsBowled: 0,
         nrr: 0.0,
       };
     }
@@ -167,58 +167,97 @@ export const getTournamentStandings = async (tournamentId) => {
     if (!game.tournamentPoolId) continue;
 
     for (const gt of game.teams) {
-      initTeam(game.tournamentPoolId, gt.teamId, gt.team.name);
+      if (gt.linkedTeamId && gt.linkedTeam) {
+        initTeam(game.tournamentPoolId, gt.linkedTeamId, gt.linkedTeam.name);
+      }
     }
 
     if (game.status === "COMPLETED" && game.cricketMatch) {
       const match = game.cricketMatch;
-      const t1 = match.teams[0];
-      const t2 = match.teams[1];
+      
+      const gtA = game.teams.find((t) => t.teamKey === "teamA");
+      const gtB = game.teams.find((t) => t.teamKey === "teamB");
+      
+      if (!gtA || !gtB || !gtA.linkedTeamId || !gtB.linkedTeamId) continue;
+      
+      const sA = standings[game.tournamentPoolId][gtA.linkedTeamId];
+      const sB = standings[game.tournamentPoolId][gtB.linkedTeamId];
+      
+      if (!sA || !sB) continue;
 
-      if (!t1 || !t2) continue;
+      sA.played += 1;
+      sB.played += 1;
 
-      const team1Id = game.teams.find((t) => t.id === t1.teamId)?.teamId; // mapping HostedGame team to global Team
-      const team2Id = game.teams.find((t) => t.id === t2.teamId)?.teamId;
+      // Extract normal innings, excluding Super Overs
+      const normalInnings = match.innings.filter(i => !i.isSuperOver);
+      const inningsA = normalInnings.find(i => i.battingTeam === "teamA");
+      const inningsB = normalInnings.find(i => i.battingTeam === "teamB");
 
-      // Wait, CricketMatch Teams usually map back to actual teams?
-      // HostedGame.teams -> GameTeam. GameTeam.id is what CricketMatch.teams points to.
-      // So t1.teamId is GameTeam.id. We need to find the GameTeam to get the real global teamId.
-      const gt1 = game.teams.find((t) => t.id === t1.teamId);
-      const gt2 = game.teams.find((t) => t.id === t2.teamId);
+      const ballsPerOver = match.houseRules?.ballsPerOver || 6;
+      const maxOvers = match.revisedOvers != null ? match.revisedOvers : match.oversPerInnings;
+      const maxBalls = Math.floor(maxOvers * ballsPerOver);
 
-      if (!gt1 || !gt2) continue;
+      const playersPerTeam = match.houseRules?.playersPerTeam || 11;
+      const wicketsForAllOut = playersPerTeam - 1;
 
-      const s1 = standings[game.tournamentPoolId][gt1.teamId];
-      const s2 = standings[game.tournamentPoolId][gt2.teamId];
+      const isTeamAAllOut = inningsA && inningsA.totalWickets >= wicketsForAllOut;
+      const isTeamBAllOut = inningsB && inningsB.totalWickets >= wicketsForAllOut;
 
-      s1.played += 1;
-      s2.played += 1;
+      let runsScoredA = inningsA ? inningsA.totalRuns : 0;
+      let runsScoredB = inningsB ? inningsB.totalRuns : 0;
 
-      // Runs & Overs logic for NRR (simplified)
-      s1.runsScored += t1.score || 0;
-      s1.oversFaced += t1.overs || 0; // Note: In real cricket NRR, 19.3 overs is 19.5 overs in math (19 + 3/6). Ensure `overs` is numeric decimal.
-      s1.runsConceded += t2.score || 0;
-      s1.oversBowled += t2.overs || 0;
+      // DLS adjustment: if revisedTarget is set, the team batting first is credited with (revisedTarget - 1)
+      if (match.revisedTarget != null) {
+        const firstInnings = normalInnings.find(i => i.inningsIndex === 0);
+        if (firstInnings) {
+          if (firstInnings.battingTeam === "teamA") {
+            runsScoredA = Math.max(0, match.revisedTarget - 1);
+          } else {
+            runsScoredB = Math.max(0, match.revisedTarget - 1);
+          }
+        }
+      }
 
-      s2.runsScored += t2.score || 0;
-      s2.oversFaced += t2.overs || 0;
-      s2.runsConceded += t1.score || 0;
-      s2.oversBowled += t1.overs || 0;
+      // Calculate balls faced & bowled under All-Out laws
+      let ballsFacedA = inningsA ? inningsA.totalBalls : 0;
+      if (isTeamAAllOut) {
+        ballsFacedA = maxBalls;
+      }
 
-      // Determine Winner
-      if (match.result === "TEAM1_WON") {
-        s1.won += 1;
-        s1.points += 2;
-        s2.lost += 1;
-      } else if (match.result === "TEAM2_WON") {
-        s2.won += 1;
-        s2.points += 2;
-        s1.lost += 1;
-      } else if (match.result === "DRAW" || match.result === "TIE") {
-        s1.tied += 1;
-        s2.tied += 1;
-        s1.points += 1;
-        s2.points += 1;
+      let ballsFacedB = inningsB ? inningsB.totalBalls : 0;
+      if (isTeamBAllOut) {
+        ballsFacedB = maxBalls;
+      }
+
+      // Accumulate stats
+      sA.runsScored += runsScoredA;
+      sA.ballsFaced += ballsFacedA;
+      sA.runsConceded += runsScoredB;
+      sA.ballsBowled += ballsFacedB;
+
+      sB.runsScored += runsScoredB;
+      sB.ballsFaced += ballsFacedB;
+      sB.runsConceded += runsScoredA;
+      sB.ballsBowled += ballsFacedA;
+
+      // Determine Winner from completed result string
+      const resultStr = match.result || "";
+      const teamAName = gtA.name || gtA.linkedTeam.name;
+      const teamBName = gtB.name || gtB.linkedTeam.name;
+
+      if (resultStr.toLowerCase().includes("tied") || resultStr.toLowerCase().includes("draw")) {
+        sA.tied += 1;
+        sB.tied += 1;
+        sA.points += 1;
+        sB.points += 1;
+      } else if (resultStr.includes(teamAName)) {
+        sA.won += 1;
+        sA.points += 2;
+        sB.lost += 1;
+      } else if (resultStr.includes(teamBName)) {
+        sB.won += 1;
+        sB.points += 2;
+        sA.lost += 1;
       }
     }
   }
@@ -228,9 +267,11 @@ export const getTournamentStandings = async (tournamentId) => {
   for (const poolId in standings) {
     const teamsInPool = Object.values(standings[poolId]);
     for (const team of teamsInPool) {
-      const rf = team.oversFaced > 0 ? team.runsScored / team.oversFaced : 0;
-      const ra =
-        team.oversBowled > 0 ? team.runsConceded / team.oversBowled : 0;
+      const oversFacedFraction = team.ballsFaced / 6;
+      const oversBowledFraction = team.ballsBowled / 6;
+      
+      const rf = oversFacedFraction > 0 ? team.runsScored / oversFacedFraction : 0;
+      const ra = oversBowledFraction > 0 ? team.runsConceded / oversBowledFraction : 0;
       team.nrr = parseFloat((rf - ra).toFixed(3));
     }
 
