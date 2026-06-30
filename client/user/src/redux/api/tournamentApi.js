@@ -84,6 +84,29 @@ export const tournamentApi = baseApi.injectEndpoints({
       query: (id) => `/api/tournament/${id}/matches`,
       providesTags: (result, error, id) => [{ type: "TournamentMatches", id }],
     }),
+    // Edge Case 24 — Tournament cancellation with bulk refund
+    cancelTournament: builder.mutation({
+      query: (id) => ({
+        url: `/api/tournament/${id}/cancel`,
+        method: "POST",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Tournament", id },
+        "Tournament",
+      ],
+    }),
+    // Team withdrawal + walkover generation + optional partial refund
+    withdrawTeam: builder.mutation({
+      query: ({ tournamentId, teamId, refundAmount }) => ({
+        url: `/api/tournament/${tournamentId}/teams/${teamId}/withdraw`,
+        method: "POST",
+        body: { refundAmount },
+      }),
+      invalidatesTags: (result, error, { tournamentId }) => [
+        { type: "Tournament", id: tournamentId },
+        "Tournament",
+      ],
+    }),
   }),
 });
 
@@ -100,4 +123,6 @@ export const {
   useManualScheduleMutation,
   useGetStandingsQuery,
   useGetTournamentMatchesQuery,
+  useCancelTournamentMutation,
+  useWithdrawTeamMutation,
 } = tournamentApi;

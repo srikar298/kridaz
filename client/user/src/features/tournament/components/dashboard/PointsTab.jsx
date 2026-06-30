@@ -1,5 +1,6 @@
 import React from "react";
 import { useGetStandingsQuery } from "@redux/api/tournamentApi";
+import { CloudRain, Trophy, Sunrise } from "lucide-react";
 
 const PointsTab = ({ tournament }) => {
   const { data: standings, isLoading, error } = useGetStandingsQuery(tournament.id);
@@ -22,6 +23,22 @@ const PointsTab = ({ tournament }) => {
 
   return (
     <div className="space-y-8 pb-10">
+      {/* Legend row */}
+      <div className="flex flex-wrap gap-3 text-[10px]">
+        {[
+          { badge: "Q", label: "Qualifies", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+          { badge: "E", label: "Eliminated", color: "bg-white/5 text-white/40 border-white/10" },
+          { badge: "NR", label: "No Result / Abandoned", color: "bg-sky-500/10 text-sky-400 border-sky-500/20" },
+        ].map(({ badge, label, color }) => (
+          <div key={badge} className="flex items-center gap-1.5">
+            <span className={`px-1.5 py-0.5 rounded border font-bold uppercase tracking-wider ${color}`}>
+              {badge}
+            </span>
+            <span className="text-white/40">{label}</span>
+          </div>
+        ))}
+      </div>
+
       {standings.map((poolData, poolIdx) => {
         // Qualification threshold: top 2 or top 4
         const qualifyCount = poolData.teams.length > 5 ? 4 : 2;
@@ -43,7 +60,9 @@ const PointsTab = ({ tournament }) => {
                     <th className="py-3 text-center">W</th>
                     <th className="py-3 text-center">L</th>
                     <th className="py-3 text-center">T</th>
-                    <th className="py-3 text-center">Pts</th>
+                    {/* NR column: No Result / Abandoned matches */}
+                    <th className="py-3 text-center" title="No Result / Abandoned">NR</th>
+                    <th className="py-3 text-center font-black text-primary">Pts</th>
                     <th className="py-3 text-right pr-2">NRR</th>
                   </tr>
                 </thead>
@@ -51,6 +70,7 @@ const PointsTab = ({ tournament }) => {
                   {poolData.teams.map((team, idx) => {
                     const isQualifying = idx < qualifyCount;
                     const isLastQualifyingSpot = idx === qualifyCount - 1;
+                    const noResult = team.noResult || 0;
 
                     return (
                       <React.Fragment key={team.teamId}>
@@ -76,6 +96,16 @@ const PointsTab = ({ tournament }) => {
                           <td className="py-4 text-center text-emerald-400">{team.won}</td>
                           <td className="py-4 text-center text-red-400">{team.lost}</td>
                           <td className="py-4 text-center text-white/50">{team.tied}</td>
+                          {/* NR column — sky blue for abandoned/no-result matches */}
+                          <td className="py-4 text-center">
+                            {noResult > 0 ? (
+                              <span className="text-sky-400 font-bold flex items-center justify-center gap-0.5">
+                                <CloudRain size={10} /> {noResult}
+                              </span>
+                            ) : (
+                              <span className="text-white/20">—</span>
+                            )}
+                          </td>
                           <td className="py-4 text-center font-black text-primary">{team.points}</td>
                           <td className={`py-4 text-right pr-2 font-bold ${Number(team.nrr) >= 0 ? "text-emerald-400" : "text-red-400"}`}>
                             {Number(team.nrr) > 0 ? `+${team.nrr}` : team.nrr}
@@ -84,7 +114,7 @@ const PointsTab = ({ tournament }) => {
                         {/* Qualification Separator Line */}
                         {isLastQualifyingSpot && idx < poolData.teams.length - 1 && (
                           <tr className="pointer-events-none">
-                            <td colSpan={8} className="py-1 px-0">
+                            <td colSpan={9} className="py-1 px-0">
                               <div className="flex items-center gap-2 w-full">
                                 <div className="h-[1.5px] bg-emerald-500/20 flex-1" />
                                 <span className="text-[9px] font-black text-emerald-500/50 uppercase tracking-widest whitespace-nowrap">
@@ -100,6 +130,11 @@ const PointsTab = ({ tournament }) => {
                   })}
                 </tbody>
               </table>
+            </div>
+
+            {/* Pool legend footer */}
+            <div className="mt-4 flex flex-wrap gap-4 text-[10px] text-white/30">
+              <span>P=Played • W=Won • L=Lost • T=Tied • NR=No Result • Pts=Points • NRR=Net Run Rate</span>
             </div>
           </div>
         );

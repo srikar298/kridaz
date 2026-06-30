@@ -10,6 +10,7 @@ import KnockoutSchedulerModal from "./KnockoutSchedulerModal";
 import { Button, Input } from "@kridaz/ui";
 
 const MatchesTab = ({ tournamentId, tournament }) => {
+  // tournamentId comes directly from the parent via prop — prevents undefined query
   const { data: matchesData, isLoading } = useGetTournamentMatchesQuery(tournamentId);
   const [autoSchedule, { isLoading: isGenerating }] = useAutoScheduleGroupStageMutation();
 
@@ -20,23 +21,29 @@ const MatchesTab = ({ tournamentId, tournament }) => {
   );
   const [slotTimes, setSlotTimes] = useState(["09:00", "14:00"]);
 
-  const matches = matchesData?.matches || [];
+  // Fix: backend returns { data: [...] } not { matches: [...] }
+  const matches = matchesData?.data || [];
 
   const handleGenerate = async () => {
     try {
       if (!startDate) return toast.error("Start date is required");
       if (slotTimes.length === 0) return toast.error("At least one time slot is required");
-      
+
+      // Fix: API shape is { id, data: { startDate, slotTimes } }
       await autoSchedule({
-        tournamentId,
-        startDate: new Date(startDate).toISOString(),
-        slotTimes
+        id: tournamentId,
+        data: {
+          startDate: new Date(startDate).toISOString(),
+          slotTimes,
+        },
       }).unwrap();
-      
-      toast.success("Schedule generated successfully");
+
+      toast.success("Schedule generated successfully!");
       setShowAutoModal(false);
     } catch (error) {
-      toast.error(error?.data?.message || "Failed to generate schedule");
+      // Bubble collision errors clearly
+      const msg = error?.data?.message || "Failed to generate schedule";
+      toast.error(msg, { duration: 6000 });
     }
   };
 

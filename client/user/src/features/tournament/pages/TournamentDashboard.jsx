@@ -1,26 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSelector } from "react-redux";
 import {
-  Trophy,
-  Share2,
-  Users,
-  Calendar,
-  Megaphone,
-  ShieldCheck,
-  Wallet,
-  Settings,
-  ArrowLeft,
-  QrCode,
-  List,
-  BarChart,
-  Award,
-  Image as ImageIcon,
-  Info,
-  MapPin
+  Trophy, Share2, Users, Calendar, Megaphone,
+  Wallet, Settings, ArrowLeft, QrCode, List, BarChart,
+  Award, Image as ImageIcon, Info, PlayCircle, LayoutDashboard
 } from "lucide-react";
 import { useGetTournamentByIdQuery } from "../../../redux/api/tournamentApi";
 import { QRCodeSVG } from "qrcode.react";
+import { toast } from "react-hot-toast";
 
 import MatchesTab from "../components/dashboard/MatchesTab";
 import TeamsTab from "../components/dashboard/TeamsTab";
@@ -32,21 +21,33 @@ import AboutTab from "../components/dashboard/AboutTab";
 import LeaderboardTab from "../components/dashboard/LeaderboardTab";
 import SponsorsTab from "../components/dashboard/SponsorsTab";
 import LiveMatchesTab from "../components/dashboard/LiveMatchesTab";
+import OverviewTab from "../components/dashboard/OverviewTab";
+import FinancesTab from "../components/dashboard/FinancesTab";
+import ScheduleTab from "../components/dashboard/ScheduleTab";
+import SettingsTab from "../components/dashboard/SettingsTab";
 import { Button } from "@kridaz/ui";
-import { PlayCircle } from "lucide-react";
 
 
-const TABS = [
-  { id: "live-matches", label: "Live Matches", icon: <PlayCircle size={16} /> },
-  { id: "matches", label: "Matches", icon: <Calendar size={16} /> },
-  { id: "teams", label: "Teams", icon: <Users size={16} /> },
-  { id: "points", label: "Points", icon: <List size={16} /> },
-  { id: "leaderboard", label: "Leaderboard", icon: <Trophy size={16} /> },
-  { id: "stats", label: "Stats", icon: <BarChart size={16} /> },
-  { id: "heroes", label: "Heroes", icon: <Award size={16} /> },
-  { id: "sponsors", label: "Sponsors", icon: <Megaphone size={16} /> },
-  { id: "gallery", label: "Gallery", icon: <ImageIcon size={16} /> },
-  { id: "about", label: "About", icon: <Info size={16} /> },
+// Tabs visible to all viewers
+const PUBLIC_TABS = [
+  { id: "live-matches", label: "Live", icon: <PlayCircle size={16} /> },
+  { id: "matches",     label: "Matches", icon: <Calendar size={16} /> },
+  { id: "teams",       label: "Teams",   icon: <Users size={16} /> },
+  { id: "points",      label: "Points",  icon: <List size={16} /> },
+  { id: "leaderboard", label: "Leaders", icon: <Trophy size={16} /> },
+  { id: "stats",       label: "Stats",   icon: <BarChart size={16} /> },
+  { id: "heroes",      label: "Heroes",  icon: <Award size={16} /> },
+  { id: "sponsors",    label: "Sponsors",icon: <Megaphone size={16} /> },
+  { id: "gallery",     label: "Gallery", icon: <ImageIcon size={16} /> },
+  { id: "about",       label: "About",   icon: <Info size={16} /> },
+];
+
+// Owner-only management tabs
+const OWNER_TABS = [
+  { id: "overview",  label: "Overview",  icon: <LayoutDashboard size={16} /> },
+  { id: "schedule",  label: "Schedule",  icon: <Calendar size={16} /> },
+  { id: "finances",  label: "Finances",  icon: <Wallet size={16} /> },
+  { id: "settings",  label: "Settings",  icon: <Settings size={16} /> },
 ];
 
 const TournamentDashboard = () => {
@@ -54,42 +55,41 @@ const TournamentDashboard = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentTab = searchParams.get("tab") || "matches";
-
   const [showShareModal, setShowShareModal] = useState(false);
 
   // Fetch Tournament Details
   const { data: res, isLoading } = useGetTournamentByIdQuery(id);
   const tournament = res?.data;
 
+  // Determine if current user is the owner
+  const currentUser = useSelector((s) => s.auth?.user || s.user?.currentUser);
+  const isOwner = !!(currentUser && tournament && currentUser.id === tournament.ownerId);
+  const visibleTabs = isOwner ? [...PUBLIC_TABS, ...OWNER_TABS] : PUBLIC_TABS;
+
   // Render the correct tab content
   const renderTabContent = () => {
     if (!tournament) return null;
-
-    const props = { tournament };
+    // Pass both tournament AND tournamentId (fixes MatchesTab query bug)
+    // Pass isOwner so tabs can conditionally show owner-only controls
+    const props = { tournament, tournamentId: tournament.id, isOwner };
 
     switch (currentTab) {
-      case "live-matches":
-        return <LiveMatchesTab {...props} />;
-      case "matches":
-        return <MatchesTab {...props} />;
-      case "teams":
-        return <TeamsTab {...props} />;
-      case "points":
-        return <PointsTab {...props} />;
-      case "leaderboard":
-        return <LeaderboardTab {...props} />;
-      case "stats":
-        return <StatsTab {...props} />;
-      case "heroes":
-        return <HeroesTab {...props} />;
-      case "sponsors":
-        return <SponsorsTab {...props} />;
-      case "gallery":
-        return <GalleryTab {...props} />;
-      case "about":
-        return <AboutTab {...props} />;
-      default:
-        return <MatchesTab {...props} />;
+      case "live-matches": return <LiveMatchesTab {...props} />;
+      case "matches":      return <MatchesTab {...props} />;
+      case "teams":        return <TeamsTab {...props} />;
+      case "points":       return <PointsTab {...props} />;
+      case "leaderboard":  return <LeaderboardTab {...props} />;
+      case "stats":        return <StatsTab {...props} />;
+      case "heroes":       return <HeroesTab {...props} />;
+      case "sponsors":     return <SponsorsTab {...props} />;
+      case "gallery":      return <GalleryTab {...props} />;
+      case "about":        return <AboutTab {...props} />;
+      // Owner-only tabs
+      case "overview":     return <OverviewTab {...props} />;
+      case "schedule":     return <ScheduleTab {...props} />;
+      case "finances":     return <FinancesTab {...props} />;
+      case "settings":     return <SettingsTab {...props} />;
+      default:             return <MatchesTab {...props} />;
     }
   };
 
@@ -234,7 +234,7 @@ const TournamentDashboard = () => {
       <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-y border-white/5">
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex overflow-x-auto hide-scrollbar">
-            {TABS.map((tab) => (
+            {visibleTabs.map((tab) => (
               <Button
                 key={tab.id}
                 onClick={() => setTab(tab.id)}
@@ -307,7 +307,16 @@ const TournamentDashboard = () => {
               />
             </div>
 
-            <Button className="w-full bg-[#25D366] text-white font-bold py-3 rounded-full flex items-center justify-center gap-2 mb-3">
+            <Button
+              onClick={() => {
+                const link = `https://kridaz.com/t/${tournament.id}`;
+                window.open(
+                  `https://wa.me/?text=${encodeURIComponent(`Join ${tournament.name} on KRIDAZ! Register here: ${link}`)}`,
+                  "_blank"
+                );
+              }}
+              className="w-full bg-[#25D366] text-white font-bold py-3 rounded-full flex items-center justify-center gap-2 mb-3"
+            >
               Share on WhatsApp
             </Button>
             <Button
