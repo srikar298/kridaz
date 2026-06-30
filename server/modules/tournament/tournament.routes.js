@@ -12,6 +12,8 @@ import {
   getStandings,
   manualSchedule,
   getTournamentMatches,
+  cancelTournament,
+  withdrawTeam,
 } from "./tournament.controller.js";
 import { validate } from "../../middleware/validate.middleware.js";
 import {
@@ -36,6 +38,12 @@ router.post("/:id/register", registerForTournament);
 router.post("/:id/schedule/auto", autoScheduleGroupStage);
 router.post("/:id/schedule/manual", manualSchedule);
 
+// Edge Case 24 — Tournament cancellation + bulk refunds
+router.post("/:id/cancel", cancelTournament);
+
+// Edge Case — Team withdrawal + partial refund + walkover generation
+router.post("/:id/teams/:teamId/withdraw", withdrawTeam);
+
 router.post("/", validate(createTournamentSchema), createTournament);
 
 router.get("/my-tournaments", getMyTournaments);
@@ -46,7 +54,7 @@ router.patch("/:id", validate(updateTournamentSchema), updateTournament);
 
 router.post(
   "/:id/poster",
-  upload.single("image"), // Uses existing Cloudinary image upload middleware
+  upload.single("image"),
   uploadPoster
 );
 

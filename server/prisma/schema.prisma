@@ -1685,6 +1685,9 @@ model TournamentTeam {
   poolId        String?
   paymentStatus String          @default("PENDING") // PENDING, PARTIAL, FULL
   amountPaid    Decimal         @default(0) @db.Decimal(10, 2)
+  status        String          @default("ACTIVE") // ACTIVE, WITHDRAWN
+  withdrawnAt   DateTime?
+  refundAmount  Decimal?        @db.Decimal(10, 2)
   tournament    Tournament      @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   pool          TournamentPool? @relation(fields: [poolId], references: [id])
   team          Team            @relation(fields: [teamId], references: [id])

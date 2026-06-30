@@ -23,7 +23,11 @@ const generateRoundRobinMatches = (teams) => {
       const away = teamIds[teamIds.length - 1 - match];
 
       if (home !== "BYE" && away !== "BYE") {
-        matches.push({ home, away });
+        matches.push({ home, away, byeTeam: null });
+      } else {
+        // Track which team has the bye so we can award them walkover points in standings
+        const realTeam = home === "BYE" ? away : home;
+        matches.push({ home: null, away: null, byeTeam: realTeam });
       }
     }
     // Rotate array, keeping the first element fixed
@@ -58,9 +62,26 @@ export const autoGenerateGroupStage = async (
   if (!slotTimes || slotTimes.length === 0)
     throw new Error("Please provide slot times");
 
+  // Edge Case 25: Partial payment defaulter exclusion
+  // Teams that have never paid anything (PENDING) are excluded from schedule generation
+  const pendingDefaulters = [];
+  for (const pool of tournament.pools) {
+    for (const team of pool.teams) {
+      if (team.paymentStatus === "PENDING") {
+        pendingDefaulters.push(team.teamId);
+      }
+    }
+  }
+  if (pendingDefaulters.length > 0) {
+    throw new Error(
+      `Cannot generate schedule: ${pendingDefaulters.length} team(s) have not completed their registration payment. ` +
+      `Please approve or remove these teams before scheduling.`
+    );
+  }
+
   let allMatches = [];
 
-  // 1. Generate unordered pairings for each pool
+  // 1. Generate unordered pairings for each pool (includes BYE pairings)
   for (const pool of tournament.pools) {
     const pairings = generateRoundRobinMatches(pool.teams);
     for (const pair of pairings) {
@@ -68,56 +89,78 @@ export const autoGenerateGroupStage = async (
         poolId: pool.id,
         team1Id: pair.home,
         team2Id: pair.away,
+        byeTeam: pair.byeTeam,
       });
     }
   }
 
-  // Shuffle matches slightly to mix pools, or interleave them
-  // A simple interleaving:
-  const interleavedMatches = [];
-  // (In a real scenario, you'd balance matches better so one team doesn't play twice a day, but keeping it simple for now)
+  // Edge Case 22: Multi-venue rest collision guard
+  // Ensure no team plays twice in a 2-hour window on the same day
+  const teamDaySlots = {}; // key: `${teamId}:${dateStr}`, value: [scheduledAt timestamps]
+  const MIN_REST_MS = 2 * 60 * 60 * 1000; // 2 hours
 
   let currentDate = parseISO(startDate || new Date().toISOString());
   let slotIndex = 0;
 
-  const gamesToCreate = allMatches.map((match, i) => {
-    // Determine the date and time for this match
+  // Pre-compute all slot times to check for collisions
+  const tentativeSlots = allMatches.map((match) => {
     if (slotIndex >= slotTimes.length) {
       slotIndex = 0;
       currentDate = addDays(currentDate, 1);
     }
-
     const timeString = slotTimes[slotIndex];
     const scheduledAt = new Date(
       `${format(currentDate, "yyyy-MM-dd")}T${timeString}:00`
     );
-
     slotIndex++;
-
-    return {
-      tournamentId,
-      tournamentStage: "GROUP",
-      tournamentPoolId: match.poolId,
-      status: "SCHEDULED",
-      requestType: "TOURNAMENT_MATCH",
-      scheduledAt,
-      teams: {
-        create: [
-          { teamId: match.team1Id, score: 0, status: "ACCEPTED" },
-          { teamId: match.team2Id, score: 0, status: "ACCEPTED" },
-        ],
-      },
-    };
+    return { match, scheduledAt };
   });
 
-  // 2. Save matches to DB
+  // Check for collision — any team with <2h gap between matches on same day
+  for (const { match, scheduledAt } of tentativeSlots) {
+    const teamsToCheck = [match.team1Id, match.team2Id].filter(Boolean);
+    for (const teamId of teamsToCheck) {
+      const dateStr = format(scheduledAt, "yyyy-MM-dd");
+      const key = `${teamId}:${dateStr}`;
+      if (!teamDaySlots[key]) teamDaySlots[key] = [];
+
+      for (const existingTime of teamDaySlots[key]) {
+        const diff = Math.abs(scheduledAt.getTime() - existingTime.getTime());
+        if (diff < MIN_REST_MS) {
+          throw new Error(
+            `Schedule conflict detected: Team ${teamId} is scheduled for two matches within 2 hours on ${dateStr}. ` +
+            `Please add more slot times or spread matches across more days.`
+          );
+        }
+      }
+      teamDaySlots[key].push(scheduledAt);
+    }
+  }
+
+  // 2. Save real matches to DB (skip BYE placeholder pairings — they get walkover points in standings)
   const createdGames = [];
-  for (const gameData of gamesToCreate) {
-    const { teams, ...gameDetails } = gameData;
+  for (const { match, scheduledAt } of tentativeSlots) {
+    if (match.byeTeam !== null) {
+      // BYE round — no game created, walkover handled in standings calculation
+      continue;
+    }
+
+    const { teams: _teams, byeTeam: _bye, ...gameDetails } = match;
+
     const created = await prisma.hostedGame.create({
       data: {
-        ...gameDetails,
-        teams: teams,
+        tournamentId,
+        tournamentStage: "GROUP",
+        tournamentPoolId: match.poolId,
+        status: "SCHEDULED",
+        requestType: "TOURNAMENT_MATCH",
+        scheduledAt,
+        teams: {
+          create: [
+            { teamId: match.team1Id, score: 0, status: "ACCEPTED" },
+            { teamId: match.team2Id, score: 0, status: "ACCEPTED" },
+          ],
+        },
       },
     });
     createdGames.push(created);
@@ -128,6 +171,12 @@ export const autoGenerateGroupStage = async (
 
 /**
  * Calculates Standings (Points, NRR) based on CricketMatch data.
+ * Handles:
+ *  - ICC All-Out overs quota rule
+ *  - DLS first-innings NRR adjustment
+ *  - Super Over exclusion
+ *  - Abandoned / No-Result matches (1 point each, no NRR impact)
+ *  - BYE team walkover points (2 points for the real team, no NRR impact)
  */
 export const getTournamentStandings = async (tournamentId) => {
   const games = await prisma.hostedGame.findMany({
@@ -153,6 +202,7 @@ export const getTournamentStandings = async (tournamentId) => {
         won: 0,
         lost: 0,
         tied: 0,
+        noResult: 0,
         points: 0,
         runsScored: 0,
         ballsFaced: 0,
@@ -170,6 +220,21 @@ export const getTournamentStandings = async (tournamentId) => {
       if (gt.linkedTeamId && gt.linkedTeam) {
         initTeam(game.tournamentPoolId, gt.linkedTeamId, gt.linkedTeam.name);
       }
+    }
+
+    // Edge Case 19: Abandoned / No-Result matches
+    // 1 point each, completely excluded from NRR calculations
+    if (game.status === "ABANDONED" || game.status === "NO_RESULT") {
+      for (const gt of game.teams) {
+        if (gt.linkedTeamId && standings[game.tournamentPoolId]?.[gt.linkedTeamId]) {
+          const s = standings[game.tournamentPoolId][gt.linkedTeamId];
+          s.played += 1;
+          s.noResult += 1;
+          s.points += 1; // Standard rule: 1 point each for abandoned match
+          // NRR accumulators intentionally NOT updated
+        }
+      }
+      continue;
     }
 
     if (game.status === "COMPLETED" && game.cricketMatch) {
@@ -206,7 +271,9 @@ export const getTournamentStandings = async (tournamentId) => {
       let runsScoredA = inningsA ? inningsA.totalRuns : 0;
       let runsScoredB = inningsB ? inningsB.totalRuns : 0;
 
-      // DLS adjustment: if revisedTarget is set, the team batting first is credited with (revisedTarget - 1)
+      // Edge Case 20: DLS adjustment
+      // If revisedTarget is set, the team batting first is credited with (revisedTarget - 1) for NRR
+      // Their overs are also set to revisedOvers (the reduced quota for the chasing team)
       if (match.revisedTarget != null) {
         const firstInnings = normalInnings.find(i => i.inningsIndex === 0);
         if (firstInnings) {
@@ -218,7 +285,7 @@ export const getTournamentStandings = async (tournamentId) => {
         }
       }
 
-      // Calculate balls faced & bowled under All-Out laws
+      // ICC All-Out law: bowled-out team counted as using full quota of overs for NRR
       let ballsFacedA = inningsA ? inningsA.totalBalls : 0;
       if (isTeamAAllOut) {
         ballsFacedA = maxBalls;
@@ -262,6 +329,37 @@ export const getTournamentStandings = async (tournamentId) => {
     }
   }
 
+  // Edge Case 21: BYE team walkover points
+  // Fetch the pool structures to compute BYE rounds (odd-number pools)
+  // Any team in an odd-sized pool gets one automatic walkover win (2 pts) per round they had a bye
+  const tournament = await prisma.tournament.findUnique({
+    where: { id: tournamentId },
+    include: {
+      pools: { include: { teams: { include: { team: true } } } },
+    },
+  });
+
+  if (tournament) {
+    for (const pool of tournament.pools) {
+      if (pool.teams.length % 2 !== 0 && standings[pool.id]) {
+        // Odd-sized pool: each team gets exactly 1 BYE round in the round-robin
+        // Award each active team 1 walkover win worth 2 points
+        // (The BYE round is distributed evenly, one per team across all rounds)
+        // We represent this as: each team in the pool gets a BYE walkover once
+        const byeRounds = generateRoundRobinMatches(pool.teams).filter(p => p.byeTeam !== null);
+        for (const byeRound of byeRounds) {
+          const s = standings[pool.id]?.[byeRound.byeTeam];
+          if (s) {
+            s.played += 1;
+            s.won += 1;
+            s.points += 2;
+            // NRR accumulators intentionally NOT updated for walkover wins
+          }
+        }
+      }
+    }
+  }
+
   // Calculate NRR and sort
   const result = [];
   for (const poolId in standings) {
@@ -291,7 +389,8 @@ export const getTournamentStandings = async (tournamentId) => {
 };
 
 /**
- * Creates a manual scheduled game
+ * Creates a manual scheduled game.
+ * Edge Case 22: Validates no team plays twice within 2 hours on the same day.
  */
 export const createManualScheduledGame = async (
   tournamentId,
@@ -301,6 +400,36 @@ export const createManualScheduledGame = async (
   team1Id,
   team2Id
 ) => {
+  const scheduled = new Date(scheduledAt);
+  const dateStr = format(scheduled, "yyyy-MM-dd");
+  const MIN_REST_MS = 2 * 60 * 60 * 1000;
+
+  // Check for same-day rest collision against existing games
+  const existingGames = await prisma.hostedGame.findMany({
+    where: {
+      tournamentId,
+      scheduledAt: {
+        gte: new Date(`${dateStr}T00:00:00`),
+        lte: new Date(`${dateStr}T23:59:59`),
+      },
+      status: { in: ["SCHEDULED", "LIVE"] },
+    },
+    include: { teams: true },
+  });
+
+  for (const existingGame of existingGames) {
+    const existingTeamIds = existingGame.teams.map((t) => t.teamId);
+    const conflicting = [team1Id, team2Id].filter((id) => existingTeamIds.includes(id));
+    if (conflicting.length > 0) {
+      const diff = Math.abs(scheduled.getTime() - existingGame.scheduledAt.getTime());
+      if (diff < MIN_REST_MS) {
+        throw new Error(
+          `Schedule conflict: Team(s) ${conflicting.join(", ")} already have a match scheduled within 2 hours on ${dateStr}.`
+        );
+      }
+    }
+  }
+
   return await prisma.hostedGame.create({
     data: {
       tournamentId,
@@ -308,7 +437,7 @@ export const createManualScheduledGame = async (
       tournamentPoolId: poolId,
       status: "SCHEDULED",
       requestType: "TOURNAMENT_MATCH",
-      scheduledAt: new Date(scheduledAt),
+      scheduledAt: scheduled,
       teams: {
         create: [
           { teamId: team1Id, score: 0, status: "ACCEPTED" },

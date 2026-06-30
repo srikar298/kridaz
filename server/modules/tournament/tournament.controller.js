@@ -6,6 +6,7 @@ import {
   createManualScheduledGame,
 } from "./scheduler.service.js";
 import { uploadToR2 } from "../../utils/r2Upload.js";
+import walletService from "../../services/wallet.service.js";
 
 /**
  * @desc    Create a draft tournament (Step 1)
@@ -210,6 +211,19 @@ export const updateTournament = async (req, res, next) => {
         });
       }
       delete updateData.officials;
+    }
+
+    // Edge Case 23: Fee lock post-publishing
+    // Once any team has paid (amountPaid > 0), entry/advance fees are immutable
+    if (updateData.entryFee !== undefined || updateData.advanceFee !== undefined) {
+      const paidTeams = await prisma.tournamentTeam.findFirst({
+        where: { tournamentId: id, amountPaid: { gt: 0 } },
+      });
+      if (paidTeams) {
+        throw new BadRequestError(
+          "Cannot change entry or advance fees after teams have already registered and paid."
+        );
+      }
     }
 
     const updatedTournament = await prisma.tournament.update({
@@ -427,17 +441,18 @@ export const registerForTournament = async (req, res, next) => {
       // Wallet Deduction Logic
       if (amountToDeduct > 0) {
         // Fetch user wallet
-        const wallet = await tx.wallet.findUnique({ where: { userId } });
-        if (!wallet || Number(wallet.balance) < amountToDeduct) {
+      // Fix: Use WalletService.getUsableBalance (balance - reservedBalance)
+        // to prevent double-spending by users with reserved funds
+        const usableBalance = await walletService.getUsableBalance(userId, "user", tx);
+        if (usableBalance < amountToDeduct) {
           throw new BadRequestError(
             "Insufficient wallet balance. Please recharge."
           );
         }
 
-        await tx.wallet.update({
-          where: { userId },
-          data: { balance: { decrement: amountToDeduct } },
-        });
+        // Debit via WalletService for correct balance/reservedBalance handling
+        await walletService.debit(userId, "user", amountToDeduct, tx);
+        const wallet = await tx.wallet.findUnique({ where: { userId } });
 
         await tx.walletTransaction.create({
           data: {
@@ -578,6 +593,177 @@ export const getTournamentMatches = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: matches,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Cancel a tournament and issue refunds to all registered teams
+ * @route   POST /api/tournament/:id/cancel
+ * @access  Private (Owner)
+ */
+export const cancelTournament = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const refundSummary = await prisma.$transaction(async (tx) => {
+      const tournament = await tx.tournament.findUnique({
+        where: { id },
+        include: { teams: { include: { team: true } } },
+      });
+
+      if (!tournament) throw new NotFoundError("Tournament not found");
+      if (tournament.ownerId !== userId) throw new ForbiddenError("Not authorized");
+      if (tournament.status === "CANCELLED")
+        throw new BadRequestError("Tournament is already cancelled");
+      if (tournament.status === "COMPLETED")
+        throw new BadRequestError("Cannot cancel a completed tournament");
+
+      // Set tournament status to CANCELLED
+      await tx.tournament.update({ where: { id }, data: { status: "CANCELLED" } });
+
+      // Cancel all future scheduled matches
+      await tx.hostedGame.updateMany({
+        where: { tournamentId: id, status: { in: ["SCHEDULED", "PENDING"] } },
+        data: { status: "CANCELLED" },
+      });
+
+      const refunds = [];
+
+      // Refund all teams that paid
+      for (const tournamentTeam of tournament.teams) {
+        const amountPaid = Number(tournamentTeam.amountPaid);
+        if (amountPaid <= 0) continue;
+
+        // Resolve the captain's userId from the linked team's admin
+        const team = await tx.team.findUnique({ where: { id: tournamentTeam.teamId } });
+        if (!team?.adminId) continue;
+
+        // Credit refund to captain's wallet
+        await walletService.credit(team.adminId, "user", amountPaid, tx);
+
+        const captainWallet = await tx.wallet.findUnique({ where: { userId: team.adminId } });
+        if (captainWallet) {
+          await tx.walletTransaction.create({
+            data: {
+              walletId: captainWallet.id,
+              amount: amountPaid,
+              type: "REFUND",
+              status: "SUCCESS",
+              description: `Refund for cancelled tournament: ${tournament.name}`,
+              referenceType: "TOURNAMENT",
+              referenceId: id,
+            },
+          });
+        }
+
+        // Mark TournamentTeam refundAmount
+        await tx.tournamentTeam.update({
+          where: { id: tournamentTeam.id },
+          data: { refundAmount: amountPaid },
+        });
+
+        refunds.push({ teamId: tournamentTeam.teamId, refundAmount: amountPaid, captainId: team.adminId });
+      }
+
+      return refunds;
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Tournament cancelled and all team fees refunded.",
+      data: { refunds: refundSummary },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Withdraw a team from a tournament (organizer action) with optional partial refund
+ * @route   POST /api/tournament/:id/teams/:teamId/withdraw
+ * @access  Private (Owner)
+ */
+export const withdrawTeam = async (req, res, next) => {
+  try {
+    const { id: tournamentId, teamId } = req.params;
+    const { refundAmount: requestedRefund } = req.body;
+    const userId = req.user.id;
+
+    const result = await prisma.$transaction(async (tx) => {
+      const tournament = await tx.tournament.findUnique({ where: { id: tournamentId } });
+      if (!tournament) throw new NotFoundError("Tournament not found");
+      if (tournament.ownerId !== userId) throw new ForbiddenError("Not authorized");
+      if (tournament.status === "CANCELLED")
+        throw new BadRequestError("Tournament is already cancelled");
+
+      const tournamentTeam = await tx.tournamentTeam.findFirst({
+        where: { tournamentId, teamId },
+        include: { team: true },
+      });
+      if (!tournamentTeam) throw new NotFoundError("Team not registered in this tournament");
+      if (tournamentTeam.status === "WITHDRAWN")
+        throw new BadRequestError("Team has already been withdrawn");
+
+      const amountPaid = Number(tournamentTeam.amountPaid);
+      const refundAmount = Math.min(
+        requestedRefund != null ? Number(requestedRefund) : amountPaid,
+        amountPaid
+      );
+
+      // Mark team as withdrawn
+      await tx.tournamentTeam.update({
+        where: { id: tournamentTeam.id },
+        data: { status: "WITHDRAWN", withdrawnAt: new Date(), refundAmount },
+      });
+
+      // Cancel their future scheduled matches
+      const teamGames = await tx.hostedGame.findMany({
+        where: {
+          tournamentId,
+          status: { in: ["SCHEDULED", "PENDING"] },
+          teams: { some: { teamId } },
+        },
+        include: { teams: true },
+      });
+
+      for (const game of teamGames) {
+        // Award walkover win to the opponent
+        await tx.hostedGame.update({
+          where: { id: game.id },
+          data: { status: "WALKOVER" },
+        });
+      }
+
+      // Issue partial/full refund if applicable
+      if (refundAmount > 0 && tournamentTeam.team?.adminId) {
+        await walletService.credit(tournamentTeam.team.adminId, "user", refundAmount, tx);
+        const captainWallet = await tx.wallet.findUnique({ where: { userId: tournamentTeam.team.adminId } });
+        if (captainWallet) {
+          await tx.walletTransaction.create({
+            data: {
+              walletId: captainWallet.id,
+              amount: refundAmount,
+              type: "REFUND",
+              status: "SUCCESS",
+              description: `Partial refund — team withdrawn from tournament: ${tournament.name}`,
+              referenceType: "TOURNAMENT",
+              referenceId: tournamentId,
+            },
+          });
+        }
+      }
+
+      return { tournamentTeam, refundAmount, walkoversIssued: teamGames.length };
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Team withdrawn. ${result.walkoversIssued} walkover(s) issued to opponents. Refund: ₹${result.refundAmount}.`,
+      data: result,
     });
   } catch (error) {
     next(error);
