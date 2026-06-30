@@ -20,6 +20,12 @@ export const createTournamentSchema = z.object({
     pitchType: z.string().optional().nullable(),
     matchType: z.string().optional().nullable(),
     maxTeams: z.coerce.number().optional().nullable(),
+    entryFee: z.coerce.number().min(0).optional(),
+    advanceFee: z.coerce.number().min(0).optional(),
+    prizePool: z.coerce.number().min(0).optional(),
+    numberOfWinners: z.coerce.number().min(1).optional(),
+    venues: z.array(z.any()).optional(),
+    officials: z.array(z.any()).optional(),
   }),
 });
 
@@ -45,5 +51,8 @@ export const updateTournamentSchema = z.object({
     pitchType: z.string().optional().nullable(),
     matchType: z.string().optional().nullable(),
     maxTeams: z.coerce.number().optional().nullable(),
+    numberOfWinners: z.coerce.number().min(1).optional(),
+    venues: z.array(z.any()).optional(),
+    officials: z.array(z.any()).optional(),
   }),
 });

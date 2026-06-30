@@ -150,6 +150,62 @@ export const updateTournament = async (req, res, next) => {
       throw new ForbiddenError("Not authorized to update this tournament");
     }
 
+    if (updateData.venues !== undefined) {
+      const venuesList = updateData.venues || [];
+      const venueTurfIds = venuesList
+        .filter((v) => v.type === "VENUE" || v.venueId || v.turfId)
+        .map((v) => v.venueId || v.turfId);
+
+      // Delete old venues not in the new list
+      await prisma.tournamentVenue.deleteMany({
+        where: {
+          tournamentId: id,
+          turfId: { notIn: venueTurfIds },
+        },
+      });
+
+      // Insert new venues
+      for (const turfId of venueTurfIds) {
+        const exists = await prisma.tournamentVenue.findFirst({
+          where: { tournamentId: id, turfId },
+        });
+        if (!exists) {
+          await prisma.tournamentVenue.create({
+            data: { tournamentId: id, turfId },
+          });
+        }
+      }
+      delete updateData.venues;
+    }
+
+    if (updateData.officials !== undefined) {
+      const officialsList = updateData.officials || [];
+
+      // Delete old officials
+      await prisma.tournamentOfficial.deleteMany({
+        where: { tournamentId: id },
+      });
+
+      // Insert new officials
+      for (const off of officialsList) {
+        const uId = off.officialId || off.userId;
+        const name = off.user?.name || off.name || "Official";
+        const role = off.role;
+        const phone = off.user?.phone || off.phone || null;
+
+        await prisma.tournamentOfficial.create({
+          data: {
+            tournamentId: id,
+            userId: uId,
+            name,
+            role,
+            phone,
+          },
+        });
+      }
+      delete updateData.officials;
+    }
+
     const updatedTournament = await prisma.tournament.update({
       where: { id },
       data: updateData,
@@ -269,7 +325,7 @@ export const getPublicTournament = async (req, res, next) => {
           include: { turf: true },
         },
         teams: {
-          where: { status: { in: ["APPROVED", "PENDING"] } },
+          where: { paymentStatus: { in: ["PENDING", "PARTIAL", "FULL"] } },
           include: {
             team: {
               select: { name: true, logo: true, city: true },
@@ -308,19 +364,7 @@ export const registerForTournament = async (req, res, next) => {
     const { teamId, paymentType } = req.body; // paymentType: 'FULL' | 'ADVANCE'
     const userId = req.user.id;
 
-    // 1. Fetch Tournament
-    const tournament = await prisma.tournament.findUnique({
-      where: { id: tournamentId },
-      include: {
-        teams: true,
-      },
-    });
-
-    if (!tournament) throw new NotFoundError("Tournament not found");
-    if (tournament.status !== "PUBLISHED")
-      throw new BadRequestError("Registration is not open");
-
-    // 2. Fetch Team and verify ownership
+    // 1. Fetch Team and verify ownership
     const team = await prisma.team.findUnique({
       where: { id: teamId },
       include: {
@@ -331,51 +375,65 @@ export const registerForTournament = async (req, res, next) => {
     if (!team) throw new NotFoundError("Team not found");
     if (team.adminId !== userId)
       throw new ForbiddenError("You must be the team admin to register");
-    if (
-      team.sportType &&
-      tournament.sport &&
-      team.sportType !== tournament.sport
-    ) {
-      throw new BadRequestError(
-        `This is a ${tournament.sport} tournament, but your team plays ${team.sportType}`
-      );
-    }
 
-    // 3. Verify Team is not already registered
-    const alreadyRegistered = tournament.teams.find((t) => t.teamId === teamId);
-    if (alreadyRegistered) {
-      throw new BadRequestError(
-        "Your team is already registered for this tournament"
-      );
-    }
+    // 2. Perform registration in interactive transaction for concurrency safety
+    await prisma.$transaction(async (tx) => {
+      const tournament = await tx.tournament.findUnique({
+        where: { id: tournamentId },
+        include: {
+          teams: true,
+        },
+      });
 
-    // 4. Verify spots available
-    if (tournament.maxTeams && tournament.teams.length >= tournament.maxTeams) {
-      throw new BadRequestError("Tournament is already full");
-    }
+      if (!tournament) throw new NotFoundError("Tournament not found");
+      if (tournament.status !== "PUBLISHED")
+        throw new BadRequestError("Registration is not open");
 
-    // 5. Calculate Fee
-    const entryFee = tournament.entryFee || 0;
-    const advanceFee = tournament.advanceFee || 0;
-    const amountToDeduct =
-      paymentType === "ADVANCE" && advanceFee > 0 ? advanceFee : entryFee;
-
-    // 6. Wallet Deduction Logic (Transaction)
-    if (amountToDeduct > 0) {
-      // Fetch user wallet
-      const wallet = await prisma.wallet.findUnique({ where: { userId } });
-      if (!wallet || wallet.balance < amountToDeduct) {
+      if (
+        team.sportType &&
+        tournament.sport &&
+        team.sportType !== tournament.sport
+      ) {
         throw new BadRequestError(
-          "Insufficient wallet balance. Please recharge."
+          `This is a ${tournament.sport} tournament, but your team plays ${team.sportType}`
         );
       }
 
-      await prisma.$transaction([
-        prisma.wallet.update({
+      // Verify Team is not already registered
+      const alreadyRegistered = tournament.teams.find((t) => t.teamId === teamId);
+      if (alreadyRegistered) {
+        throw new BadRequestError(
+          "Your team is already registered for this tournament"
+        );
+      }
+
+      // Verify spots available
+      if (tournament.maxTeams && tournament.teams.length >= tournament.maxTeams) {
+        throw new BadRequestError("Tournament is already full");
+      }
+
+      // Calculate Fee
+      const entryFee = Number(tournament.entryFee) || 0;
+      const advanceFee = Number(tournament.advanceFee) || 0;
+      const amountToDeduct =
+        paymentType === "ADVANCE" && advanceFee > 0 ? advanceFee : entryFee;
+
+      // Wallet Deduction Logic
+      if (amountToDeduct > 0) {
+        // Fetch user wallet
+        const wallet = await tx.wallet.findUnique({ where: { userId } });
+        if (!wallet || Number(wallet.balance) < amountToDeduct) {
+          throw new BadRequestError(
+            "Insufficient wallet balance. Please recharge."
+          );
+        }
+
+        await tx.wallet.update({
           where: { userId },
           data: { balance: { decrement: amountToDeduct } },
-        }),
-        prisma.walletTransaction.create({
+        });
+
+        await tx.walletTransaction.create({
           data: {
             walletId: wallet.id,
             amount: amountToDeduct,
@@ -385,32 +443,19 @@ export const registerForTournament = async (req, res, next) => {
             referenceType: "TOURNAMENT",
             referenceId: tournamentId,
           },
-        }),
-        // Register the team
-        prisma.tournamentTeam.create({
-          data: {
-            tournamentId,
-            teamId,
-            status: "APPROVED", // or PENDING based on organizer preference
-            paidAmount: amountToDeduct,
-            isAdvancePaid: paymentType === "ADVANCE",
-            isFullyPaid: paymentType === "FULL" || amountToDeduct >= entryFee,
-          },
-        }),
-      ]);
-    } else {
-      // Free tournament
-      await prisma.tournamentTeam.create({
+        });
+      }
+
+      // Register the team using existing schema columns
+      await tx.tournamentTeam.create({
         data: {
           tournamentId,
           teamId,
-          status: "APPROVED",
-          paidAmount: 0,
-          isAdvancePaid: true,
-          isFullyPaid: true,
+          amountPaid: amountToDeduct,
+          paymentStatus: (paymentType === "FULL" || amountToDeduct >= entryFee) ? "FULL" : "PARTIAL",
         },
       });
-    }
+    });
 
     res.status(200).json({
       success: true,
